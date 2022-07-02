@@ -4921,6 +4921,8 @@ static_library("ui") {
       "views/tabs/tab_width_constraints.h",
       "views/tabs/window_finder.cc",
       "views/tabs/window_finder.h",
+      "views/tabs/z_orderable_tab_container_element.cc",
+      "views/tabs/z_orderable_tab_container_element.h",
       "views/task_manager_view.cc",
       "views/task_manager_view.h",
       "views/theme_copying_widget.cc",

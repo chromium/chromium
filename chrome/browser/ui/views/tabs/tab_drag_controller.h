@@ -92,7 +92,7 @@ class TabDragController : public views::WidgetObserver {
   // |tab_strip|.
   // NOTE: this returns false if the TabDragController is in the process of
   // finishing the drag.
-  static bool IsAttachedTo(const TabDragContext* tab_strip);
+  static bool IsAttachedTo(const TabDragContextBase* tab_strip);
 
   // Returns true if there is a drag underway.
   static bool IsActive();
@@ -650,10 +650,6 @@ class TabDragController : public views::WidgetObserver {
 
   // The selection model of |attached_context_| before the tabs were attached.
   ui::ListSelectionModel selection_model_before_attach_;
-
-  // Initial x-coordinates of the tabs when the drag started. Only used for
-  // touch mode.
-  std::vector<int> initial_tab_positions_;
 
   // What should occur during ConinueDragging when a tab is attempted to be
   // detached.

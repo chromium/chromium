@@ -23,6 +23,8 @@ class TabGroupHighlight : public views::View {
   TabGroupHighlight(const TabGroupHighlight&) = delete;
   TabGroupHighlight& operator=(const TabGroupHighlight&) = delete;
 
+  void UpdateBounds(views::View* leading_view, views::View* trailing_view);
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   bool GetCanProcessEventsWithinSubtree() const override;

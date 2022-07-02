@@ -509,7 +509,7 @@ void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {
   widget->RemoveObserver(&editor_bubble_tracker_);
 }
 
-BEGIN_METADATA(TabGroupHeader, views::View)
+BEGIN_METADATA(TabGroupHeader, TabSlotView)
 ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)
 END_METADATA
 

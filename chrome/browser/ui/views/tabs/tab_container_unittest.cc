@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -30,6 +31,19 @@ views::View* FindTabView(views::View* view) {
   }
   return current;
 }
+
+class FakeTabDragContext : public TabDragContextBase {
+ public:
+  FakeTabDragContext() = default;
+  ~FakeTabDragContext() override = default;
+
+  void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                             const gfx::Rect& target_bounds) override {}
+  bool IsDragSessionActive() const override { return false; }
+  bool IsEndingDrag() const override { return false; }
+  void FinishEndingDrag() override {}
+  int GetTabDragAreaWidth() const override { return width(); }
+};
 }  // namespace
 
 class TabContainerTest : public ChromeViewsTestBase {
@@ -46,23 +60,29 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_slot_controller_ =
         std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
 
+    std::unique_ptr<TabDragContextBase> drag_context =
+        std::make_unique<FakeTabDragContext>();
     std::unique_ptr<TabContainer> tab_container =
         std::make_unique<TabContainer>(
             tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
-            nullptr /*drag_context*/, tab_slot_controller_.get(),
+            drag_context.get(), tab_slot_controller_.get(),
             nullptr /*scroll_contents_view*/);
     tab_container->SetAvailableWidthCallback(base::BindRepeating(
         [](TabContainerTest* test) { return test->tab_container_width_; },
         this));
 
     widget_ = CreateTestWidget();
+    tab_container_ =
+        widget_->GetRootView()->AddChildView(std::move(tab_container));
+    drag_context_ =
+        widget_->GetRootView()->AddChildView(std::move(drag_context));
     SetTabContainerWidth(1000);
-    tab_container_ = widget_->SetContentsView(std::move(tab_container));
 
     tab_slot_controller_->set_tab_container(tab_container_);
   }
 
   void TearDown() override {
+    drag_context_ = nullptr;
     tab_container_ = nullptr;
     widget_.reset();
     tab_slot_controller_.reset();
@@ -217,12 +237,15 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   void SetTabContainerWidth(int width) {
     tab_container_width_ = width;
-    widget_->SetSize(
-        gfx::Size(tab_container_width_, GetLayoutConstant(TAB_HEIGHT)));
+    gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_HEIGHT));
+    widget_->SetSize(size);
+    drag_context_->SetSize(size);
+    tab_container_->SetSize(size);
   }
 
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
+  raw_ptr<TabDragContextBase> drag_context_;
   raw_ptr<TabContainer> tab_container_;
   std::unique_ptr<views::Widget> widget_;
 

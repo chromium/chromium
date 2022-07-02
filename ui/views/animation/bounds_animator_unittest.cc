@@ -295,6 +295,25 @@ TEST_F(BoundsAnimatorTest, HandleDuplicateAnimation) {
   EXPECT_FALSE(OwnedDelegate::GetAndClearCanceled());
 }
 
+// Make sure that a duplicate animation request that specifies a different
+// delegate swaps out that delegate.
+TEST_F(BoundsAnimatorTest, DuplicateAnimationsCanReplaceDelegate) {
+  const gfx::Rect target_bounds(0, 0, 10, 10);
+
+  animator()->AnimateViewTo(child(), target_bounds);
+  animator()->SetAnimationDelegate(child(), std::make_unique<OwnedDelegate>());
+
+  // Request the animation with the same view/target bounds but a different
+  // delegate.
+  animator()->AnimateViewTo(child(), target_bounds,
+                            std::make_unique<OwnedDelegate>());
+
+  // Verify that the delegate was replaced.
+  EXPECT_TRUE(OwnedDelegate::GetAndClearDeleted());
+  // The animation still should not have been canceled.
+  EXPECT_FALSE(OwnedDelegate::GetAndClearCanceled());
+}
+
 // Makes sure StopAnimating works.
 TEST_F(BoundsAnimatorTest, StopAnimating) {
   std::unique_ptr<OwnedDelegate> delegate(std::make_unique<OwnedDelegate>());
@@ -311,6 +330,28 @@ TEST_F(BoundsAnimatorTest, StopAnimating) {
   // Stopping should both cancel the delegate and delete it.
   EXPECT_TRUE(OwnedDelegate::GetAndClearDeleted());
   EXPECT_TRUE(OwnedDelegate::GetAndClearCanceled());
+}
+
+// Make sure Complete completes in-progress animations.
+TEST_F(BoundsAnimatorTest, CompleteAnimation) {
+  std::unique_ptr<OwnedDelegate> delegate(std::make_unique<OwnedDelegate>());
+  const gfx::Rect target_bounds = gfx::Rect(0, 0, 10, 10);
+
+  animator()->AnimateViewTo(child(), target_bounds);
+  animator()->SetAnimationDelegate(child(), std::make_unique<OwnedDelegate>());
+
+  animator()->Complete();
+
+  // Shouldn't be animating now.
+  EXPECT_FALSE(animator()->IsAnimating());
+  EXPECT_FALSE(animator()->IsAnimating(child()));
+
+  // Child should have been moved to the animation's target.
+  EXPECT_EQ(target_bounds, child()->bounds());
+
+  // Completing should delete the delegate.
+  EXPECT_TRUE(OwnedDelegate::GetAndClearDeleted());
+  EXPECT_FALSE(OwnedDelegate::GetAndClearCanceled());
 }
 
 // Verify that transform is used when the animation target bounds have the

@@ -104,8 +104,6 @@ class BrowserTabStripController : public TabStripController,
       const tab_groups::TabGroupVisualData& visual_data) override;
   absl::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override;
-  absl::optional<int> GetLastTabInGroup(
-      const tab_groups::TabGroupId& group) const override;
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group_id) const override;
   bool IsFrameCondensed() const override;

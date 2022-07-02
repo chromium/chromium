@@ -297,7 +297,10 @@ void TabDragControllerTest::SetWindowFinderForTabStrip(
 
 void TabDragControllerTest::HandleGestureEvent(TabStrip* tab_strip,
                                                ui::GestureEvent* event) {
-  tab_strip->OnGestureEvent(event);
+  // Manually dispatch the event to the drag context (which has capture during
+  // drags). Mouse/keyboard/touch events can be dispatched normally via test
+  // machinery in ui_test_utils that have no direct gesture event equivalent.
+  tab_strip->GetDragContext()->OnGestureEvent(event);
 }
 
 bool TabDragControllerTest::HasDragStarted(TabStrip* tab_strip) const {
@@ -420,6 +423,8 @@ IN_PROC_BROWSER_TEST_F(TabDragCaptureLostTest, ReleaseCaptureOnDrag) {
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 }
 
+#endif
+
 IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
   AddTabsAndResetBrowser(browser(), 1);
 
@@ -442,8 +447,6 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
   EXPECT_FALSE(TabDragController::IsActive());
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 }
-
-#endif
 
 class DetachToBrowserTabDragControllerTest
     : public TabDragControllerTest,
@@ -1557,7 +1560,8 @@ class CaptureLoseWindowFinder : public WindowFinder {
   gfx::NativeWindow GetLocalProcessWindowAtPoint(
       const gfx::Point& screen_point,
       const std::set<gfx::NativeWindow>& ignore) override {
-    static_cast<views::View*>(tab_strip_)->OnMouseCaptureLost();
+    static_cast<views::View*>(tab_strip_->GetDragContext())
+        ->OnMouseCaptureLost();
     return nullptr;
   }
 
@@ -2113,6 +2117,76 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragInSameWindow) {
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
 }
 
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       TabDragContextOwnsDraggedTabs) {
+  AddTabsAndResetBrowser(browser(), 1);
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabDragContext* drag_context = tab_strip->GetDragContext();
+  Tab* dragged_tab = tab_strip->tab_at(1);
+
+  // Tabs are not in the TabDragContext when they aren't being dragged.
+  ASSERT_FALSE(drag_context->Contains(dragged_tab));
+
+  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
+  EXPECT_FALSE(drag_context->Contains(dragged_tab));
+
+  // TabDragContext gets them only after the drag truly begins.
+  ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip->tab_at(0))));
+  EXPECT_TRUE(drag_context->Contains(dragged_tab));
+
+  // TabDragContext keeps them after the drag ends...
+  ASSERT_TRUE(ReleaseInput());
+  EXPECT_TRUE(drag_context->Contains(dragged_tab));
+
+  // Until they animate back into place.
+  StopAnimating(tab_strip);
+  EXPECT_FALSE(drag_context->Contains(dragged_tab));
+
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+}
+
+// Flaky on lacros - it appears that the tab close animation sometimes completes
+// before we have a chance to check for ownership during said animation.
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#define MAYBE_TabDragContextOwnsClosingDraggedTabs \
+  DISABLED_TabDragContextOwnsClosingDraggedTabs
+#else
+#define MAYBE_TabDragContextOwnsClosingDraggedTabs \
+  TabDragContextOwnsClosingDraggedTabs
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_TabDragContextOwnsClosingDraggedTabs) {
+  AddTabsAndResetBrowser(browser(), 1);
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabDragContext* drag_context = tab_strip->GetDragContext();
+  Tab* dragged_tab = tab_strip->tab_at(1);
+
+  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
+
+  ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip->tab_at(0))));
+
+  // Delete the tab being dragged.
+  browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+
+  // Should have canceled dragging.
+  ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(TabDragController::IsActive());
+
+  // TabDragContext still owns the tab while it's closing.
+  ASSERT_TRUE(dragged_tab->closing());
+  EXPECT_TRUE(drag_context->Contains(dragged_tab));
+
+  // Completing the close animation destroys the tab.
+  views::ViewTracker dragged_tab_tracker(dragged_tab);
+  StopAnimating(tab_strip);
+  EXPECT_EQ(dragged_tab_tracker.view(), nullptr);
+}
+
 namespace {
 
 void DragAllStep2(DetachToBrowserTabDragControllerTest* test,
@@ -2339,6 +2413,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       browser()->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
       false, false));
+  StopAnimating(tab_strip);
 
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_FALSE(group_header->dragging());
@@ -2373,6 +2448,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       browser()->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
       false, false));
 
+  StopAnimating(tab_strip);
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_FALSE(group_header->dragging());
   EXPECT_EQ("0 1 2 3", IDString(browser()->tab_strip_model()));

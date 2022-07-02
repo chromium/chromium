@@ -87,7 +87,7 @@ BrowserView* GetSourceBrowserViewInTabDragging() {
   auto* source_context = TabDragController::GetSourceContext();
   if (source_context) {
     gfx::NativeWindow source_window =
-        source_context->AsView()->GetWidget()->GetNativeWindow();
+        source_context->GetWidget()->GetNativeWindow();
     if (source_window)
       return BrowserView::GetBrowserViewForNativeWindow(source_window);
   }
@@ -544,11 +544,6 @@ void BrowserTabStripController::SetVisualDataForGroup(
 absl::optional<int> BrowserTabStripController::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->GetFirstTab();
-}
-
-absl::optional<int> BrowserTabStripController::GetLastTabInGroup(
-    const tab_groups::TabGroupId& group) const {
-  return model_->group_model()->GetTabGroup(group)->GetLastTab();
 }
 
 gfx::Range BrowserTabStripController::ListTabsInGroup(

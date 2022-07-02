@@ -153,16 +153,6 @@ absl::optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
   return absl::nullopt;
 }
 
-absl::optional<int> FakeBaseTabStripController::GetLastTabInGroup(
-    const tab_groups::TabGroupId& group) const {
-  for (size_t i = tab_groups_.size(); i > 0; --i) {
-    if (tab_groups_[i - 1] == group)
-      return i - 1;
-  }
-
-  return absl::nullopt;
-}
-
 gfx::Range FakeBaseTabStripController::ListTabsInGroup(
     const tab_groups::TabGroupId& group) const {
   int first_tab = -1;

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -48,13 +49,7 @@ gfx::ImageSkia* GetDropArrowImage(bool is_down) {
 // underlines.
 class TabSlotAnimationDelegate : public gfx::AnimationDelegate {
  public:
-  using OnAnimationProgressedCallback =
-      base::RepeatingCallback<void(TabSlotView*)>;
-
-  TabSlotAnimationDelegate(
-      TabContainer* tab_container,
-      TabSlotView* slot_view,
-      OnAnimationProgressedCallback on_animation_progressed);
+  TabSlotAnimationDelegate(TabContainer* tab_container, TabSlotView* slot_view);
   TabSlotAnimationDelegate(const TabSlotAnimationDelegate&) = delete;
   TabSlotAnimationDelegate& operator=(const TabSlotAnimationDelegate&) = delete;
   ~TabSlotAnimationDelegate() override;
@@ -70,16 +65,11 @@ class TabSlotAnimationDelegate : public gfx::AnimationDelegate {
  private:
   const raw_ptr<TabContainer> tab_container_;
   const raw_ptr<TabSlotView> slot_view_;
-  OnAnimationProgressedCallback on_animation_progressed_;
 };
 
-TabSlotAnimationDelegate::TabSlotAnimationDelegate(
-    TabContainer* tab_container,
-    TabSlotView* slot_view,
-    OnAnimationProgressedCallback on_animation_progressed)
-    : tab_container_(tab_container),
-      slot_view_(slot_view),
-      on_animation_progressed_(on_animation_progressed) {
+TabSlotAnimationDelegate::TabSlotAnimationDelegate(TabContainer* tab_container,
+                                                   TabSlotView* slot_view)
+    : tab_container_(tab_container), slot_view_(slot_view) {
   slot_view_->set_animating(true);
 }
 
@@ -87,7 +77,7 @@ TabSlotAnimationDelegate::~TabSlotAnimationDelegate() = default;
 
 void TabSlotAnimationDelegate::AnimationProgressed(
     const gfx::Animation* animation) {
-  on_animation_progressed_.Run(slot_view());
+  tab_container_->OnTabSlotAnimationProgressed(slot_view_);
 }
 
 void TabSlotAnimationDelegate::AnimationEnded(const gfx::Animation* animation) {
@@ -100,127 +90,6 @@ void TabSlotAnimationDelegate::AnimationCanceled(
     const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
-
-// Animation delegate used when a dragged tab is released. When done sets the
-// dragging state to false.
-class ResetDraggingStateDelegate : public TabSlotAnimationDelegate {
- public:
-  ResetDraggingStateDelegate(
-      TabContainer* tab_container,
-      Tab* tab,
-      OnAnimationProgressedCallback on_animation_progressed);
-  ResetDraggingStateDelegate(const ResetDraggingStateDelegate&) = delete;
-  ResetDraggingStateDelegate& operator=(const ResetDraggingStateDelegate&) =
-      delete;
-  ~ResetDraggingStateDelegate() override;
-
-  void AnimationEnded(const gfx::Animation* animation) override;
-  void AnimationCanceled(const gfx::Animation* animation) override;
-};
-
-ResetDraggingStateDelegate::ResetDraggingStateDelegate(
-    TabContainer* tab_container,
-    Tab* tab,
-    OnAnimationProgressedCallback on_animation_progressed)
-    : TabSlotAnimationDelegate(tab_container, tab, on_animation_progressed) {}
-
-ResetDraggingStateDelegate::~ResetDraggingStateDelegate() = default;
-
-void ResetDraggingStateDelegate::AnimationEnded(
-    const gfx::Animation* animation) {
-  static_cast<Tab*>(slot_view())->set_dragging(false);
-  TabSlotAnimationDelegate::AnimationEnded(animation);
-}
-
-void ResetDraggingStateDelegate::AnimationCanceled(
-    const gfx::Animation* animation) {
-  AnimationEnded(animation);
-}
-
-// A class that calculates a z-value for a TabContainer child view (one of a
-// tab, a tab group header, a tab group underline, or a tab group highlight).
-// Can be compared with other ZOrderableTabContainerElements to determine paint
-// order of their associated views.
-class ZOrderableTabContainerElement {
- public:
-  ZOrderableTabContainerElement(views::View* const child,
-                                absl::optional<const TabGroupUnderline* const>
-                                    dragging_tabs_current_group_underline)
-      : child_(child),
-        z_value_(
-            CalculateZValue(child, dragging_tabs_current_group_underline)) {}
-
-  bool operator<(const ZOrderableTabContainerElement& rhs) const {
-    return z_value_ < rhs.z_value_;
-  }
-
-  views::View* view() const { return child_; }
-
- private:
-  // Determines the 'height' of |child|, which should be used to determine the
-  // paint order of TabContainer's children.  Larger z-values should be painted
-  // on top of smaller ones.
-  static float CalculateZValue(views::View* child,
-                               absl::optional<const TabGroupUnderline* const>
-                                   dragging_tabs_current_group_underline) {
-    Tab* tab = views::AsViewClass<Tab>(child);
-    TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(child);
-    TabGroupUnderline* underline = views::AsViewClass<TabGroupUnderline>(child);
-    TabGroupHighlight* highlight = views::AsViewClass<TabGroupHighlight>(child);
-    DCHECK_EQ(1, !!tab + !!header + !!underline + !!highlight);
-
-    // Construct a bitfield that encodes |child|'s z-value. Higher-order bits
-    // encode more important properties - see usage below for details on each.
-    // The lowest-order |num_bits_reserved_for_tab_style_z_value| bits are
-    // reserved for the factors considered by TabStyle, e.g. selection and hover
-    // state.
-    constexpr int num_bits_reserved_for_tab_style_z_value =
-        base::bits::Log2Ceiling(static_cast<int>(TabStyle::kMaximumZValue) + 1);
-    enum ZValue {
-      kActiveTab = (1u << (num_bits_reserved_for_tab_style_z_value + 4)),
-      kDraggedHeader = (1u << (num_bits_reserved_for_tab_style_z_value + 3)),
-      kDragRelevantUnderline =
-          (1u << (num_bits_reserved_for_tab_style_z_value + 2)),
-      kDraggedTab = (1u << (num_bits_reserved_for_tab_style_z_value + 1)),
-      kGroupView = (1u << num_bits_reserved_for_tab_style_z_value)
-    };
-
-    unsigned int z_value = 0;
-
-    // The active tab is always on top.
-    if (tab && tab->IsActive())
-      z_value |= kActiveTab;
-
-    // If we're dragging a header, that is painted above non-active tabs.
-    if (header && header->dragging())
-      z_value |= kDraggedHeader;
-
-    // If we're dragging tabs into a group, or are dragging a group, the
-    // underline for that group is painted above non-active dragged tabs.
-    if (underline && dragging_tabs_current_group_underline.has_value() &&
-        underline == dragging_tabs_current_group_underline.value())
-      z_value |= kDragRelevantUnderline;
-
-    // Dragged tabs are painted above anything that isn't part of the drag.
-    if (tab && tab->dragging())
-      z_value |= kDraggedTab;
-
-    // Group headers, highlights and underlines are painted above non-active,
-    // non-dragged tabs. Note that a group highlight is only visible when the
-    // associated group is being dragged in a header drag.
-    if (header || underline || highlight)
-      z_value |= kGroupView;
-
-    // The remaining (non-active, non-dragged) tabs are painted last. They are
-    // ordered by their selected or hovered state, which is animated and thus
-    // real-valued.
-    const float tab_style_z_value = tab ? tab->tab_style()->GetZValue() : 0.0f;
-    return z_value + tab_style_z_value;
-  }
-
-  views::View* child_;
-  float z_value_;
-};  // ZOrderableTabStripElement
 
 // Helper class that manages the tab scrolling animation.
 class TabScrollingAnimation : public gfx::LinearAnimation,
@@ -273,9 +142,7 @@ class TabScrollingAnimation : public gfx::LinearAnimation,
 // done.
 class TabContainer::RemoveTabDelegate : public TabSlotAnimationDelegate {
  public:
-  RemoveTabDelegate(TabContainer* tab_container,
-                    Tab* tab,
-                    OnAnimationProgressedCallback on_animation_progressed);
+  RemoveTabDelegate(TabContainer* tab_container, Tab* tab);
   RemoveTabDelegate(const RemoveTabDelegate&) = delete;
   RemoveTabDelegate& operator=(const RemoveTabDelegate&) = delete;
 
@@ -283,11 +150,9 @@ class TabContainer::RemoveTabDelegate : public TabSlotAnimationDelegate {
   void AnimationCanceled(const gfx::Animation* animation) override;
 };
 
-TabContainer::RemoveTabDelegate::RemoveTabDelegate(
-    TabContainer* tab_container,
-    Tab* tab,
-    OnAnimationProgressedCallback on_animation_progressed)
-    : TabSlotAnimationDelegate(tab_container, tab, on_animation_progressed) {}
+TabContainer::RemoveTabDelegate::RemoveTabDelegate(TabContainer* tab_container,
+                                                   Tab* tab)
+    : TabSlotAnimationDelegate(tab_container, tab) {}
 
 void TabContainer::RemoveTabDelegate::AnimationEnded(
     const gfx::Animation* animation) {
@@ -301,7 +166,7 @@ void TabContainer::RemoveTabDelegate::AnimationCanceled(
 
 TabContainer::TabContainer(TabStripController* controller,
                            TabHoverCardController* hover_card_controller,
-                           TabDragContext* drag_context,
+                           TabDragContextBase* drag_context,
                            TabSlotController* tab_slot_controller,
                            views::View* scroll_contents_view)
     : controller_(controller),
@@ -412,6 +277,22 @@ void TabContainer::SetTabPinned(int model_index, TabPinned pinned) {
   }
 }
 
+void TabContainer::StoppedDraggingView(TabSlotView* view) {
+  AddChildView(view);
+  Tab* tab = views::AsViewClass<Tab>(view);
+  if (tab && tab->closing()) {
+    // This tab was closed during the drag. It's already been removed from our
+    // other data structures in RemoveTab(), and TabDragContext animated it
+    // closed for us, so we can just destroy it.
+    OnTabCloseAnimationCompleted(tab);
+    return;
+  }
+  OrderTabSlotView(view);
+
+  if (view->group())
+    UpdateTabGroupVisuals(view->group().value());
+}
+
 void TabContainer::ScrollTabToVisible(int model_index) {
   views::ScrollView* scroll_container =
       views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
@@ -468,8 +349,8 @@ void TabContainer::ScrollTabToVisible(int model_index) {
 }
 
 void TabContainer::OnGroupCreated(const tab_groups::TabGroupId& group) {
-  auto group_view =
-      std::make_unique<TabGroupViews>(this, tab_slot_controller_, group);
+  auto group_view = std::make_unique<TabGroupViews>(
+      this, drag_context_, tab_slot_controller_, group);
   layout_helper()->InsertGroupHeader(group, group_view->header());
   group_views()[group] = std::move(group_view);
 }
@@ -527,7 +408,7 @@ void TabContainer::UpdateHoverCard(
   // to change at the same time as the tabstrip is starting to animate; the
   // hover card should not be visible at this time.
   // See crbug.com/1220840 for an example case.
-  if (bounds_animator_.IsAnimating()) {
+  if (IsAnimating()) {
     tab = nullptr;
     update_type = TabSlotController::HoverCardUpdateType::kAnimating;
   }
@@ -589,7 +470,6 @@ void TabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
 }
 
 void TabContainer::StartBasicAnimation() {
-  PrepareForAnimation();
   UpdateIdealBounds();
   AnimateToIdealBounds();
 }
@@ -598,7 +478,13 @@ void TabContainer::InvalidateIdealBounds() {
   last_layout_size_ = gfx::Size();
 }
 
+bool TabContainer::IsAnimating() const {
+  return bounds_animator_.IsAnimating() ||
+         (drag_context_ && drag_context_->IsEndingDrag());
+}
+
 void TabContainer::StopAnimating(bool layout) {
+  drag_context_->FinishEndingDrag();
   if (!bounds_animator_.IsAnimating())
     return;
 
@@ -630,18 +516,6 @@ int TabContainer::GetAvailableWidthForTabContainer() const {
              : parent()->GetAvailableSize(this).width().value();
 }
 
-void TabContainer::StartResetDragAnimation(int tab_model_index) {
-  Tab* tab = GetTabAtModelIndex(tab_model_index);
-  // Install a delegate to reset the dragging state when done. We have to leave
-  // dragging true for the tab otherwise it'll draw beneath the new tab button.
-  bounds_animator().AnimateViewTo(
-      tab, tabs_view_model_.ideal_bounds(tab_model_index),
-      std::make_unique<ResetDraggingStateDelegate>(
-          this, GetTabAtModelIndex(tab_model_index),
-          base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                              base::Unretained(this))));
-}
-
 void TabContainer::EnterTabClosingMode(absl::optional<int> override_width,
                                        CloseTabSource source) {
   in_tab_close_ = true;
@@ -669,7 +543,10 @@ void TabContainer::SetTabSlotVisibility() {
       TabGroupViews* group_view =
           group_views().at(last_tab_group.value()).get();
       group_view->header()->SetVisible(last_tab_visible);
-      group_view->underline()->SetVisible(last_tab_visible);
+      // Hide underlines if they would underline an invisible tab, but don't
+      // show underlines if they're hidden during a header drag session.
+      if (!group_view->header()->dragging())
+        group_view->underline()->SetVisible(last_tab_visible);
     }
     last_tab_visible = ShouldTabBeVisible(tab);
     last_tab_group = tab->closing() ? absl::nullopt : current_group;
@@ -700,7 +577,7 @@ void TabContainer::Layout() {
     SetTabSlotVisibility();
   }
 
-  if (bounds_animator_.IsAnimating()) {
+  if (IsAnimating()) {
     // Hide tabs that have animated at least partially out of the clip region.
     SetTabSlotVisibility();
     return;
@@ -716,33 +593,11 @@ void TabContainer::Layout() {
 }
 
 void TabContainer::PaintChildren(const views::PaintInfo& paint_info) {
-  // Groups that are being dragged by their header, or that contain the dragged
-  // tabs, need an adjusted z-value. Find that group, if it exists.
-  absl::optional<tab_groups::TabGroupId> dragging_tabs_current_group =
-      absl::nullopt;
-
-  for (const Tab* tab : layout_helper()->GetTabs()) {
-    if (tab->dragging()) {
-      dragging_tabs_current_group = tab->group();
-      break;
-    }
-  }
-
-  absl::optional<const TabGroupUnderline*>
-      dragging_tabs_current_group_underline =
-          dragging_tabs_current_group.has_value()
-              ? absl::optional<const TabGroupUnderline*>(
-                    group_views_[dragging_tabs_current_group.value()]
-                        ->underline())
-              : absl::nullopt;
-
   std::vector<ZOrderableTabContainerElement> orderable_children;
   for (views::View* child : children())
-    orderable_children.emplace_back(child,
-                                    dragging_tabs_current_group_underline);
+    orderable_children.emplace_back(child);
 
-  // Sort in non-descending order. Stable sort breaks z-value ties by index (for
-  // tabs).
+  // Sort in ascending order by z-value. Stable sort breaks ties by child index.
   std::stable_sort(orderable_children.begin(), orderable_children.end());
 
   for (const ZOrderableTabContainerElement& child : orderable_children)
@@ -761,13 +616,19 @@ gfx::Size TabContainer::CalculatePreferredSize() const {
   // that NTB can be laid out just to the right of the rightmost tab. When the
   // tabs aren't at their ideal bounds (i.e. during animation or a drag), we
   // need to size ourselves to exactly fit wherever the tabs *currently* are.
-  if (bounds_animator_.IsAnimating() || IsDragSessionActive()) {
+  if (IsAnimating() || IsDragSessionActive()) {
     // The visual order of the tabs can be out of sync with the logical order,
     // so we have to check all of them to find the visually trailing-most one.
     int max_x = 0;
-    for (auto* child : children()) {
+    for (views::View* child : children())
       max_x = std::max(max_x, child->bounds().right());
-    }
+
+    // We also need to check each tab, in case the rightmost tab is currently
+    // being dragged. Group headers don't need such treatment, since any drag
+    // session including such a header must also include a tab to its right.
+    for (Tab* tab : layout_helper_->GetTabs())
+      max_x = std::max(max_x, tab->bounds().right());
+
     // The tabs span from 0 to |max_x|, so |max_x| is the current width
     // occupied by tabs. We report the current width as our preferred width so
     // that the tab strip is sized to exactly fit the current position of the
@@ -973,14 +834,6 @@ void TabContainer::DropArrow::OnWidgetDestroying(views::Widget* widget) {
   arrow_window_ = nullptr;
 }
 
-void TabContainer::PrepareForAnimation() {
-  if (!IsDragSessionActive() &&
-      !TabDragController::IsAttachedTo(drag_context_)) {
-    for (int i = 0; i < GetTabCount(); ++i)
-      GetTabAtModelIndex(i)->set_dragging(false);
-  }
-}
-
 void TabContainer::UpdateIdealBounds() {
   if (GetTabCount() == 0)
     return;  // Should only happen during creation/destruction, ignore.
@@ -998,51 +851,18 @@ void TabContainer::AnimateToIdealBounds() {
   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
 
   for (int i = 0; i < GetTabCount(); ++i) {
-    // If the tab is being dragged manually, skip it.
     Tab* tab = GetTabAtModelIndex(i);
-    if (tab->dragging() && !bounds_animator().IsAnimating(tab))
-      continue;
-
-    // Also skip tabs already being animated to the same ideal bounds.  Calling
-    // AnimateViewTo() again restarts the animation, which changes the timing of
-    // how the tab animates, leading to hitches.
     const gfx::Rect& target_bounds = tabs_view_model_.ideal_bounds(i);
-    if (bounds_animator().GetTargetBounds(tab) == target_bounds)
-      continue;
 
-    // Set an animation delegate for the tab so it will clip appropriately.
-    // Don't do this if dragging() is true.  In this case the tab was
-    // previously being dragged and is now animating back to its ideal
-    // bounds; it already has an associated ResetDraggingStateDelegate that
-    // will reset this dragging state. Replacing this delegate would mean
-    // this code would also need to reset the dragging state immediately,
-    // and that could allow the new tab button to be drawn atop this tab.
-    if (bounds_animator().IsAnimating(tab) && tab->dragging()) {
-      bounds_animator().SetTargetBounds(tab, target_bounds);
-    } else {
-      bounds_animator().AnimateViewTo(
-          tab, target_bounds,
-          std::make_unique<TabSlotAnimationDelegate>(
-              this, tab,
-              base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                                  base::Unretained(this))));
-    }
+    AnimateTabSlotViewTo(tab, target_bounds);
   }
 
   for (const auto& header_pair : group_views()) {
     TabGroupHeader* const header = header_pair.second->header();
+    const gfx::Rect& target_bounds =
+        layout_helper()->group_header_ideal_bounds().at(header_pair.first);
 
-    // If the header is being dragged manually, skip it.
-    if (header->dragging() && !bounds_animator().IsAnimating(header))
-      continue;
-
-    bounds_animator().AnimateViewTo(
-        header,
-        layout_helper()->group_header_ideal_bounds().at(header_pair.first),
-        std::make_unique<TabSlotAnimationDelegate>(
-            this, header,
-            base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                                base::Unretained(this))));
+    AnimateTabSlotViewTo(header, target_bounds);
   }
 
   // Because the preferred size of the tabstrip depends on the IsAnimating()
@@ -1050,6 +870,26 @@ void TabContainer::AnimateToIdealBounds() {
   // existing preferred size and layout (which may now be incorrect), we need to
   // signal this explicitly.
   PreferredSizeChanged();
+}
+
+void TabContainer::AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
+                                        const gfx::Rect& target_bounds) {
+  // If the slot is being dragged, we don't own it - let TabDragContext decide
+  // what to do.
+  if (tab_slot_view->dragging()) {
+    drag_context_->UpdateAnimationTarget(tab_slot_view, target_bounds);
+    return;
+  }
+
+  // Also skip slots already being animated to the same ideal bounds.  Calling
+  // AnimateViewTo() again restarts the animation, which changes the timing of
+  // how the slot animates, leading to hitches.
+  if (bounds_animator().GetTargetBounds(tab_slot_view) == target_bounds)
+    return;
+
+  bounds_animator().AnimateViewTo(
+      tab_slot_view, target_bounds,
+      std::make_unique<TabSlotAnimationDelegate>(this, tab_slot_view));
 }
 
 void TabContainer::SnapToIdealBounds() {
@@ -1111,13 +951,41 @@ void TabContainer::StartRemoveTabAnimation(Tab* tab, int former_model_index) {
 
   StartBasicAnimation();
 
-  const int tab_overlap = TabStyle::GetTabOverlap();
+  gfx::Rect target_bounds =
+      GetTargetBoundsForClosingTab(tab, former_model_index);
+
+  // If the tab is being dragged, we don't own it, and can't run animations on
+  // it. We need to take it back first.
+  if (tab->dragging()) {
+    // Don't bother animating if the tab has been detached rather than closed -
+    // i.e. it's being moved to another tabstrip. At this point it's safe to
+    // just destroy the tab immediately.
+    if (tab->detached()) {
+      OnTabCloseAnimationCompleted(tab);
+      return;
+    }
+
+    DCHECK(drag_context_->IsEndingDrag());
+    // Notify |drag_context_| of the new animation target, since we can't
+    // animate |tab| ourselves.
+    drag_context_->UpdateAnimationTarget(tab, target_bounds);
+    return;
+  }
 
   // TODO(pkasting): When closing multiple tabs, we get repeated RemoveTabAt()
   // calls, each of which closes a new tab and thus generates different ideal
   // bounds.  We should update the animations of any other tabs that are
   // currently being closed to reflect the new ideal bounds, or else change from
   // removing one tab at a time to animating the removal of all tabs at once.
+
+  bounds_animator().AnimateViewTo(
+      tab, target_bounds, std::make_unique<RemoveTabDelegate>(this, tab));
+}
+
+gfx::Rect TabContainer::GetTargetBoundsForClosingTab(
+    Tab* tab,
+    int former_model_index) const {
+  const int tab_overlap = TabStyle::GetTabOverlap();
 
   // Compute the target bounds for animating this tab closed.  The tab's left
   // edge should stay joined to the right edge of the previous tab, if any.
@@ -1132,12 +1000,8 @@ void TabContainer::StartRemoveTabAnimation(Tab* tab, int former_model_index) {
   // same speed the surrounding tabs are moving, since at this width the
   // subsequent tab is naturally positioned at the same X coordinate.
   target_bounds.set_width(tab_overlap);
-  bounds_animator().AnimateViewTo(
-      tab, target_bounds,
-      std::make_unique<RemoveTabDelegate>(
-          this, tab,
-          base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
-                              base::Unretained(this))));
+
+  return target_bounds;
 }
 
 void TabContainer::RemoveTabFromViewModel(int index) {
@@ -1273,6 +1137,9 @@ void TabContainer::RemoveMessageLoopObserver() {
 }
 
 void TabContainer::OrderTabSlotView(TabSlotView* slot_view) {
+  if (slot_view->parent() != this)
+    return;
+
   // |slot_view| is in the wrong place in children(). Fix it.
   std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
   size_t target_slot_index =
@@ -1295,6 +1162,9 @@ bool TabContainer::IsPointInTab(Tab* tab,
                                 const gfx::Point& point_in_tabstrip_coords) {
   if (!tab->GetVisible())
     return false;
+  if (tab->parent() != this)
+    return false;
+
   gfx::Point point_in_tab_coords(point_in_tabstrip_coords);
   View::ConvertPointToTarget(this, tab, &point_in_tab_coords);
   return tab->HitTestPoint(point_in_tab_coords);
@@ -1383,7 +1253,7 @@ bool TabContainer::ShouldTabBeVisible(const Tab* tab) const {
   // We need to check what would happen if the active tab were to move to this
   // tab or before. If animating, we want to use the target bounds in this
   // calculation.
-  if (bounds_animator_.IsAnimating())
+  if (IsAnimating())
     right_edge = bounds_animator_.GetTargetBounds(tab).right();
   return (right_edge + layout_helper_->active_tab_width() -
           layout_helper_->inactive_tab_width()) <= tabstrip_right;

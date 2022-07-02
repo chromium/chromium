@@ -180,11 +180,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
   int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
 
   // End any outstanding drag and animate tabs back to their ideal bounds.
-  void StopDragging(TabSlotView* view) {
-    // Passing false for |is_first_view| results in running the post-drag
-    // animation unconditionally.
-    bool is_first_view = false;
-    tab_strip_->StoppedDraggingView(view, &is_first_view);
+  void StopDragging(const std::vector<TabSlotView*> views) {
+    tab_strip_->GetDragContext()->StoppedDragging(views);
   }
 
   std::vector<views::View*> GetChildViews() {
@@ -498,19 +495,18 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   const int min_active_width = TabStyleViews::GetMinimumActiveWidth();
 
   int dragged_tab_index = tab_strip_->GetActiveIndex();
-  EXPECT_GE(tab_strip_->tab_at(dragged_tab_index)->bounds().width(),
+  ASSERT_GE(tab_strip_->tab_at(dragged_tab_index)->bounds().width(),
             min_active_width);
 
   // Mark the active tab as being dragged.
   Tab* dragged_tab = tab_strip_->tab_at(dragged_tab_index);
-  dragged_tab->set_dragging(true);
-
-  gfx::AnimationContainerTestApi test_api(bounds_animator()->container());
+  tab_strip_->GetDragContext()->StartedDragging({dragged_tab});
 
   // Ending the drag triggers the tabstrip to begin animating this tab back
   // to its ideal bounds.
-  StopDragging(dragged_tab);
-  EXPECT_TRUE(bounds_animator()->IsAnimating(dragged_tab));
+  ASSERT_FALSE(tab_strip_->IsAnimating());
+  StopDragging({dragged_tab});
+  EXPECT_TRUE(tab_strip_->IsAnimating());
 
   // Change the ideal bounds of the tabs mid-animation by selecting a
   // different tab.
@@ -519,8 +515,7 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   // Once the animation completes, the dragged tab should have animated to
   // the new ideal bounds (computed with this as an inactive tab) rather
   // than the original ones (where it's an active tab).
-  const base::TimeDelta duration = bounds_animator()->GetAnimationDuration();
-  test_api.IncrementTime(duration);
+  tab_strip_->StopAnimating(false);
 
   EXPECT_FALSE(dragged_tab->dragging());
   EXPECT_LT(dragged_tab->bounds().width(), min_active_width);

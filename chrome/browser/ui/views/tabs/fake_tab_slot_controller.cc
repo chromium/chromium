@@ -144,11 +144,6 @@ bool FakeTabSlotController::IsGroupCollapsed(
   return tab_strip_controller_->IsGroupCollapsed(group);
 }
 
-absl::optional<int> FakeTabSlotController::GetLastTabInGroup(
-    const tab_groups::TabGroupId& group) const {
-  return tab_strip_controller_->GetLastTabInGroup(group);
-}
-
 SkColor FakeTabSlotController::GetPaintedGroupColor(
     const tab_groups::TabGroupColorId& color_id) const {
   return SkColor();
