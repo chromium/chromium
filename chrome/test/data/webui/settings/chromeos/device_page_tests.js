@@ -659,6 +659,33 @@ suite('SettingsDevicePage', function() {
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
 
+    // enableAudioSettingsPage feature flag by default is turned off.
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+
+    webUIListenerCallback('has-mouse-changed', false);
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    webUIListenerCallback('has-pointing-stick-changed', false);
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    webUIListenerCallback('has-touchpad-changed', false);
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    webUIListenerCallback('has-mouse-changed', true);
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+  });
+
+  test('audio row visibility', async function() {
+    loadTimeData.overrideValues({
+      enableAudioSettingsPage: true,
+    });
+
+    await init();
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+
     webUIListenerCallback('has-mouse-changed', false);
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
 

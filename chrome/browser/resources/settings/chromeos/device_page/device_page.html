@@ -19,6 +19,11 @@
     <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
         on-click="onDisplayTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <template is="dom-if" if="[[showAudioInfo_]]">
+      <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
     <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
         label="$i18n{storageTitle}" on-click="onStorageTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>

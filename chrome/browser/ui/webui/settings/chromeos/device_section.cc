@@ -1240,6 +1240,7 @@ void DeviceSection::UpdateStylusSearchTags() {
 void DeviceSection::AddDevicePointersStrings(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kPointersStrings[] = {
+      {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
       {"pointingStickTitle", IDS_SETTINGS_POINTING_STICK_TITLE},
       {"touchpadTitle", IDS_SETTINGS_TOUCHPAD_TITLE},
@@ -1293,6 +1294,9 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean("allowTouchpadHapticClickSettings",
                           base::FeatureList::IsEnabled(
                               ::features::kAllowTouchpadHapticClickSettings));
+  html_source->AddBoolean(
+      "enableAudioSettingsPage",
+      base::FeatureList::IsEnabled(ash::features::kAudioSettingsPage));
 }
 
 }  // namespace settings

@@ -93,6 +93,18 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       },
 
       /**
+       * Whether audio management info should be shown.
+       * @protected
+       */
+      showAudioInfo_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableAudioSettingsPage');
+        },
+        readOnly: true,
+      },
+
+      /**
        * Whether storage management info should be hidden.
        * @private
        */
@@ -123,6 +135,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           if (routes.DISPLAY) {
             map.set(routes.DISPLAY.path, '#displayRow');
           }
+          // TODO(crbug.com/1092970): Create routes.Audio page.
           if (routes.STORAGE) {
             map.set(routes.STORAGE.path, '#storageRow');
           }
