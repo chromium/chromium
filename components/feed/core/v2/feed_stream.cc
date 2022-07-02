@@ -310,7 +310,7 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
       stream.type, result.load_from_store_status, result.final_status,
       result.load_type == LoadType::kInitialLoad,
       result.loaded_new_content_from_network, result.stored_content_age,
-      content_stats, GetRequestMetadata(stream.type, false),
+      content_stats, GetContentOrder(result.stream_type),
       std::move(result.latencies));
 
   stream.model_loading_in_progress = false;
@@ -978,14 +978,14 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
         /*allow_expired_session_id =*/false);
   }
 
-  if (stream_type.IsWebFeed()) {
-    result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
-  }
+  result.content_order = GetContentOrder(stream_type);
 
-  if (stream->model) {
+  const feedstore::Metadata::StreamMetadata* stream_metadata =
+      FindMetadataForStream(GetMetadata(), stream_type);
+  if (stream_metadata != nullptr) {
     result.info_card_tracking_states = info_card_tracker_.GetAllStates(
-        stream->model->last_server_response_time_millis(),
-        stream->model->last_added_time_millis());
+        stream_metadata->last_server_response_time_millis(),
+        stream_metadata->last_fetch_time_millis());
   }
 
   return result;
@@ -1420,13 +1420,9 @@ void FeedStream::SetContentOrder(const StreamType& stream_type,
           &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
 }
 
-ContentOrder FeedStream::GetContentOrder(const StreamType& stream_type) {
-  if (!stream_type.IsWebFeed()) {
-    NOTREACHED()
-        << "GetContentOrderFromPrefs is not supported for this stream_type "
-        << stream_type;
+ContentOrder FeedStream::GetContentOrder(const StreamType& stream_type) const {
+  if (!stream_type.IsWebFeed())
     return ContentOrder::kUnspecified;
-  }
   return GetValidWebFeedContentOrder(*profile_prefs_);
 }
 

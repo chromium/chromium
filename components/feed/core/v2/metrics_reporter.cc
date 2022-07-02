@@ -739,7 +739,7 @@ void MetricsReporter::OnLoadStream(
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
     const ContentStats& content_stats,
-    const RequestMetadata& request_metadata,
+    ContentOrder content_order,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
   VVLOG << "OnLoadStream load_from_store_status=" << load_from_store_status
         << " final_status=" << final_status;
@@ -786,7 +786,7 @@ void MetricsReporter::OnLoadStream(
     if (stream_type.IsWebFeed()) {
       base::UmaHistogramSparse(
           base::StrCat({"ContentSuggestions.Feed.WebFeed.LoadedCardCount.",
-                        ContentOrderToString(request_metadata.content_order)}),
+                        ContentOrderToString(content_order)}),
           content_stats.card_count);
     }
   }

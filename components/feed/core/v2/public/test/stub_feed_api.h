@@ -109,7 +109,7 @@ class StubFeedApi : public FeedApi {
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override {}
-  ContentOrder GetContentOrder(const StreamType& stream_type) override;
+  ContentOrder GetContentOrder(const StreamType& stream_type) const override;
   ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
   void IncrementFollowedFromWebPageMenuCount() override {}
 

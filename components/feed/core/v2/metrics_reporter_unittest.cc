@@ -37,12 +37,6 @@ const ContentStats kContentStats = {
     /*total_content_frame_size_bytes=*/100 * 1024,
     /*shared_state_size=*/200 * 1024};
 
-RequestMetadata DefaultRequestMetadata() {
-  RequestMetadata metadata;
-  metadata.content_order = ContentOrder::kGrouped;
-  return metadata;
-}
-
 class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
  protected:
   void SetUp() override {
@@ -289,7 +283,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -313,7 +307,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatusWhenDisabled) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -330,7 +324,7 @@ TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -359,15 +353,12 @@ TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus) {
 }
 
 TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus_ReverseChron) {
-  RequestMetadata request_metadata = DefaultRequestMetadata();
-  request_metadata.content_order = ContentOrder::kReverseChron;
-
   reporter_->OnLoadStream(kWebFeedStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromNetwork,
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          request_metadata,
+                          ContentOrder::kReverseChron,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -386,7 +377,7 @@ TEST_F(MetricsReporterTest, WebFeed_ReportsNoContentShown) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::Days(5), ContentStats(),
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -400,7 +391,7 @@ TEST_F(MetricsReporterTest, OnLoadStreamDoesNotReportLoadedCardCountOnFailure) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectTotalCount("ContentSuggestions.Feed.LoadedCardCount", 0);
@@ -412,7 +403,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatusForManualRefresh) {
                           /*is_initial_load=*/false,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -432,7 +423,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatusIgnoresNoStatusFromStore) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::TimeDelta(),
-                          kContentStats, DefaultRequestMetadata(),
+                          kContentStats, ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueSample(
@@ -451,7 +442,7 @@ TEST_F(MetricsReporterTest, ReportsContentAgeBlockingRefresh) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/true,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueTimeSample(
@@ -465,7 +456,7 @@ TEST_F(MetricsReporterTest, ReportsContentAgeNoRefresh) {
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::Days(5), kContentStats,
-                          DefaultRequestMetadata(),
+                          ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
 
   histogram_.ExpectUniqueTimeSample(
@@ -479,13 +470,13 @@ TEST_F(MetricsReporterTest, DoNotReportContentAgeWhenNotPositive) {
       LoadStreamStatus::kLoadedFromStore, /*is_initial_load=*/true,
       /*loaded_new_content_from_network=*/false,
       /*stored_content_age=*/-base::Seconds(1), kContentStats,
-      DefaultRequestMetadata(), std::make_unique<LoadLatencyTimes>());
+      ContentOrder::kGrouped, std::make_unique<LoadLatencyTimes>());
   reporter_->OnLoadStream(kForYouStream, LoadStreamStatus::kDataInStoreIsStale,
                           LoadStreamStatus::kLoadedFromStore,
                           /*is_initial_load=*/true,
                           /*loaded_new_content_from_network=*/false,
                           /*stored_content_age=*/base::TimeDelta(),
-                          kContentStats, DefaultRequestMetadata(),
+                          kContentStats, ContentOrder::kGrouped,
                           std::make_unique<LoadLatencyTimes>());
   histogram_.ExpectTotalCount(
       "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed", 0);
@@ -505,7 +496,7 @@ TEST_F(MetricsReporterTest, ReportsLoadStepLatenciesOnFirstView) {
                             /*is_initial_load=*/true,
                             /*loaded_new_content_from_network=*/true,
                             /*stored_content_age=*/base::TimeDelta(),
-                            kContentStats, DefaultRequestMetadata(),
+                            kContentStats, ContentOrder::kGrouped,
                             std::move(latencies));
   }
   task_environment_.FastForwardBy(base::Milliseconds(300));

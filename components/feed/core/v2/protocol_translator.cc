@@ -320,12 +320,6 @@ RefreshResponseData TranslateWireResponse(
         TranslateContentLifetime(response_metadata.content_lifetime());
   }
 
-  if (response_metadata.has_response_time_ms()) {
-    feedstore::SetLastServerResponseTime(
-        feedstore::FromTimestampMillis(response_metadata.response_time_ms()),
-        result->stream_data);
-  }
-
   const auto& chrome_response_metadata =
       response_metadata.chrome_feed_response_metadata();
   // Note that we're storing the raw proto bytes for the root event ID because
@@ -383,10 +377,12 @@ RefreshResponseData TranslateWireResponse(
   response_data.content_lifetime = std::move(content_lifetime);
   response_data.session_id = std::move(session_id);
   response_data.experiments = std::move(experiments);
-  response_data.server_request_received_timestamp_ns =
-      feed_response->feed_response_metadata().event_id().time_usec() * 1'000;
-  response_data.server_response_sent_timestamp_ns =
-      feed_response->feed_response_metadata().response_time_ms() * 1'000'000;
+  response_data.server_request_received_timestamp =
+      feedstore::FromTimestampMicros(
+          feed_response->feed_response_metadata().event_id().time_usec());
+  response_data.server_response_sent_timestamp = feedstore::FromTimestampMillis(
+      feed_response->feed_response_metadata().response_time_ms());
+  response_data.last_fetch_timestamp = current_time;
   response_data.web_and_app_activity_enabled =
       chrome_response_metadata.web_and_app_activity_enabled();
   response_data.discover_personalization_enabled =

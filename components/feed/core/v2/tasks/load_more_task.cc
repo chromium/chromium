@@ -143,7 +143,8 @@ void LoadMoreTask::ProcessNetworkResponse(
       !translated_response.model_update_request->stream_structures.empty();
 
   auto updated_metadata = stream_.GetMetadata();
-  SetLastFetchTime(updated_metadata, stream_type_, base::Time::Now());
+  SetLastFetchTime(updated_metadata, stream_type_,
+                   translated_response.last_fetch_timestamp);
   if (translated_response.session_id) {
     feedstore::MaybeUpdateSessionId(updated_metadata,
                                     translated_response.session_id);

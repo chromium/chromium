@@ -1882,8 +1882,7 @@ TEST_F(FeedApiTest, LoadMoreDoesNotUpdateLoggingEnabled) {
   for (bool waa_on : {true, false}) {
     for (bool privacy_notice_fulfilled : {true, false}) {
       response_translator_.InjectResponse(MakeTypicalNextPageState(
-          page++, kTestTimeEpoch, kTestTimeEpoch, signed_in, waa_on,
-          privacy_notice_fulfilled));
+          page++, kTestTimeEpoch, signed_in, waa_on, privacy_notice_fulfilled));
       stream_->LoadMore(surface, base::DoNothing());
       WaitForIdleTaskQueue();
       EXPECT_TRUE(surface.update->logging_parameters().logging_enabled());
@@ -2699,6 +2698,7 @@ TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOnDpOff) {
     RefreshResponseData response;
     response.model_update_request = MakeTypicalInitialModelState();
     response.web_and_app_activity_enabled = true;
+    response.last_fetch_timestamp = base::Time::Now();
     response_translator_.InjectResponse(std::move(response));
   }
   TestForYouSurface surface(stream_.get());
@@ -2720,6 +2720,7 @@ TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOffDpOn) {
     RefreshResponseData response;
     response.model_update_request = MakeTypicalInitialModelState();
     response.discover_personalization_enabled = true;
+    response.last_fetch_timestamp = base::Time::Now();
     response_translator_.InjectResponse(std::move(response));
   }
   TestForYouSurface surface(stream_.get());
@@ -3081,8 +3082,11 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
   task_environment_.AdvanceClock(base::Seconds(200));
 
   // Load the initial page.
-  response_translator_.InjectResponse(
-      MakeTypicalInitialModelState(0, client_timestamp, server_timestamp));
+  RefreshResponseData response;
+  response.model_update_request = MakeTypicalInitialModelState();
+  response.last_fetch_timestamp = client_timestamp;
+  response.server_response_sent_timestamp = server_timestamp;
+  response_translator_.InjectResponse(std::move(response));
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -3128,8 +3132,11 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
                                kTestInfoCardType1, 1);
 
   // Refresh the page so that a feed query including the info card tracking
-  // states is sent.
+  // states is sent. Call "CreateStream()" before the refresh to simulate
+  // Chrome restart. This is used to test that info card tracking states are
+  // sent in the initial page load when stream model is not loaded yet.
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CreateStream();
   stream_->ManualRefresh(kForYouStream, base::DoNothing());
   WaitForIdleTaskQueue();
 

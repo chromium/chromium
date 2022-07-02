@@ -31,14 +31,17 @@ feed::StreamType StreamTypeFromId(base::StringPiece id);
 
 int64_t ToTimestampMillis(base::Time t);
 base::Time FromTimestampMillis(int64_t millis);
+int64_t ToTimestampNanos(base::Time t);
+base::Time FromTimestampMicros(int64_t millis);
 void SetLastAddedTime(base::Time t, feedstore::StreamData& data);
-void SetLastServerResponseTime(base::Time t, feedstore::StreamData& data);
+void SetLastServerResponseTime(Metadata& metadata,
+                               const feed::StreamType& stream_type,
+                               const base::Time& server_time);
 
 base::Time GetLastAddedTime(const feedstore::StreamData& data);
 base::Time GetSessionIdExpiryTime(const feedstore::Metadata& metadata);
 base::Time GetStreamViewTime(const Metadata& metadata,
                              const feed::StreamType& stream_type);
-base::Time GetLastServerResponseTime(const feedstore::StreamData& data);
 
 bool IsKnownStale(const Metadata& metadata,
                   const feed::StreamType& stream_type);

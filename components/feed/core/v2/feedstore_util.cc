@@ -38,6 +38,14 @@ base::Time FromTimestampMillis(int64_t millis) {
   return base::Time::UnixEpoch() + base::Milliseconds(millis);
 }
 
+int64_t ToTimestampNanos(base::Time t) {
+  return (t - base::Time::UnixEpoch()).InNanoseconds();
+}
+
+base::Time FromTimestampMicros(int64_t micros) {
+  return base::Time::UnixEpoch() + base::Microseconds(micros);
+}
+
 void SetLastAddedTime(base::Time t, feedstore::StreamData& data) {
   data.set_last_added_time_millis(ToTimestampMillis(t));
 }
@@ -187,12 +195,13 @@ feed::ContentHashSet GetViewContentIds(const Metadata& metadata,
   return {};
 }
 
-void SetLastServerResponseTime(base::Time t, feedstore::StreamData& data) {
-  data.set_last_server_response_time_millis(ToTimestampMillis(t));
-}
-
-base::Time GetLastServerResponseTime(const feedstore::StreamData& data) {
-  return FromTimestampMillis(data.last_server_response_time_millis());
+void SetLastServerResponseTime(Metadata& metadata,
+                               const feed::StreamType& stream_type,
+                               const base::Time& server_time) {
+  Metadata::StreamMetadata& stream_metadata =
+      MetadataForStream(metadata, stream_type);
+  stream_metadata.set_last_server_response_time_millis(
+      ToTimestampMillis(server_time));
 }
 
 int32_t ContentHashFromPrefetchMetadata(

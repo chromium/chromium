@@ -379,9 +379,9 @@ void LoadStreamTask::ProcessNetworkResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
           response_info.account_info, base::Time::Now());
   server_send_timestamp_ns_ =
-      response_data.server_request_received_timestamp_ns;
-  server_receive_timestamp_ns_ =
-      response_data.server_request_received_timestamp_ns;
+      feedstore::ToTimestampNanos(response_data.server_response_sent_timestamp);
+  server_receive_timestamp_ns_ = feedstore::ToTimestampMillis(
+      response_data.server_request_received_timestamp);
 
   if (!response_data.model_update_request) {
     return RequestFinished(
@@ -406,7 +406,10 @@ void LoadStreamTask::ProcessNetworkResponse(
   MetricsReporter::NoticeCardFulfilled(fetched_content_has_notice_card);
 
   feedstore::Metadata updated_metadata = stream_.GetMetadata();
-  SetLastFetchTime(updated_metadata, options_.stream_type, base::Time::Now());
+  SetLastFetchTime(updated_metadata, options_.stream_type,
+                   response_data.last_fetch_timestamp);
+  SetLastServerResponseTime(updated_metadata, options_.stream_type,
+                            response_data.server_response_sent_timestamp);
   updated_metadata.set_web_and_app_activity_enabled(
       response_data.web_and_app_activity_enabled);
   updated_metadata.set_discover_personalization_enabled(

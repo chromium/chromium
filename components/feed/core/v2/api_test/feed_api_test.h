@@ -416,7 +416,7 @@ class TestMetricsReporter : public MetricsReporter {
                     bool loaded_new_content_from_network,
                     base::TimeDelta stored_content_age,
                     const ContentStats& content_stats,
-                    const RequestMetadata& request_metadata,
+                    ContentOrder content_order,
                     std::unique_ptr<LoadLatencyTimes> latencies) override;
   void OnLoadMoreBegin(const StreamType& stream_type,
                        SurfaceId surface_id) override;

@@ -70,11 +70,8 @@ message StreamData {
   repeated uint32 content_hashes = 11;
   // Root EventID provided by the server.
   bytes root_event_id = 12;
-  // The unix timestamp in milliseconds that the feed response is produced on
-  // the server. This is returned from the server and based on server clock.
-  int64 last_server_response_time_millis = 15;
 
-  reserved 3, 5;
+  reserved 3, 5, 15;
 }
 
 // Data that doesn't belong to a stream.
@@ -104,6 +101,10 @@ message Metadata {
     ContentLifetime content_lifetime = 5;
     // The unix timestamp in milliseconds that the stream was fetched last time.
     int64 last_fetch_time_millis = 6;
+
+    // The unix timestamp in milliseconds that the feed response is produced on
+    // the server. This is returned from the server and based on server clock.
+    int64 last_server_response_time_millis = 7;
 
     reserved 2;
   }

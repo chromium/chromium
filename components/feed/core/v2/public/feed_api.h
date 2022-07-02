@@ -75,7 +75,7 @@ class FeedApi {
                                ContentOrder content_order) = 0;
 
   // Returns the current `ContentOrder` for `stream_type`.
-  virtual ContentOrder GetContentOrder(const StreamType& stream_type) = 0;
+  virtual ContentOrder GetContentOrder(const StreamType& stream_type) const = 0;
 
   // Gets the "raw" content order value stored in prefs. Returns `kUnspecified`
   // if the user has not selected one yet.
