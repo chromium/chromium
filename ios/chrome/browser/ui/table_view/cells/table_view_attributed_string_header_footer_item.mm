@@ -13,6 +13,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -42,7 +43,7 @@
 
 @interface TableViewAttributedStringHeaderFooterView () <UITextViewDelegate>
 
-// UITextView corresponding to |text| from the item.
+// UITextView corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UITextView* textView;
 
 @end
@@ -52,7 +53,7 @@
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
-    _textView = [[UITextView alloc] init];
+    _textView = CreateUITextViewWithTextKit1();
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
     _textView.delegate = self;
@@ -95,8 +96,8 @@
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.
   textView.selectedTextRange = nil;
 }

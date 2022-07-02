@@ -7,6 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/gesture_router.h"
 #include "chromecast/browser/mojom/cast_content_window.mojom.h"
@@ -29,11 +31,22 @@ namespace chromecast {
 class CastContentWindow : public mojom::CastContentWindow,
                           public mojom::ActivityWindow {
  public:
+  // Synchronous in-process observer for CastContentWindow.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnVisibilityChange(VisibilityType visibility_type) = 0;
+  };
+
   explicit CastContentWindow(mojom::CastWebViewParamsPtr params);
   ~CastContentWindow() override;
 
   // |cast_web_contents| must outlive the CastContentWindow.
   void SetCastWebContents(CastWebContents* cast_web_contents);
+
+  // Adds an observer that receives the notifications in-process.
+  void AddObserver(Observer* observer);
+  // Removes an observer that would receive the notifications in-process.
+  void RemoveObserver(Observer* observer);
 
   CastWebContents* cast_web_contents() { return cast_web_contents_; }
   GestureRouter* gesture_router() { return &gesture_router_; }
@@ -57,7 +70,7 @@ class CastContentWindow : public mojom::CastContentWindow,
   // Notify the window that its visibility type has changed. This should only
   // ever be called by the window manager.
   // TODO(seantopping): Make this private to the window manager.
-  virtual void NotifyVisibilityChange(VisibilityType visibility_type) = 0;
+  virtual void NotifyVisibilityChange(VisibilityType visibility_type);
 
   // Cast activity or application calls it to request for moving out of the
   // screen.
@@ -89,6 +102,7 @@ class CastContentWindow : public mojom::CastContentWindow,
   mojo::Receiver<mojom::CastContentWindow> receiver_{this};
   mojo::Receiver<mojom::ActivityWindow> activity_window_receiver_{this};
   mojo::RemoteSet<mojom::CastContentWindowObserver> observers_;
+  base::ObserverList<Observer> sync_observers_;
   base::WeakPtrFactory<CastContentWindow> weak_factory_{this};
 };
 

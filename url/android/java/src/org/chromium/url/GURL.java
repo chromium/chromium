@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.errorprone.annotations.DoNotMock;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -36,6 +38,7 @@ import java.util.Random;
  */
 @JNINamespace("url")
 @MainDex
+@DoNotMock("Create a real instance instead. For Robolectric, see JUnitTestGURLs.java")
 public class GURL {
     private static final String TAG = "GURL";
     /* package */ static final int SERIALIZER_VERSION = 1;

@@ -6,15 +6,12 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.os.Bundle;
 
-import androidx.annotation.XmlRes;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 /**
  * Fragment to manage the Contextual Search preference in Chrome Settings, and to explain to the
@@ -23,16 +20,10 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat {
     static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";
-    static final String PREF_CONTEXTUAL_SEARCH_DESCRIPTION = "contextual_search_description";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        @XmlRes
-        int tapOrTouchPreferenceId =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE)
-                ? R.xml.contextual_search_preferences
-                : R.xml.contextual_search_tap_preferences;
-        SettingsUtils.addPreferencesFromResource(this, tapOrTouchPreferenceId);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.contextual_search_preferences);
         getActivity().setTitle(R.string.contextual_search_title);
         setHasOptionsMenu(true);
         initSwitches();
@@ -50,8 +41,7 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
         contextualSearchSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             ContextualSearchPolicy.setContextualSearchState((boolean) newValue);
             ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
-            seeBetterResultsSwitch.setVisible(
-                    ContextualSearchPolicy.shouldShowMultilevelSettingsUI() && (boolean) newValue);
+            seeBetterResultsSwitch.setVisible((boolean) newValue);
             return true;
         });
 
@@ -67,13 +57,6 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
             return true;
         });
 
-        seeBetterResultsSwitch.setVisible(ContextualSearchPolicy.shouldShowMultilevelSettingsUI()
-                && isContextualSearchEnabled);
-
-        if (ContextualSearchPolicy.shouldShowMultilevelSettingsUI()) {
-            TextMessagePreference contextualSearchDescription =
-                    (TextMessagePreference) findPreference(PREF_CONTEXTUAL_SEARCH_DESCRIPTION);
-            contextualSearchDescription.setTitle(R.string.contextual_search_description_revised);
-        }
+        seeBetterResultsSwitch.setVisible(isContextualSearchEnabled);
     }
 }

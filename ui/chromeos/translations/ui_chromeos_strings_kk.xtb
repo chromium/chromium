@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Желі табылмады</translation>
 <translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> қолданбасымен ашу үшін оларды алдымен Windows файлдар қалтасына жылжытыңыз.</translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
-<translation id="1119069657431255176">Қысылған Bzip2 TAR мұрағаты</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1120073797882051782">Ханғыл (Romaja)</translation>
 <translation id="112387589102719461">Ағылшын (АҚШ), бағдарламашы Дворак пернетақтасымен</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">Ханғыл (Ahnmatae)</translation>
 <translation id="1155759005174418845">каталан</translation>
 <translation id="1168100932582989117">Google ат серверлері</translation>
-<translation id="1171082344678443012">XZ сығылған мұрағат файлы</translation>
 <translation id="1172970565351728681">Шамамен <ph name="REMAINING_TIME" /> қалды.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1209796539517632982">Автоматты атау серверлері</translation>
 <translation id="1210831758834677569">Лаос</translation>
-<translation id="1223825810409523901">Chrome кеңейтімі</translation>
 <translation id="1243314992276662751">Жүктеп салу</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Ортақ желі конфигурацияларын өзгертуге рұқсат жоқ</translation>
 <translation id="1665611772925418501">Файлды өзгерту мүмкін болмады.</translation>
 <translation id="1673103856845176271">Қауіпсіздік себептеріне байланысты файлға кіру мүмкін емес.</translation>
-<translation id="16762847117768727">ISO кескіні</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Велосипедші</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> элемент қысылуда…</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
-<translation id="2028997212275086731">RAR мұрағаты</translation>
-<translation id="2036414735548252477">LZMA сығылған tar мұрағат файлы</translation>
 <translation id="2037845485764049925">Орыс</translation>
 <translation id="2044023416777079300">Модем тіркелмеген.</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="2142680004883808240">Орыс (фонетикалық YaZHert пернетақтасымен)</translation>
 <translation id="2143778271340628265">Прокси конфигурациясын қолмен реттеу</translation>
+<translation id="2148716181193084225">Бүгін</translation>
 <translation id="2163152940313951844">Жарамсыз таңба: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португал (АҚШ), халықаралық дербес компьютер пернетақтасымен</translation>
 <translation id="2198315389084035571">Жеңілдетілген қытай тілі</translation>
-<translation id="2208158072373999562">ZIP мұрағаты</translation>
 <translation id="22085916256174561">Корей</translation>
 <translation id="2208919847696382164">Linux арқылы ойнату</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> элементті жойғыңыз келе ме?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файл таңдалды</translation>
+<translation id="2387120140441437063">Себеттегі файлдарды ашу мүмкін емес. Ашпас бұрын, файлдарды себеттен шығарыңыз.</translation>
 <translation id="2387458720915042159">Прокси-сервер байланысының түрі</translation>
 <translation id="2389832672041313158">Бирма (Мьянма)</translation>
 <translation id="2392369802118427583">Белсендіру</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">Бұл қалтадағы мазмұнды тек оқуға болады. Кейбір әрекеттерге қолдау көрсетілмейді.</translation>
 <translation id="2542049655219295786">Google кестесі</translation>
 <translation id="2544853746127077729">Желі аутентификация сертификатын қабылдамады</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> кеңейтіміне қосу</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
 <translation id="2563185590376525700">Бақа</translation>
 <translation id="2578394532502990878">Тамиль (фонетикалық)</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">Қытай (даи)</translation>
 <translation id="3057861065630527966">Фотосуреттеріңіз бен бейнелеріңіздің сақтық көшірмесін жасау</translation>
 <translation id="3067790092342515856">Windows файлдары</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> кеңейтімін бөлісу</translation>
 <translation id="3083975830683400843">Chromebit құрылғылары</translation>
 <translation id="3085752524577180175">SOCKS хосты</translation>
 <translation id="3104793765551262433">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3855472144336161447">Неміс (Neo 2)</translation>
 <translation id="3858860766373142691">Аты</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> кеңейтімді пакет</translation>
 <translation id="3866249974567520381">Сипаттама</translation>
 <translation id="3899991606604168269">Француз (Канада), көптілді пернетақтамен</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> желісіне қосылу</translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_PROVIDER_NAME" /> провайдерінің <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="3973925058222872294">Ағылшын (БK)</translation>
 <translation id="3975895378829046965">Бенгал (фонетикалық)</translation>
+<translation id="3991446849494482687">Құрылғыдағы SIM картасын құлыптау параметрі де өшіріледі.</translation>
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4017788180641807848">Ағылшын (АҚШ), Workman пернетақтасымен</translation>
 <translation id="4040753847560036377">PUK коды дұрыс емес.</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4880214202172289027">Дыбыс деңгейі ысырмасы</translation>
 <translation id="4881695831933465202">Ашу</translation>
-<translation id="4886199584824489598">Bzip2 сығылған мұрағат файлы</translation>
 <translation id="4900532980794411603">Parallels Desktop арқылы бөлісу</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> файлдың сақтық көшірмесін жасауға болады</translation>
@@ -550,9 +542,9 @@
 <translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5669691691057771421">Жаңа PIN кодын енгізіңіз</translation>
 <translation id="5678784840044122290">Linux қолданбасы терминалда қолжетімді болады және Launcher қолданбасында белгіше көрсетіледі.</translation>
-<translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалды дискіден ажырату мүмкін емес<ph name="END_BOLD" />
+<translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалдық дискіден ажырату мүмкін емес<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   Мұрағаттағы немесе виртуалды дискідегі барлық файлдарды жауып, әрекетті қайталаңыз.</translation>
+   Мұрағаттағы немесе виртуалдық дискідегі барлық файлдарды жауып, әрекетті қайталаңыз.</translation>
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> деген файл енді жоқ.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Құлыпты ашу</translation>
 <translation id="5700087501958648444">Аудиофайл ақпараты</translation>
@@ -597,7 +589,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> желісі, жалғанбаған</translation>
 <translation id="6074825444536523002">Google пішіні</translation>
 <translation id="6079871810119356840">Венгр (QWERTY пернетақтасымен)</translation>
-<translation id="6082256976217156453">LZMA сығылған мұрағат файлы</translation>
 <translation id="6096979789310008754">Ізделген мәтін өшірілді. Барлық файл мен қалта көрсетілуде.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына тасымалдануда</translation>
 <translation id="61118516107968648">CSV мәтіні</translation>
@@ -611,7 +602,6 @@
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Венгр</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> арқылы ашу</translation>
 <translation id="6198252989419008588">PIN кодын өзгерту</translation>
 <translation id="6199801702437275229">Бос орын туралы ақпарат күтілуде…</translation>
 <translation id="6205710420833115353">Кейбір операциялар күтілгеннен ұзағырақ уақытқа созылады. Оларды тоқтатқыңыз келе ме?</translation>
@@ -626,6 +616,7 @@
 <translation id="6296410173147755564">PUK коды жарамсыз.</translation>
 <translation id="6312403991423642364">Белгісіз желі қатесі</translation>
 <translation id="6317608858038767920"><ph name="INPUT_INDEX" /> арнаулы атаулар сервері</translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> мұрағаты</translation>
 <translation id="6321303798550928047">Қол бұлғау</translation>
 <translation id="6327785803543103246">Вебпрокси-серверді автоматты анықтау</translation>
 <translation id="6339145975392024142">АҚШ халықаралық (ДК)</translation>
@@ -641,6 +632,7 @@
 <translation id="6423031066725912715">Вьетнам (TCVN пернетақтасымен)</translation>
 <translation id="6485131920355264772">Бос орын ақпаратын шығарып алу сәтсіз аяқталды</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші:<ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына көшірілуде</translation>
 <translation id="6499681088828539489">Ортақ желіге прокси-серверлерді пайдаланбау</translation>
 <translation id="6509122719576673235">норвег</translation>
 <translation id="6528513914570774834">Бұл құрылғының басқа пайдаланушыларына осы желіні пайдалануға рұқсат ету</translation>
@@ -669,7 +661,6 @@
 <translation id="6806699711453372963">Linux контейнерімен бөлісуді басқару</translation>
 <translation id="6806796368146926706">Әріптік-сандық (жапондық пернетақтамен)</translation>
 <translation id="6808193438228982088">Түлкі</translation>
-<translation id="6820687829547641339">Gzip қысылған TAR мұрағаты</translation>
 <translation id="6823166707458800069">Осы қалтада сақталған барлық файлдардың автоматты түрде онлайн сақтық көшірмесі жасалады.</translation>
 <translation id="6825883775269213504">орыс</translation>
 <translation id="6847101934483209767">Таңдалғандар арасынан <ph name="ENTRY_NAME" /> өшірілді.</translation>
@@ -714,6 +705,7 @@
 <translation id="7075931588889865715">Тай (TIS 820-2531 пернетақтасымен)</translation>
 <translation id="708278670402572152">Сканерлеуді қосу үшін желіден шығу керек</translation>
 <translation id="7086590977277044826">Тамиль (InScript пернетақтасымен)</translation>
+<translation id="7088615885725309056">Ескірек</translation>
 <translation id="7103992300314999525">Македон</translation>
 <translation id="7106346894903675391">Қосымша жад сатып алу…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;Drive ішінен іздеу&lt;/em&gt;</translation>
@@ -778,6 +770,7 @@
 <translation id="7663224033570512922">Хинди</translation>
 <translation id="7693909743393669729">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады және қолданыстағы бөлімдердің барлығы (оның ішінде көрінбейтін бөлімдер) жойылып кетеді. Бұл әрекетті кері қайтару мүмкін емес.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> форматталмады.</translation>
+<translation id="76959938259365003">Себетті босату мүмкін болмады.</translation>
 <translation id="770015031906360009">грек</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> көшірілді.</translation>
 <translation id="7711920809702896782">Сурет ақпараты</translation>
@@ -788,6 +781,7 @@
 <translation id="7760449188139285140">Қытай (Wubi)</translation>
 <translation id="7765158879357617694">Жылжыту</translation>
 <translation id="7774365994322694683">Құс</translation>
+<translation id="7781829728241885113">Кеше</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" офлайн сақтау үшін қосымша <ph name="TOTAL_FILE_SIZE" /> орын босатуыңыз керек:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />офлайн кіру қажет болмайтын файлдарды босатыңыз<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />"Жүктеулер" қалтасындағы файлдарды жойыңыз<ph name="MARKUP_5" /></translation>
@@ -818,7 +812,6 @@
 <translation id="7925686952655276919">Синхрондау үшін ұялы деректерді пайдаланбау</translation>
 <translation id="7928710562641958568">Құрылғыны шығару</translation>
 <translation id="7943385054491506837">АҚШ Колемак</translation>
-<translation id="7948417415021769876">7z мұрағаты</translation>
 <translation id="7953739707111622108">Бұл құрылғыны ашу мүмкін емес, себебі оның файл жүйесі анықталмаған.</translation>
 <translation id="7969525169268594403">словен</translation>
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
@@ -860,7 +853,6 @@
 <translation id="8297012244086013755">Ханғыл 3-жинағы (Shift пернесінсіз)</translation>
 <translation id="8299269255470343364">жапон</translation>
 <translation id="8300849813060516376">OTASP сәтсіз аяқталды</translation>
-<translation id="8308481408797647857">XZ сығылған tar мұрағат файлы</translation>
 <translation id="8312871300878166382">Қалта ішіне қою</translation>
 <translation id="8329978297633540474">Қарапайым мәтін</translation>
 <translation id="8335587457941836791">Сөреден босату</translation>
@@ -882,7 +874,6 @@
 <translation id="8461467696380332069">Сөредегі файлдарға жылдам кіру үшін файлды тінтуірдің оң жақ түймесімен басып, "Сөреге бекіту" тармағын таңдаңыз.</translation>
 <translation id="8461914792118322307">Прокси</translation>
 <translation id="8463494891489624050">Вьетнам (VIQR)</translation>
-<translation id="8466234950814670489">TAR мұрағаты</translation>
 <translation id="8475647382427415476">Google Drive дәл қазір "<ph name="FILENAME" />" синхрондай алмады. Google Drive кейін қайта тырысып көреді.</translation>
 <translation id="8477649328507734757">Шеңбер</translation>
 <translation id="8484284835977497781">Соңғы фотосуреттеріңізден таңдаңыз.</translation>
@@ -971,7 +962,6 @@
 <translation id="943972244133411984">Өзгерткен:</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />—<ph name="TO_ENTRY_NAME" /> аралығынан <ph name="ENTRY_COUNT" /> жазба таңдалды.</translation>
-<translation id="961973045258256291">Gzip сығылған мұрағат файлы</translation>
 <translation id="965477715979482472">Ағылшын (Оңтүстік Африка)</translation>
 <translation id="981121421437150478">Желіден тыс</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Оны ауыстырғыңыз келе ме?</translation>

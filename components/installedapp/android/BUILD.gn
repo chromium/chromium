@@ -44,7 +44,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "java/src/org/chromium/components/installedapp/InstalledAppProviderTest.java" ]
@@ -63,10 +63,7 @@ android_library("javatests") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources =
       [ "java/src/org/chromium/components/installedapp/PackageHashTest.java" ]
   deps = [
@@ -74,7 +71,6 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//build/android:build_java",
     "//content/public/android:content_full_java",
     "//third_party/junit",
   ]

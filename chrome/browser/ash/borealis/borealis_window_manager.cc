@@ -54,8 +54,7 @@ const std::string* GetWindowId(const aura::Window* window) {
 std::string BorealisIdToAppId(Profile* profile, unsigned borealis_id) {
   for (const auto& item :
        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-           ->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                   ApplicationList_VmType_BOREALIS)) {
+           ->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
     absl::optional<int> app_id = GetBorealisAppId(item.second.Exec());
     if (app_id && app_id.value() == static_cast<int>(borealis_id)) {
       return item.first;

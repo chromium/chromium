@@ -18,14 +18,14 @@ import numpy as np
 from tensorflow_lite_support.python.task.audio.core import audio_record
 from tensorflow_lite_support.python.task.audio.core.pybinds import _pywrap_audio_buffer
 
-_CppAudioFormat = _pywrap_audio_buffer.AudioFormat
 _LoadAudioBufferFromFile = _pywrap_audio_buffer.LoadAudioBufferFromFile
+AudioFormat = _pywrap_audio_buffer.AudioFormat
 
 
 class TensorAudio(object):
   """A wrapper class to store the input audio."""
 
-  def __init__(self, audio_format: _CppAudioFormat, buffer_size: int) -> None:
+  def __init__(self, audio_format: AudioFormat, buffer_size: int) -> None:
     """Initializes the `TensorAudio` object.
 
     Args:
@@ -137,7 +137,7 @@ class TensorAudio(object):
       self._buffer[-shift:, :] = src[offset:offset + size].copy()
 
   @property
-  def format(self) -> _CppAudioFormat:
+  def format(self) -> AudioFormat:
     """Gets the audio format of the audio."""
     return self._format
 

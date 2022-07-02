@@ -81,7 +81,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
         break_token_(break_token),
         container_builder_(node,
                            style,
-                           &space,
+                           space,
                            {space.GetWritingMode(), direction}) {}
 
   // Constructor for algorithms that use NGBoxFragmentBuilder and
@@ -93,7 +93,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
         container_builder_(
             params.node,
             &params.node.Style(),
-            &params.space,
+            params.space,
             {params.space.GetWritingMode(), params.space.Direction()}),
         additional_early_breaks_(params.additional_early_breaks) {
     container_builder_.SetIsNewFormattingContext(
@@ -110,8 +110,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
  protected:
   const NGConstraintSpace& ConstraintSpace() const {
-    DCHECK(container_builder_.ConstraintSpace());
-    return *container_builder_.ConstraintSpace();
+    return container_builder_.ConstraintSpace();
   }
 
   const ComputedStyle& Style() const { return node_.Style(); }

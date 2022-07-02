@@ -102,9 +102,9 @@ export function helpContentTestSuite() {
         /* isPopularContent= */ true);
 
     // Verify the title is in the helpContentElement.
-    const title = getElement('#helpContentLabel');
+    const title = getElement('.help-content-label');
     assertTrue(!!title);
-    assertEquals('Popular help content', title.textContent);
+    assertEquals('Top help content', title.textContent);
 
     verifyPopularHelpContent();
   });
@@ -119,7 +119,7 @@ export function helpContentTestSuite() {
         /* isPopularContent =*/ false);
 
     // Verify the title is in the helpContentElement.
-    const title = getElement('#helpContentLabel');
+    const title = getElement('.help-content-label');
     assertTrue(!!title);
     assertEquals('Suggested help content', title.textContent);
 
@@ -175,10 +175,10 @@ export function helpContentTestSuite() {
         /* isPopularContent= */ true);
 
     // Verify the title is in the helpContentElement.
-    const title = getElement('#helpContentLabel');
+    const title = getElement('.help-content-label');
     assertTrue(!!title);
     assertEquals(
-        'No matched results, see popular help content', title.textContent);
+        'No suggested content. See top help content.', title.textContent);
 
     verifyPopularHelpContent();
   });

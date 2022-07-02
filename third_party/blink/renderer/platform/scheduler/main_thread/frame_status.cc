@@ -61,7 +61,7 @@ FrameOriginState GetFrameOriginState(const FrameScheduler& frame_scheduler) {
   if (frame_scheduler.GetFrameType() == FrameScheduler::FrameType::kMainFrame) {
     return FrameOriginState::kMainFrame;
   }
-  if (frame_scheduler.IsCrossOriginToMainFrame())
+  if (frame_scheduler.IsCrossOriginToNearestMainFrame())
     return FrameOriginState::kCrossOriginToMainFrame;
   return FrameOriginState::kSameOriginToMainFrame;
 }

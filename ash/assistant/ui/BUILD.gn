@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 assert(is_chromeos_ash)
 
@@ -13,6 +13,7 @@ source_set("constants") {
   sources = [
     "assistant_ui_constants.cc",
     "assistant_ui_constants.h",
+    "assistant_view_ids.h",
   ]
 
   deps = [
@@ -30,7 +31,6 @@ source_set("ui") {
 
   sources = [
     "assistant_view_delegate.h",
-    "assistant_view_ids.h",
     "assistant_web_container_view.cc",
     "assistant_web_container_view.h",
     "assistant_web_view_delegate.h",
@@ -94,9 +94,9 @@ source_set("ui") {
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
-    "//chromeos/assistant:buildflags",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/mojom",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
     "//components/vector_icons",

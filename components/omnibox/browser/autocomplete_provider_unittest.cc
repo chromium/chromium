@@ -109,7 +109,6 @@ class TestProvider : public AutocompleteProvider {
                const std::u16string& match_keyword,
                AutocompleteProviderClient* client)
       : AutocompleteProvider(AutocompleteProvider::TYPE_SEARCH),
-        listener_(nullptr),
         relevance_(relevance),
         prefix_(prefix),
         match_keyword_(match_keyword),
@@ -118,12 +117,6 @@ class TestProvider : public AutocompleteProvider {
   TestProvider& operator=(const TestProvider&) = delete;
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-
-  void set_listener(AutocompleteProviderListener* listener) {
-    listener_ = listener;
-  }
-
-  virtual AutocompleteProviderListener* listener() { return listener_; }
 
  protected:
   ~TestProvider() override = default;
@@ -137,7 +130,6 @@ class TestProvider : public AutocompleteProvider {
       AutocompleteMatch::Type type,
       const TemplateURLRef::SearchTermsArgs& search_terms_args);
 
-  raw_ptr<AutocompleteProviderListener> listener_;
   int relevance_;
   const std::u16string prefix_;
   const std::u16string match_keyword_;
@@ -173,7 +165,7 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
 void TestProvider::Run() {
   AddResults(1, kResultsPerProvider);
   done_ = true;
-  listener()->OnProviderUpdate(true);
+  NotifyListeners(true);
 }
 
 void TestProvider::AddResults(int start_at, int num) {
@@ -244,7 +236,7 @@ class AutocompleteProviderListenerWithClosure
   }
 
  private:
-  AutocompleteController* controller_;
+  raw_ptr<AutocompleteController> controller_;
   base::RepeatingClosure closure_;
 };
 
@@ -260,22 +252,13 @@ class TestPrefetchProvider : public TestProvider {
   TestPrefetchProvider(const TestPrefetchProvider&) = delete;
   TestPrefetchProvider& operator=(const TestPrefetchProvider&) = delete;
 
-  // TestProvider:
-  AutocompleteProviderListener* listener() override { return listener_; }
-
   // AutocompleteProvider:
   void StartPrefetch(const AutocompleteInput& input) override;
-
-  void set_listener(AutocompleteProviderListenerWithClosure* listener) {
-    listener_ = listener;
-  }
 
  private:
   ~TestPrefetchProvider() override = default;
 
   void RunPrefetch();
-
-  raw_ptr<AutocompleteProviderListenerWithClosure> listener_;
 };
 
 void TestPrefetchProvider::StartPrefetch(const AutocompleteInput& input) {
@@ -293,7 +276,8 @@ void TestPrefetchProvider::StartPrefetch(const AutocompleteInput& input) {
 void TestPrefetchProvider::RunPrefetch() {
   AddResults(0, kResultsPerProvider);
   done_ = true;
-  listener_->OnProviderFinishedPrefetch();
+  static_cast<AutocompleteProviderListenerWithClosure*>(listeners_[0])
+      ->OnProviderFinishedPrefetch();
 }
 
 // Helper class to make running tests of ClassifyAllMatchesInString() more
@@ -509,8 +493,8 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
   // empty so no elements need to be freed at this point.
   EXPECT_TRUE(controller_->providers_.empty());
   controller_->providers_.swap(providers);
-  provider1->set_listener(controller_.get());
-  provider2->set_listener(controller_.get());
+  provider1->AddListener(controller_.get());
+  provider2->AddListener(controller_.get());
 
   if (provider1_ptr)
     *provider1_ptr = provider1;
@@ -610,7 +594,7 @@ void AutocompleteProviderTest::RunKeywordTest(const std::u16string& input,
   autocomplete_input.set_prefer_keyword(true);
   controller_->input_ = autocomplete_input;
   AutocompleteResult result;
-  result.AppendMatches(controller_->input_, matches);
+  result.AppendMatches(matches);
   controller_->UpdateAssociatedKeywords(&result);
   for (size_t j = 0; j < result.size(); ++j) {
     EXPECT_EQ(match_data[j].expected_associated_keyword,
@@ -635,7 +619,7 @@ void AutocompleteProviderTest::UpdateResultsWithHeaderTestData(
   add_zero_suggest_provider_headers_map(headers_data.headers_map);
 
   result_.Reset();
-  result_.AppendMatches(AutocompleteInput(), matches);
+  result_.AppendMatches(matches);
 
   // Update the result with the header information.
   controller_->UpdateHeaderInfoFromZeroSuggestProvider(&result_);
@@ -660,7 +644,7 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
     matches.push_back(match);
   }
   result_.Reset();
-  result_.AppendMatches(AutocompleteInput(), matches);
+  result_.AppendMatches(matches);
 
   // Update AQS.
   controller_->UpdateAssistedQueryStats(&result_);
@@ -1674,7 +1658,7 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_NonPrefetch) {
 
   base::RunLoop run_loop;
   provider_listener_->set_closure(run_loop.QuitClosure());
-  provider->set_listener(provider_listener_.get());
+  provider->AddListener(provider_listener_.get());
 
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
                           TestingSchemeClassifier());
@@ -1702,7 +1686,7 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
 
   base::RunLoop run_loop;
   provider_listener_->set_closure(run_loop.QuitClosure());
-  provider->set_listener(provider_listener_.get());
+  provider->AddListener(provider_listener_.get());
 
   AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                           TestingSchemeClassifier());
@@ -1730,7 +1714,7 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
 
   base::RunLoop run_loop;
   provider_listener_->set_closure(run_loop.QuitClosure());
-  provider->set_listener(provider_listener_.get());
+  provider->AddListener(provider_listener_.get());
 
   AutocompleteInput input(u"bar", metrics::OmniboxEventProto::OTHER,
                           TestingSchemeClassifier());

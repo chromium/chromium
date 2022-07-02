@@ -4,9 +4,9 @@
 
 #include "ash/shelf/login_shelf_gesture_controller.h"
 
+#include "ash/controls/contextual_nudge.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_test_base.h"
-#include "ash/shelf/contextual_nudge.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"

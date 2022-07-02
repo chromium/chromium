@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -64,7 +65,7 @@ class AccountCache {
   AccountByGaiaIdMap GetAccountsCopy() const;
 
  private:
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   bool snapshot_created_ = false;
 

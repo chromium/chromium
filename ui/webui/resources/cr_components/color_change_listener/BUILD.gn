@@ -6,6 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android && !is_ios)
+
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/color_change_listener"
 
 mojom("mojom") {
@@ -48,7 +50,8 @@ ts_library("build_ts") {
 generate_grd("build_grdp") {
   grd_prefix = "cr_components_color_change_listener"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  public_deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   resource_path_prefix = "cr_components/color_change_listener"
 }

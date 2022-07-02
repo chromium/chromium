@@ -244,8 +244,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
   mixer[kColorExtensionDialogBackground] = {SK_ColorWHITE};
   mixer[kColorExtensionIconBadgeBackgroundDefault] = {ui::kColorAccent};
-  mixer[kColorExtensionIconBadgeForegroundDefault] =
-      ui::GetColorWithMaxContrast(kColorExtensionIconBadgeBackgroundDefault);
   mixer[kColorExtensionIconDecorationAmbientShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x26);
   mixer[kColorExtensionIconDecorationBackground] = {SK_ColorWHITE};
@@ -291,6 +289,11 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarContentAreaSeparator] =
       ui::AlphaBlend(kColorToolbarButtonIcon, kColorInfoBarBackground, 0x3A);
   mixer[kColorInfoBarForeground] = {kColorToolbarText};
+  mixer[kColorIntentPickerItemBackgroundHovered] = ui::SetAlpha(
+      ui::GetColorWithMaxContrast(ui::kColorDialogBackground), 0x0F);  // 6%.
+  mixer[kColorIntentPickerItemBackgroundSelected] = ui::BlendForMinContrast(
+      ui::kColorDialogBackground, ui::kColorDialogBackground, ui::kColorAccent,
+      1.2);
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
@@ -325,8 +328,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};
   mixer[kColorNewTabPageLink] = {dark_mode ? gfx::kGoogleBlue300
                                            : SkColorSetRGB(0x06, 0x37, 0x74)};
-  mixer[kColorNewTabPageLogo] = {kColorNewTabPageLogoUnthemed};
-  mixer[kColorNewTabPageLogoUnthemed] = {SkColorSetRGB(0xEE, 0xEE, 0xEE)};
+  mixer[kColorNewTabPageLogo] = {kColorNewTabPageLogoUnthemedLight};
+  mixer[kColorNewTabPageLogoUnthemedDark] = {gfx::kGoogleGrey700};
+  mixer[kColorNewTabPageLogoUnthemedLight] = {SkColorSetRGB(0xEE, 0xEE, 0xEE)};
   if (dark_mode) {
     mixer[kColorNewTabPageMostVisitedTileBackground] = {gfx::kGoogleGrey900};
   } else {
@@ -337,8 +341,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =
       ui::SetAlpha(kColorNewTabPageHeader, 0x50);
-  mixer[kColorNewTabPageText] = {dark_mode ? gfx::kGoogleGrey200
-                                           : SK_ColorBLACK};
+  mixer[kColorNewTabPageText] = ui::SelectBasedOnDarkInput(
+      kColorNewTabPageBackground, gfx::kGoogleGrey200, SK_ColorBLACK);
   mixer[kColorNewTabPageTextUnthemed] = {gfx::kGoogleGrey050};
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
@@ -403,8 +407,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorQuickAnswersReportQueryButtonForeground] = {ui::kColorAccent};
   mixer[kColorScreenshotCapturedImageBackground] = {ui::kColorBubbleBackground};
   mixer[kColorScreenshotCapturedImageBorder] = {ui::kColorMidground};
-  mixer[kColorSidePanelContentAreaSeparator] = {
-      kColorToolbarContentAreaSeparator};
+  mixer[kColorSidePanelBackground] = {kColorToolbar};
+  mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
   mixer[kColorStatusBubbleBackgroundFrameActive] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorStatusBubbleBackgroundFrameInactive] = {

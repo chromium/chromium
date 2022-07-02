@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("file_access") {
+  output_name = "file_access_lib"
+
+  sources = [
+    "scoped_file_access.cc",
+    "scoped_file_access.h",
+  ]
+
+  defines = [ "IS_FILE_ACCESS_IMPL" ]
+
+  deps = [ "//base" ]
+}

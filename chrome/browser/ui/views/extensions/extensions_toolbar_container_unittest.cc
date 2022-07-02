@@ -6,10 +6,10 @@
 
 #include "base/json/json_reader.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -35,7 +35,7 @@ class ExtensionsToolbarContainerUnitTest : public ExtensionsToolbarUnitTest {
 
 ExtensionsToolbarContainerUnitTest::ExtensionsToolbarContainerUnitTest() {
   scoped_feature_list_.InitAndEnableFeature(
-      features::kExtensionsMenuAccessControl);
+      extensions_features::kExtensionsMenuAccessControl);
 }
 
 ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(

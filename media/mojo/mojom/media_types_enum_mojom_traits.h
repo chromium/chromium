@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
-#include "media/base/video_frame_metadata.h"
 #include "media/base/video_transformation.h"
 #include "media/cdm/cdm_document_service.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
@@ -262,40 +261,6 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return true;
       case media::mojom::VideoRotation::kVideoRotation270:
         *output = ::media::VideoRotation::VIDEO_ROTATION_270;
-        return true;
-    }
-
-    NOTREACHED();
-    return false;
-  }
-};
-
-template <>
-struct EnumTraits<media::mojom::CopyMode,
-                  ::media::VideoFrameMetadata::CopyMode> {
-  static media::mojom::CopyMode ToMojom(
-      ::media::VideoFrameMetadata::CopyMode input) {
-    switch (input) {
-      case ::media::VideoFrameMetadata::CopyMode::kCopyToNewTexture:
-        return media::mojom::CopyMode::kCopyToNewTexture;
-      case ::media::VideoFrameMetadata::CopyMode::kCopyMailboxesOnly:
-        return media::mojom::CopyMode::kCopyMailboxesOnly;
-    }
-
-    NOTREACHED();
-    return static_cast<media::mojom::CopyMode>(input);
-  }
-
-  // Returning false results in deserialization failure and causes the
-  // message pipe receiving it to be disconnected.
-  static bool FromMojom(media::mojom::CopyMode input,
-                        media::VideoFrameMetadata::CopyMode* output) {
-    switch (input) {
-      case media::mojom::CopyMode::kCopyToNewTexture:
-        *output = ::media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
-        return true;
-      case media::mojom::CopyMode::kCopyMailboxesOnly:
-        *output = ::media::VideoFrameMetadata::CopyMode::kCopyMailboxesOnly;
         return true;
     }
 

@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -110,7 +110,7 @@ sharesheet::SharesheetResult ShowBubble(const std::string& window_id,
 
 }  // namespace
 
-class SharesheetAshBrowserTest : public SystemWebAppIntegrationTest {
+class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
  public:
   SharesheetAshBrowserTest() = default;
   ~SharesheetAshBrowserTest() override = default;
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(SharesheetAshBrowserTest, Success) {
   content::WebContents* const contents = waiter.Wait();
   EXPECT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_EQ(contents->GetLastCommittedURL(),
-            GetStartUrl(web_app::SystemAppType::SAMPLE).Resolve("share.html"));
+            GetStartUrl(ash::SystemWebAppType::SAMPLE).Resolve("share.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharesheetAshBrowserTest, Cancel) {

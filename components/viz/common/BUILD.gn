@@ -15,9 +15,16 @@ source_set("resource_format") {
   sources = [ "resources/resource_format.h" ]
 }
 
+always_enable_blending_for_primary = is_castos || is_cast_android
+assert(enable_cast_overlay_strategy || !always_enable_blending_for_primary)
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "USE_VIZ_DEBUGGER=$use_viz_debugger" ]
+  flags = [
+    "USE_VIZ_DEBUGGER=$use_viz_debugger",
+    "ENABLE_CAST_OVERLAY_STRATEGY=$enable_cast_overlay_strategy",
+    "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY=$always_enable_blending_for_primary",
+  ]
 }
 
 viz_component("resource_format_utils") {
@@ -180,12 +187,6 @@ viz_component("common") {
     "frame_sinks/delay_based_time_source.h",
     "frame_timing_details.h",
     "frame_timing_details_map.h",
-    "gl_i420_converter.cc",
-    "gl_i420_converter.h",
-    "gl_nv12_converter.cc",
-    "gl_nv12_converter.h",
-    "gl_scaler.cc",
-    "gl_scaler.h",
     "gpu/context_cache_controller.cc",
     "gpu/context_cache_controller.h",
     "gpu/context_lost_observer.h",
@@ -403,6 +404,7 @@ viz_source_set("unit_tests") {
     sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
   }
   deps = [
+    ":buildflags",
     ":common",
     "//base/test:test_support",
     "//cc:test_support",

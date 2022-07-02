@@ -14,7 +14,7 @@ namespace ash {
 
 class MockErrorScreen : public ErrorScreen {
  public:
-  explicit MockErrorScreen(ErrorScreenView* view);
+  explicit MockErrorScreen(base::WeakPtr<ErrorScreenView> view);
   ~MockErrorScreen() override;
 
   void FixCaptivePortal() override;
@@ -34,13 +34,8 @@ class MockErrorScreenView : public ErrorScreenView {
   MockErrorScreenView();
   virtual ~MockErrorScreenView();
 
-  void Bind(ErrorScreen* screen) override;
-  void Unbind() override;
-
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
-  MOCK_METHOD1(MockBind, void(ErrorScreen* screen));
-  MOCK_METHOD0(MockUnbind, void());
   MOCK_METHOD1(ShowOobeScreen, void(OobeScreenId screen));
   MOCK_METHOD1(SetErrorStateCode, void(NetworkError::ErrorState error_state));
   MOCK_METHOD1(SetErrorStateNetwork, void(const std::string& network_name));
@@ -50,10 +45,6 @@ class MockErrorScreenView : public ErrorScreenView {
   MOCK_METHOD1(SetUIState, void(NetworkError::UIState ui_state));
   MOCK_METHOD1(SetIsPersistentError, void(bool is_persistent));
   MOCK_METHOD0(OnCancelButtonClicked, void());
-  MOCK_METHOD0(OnReloadGaiaClicked, void());
-
- private:
-  ErrorScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

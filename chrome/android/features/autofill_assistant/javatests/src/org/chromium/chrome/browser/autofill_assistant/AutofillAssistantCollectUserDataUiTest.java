@@ -54,7 +54,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataTestHelper.ViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
@@ -71,6 +71,7 @@ import org.chromium.components.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.components.autofill_assistant.user_data.AssistantChoiceList;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel.DataOriginNoticeConfiguration;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 import org.chromium.components.autofill_assistant.user_data.AssistantContactField;
 import org.chromium.components.autofill_assistant.user_data.AssistantLoginChoice;
@@ -101,8 +102,9 @@ public class AutofillAssistantCollectUserDataUiTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), "about:blank"));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(), "about:blank"));
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
 
         mDefaultContactSummaryOptions =
@@ -1190,23 +1192,23 @@ public class AutofillAssistantCollectUserDataUiTest {
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
 
-        TextView dataOriginLinkText =
-                viewHolder.mDataOriginNotice.findViewById(R.id.link_to_data_origin_dialog);
+        // Not visible initially.
+        onView(is(viewHolder.mDataOriginNotice))
+                .check(matches(withEffectiveVisibility(Visibility.GONE)));
 
         // Setting a text from "backend".
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            model.set(AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT, "About this data");
-            model.set(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TITLE,
-                    "About your personal information");
-            model.set(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TEXT,
-                    "This is some text describing the <link2>user's data</link2> info.");
-            model.set(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_BUTTON_TEXT, "Got it");
+            model.set(AssistantCollectUserDataModel.DATA_ORIGIN_NOTICE_CONFIGURATION,
+                    new DataOriginNoticeConfiguration(/* linkText= */ "About this data",
+                            /* title= */ "About your personal information",
+                            /* text= */
+                            "This is some text describing the <link2>user's data</link2> info.",
+                            /* buttonText= */ "Got it"));
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
         });
 
-        onView(is(dataOriginLinkText))
+        onView(is(withId(R.id.link_to_data_origin_dialog)))
                 .check(matches(allOf(withText("About this data"), isDisplayed())));
-
         onView(withText("About this data")).perform(click());
         onView(withText("This is some text describing the user's data info."))
                 .check(matches(isDisplayed()));

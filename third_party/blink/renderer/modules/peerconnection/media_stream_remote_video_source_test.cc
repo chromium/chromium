@@ -205,7 +205,6 @@ TEST_F(MediaStreamRemoteVideoSourceTest, StartTrack) {
   source()->SinkInterfaceForTesting()->OnFrame(
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(buffer)
-          .set_rotation(webrtc::kVideoRotation_0)
           .set_timestamp_us(1000)
           .build());
   run_loop.Run();
@@ -271,13 +270,10 @@ TEST_F(MediaStreamRemoteVideoSourceTest, PreservesColorSpace) {
                                  webrtc::ColorSpace::TransferID::kSMPTE240M,
                                  webrtc::ColorSpace::MatrixID::kSMPTE240M,
                                  webrtc::ColorSpace::RangeID::kLimited);
-  const webrtc::VideoFrame& input_frame =
-      webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(buffer)
-          .set_timestamp_ms(0)
-          .set_rotation(webrtc::kVideoRotation_0)
-          .set_color_space(kColorSpace)
-          .build();
+  const webrtc::VideoFrame& input_frame = webrtc::VideoFrame::Builder()
+                                              .set_video_frame_buffer(buffer)
+                                              .set_color_space(kColorSpace)
+                                              .build();
   source()->SinkInterfaceForTesting()->OnFrame(input_frame);
   run_loop.Run();
 
@@ -309,13 +305,10 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
                                  webrtc::ColorSpace::TransferID::kUnspecified,
                                  webrtc::ColorSpace::MatrixID::kUnspecified,
                                  webrtc::ColorSpace::RangeID::kLimited);
-  const webrtc::VideoFrame& input_frame =
-      webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(buffer)
-          .set_timestamp_ms(0)
-          .set_rotation(webrtc::kVideoRotation_0)
-          .set_color_space(kColorSpace)
-          .build();
+  const webrtc::VideoFrame& input_frame = webrtc::VideoFrame::Builder()
+                                              .set_video_frame_buffer(buffer)
+                                              .set_color_space(kColorSpace)
+                                              .build();
   source()->SinkInterfaceForTesting()->OnFrame(input_frame);
   run_loop.Run();
 
@@ -349,13 +342,10 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
                                  webrtc::ColorSpace::TransferID::kUnspecified,
                                  webrtc::ColorSpace::MatrixID::kUnspecified,
                                  webrtc::ColorSpace::RangeID::kLimited);
-  const webrtc::VideoFrame& input_frame =
-      webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(buffer)
-          .set_timestamp_ms(0)
-          .set_rotation(webrtc::kVideoRotation_0)
-          .set_color_space(kColorSpace)
-          .build();
+  const webrtc::VideoFrame& input_frame = webrtc::VideoFrame::Builder()
+                                              .set_video_frame_buffer(buffer)
+                                              .set_color_space(kColorSpace)
+                                              .build();
   source()->SinkInterfaceForTesting()->OnFrame(input_frame);
   run_loop.Run();
 
@@ -520,6 +510,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, NoTimestampUsMeansNoReferenceTime) {
 
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer).build();
+  input_frame.set_render_parameters({.use_low_latency_rendering = true});
 
   source()->SinkInterfaceForTesting()->OnFrame(input_frame);
   run_loop.Run();

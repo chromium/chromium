@@ -57,7 +57,7 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   // Check if we can use the script streamer.
   ScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) = ScriptStreamer::TakeFrom(
+  std::tie(streamer, not_streamed_reason) = ResourceScriptStreamer::TakeFrom(
       script_resource, mojom::blink::ScriptType::kModule);
 
   ScriptStreamer::RecordStreamingHistogram(ScriptSchedulingType::kAsync,

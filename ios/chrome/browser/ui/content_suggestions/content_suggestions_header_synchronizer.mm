@@ -26,7 +26,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 @interface ContentSuggestionsHeaderSynchronizer ()<UIGestureRecognizerDelegate>
 
 @property(nonatomic, weak, readonly) UICollectionView* collectionView;
-// |YES| if the fakebox header should be animated on scroll.
+// `YES` if the fakebox header should be animated on scroll.
 @property(nonatomic, assign) BOOL shouldAnimateHeader;
 @property(nonatomic, weak) id<ContentSuggestionsCollectionControlling>
     collectionController;
@@ -102,9 +102,9 @@ initWithCollectionController:
   // CADisplayLink is used for this animation instead of the standard UIView
   // animation because the standard animation did not properly convert the
   // fakebox from its scrolled up mode to its scrolled down mode. Specifically,
-  // calling |UICollectionView reloadData| adjacent to the standard animation
+  // calling `UICollectionView reloadData` adjacent to the standard animation
   // caused the fakebox's views to jump incorrectly. CADisplayLink avoids this
-  // problem because it allows |shiftTilesDownAnimationDidFire| to directly
+  // problem because it allows `shiftTilesDownAnimationDidFire` to directly
   // control each frame.
   CADisplayLink* link = [CADisplayLink
       displayLinkWithTarget:self
@@ -138,8 +138,6 @@ initWithCollectionController:
   CGFloat pinnedOffsetY = [self.headerController pinnedOffsetY];
   self.collectionShiftingOffset =
       MAX(-self.additionalOffset, pinnedOffsetY - [self adjustedOffset].y);
-
-  self.collectionController.scrolledToMinimumHeight = YES;
   self.shouldAnimateHeader = YES;
 
   __weak __typeof(self) weakSelf = self;
@@ -148,8 +146,9 @@ initWithCollectionController:
       initWithDuration:kShiftTilesUpAnimationDuration
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              if (!weakSelf)
+              if (!weakSelf) {
                 return;
+              }
 
               __typeof(weakSelf) strongSelf = weakSelf;
               if (strongSelf.collectionView.contentOffset.y <
@@ -168,14 +167,19 @@ initWithCollectionController:
             }];
 
   [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    if (!weakSelf)
+    ContentSuggestionsHeaderSynchronizer* strongSelf = weakSelf;
+    if (!strongSelf) {
       return;
+    }
 
-    if (finalPosition == UIViewAnimatingPositionEnd)
-      weakSelf.shouldAnimateHeader = NO;
+    if (finalPosition == UIViewAnimatingPositionEnd) {
+      strongSelf.shouldAnimateHeader = NO;
+    }
 
-    if (completion)
+    strongSelf.collectionController.scrolledToMinimumHeight = YES;
+    if (completion) {
       completion(finalPosition);
+    }
   }];
 
   self.animator.interruptible = YES;
@@ -321,7 +325,7 @@ initWithCollectionController:
   if (percentComplete == 1.0) {
     [link invalidate];
     self.collectionShiftingOffset = 0;
-    // Reset |shiftTileStartTime| to its sentinel value.
+    // Reset `shiftTileStartTime` to its sentinel value.
     self.shiftTileStartTime = -1;
   }
 }

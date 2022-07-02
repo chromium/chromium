@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "gpu/config/gpu_info.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 
@@ -33,6 +34,7 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
       VideoEncodeAccelerator::Client* client,
       const gpu::GpuPreferences& gpu_perferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device,
       std::unique_ptr<MediaLog> media_log = nullptr);
 
   // Gets the supported codec profiles for video encoding on the platform.
@@ -41,6 +43,7 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device,
       bool populate_extended_info = true);
 };
 

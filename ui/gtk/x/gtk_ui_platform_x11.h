@@ -5,6 +5,7 @@
 #ifndef UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 #define UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -38,8 +39,8 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
  private:
   GdkDisplay* GetGdkDisplay();
 
-  x11::Connection* const connection_;
-  GdkDisplay* display_ = nullptr;
+  const raw_ptr<x11::Connection> connection_;
+  raw_ptr<GdkDisplay> display_ = nullptr;
   std::unique_ptr<GtkEventLoopX11> event_loop_;
 };
 

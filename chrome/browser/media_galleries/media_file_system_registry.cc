@@ -171,7 +171,7 @@ RPHReferenceManager::~RPHReferenceManager() {
 
 void RPHReferenceManager::ReferenceFromWebContents(
     content::WebContents* contents) {
-  RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* rph = contents->GetPrimaryMainFrame()->GetProcess();
   if (!base::Contains(observer_map_, rph)) {
     observer_map_[rph] = std::make_unique<RPHObserver>(this, rph);
   }
@@ -249,7 +249,7 @@ void RPHReferenceManager::OnRenderProcessHostDestroyed(
 
 void RPHReferenceManager::OnWebContentsDestroyedOrNavigated(
     WebContents* contents) {
-  RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* rph = contents->GetPrimaryMainFrame()->GetProcess();
   auto rph_info = observer_map_.find(rph);
   DCHECK(rph_info != observer_map_.end());
 

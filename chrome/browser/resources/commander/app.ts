@@ -1,19 +1,20 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './icons.js';
+import './icons.html.js';
 import './option.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {Debouncer, DomRepeatEvent, enqueueDebouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, DomRepeatEvent, enqueueDebouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {getTemplate} from './app.html.js';
+import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {Action, Option, ViewModel} from './types.js';
 
-interface CommanderAppElement {
+export interface CommanderAppElement {
   $: {
     input: HTMLInputElement,
     inputRow: HTMLElement,
@@ -21,13 +22,13 @@ interface CommanderAppElement {
 }
 
 
-class CommanderAppElement extends PolymerElement {
+export class CommanderAppElement extends PolymerElement {
   static get is() {
     return 'commander-app';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -54,7 +55,7 @@ class CommanderAppElement extends PolymerElement {
 
   constructor() {
     super();
-    this.browserProxy_ = BrowserProxy.getInstance();
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
   }
 
   override ready() {
@@ -188,4 +189,11 @@ class CommanderAppElement extends PolymerElement {
     return index === this.focusedIndex_ ? 'true' : 'false';
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'commander-app': CommanderAppElement;
+  }
+}
+
 customElements.define(CommanderAppElement.is, CommanderAppElement);

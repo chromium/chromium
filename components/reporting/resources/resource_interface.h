@@ -7,7 +7,8 @@
 
 #include <cstdint>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -15,10 +16,8 @@ namespace reporting {
 // Interface to resources management by Storage module.
 // Must be implemented by the caller base on the platform limitations.
 // All APIs are non-blocking.
-class ResourceInterface {
+class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
  public:
-  virtual ~ResourceInterface() = default;
-
   // Needs to be called before attempting to allocate specified size.
   // Returns true if requested amount can be allocated.
   // After that the caller can actually allocate it or must call
@@ -30,23 +29,26 @@ class ResourceInterface {
   virtual void Discard(uint64_t size) = 0;
 
   // Returns total amount.
-  virtual uint64_t GetTotal() = 0;
+  virtual uint64_t GetTotal() const = 0;
 
   // Returns current used amount.
-  virtual uint64_t GetUsed() = 0;
+  virtual uint64_t GetUsed() const = 0;
 
   // Test only: Sets non-default usage limit.
   virtual void Test_SetTotal(uint64_t test_total) = 0;
 
  protected:
+  friend class base::RefCountedThreadSafe<ResourceInterface>;
+
   ResourceInterface() = default;
+  virtual ~ResourceInterface() = default;
 };
 
 // Moveable RAII class used for scoped Reserve-Discard.
 //
 // Usage:
 //  {
-//    ScopedReservation reservation(1024u, GetMemoryResource());
+//    ScopedReservation reservation(1024u, options.memory_resource());
 //    if (!reservation.reserved()) {
 //      // Allocation failed.
 //      return;
@@ -58,22 +60,30 @@ class ResourceInterface {
 // Can be handed over to another owner.
 class ScopedReservation {
  public:
-  ScopedReservation(uint64_t size, ResourceInterface* resource_interface);
-  ScopedReservation(ScopedReservation&& other);
+  ScopedReservation(
+      uint64_t size,
+      scoped_refptr<ResourceInterface> resource_interface) noexcept;
+  ScopedReservation(ScopedReservation&& other) noexcept;
   ScopedReservation(const ScopedReservation& other) = delete;
+  ScopedReservation& operator=(ScopedReservation&& other) = delete;
   ScopedReservation& operator=(const ScopedReservation& other) = delete;
   ~ScopedReservation();
 
   bool reserved() const;
+
+  // Reduces reservation to |new_size|.
   bool Reduce(uint64_t new_size);
 
+  // Adds |other| to |this| without assigning or releasing any reservation.
+  // Used for seamless transition from one reservation to another (more generic
+  // than std::move). Resets |other| to non-reserved state upon return from this
+  // method.
+  void HandOver(ScopedReservation& other);
+
  private:
-  const raw_ptr<ResourceInterface> resource_interface_;
+  const scoped_refptr<ResourceInterface> resource_interface_;
   absl::optional<uint64_t> size_;
 };
-
-ResourceInterface* GetMemoryResource();
-ResourceInterface* GetDiskResource();
 
 }  // namespace reporting
 

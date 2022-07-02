@@ -4,36 +4,48 @@
 
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 
+#include <ios>
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_tree.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/browser_features.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+#include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
@@ -41,12 +53,15 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -56,21 +71,37 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "extensions/browser/extension_registry.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/manifest/handle_links.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_family.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -85,6 +116,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #endif
 
 namespace web_app {
@@ -876,7 +911,26 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+class ManifestUpdateManagerBrowserTest_ExternalPrefMigration
+    : public ManifestUpdateManagerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ManifestUpdateManagerBrowserTest_ExternalPrefMigration() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_ExternalPrefMigration,
                        CheckIgnoresPlaceholderApps) {
   // Set up app URL to redirect to force placeholder app to install.
   const GURL app_url = GetAppURL();
@@ -897,7 +951,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // Install via ExternallyManagedAppManager, the redirect to a different origin
   // should cause it to install a placeholder app.
   AppId app_id = InstallPolicyApp();
-  EXPECT_TRUE(GetProvider().registrar().IsPlaceholderApp(app_id));
+  EXPECT_TRUE(GetProvider().registrar().IsPlaceholderApp(
+      app_id, WebAppManagement::kPolicy));
 
   // Manifest updating should ignore non-redirect loads for placeholder apps
   // because the ExternallyManagedAppManager will handle these.
@@ -916,6 +971,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   histogram_tester_.ExpectBucketCount(
       kUpdateHistogramName, ManifestUpdateResult::kAppIsPlaceholder, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ManifestUpdateManagerBrowserTest_ExternalPrefMigration,
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsThemeColorChange) {
@@ -1809,44 +1868,6 @@ INSTANTIATE_TEST_SUITE_P(
                       UpdateDialogParam::kDisabled),
     ManifestUpdateManagerBrowserTest_UpdateDialog::ParamToString);
 
-class ManifestUpdateManagerHandleLinksBrowserTest
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableHandleLinks};
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerHandleLinksBrowserTest,
-                       CheckFindsHandleLinksChange) {
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "Test app name",
-      "start_url": ".",
-      "scope": "/",
-      "display": "standalone",
-      "icons": $1,
-      "handle_links": "$2"
-    }
-  )";
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "auto"});
-  AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetProvider().registrar().GetAppHandleLinks(app_id),
-            blink::mojom::HandleLinks::kAuto);
-
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "preferred"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kAppUpdated);
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-  ConfirmShortcutColors(app_id, {{{32, kAll}, kInstallableIconTopLeftColor},
-                                 {{48, kAll}, kInstallableIconTopLeftColor},
-                                 {{64, kWin}, kInstallableIconTopLeftColor},
-                                 {{96, kWin}, kInstallableIconTopLeftColor},
-                                 {{128, kAll}, kInstallableIconTopLeftColor},
-                                 {{256, kAll}, kInstallableIconTopLeftColor}});
-  EXPECT_EQ(GetProvider().registrar().GetAppHandleLinks(app_id),
-            blink::mojom::HandleLinks::kPreferred);
-}
-
 class ManifestUpdateManagerLaunchHandlerBrowserTest
     : public ManifestUpdateManagerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1897,8 +1918,8 @@ class ManifestUpdateManagerSystemAppBrowserTest
     : public ManifestUpdateManagerBrowserTest {
  public:
   ManifestUpdateManagerSystemAppBrowserTest()
-      : system_app_(
-            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {
+      : system_app_(ash::TestSystemWebAppInstallation::
+                        SetUpStandaloneSingleWindowApp()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1907,7 +1928,7 @@ class ManifestUpdateManagerSystemAppBrowserTest
   void SetUpOnMainThread() override { system_app_->WaitForAppInstall(); }
 
  protected:
-  std::unique_ptr<TestSystemWebAppInstallation> system_app_;
+  std::unique_ptr<ash::TestSystemWebAppInstallation> system_app_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerSystemAppBrowserTest,
@@ -3414,6 +3435,205 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app->protocol_handlers().empty());
+}
+
+class ManifestUpdateManagerBrowserTest_LockScreen
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTest_LockScreen() {
+    feature_list_.InitWithFeatures({features::kWebLockScreenApi,
+                                    blink::features::kWebAppManifestLockScreen},
+                                   /*disabled_features=*/{});
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_LockScreen,
+                       CheckFindsAddedLockScreenStartUrl) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  constexpr char kLockScreenStartUrlManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "lock_screen": {
+        "start_url": "/lock-screen-start"
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  EXPECT_TRUE(web_app->lock_screen_start_url().is_empty());
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_EQ(http_server_.GetURL("/lock-screen-start"),
+            web_app->lock_screen_start_url().spec());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_LockScreen,
+                       CheckIgnoresUnchangedLockScreenStartUrl) {
+  constexpr char kLockScreenStartUrlManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "lock_screen": {
+        "start_url": "/lock-screen-start"
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  EXPECT_EQ(http_server_.GetURL("/lock-screen-start"),
+            web_app->lock_screen_start_url().spec());
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+  EXPECT_EQ(http_server_.GetURL("/lock-screen-start"),
+            web_app->lock_screen_start_url().spec());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_LockScreen,
+                       CheckFindsChangedLockScreenStartUrl) {
+  constexpr char kLockScreenStartUrlManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "lock_screen": {
+        "start_url": "$1"
+      },
+      "icons": $2
+    }
+  )";
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate,
+                   {"old-relative-url", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  // URL parsed relative to manifest URL, which is in /banners/.
+  EXPECT_EQ(http_server_.GetURL("/banners/old-relative-url"),
+            web_app->lock_screen_start_url().spec());
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate,
+                   {"/lock-screen-starter", kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_EQ(http_server_.GetURL("/lock-screen-starter"),
+            web_app->lock_screen_start_url().spec());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_LockScreen,
+                       CheckFindsDeletedLockScreenStartUrl) {
+  constexpr char kLockScreenStartUrlManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "lock_screen": {
+        "start_url": "/lock-screen-start"
+      },
+      "icons": $1
+    }
+  )";
+
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  EXPECT_FALSE(web_app->lock_screen_start_url().is_empty());
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_TRUE(web_app->lock_screen_start_url().is_empty());
+}
+
+class ManifestUpdateManagerBrowserTest_NoLockScreen
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTest_NoLockScreen() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kWebAppManifestLockScreen);
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_NoLockScreen,
+                       WithoutLockScreenFlag_CheckIgnoresLockScreenStartUrl) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  constexpr char kLockScreenStartUrlManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "lock_screen": {
+        "start_url": "/lock-screen-start"
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  EXPECT_TRUE(web_app->lock_screen_start_url().is_empty());
+
+  OverrideManifest(kLockScreenStartUrlManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+  EXPECT_TRUE(web_app->lock_screen_start_url().is_empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

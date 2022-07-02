@@ -141,6 +141,7 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
 
   // Pipeline::Client overrides
   void OnError(PipelineStatus status) override { NOTREACHED(); }
+  void OnFallback(PipelineStatus status) override { NOTREACHED(); }
   void OnEnded() override {}
   void OnMetadata(const PipelineMetadata& metadata) override {}
   void OnBufferingStateChange(BufferingState state,

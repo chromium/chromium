@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,8 +38,7 @@ class CacheAliasSearchPrefetchURLLoader
   CacheAliasSearchPrefetchURLLoader(
       Profile* profile,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      const GURL& prefetch_url,
-      std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader);
+      const GURL& prefetch_url);
 
   ~CacheAliasSearchPrefetchURLLoader() override;
 
@@ -67,8 +69,6 @@ class CacheAliasSearchPrefetchURLLoader
                         OnUploadProgressCallback callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // Restarts the request to go directly to |resource_request_|.
@@ -97,10 +97,6 @@ class CacheAliasSearchPrefetchURLLoader
   // Starts the cache only request to |prefetch_url_|.
   void StartPrefetchRequest();
 
-  // Passed as a callback to the underlying fetching mechanism to inform |this|
-  // that headers have arrived.
-  void HeadersReceived();
-
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_receiver_{this};
@@ -115,16 +111,14 @@ class CacheAliasSearchPrefetchURLLoader
   // fallback occurs.
   bool paused_ = false;
 
-  raw_ptr<Profile> profile_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  base::WeakPtr<SearchPrefetchService> search_prefetch_service_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 
   // The URL for the prefetch response stored in cache.
   GURL prefetch_url_;
-
-  // The underlying prefetch loader that is fetching/fetched the prefetch
-  // request.
-  std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader_;
 
   // Forwarding client receiver.
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};

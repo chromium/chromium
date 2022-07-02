@@ -85,6 +85,7 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
   target_path_ = target_path;
   tmp_path_ = tmp_path;
   callback_ = std::move(callback);
+  start_time_ = base::Time::Now();
 
   results_.type = download_type_util::GetDownloadType(target_path_);
 
@@ -135,6 +136,7 @@ void FileAnalyzer::StartExtractFileFeatures() {
 }
 
 void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
+  LogAnalysisDurationWithAndWithoutSuffix("Executable");
   results.type = download_type_util::GetDownloadType(target_path_);
   std::move(callback_).Run(results);
 }
@@ -156,13 +158,24 @@ void FileAnalyzer::OnZipAnalysisFinished(
     const ArchiveAnalyzerResults& archive_results) {
   base::UmaHistogramEnumeration("SBClientDownload.ZipArchiveAnalysisResult",
                                 archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Zip");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Even if !results.success, some of the zip may have been parsed.
   // Some unzippers will successfully unpack archives that we cannot,
   // so we're lenient here.
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -180,8 +193,8 @@ void FileAnalyzer::OnZipAnalysisFinished(
     results_.type = ClientDownloadRequest::ZIPPED_EXECUTABLE;
   }
 
-  results_.file_count = archive_results.file_count;
-  results_.directory_count = archive_results.directory_count;
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -204,9 +217,20 @@ void FileAnalyzer::OnRarAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::UmaHistogramEnumeration("SBClientDownload.RarArchiveAnalysisResult",
                                 archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Rar");
 
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -224,8 +248,8 @@ void FileAnalyzer::OnRarAnalysisFinished(
     results_.type = ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE;
   }
 
-  results_.file_count = archive_results.file_count;
-  results_.directory_count = archive_results.directory_count;
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -262,6 +286,7 @@ void FileAnalyzer::OnDmgAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::UmaHistogramEnumeration("SBClientDownload.DmgArchiveAnalysisResult",
                                 archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Dmg");
 
   if (archive_results.signature_blob.size() > 0) {
     results_.disk_image_signature =
@@ -272,8 +297,6 @@ void FileAnalyzer::OnDmgAnalysisFinished(
       archive_results.detached_code_signatures);
 
   // Even if !results.success, some of the DMG may have been parsed.
-  results_.archive_is_valid =
-      (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
@@ -283,6 +306,19 @@ void FileAnalyzer::OnDmgAnalysisFinished(
     results_.type = ClientDownloadRequest::MAC_EXECUTABLE;
   } else {
     results_.type = ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING;
+  }
+
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
   }
 
   std::move(callback_).Run(std::move(results_));
@@ -309,11 +345,9 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Log metrics for Document Analysis.
-  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.DocumentAnalysisSuccess",
-                        document_results.success);
-  UMA_HISTOGRAM_MEDIUM_TIMES(
-      "SBClientDownload.ExtractDocumentFeaturesTimeMedium",
-      base::TimeTicks::Now() - document_analysis_start_time_);
+  base::UmaHistogramBoolean("SBClientDownload.DocumentAnalysisSuccess",
+                            document_results.success);
+  LogAnalysisDurationWithAndWithoutSuffix("Document");
 
   ClientDownloadRequest::DocumentSummary document_summary;
   ClientDownloadRequest::DocumentInfo* document_info =
@@ -335,4 +369,14 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   std::move(callback_).Run(std::move(results_));
 }
 #endif
+
+void FileAnalyzer::LogAnalysisDurationWithAndWithoutSuffix(
+    const std::string& suffix) {
+  base::UmaHistogramMediumTimes("SBClientDownload.FileAnalysisDuration",
+                                base::Time::Now() - start_time_);
+  base::UmaHistogramMediumTimes(
+      "SBClientDownload.FileAnalysisDuration." + suffix,
+      base::Time::Now() - start_time_);
+}
+
 }  // namespace safe_browsing

@@ -221,10 +221,6 @@ public class MockWebContents implements WebContents {
             String targetOrigin, MessagePort[] ports) {}
 
     @Override
-    public void postMessageToMainFrame(final String message, final String sourceOrigin,
-            final String targetOrigin, @Nullable final MessagePort[] ports) {}
-
-    @Override
     public MessagePort[] createMessageChannel() {
         return null;
     }

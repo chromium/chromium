@@ -155,7 +155,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 22;
+  expected_providers += 23;
 
   int sample_rate;
   if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(
@@ -190,10 +190,10 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
-  // PrinterMetricsProvider, HashedLoggingMetricsProvider,
-  // FamilyUserMetricsProvider, FamilyLinkUserMetricsProvider, and
-  // UserTypeByDeviceTypeMetricsProvider.
-  expected_providers += 9;
+  // KeyboardBacklightColorMetricsProvider, PrinterMetricsProvider,
+  // HashedLoggingMetricsProvider, FamilyUserMetricsProvider,
+  // FamilyLinkUserMetricsProvider, and UserTypeByDeviceTypeMetricsProvider.
+  expected_providers += 10;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

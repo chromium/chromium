@@ -33,12 +33,9 @@ const char kPreventElisionExtensionId[] = "jknemblkbdhdcpllfgbfekkdciegfboi";
 
 namespace safe_browsing {
 
-const char kDelayedWarningsHistogram[] = "SafeBrowsing.DelayedWarnings.Event";
 const char kDelayedWarningsTimeOnPageHistogram[] =
     "SafeBrowsing.DelayedWarnings.TimeOnPage";
 
-const char kDelayedWarningsWithElisionDisabledHistogram[] =
-    "SafeBrowsing.DelayedWarnings.Event_UrlElisionDisabled";
 const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[] =
     "SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled";
 
@@ -94,7 +91,7 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
   // indicate that it wants the key press to be ignored.
   // (DidGetUserInteraction() can only observe and not cancel the event.)
   content::RenderWidgetHost* widget =
-      web_contents->GetMainFrame()->GetRenderWidgetHost();
+      web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
   widget->AddKeyPressEventCallback(key_press_callback_);
   widget->AddMouseEventCallback(mouse_event_callback_);
 
@@ -104,7 +101,6 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
   if (permission_request_manager) {
     permission_request_manager->AddObserver(this);
   }
-  RecordUMA(DelayedWarningEvent::kPageLoaded);
 }
 
 SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
@@ -114,11 +110,11 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
     permission_request_manager->RemoveObserver(this);
   }
   web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderWidgetHost()
       ->RemoveKeyPressEventCallback(key_press_callback_);
   web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderWidgetHost()
       ->RemoveMouseEventCallback(mouse_event_callback_);
 }
@@ -146,7 +142,7 @@ void SafeBrowsingUserInteractionObserver::RenderFrameHostChanged(
     content::RenderFrameHost* new_frame) {
   // We currently only insert callbacks on the widget for the top-level main
   // frame.
-  if (new_frame != web_contents()->GetMainFrame())
+  if (new_frame != web_contents()->GetPrimaryMainFrame())
     return;
   // The `old_frame` is null when the `new_frame` is the initial
   // RenderFrameHost, which we already attached to in the constructor.
@@ -195,7 +191,6 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
   // result, the page should remain unchanged on downloads. Record a metric and
   // ignore this cancelled navigation.
   if (handle->IsDownload()) {
-    RecordUMA(DelayedWarningEvent::kDownloadCancelled);
     return;
   }
   // Now ignore other kinds of navigations that don't commit (e.g. 204 response
@@ -208,9 +203,6 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
 }
 
 void SafeBrowsingUserInteractionObserver::Detach() {
-  if (!interstitial_shown_) {
-    RecordUMA(DelayedWarningEvent::kWarningNotShown);
-  }
   base::TimeDelta time_on_page = clock_->Now() - creation_time_;
   if (IsUrlElisionDisabled(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
@@ -276,7 +268,6 @@ void SafeBrowsingUserInteractionObserver::OnPasswordSaveOrAutofillDenied() {
     return;
   }
   password_save_or_autofill_denied_metric_recorded_ = true;
-  RecordUMA(DelayedWarningEvent::kPasswordSaveOrAutofillDenied);
 }
 
 void SafeBrowsingUserInteractionObserver::OnDesktopCaptureRequest() {
@@ -304,17 +295,6 @@ void SafeBrowsingUserInteractionObserver::SetClockForTesting(
 base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
     const {
   return creation_time_;
-}
-
-void SafeBrowsingUserInteractionObserver::RecordUMA(DelayedWarningEvent event) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (IsUrlElisionDisabled(profile, suspicious_site_reporter_extension_id_)) {
-    base::UmaHistogramEnumeration(kDelayedWarningsWithElisionDisabledHistogram,
-                                  event);
-  } else {
-    base::UmaHistogramEnumeration(kDelayedWarningsHistogram, event);
-  }
 }
 
 bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
@@ -356,7 +336,6 @@ bool SafeBrowsingUserInteractionObserver::HandleMouseEvent(
   // the user clicks.
   if (!kDelayedWarningsEnableMouseClicks.Get()) {
     if (!mouse_click_with_no_warning_recorded_) {
-      RecordUMA(DelayedWarningEvent::kWarningNotTriggeredOnMouseClick);
       mouse_click_with_no_warning_recorded_ = true;
     }
     return false;
@@ -372,7 +351,6 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
   DCHECK(!interstitial_shown_);
   interstitial_shown_ = true;
   CleanUp();
-  RecordUMA(event);
   ui_manager_->StartDisplayingBlockingPage(resource_);
   Detach();
   // DO NOT add code past this point. |this| is destroyed.
@@ -380,7 +358,7 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
 
 void SafeBrowsingUserInteractionObserver::CleanUp() {
   content::RenderWidgetHost* widget =
-      web_contents()->GetMainFrame()->GetRenderWidgetHost();
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
   widget->RemoveKeyPressEventCallback(key_press_callback_);
   widget->RemoveMouseEventCallback(mouse_event_callback_);
 }

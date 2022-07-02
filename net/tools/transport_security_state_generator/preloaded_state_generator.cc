@@ -13,9 +13,7 @@
 #include "net/tools/transport_security_state_generator/cert_util.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 namespace {
 
@@ -313,6 +311,4 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
   ReplaceTag("PINSETS", pinsets_output, tpl);
 }
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

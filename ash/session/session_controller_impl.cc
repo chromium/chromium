@@ -234,11 +234,6 @@ void SessionControllerImpl::ShowMultiProfileLogin() {
     client_->ShowMultiProfileLogin();
 }
 
-void SessionControllerImpl::EmitAshInitialized() {
-  if (client_)
-    client_->EmitAshInitialized();
-}
-
 PrefService* SessionControllerImpl::GetSigninScreenPrefService() const {
   return client_ ? client_->GetSigninScreenPrefService() : nullptr;
 }

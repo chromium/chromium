@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -34,7 +36,9 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -67,7 +71,7 @@ public class ToolbarTabControllerImplTest {
     @Mock
     private Supplier<Boolean> mOverrideHomePageSupplier;
     @Mock
-    private Supplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
+    private ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     @Mock
     private BottomControlsCoordinator mBottomControlsCoordinator;
     @Mock
@@ -80,6 +84,10 @@ public class ToolbarTabControllerImplTest {
     private Profile mProfile;
     @Mock
     public Profile.Natives mMockProfileNatives;
+    @Mock
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock
+    private NativePage mNativePage;
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -93,10 +101,12 @@ public class ToolbarTabControllerImplTest {
         doReturn(false).when(mOverrideHomePageSupplier).get();
         mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
         doReturn(mProfile).when(mMockProfileNatives).fromWebContents(any());
+        doReturn(mNativePage).when(mTab).getNativePage();
         TrackerFactory.setTrackerForTests(mTracker);
+        doReturn(new ObservableSupplierImpl<>()).when(mTabModelSelectorSupplier).get();
         mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
                 mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
-                ToolbarManager::homepageUrl, mRunnable);
+                ToolbarManager::homepageUrl, mRunnable, mTabModelSelectorSupplier);
     }
 
     @Test
@@ -106,6 +116,7 @@ public class ToolbarTabControllerImplTest {
 
         assertFalse(mToolbarTabController.forward());
         assertFalse(mToolbarTabController.back());
+        verify(mNativePage, never()).notifyHidingWithBack();
     }
 
     @Test
@@ -129,6 +140,15 @@ public class ToolbarTabControllerImplTest {
         verify(mBottomControlsCoordinator).onBackPressed();
         verify(mRunnable, never()).run();
         verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void back_notifyNativePageHiding() {
+        doReturn(null).when(mBottomControlsCoordinatorSupplier).get();
+        doReturn(true).when(mTab).canGoBack();
+
+        mToolbarTabController.back();
+        verify(mNativePage).notifyHidingWithBack();
     }
 
     @Test

@@ -32,7 +32,6 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
@@ -388,8 +387,6 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
         numNTPTabs++;
       }
     }
-    BrowserViewController* bvc = scene.interfaceProvider.mainInterface.bvc;
-    numLiveNTPTabs += [bvc liveNTPCount];
   }
 
   if (startupInformation.isColdStart) {
@@ -562,6 +559,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     // trial randomization), as the pref is only read on startup.
     GetApplicationContext()->GetLocalState()->ClearPref(
         metrics::prefs::kMetricsClientID);
+    GetApplicationContext()->GetLocalState()->ClearPref(
+        metrics::prefs::kMetricsProvisionalClientID);
     GetApplicationContext()->GetLocalState()->ClearPref(
         metrics::prefs::kMetricsReportingEnabledTimestamp);
     crash_keys::ClearMetricsClientId();

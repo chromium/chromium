@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_TRACK_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_TRACK_COLLECTION_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -174,6 +175,11 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
       : NGGridTrackCollectionBase(track_direction) {}
 
+  NGGridLayoutTrackCollection(
+      const NGGridLayoutTrackCollection& other,
+      const NGBoxStrut& subgrid_border_scrollbar_padding,
+      const NGBoxStrut& subgrid_margins);
+
   bool operator==(const NGGridLayoutTrackCollection& other) const;
 
   // NGGridTrackCollectionBase overrides.
@@ -232,6 +238,12 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
  protected:
   LayoutUnit gutter_size_;
+
+  // These values are used to adjust the sets geometry to the relative border
+  // box of a subgrid and account for its gutter size difference.
+  LayoutUnit sets_geometry_start_offset_;
+  LayoutUnit start_extra_margin_;
+  LayoutUnit end_extra_margin_;
 
   Vector<Range> ranges_;
   Vector<LayoutUnit> major_baselines_;

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -211,7 +212,7 @@ class ObjectManagerTest
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;
-  ObjectManager* object_manager_;
+  raw_ptr<ObjectManager> object_manager_;
   std::unique_ptr<TestService> test_service_;
 
   std::string last_name_value_;

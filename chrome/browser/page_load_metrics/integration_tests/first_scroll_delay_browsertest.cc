@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -14,6 +15,10 @@
 using ukm::builders::PageLoad;
 
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstScrollDelay);
   LoadHTML(R"HTML(
     <div id="content">
       <p>This is some text</p>
@@ -26,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
 
   // We should wait for the main frame's hit-test data to be ready before
   // sending the click event below to avoid flakiness.
-  content::WaitForHitTestData(web_contents()->GetMainFrame());
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
   // Ensure the compositor thread is ready for wheel events.
   content::MainThreadFrameObserver main_thread(GetRenderWidgetHost());
   main_thread.Wait();
@@ -52,6 +57,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
       web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
   frame_observer.WaitForScrollOffset(
       gfx::PointF(0, scroll_distance * device_scale_factor));
+
+  waiter->Wait();
 
   // Navigate away.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

@@ -15,6 +15,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_devtools.h"
 #include "headless/lib/browser/headless_screen.h"
+#include "headless/lib/browser/headless_select_file_dialog_factory.h"
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/os_crypt/os_crypt.h"  // nogncheck
@@ -61,6 +62,7 @@ int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
   MaybeStartLocalDevToolsHttpHandler();
   browser_->PlatformInitialize();
   browser_->RunOnStartCallback();
+  HeadlessSelectFileDialogFactory::SetUp();
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 

@@ -37,6 +37,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   PrefService* GetPrefs() const override;
   PrefService* GetLocalState() override;
+  std::string GetApplicationLocale() const override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   history::HistoryService* GetHistoryService() override;

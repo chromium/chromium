@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "third_party/private_membership/src/internal/crypto_utils.h"
+#include "third_party/private_membership/src/private_membership.pb.h"
 #include "third_party/private_membership/src/internal/constants.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -51,20 +52,33 @@ namespace rlwe {
   }
   const std::string hashed_encrypted_id = HashEncryptedId(encrypted_id, ctx);
 
-  // Find the first byte that is not used by the bucket ID.
-  int start_byte = (params.encrypted_bucket_id_length() - 1) / 8 + 1;
+  switch (params.sensitive_id_hash_type()) {
+    case ENCRYPTED_BUCKET_HASH_TYPE_UNDEFINED: {
+      return absl::InvalidArgumentError(
+          "Sensitive id hash type must be defined.");
+    }
+    case ENCRYPTED_BUCKET_TEST_HASH_TYPE:
+    case SHA256_NON_SENSITIVE_AND_SENSITIVE_ID: {
+      // Find the first byte that is not used by the bucket ID.
+      int start_byte = (params.encrypted_bucket_id_length() - 1) / 8 + 1;
 
-  // Ensure that the total of the bytes stored in the bucket plus the length
-  // of the bucket ID is at least kBucketStoredEncryptedIdByteLength. Since
-  // the ID within a bucket needs to be represented at byte-level
-  // granularity, pad up the remainder of a byte if needed.
-  int byte_length =
-      kStoredEncryptedIdByteLength - (params.encrypted_bucket_id_length() / 8);
-  if (byte_length < 0) {
-    byte_length = 0;
+      // Ensure that the total of the bytes stored in the bucket plus the length
+      // of the bucket ID is at least kBucketStoredEncryptedIdByteLength. Since
+      // the ID within a bucket needs to be represented at byte-level
+      // granularity, pad up the remainder of a byte if needed.
+      int byte_length = kStoredEncryptedIdByteLength -
+                        (params.encrypted_bucket_id_length() / 8);
+      if (byte_length < 0) {
+        byte_length = 0;
+      }
+      std::string stored_encrypted_id(hashed_encrypted_id, start_byte,
+                                      byte_length);
+      return stored_encrypted_id;
+    }
+    default:
+      return absl::InvalidArgumentError(absl::StrCat(
+          "Unknown sensitive id hash type: ", params.sensitive_id_hash_type()));
   }
-  std::string stored_encrypted_id(hashed_encrypted_id, start_byte, byte_length);
-  return stored_encrypted_id;
 }
 
 std::string HashRlwePlaintextId(const RlwePlaintextId& id) {

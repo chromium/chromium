@@ -254,5 +254,5 @@ void TtsExtensionEngineChromeOS::Play(std::unique_ptr<base::ListValue> args,
       engine_id, std::make_unique<extensions::Event>(
                      extensions::events::TTS_ENGINE_ON_SPEAK_WITH_AUDIO_STREAM,
                      tts_engine_events::kOnSpeakWithAudioStream,
-                     std::move(*args).TakeListDeprecated(), profile));
+                     std::move(args->GetList()), profile));
 }

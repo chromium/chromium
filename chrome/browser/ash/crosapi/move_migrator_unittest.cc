@@ -63,6 +63,11 @@ static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
 constexpr int64_t kRequiredDiskSpaceForBot =
     browser_data_migrator_util::kBuffer * 2;
 
+base::FilePath GetNigoriPath(const base::FilePath& profile_path) {
+  return profile_path.Append(browser_data_migrator_util::kSyncDataFilePath)
+      .Append(browser_data_migrator_util::kSyncDataNigoriFileName);
+}
+
 // Setup the `Extensions` folder inside a profile.
 // If `ash_only` is true, it will only generate data associated to extensions
 // that have to be kept in Ash. Otherwise, it will generate data for both
@@ -73,6 +78,50 @@ void SetUpExtensions(const base::FilePath& profile_path,
                      bool both = true) {
   base::FilePath path =
       profile_path.Append(browser_data_migrator_util::kExtensionsFilePath);
+
+  // Generate data for an extension that has to be moved to Lacros.
+  if (lacros) {
+    ASSERT_TRUE(base::CreateDirectory(path.Append(kMoveExtensionId)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(kMoveExtensionId).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
+
+  // Generate data for an extension that has to stay in Ash.
+  if (ash) {
+    std::string keep_extension_id =
+        browser_data_migrator_util::kExtensionsAshOnly[0];
+    ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
+
+  // Generate data for an extension that has to be in both Ash and Lacros.
+  if (both) {
+    std::string both_extension_id =
+        browser_data_migrator_util::kExtensionsBothChromes[0];
+    ASSERT_TRUE(base::CreateDirectory(path.Append(both_extension_id)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(both_extension_id).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
+}
+
+// Setup the `Storage` folder inside a profile.
+// If `ash_only` is true, it will only generate data associated to extensions
+// that have to be kept in Ash. Otherwise, it will generate data for both
+// categories of extensions.
+void SetUpStorage(const base::FilePath& profile_path,
+                  bool ash = true,
+                  bool lacros = true,
+                  bool both = true) {
+  base::FilePath path =
+      profile_path.Append(browser_data_migrator_util::kStorageFilePath)
+          .Append(browser_data_migrator_util::kStorageExtFilePath);
 
   // Generate data for an extension that has to be moved to Lacros.
   if (lacros) {
@@ -254,17 +303,18 @@ void SetUpPreferences(const base::FilePath& profile_path,
   ASSERT_TRUE(base::WriteFile(path, contents));
 }
 
-void SetUpSyncData(const base::FilePath& profile_path,
-                   bool ash = true,
-                   bool lacros = true) {
-  base::FilePath path =
+void SetUpSyncDataLevelDB(const base::FilePath& profile_path,
+                          bool ash = true,
+                          bool lacros = true) {
+  base::FilePath leveldb_path =
       profile_path.Append(browser_data_migrator_util::kSyncDataFilePath)
           .Append(browser_data_migrator_util::kSyncDataLeveldbName);
 
   leveldb_env::Options options;
   options.create_if_missing = true;
   std::unique_ptr<leveldb::DB> db;
-  leveldb::Status status = leveldb_env::OpenDB(options, path.value(), &db);
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, leveldb_path.value(), &db);
   ASSERT_TRUE(status.ok());
 
   leveldb::WriteBatch batch;
@@ -304,7 +354,10 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   // |- Login Data/
   // |- Policy/
   // |- Preferences
+  // |- Storage/
   // |- Sync Data/
+  //     |- LevelDB
+  //     |- Nigori.bin
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
   ASSERT_EQ(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
                             kDataContent, kDataSize),
@@ -330,12 +383,18 @@ void SetUpProfileDirectory(const base::FilePath& path) {
                             kDataContent, kDataSize),
             kDataSize);
 
+  ASSERT_TRUE(base::CreateDirectory(
+      path.Append(browser_data_migrator_util::kSyncDataFilePath)));
+  ASSERT_EQ(base::WriteFile(GetNigoriPath(path), kDataContent, kDataSize),
+            kDataSize);
+
   SetUpExtensions(path);
+  SetUpStorage(path);
   SetUpLocalStorage(path);
   SetUpExtensionState(path);
   SetUpIndexedDB(path);
   SetUpPreferences(path);
-  SetUpSyncData(path);
+  SetUpSyncDataLevelDB(path);
 }
 
 std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
@@ -471,12 +530,14 @@ TEST(MoveMigratorTest, MoveLacrosItemsToNewDir) {
   EXPECT_FALSE(
       base::PathExists(original_profile_dir.Append(kBookmarksFilePath)));
   EXPECT_FALSE(base::PathExists(original_profile_dir.Append(kCookiesFilePath)));
+  EXPECT_FALSE(base::PathExists(GetNigoriPath(original_profile_dir)));
   EXPECT_TRUE(base::PathExists(tmp_profile_dir.Append(kBookmarksFilePath)));
   EXPECT_TRUE(base::PathExists(tmp_profile_dir.Append(kCookiesFilePath)));
   EXPECT_TRUE(base::PathExists(
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
   EXPECT_TRUE(base::PathExists(
       tmp_profile_dir.Append(browser_data_migrator_util::kIndexedDBFilePath)));
+  EXPECT_TRUE(base::PathExists(GetNigoriPath(tmp_profile_dir)));
 }
 
 TEST(MoveMigratorTest, MoveLacrosItemsToNewDirFailIfNoWritePermForLacrosItem) {
@@ -587,7 +648,8 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
       tmp_profile_dir.Append(chrome::kPreferencesFilename);
   EXPECT_TRUE(base::PathExists(lacros_path));
 
-  // Check `Sync Data` is present in both tmp_profile_dir and tmp_split_dir.
+  // Check `Sync Data`/LevelDB is present in both tmp_profile_dir and
+  // tmp_split_dir.
   path = tmp_split_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
              .Append(browser_data_migrator_util::kSyncDataLeveldbName);
   EXPECT_TRUE(base::PathExists(path));
@@ -681,7 +743,8 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // |- Login Data
     // |- Policy
     // |- Preferences
-    // |- Sync Data
+    // |- Storage/
+    // |- Sync Data/LevelDB
     // |- lacros/First Run
     // |- lacros/Default/
     //     |- Bookmarks
@@ -691,7 +754,10 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     //     |- Local Storage
     //     |- Policy
     //     |- Preferences
-    //     |- Sync Data
+    //     |- Storage/
+    //     |- Sync Data/
+    //         |- LevelDB
+    //         |- Nigori.bin
 
     const base::FilePath new_user_dir =
         original_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -740,6 +806,27 @@ class MoveMigratorMigrateTest : public ::testing::Test {
             .Append(kMoveExtensionId)));
     EXPECT_TRUE(base::PathExists(
         new_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)
+            .Append(kMoveExtensionId)));
+
+    // Storage.
+    EXPECT_TRUE(base::PathExists(
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
+            .Append(keep_extension_id)));
+    EXPECT_TRUE(base::PathExists(
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
+            .Append(both_extension_id)));
+    EXPECT_FALSE(base::PathExists(
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
+            .Append(kMoveExtensionId)));
+    EXPECT_TRUE(base::PathExists(
+        new_profile_dir.Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
             .Append(kMoveExtensionId)));
 
     // Local Storage.
@@ -814,16 +901,20 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     EXPECT_TRUE(base::PathExists(ash_preferences_path));
     EXPECT_TRUE(base::PathExists(lacros_preferences_path));
 
-    // Sync Data.
-    const base::FilePath ash_syncdata_path =
+    // Sync Data/LevelDB.
+    const base::FilePath ash_syncdata_leveldb_path =
         original_profile_dir_
             .Append(browser_data_migrator_util::kSyncDataFilePath)
             .Append(browser_data_migrator_util::kSyncDataLeveldbName);
-    const base::FilePath lacros_syncdata_path =
+    const base::FilePath lacros_syncdata_leveldb_path =
         new_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
             .Append(browser_data_migrator_util::kSyncDataLeveldbName);
-    EXPECT_TRUE(base::PathExists(ash_syncdata_path));
-    EXPECT_TRUE(base::PathExists(lacros_syncdata_path));
+    EXPECT_TRUE(base::PathExists(ash_syncdata_leveldb_path));
+    EXPECT_TRUE(base::PathExists(lacros_syncdata_leveldb_path));
+
+    // Sync Data/Nigori.bin
+    EXPECT_FALSE(base::PathExists(GetNigoriPath(original_profile_dir_)));
+    EXPECT_TRUE(base::PathExists(GetNigoriPath(new_profile_dir)));
   }
 
   void TearDown() override { EXPECT_TRUE(scoped_temp_dir_.Delete()); }
@@ -870,13 +961,17 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
-  //     |- Sync Data
+  //     |- Storage/
+  //     |- Sync Data/
+  //         |- LevelDB
+  //         |- Nigori.bin
   // |- move_migrator_split/
   //     |- Extensions
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Preferences
-  //     |- Sync Data
+  //     |- Storage/
+  //     |- Sync Data/LevelDB
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -899,6 +994,11 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kBookmarksFilePath),
                          tmp_profile_dir.Append(kBookmarksFilePath)));
 
+  ASSERT_TRUE(base::CreateDirectory(
+      tmp_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)));
+  ASSERT_TRUE(base::Move(GetNigoriPath(original_profile_dir_),
+                         GetNigoriPath(tmp_profile_dir)));
+
   // Extensions that have to stay in both Ash and Lacros were copied to the
   // split dir.
   SetUpExtensions(tmp_split_dir, /*ash=*/false, /*lacros=*/false,
@@ -908,6 +1008,16 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
+
+  // Storage objects that have to stay in both Ash and Lacros were copied to the
+  // split dir.
+  SetUpStorage(tmp_split_dir, /*ash=*/false, /*lacros=*/false,
+               /*both=*/true);
+  // Storage objects have been moved to Lacros's tmp dir.
+  ASSERT_TRUE(base::Move(
+      original_profile_dir_.Append(
+          browser_data_migrator_util::kStorageFilePath),
+      tmp_profile_dir.Append(browser_data_migrator_util::kStorageFilePath)));
 
   // IndexedDB objects that have to stay in both Ash and Lacros were copied to
   // the split dir.
@@ -930,9 +1040,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpPreferences(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
-  // Sync Data has been split.
-  SetUpSyncData(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
-  SetUpSyncData(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
+  // `Sync Data`/LevelDB has been split.
+  SetUpSyncDataLevelDB(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpSyncDataLevelDB(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
   run_loop_->Run();
@@ -961,13 +1071,17 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
-  //     |- Sync Data
+  //     |- Storage/
+  //     |- Sync Data/
+  //         |- LevelDB
+  //         |- Nigori.bin
   // |- move_migrator_split/
   //     |- Extensions
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Preferences
-  //     |- Sync Data
+  //     |- Storage/
+  //     |- Sync Data/LevelDB
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -992,6 +1106,11 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kCookiesFilePath),
                          tmp_profile_dir.Append(kCookiesFilePath)));
 
+  ASSERT_TRUE(base::CreateDirectory(
+      tmp_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)));
+  ASSERT_TRUE(base::Move(GetNigoriPath(original_profile_dir_),
+                         GetNigoriPath(tmp_profile_dir)));
+
   // Extensions that have to stay in both Ash and Lacros were copied to the
   // split dir.
   SetUpExtensions(tmp_split_dir, /*ash=*/false, /*lacros=*/false,
@@ -1002,6 +1121,17 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
+
+  // Storage objects that have to stay in both Ash and Lacros were copied to the
+  // split dir.
+  SetUpStorage(tmp_split_dir, /*ash=*/false, /*lacros=*/false,
+               /*both=*/true);
+  // Storage objects have been moved to Lacros's tmp dir, but not yet split and
+  // moved to Ash profile dir.
+  ASSERT_TRUE(base::Move(
+      original_profile_dir_.Append(
+          browser_data_migrator_util::kStorageFilePath),
+      tmp_profile_dir.Append(browser_data_migrator_util::kStorageFilePath)));
 
   // IndexedDB objects that have to stay in both Ash and Lacros were copied to
   // the split dir.
@@ -1025,9 +1155,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpPreferences(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
-  // `Sync Data` has been split, but not yet moved to Ash profile dir.
-  SetUpSyncData(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
-  SetUpSyncData(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
+  // `Sync Data`/LevelDB has been split, but not yet moved to Ash profile dir.
+  SetUpSyncDataLevelDB(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpSyncDataLevelDB(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
   run_loop_->Run();
@@ -1050,7 +1180,8 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   // |- Local Storage
   // |- Policy
   // |- Preferences
-  // |- Sync Data
+  // |- Storage/
+  // |- Sync Data/LevelDB
   // |- move_migrator/First Run
   // |- move_migrator/Default/
   //     |- Bookmarks
@@ -1059,7 +1190,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
-  //     |- Sync Data
+  //     |- Storage/
+  //     |- Sync Data/
+  //         |- LevelDB
+  //         |- Nigori.bin
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -1081,11 +1215,22 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   ASSERT_TRUE(base::Move(original_profile_dir_.Append(kCookiesFilePath),
                          tmp_profile_dir.Append(kCookiesFilePath)));
 
+  ASSERT_TRUE(base::CreateDirectory(
+      tmp_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)));
+  ASSERT_TRUE(base::Move(GetNigoriPath(original_profile_dir_),
+                         GetNigoriPath(tmp_profile_dir)));
+
   // Extensions have been split, and Ash's version is in its final place.
   ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(
       browser_data_migrator_util::kExtensionsFilePath)));
   SetUpExtensions(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpExtensions(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
+
+  // Storage objects have been split, and Ash's version is in its final place.
+  ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(
+      browser_data_migrator_util::kStorageFilePath)));
+  SetUpStorage(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpStorage(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   // IndexedDB has been split, and Ash's version is in its final place.
   ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(
@@ -1105,9 +1250,9 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpPreferences(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
-  // `Sync Data` has been split.
-  SetUpSyncData(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
-  SetUpSyncData(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
+  // `Sync Data`/LevelDB has been split.
+  SetUpSyncDataLevelDB(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpSyncDataLevelDB(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
   run_loop_->Run();

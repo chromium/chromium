@@ -71,22 +71,26 @@ void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void SavedTabGroupBar::SavedTabGroupAdded(const SavedTabGroup& group,
                                           int index) {
   AddTabGroupButton(group, index);
+  PreferredSizeChanged();
 }
 
 void SavedTabGroupBar::SavedTabGroupRemoved(int index) {
   RemoveTabGroupButton(index);
+  PreferredSizeChanged();
 }
 
 void SavedTabGroupBar::SavedTabGroupUpdated(const SavedTabGroup& group,
                                             int index) {
   RemoveTabGroupButton(index);
   AddTabGroupButton(group, index);
+  PreferredSizeChanged();
 }
 
 void SavedTabGroupBar::SavedTabGroupMoved(const SavedTabGroup& group,
                                           int old_index,
                                           int new_index) {
   ReorderChildView(children().at(old_index), new_index);
+  PreferredSizeChanged();
 }
 
 // TODO dpenning: Support the state of the SavedTabGroup open in a tab strip
@@ -136,8 +140,8 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     if (group->saved_tabs.empty())
       return;
-    chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(), group,
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB);
+    chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(),
+                              group->group_id, group->saved_tabs.size());
   }
 }
 

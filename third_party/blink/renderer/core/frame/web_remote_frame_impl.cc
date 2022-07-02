@@ -44,6 +44,14 @@
 
 namespace blink {
 
+WebRemoteFrame* WebRemoteFrame::FromFrameToken(
+    const RemoteFrameToken& frame_token) {
+  auto* frame = RemoteFrame::FromFrameToken(frame_token);
+  if (!frame)
+    return nullptr;
+  return WebRemoteFrameImpl::FromFrame(*frame);
+}
+
 WebRemoteFrame* WebRemoteFrame::Create(
     mojom::blink::TreeScopeType scope,
     WebRemoteFrameClient* client,

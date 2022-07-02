@@ -4,6 +4,7 @@
 
 #include "services/network/cors/cors_url_loader.h"
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/net_errors.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
@@ -652,9 +653,13 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
             mojom::IPAddressSpace::kPublic);
 }
 
-// This test verifies that not having response for preflight will cause
-// PreflightLoader time out and the real request will continue being sent
-// under kPreflightWarn mode.
+// This test verifies that when:
+//
+//  - the private network request policy is set to `kPreflightWarn`
+//  - a simple request detects a private network request
+//  - the following PNA preflight response takes forever to arrive
+//
+// ... a short timeout is applied, the error ignored and the request proceeds.
 TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
   auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
 
@@ -719,6 +724,76 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
             mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(error_params.client_security_state->ip_address_space,
             mojom::IPAddressSpace::kPublic);
+}
+
+// This test verifies that when:
+//
+//  - the private network request policy is set to `kPreflightWarn`
+//  - a CORS preflight request detects a private network request
+//  - the following PNA preflight response takes forever to arrive
+//
+// ... we wait as long as it takes for the response to arrive.
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNoTimeout) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  MockDevToolsObserver devtools_observer;
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://other.example/");
+  request.request_initiator = initiator_origin;
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
+
+  base::HistogramTester histogram_tester;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Simulate a response that takes longer to arrive than the preflight timeout.
+  // This should still work, because the timeout should not be applied.
+  base::OneShotTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(500),
+              base::BindLambdaForTesting([this] {
+                NotifyLoaderClientOnReceiveResponse({
+                    {"Access-Control-Allow-Methods", "PUT"},
+                    {"Access-Control-Allow-Origin", "https://example.com"},
+                    {"Access-Control-Allow-Credentials", "true"},
+                    {"Access-Control-Allow-Private-Network", "true"},
+                });
+              }));
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse({
+      {"Access-Control-Allow-Methods", "PUT"},
+      {"Access-Control-Allow-Origin", "https://example.com"},
+      {"Access-Control-Allow-Credentials", "true"},
+  });
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              IsEmpty());
 }
 
 // This test verifies that when:

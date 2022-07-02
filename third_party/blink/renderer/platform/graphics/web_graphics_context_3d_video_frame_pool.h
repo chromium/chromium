@@ -53,14 +53,13 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
       base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
 
   // On success, this function will issue return true and will call the
-  // specified FrameCallback with the resulting VideoFrame when the frame
-  // is ready. On failure this will issue `callback` with a nullptr VideoFrame
-  // and then return false. The resulting VideoFrame will always be NV12.
-  // Note: In some paths `src_color_space` is ignored in favor of the
-  // SharedImage color space associated with `src_mailbox_holder`.
-  // Note: If the YUV to RGB matrix of `dst_color_space` is not Rec601, then
-  // this function will use the matrix for Rec709 (it supports no other
-  // values). See https://crbug.com/skia/12545.
+  // specified FrameCallback with the resulting VideoFrame when the frame is
+  // ready. On failure this will return false. The resulting VideoFrame will
+  // always be NV12. Note: In some paths `src_color_space` is ignored in favor
+  // of the SharedImage color space associated with `src_mailbox_holder`. Note:
+  // If the YUV to RGB matrix of `dst_color_space` is not Rec601, then this
+  // function will use the matrix for Rec709 (it supports no other values). See
+  // https://crbug.com/skia/12545.
   bool CopyRGBATextureToVideoFrame(viz::ResourceFormat src_format,
                                    const gfx::Size& src_size,
                                    const gfx::ColorSpace& src_color_space,

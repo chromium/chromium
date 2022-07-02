@@ -16,7 +16,6 @@ import android.widget.TextView;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.Calendar;
@@ -29,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class DevicePickerBottomSheetAdapter extends BaseAdapter {
     private final List<TargetDeviceInfo> mTargetDevices;
 
-    public DevicePickerBottomSheetAdapter(Profile profile) {
-        mTargetDevices = SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(profile);
+    public DevicePickerBottomSheetAdapter(List<TargetDeviceInfo> targetDevices) {
+        mTargetDevices = targetDevices;
     }
 
     @Override

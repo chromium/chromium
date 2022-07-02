@@ -35,6 +35,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -1186,7 +1187,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
     request_info->setIsSameSite(
         loader->GetFrame()->GetDocument()->SiteForCookies().IsFirstParty(
-            request.Url()));
+            GURL(request.Url())));
   }
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
@@ -1782,9 +1783,9 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
     size += span.size();
   }
   Vector<char> flatten;
-  flatten.ReserveCapacity(SafeCast<wtf_size_t>(size));
+  flatten.ReserveCapacity(base::checked_cast<wtf_size_t>(size));
   for (const auto& span : data) {
-    flatten.Append(span.data(), SafeCast<wtf_size_t>(span.size()));
+    flatten.Append(span.data(), base::checked_cast<wtf_size_t>(span.size()));
   }
   GetFrontend()->webSocketFrameReceived(
       IdentifiersFactory::SubresourceRequestId(identifier),

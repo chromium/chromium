@@ -392,7 +392,7 @@ bool ComparePreAndPostInterstitialSSLStatuses(const content::SSLStatus& one,
 void ExpectInterstitialElementHidden(WebContents* tab,
                                      const std::string& element_id,
                                      bool expect_hidden) {
-  content::RenderFrameHost* frame = tab->GetMainFrame();
+  content::RenderFrameHost* frame = tab->GetPrimaryMainFrame();
   // Send CMD_TEXT_FOUND to indicate that the 'hidden' class is found, and
   // CMD_TEXT_NOT_FOUND if not.
   std::string command = base::StringPrintf(
@@ -1756,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCertAndClose) {
   // The title will be changed to 'PASS'.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), wss_close_url));
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 
   // Close tabs which contains the test page.
   for (int i = 0; i < 16; ++i)
@@ -1792,7 +1792,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCert) {
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 
 // Data URLs should always be marked as non-secure.
@@ -1836,7 +1836,7 @@ class SSLUITestWithClientCert : public SSLUITestBase {
     loop->Quit();
   }
 
-  net::NSSCertDatabase* cert_db_;
+  raw_ptr<net::NSSCertDatabase> cert_db_;
 };
 
 // SSL client certificate tests are only enabled when using NSS for private key
@@ -1904,7 +1904,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   // Test page runs a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -2653,8 +2653,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_TestRunsInsecureContentTwoTabs) {
   observer.Wait();
 
   // Both tabs should have the same process.
-  EXPECT_EQ(tab1->GetMainFrame()->GetProcess(),
-            tab2->GetMainFrame()->GetProcess());
+  EXPECT_EQ(tab1->GetPrimaryMainFrame()->GetProcess(),
+            tab2->GetPrimaryMainFrame()->GetProcess());
 
   // The new tab has insecure content.
   ssl_test_util::CheckAuthenticationBrokenState(
@@ -2780,8 +2780,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestRefNavigation) {
 
 // Tests that closing a page that opened a pop-up with an interstitial does not
 // crash the browser (crbug.com/1966).
-// TODO(crbug.com/1119359): Test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1119359, crbug.com/1338068): Test is flaky on Linux and Chrome
+// OS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestCloseTabWithUnsafePopup DISABLED_TestCloseTabWithUnsafePopup
 #else
 #define MAYBE_TestCloseTabWithUnsafePopup TestCloseTabWithUnsafePopup
@@ -3398,7 +3399,7 @@ class SSLUIWorkerFetchTest
 
     EXPECT_EQ(expected_show_blocked,
               content_settings::PageSpecificContentSettings::GetForFrame(
-                  tab->GetMainFrame())
+                  tab->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::MIXEDSCRIPT));
     ssl_test_util::CheckSecurityState(
         tab, CertError::NONE,
@@ -3407,8 +3408,8 @@ class SSLUIWorkerFetchTest
         expected_show_dangerous ? AuthState::RAN_INSECURE_CONTENT
                                 : AuthState::NONE);
     // Clears title.
-    ASSERT_TRUE(
-        content::ExecuteScript(tab->GetMainFrame(), "document.title = \"\";"));
+    ASSERT_TRUE(content::ExecuteScript(tab->GetPrimaryMainFrame(),
+                                       "document.title = \"\";"));
 
     {
       // SetAllowRunningInsecureContent will reload the page.
@@ -3422,7 +3423,7 @@ class SSLUIWorkerFetchTest
 
     EXPECT_EQ(expected_show_blocked_after_allow,
               content_settings::PageSpecificContentSettings::GetForFrame(
-                  tab->GetMainFrame())
+                  tab->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::MIXEDSCRIPT));
     ssl_test_util::CheckSecurityState(
         tab, CertError::NONE,
@@ -3438,8 +3439,10 @@ class SSLUIWorkerFetchTest
 
  private:
   void SetAllowRunningInsecureContent() {
-    content::RenderFrameHost* render_frame_host =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* render_frame_host = browser()
+                                                      ->tab_strip_model()
+                                                      ->GetActiveWebContents()
+                                                      ->GetPrimaryMainFrame();
     mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
     render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
     agent->SetAllowRunningInsecureContent();
@@ -3448,7 +3451,7 @@ class SSLUIWorkerFetchTest
   void CheckErrorStateIsCleared() {
     WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
-                     tab->GetMainFrame())
+                     tab->GetPrimaryMainFrame())
                      ->IsContentBlocked(ContentSettingsType::MIXEDSCRIPT));
     ssl_test_util::CheckSecurityState(tab, CertError::NONE,
                                       security_state::NONE, AuthState::NONE);
@@ -3936,7 +3939,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrors, TestWSS) {
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 
 // Visit a page and establish a WebSocket connection over bad https with
@@ -3963,7 +3966,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIWSS, TestWSSExpired) {
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -4078,7 +4081,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ProceedLinkOverridable) {
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(tab));
 
   EXPECT_TRUE(chrome_browser_interstitials::InterstitialHasProceedLink(
-      tab->GetMainFrame()));
+      tab->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestLearnMoreLinkContainsErrorCode) {
@@ -4122,7 +4125,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SubframeCertError) {
   observer.Wait();
 
   content::RenderFrameHost* child =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(child);
   int result = security_interstitials::CMD_ERROR;
   const std::string javascript = base::StringPrintf(
@@ -4161,7 +4164,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestHSTS, TestInterstitialOptionsNonOverridable) {
       "? (%d) : (%d))",
       security_interstitials::CMD_TEXT_NOT_FOUND,
       security_interstitials::CMD_TEXT_FOUND);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(),
+  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetPrimaryMainFrame(),
                                                   javascript, &result));
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND, result);
 }
@@ -4236,7 +4239,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, InterstitialNotAffectedByHideShow) {
   EXPECT_FALSE(tab->GetRenderWidgetHostView()->IsShowing());
 
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(tab->GetRenderWidgetHostView()->IsShowing());
 }
 
@@ -7261,9 +7265,9 @@ IN_PROC_BROWSER_TEST_F(SSLUIMITMSoftwareEnabledTest, EnterpriseManaged) {
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), expected_explanation));
+      tab->GetPrimaryMainFrame(), expected_explanation));
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), expected_primary_paragraph));
+      tab->GetPrimaryMainFrame(), expected_primary_paragraph));
 }
 
 // Tests that the correct strings are displayed on the interstitial in the
@@ -7284,7 +7288,7 @@ IN_PROC_BROWSER_TEST_F(SSLUIMITMSoftwareEnabledTest, NotEnterpriseManaged) {
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), expected_explanation));
+      tab->GetPrimaryMainFrame(), expected_explanation));
 }
 
 // Initialize MITMSoftware certificate list but set the version_id to zero. This
@@ -7315,7 +7319,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SimpleURLLoaderCertError) {
 
   EXPECT_EQ(net::OK,
             content::LoadBasicRequest(
-                tab->GetMainFrame(),
+                tab->GetPrimaryMainFrame(),
                 https_server_mismatched_.GetURL("/anchor_download_test.png")));
 }
 
@@ -8356,9 +8360,11 @@ IN_PROC_BROWSER_TEST_F(InsecureFormNavigationThrottleFencedFrameBrowserTest,
 
   // Navigate to site with an insecure form and submit it in a fenced frame.
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-          form_site_url);
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   form_site_url);
   ASSERT_TRUE(fenced_frame);
   content::TestNavigationObserver observer(GetWebContents());
   content::WebContentsConsoleObserver console_observer(GetWebContents());

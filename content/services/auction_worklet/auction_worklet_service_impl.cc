@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/waitable_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -25,13 +26,14 @@ namespace auction_worklet {
 
 // Make sure we only use a single AuctionV8Helper, including V8 thread and V8
 // isolate, no matter how many services there are. Assumes usages from a single
-// thread.
+// thread. In kDedicated mode, assumes this will be destroyed strictly before
+// task scheduling is shut down.
 class AuctionWorkletServiceImpl::V8HelperHolder
     : public base::RefCounted<V8HelperHolder> {
  public:
-  static V8HelperHolder* Instance() {
+  static V8HelperHolder* Instance(ProcessModel process_model) {
     if (!g_instance)
-      g_instance = new V8HelperHolder();
+      g_instance = new V8HelperHolder(process_model);
     DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
     return g_instance;
   }
@@ -44,20 +46,43 @@ class AuctionWorkletServiceImpl::V8HelperHolder
  private:
   friend class base::RefCounted<V8HelperHolder>;
 
-  V8HelperHolder()
+  explicit V8HelperHolder(ProcessModel process_model)
       : auction_v8_helper_(
-            AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner())) {
+            AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner())),
+        process_model_(process_model) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (process_model_ == ProcessModel::kDedicated) {
+      auction_v8_helper_->SetDestroyedCallback(base::BindOnce(
+          &V8HelperHolder::FinishedDestroying, base::Unretained(this)));
+    }
   }
 
   ~V8HelperHolder() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (process_model_ == ProcessModel::kDedicated) {
+      // ~V8HelperHolder running means there are no more instances of the
+      // service, so the service process itself may be about to be shutdown.
+      // Wait until `auction_v8_helper_` is destroyed to make sure no V8 things
+      // are running on its thread, since they may crash if task scheduling
+      // suddenly becomes impossible.
+      auction_v8_helper_.reset();
+      wait_for_v8_shutdown_.Wait();
+    }
     g_instance = nullptr;
+  }
+
+  void FinishedDestroying() {
+    DCHECK_EQ(process_model_, ProcessModel::kDedicated);
+    // This method runs on the V8 thread, while the object lives on the
+    // service's mojo thread.
+    wait_for_v8_shutdown_.Signal();
   }
 
   static V8HelperHolder* g_instance;
 
   scoped_refptr<AuctionV8Helper> auction_v8_helper_;
+  const ProcessModel process_model_;
+  base::WaitableEvent wait_for_v8_shutdown_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -65,22 +90,31 @@ class AuctionWorkletServiceImpl::V8HelperHolder
 AuctionWorkletServiceImpl::V8HelperHolder*
     AuctionWorkletServiceImpl::V8HelperHolder::g_instance = nullptr;
 
-AuctionWorkletServiceImpl::AuctionWorkletServiceImpl(
-    mojo::PendingReceiver<mojom::AuctionWorkletService> receiver)
-    : receiver_(this, std::move(receiver)),
-      auction_v8_helper_holder_(V8HelperHolder::Instance()) {}
-
-AuctionWorkletServiceImpl::AuctionWorkletServiceImpl()
-    : receiver_(this), auction_v8_helper_holder_(V8HelperHolder::Instance()) {}
-
-AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
+// static
+void AuctionWorkletServiceImpl::CreateForRenderer(
+    mojo::PendingReceiver<mojom::AuctionWorkletService> receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new AuctionWorkletServiceImpl(
+          ProcessModel::kShared,
+          mojo::PendingReceiver<mojom::AuctionWorkletService>())),
+      std::move(receiver));
+}
 
 // static
-void AuctionWorkletServiceImpl::Create(
+std::unique_ptr<AuctionWorkletServiceImpl>
+AuctionWorkletServiceImpl::CreateForService(
     mojo::PendingReceiver<mojom::AuctionWorkletService> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<AuctionWorkletServiceImpl>(),
-                              std::move(receiver));
+  return base::WrapUnique(new AuctionWorkletServiceImpl(
+      ProcessModel::kDedicated, std::move(receiver)));
 }
+
+AuctionWorkletServiceImpl::AuctionWorkletServiceImpl(
+    ProcessModel process_model,
+    mojo::PendingReceiver<mojom::AuctionWorkletService> receiver)
+    : auction_v8_helper_holder_(V8HelperHolder::Instance(process_model)),
+      receiver_(this, std::move(receiver)) {}
+
+AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 
 scoped_refptr<AuctionV8Helper>
 AuctionWorkletServiceImpl::AuctionV8HelperForTesting() {

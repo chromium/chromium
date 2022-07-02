@@ -2,6 +2,7 @@
 
 use super::super::codegen::EnumVariation;
 use super::context::{BindgenContext, TypeId};
+use super::function::Visibility;
 use super::item::Item;
 use super::ty::{Type, TypeKind};
 use crate::clang;
@@ -32,12 +33,16 @@ pub struct Enum {
 
     /// The different variants, with explicit values.
     variants: Vec<EnumVariant>,
+
+    /// The visibility of this enum if it was declared inside of
+    /// another type. Top-level types always have public visibility.
+    pub(crate) visibility: Visibility,
 }
 
 impl Enum {
     /// Construct a new `Enum` with the given representation and variants.
-    pub fn new(repr: Option<TypeId>, variants: Vec<EnumVariant>) -> Self {
-        Enum { repr, variants }
+    pub fn new(repr: Option<TypeId>, variants: Vec<EnumVariant>, visibility: Visibility) -> Self {
+        Enum { repr, variants, visibility }
     }
 
     /// Get this enumeration's representation.
@@ -53,6 +58,7 @@ impl Enum {
     /// Construct an enumeration from the given Clang type.
     pub fn from_ty(
         ty: &clang::Type,
+        visibility: Visibility,
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
@@ -144,7 +150,7 @@ impl Enum {
             }
             CXChildVisit_Continue
         });
-        Ok(Enum::new(repr, variants))
+        Ok(Enum::new(repr, variants, visibility))
     }
 
     fn is_matching_enum(

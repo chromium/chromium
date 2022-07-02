@@ -6,21 +6,25 @@
 
 #include <tuple>
 
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
-api::passwords_private::UrlCollection CreateUrlCollectionFromForm(
-    const password_manager::PasswordForm& form) {
+namespace {
+
+using password_manager::CredentialUIEntry;
+
+}  // namespace
+
+api::passwords_private::UrlCollection CreateUrlCollectionFromCredential(
+    const CredentialUIEntry& credential) {
   api::passwords_private::UrlCollection urls;
-  GURL link_url;
-  std::tie(urls.shown, link_url) =
-      password_manager::GetShownOriginAndLinkUrl(form);
-  urls.origin = form.signon_realm;
-  urls.link = link_url.spec();
+  urls.shown = GetShownOrigin(credential);
+  urls.origin = credential.signon_realm;
+  urls.link = GetShownUrl(credential).spec();
   return urls;
 }
 

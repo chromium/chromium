@@ -202,9 +202,9 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
   local_and_remote_devices.push_back(remote_devices[0]);
   local_and_remote_devices.push_back(*local_device);
 
-  std::unique_ptr<base::ListValue> device_list(new base::ListValue());
+  base::ListValue device_list;
   for (const auto& device : local_and_remote_devices) {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+    base::Value::Dict dict;
     std::string b64_public_key, b64_psk;
     base::Base64UrlEncode(device.public_key(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
@@ -213,59 +213,58 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &b64_psk);
 
-    dict->SetStringKey(key_names::kKeyPsk, b64_psk);
+    dict.Set(key_names::kKeyPsk, b64_psk);
 
     // TODO(jhawkins): Remove the bluetoothAddress field from this proto.
-    dict->SetStringKey(key_names::kKeyBluetoothAddress, std::string());
+    dict.Set(key_names::kKeyBluetoothAddress, std::string());
 
-    dict->SetStringPath(
+    dict.SetByDottedPath(
         key_names::kKeyPermitPermitId,
         base::StringPrintf(
             key_names::kPermitPermitIdFormat,
             gaia::CanonicalizeEmail(GetAccountId().GetUserEmail()).c_str()));
 
-    dict->SetStringPath(key_names::kKeyPermitId, b64_public_key);
-    dict->SetStringPath(key_names::kKeyPermitType,
-                        key_names::kPermitTypeLicence);
-    dict->SetStringPath(key_names::kKeyPermitData, b64_public_key);
+    dict.SetByDottedPath(key_names::kKeyPermitId, b64_public_key);
+    dict.SetByDottedPath(key_names::kKeyPermitType,
+                         key_names::kPermitTypeLicence);
+    dict.SetByDottedPath(key_names::kKeyPermitData, b64_public_key);
 
-    std::unique_ptr<base::ListValue> beacon_seed_list(new base::ListValue());
+    base::Value::List beacon_seed_list;
     for (const auto& beacon_seed : device.beacon_seeds()) {
       std::string b64_beacon_seed;
       base::Base64UrlEncode(
           multidevice::ToCryptAuthSeed(beacon_seed).SerializeAsString(),
           base::Base64UrlEncodePolicy::INCLUDE_PADDING, &b64_beacon_seed);
-      beacon_seed_list->Append(b64_beacon_seed);
+      beacon_seed_list.Append(b64_beacon_seed);
     }
 
     std::string serialized_beacon_seeds;
     JSONStringValueSerializer serializer(&serialized_beacon_seeds);
-    serializer.Serialize(*beacon_seed_list);
-    dict->SetStringKey(key_names::kKeySerializedBeaconSeeds,
-                       serialized_beacon_seeds);
+    serializer.Serialize(beacon_seed_list);
+    dict.Set(key_names::kKeySerializedBeaconSeeds, serialized_beacon_seeds);
 
     // This differentiates the local device from the remote device.
     bool unlock_key = device.GetSoftwareFeatureState(
                           multidevice::SoftwareFeature::kSmartLockHost) ==
                       multidevice::SoftwareFeatureState::kEnabled;
-    dict->SetBoolKey(key_names::kKeyUnlockKey, unlock_key);
+    dict.Set(key_names::kKeyUnlockKey, unlock_key);
 
     PA_LOG(VERBOSE) << "Storing RemoteDevice: { "
                     << "name: " << device.name()
                     << ", unlock_key: " << unlock_key
                     << ", id: " << device.GetTruncatedDeviceIdForLogs()
                     << " }.";
-    device_list->Append(std::move(dict));
+    device_list.GetList().Append(std::move(dict));
   }
 
-  if (device_list->GetListDeprecated().size() != 2u) {
+  if (device_list.GetList().size() != 2u) {
     PA_LOG(ERROR) << "There should only be 2 devices persisted, the host and "
                      "the client, but there are: "
-                  << device_list->GetListDeprecated().size();
+                  << device_list.GetList().size();
     NOTREACHED();
   }
 
-  SetStoredRemoteDevices(*device_list);
+  SetStoredRemoteDevices(device_list);
 }
 
 void EasyUnlockServiceRegular::SetStoredRemoteDevices(

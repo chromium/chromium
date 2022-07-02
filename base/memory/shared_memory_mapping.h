@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "base/unguessable_token.h"
 
@@ -85,7 +86,7 @@ class BASE_EXPORT SharedMemoryMapping {
   span<uint8_t> mapped_span_;
   size_t size_ = 0;
   UnguessableToken guid_;
-  SharedMemoryMapper* mapper_ = nullptr;
+  raw_ptr<SharedMemoryMapper> mapper_ = nullptr;
 };
 
 // Class modeling a read-only mapping of a shared memory region into the

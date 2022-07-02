@@ -343,6 +343,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetSessionStorageArea(
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           session_storage_area) override;
+  void AddHitTestOnTouchStartCallback(
+      base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback)
+      override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;
@@ -491,8 +494,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   // useful.
   WebFrameWidgetImpl* LocalRootFrameWidget();
 
-  // Scroll the focused editable element into the rect.
-  void ScrollFocusedEditableElementIntoRect(const gfx::Rect& rect);
+  // Scroll the focused editable element into the view.
+  void ScrollFocusedEditableElementIntoView();
   void ResetHasScrolledFocusedEditableIntoView();
 
   // Returns true if the frame is focused.
@@ -510,6 +513,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
       const blink::ContextMenuData& data,
       const absl::optional<gfx::Point>& host_context_menu_location);
+
+  sk_sp<cc::PaintRecord> GetPaintRecord() const override;
 
   virtual void Trace(Visitor*) const;
 
@@ -576,10 +581,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
 
-  void ShowDeferredContextMenu(
-      mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
-      const UntrustworthyContextMenuParams& params);
-
   WebLocalFrameClient* client_;
 
   // TODO(dcheng): Inline this field directly rather than going through Member.
@@ -635,7 +636,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Bookkeeping to suppress redundant scroll and focus requests for an already
   // scrolled and focused editable node.
   bool has_scrolled_focused_editable_node_into_rect_ = false;
-  gfx::Rect rect_for_scrolled_focused_editable_node_;
 
   WebHistoryItem current_history_item_;
 };

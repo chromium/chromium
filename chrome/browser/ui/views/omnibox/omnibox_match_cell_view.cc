@@ -239,7 +239,8 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer->type()));
       }
     } else {
-      SkColor color = result_view->GetColor(OmniboxPart::RESULTS_BACKGROUND);
+      SkColor color = GetColorProvider()->GetColor(
+          GetOmniboxBackgroundColorId(result_view->GetThemeState()));
       content::ParseHexColorString(match.image_dominant_color, &color);
       color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
       constexpr gfx::Size size(kEntityImageSize, kEntityImageSize);

@@ -31,7 +31,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/policy/core/common/preferences_mock_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -151,10 +150,6 @@ void EnsureMediaDirectoriesExists::Init() {
 #else
 
   ASSERT_TRUE(fake_dir_.CreateUniqueTempDir());
-
-#if BUILDFLAG(IS_MAC)
-  mac_preferences_ = std::make_unique<MockPreferences>();
-#endif  // BUILDFLAG(IS_MAC)
 
   ChangeMediaPathOverrides();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)

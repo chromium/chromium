@@ -33,7 +33,7 @@ class MainContentUIStateUpdaterTest : public PlatformTest {
 };
 
 // Tests that the y content offset is correctly broadcast as the result of
-// |-scrollViewDidScrollToOffset:|.
+// `-scrollViewDidScrollToOffset:`.
 TEST_F(MainContentUIStateUpdaterTest, UpdateOffset) {
   const CGFloat kYOffset = 150.0;
   ASSERT_TRUE(AreCGFloatsEqual(0.0, state().yContentOffset));

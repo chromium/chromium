@@ -36,6 +36,7 @@ void PictureInPictureServiceImpl::StartSession(
     const gfx::Size& natural_size,
     bool show_play_pause_button,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,
+    const gfx::Rect& source_bounds,
     StartSessionCallback callback) {
   gfx::Size window_size;
   mojo::PendingRemote<blink::mojom::PictureInPictureSession> session_remote;
@@ -43,8 +44,8 @@ void PictureInPictureServiceImpl::StartSession(
   auto result = GetController().StartSession(
       this, MediaPlayerId(render_frame_host()->GetGlobalId(), player_id),
       std::move(player_remote), surface_id, natural_size,
-      show_play_pause_button, std::move(observer), &session_remote,
-      &window_size);
+      show_play_pause_button, std::move(observer), source_bounds,
+      &session_remote, &window_size);
 
   if (result == PictureInPictureResult::kSuccess) {
     // Frames are to be blocklisted from the back-forward cache because the

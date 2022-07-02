@@ -60,6 +60,15 @@
                 android:layout_height="56dp"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"/>
+            <org.chromium.chrome.browser.tasks.tab_management.CouponCardView
+                android:id="@+id/coupon_info_box_outer"
+                android:layout_below="@id/tab_title"
+                android:background="@drawable/price_card_scrim"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"/>
             <!-- TODO(crbug/1198288): Make decision on duplication of PriceCardView code.-->
             <org.chromium.chrome.browser.tasks.tab_management.StoreHoursCardView
                 android:id="@+id/store_hours_box_outer"

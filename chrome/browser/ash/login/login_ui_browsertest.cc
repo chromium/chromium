@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -21,6 +26,7 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
@@ -29,15 +35,17 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -58,6 +66,16 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
+class OobeBaseTestPolymer3 : public OobeBaseTest {
+ public:
+  OobeBaseTestPolymer3() {
+    scoped_feature_list_.InitAndEnableFeature(features::kEnableOobePolymer3);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Tests that the default first screen is the welcome screen after OOBE
 // when auto enrollment is enabled and device is not yet enrolled.
 IN_PROC_BROWSER_TEST_F(InterruptedAutoStartEnrollmentTest, ShowsWelcome) {
@@ -65,6 +83,11 @@ IN_PROC_BROWSER_TEST_F(InterruptedAutoStartEnrollmentTest, ShowsWelcome) {
 }
 
 IN_PROC_BROWSER_TEST_F(OobeBaseTest, OobeNoExceptions) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  OobeBaseTest::CheckJsExceptionErrors(0);
+}
+
+IN_PROC_BROWSER_TEST_F(OobeBaseTestPolymer3, OobeNoExceptions) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   OobeBaseTest::CheckJsExceptionErrors(0);
 }
@@ -553,5 +576,144 @@ IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnEnrollment) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SshWarningTest, ::testing::Bool());
+
+namespace {
+
+// This is the constant that exists on the server side. It corresponds to
+// the type of enrollment license.
+constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
+
+}  // namespace
+
+class KioskSkuLoginScreenVisibilityTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  KioskSkuLoginScreenVisibilityTest() : MixinBasedInProcessBrowserTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+  }
+  ~KioskSkuLoginScreenVisibilityTest() override = default;
+  KioskSkuLoginScreenVisibilityTest(const KioskSkuLoginScreenVisibilityTest&) =
+      delete;
+  void operator=(const KioskSkuLoginScreenVisibilityTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(
+        switches::kDisableOOBEChromeVoxHintTimerForTesting);
+
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ protected:
+  policy::DevicePolicyCrosTestHelper* policy_helper() {
+    return &policy_helper_;
+  }
+
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  policy::DevicePolicyCrosTestHelper policy_helper_;
+};
+
+// Verifies that shelf buttons of Guest mode and Add user are shown, and kiosk
+// instruction bubble is hidden without kiosk SKU.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutKioskSku) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, kiosk
+// instruction bubble is hidden, and kiosk
+// default message is shown without kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutApps) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, kiosk
+// instruction bubble is shown, and kiosk
+// default message is hidden with kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithApps) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies kiosk instruction bubble and kiosk
+// default message are hidden when kiosk app menu is opened.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, OpenKioskMenu) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+
+  // Click app menu button
+  EXPECT_TRUE(LoginScreenTestApi::ClickAppsButton());
+
+  // Check visibility
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
+
+// Verifies that kiosk default message is show even after ESC key is pressed.
+IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest,
+                       TryDismissDefaultMessage) {
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+
+  // Focus the Kiosk default message
+  EXPECT_TRUE(LoginScreenTestApi::FocusKioskDefaultMessage());
+
+  // Press ESC key.
+  ui::test::EventGenerator generator(Shell::Get()->GetPrimaryRootWindow());
+  generator.PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
+}
 
 }  // namespace ash

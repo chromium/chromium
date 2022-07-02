@@ -149,6 +149,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     initial_root_bounds_ = bounds;
   }
 
+  virtual void CleanupBeforeDestroy() {}
   virtual void AfterTest() {}
   virtual void WillBeginTest();
   virtual void BeginTest() = 0;
@@ -211,11 +212,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     begin_frame_source_ = begin_frame_source;
   }
 
-  bool use_skia_renderer() const {
-    return renderer_type_ == viz::RendererType::kSkiaGL ||
-           renderer_type_ == viz::RendererType::kSkiaVk ||
-           renderer_type_ == viz::RendererType::kSkiaDawn;
-  }
   bool use_software_renderer() const {
     return renderer_type_ == viz::RendererType::kSoftware;
   }

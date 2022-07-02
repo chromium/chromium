@@ -12,14 +12,15 @@ function init() {
     let rect = entries[0].intersectionRect.x + "," +
                entries[0].intersectionRect.y + "," +
                entries[0].intersectionRect.width + "," +
-               entries[0].intersectionRect.height;
+               entries[0].intersectionRect.height + "," +
+               entries[0].isVisible;
     writeValueToServer(tokens[next_token], rect);
     next_token = next_token + 1;
 
     if (next_token == tokens.length) {
       observer.disconnect();
     }
-  }, {threshold: [0.6, 0.75]});
+  }, {trackVisibility: true, delay: 100, threshold: [0.6, 0.75]});
   observer.observe(document.getElementById("target"));
 }
 

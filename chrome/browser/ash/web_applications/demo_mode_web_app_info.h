@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_DEMO_MODE_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_DEMO_MODE_WEB_APP_INFO_H_
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
 struct WebAppInstallInfo;
 
@@ -14,11 +14,11 @@ struct WebAppInstallInfo;
 #error Demo Mode should only be included in unofficial builds.
 #endif
 
-class DemoModeSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class DemoModeSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit DemoModeSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;

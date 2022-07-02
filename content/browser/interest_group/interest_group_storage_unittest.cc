@@ -71,6 +71,8 @@ class InterestGroupStorageTest : public testing::Test {
     result.owner = owner;
     result.name = name;
     result.expiry = base::Time::Now() + base::Days(30);
+    result.execution_mode =
+        blink::InterestGroup::ExecutionMode::kCompatibilityMode;
     return result;
   }
 
@@ -93,7 +95,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
     const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
-    storage->LeaveInterestGroup(test_origin, "example");
+    storage->LeaveInterestGroup(test_origin, "example", test_origin);
   }
 
   // InterestGroupStorage creates the database if it doesn't exist.
@@ -131,7 +133,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
     // initialization.
     const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
-    storage->LeaveInterestGroup(test_origin, "example");
+    storage->LeaveInterestGroup(test_origin, "example", test_origin);
   }
 
   {
@@ -166,7 +168,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
     // initialization.
     const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
-    storage->LeaveInterestGroup(test_origin, "example");
+    storage->LeaveInterestGroup(test_origin, "example", test_origin);
   }
 
   {
@@ -239,7 +241,7 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
 
-  storage->LeaveInterestGroup(test_origin, "example");
+  storage->LeaveInterestGroup(test_origin, "example", test_origin);
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
@@ -730,6 +732,7 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroup full(
       /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
       /*name=*/"full", /*priority=*/1.0,
+      /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
       /*bidding_url=*/GURL("https://full.example.com/bid"),
       /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
       /*daily_update_url=*/GURL("https://full.example.com/update"),
@@ -1297,6 +1300,236 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
 
     EXPECT_THAT(interest_groups, expected_interest_group_matcher);
   }
+}
+
+TEST_F(InterestGroupStorageTest,
+       ClusteredGroupsClearedWhenClusterChangesOnJoin) {
+  const url::Origin cluster_origin =
+      url::Origin::Create(GURL("https://cluster.com/"));
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://other.com/"));
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  ASSERT_TRUE(storage);
+
+  const std::string clusters[] = {
+      {"cluster0"}, {"cluster1"}, {"cluster2"}, {"cluster3"}};
+  for (const auto& name : clusters) {
+    blink::InterestGroup group = NewInterestGroup(cluster_origin, name);
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, cluster_origin.GetURL());
+  }
+  storage->JoinInterestGroup(NewInterestGroup(cluster_origin, "separate_same"),
+                             cluster_origin.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(other_origin, "separate_other"),
+                             other_origin.GetURL());
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(cluster_origin, "clustered_different");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(other_origin, "clustered_other");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  std::vector<StorageInterestGroup> interest_groups =
+      storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_EQ(8u, interest_groups.size());
+
+  {
+    blink::InterestGroup group = NewInterestGroup(cluster_origin, "cluster0");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  auto expected_interest_group_matcher = testing::UnorderedElementsAre(
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, cluster_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 cluster_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "separate_same"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kCompatibilityMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 other_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "separate_other"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kCompatibilityMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 cluster_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "clustered_different"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kGroupedByOriginMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 other_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "clustered_other"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kGroupedByOriginMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 cluster_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "cluster0"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kGroupedByOriginMode)))));
+  interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_THAT(interest_groups, expected_interest_group_matcher);
+}
+
+TEST_F(InterestGroupStorageTest,
+       ClusteredGroupsClearedWhenClusterChangesOnLeave) {
+  const url::Origin cluster_origin =
+      url::Origin::Create(GURL("https://cluster.com/"));
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://other.com/"));
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  ASSERT_TRUE(storage);
+
+  const std::string clusters[] = {
+      {"cluster0"}, {"cluster1"}, {"cluster2"}, {"cluster3"}};
+  for (const auto& name : clusters) {
+    blink::InterestGroup group = NewInterestGroup(cluster_origin, name);
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, cluster_origin.GetURL());
+  }
+  storage->JoinInterestGroup(NewInterestGroup(cluster_origin, "separate_same"),
+                             cluster_origin.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(other_origin, "separate_other"),
+                             other_origin.GetURL());
+
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(cluster_origin, "clustered_different");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(other_origin, "clustered_other");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  std::vector<StorageInterestGroup> interest_groups =
+      storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_EQ(8u, interest_groups.size());
+
+  storage->LeaveInterestGroup(cluster_origin, "cluster0", other_origin);
+
+  auto expected_interest_group_matcher = testing::UnorderedElementsAre(
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, cluster_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 cluster_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "separate_same"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kCompatibilityMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 other_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "separate_other"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kCompatibilityMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 cluster_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "clustered_different"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kGroupedByOriginMode)))),
+      testing::AllOf(
+          testing::Field("joining_origin",
+                         &StorageInterestGroup::joining_origin, other_origin),
+          testing::Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  testing::Field("owner", &blink::InterestGroup::owner,
+                                 other_origin),
+                  testing::Field("name", &blink::InterestGroup::name,
+                                 "clustered_other"),
+                  testing::Field("execution_mode",
+                                 &blink::InterestGroup::execution_mode,
+                                 blink::InterestGroup::ExecutionMode::
+                                     kGroupedByOriginMode)))));
+
+  interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_THAT(interest_groups, expected_interest_group_matcher);
 }
 
 }  // namespace content

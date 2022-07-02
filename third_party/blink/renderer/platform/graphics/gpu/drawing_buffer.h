@@ -284,12 +284,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                              const gfx::Rect& src_sub_rectangle,
                              SourceDrawingBuffer src_buffer);
 
-  void CopyToVideoFrame(
+  bool CopyToVideoFrame(
       WebGraphicsContext3DVideoFramePool* frame_pool,
       SourceDrawingBuffer src_buffer,
       bool src_origin_is_top_left,
       const gfx::ColorSpace& dst_color_space,
-      WebGraphicsContext3DVideoFramePool::FrameReadyCallback& callback);
+      WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
   sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer);
 
@@ -459,8 +459,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     gpu::SyncToken receive_sync_token;
   };
 
-  // CopyFunction(const gpu::MailboxHolder&, viz::ResourceFormat,
-  //              const gfx::Size&, const gfx::ColorSpace&)
+  // bool CopyFunction(const gpu::MailboxHolder&, viz::ResourceFormat,
+  //                   const gfx::Size&, const gfx::ColorSpace&)
   template <typename CopyFunction>
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                               SourceDrawingBuffer src_buffer,

@@ -32,6 +32,7 @@ ClientHintsFactory::ClientHintsFactory()
           "ClientHints",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(CookieSettingsFactory::GetInstance());
 }
 
 ClientHintsFactory::~ClientHintsFactory() = default;

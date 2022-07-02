@@ -65,10 +65,10 @@ extern const base::Feature
 extern const base::Feature
     kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature;
 extern const base::Feature kIPHAddToHomescreenMessageFeature;
-extern const base::Feature kIPHAddToHomescreenTextBubbleFeature;
 extern const base::Feature kIPHAutoDarkOptOutFeature;
 extern const base::Feature kIPHAutoDarkUserEducationMessageFeature;
 extern const base::Feature kIPHAutoDarkUserEducationMessageOptInFeature;
+extern const base::Feature kIPHContextualPageActionsPriceTrackingFeature;
 extern const base::Feature kIPHCrowFeature;
 extern const base::Feature kIPHDataSaverDetailFeature;
 extern const base::Feature kIPHDataSaverMilestonePromoFeature;
@@ -128,6 +128,7 @@ extern const base::Feature kIPHNewTabPageHomeButtonFeature;
 extern const base::Feature kIPHPageInfoFeature;
 extern const base::Feature kIPHPageInfoStoreInfoFeature;
 extern const base::Feature kIPHPreviewsOmniboxUIFeature;
+extern const base::Feature kIPHPriceDropNTPFeature;
 extern const base::Feature kIPHQuietNotificationPromptsFeature;
 extern const base::Feature kIPHReadLaterContextMenuFeature;
 extern const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature;
@@ -149,6 +150,7 @@ extern const base::Feature kIPHVideoTutorialNTPSummaryFeature;
 extern const base::Feature kIPHVideoTutorialTryNowFeature;
 extern const base::Feature kIPHExploreSitesTileFeature;
 extern const base::Feature kIPHFeedHeaderMenuFeature;
+extern const base::Feature kIPHWebFeedAwarenessFeature;
 extern const base::Feature kIPHFeedSwipeRefresh;
 extern const base::Feature kIPHChromeReengagementNotification1Feature;
 extern const base::Feature kIPHChromeReengagementNotification2Feature;
@@ -160,7 +162,6 @@ extern const base::Feature kIPHWebFeedFollowFeature;
 extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
 extern const base::Feature kIPHSharedHighlightingBuilder;
 extern const base::Feature kIPHSharedHighlightingReceiverFeature;
-extern const base::Feature kIPHStartSurfaceTabSwitcherHomeButton;
 extern const base::Feature kIPHSharingHubWebnotesStylizeFeature;
 #endif  // BUILDFLAG(IS_ANDROID)
 

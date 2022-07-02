@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSAPI_IDLE_SERVICE_ASH_H_
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/idle_service.mojom.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -25,7 +25,7 @@ class IdleServiceAsh : public mojom::IdleService {
   // Helper to observe changes in relevant quantities, read these values, and
   // manage / dispatch to observers for IdleServiceAsh.
   class Dispatcher : public ui::UserActivityObserver,
-                     public chromeos::SessionManagerClient::Observer {
+                     public ash::SessionManagerClient::Observer {
    public:
     Dispatcher();
     Dispatcher(const Dispatcher&) = delete;
@@ -35,7 +35,7 @@ class IdleServiceAsh : public mojom::IdleService {
     // ui::UserActivityObserver:
     void OnUserActivity(const ui::Event* event) override;
 
-    // chromeos::SessionManagerClient::Observer:
+    // SessionManagerClient::Observer:
     void ScreenLockedStateUpdated() override;
 
    private:

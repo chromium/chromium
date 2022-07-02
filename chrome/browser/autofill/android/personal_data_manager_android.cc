@@ -135,7 +135,7 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
     }
 
     ContentAutofillDriver* driver =
-        factory->DriverForFrame(contents->GetMainFrame());
+        factory->DriverForFrame(contents->GetPrimaryMainFrame());
     if (!driver) {
       OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
       return;

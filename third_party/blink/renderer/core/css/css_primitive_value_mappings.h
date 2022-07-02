@@ -1644,17 +1644,19 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
 template <>
 inline EContainerType CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
-    case CSSValueID::kNone:
-      return kContainerTypeNone;
+    case CSSValueID::kNormal:
+      return kContainerTypeNormal;
     case CSSValueID::kInlineSize:
       return kContainerTypeInlineSize;
     case CSSValueID::kSize:
       return kContainerTypeSize;
+    case CSSValueID::kStyle:
+      return kContainerTypeStyle;
     default:
       break;
   }
   NOTREACHED();
-  return kContainerTypeNone;
+  return kContainerTypeNormal;
 }
 
 template <>

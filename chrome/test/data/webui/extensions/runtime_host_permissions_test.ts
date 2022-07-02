@@ -137,15 +137,14 @@ suite('RuntimeHostPermissions', function() {
     // Changes the value of the selectHostAccess menu and fires the change
     // event, then verifies that the delegate was called with the correct
     // value.
-    function assertDelegateCallOnAccessChange(
+    async function assertDelegateCallOnAccessChange(
         newValue: chrome.developerPrivate.HostAccess): Promise<void> {
       selectHostAccess.value = newValue;
       selectHostAccess.dispatchEvent(new CustomEvent('change'));
-      return delegate.whenCalled('setItemHostAccess').then((args) => {
-        assertEquals(ITEM_ID, args[0] /* id */);
-        assertEquals(newValue, args[1] /* access */);
-        delegate.resetResolver('setItemHostAccess');
-      });
+      const args = await delegate.whenCalled('setItemHostAccess');
+      assertEquals(ITEM_ID, args[0] /* id */);
+      assertEquals(newValue, args[1] /* access */);
+      delegate.resetResolver('setItemHostAccess');
     }
 
     // Check that selecting different values correctly notifies the delegate.
@@ -352,7 +351,7 @@ suite('RuntimeHostPermissions', function() {
     assertFalse(dialog.updateHostAccess);
   });
 
-  test('removing runtime host permissions', function() {
+  test('removing runtime host permissions', async function() {
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
       hasAllHosts: true,
@@ -385,11 +384,10 @@ suite('RuntimeHostPermissions', function() {
         metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.ActionMenuRemoveActivated'),
         1);
-    return delegate.whenCalled('removeRuntimeHostPermission').then((args) => {
-      assertEquals(ITEM_ID, args[0] /* id */);
-      assertEquals('https://chromium.org', args[1] /* site */);
-      assertFalse(actionMenu.open);
-    });
+    const [id, site] = await delegate.whenCalled('removeRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals('https://chromium.org', site);
+    assertFalse(actionMenu.open);
   });
 
   test('clicking edit host triggers dialog', function() {
@@ -454,34 +452,36 @@ suite('RuntimeHostPermissions', function() {
     assertEquals('https://chromium.org', dialog.currentSite);
   });
 
-  test('clicking remove host with enableEnhancedSiteControls flag', function() {
-    element.enableEnhancedSiteControls = true;
-    const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
-      hostAccess: HostAccess.ON_SPECIFIC_SITES,
-      hasAllHosts: true,
-      hosts: [
-        {host: 'https://chromium.org', granted: true},
-      ],
-    };
+  test(
+      'clicking remove host with enableEnhancedSiteControls flag',
+      async function() {
+        element.enableEnhancedSiteControls = true;
+        const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
+          hostAccess: HostAccess.ON_SPECIFIC_SITES,
+          hasAllHosts: true,
+          hosts: [
+            {host: 'https://chromium.org', granted: true},
+          ],
+        };
 
-    element.permissions = permissions;
-    flush();
+        element.permissions = permissions;
+        flush();
 
-    const removeHost =
-        element.shadowRoot!.querySelector<HTMLElement>('.remove-host');
-    assertTrue(!!removeHost);
-    removeHost.click();
-    flush();
+        const removeHost =
+            element.shadowRoot!.querySelector<HTMLElement>('.remove-host');
+        assertTrue(!!removeHost);
+        removeHost.click();
+        flush();
 
-    return delegate.whenCalled('removeRuntimeHostPermission').then((args) => {
-      assertEquals(ITEM_ID, args[0] /* id */);
-      assertEquals('https://chromium.org', args[1] /* site */);
-    });
-  });
+        const [id, site] =
+            await delegate.whenCalled('removeRuntimeHostPermission');
+        assertEquals(ITEM_ID, id);
+        assertEquals('https://chromium.org', site);
+      });
 
   test(
       'switching away from ON_SPECIFIC_SITES with flag enabled triggers dialog',
-      function() {
+      async function() {
         element.enableEnhancedSiteControls = true;
 
         const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
@@ -534,13 +534,12 @@ suite('RuntimeHostPermissions', function() {
         assertTrue(!!remove);
         remove.click();
 
-        return delegate.whenCalled('setItemHostAccess').then((args) => {
-          assertEquals(ITEM_ID, args[0] /* id */);
-          assertEquals(HostAccess.ON_CLICK, args[1] /* access */);
+        const [id, access] = await delegate.whenCalled('setItemHostAccess');
+        assertEquals(ITEM_ID, id);
+        assertEquals(HostAccess.ON_CLICK, access);
 
-          flush();
-          assertFalse(!!element.getRemoveSiteDialog());
-          assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
-        });
+        flush();
+        assertFalse(!!element.getRemoveSiteDialog());
+        assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
       });
 });

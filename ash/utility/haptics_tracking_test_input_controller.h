@@ -39,6 +39,9 @@ class HapticsTrackingTestInputController : public ui::InputController {
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override;
   void SetCurrentLayoutByName(const std::string& layout_name) override;
+  void SetKeyboardKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override;
+  std::vector<uint64_t> GetKeyboardKeyBits(int id) override;
   void SetTouchpadSensitivity(int value) override;
   void SetTouchpadScrollSensitivity(int value) override;
   void SetTapToClick(bool enabled) override;
@@ -60,6 +63,9 @@ class HapticsTrackingTestInputController : public ui::InputController {
   void SetPointingStickSensitivity(int value) override;
   void SetPointingStickPrimaryButtonRight(bool right) override;
   void SetPointingStickAcceleration(bool enabled) override;
+  void SetGamepadKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override;
+  std::vector<uint64_t> GetGamepadKeyBits(int id) override;
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override;
   void GetTouchEventLog(const base::FilePath& out_dir,
                         GetTouchEventLogReply reply) override;

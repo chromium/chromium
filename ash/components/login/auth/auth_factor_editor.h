@@ -40,16 +40,35 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorEditor {
   void AddKioskKey(std::unique_ptr<UserContext> context,
                    AuthOperationCallback callback);
 
-  // Attempts to add Key contained in `context` to corresponding user.
+  // Attempts to add knowledge-based Key contained in `context` to corresponding
+  // user. Until migration to AuthFactors this method supports both password and
+  // PIN keys.
   // Session should be authenticated.
-  void AddContextKey(std::unique_ptr<UserContext> context,
-                     AuthOperationCallback callback);
+  void AddContextKnowledgeKey(std::unique_ptr<UserContext> context,
+                              AuthOperationCallback callback);
+
+  // Attempts to add Challenge-response Key contained in `context` to
+  // corresponding user.
+  // Session should be authenticated.
+  void AddContextChallengeResponseKey(std::unique_ptr<UserContext> context,
+                                      AuthOperationCallback callback);
 
   // Attempts to replace factor labeled by Key contained in `context`
   // with key stored in ReplacementKey in the `context`.
   // Session should be authenticated.
   void ReplaceContextKey(std::unique_ptr<UserContext> context,
                          AuthOperationCallback callback);
+
+  // Adds a recovery key for the user by `context`. No key is added if there is
+  // already a recovery key.
+  // Session must be authenticated.
+  void AddRecoveryFactor(std::unique_ptr<UserContext> context,
+                         AuthOperationCallback callback);
+
+  // Remove all recovery keys for the user by `context`.
+  // Session must be authenticated.
+  void RemoveRecoveryFactor(std::unique_ptr<UserContext> context,
+                            AuthOperationCallback callback);
 
  private:
   void HashContextKeyAndAdd(std::unique_ptr<UserContext> context,
@@ -64,6 +83,16 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorEditor {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::UpdateCredentialReply> reply);
+
+  void OnRecoveryFactorAdded(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::AddAuthFactorReply> reply);
+
+  void OnRecoveryFactorRemoved(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::RemoveAuthFactorReply> reply);
 
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};
 };

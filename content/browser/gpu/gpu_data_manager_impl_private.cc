@@ -91,9 +91,9 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_CHROMECAST)
-#include "chromecast/chromecast_buildflags.h"
-#endif
+#if BUILDFLAG(IS_CASTOS)
+#include "chromecast/chromecast_buildflags.h"  // nogncheck
+#endif                                         // BUILDFLAG(IS_CASTOS)
 
 namespace content {
 
@@ -633,14 +633,17 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   if (command_line->HasSwitch(switches::kDisableGpu)) {
     // Chomecast audio-only builds run with the flag --disable-gpu. The GPU
     // process should not access hardware GPU in this case.
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS)
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
     fallback_modes_.clear();
     fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
-#endif
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CAST_AUDIO_ONLY)
+#endif  // BUILDFLAG(IS_CASTOS)
+
+#if (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(false) << "GPU acceleration is required on certain platforms!";
-#endif  // IS_CHROMECAST
+#endif
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine
     // embedder. Falling back to SW compositing in that case is not supported.
@@ -927,7 +930,7 @@ void GpuDataManagerImplPrivate::RequestDawnInfo() {
 void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
   base::OnceClosure task = base::BindOnce([]() {
     auto media_interface_proxy =
-        std::make_unique<FramelessMediaInterfaceProxy>();
+        std::make_unique<FramelessMediaInterfaceProxy>(nullptr);
 
     mojo::PendingRemote<media::mojom::VideoDecoder> pending_remote_decoder;
     media_interface_proxy->CreateVideoDecoder(
@@ -943,13 +946,15 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
     DCHECK(remote_decoder_ptr);
     remote_decoder_ptr->GetSupportedConfigs(base::BindOnce(
         [](mojo::Remote<media::mojom::VideoDecoder> /* remote_decoder */,
+           std::unique_ptr<
+               FramelessMediaInterfaceProxy> /* media_interface_proxy */,
            const media::SupportedVideoDecoderConfigs& configs,
            media::VideoDecoderType /* decoder_type */) {
           GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
           DCHECK(manager);
           manager->UpdateMojoMediaVideoCapabilities(configs);
         },
-        std::move(remote_decoder)));
+        std::move(remote_decoder), std::move(media_interface_proxy)));
   });
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));

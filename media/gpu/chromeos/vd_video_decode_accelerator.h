@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -22,6 +23,7 @@
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -51,7 +53,8 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
           scoped_refptr<base::SequencedTaskRunner>,
           std::unique_ptr<DmabufVideoFramePool>,
           std::unique_ptr<VideoFrameConverter>,
-          std::unique_ptr<MediaLog>)>;
+          std::unique_ptr<MediaLog>,
+          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)>;
 
   // Create VdVideoDecodeAccelerator instance, and call Initialize().
   // Return nullptr if Initialize() failed.
@@ -120,7 +123,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   // Callback to generate VideoDecoder.
   CreateVideoDecoderCb create_vd_cb_;
   // The client of this VDA.
-  VideoDecodeAccelerator::Client* client_ = nullptr;
+  raw_ptr<VideoDecodeAccelerator::Client> client_ = nullptr;
   // The delegated VideoDecoder instance.
   std::unique_ptr<VideoDecoder> vd_;
   // Callback for returning the result after this instance is asked to request

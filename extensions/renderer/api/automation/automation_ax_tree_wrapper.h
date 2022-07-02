@@ -103,6 +103,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
                             ui::AXNode* node);
   bool HasEventListener(api::automation::EventType event_type,
                         ui::AXNode* node);
+  size_t EventListenerCount() const;
 
   // Indicates whether this tree is ignored due to a hosting ancestor tree/node
   // being ignored.

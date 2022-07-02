@@ -233,7 +233,7 @@ class WebRtcVideoDisplayPerfBrowserTest
         OpenPageAndGetUserMediaInNewTabWithConstraints(
             embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage),
             "{audio: true, video: false}");
-    const int process_id = right_tab->GetMainFrame()
+    const int process_id = right_tab->GetPrimaryMainFrame()
                                ->GetRenderViewHost()
                                ->GetProcess()
                                ->GetProcess()

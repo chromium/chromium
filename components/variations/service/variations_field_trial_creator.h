@@ -106,8 +106,11 @@ class VariationsFieldTrialCreator {
   // Sets up field trials based on stored variations seed data. Returns whether
   // setup completed successfully.
   //
-  // |variation_ids| allows for forcing ids selected in chrome://flags and/or
-  // specified using the command-line flag.
+  // |variation_ids| allows for forcing ids selected in chrome://flags.
+  // |command_line_variation_ids| allows for forcing ids through the
+  // "--force-variation-ids" command line flag. It should be a comma-separated
+  // list of variation ids. Ids prefixed with the character "t" will be treated
+  // as Trigger Variation Ids.
   // |extra_overrides| gives a list of feature overrides that should be applied
   // after the features explicitly disabled/enabled from the command line via
   // --disable-features and --enable-features, but before field trials.
@@ -130,6 +133,7 @@ class VariationsFieldTrialCreator {
   // field trials.
   bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
+      const std::string& command_line_variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
       std::unique_ptr<const base::FieldTrial::EntropyProvider>

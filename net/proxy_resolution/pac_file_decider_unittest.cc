@@ -88,9 +88,9 @@ class Rules {
   }
 
   const Rule& GetRuleByUrl(const GURL& url) const {
-    for (auto it = rules_.begin(); it != rules_.end(); ++it) {
-      if (it->url == url)
-        return *it;
+    for (const auto& rule : rules_) {
+      if (rule.url == url)
+        return rule;
     }
     LOG(FATAL) << "Rule not found for " << url;
     return rules_[0];
@@ -103,8 +103,7 @@ class Rules {
 
 class RuleBasedPacFileFetcher : public PacFileFetcher {
  public:
-  explicit RuleBasedPacFileFetcher(const Rules* rules)
-      : rules_(rules), request_context_(nullptr) {}
+  explicit RuleBasedPacFileFetcher(const Rules* rules) : rules_(rules) {}
 
   virtual void SetRequestContext(URLRequestContext* context) {
     request_context_ = context;
@@ -133,7 +132,7 @@ class RuleBasedPacFileFetcher : public PacFileFetcher {
 
  private:
   raw_ptr<const Rules> rules_;
-  raw_ptr<URLRequestContext> request_context_;
+  raw_ptr<URLRequestContext> request_context_ = nullptr;
 };
 
 // A mock retriever, returns asynchronously when CompleteRequests() is called.

@@ -70,7 +70,7 @@ class QuicClientMessageLooplNetworkHelper
 
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;
 
-  bool packet_reader_started_;
+  bool packet_reader_started_ = false;
 
   quic::QuicChromiumClock* clock_;
   quic::QuicClientBase* client_;

@@ -48,7 +48,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace {
 
@@ -1295,8 +1295,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        SpecialSchemeDevtools) {
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(), GURL("devtools://devtools/bundled/devtools_app.html")));
-  EXPECT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
-      content::kChromeDevToolsScheme));
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().SchemeIs(
+          content::kChromeDevToolsScheme));
 
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
   GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
@@ -1315,8 +1316,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        SpecialSchemeChromeSearch) {
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(), GURL("chrome-search://most-visited/title.html")));
-  ASSERT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
-      chrome::kChromeSearchScheme));
+  ASSERT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().SchemeIs(
+          chrome::kChromeSearchScheme));
 
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
   GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
@@ -1374,8 +1376,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   const GURL url = extension->GetResourceURL(kPageFile);
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  ASSERT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
-      extensions::kExtensionScheme));
+  ASSERT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().SchemeIs(
+          extensions::kExtensionScheme));
 
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
   GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
@@ -1419,8 +1422,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   dom_distiller::DistilledPageObserver(web_contents())
       .WaitUntilFinishedLoading();
 
-  EXPECT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
-      dom_distiller::kDomDistillerScheme));
+  EXPECT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().SchemeIs(
+          dom_distiller::kDomDistillerScheme));
 
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
   GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
@@ -1436,6 +1440,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 // AUTO-RELOAD TESTS
 // =================
 
+// Intercepts the first load to a URL and fails the request with an error.
 class NetErrorInterceptor final {
  public:
   NetErrorInterceptor(GURL url, net::Error error)
@@ -1451,11 +1456,13 @@ class NetErrorInterceptor final {
   NetErrorInterceptor& operator=(const NetErrorInterceptor&) = delete;
 
  private:
-  bool Intercept(content::URLLoaderInterceptor::RequestParams* params) const {
+  bool Intercept(content::URLLoaderInterceptor::RequestParams* params) {
     const GURL& request_url = params->url_request.url;
-    if (request_url != url_) {
+    if (request_url != url_ || did_intercept_) {
       return false;
     }
+
+    did_intercept_ = true;
 
     network::URLLoaderCompletionStatus status;
     status.error_code = error_;
@@ -1463,12 +1470,15 @@ class NetErrorInterceptor final {
     return true;
   }
 
-  GURL url_;
-  net::Error error_;
+  const GURL url_;
+  const net::Error error_;
+
+  // Whether this instance already intercepted and failed a request.
+  bool did_intercept_ = false;
 
   // Interceptor must be declared after all state used in `Intercept()`, to
   // avoid use-after-free at destruction time.
-  content::URLLoaderInterceptor interceptor_;
+  const content::URLLoaderInterceptor interceptor_;
 };
 
 class PrivateNetworkAccessAutoReloadBrowserTest
@@ -1493,19 +1503,25 @@ class PrivateNetworkAccessAutoReloadBrowserTest
 // This test verifies that when a document in the `local` address space fails to
 // load due to a transient network error, it is auto-reloaded a short while
 // later and that fetch is not blocked as a private network request.
+//
+// TODO(crbug.com/1326341): Flaky on Linux ChromiumOS MSAN.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AutoReloadWorks DISABLED_AutoReloadWorks
+#else
+#define MAYBE_AutoReloadWorks AutoReloadWorks
+#endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessAutoReloadBrowserTest,
-                       AutoReloadWorks) {
+                       MAYBE_AutoReloadWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/defaultresponse");
 
   // There should be two navigations in total: one failed, one successful.
   content::TestNavigationObserver observer(web_contents(), 2);
 
-  {
-    NetErrorInterceptor interceptor(url, net::ERR_UNEXPECTED);
+  // This interceptor will only fail the first request to `url`.
+  NetErrorInterceptor interceptor(url, net::ERR_UNEXPECTED);
 
-    EXPECT_FALSE(content::NavigateToURL(web_contents(), url));
-  }
+  EXPECT_FALSE(content::NavigateToURL(web_contents(), url));
 
   // Observe second navigation, which succeeds.
   observer.Wait();

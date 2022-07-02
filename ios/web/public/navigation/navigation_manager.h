@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/navigation/browser_url_rewriter.h"
+#include "ios/web/public/navigation/https_upgrade_type.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/navigation/reload_type.h"
 #include "ui/base/page_transition_types.h"
@@ -59,12 +60,9 @@ class NavigationManager {
     // generally set a Content-Type header as well.
     NSData* post_data;
 
-    // True if the navigation was initiated by typing in the omnibox but the
-    // typed text didn't have a scheme such as http or https (e.g. google.com),
-    // and https was used as the default scheme for the navigation. This is used
-    // by TypedNavigationUpgradeThrottle to determine if the navigation should
-    // be observed and fall back to using http scheme if necessary.
-    bool is_using_https_as_default_scheme;
+    // Indicates the type of the HTTPS upgrade applied on the navigation, if
+    // any.
+    HttpsUpgradeType https_upgrade_type;
 
     // Create a new WebLoadParams with the given URL and defaults for all other
     // parameters.

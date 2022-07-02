@@ -1,6 +1,7 @@
 include_rules = [
   "-chrome",
   "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities.java",
+  "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiThemeProvider.java",
   "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/PriceTrackingUtilities.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ActivityUtils.java",
@@ -17,8 +18,11 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationService.java",
   "+chrome/browser/bluetooth/android/java/src/org/chromium/chrome/browser/bluetooth/BluetoothNotificationManager.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/app/usb/UsbNotificationService.java",
+  "+chrome/browser/usb/android/java/src/org/chromium/chrome/browser/usb/UsbNotificationManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UkmRecorder.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/native_page/NativePageFactory.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageBridge.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageOrigin.java",
@@ -30,6 +34,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ui/TabObscuringHandler.java",
   "+chrome/browser/android/crypto/java/src/org/chromium/chrome/browser/crypto/CipherFactory.java",
   "+chrome/browser/android/lifecycle",
+  "+chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingFeatures.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulator.java",
@@ -94,6 +99,9 @@ specific_include_rules = {
   ],
   'TabStateBrowserControlsVisibilityDelegate\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
+  ],
+  'TabViewAndroidDelegate\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
   ],
   'TabViewManagerImpl\.java': [
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",

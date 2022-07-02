@@ -25,15 +25,18 @@ extern const base::Feature kContentSuggestionsHeaderMigration;
 // Feature to move the Content Suggestions ViewController to a UIViewController.
 extern const base::Feature kContentSuggestionsUIViewControllerMigration;
 
+// Feature to section the Content Suggestions into modules.
+extern const base::Feature kContentSuggestionsUIModuleRefresh;
+
+// Feature to show the Trending Queries module.
+extern const base::Feature kTrendingQueriesModule;
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
 
 // Whether the Discover feed is enabled instead of the Zine feed.
 bool IsDiscoverFeedEnabled();
-
-// Whether the single ntp feature is enabled.
-bool IsSingleNtpEnabled();
 
 // Whether the single cell content suggestions feature is enabled.
 bool IsSingleCellContentSuggestionsEnabled();
@@ -44,5 +47,11 @@ bool IsContentSuggestionsHeaderMigrationEnabled();
 // Whether the Content Suggestions UIViewController migration feature is
 // enabled.
 bool IsContentSuggestionsUIViewControllerMigrationEnabled();
+
+// Whether the Content Suggestions UI Module Refresh feature is enabled.
+bool IsContentSuggestionsUIModuleRefreshEnabled();
+
+// Whether the Trending Queries module feature is enabled.
+bool IsTrendingQueriesModuleEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

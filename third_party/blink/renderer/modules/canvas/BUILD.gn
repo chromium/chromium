@@ -53,6 +53,7 @@ blink_modules_sources("canvas") {
     "offscreencanvas/offscreen_canvas_module.h",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.cc",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.h",
+    "testing/canvas_test_utils.cc",
   ]
 
   deps = [ "//third_party/blink/renderer/modules/webcodecs" ]

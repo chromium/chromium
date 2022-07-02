@@ -63,7 +63,7 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
   // Returns a pointer to the current root RenderFrameHostImpl.
   RenderFrameHostImpl* root_frame_host() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
   // Returns the URL of a page in the local address space.
@@ -182,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, nullptr);
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
-  builder.ComputePolicies(GURL(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   // This must be called on a task runner, hence the need for this test to be
   // a browser test and not a simple unit test.
@@ -194,8 +194,6 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   const blink::mojom::PolicyContainerPolicies& policies = *container->policies;
   EXPECT_EQ(policies.referrer_policy, builder.FinalPolicies().referrer_policy);
-  EXPECT_EQ(policies.ip_address_space,
-            builder.FinalPolicies().ip_address_space);
 }
 
 // Verifies that when the URL of the document to commit is `about:blank`, and
@@ -234,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.AddContentSecurityPolicy(MakeTestCSP());
 
   builder.ComputePolicies(AboutBlankUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
@@ -278,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.AddContentSecurityPolicy(MakeTestCSP());
 
   builder.ComputePolicies(AboutSrcdocUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
@@ -322,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   builder.ComputePolicies(AboutBlankUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePoliciesForError(false,
@@ -418,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   builder.ComputePolicies(GURL("http://foo.test"), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
 
@@ -426,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePolicies(AboutBlankUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }

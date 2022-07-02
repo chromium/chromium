@@ -34,26 +34,19 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   SavedDeskPresenter& operator=(const SavedDeskPresenter&) = delete;
   ~SavedDeskPresenter() override;
 
-  // Convenience function to get the presenter instance, which is created and
-  // owned by `OverviewSession`.
-  // TODO(crbug.com/1322553): Remove this function as `Get()` is normally used
-  // for singletons, or for objects whose lifetimes are deterministic and live
-  // as long as ash lives.
-  static SavedDeskPresenter* Get();
-
   bool should_show_templates_ui() { return should_show_templates_ui_; }
 
-  size_t GetEntryCount() const;
+  // Retrieve the current and max count for a given saved desk type. Note that
+  // these are snapshots of the model state, which may not match the current UI
+  // state.
+  size_t GetEntryCount(DeskTemplateType type) const;
+  size_t GetMaxEntryCount(DeskTemplateType type) const;
 
-  size_t GetMaxEntryCount() const;
-
-  size_t GetDeskTemplateEntryCount() const;
-
-  size_t GetMaxDeskTemplateEntryCount() const;
-
-  size_t GetSaveAndRecallDeskEntryCount() const;
-
-  size_t GetMaxSaveAndRecallDeskEntryCount() const;
+  // Finds an entry of type `type` with the name `name` that is not the entry
+  // identified by `uuid`. Returns nullptr if not found.
+  ash::DeskTemplate* FindOtherEntryWithName(const std::u16string& name,
+                                            ash::DeskTemplateType type,
+                                            const base::GUID& uuid) const;
 
   // Update the buttons of the desks templates UI and the visibility of the
   // templates grid. The grid contents are not updated. Updates
@@ -65,8 +58,10 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void GetAllEntries(const base::GUID& item_to_focus,
                      aura::Window* const root_window);
 
-  // Calls the DeskModel to delete the template with the provided uuid.
-  void DeleteEntry(const std::string& template_uuid);
+  // Calls the DeskModel to delete the saved desk with the provided `uuid`. Will
+  // record histogram if `record_for_type` is specified.
+  void DeleteEntry(const std::string& uuid,
+                   absl::optional<DeskTemplateType> record_for_type);
 
   // Launches the desk template with 'template_uuid' as a new desk. `delay` is
   // the time between each app launch, used for debugging.
@@ -107,8 +102,9 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
                        const std::vector<const DeskTemplate*>& entries);
 
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
-  // update the UI by removing the deleted template.
-  void OnDeleteEntry(const std::string& template_uuid,
+  // update the UI by removing the deleted saved desk.
+  void OnDeleteEntry(const std::string& uuid,
+                     absl::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Launches DeskTemplate after retrieval from storage.
@@ -138,6 +134,13 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void AddOrUpdateUIEntries(
       const std::vector<const DeskTemplate*>& new_entries);
   void RemoveUIEntries(const std::vector<std::string>& uuids);
+
+  // Returns a copy of a duplicated name to be stored.  This function works by
+  // taking the name to be duplicated and adding a "(1)" to it. If the name
+  // already has "(1)" then the number inside of the parenthesis will be
+  // incremented.
+  std::u16string AppendDuplicateNumberToDuplicateName(
+      const std::u16string& duplicate_name_u16);
 
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;

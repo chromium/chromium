@@ -4,6 +4,8 @@
 
 #include "chrome/updater/mac/keystone/ksinstall.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 #import <getopt.h>
 
@@ -40,7 +42,7 @@ class KSInstallApp : public App {
   void Uninstall(base::OnceCallback<void(int)> callback);
 
   int argc_;
-  char** argv_;
+  raw_ptr<char*> argv_;
 
   bool uninstall_;
 };

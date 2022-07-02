@@ -36,6 +36,9 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
       const gfx::Transform& transform_for_tile_priority) override;
   void ReturnResources(uint32_t layer_tree_frame_sink_id,
                        std::vector<viz::ReturnedResource> resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) override {}
   void DidPresentCompositorFrames(viz::FrameTimingDetailsMap timing_details,
                                   uint32_t frame_token) override {}
   bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) override;

@@ -10,6 +10,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/assistant_notification_expiry_monitor.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/shell.h"
@@ -71,7 +72,8 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
 
 message_center::NotifierId GetNotifierId() {
   return message_center::NotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+      NotificationCatalogName::kAssistantNotification);
 }
 
 bool IsValidActionUrl(const GURL& action_url) {

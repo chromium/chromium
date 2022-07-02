@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
@@ -214,6 +215,12 @@
   [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
 }
 
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible {
+  RecordFirstRunScrollButtonVisibilityMetrics(
+      first_run::FirstRunScreenType::kSyncScreenWithoutIdentityPicker,
+      scrollButtonVisible);
+}
+
 #pragma mark - SyncScreenMediatorDelegate
 
 - (void)syncScreenMediatorDidSuccessfulyFinishSignin:
@@ -239,12 +246,17 @@
 
 - (void)policyWatcherBrowserAgentNotifySignInDisabled:
     (PolicyWatcherBrowserAgent*)policyWatcher {
-  self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                      promptType:EnterprisePromptTypeForceSignOut];
-  self.enterprisePromptCoordinator.delegate = self;
-  [self.enterprisePromptCoordinator start];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf openEnterprisePromptDialog];
+  };
+  if (!self.advancedSettingsSigninCoordinator) {
+    completion();
+    return;
+  }
+  [self.advancedSettingsSigninCoordinator
+      interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+               completion:completion];
 }
 
 #pragma mark - EnterprisePromptCoordinatorDelegate
@@ -269,14 +281,14 @@
 
 #pragma mark - Private
 
-// Dismisses the Signed Out modal if it is still present and |skipScreens|.
+// Dismisses the Signed Out modal if it is still present and `skipScreens`.
 - (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
   [self.delegate skipAll];
 }
 
-// Starts syncing or opens |advancedSettings|.
+// Starts syncing or opens `advancedSettings`.
 - (void)startSyncOrAdvancedSettings:(BOOL)advancedSettings {
   self.advancedSettingsRequested = advancedSettings;
   int confirmationID = advancedSettings
@@ -332,6 +344,16 @@
 
   [self.advancedSettingsSigninCoordinator stop];
   self.advancedSettingsSigninCoordinator = nil;
+}
+
+// Opens EnterprisePromptCoordinator.
+- (void)openEnterprisePromptDialog {
+  self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      promptType:EnterprisePromptTypeForceSignOut];
+  self.enterprisePromptCoordinator.delegate = self;
+  [self.enterprisePromptCoordinator start];
 }
 
 @end

@@ -11,6 +11,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -26,7 +27,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsD
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -67,6 +68,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -105,10 +108,12 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public boolean maybeSetTargetPackage(Intent intent) {
+        public boolean maybeSetTargetPackage(
+                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             // If the client app can handle the intent, set it as the receiver.
             if (!TextUtils.isEmpty(mClientPackageName)
-                    && isPackageSpecializedHandler(mClientPackageName, intent)) {
+                    && ExternalNavigationHandler.isPackageSpecializedHandler(
+                            mClientPackageName, resolveInfoSupplier.get())) {
                 intent.setSelector(null);
                 intent.setPackage(mClientPackageName);
                 return true;
@@ -123,11 +128,13 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public boolean isIntentForTrustedCallingApp(Intent intent) {
+        public boolean isIntentForTrustedCallingApp(
+                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
             if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
-            return isPackageSpecializedHandler(mClientPackageName, intent);
+            return ExternalNavigationHandler.isPackageSpecializedHandler(
+                    mClientPackageName, resolveInfoSupplier.get());
         }
 
         @Override
@@ -238,7 +245,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if ((mActivity instanceof CustomTabActivity)
                     && ((CustomTabActivity) mActivity).isInTwaMode()) {
                 // Whether the corresponding TWA client app enrolled in location delegation.
-                return TrustedWebActivityPermissionManager.hasAndroidLocationPermission(
+                return InstalledWebappPermissionManager.hasAndroidLocationPermission(
                                ((CustomTabActivity) mActivity).getTwaPackage())
                         != null;
             }

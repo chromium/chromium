@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chromecast/base/cast_sys_info_android.h"
-#include "chromecast/base/chromecast_config_android.h"
 #include "chromecast/base/version.h"
 #include "chromecast/common/global_descriptors.h"
 #include "content/public/common/content_switches.h"
@@ -75,10 +74,6 @@ bool CastCrashReporterClientAndroid::GetCrashDumpLocation(
 
   *crash_dir = app_data.Append("Crashpad");
   return true;
-}
-
-bool CastCrashReporterClientAndroid::GetCollectStatsConsent() {
-  return android::ChromecastConfigAndroid::GetInstance()->CanSendUsageStats();
 }
 
 int CastCrashReporterClientAndroid::GetAndroidMinidumpDescriptor() {

@@ -19,6 +19,7 @@
 #include "extensions/browser/api/idle/idle_manager_factory.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
+#include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/api/power/power_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api/serial/serial_connection.h"
@@ -50,7 +51,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
 #endif
 
@@ -92,6 +92,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
     BUILDFLAG(IS_MAC)
   NetworkingPrivateEventRouterFactory::GetInstance();
 #endif
+  OffscreenDocumentManager::GetFactory();
   PowerAPI::GetFactoryInstance();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();
@@ -102,7 +103,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   UsbDeviceManager::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VirtualKeyboardAPI::GetFactoryInstance();
-  chromeos::VpnServiceFactory::GetInstance();
   WebcamPrivateAPI::GetFactoryInstance();
 #endif
   WebRequestAPI::GetFactoryInstance();

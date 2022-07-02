@@ -39,6 +39,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace message_center {
 
 namespace {
@@ -1082,7 +1086,13 @@ TEST_F(NotificationViewBaseTest, AppNameSystemNotification) {
   auto notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
       u"title", u"message", ui::ImageModel(), std::u16string(), GURL(),
-      NotifierId(NotifierType::SYSTEM_COMPONENT, "system"), data, nullptr);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      NotifierId(NotifierType::SYSTEM_COMPONENT, "system",
+                 ash::NotificationCatalogName::kTestCatalogName),
+#else
+      NotifierId(NotifierType::SYSTEM_COMPONENT, "system"),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      data, nullptr);
 
   UpdateNotificationViews(*notification);
 

@@ -5,6 +5,8 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_ADVERTISEMENT_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADVERTISEMENT_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #include <memory>
@@ -73,7 +75,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
   std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids_;
   BluetoothAdapter::CreateAdvertisementCallback success_callback_;
   BluetoothAdapter::AdvertisementErrorCallback error_callback_;
-  BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager_;
+  raw_ptr<BluetoothLowEnergyAdvertisementManagerMac> advertisement_manager_;
   Status status_;
 };
 

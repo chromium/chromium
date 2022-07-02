@@ -181,3 +181,84 @@
     return CrPolicyIndicatorType.NONE;
   },
 };
+
+/** @interface */
+/* #export */ class CrPolicyNetworkBehaviorMojoInterface {
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {boolean}
+   */
+  isNetworkPolicyControlled(property) {}
+
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {boolean}
+   */
+  isExtensionControlled(property) {}
+
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {boolean}
+   */
+  isControlled(property) {}
+
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {boolean}
+   */
+  isEditable(property) {}
+
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {boolean}
+   */
+  isNetworkPolicyEnforced(property) {}
+
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {boolean}
+   */
+  isNetworkPolicyRecommended(property) {}
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
+   *         !chromeos.networkConfig.mojom.ManagedInt32|
+   *         !chromeos.networkConfig.mojom.ManagedString|
+   *         !chromeos.networkConfig.mojom.ManagedStringList|
+   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @return {boolean|number|string|!Array<string>|
+   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   */
+  getEnforcedPolicyValue(property) {}
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
+   *         !chromeos.networkConfig.mojom.ManagedInt32|
+   *         !chromeos.networkConfig.mojom.ManagedString|
+   *         !chromeos.networkConfig.mojom.ManagedStringList|
+   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @return {boolean|number|string|!Array<string>|
+   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   */
+  getRecommendedPolicyValue(property) {}
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.OncSource} source
+   * @return {boolean}
+   * @protected
+   */
+  isPolicySource(source) {}
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.OncSource} source
+   * @return {!CrPolicyIndicatorType}
+   * @protected
+   */
+  getIndicatorTypeForSource(source) {}
+
+  /**
+   * @param {?OncMojo.ManagedProperty|undefined} property
+   * @return {CrPolicyIndicatorType}
+   */
+  getPolicyIndicatorType(property) {}
+}

@@ -1,4 +1,4 @@
-<style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+<style include="cr-shared-style diagnostics-shared">
   #banner {
    align-items: center;
    background-color: var(--google-blue-50);
@@ -16,10 +16,6 @@
    fill: var(--cros-icon-color-prominent);
    padding-inline-end: 16px;
    padding-inline-start: 40px;
- }
-
- #bannerMsg {
-   @apply --diagnostics-caution-banner-font;
  }
 
  #diagnosticsContainer {
@@ -43,10 +39,13 @@
  }
 
  #header {
-   @apply --diagnostics-header-font;
    align-self: flex-start;
+   color: var(--cros-text-color-primary);
+   font-family: var(--diagnostics-roboto-font-family);
+   font-size: 16px;
+   font-weight: var(--diagnostics-medium-font-weight);
    margin-bottom: 10px;
-   margin-left: 22px;
+   margin-inline-start: 22px;
  }
 
  .overview-container {
@@ -70,7 +69,7 @@
   </div>
   <div id="banner" hidden="[[!bannerMessage]]" class$="[[scrollingClass_]]">
     <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
-    <span id="bannerMsg">[[bannerMessage]]</span>
+    <span id="bannerMsg" class="diagnostics-caution-banner-font">[[bannerMessage]]</span>
   </div>
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {OsSyncBrowserProxyImpl, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
@@ -53,13 +54,13 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
   test('Chrome Sync off', async () => {
     const prefs = getPrefs();
     prefs.wifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
+    webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertTrue(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertTrue(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
 
-    const toggle = wifiSyncItem.$$('cr-toggle');
+    const toggle = wifiSyncItem.shadowRoot.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
@@ -68,11 +69,11 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
   test('Chrome Sync on', async () => {
     const prefs = getPrefs();
     prefs.wifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
+    webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertFalse(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertFalse(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
   });
 });
 
@@ -94,7 +95,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
 
   setup(function() {
     const browserProxy = new TestOsSyncBrowserProxy();
-    OsSyncBrowserProxyImpl.instance_ = browserProxy;
+    OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
     loadTimeData.overrideValues({
@@ -114,13 +115,13 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   test('Wifi Sync off', async () => {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
     flush();
 
-    assertTrue(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertTrue(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
 
-    const toggle = wifiSyncItem.$$('cr-toggle');
+    const toggle = wifiSyncItem.shadowRoot.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
@@ -129,10 +130,10 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   test('Wifi Sync on', async () => {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
     flush();
 
-    assertFalse(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertFalse(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
   });
 });

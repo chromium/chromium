@@ -1,3 +1,11 @@
 include_rules = [
-  "+ui/accessibility"
+  "+ui/accessibility/accessibility_features.h",
+  "+ui/accessibility/ax_enum_util.h",
+  "+ui/accessibility/ax_enums.mojom.h",
+  "+ui/accessibility/ax_node_data.h",
+  "+ui/accessibility/ax_role_properties.h",
+  "+ui/accessibility/ax_tree_update.h",
+  "+ui/accessibility/test_ax_tree_update_json_reader.h",
+  "+ui/gfx/geometry",
+  "+sandbox/policy"
 ]

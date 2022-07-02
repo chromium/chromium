@@ -18,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/controls/link.h"
+#include "ui/views/controls/link_fragment.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/test/combobox_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -192,8 +192,9 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowLearnMoreDialog) {
 
   // Tap on the learn more link.
   const auto& children = test_api.learn_more_label()->children();
-  const auto it = base::ranges::find(children, views::Link::kViewClassName,
-                                     &views::View::GetClassName);
+  const auto it =
+      base::ranges::find(children, views::LinkFragment::kViewClassName,
+                         &views::View::GetClassName);
   DCHECK(it != children.cend());
   TapOnView(*it);
   ASSERT_NE(test_api.learn_more_dialog(), nullptr);

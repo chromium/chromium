@@ -12,6 +12,7 @@ import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
 assert(use_ozone)
+assert(!is_chromeos_lacros)
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -30,8 +31,6 @@ static_library("exo") {
     "buffer.h",
     "capabilities.cc",
     "capabilities.h",
-    "common_utils.cc",
-    "common_utils.h",
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
@@ -213,14 +212,6 @@ static_library("exo") {
       configs += [ ":xkbcommon" ]
     }
   }
-
-  if (is_chromecast) {
-    deps += [ "//ui/accessibility:accessibility" ]
-    sources += [
-      "fullscreen_shell_surface.cc",
-      "fullscreen_shell_surface.h",
-    ]
-  }
 }
 
 source_set("test_support") {
@@ -365,11 +356,6 @@ source_set("unit_tests") {
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
     ]
-  }
-
-  if (is_chromecast) {
-    deps += [ "//ui/accessibility:accessibility" ]
-    sources += [ "fullscreen_shell_surface_unittest.cc" ]
   }
 }
 

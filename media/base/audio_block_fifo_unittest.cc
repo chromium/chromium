@@ -39,7 +39,7 @@ class AudioBlockFifoTest : public testing::Test {
     DCHECK_LE(frames_to_push, fifo->GetUnfilledFrames());
     const int bytes_per_sample = 2;
     const int data_byte_size = bytes_per_sample * channels * frames_to_push;
-    std::unique_ptr<uint8_t[]> data(new uint8_t[data_byte_size]);
+    auto data = std::make_unique<uint8_t[]>(data_byte_size);
     memset(data.get(), 1, data_byte_size);
     fifo->Push(data.get(), frames_to_push, bytes_per_sample);
   }

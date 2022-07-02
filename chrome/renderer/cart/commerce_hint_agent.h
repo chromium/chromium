@@ -20,6 +20,10 @@ namespace base {
 class Value;
 }
 
+namespace ukm {
+class MojoUkmRecorder;
+}
+
 namespace cart {
 
 // The renderer-side agent for CommerceHint.
@@ -74,6 +78,7 @@ class CommerceHintAgent
   bool is_extraction_running_{false};
   bool should_skip_{false};
   bool extraction_script_initialized_{false};
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   class JavaScriptRequest : public blink::WebScriptExecutionCallback {

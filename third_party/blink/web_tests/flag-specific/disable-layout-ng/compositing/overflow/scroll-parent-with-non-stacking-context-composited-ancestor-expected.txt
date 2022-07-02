@@ -24,10 +24,10 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='fixed'",
-      "position": [60, 60],
       "bounds": [80, 80],
       "contentsOpaque": true,
-      "backgroundColor": "#008000"
+      "backgroundColor": "#008000",
+      "transform": 2
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='scrolled'",
@@ -53,6 +53,15 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [98, 90, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
       ]
     }
   ]

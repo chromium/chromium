@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/service_worker_context.h"
@@ -85,23 +85,41 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
+class ExternallyManagedBrowserTestWithPrefMigrationRead
+    : public ExternallyManagedAppManagerImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExternallyManagedBrowserTestWithPrefMigrationRead() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Basic integration test to make sure the whole flow works. Each step in the
 // flow is unit tested separately.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        InstallSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   InstallApp(CreateInstallOptions(url));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
   EXPECT_TRUE(app_id.has_value());
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
 }
 
 // If install URL redirects, install should still succeed.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        InstallSucceedsWithRedirect) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL start_url =
@@ -111,9 +129,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(CreateInstallOptions(install_url));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-          .LookupAppId(install_url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(install_url);
   EXPECT_TRUE(app_id.has_value());
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
   // Same AppID should be in the registrar using start_url from the manifest.
@@ -125,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 }
 
 // If install URL redirects, install should still succeed.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        InstallSucceedsWithRedirectNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL final_url =
@@ -135,9 +151,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(CreateInstallOptions(install_url));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-          .LookupAppId(install_url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(install_url);
   EXPECT_TRUE(app_id.has_value());
   EXPECT_EQ("Web app banner test page",
             registrar().GetAppShortName(app_id.value()));
@@ -151,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 }
 
 // Installing a placeholder app with shortcuts should succeed.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        PlaceholderInstallSucceedsWithShortcuts) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -161,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   GURL url(
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
 
-  ExternalInstallOptions options = CreateInstallOptions(url);
+  ExternalInstallOptions options =
+      CreateInstallOptions(url, ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -169,16 +184,16 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(app_id.has_value());
-  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Installing a placeholder app with a custom name should succeed.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        PlaceholderInstallSucceedsWithCustomName) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -189,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
   const std::string CUSTOM_NAME = "CUSTOM_NAME";
 
-  ExternalInstallOptions options = CreateInstallOptions(url);
+  ExternalInstallOptions options =
+      CreateInstallOptions(url, ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -198,17 +214,17 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(app_id.has_value());
-  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
   EXPECT_EQ(CUSTOM_NAME,
             registrar().GetAppById(app_id.value())->untranslated_name());
 }
 
 // Installing a placeholder app with a custom icon should succeed.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        PlaceholderInstallSucceedsWithCustomIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -224,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   const auto kGeneratedSizes = SizesToGenerate();
   EXPECT_TRUE(kGeneratedSizes.find(kIconSize) == kGeneratedSizes.end());
 
-  ExternalInstallOptions options = CreateInstallOptions(app_url);
+  ExternalInstallOptions options =
+      CreateInstallOptions(app_url, ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -233,11 +250,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-          .LookupAppId(app_url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(app_url);
   ASSERT_TRUE(app_id.has_value());
-  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
   SortedSizesPx downloaded_sizes =
       registrar().GetAppDownloadedIconSizesAny(app_id.value());
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
@@ -328,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
 // Test that adding a manifest that points to a chrome:// URL does not actually
 // install a web app that points to a chrome:// URL.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        InstallChromeURLFails) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -336,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(CreateInstallOptions(url));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(app_id.has_value());
 
   // The installer falls back to installing a web app of the original URL.
@@ -348,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
 // Test that adding a web app without a manifest while using the
 // |require_manifest| flag fails.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        RequireManifestFailsIfNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(
@@ -359,8 +374,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kNotValidManifestForWebApp,
             result_code_.value());
-  absl::optional<AppId> id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  absl::optional<AppId> id = registrar().LookupExternalAppId(url);
   ASSERT_FALSE(id.has_value());
 }
 
@@ -535,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       .AwaitNextRegistration(url, RegistrationResultCode::kTimeout);
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
                        ReinstallPolicyAppWithLocallyInstalledApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
@@ -555,8 +569,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(install_options);
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<AppId> policy_app_id =
-      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  absl::optional<AppId> policy_app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(policy_app_id.has_value());
   ASSERT_EQ(policy_app_id.value(), app_id);
   ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
@@ -582,9 +595,21 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
   // Reinstall policy app
   InstallApp(install_options);
-  ASSERT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
-            result_code_.value());
+  // The success codes will vary as per the storage, as prefs will stay
+  // after deletion, but the web_app values are wiped on every uninstall.
+  if (base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+              result_code_.value());
+  } else {
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+              result_code_.value());
+  }
   ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternallyManagedBrowserTestWithPrefMigrationRead,
+                         ::testing::Bool());
 
 }  // namespace web_app

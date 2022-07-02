@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ui {
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
   // Model for the BiDi input submenu.
   ui::SimpleMenuModel bidi_submenu_model_;
 
-  Delegate* delegate_;  // Weak.
+  raw_ptr<Delegate> delegate_;  // Weak.
 };
 
 }  // namespace ui

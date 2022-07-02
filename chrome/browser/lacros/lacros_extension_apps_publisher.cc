@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/extend.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -321,20 +322,21 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
                             !policy->MustRemainInstalled(extension, nullptr));
 
-    // Add file_handlers for Chrome Apps, or file_browser_handler for
-    // Extensions.
+    // Add file_handlers for Chrome Apps and quickoffice, or
+    // file_browser_handler for Extensions.
     base::Extend(app->intent_filters,
-                 which_type_.ChooseForChromeAppOrExtension(
+                 which_type_.ChooseIntentFilter(
+                     extension_misc::IsQuickOfficeExtension(extension->id()),
                      apps_util::CreateIntentFiltersForChromeApp,
                      apps_util::CreateIntentFiltersForExtension)(extension));
     return app;
   }
 
   // This pointer is guaranteed to be valid and to outlive this object.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // This pointer is guaranteed to be valid and to outlive this object.
-  LacrosExtensionAppsPublisher* const publisher_;
+  const raw_ptr<LacrosExtensionAppsPublisher> publisher_;
 
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.
@@ -462,6 +464,7 @@ void LacrosExtensionAppsPublisher::OnProfileMarkedForPermanentDeletion(
 }
 
 void LacrosExtensionAppsPublisher::OnProfileManagerDestroying() {
+  profile_trackers_.clear();
   profile_manager_observation_.Reset();
 }
 

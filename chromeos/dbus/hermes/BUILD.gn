@@ -5,11 +5,14 @@
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("hermes") {
-  public_deps = [ ":hermes_clients" ]
-  deps = [ ":hermes_fakes" ]
+  public_deps = [
+    ":hermes_clients",
+    ":hermes_fakes",
+  ]
 }
 
 source_set("hermes_clients") {
+  visibility = [ ":*" ]
   defines = [ "IS_HERMES_CLIENT_IMPL" ]
   deps = [
     "//base",
@@ -35,6 +38,7 @@ source_set("hermes_clients") {
 }
 
 source_set("hermes_fakes") {
+  visibility = [ ":*" ]
   deps = [
     ":hermes_clients",
     "//base",

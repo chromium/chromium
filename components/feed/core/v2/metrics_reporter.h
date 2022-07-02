@@ -57,6 +57,7 @@ class MetricsReporter {
   void OnMetadataInitialized(bool isEnabledByEnterprisePolicy,
                              bool isFeedVisible,
                              bool isSignedIn,
+                             bool isEnabled,
                              const feedstore::Metadata& metadata);
 
   // User interactions. See |FeedApi| for definitions.
@@ -97,7 +98,7 @@ class MetricsReporter {
                             bool loaded_new_content_from_network,
                             base::TimeDelta stored_content_age,
                             const ContentStats& content_stats,
-                            const RequestMetadata& request_metadata,
+                            ContentOrder content_order,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(const StreamType& stream_type,
                                    LoadStreamStatus final_status);
@@ -132,16 +133,6 @@ class MetricsReporter {
   void RefreshSubscribedWebFeedsAttempted(bool subscriptions_were_stale,
                                           WebFeedRefreshStatus status,
                                           int subscribed_web_feed_count);
-
-  // Notice events.
-  void OnNoticeCreated(const StreamType& stream_type, const std::string& key);
-  void OnNoticeViewed(const StreamType& stream_type, const std::string& key);
-  void OnNoticeOpenAction(const StreamType& stream_type,
-                          const std::string& key);
-  void OnNoticeDismissed(const StreamType& stream_type, const std::string& key);
-  void OnNoticeAcknowledged(const StreamType& stream_type,
-                            const std::string& key,
-                            NoticeAcknowledgementPath acknowledgement_path);
 
   // Info card events.
   void OnInfoCardTrackViewStarted(const StreamType& stream_type,

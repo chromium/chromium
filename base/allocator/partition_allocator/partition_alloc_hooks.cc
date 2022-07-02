@@ -75,7 +75,7 @@ void PartitionAllocHooks::AllocationObserverHookIfEnabled(
 
 bool PartitionAllocHooks::AllocationOverrideHookIfEnabled(
     void** out,
-    int flags,
+    unsigned int flags,
     size_t size,
     const char* type_name) {
   if (auto* hook = allocation_override_hook_.load(std::memory_order_relaxed))

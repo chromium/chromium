@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/dips/cookie_access_type.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "url/gurl.h"
 

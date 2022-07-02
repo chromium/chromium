@@ -81,7 +81,6 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack) override;
-  void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override;
 
@@ -107,8 +106,8 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   void NotifyPendingSurfacesChanged();
 
   base::ObserverList<Observer>::Unchecked observers_;
-  const raw_ptr<SurfaceManager> surface_manager_;
-  const raw_ptr<SurfaceAggregator> aggregator_;
+  const raw_ptr<SurfaceManager, DanglingUntriaged> surface_manager_;
+  const raw_ptr<SurfaceAggregator, DanglingUntriaged> aggregator_;
 
   bool root_frame_missing_ = true;
 

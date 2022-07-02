@@ -169,7 +169,7 @@ class PlatformNetworksManager {
 
     static void getAllVisibleCells(Context context, TelephonyManager telephonyManager,
             Callback<Set<VisibleCell>> callback) {
-        if (!hasLocationPermission(context)) {
+        if (!hasLocationPermission(context) || telephonyManager == null) {
             callback.onResult(Collections.emptySet());
             return;
         }

@@ -48,7 +48,7 @@ class EventHandler {
      * Default is a function that always returns true.
      * @private {!function(chrome.automation.AutomationEvent): boolean}
      */
-    this.predicate_ = options.predicate || ((e) => true);
+    this.predicate_ = options.predicate || (e => true);
 
     /** @private {boolean} */
     this.listening_ = false;
@@ -120,7 +120,7 @@ class EventHandler {
    * @param {!chrome.automation.AutomationNode} node
    */
   removeNode(node) {
-    this.nodes_ = this.nodes_.filter((n) => n !== node);
+    this.nodes_ = this.nodes_.filter(n => n !== node);
 
     if (this.listening_) {
       for (const type of this.types_) {

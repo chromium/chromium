@@ -740,7 +740,7 @@ TEST_F(BackGestureEventHandlerTest, BackGestureWithAndroidKeyboardTest) {
   ASSERT_TRUE(keyboard);
   // Fakes showing the keyboard.
   keyboard->OnArcInputMethodBoundsChanged(gfx::Rect(400, 400));
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
 
   // Unfortunately we cannot hook this all the wall up to see if the Android IME
   // is hidden, but we can check that back key events are generated and the top
@@ -780,7 +780,7 @@ TEST_F(BackGestureEventHandlerTest,
   keyboard_bounds.set_y(keyboard_bounds.bottom() - 200);
   keyboard_bounds.set_height(200);
   keyboard->OnArcInputMethodBoundsChanged(keyboard_bounds);
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
 
   // Start drag from splitview divider bar position outside VK bounds.
   gfx::Rect divider_bounds =
@@ -804,7 +804,7 @@ TEST_F(BackGestureEventHandlerTest,
   target_back_press.ResetCounts();
   target_back_release.ResetCounts();
   keyboard->OnArcInputMethodBoundsChanged(keyboard_bounds);
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
   start = gfx::Point(divider_bounds.CenterPoint().x(),
                      keyboard_bounds.CenterPoint().y());
   end = gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());

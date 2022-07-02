@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
@@ -125,7 +126,7 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
   }
 
   std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -8,7 +8,7 @@ export function importElements() {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = './foreground/js/deferred_elements.m.js';
+    script.src = './foreground/js/deferred_elements.js';
 
     script.onload = () => {
       console.log('Elements imported.');

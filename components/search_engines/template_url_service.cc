@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -736,13 +737,14 @@ void TemplateURLService::UpdateProviderFavicons(
 }
 
 bool TemplateURLService::CanMakeDefault(const TemplateURL* url) const {
-  return
-      ((default_search_provider_source_ == DefaultSearchManager::FROM_USER) ||
-       (default_search_provider_source_ ==
-        DefaultSearchManager::FROM_FALLBACK)) &&
-      (url != GetDefaultSearchProvider()) &&
-      url->url_ref().SupportsReplacement(search_terms_data()) &&
-      (url->type() == TemplateURL::NORMAL);
+  return (default_search_provider_source_ == DefaultSearchManager::FROM_USER ||
+          default_search_provider_source_ ==
+              DefaultSearchManager::FROM_POLICY_RECOMMENDED ||
+          default_search_provider_source_ ==
+              DefaultSearchManager::FROM_FALLBACK) &&
+         (url != GetDefaultSearchProvider()) &&
+         url->url_ref().SupportsReplacement(search_terms_data()) &&
+         (url->type() == TemplateURL::NORMAL);
 }
 
 void TemplateURLService::SetUserSelectedDefaultSearchProvider(
@@ -893,6 +895,37 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
     const TemplateURLData* new_dse =
         default_search_manager_.GetDefaultSearchEngine(&source);
     ApplyDefaultSearchChange(new_dse, source);
+  }
+}
+
+void TemplateURLService::RepairStarterPackEngines() {
+  DCHECK(loaded());
+
+  Scoper scoper(this);
+
+  std::vector<std::unique_ptr<TemplateURLData>> starter_pack_engines =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  DCHECK(!starter_pack_engines.empty());
+  ActionsFromCurrentData actions(CreateActionsFromCurrentStarterPackData(
+      &starter_pack_engines, template_urls_));
+
+  // Remove items.
+  for (auto i = actions.removed_engines.begin();
+       i < actions.removed_engines.end(); ++i) {
+    Remove(*i);
+  }
+
+  // Edit items.
+  for (auto i(actions.edited_engines.begin()); i < actions.edited_engines.end();
+       ++i) {
+    Update(i->first, TemplateURL(i->second));
+  }
+
+  // Add items.
+  for (std::vector<TemplateURLData>::const_iterator i =
+           actions.added_engines.begin();
+       i < actions.added_engines.end(); ++i) {
+    Add(std::make_unique<TemplateURL>(*i));
   }
 }
 
@@ -1864,12 +1897,19 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
   Scoper scoper(this);
 
   if (default_search_provider_source_ == DefaultSearchManager::FROM_POLICY ||
-      source == DefaultSearchManager::FROM_POLICY) {
+      default_search_provider_source_ ==
+          DefaultSearchManager::FROM_POLICY_RECOMMENDED ||
+      source == DefaultSearchManager::FROM_POLICY ||
+      source == DefaultSearchManager::FROM_POLICY_RECOMMENDED) {
     // We do this both to remove any no-longer-applicable policy-defined DSE as
     // well as to add the new one, if appropriate.
     UpdateProvidersCreatedByPolicy(
         &template_urls_,
-        source == DefaultSearchManager::FROM_POLICY ? data : nullptr);
+        source == DefaultSearchManager::FROM_POLICY ||
+                source == DefaultSearchManager::FROM_POLICY_RECOMMENDED
+            ? data
+            : nullptr,
+        /*is_mandatory=*/source == DefaultSearchManager::FROM_POLICY);
   }
 
   // |default_search_provider_source_| must be set before calling Update(),
@@ -1987,7 +2027,8 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
 // which case it is updated with the data from prefs.
 void TemplateURLService::UpdateProvidersCreatedByPolicy(
     OwnedTemplateURLVector* template_urls,
-    const TemplateURLData* default_from_prefs) {
+    const TemplateURLData* default_from_prefs,
+    bool is_mandatory) {
   DCHECK(template_urls);
 
   Scoper scoper(this);
@@ -2021,7 +2062,9 @@ void TemplateURLService::UpdateProvidersCreatedByPolicy(
 
   if (default_from_prefs) {
     default_search_provider_ = nullptr;
-    default_search_provider_source_ = DefaultSearchManager::FROM_POLICY;
+    default_search_provider_source_ =
+        is_mandatory ? DefaultSearchManager::FROM_POLICY
+                     : DefaultSearchManager::FROM_POLICY_RECOMMENDED;
     TemplateURLData new_data(*default_from_prefs);
     if (new_data.sync_guid.empty())
       new_data.GenerateSyncGUID();

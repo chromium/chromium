@@ -8,9 +8,6 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 
-CustomThemeSupplier::CustomThemeSupplier(ThemeType theme_type)
-    : theme_type_(theme_type) {}
-
 CustomThemeSupplier::~CustomThemeSupplier() {}
 
 void CustomThemeSupplier::StartUsingTheme() {}

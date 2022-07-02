@@ -5,7 +5,7 @@
 <script src="/web-animations/testcommon.js"></script>
 <style>
   #scrollers > div {
-    overflow: scroll;
+    overflow: hidden;
     width: 100px;
     height: 100px;
   }
@@ -65,15 +65,9 @@
       options.name = 'timeline';
     if (typeof(options.source) == 'undefined')
       options.source = 'selector(#scroller1)';
-    if (typeof(options.start) == 'undefined')
-      options.start = '0px';
-    if (typeof(options.end) == 'undefined')
-      options.end = '100px';
     return insertSheet(`
       @scroll-timeline ${options.name} {
         source: ${options.source};
-        start: ${options.start};
-        end: ${options.end};
       }
     `);
   }
@@ -208,34 +202,6 @@
     insertScrollTimeline({source: 'selector(#scroller2)'});
     await assert_width(element, '140px');
   }, 'Changing the source descriptor switches effective timeline');
-
-  dynamic_rule_test(async (t, assert_width) => {
-    let element = insertElement();
-    insertSheet('#element { animation-timeline: timeline; }');
-
-    // Unknown animation-timeline, current time held at zero.
-    await assert_width(element, '100px');
-
-    insertScrollTimeline({start: '0px'});
-    await assert_width(element, '120px');
-
-    insertScrollTimeline({start: '50px'});
-    await assert_width(element, '0px');
-  }, 'Changing the start descriptor switches effective timeline');
-
-  dynamic_rule_test(async (t, assert_width) => {
-    let element = insertElement();
-    insertSheet('#element { animation-timeline: timeline; }');
-
-    // Unknown animation-timeline, current time held at zero.
-    await assert_width(element, '100px');
-
-    insertScrollTimeline({end: '100px'});
-    await assert_width(element, '120px');
-
-    insertScrollTimeline({end: '10px'});
-    await assert_width(element, '0px');
-  }, 'Changing the end descriptor switches effective timeline');
 
   dynamic_rule_test(async (t, assert_width) => {
     let element = insertElement();

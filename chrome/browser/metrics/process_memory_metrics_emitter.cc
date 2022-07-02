@@ -219,6 +219,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
 #if BUILDFLAG(IS_MAC)
     {"iosurface", "IOSurface", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUmaOnly, nullptr},
+    {"iosurface", "IOSurface.DirtyMemory", MetricSize::kLarge,
+     "resident_swapped", EmitTo::kSizeInUmaOnly, nullptr},
 #endif
     {"java_heap", "JavaHeap", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetJavaHeap},
@@ -249,6 +251,12 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kTiny, "brp_quarantined_count", EmitTo::kSizeInUmaOnly,
      nullptr},
 #endif
+    {"malloc/partitions", "Malloc.BRPQuarantinedBytesPerMinute",
+     MetricSize::kSmall, "brp_quarantined_bytes_per_minute",
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions", "Malloc.BRPQuarantinedCountPerMinute",
+     MetricSize::kTiny, "brp_quarantined_count_per_minute",
+     EmitTo::kSizeInUmaOnly, nullptr},
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",
      MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly, nullptr},
@@ -1078,7 +1086,7 @@ int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
 }
 
 absl::optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(
-    const base::Time& now,
+    base::TimeTicks now,
     base::ProcessId pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1110,7 +1118,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   TabFootprintAggregator per_tab_metrics;
 
-  base::Time now = base::Time::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
   for (const auto& pmd : global_dump_->process_dumps()) {
     uint32_t process_pmf_kb = pmd.os_dump().private_footprint_kb;
     private_footprint_total_kb += process_pmf_kb;

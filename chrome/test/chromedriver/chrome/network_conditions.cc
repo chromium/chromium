@@ -23,17 +23,16 @@ NetworkConditions::~NetworkConditions() {}
 
 Status FindPresetNetwork(std::string network_name,
                          NetworkConditions* network_conditions) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kNetworks, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value)
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      kNetworks, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value())
     return Status(kUnknownError, "could not parse network list because " +
-                                     parsed_json.error_message);
+                                     parsed_json.error().message);
 
-  if (!parsed_json.value->is_list())
+  if (!parsed_json->is_list())
     return Status(kUnknownError, "malformed networks list");
 
-  for (const auto& entry : parsed_json.value->GetListDeprecated()) {
+  for (const auto& entry : parsed_json->GetList()) {
     const base::DictionaryValue* network = nullptr;
     if (!entry.GetAsDictionary(&network)) {
       return Status(kUnknownError,

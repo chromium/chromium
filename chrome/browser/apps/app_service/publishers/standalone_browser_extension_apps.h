@@ -89,12 +89,6 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
-  void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                LoadIconCallback callback) override;
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
@@ -120,6 +114,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                  bool report_abuse) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void OpenNativeSettings(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<AppPtr> deltas) override;

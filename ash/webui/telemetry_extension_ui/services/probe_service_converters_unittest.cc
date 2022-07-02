@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -680,22 +680,50 @@ TEST(ProbeServiceConverters, BluetoothResultPtrError) {
 
 TEST(ProbeServiceConverters, OsInfoPtr) {
   constexpr char kOemName[] = "OEM-NAME";
+  constexpr char kReleaseMilestone[] = "87";
+  constexpr char kBuildNumber[] = "13544";
+  constexpr char kPatchNumber[] = "59.0";
+  constexpr char kReleaseChannel[] = "stable-channel";
+
+  auto os_version = cros_healthd::mojom::OsVersion::New();
+  os_version->release_milestone = kReleaseMilestone;
+  os_version->build_number = kBuildNumber;
+  os_version->patch_number = kPatchNumber;
+  os_version->release_channel = kReleaseChannel;
 
   auto input = cros_healthd::mojom::OsInfo::New();
   input->oem_name = kOemName;
+  input->os_version = std::move(os_version);
 
   const auto output = ConvertProbePtr(std::move(input));
   ASSERT_TRUE(output);
   EXPECT_EQ(output->oem_name, kOemName);
+
+  ASSERT_TRUE(output->os_version);
+  EXPECT_EQ(output->os_version->release_milestone, kReleaseMilestone);
+  EXPECT_EQ(output->os_version->build_number, kBuildNumber);
+  EXPECT_EQ(output->os_version->patch_number, kPatchNumber);
+  EXPECT_EQ(output->os_version->release_channel, kReleaseChannel);
 }
 
 TEST(ProbeServiceConverters, SystemResultPtr) {
   constexpr char kOemName[] = "OEM-NAME";
+  constexpr char kReleaseMilestone[] = "87";
+  constexpr char kBuildNumber[] = "13544";
+  constexpr char kPatchNumber[] = "59.0";
+  constexpr char kReleaseChannel[] = "stable-channel";
 
   cros_healthd::mojom::SystemResultV2Ptr input;
   {
+    auto os_version = cros_healthd::mojom::OsVersion::New();
+    os_version->release_milestone = kReleaseMilestone;
+    os_version->build_number = kBuildNumber;
+    os_version->patch_number = kPatchNumber;
+    os_version->release_channel = kReleaseChannel;
+
     auto os_info = cros_healthd::mojom::OsInfo::New();
     os_info->oem_name = kOemName;
+    os_info->os_version = std::move(os_version);
 
     auto system_info_v2 = cros_healthd::mojom::SystemInfoV2::New();
     system_info_v2->os_info = std::move(os_info);
@@ -711,6 +739,13 @@ TEST(ProbeServiceConverters, SystemResultPtr) {
   const auto& system_info_output = output->get_system_info();
   ASSERT_TRUE(system_info_output->os_info);
   EXPECT_EQ(system_info_output->os_info->oem_name, kOemName);
+
+  ASSERT_TRUE(system_info_output->os_info->os_version);
+  const auto& os_version_output = system_info_output->os_info->os_version;
+  EXPECT_EQ(os_version_output->release_milestone, kReleaseMilestone);
+  EXPECT_EQ(os_version_output->build_number, kBuildNumber);
+  EXPECT_EQ(os_version_output->patch_number, kPatchNumber);
+  EXPECT_EQ(os_version_output->release_channel, kReleaseChannel);
 }
 
 TEST(ProbeServiceConverters, SystemResultPtrError) {

@@ -43,16 +43,24 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override;
 
-  void GetOrCreateBucket(
+  void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
+
+  QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+      const BucketInitParams& params) override;
 
   void GetBucket(const blink::StorageKey& storage_key,
                  const std::string& bucket_name,
                  blink::mojom::StorageType type,
                  scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  void GetBucketById(
+      const BucketId& bucket_id,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   // We don't mock them.
   void SetUsageCacheEnabled(storage::QuotaClientType client_id,
@@ -85,6 +93,13 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override;
+
+  void CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   int notify_storage_accessed_count() const { return storage_accessed_count_; }
   int notify_storage_modified_count() const { return storage_modified_count_; }

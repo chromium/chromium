@@ -70,6 +70,8 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // be paased here.
   void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
 
+  const StorageOptions& options() const { return options_; }
+
   Storage(const Storage& other) = delete;
   Storage& operator=(const Storage& other) = delete;
 

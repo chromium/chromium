@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -48,7 +48,8 @@ base::OnceClosure& GetOnVisibleCallbackForTesting() {
 // TODO(crbug.com/1279986): Remove ExtensionMenuView once tabbed menu is rolled
 // out.
 bool IsExtensionsMenuShowing() {
-  return base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
+  return base::FeatureList::IsEnabled(
+             extensions_features::kExtensionsMenuAccessControl)
              ? ExtensionsTabbedMenuView::IsShowing()
              : ExtensionsMenuView::IsShowing();
 }
@@ -58,7 +59,8 @@ bool IsExtensionsMenuShowing() {
 // TODO(crbug.com/1279986): Remove ExtensionMenuView once tabbed menu is rolled
 // out.
 void HideExtensionsMenu() {
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl))
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl))
     ExtensionsTabbedMenuView::Hide();
   else
     ExtensionsMenuView::Hide();
@@ -92,14 +94,16 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       browser_(browser),
       model_(ToolbarActionsModel::Get(browser_->profile())),
       extensions_button_(
-          base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
+          base::FeatureList::IsEnabled(
+              extensions_features::kExtensionsMenuAccessControl)
               ? nullptr
               : new ExtensionsToolbarButton(
                     browser,
                     this,
                     ExtensionsToolbarButton::ButtonType::kExtensions)),
       extensions_controls_(
-          base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)
+          base::FeatureList::IsEnabled(
+              extensions_features::kExtensionsMenuAccessControl)
               ? new ExtensionsToolbarControls(
                     std::make_unique<ExtensionsToolbarButton>(
                         browser,
@@ -116,6 +120,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   SetVisible(false);
 
   model_observation_.Observe(model_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(browser_->profile()));
 
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -450,11 +456,6 @@ void ExtensionsToolbarContainer::ShowToolbarActionBubble(
   ShowWidgetForExtension(widget, extension_id);
 }
 
-void ExtensionsToolbarContainer::ShowToolbarActionBubbleAsync(
-    std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) {
-  ShowToolbarActionBubble(std::move(bubble));
-}
-
 void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
   GetExtensionsButton()->ToggleExtensionsMenu();
 }
@@ -535,6 +536,11 @@ void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
   ReorderViews();
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void ExtensionsToolbarContainer::UserPermissionsSettingsChanged(
+    const extensions::PermissionsManager::UserPermissionsSettings& settings) {
+  UpdateControlsVisibility();
 }
 
 void ExtensionsToolbarContainer::ReorderViews() {
@@ -736,7 +742,7 @@ views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
                         std::move(cleanup));
 }
 
-void ExtensionsToolbarContainer::OnWidgetClosing(views::Widget* widget) {
+void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
   auto iter = std::find_if(
       anchored_widgets_.begin(), anchored_widgets_.end(),
       [widget](const auto& info) { return info.widget == widget; });
@@ -745,10 +751,6 @@ void ExtensionsToolbarContainer::OnWidgetClosing(views::Widget* widget) {
   const std::string extension_id = std::move(iter->extension_id);
   anchored_widgets_.erase(iter);
   UpdateIconVisibility(extension_id);
-}
-
-void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
-  OnWidgetClosing(widget);
 }
 
 size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
@@ -869,22 +871,14 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
     return;
 
   content::WebContents* web_contents = GetCurrentWebContents();
+  if (!web_contents)
+    return;
 
-  extensions_controls_->UpdateSiteAccessButtonVisibility(
-      ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
-          actions_, web_contents));
-
-  // TODO(crbug.com/1239772): The request access button should only include
-  // extensions that are requesting access to a restricted site.
-  // `SiteInteraction::kPending` includes extensions with activeTab, that can
-  // request access to restricted or non-restricted sites. Need to update the
-  // method to not take into account activeTab extensions.
-  std::vector<ToolbarActionViewController*> extensions_requesting_access;
-  for (const auto& action : actions_) {
-    if (action->IsRequestingSiteAccess(web_contents))
-      extensions_requesting_access.push_back(action.get());
-  }
-  extensions_controls_->UpdateRequestAccessButton(extensions_requesting_access);
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  extensions_controls_->UpdateControls(actions_, site_setting, web_contents);
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

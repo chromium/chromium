@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
 #define CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
 
+#include <ostream>
 #include <string>
-
 #include "base/callback.h"
+#include "base/component_export.h"
 
 namespace chromeos {
 
@@ -45,14 +46,18 @@ using HermesResponseCallback =
 
 // Returns the HermesResponseStatus corresponding to the
 // given dbus_|error_name|.
-HermesResponseStatus HermesResponseStatusFromErrorName(
-    const std::string& error_name);
+HermesResponseStatus COMPONENT_EXPORT(HERMES_CLIENT)
+    HermesResponseStatusFromErrorName(const std::string& error_name);
 
+std::ostream& COMPONENT_EXPORT(HERMES_CLIENT) operator<<(
+    std::ostream& stream,
+    HermesResponseStatus status);
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
 namespace ash {
 using ::chromeos::HermesResponseStatus;
+using ::chromeos::HermesResponseStatusFromErrorName;
 }
 
 #endif  // CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_

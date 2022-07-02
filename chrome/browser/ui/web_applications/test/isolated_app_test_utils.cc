@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -37,6 +38,34 @@ AppId IsolatedAppBrowserTestHarness::InstallIsolatedApp(const GURL& app_url) {
       browser(), app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   return test::InstallPwaForCurrentUrl(browser());
+}
+
+Browser* IsolatedAppBrowserTestHarness::GetBrowserFromFrame(
+    content::RenderFrameHost* frame) {
+  Browser* browser = chrome::FindBrowserWithWebContents(
+      content::WebContents::FromRenderFrameHost(frame));
+  EXPECT_TRUE(browser);
+  return browser;
+}
+
+void IsolatedAppBrowserTestHarness::CreateIframe(
+    content::RenderFrameHost* parent_frame,
+    const std::string& iframe_id,
+    const GURL& url,
+    const std::string& permissions_policy) {
+  EXPECT_EQ(true, content::EvalJs(
+                      parent_frame,
+                      content::JsReplace(R"(
+            new Promise(resolve => {
+              let f = document.createElement('iframe');
+              f.id = $1;
+              f.src = $2;
+              f.allow = $3;
+              f.addEventListener('load', () => resolve(true));
+              document.body.appendChild(f);
+            });
+        )",
+                                         iframe_id, url, permissions_policy)));
 }
 
 content::RenderFrameHost* IsolatedAppBrowserTestHarness::OpenApp(

@@ -57,6 +57,9 @@ try_.orchestrator_builder(
     mirrors = ["ci/chromeos-amd64-generic-rel"],
     main_list_view = "try",
     tryjob = try_.job(),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
 )
 
 try_.compilator_builder(
@@ -91,6 +94,9 @@ try_.builder(
 try_.builder(
     name = "lacros-amd64-generic-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+    ],
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -114,6 +120,13 @@ try_.builder(
 
 try_.builder(
     name = "linux-chromeos-compile-dbg",
+    mirrors = [
+        "ci/linux-chromeos-dbg",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
@@ -163,6 +176,9 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
 )
 
 try_.compilator_builder(
@@ -188,6 +204,10 @@ try_.builder(
 
 try_.builder(
     name = "linux-lacros-rel",
+    mirrors = [
+        "ci/linux-lacros-builder-rel",
+        "ci/linux-lacros-tester-rel",
+    ],
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     cores = 16,
@@ -198,20 +218,10 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-rel-code-coverage",
-    cores = 16,
-    ssd = True,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        experiment_percentage = 3,
-    ),
-)
-
-try_.builder(
     name = "linux-chromeos-dbg",
+    mirrors = [
+        "ci/linux-chromeos-dbg",
+    ],
     # The CI builder that this mirrors is enabled on branches, so this will
     # allow testing changes that would break it before submitting
     branch_selector = branches.STANDARD_MILESTONE,
@@ -222,22 +232,13 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-chromeos-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
-    name = "linux-lacros-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
     name = "linux-cfm-rel",
+    mirrors = [
+        "ci/linux-cfm-rel",
+    ],
     tryjob = try_.job(
         location_regexp = [
-            ".+/[+]/chromeos/components/chromebox_for_meetings/.+",
+            ".+/[+]/chromeos/ash/components/chromebox_for_meetings/.+",
             ".+/[+]/chromeos/ash/components/dbus/chromebox_for_meetings/.+",
             ".+/[+]/ash/services/chromebox_for_meetings/.+",
             ".+/[+]/chrome/browser/ash/chromebox_for_meetings/.+",

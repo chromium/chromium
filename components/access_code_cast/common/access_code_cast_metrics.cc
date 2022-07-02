@@ -16,10 +16,14 @@ const char AccessCodeCastMetrics::kHistogramAddSinkResultRemembered[] =
     "AccessCodeCast.Discovery.AddSinkResult.Remembered";
 const char AccessCodeCastMetrics::kHistogramCastModeOnSuccess[] =
     "AccessCodeCast.Discovery.CastModeOnSuccess";
+const char AccessCodeCastMetrics::kHistogramDialogCloseReason[] =
+    "AccessCodeCast.Ui.DialogCloseReason";
 const char AccessCodeCastMetrics::kHistogramDialogLoadTime[] =
     "AccessCodeCast.Ui.DialogLoadTime";
 const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
+const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
+    "AccessCodeCast.Discovery.RememberedDevicesCount";
 
 // static
 void AccessCodeCastMetrics::OnCastSessionResult(int route_request_result_code,
@@ -41,6 +45,12 @@ void AccessCodeCastMetrics::RecordAddSinkResult(
 }
 
 // static
+void AccessCodeCastMetrics::RecordDialogCloseReason(
+    AccessCodeCastDialogCloseReason reason) {
+  base::UmaHistogramEnumeration(kHistogramDialogCloseReason, reason);
+}
+
+// static
 void AccessCodeCastMetrics::RecordDialogLoadTime(base::TimeDelta load_time) {
   base::UmaHistogramTimes(kHistogramDialogLoadTime, load_time);
 }
@@ -49,4 +59,9 @@ void AccessCodeCastMetrics::RecordDialogLoadTime(base::TimeDelta load_time) {
 void AccessCodeCastMetrics::RecordDialogOpenLocation(
     AccessCodeCastDialogOpenLocation location) {
   base::UmaHistogramEnumeration(kHistogramDialogOpenLocation, location);
+}
+
+// static
+void AccessCodeCastMetrics::RecordRememberedDevicesCount(int count) {
+  base::UmaHistogramCounts100(kHistogramRememberedDevicesCount, count);
 }

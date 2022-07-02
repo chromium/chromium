@@ -41,7 +41,7 @@ class PolicyContainerHostBrowserTest : public content::ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 };
 }  // namespace
@@ -839,14 +839,14 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
   NavigationRequest* navigation_request =
       NavigationRequest::From(manager.GetNavigationHandle());
   if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
-    EXPECT_EQ(navigation_request->associated_site_instance_type(),
-              NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+    EXPECT_EQ(navigation_request->associated_rfh_type(),
+              NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   } else {
     // Policy container is properly initialized in the early committed
     // render frame host.
     EXPECT_TRUE(current_frame_host()->policy_container_host());
-    EXPECT_EQ(navigation_request->associated_site_instance_type(),
-              NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+    EXPECT_EQ(navigation_request->associated_rfh_type(),
+              NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
     // The policy is copied from the previous RFH following the crash.
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
@@ -868,7 +868,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
   // Let the navigation finish.
   manager.WaitForNavigationFinished();
 
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // The referrer policy is initialized to default during the navigation (no
   // referrer-policy header in the response).

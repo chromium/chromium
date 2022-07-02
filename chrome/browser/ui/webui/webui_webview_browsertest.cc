@@ -40,7 +40,7 @@ class WebUIMessageListener : public base::SupportsWeakPtr<WebUIMessageListener>{
  public:
   WebUIMessageListener(content::WebUI* web_ui, const std::string& message)
       : message_loop_(new content::MessageLoopRunner) {
-    web_ui->RegisterDeprecatedMessageCallback(
+    web_ui->RegisterMessageCallback(
         message,
         base::BindRepeating(&WebUIMessageListener::HandleMessage, AsWeakPtr()));
   }
@@ -54,7 +54,7 @@ class WebUIMessageListener : public base::SupportsWeakPtr<WebUIMessageListener>{
   }
 
  private:
-  void HandleMessage(const base::ListValue* test_result) {
+  void HandleMessage(const base::Value::List& test_result) {
     message_loop_->Quit();
   }
 
@@ -338,9 +338,11 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ContextMenuInspectElement) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetWebViewEnabledWebUIURL()));
   content::ContextMenuParams params;
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 params);
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
@@ -357,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
   // Flush any pending events to make sure we start with a clean slate.
   content::RunAllPendingInMessageLoop();
   content::RenderViewHost* const render_view_host =
-      embedder_web_contents->GetMainFrame()->GetRenderViewHost();
+      embedder_web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
 
   gfx::NativeView view = embedder_web_contents->GetNativeView();
   view->SetBounds(gfx::Rect(0, 0, 400, 400));

@@ -24,9 +24,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 
-using syncer::UserSelectableOsType;
 using syncer::UserSelectableOsTypeSet;
-using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 
 namespace {
@@ -48,14 +46,16 @@ bool SyncItemsHaveNames(const app_list::AppListSyncableService* service) {
 // Returns true if sync items from |service1| match to sync items in |service2|.
 bool SyncItemsMatch(const app_list::AppListSyncableService* service1,
                     const app_list::AppListSyncableService* service2) {
-  if (service1->sync_items().size() != service2->sync_items().size())
+  if (service1->sync_items().size() != service2->sync_items().size()) {
     return false;
+  }
 
   for (const auto& [item_id, item1] : service1->sync_items()) {
     const app_list::AppListSyncableService::SyncItem* item2 =
         service2->GetSyncItem(item_id);
-    if (!item2)
+    if (!item2) {
       return false;
+    }
     if (item1->item_id != item2->item_id ||
         item1->item_type != item2->item_type ||
         item1->item_name != item2->item_name ||
@@ -108,8 +108,9 @@ class SingleClientAppListSyncTest : public SyncTest {
 
   // SyncTest
   bool SetupClients() override {
-    if (!SyncTest::SetupClients())
+    if (!SyncTest::SetupClients()) {
       return false;
+    }
 
     // Init SyncAppListHelper to ensure that the extension system is initialized
     // for each Profile.

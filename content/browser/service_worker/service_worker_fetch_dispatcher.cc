@@ -178,10 +178,6 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
     // will clean up the preload request when OnReceiveRedirect() is called.
     client_->OnReceiveRedirect(redirect_info, std::move(head));
   }
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    client_->OnStartLoadingResponseBody(std::move(body));
-  }
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (completed_)
       return;
@@ -650,9 +646,6 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
       std::move(preload_url_loader_client_receiver_);
   params->is_offline_capability_check = is_offline_capability_check_;
 
-  // TODO(https://crbug.com/900700): Make the remote connected to a receiver
-  // which is passed to blink::PerformanceResourceTiming.
-  params->worker_timing_remote = mojo::NullRemote();
   // |endpoint()| is owned by |version_|. So it is safe to pass the
   // unretained raw pointer of |version_| to OnFetchEventFinished callback.
   // Pass |url_loader_assets_| to the callback to keep the URL loader related

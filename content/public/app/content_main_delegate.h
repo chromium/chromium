@@ -29,7 +29,25 @@ class ZygoteForkDelegate;
 
 class CONTENT_EXPORT ContentMainDelegate {
  public:
-  virtual ~ContentMainDelegate() {}
+  // Indicates the delegate is being invoked in the browser process. The
+  // `kProcessType` switch will be empty.
+  struct InvokedInBrowserProcess {
+    // True if running in a test harness.
+    bool is_running_test = false;
+  };
+
+  // Indicates the delegate is being invoked in a child process. The
+  // `kProcessType` switch will hold the precise child process type.
+  struct InvokedInChildProcess {};
+
+  // The context in which a delegate method is invoked, including the process
+  // type and whether it is in a test harness. Can distinguish between
+  // the browser process and child processes; for more fine-grained process
+  // types check the `switches::kProcessType` command-line switch.
+  using InvokedIn =
+      absl::variant<InvokedInBrowserProcess, InvokedInChildProcess>;
+
+  virtual ~ContentMainDelegate() = default;
 
   // Tells the embedder that the absolute basic startup has been done, i.e.
   // it's now safe to create singletons and check the command line. Return true
@@ -96,30 +114,29 @@ class CONTENT_EXPORT ContentMainDelegate {
   // FeatureList instance for this process. Default implementation returns true.
   // Embedders that need to control when and/or how FeatureList should be
   // created should override and return false.
-  virtual bool ShouldCreateFeatureList();
+  virtual bool ShouldCreateFeatureList(InvokedIn invoked_in);
 
   // Creates and returns the VariationsIdsProvider. If null is returned,
   // a VariationsIdsProvider is created with a mode of `kUseSignedInState`.
   // VariationsIdsProvider is a singleton.
   virtual variations::VariationsIdsProvider* CreateVariationsIdsProvider();
 
-  // Allows the embedder to perform initialization once field trials/FeatureList
-  // initialization has completed if ShouldCreateFeatureList() returns true.
-  // Otherwise, the embedder is responsible for calling this method once feature
-  // list initialization is complete. Called in every process.
-  virtual void PostFieldTrialInitialization() {}
-
   // Allows the embedder to perform its own initialization after early content
-  // initialization. At this point, it is possible to post to base::ThreadPool
-  // or to the main thread loop via base::ThreadTaskRunnerHandle, but the tasks
-  // won't run immediately.
+  // initialization.
   //
-  // If ShouldCreateFeatureList() returns true, the field trials and FeatureList
-  // have been initialized. Otherwise, the implementation must initialize the
-  // field trials and FeatureList and call PostFieldTrialInitialization().
+  // At this point, it is possible to post to base::ThreadPool, but the tasks
+  // won't run until base::ThreadPoolInstance::Start() is called.
   //
-  // |is_running_tests| indicates whether it is running in tests.
-  virtual void PostEarlyInitialization(bool is_running_tests) {}
+  // It is also possible to post tasks to the main thread loop via
+  // base::ThreadTaskRunnerHandle. These tasks won't run until
+  // base::RunLoop::Run() is called on the main thread, which happens after all
+  // ContentMainDelegate entry points.
+  //
+  // If ShouldCreateFeatureList() returns true for `invoked_in`, the
+  // field trials and FeatureList have been initialized. Otherwise, the
+  // implementation must initialize the field trials and FeatureList before
+  // returning from PostEarlyInitialization.
+  virtual void PostEarlyInitialization(InvokedIn invoked_in) {}
 
 #if BUILDFLAG(IS_WIN)
   // Allows the embedder to indicate that console control events (e.g., Ctrl-C,

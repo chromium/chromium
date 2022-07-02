@@ -77,7 +77,7 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
     /**
      * Adds {@link AccountInfo} with the given information to the fake service.
      */
-    public void addAccountInfo(String email, String fullName, String givenName,
+    public AccountInfo addAccountInfo(String email, String fullName, String givenName,
             @Nullable Bitmap avatar, @NonNull AccountCapabilities capabilities) {
         final CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
                 email, FakeAccountManagerFacade.toGaiaId(email));
@@ -91,5 +91,6 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
                 observer.onAccountInfoUpdated(accountInfo);
             }
         });
+        return accountInfo;
     }
 }

@@ -9,14 +9,14 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 
 namespace ash {
 
 // The Ash Login/Lock screen implementation of the security token PIN dialog
 // host. It displays the PIN request embedded into the user pod.
 class SecurityTokenPinDialogHostLoginImpl final
-    : public SecurityTokenPinDialogHost {
+    : public chromeos::SecurityTokenPinDialogHost {
  public:
   SecurityTokenPinDialogHostLoginImpl();
   SecurityTokenPinDialogHostLoginImpl(
@@ -28,9 +28,9 @@ class SecurityTokenPinDialogHostLoginImpl final
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
       const std::string& caller_extension_name,
-      security_token_pin::CodeType code_type,
+      chromeos::security_token_pin::CodeType code_type,
       bool enable_user_input,
-      security_token_pin::ErrorLabel error_label,
+      chromeos::security_token_pin::ErrorLabel error_label,
       int attempts_left,
       const absl::optional<AccountId>& authenticating_user_account_id,
       SecurityTokenPinEnteredCallback pin_entered_callback,

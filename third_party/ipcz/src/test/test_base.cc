@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
 
-namespace ipcz::test {
+namespace ipcz::test::internal {
 
 namespace {
 
@@ -43,7 +43,7 @@ void TestBase::Close(IpczHandle handle) {
   ASSERT_EQ(IPCZ_RESULT_OK, ipcz().Close(handle, IPCZ_NO_FLAGS, nullptr));
 }
 
-void TestBase::CloseAll(const std::vector<IpczHandle>& handles) {
+void TestBase::CloseAll(absl::Span<const IpczHandle> handles) {
   for (IpczHandle handle : handles) {
     Close(handle);
   }
@@ -71,31 +71,24 @@ IpczResult TestBase::Put(IpczHandle portal,
 
 IpczResult TestBase::Get(IpczHandle portal,
                          std::string* message,
-                         std::vector<IpczHandle>* handles) {
+                         absl::Span<IpczHandle> handles) {
   if (message) {
     message->clear();
   }
-  if (handles) {
-    handles->clear();
-  }
 
   size_t num_bytes = 0;
-  size_t num_handles = 0;
+  IpczHandle* handle_storage = handles.empty() ? nullptr : handles.data();
+  size_t num_handles = handles.size();
   IpczResult result = ipcz().Get(portal, IPCZ_NO_FLAGS, nullptr, nullptr,
-                                 &num_bytes, nullptr, &num_handles);
+                                 &num_bytes, handle_storage, &num_handles);
   if (result != IPCZ_RESULT_RESOURCE_EXHAUSTED) {
     return result;
   }
 
   void* data_storage = nullptr;
-  IpczHandle* handle_storage = nullptr;
   if (message) {
     message->resize(num_bytes);
     data_storage = message->data();
-  }
-  if (handles) {
-    handles->resize(num_handles);
-    handle_storage = handles->data();
   }
 
   return ipcz().Get(portal, IPCZ_NO_FLAGS, nullptr, data_storage, &num_bytes,
@@ -146,10 +139,58 @@ IpczResult TestBase::WaitForConditionFlags(IpczHandle portal,
   return WaitForConditions(portal, conditions);
 }
 
+IpczResult TestBase::WaitToGet(IpczHandle portal,
+                               std::string* message,
+                               absl::Span<IpczHandle> handles) {
+  const IpczTrapConditions conditions = {
+      .size = sizeof(conditions),
+      .flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS,
+      .min_local_parcels = 0,
+  };
+  IpczResult result = WaitForConditions(portal, conditions);
+  if (result != IPCZ_RESULT_OK) {
+    return result;
+  }
+
+  return Get(portal, message, handles);
+}
+
+void TestBase::PingPong(IpczHandle portal) {
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, {}));
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal));
+}
+
+void TestBase::WaitForPingAndReply(IpczHandle portal) {
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal));
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, {}));
+}
+
+void TestBase::VerifyEndToEnd(IpczHandle portal) {
+  static const char kTestMessage[] = "Ping!!!";
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, kTestMessage));
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal, &message));
+  EXPECT_EQ(kTestMessage, message);
+}
+
+void TestBase::VerifyEndToEndLocal(IpczHandle a, IpczHandle b) {
+  const std::string kMessage1 = "psssst";
+  const std::string kMessage2 = "ssshhh";
+
+  Put(a, kMessage1);
+  Put(b, kMessage2);
+
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(a, &message));
+  EXPECT_EQ(kMessage2, message);
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, &message));
+  EXPECT_EQ(kMessage1, message);
+}
+
 void TestBase::HandleEvent(const IpczTrapEvent* event) {
   auto handler =
       absl::WrapUnique(reinterpret_cast<TrapEventHandler*>(event->context));
   (*handler)(*event);
 }
 
-}  // namespace ipcz::test
+}  // namespace ipcz::test::internal

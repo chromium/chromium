@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Imbas kod bar</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Memuat turun ciri pengimbasan dokumen</translation>
 <translation id="4118525110028899586">Jeda rakaman</translation>
 <translation id="4121305183798804752">Dokumen dikesan</translation>
 <translation id="414641094616694804">Kamera ini tidak boleh menukar peleraian</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Kamera hadapan</translation>
+<translation id="4620818268515773682">Togol redam mikrofon. Redam dimatikan</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Tidak dapat menyimpan fail</translation>
 <translation id="4695379108709712600">Bergerak ke arah atas</translation>
@@ -145,6 +147,7 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Penjuru kanan sebelah bawah dokumen</translation>
+<translation id="7692090236657809299">Dayakan sorot condong zum</translation>
 <translation id="7726641833034062494">Rakam video biasa</translation>
 <translation id="7748344063862150053">Penjuru kanan sebelah atas dokumen</translation>
 <translation id="7933675232020478311">Bergerak ke arah kanan sebelah bawah</translation>
@@ -158,6 +161,7 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="8425673304802773841">Condongkan ke bawah</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Togol redam mikrofon. Redam dihidupkan</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8732462232047530626">Pratonton metadata</translation>

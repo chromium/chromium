@@ -40,7 +40,7 @@
 
     readonly attribute DOMString type;
     [CEReactions] attribute DOMString defaultValue;
-    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString value;
+    [CEReactions, ImplementedAs=valueForBinding] attribute [TreatNullAs=EmptyString] DOMString value;
     readonly attribute unsigned long textLength;
 
     readonly attribute boolean willValidate;

@@ -10,12 +10,12 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
-#include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -68,13 +68,17 @@ coupon_db::FreeListingCouponInfoProto BuildFreeListingCouponInfoProto(
 std::unique_ptr<autofill::AutofillOfferData> BuildCouponsMapValueEntry(
     const GURL& cart_url,
     const coupon_db::FreeListingCouponInfoProto& coupon_info) {
-  auto offer = std::make_unique<autofill::AutofillOfferData>();
-  offer->display_strings.value_prop_text = coupon_info.coupon_description();
-  offer->promo_code = coupon_info.coupon_code();
-  offer->offer_id = coupon_info.coupon_id();
-  offer->expiry = base::Time::FromDoubleT(coupon_info.expiry_time());
-  offer->merchant_origins.emplace_back(cart_url);
-  return offer;
+  autofill::DisplayStrings ds;
+  ds.value_prop_text = coupon_info.coupon_description();
+  auto promo_code = coupon_info.coupon_code();
+  auto offer_id = coupon_info.coupon_id();
+  auto expiry = base::Time::FromDoubleT(coupon_info.expiry_time());
+  std::vector<GURL> origins;
+  origins.emplace_back(cart_url);
+  return std::make_unique<autofill::AutofillOfferData>(
+      autofill::AutofillOfferData::FreeListingCouponOffer(
+          offer_id, expiry, origins, /*offer_details_url=*/GURL(), ds,
+          promo_code));
 }
 
 cart_db::ChromeCartContentProto AddRBDDiscountToProto(
@@ -112,15 +116,16 @@ testing::Matcher<autofill::DisplayStrings> EqualsDisplayStrings(
 testing::Matcher<autofill::AutofillOfferData> EqualsAutofillOfferData(
     const autofill::AutofillOfferData& data) {
   return testing::AllOf(
-      testing::Field("offer_id", &autofill::AutofillOfferData::offer_id,
-                     testing::Eq(data.offer_id)),
-      testing::Field("promo_code", &autofill::AutofillOfferData::promo_code,
-                     testing::Eq(data.promo_code)),
-      testing::Field("expiry", &autofill::AutofillOfferData::expiry,
-                     testing::Eq(data.expiry)),
-      testing::Field("display_strings",
-                     &autofill::AutofillOfferData::display_strings,
-                     EqualsDisplayStrings(data.display_strings)));
+      testing::Property("offer_id", &autofill::AutofillOfferData::GetOfferId,
+                        testing::Eq(data.GetOfferId())),
+      testing::Property("promo_code",
+                        &autofill::AutofillOfferData::GetPromoCode,
+                        testing::Eq(data.GetPromoCode())),
+      testing::Property("expiry", &autofill::AutofillOfferData::GetExpiry,
+                        testing::Eq(data.GetExpiry())),
+      testing::Property("display_strings",
+                        &autofill::AutofillOfferData::GetDisplayStrings,
+                        EqualsDisplayStrings(data.GetDisplayStrings())));
 }
 
 const char kMockMerchantA[] = "foo.com";

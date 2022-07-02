@@ -19,11 +19,6 @@ table {
   border: 1px solid black;
   border-collapse: collapse;
 }
-tabpanel {
-  background-color: whitesmoke;
-  height: 100vh;
-  width: 100vw;
-}
 tbody {
   background-color: white;
 }

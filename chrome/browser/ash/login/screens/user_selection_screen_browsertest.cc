@@ -10,7 +10,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,8 +31,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
@@ -86,9 +87,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
 
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
       cryptohome::CreateAccountIdentifierFromAccountId(users[1].account_id),
-      true);
+      FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs);
 
   // Focus the 2nd user pod (consumer).
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[1].account_id));
@@ -101,9 +102,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", true,
                                       1);
 
-  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
       cryptohome::CreateAccountIdentifierFromAccountId(users[2].account_id),
-      false);
+      FakeUserDataAuthClient::HomeEncryptionMethod::kDirCrypto);
   histogram_tester = std::make_unique<base::HistogramTester>();
   // Focus the 3rd user pod (consumer).
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[2].account_id));
@@ -116,9 +117,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", false,
                                       1);
 
-  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
       cryptohome::CreateAccountIdentifierFromAccountId(users[3].account_id),
-      true);
+      FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs);
   histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Focus to the 4th user pod (enterprise).
@@ -265,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
   test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
 }
 
-class DarkLightEnabledTest : public LoginManagerTest {
+class DarkLightEnabledTest : public LoginManagerTest,
+                             public ash::ColorModeObserver {
  public:
   DarkLightEnabledTest() {
     feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
@@ -273,11 +275,15 @@ class DarkLightEnabledTest : public LoginManagerTest {
 
  protected:
   void StartLogin(const AccountId& account_id) {
+    ash::DarkLightModeControllerImpl::Get()->AddObserver(this);
+    wait_for_color_mode_change_ = true;
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->defer_oobe_flow_finished_for_tests = true;
     login_manager_mixin_.LoginWithDefaultContext(
         LoginManagerMixin::TestUserInfo(account_id));
+    WaitForColorModeChange();
+    ash::DarkLightModeControllerImpl::Get()->RemoveObserver(this);
   }
   void FinishLogin() {
     LoginDisplayHost::default_host()
@@ -286,9 +292,26 @@ class DarkLightEnabledTest : public LoginManagerTest {
     login_manager_mixin_.SkipPostLoginScreens();
     login_manager_mixin_.WaitForActiveSession();
   }
+
+  void OnColorModeChanged(bool dark_mode_enabled) override {
+    wait_for_color_mode_change_ = false;
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  void WaitForColorModeChange() {
+    if (!wait_for_color_mode_change_)
+      return;
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   const AccountId user1{AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID)};
   const AccountId user2{AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID)};
+  bool wait_for_color_mode_change_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -297,31 +320,33 @@ class DarkLightEnabledTest : public LoginManagerTest {
 // OOBE + login of the first user.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_PRE_OobeLogin) {
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   StartLogin(user1);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
   auto* profile = ProfileManager::GetActiveUserProfile();
   profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled, true);
   // Still not enabled because OOBE is shown.
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   FinishLogin();
   // Oobe is hidden - prefs are applied.
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 // "Add person" flow.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
   // Oobe is hidden - prefs of the focused user are applied.
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   LoginScreenTestApi::ClickAddUserButton();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
   // Oobe is shown - switch to the light mode.
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   // Close the dialog with the `cancel` accelerator.
   LoginDisplayHost::default_host()->HandleAccelerator(
@@ -331,33 +356,34 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
   })).Wait();
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   // Switch back.
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   LoginScreenTestApi::ClickAddUserButton();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
 
   StartLogin(user2);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
   FinishLogin();
   auto* profile = ProfileManager::GetActiveUserProfile();
   profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled, true);
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled, false);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 // Test focusing different pods.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, OobeLogin) {
   ASSERT_EQ(LoginScreenTestApi::GetFocusedUser(), user2);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(user1));
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(user2));
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 }  // namespace

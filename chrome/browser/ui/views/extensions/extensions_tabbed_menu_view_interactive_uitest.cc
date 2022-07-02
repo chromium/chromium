@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
@@ -22,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -94,7 +94,7 @@ bool ExtensionsTabbedMenuViewInteractiveUITest::VerifyUi() {
 ExtensionsTabbedMenuViewInteractiveUITest::
     ExtensionsTabbedMenuViewInteractiveUITest() {
   scoped_feature_list_.InitAndEnableFeature(
-      features::kExtensionsMenuAccessControl);
+      extensions_features::kExtensionsMenuAccessControl);
 }
 
 InstalledExtensionMenuItemView*

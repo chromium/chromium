@@ -15,7 +15,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var GaiaActionButtonsTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://chrome-signin/test_loader.html?module=chromeos/gaia_action_buttons/gaia_action_buttons_test.js';
+    return 'chrome://chrome-signin/test_loader.html?module=chromeos/gaia_action_buttons/gaia_action_buttons_test.js&host=test';
   }
 
   get suiteName() {

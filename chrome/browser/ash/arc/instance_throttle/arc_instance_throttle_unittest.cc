@@ -22,6 +22,7 @@
 #include "ash/components/arc/test/fake_power_instance.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/test/fake_intent_helper_host.h"
@@ -356,16 +358,129 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotificationEnabledByDefault) {
 }
 
 // Tests that power instance notification is off by default.
-TEST_F(ArcInstanceThrottleTest, TestPowerNotificationDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({},
-                                       {arc::kEnableThrottlingNotification});
+TEST_F(ArcInstanceThrottleTest, TestPowerNotification) {
   // Set power instance and it should be automatically notified once connection
   // is made.
   CreatePowerInstance();
+  EXPECT_EQ(1, power_instance()->cpu_restriction_state_count());
   GetThrottleObserver()->SetActive(true);
+  EXPECT_EQ(2, power_instance()->cpu_restriction_state_count());
   GetThrottleObserver()->SetActive(false);
-  EXPECT_EQ(0, power_instance()->cpu_restriction_state_count());
+  EXPECT_EQ(3, power_instance()->cpu_restriction_state_count());
+}
+
+class ArcInstanceThrottleVMTest : public testing::Test {
+ public:
+  ArcInstanceThrottleVMTest() = default;
+  ~ArcInstanceThrottleVMTest() override = default;
+
+  explicit ArcInstanceThrottleVMTest(const ArcInstanceThrottleTest&) = delete;
+  ArcInstanceThrottleVMTest& operator=(const ArcInstanceThrottleTest&) = delete;
+
+  void SetUp() override {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->InitFromArgv({"", "--enable-arcvm"});
+
+    SetArcAvailableCommandLineForTesting(command_line);
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+
+    // Need to initialize DBusThreadManager before ArcSessionManager's
+    // constructor calls DBusThreadManager::Get().
+    chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake();
+    DCHECK(GetConciergeClient());
+
+    arc_service_manager_ = std::make_unique<ArcServiceManager>();
+    arc_session_manager_ =
+        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)));
+    testing_profile_ = std::make_unique<TestingProfile>();
+
+    arc_instance_throttle_ =
+        ArcInstanceThrottle::GetForBrowserContextForTesting(
+            testing_profile_.get());
+
+    run_loop()->RunUntilIdle();
+  }
+
+  void TearDown() override {
+    testing_profile_.reset();
+    arc_session_manager_.reset();
+    arc_service_manager_.reset();
+    chromeos::DBusThreadManager::Shutdown();
+  }
+
+ protected:
+  ash::FakeConciergeClient* GetConciergeClient() {
+    return ash::FakeConciergeClient::Get();
+  }
+
+  ash::ThrottleObserver* GetThrottleObserver() {
+    for (const auto& observer :
+         arc_instance_throttle_->observers_for_testing()) {
+      if (observer->name() == kArcPowerThrottleObserverName)
+        return observer.get();
+    }
+    NOTREACHED();
+    return nullptr;
+  }
+
+  base::RunLoop* run_loop() { return run_loop_.get(); }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+
+  std::unique_ptr<ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<ArcSessionManager> arc_session_manager_;
+  std::unique_ptr<TestingProfile> testing_profile_;
+
+  ArcInstanceThrottle* arc_instance_throttle_;
+};
+
+TEST_F(ArcInstanceThrottleVMTest, Histograms) {
+  constexpr char kHistogramName[] = "Arc.CpuRestrictionVmResult";
+  base::HistogramTester histogram_tester;
+
+  auto* const client = GetConciergeClient();
+  auto* const observer = GetThrottleObserver();
+
+  // No service
+  client->set_wait_for_service_to_be_available_response(false);
+  observer->SetActive(true);
+  run_loop()->RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName,
+                                     2 /* kNoConciergeService */, 1);
+
+  // No response
+  client->set_wait_for_service_to_be_available_response(true);
+  absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response;
+  client->set_set_vm_cpu_restriction_response(response);
+  observer->SetActive(false);
+  run_loop()->RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
+  histogram_tester.ExpectBucketCount(kHistogramName,
+                                     4 /* kConciergeDidNotRespond */, 1);
+
+  // Failure
+  response = vm_tools::concierge::SetVmCpuRestrictionResponse();
+  response->set_success(false);
+  client->set_set_vm_cpu_restriction_response(response);
+  observer->SetActive(true);
+  run_loop()->RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kHistogramName, 3);
+  histogram_tester.ExpectBucketCount(kHistogramName, 1 /* kOther */, 1);
+
+  // Success
+  response = vm_tools::concierge::SetVmCpuRestrictionResponse();
+  response->set_success(true);
+  client->set_set_vm_cpu_restriction_response(response);
+  observer->SetActive(false);
+  run_loop()->RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kHistogramName, 4);
+  histogram_tester.ExpectBucketCount(kHistogramName, 0 /* kSuccess */, 1);
 }
 
 }  // namespace arc

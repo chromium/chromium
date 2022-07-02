@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chromeos/components/quick_answers/result_loader.h"
@@ -30,9 +31,6 @@ enum class ResultType;
 // A delegate interface for the QuickAnswersClient.
 class QuickAnswersDelegate {
  public:
-  using AccessTokenCallback =
-      base::OnceCallback<void(const std::string& access_token)>;
-
   QuickAnswersDelegate(const QuickAnswersDelegate&) = delete;
   QuickAnswersDelegate& operator=(const QuickAnswersDelegate&) = delete;
 
@@ -47,13 +45,6 @@ class QuickAnswersDelegate {
 
   // Invoked when there is a network error.
   virtual void OnNetworkError() {}
-
-  // Request for the access token associated with the active user's profile.
-  // Request is handled asynchronously if the token is not available.
-  // AccessTokenCallbacks are invoked as soon as the token if fetched.
-  // If the token is available, AccessTokenCallbacks are invoked
-  // synchronously before RequestAccessToken() returns.
-  virtual void RequestAccessToken(AccessTokenCallback callback) {}
 
  protected:
   QuickAnswersDelegate() = default;
@@ -86,7 +77,6 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
   void OnNetworkError() override;
   void OnQuickAnswerReceived(
       std::unique_ptr<QuickAnswer> quick_answer) override;
-  void RequestAccessToken(AccessTokenCallback callback) override;
 
   // Send a quick answer request for preprocessing only.
   void SendRequestForPreprocessing(
@@ -136,7 +126,7 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
   base::TimeDelta GetImpressionDuration() const;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  QuickAnswersDelegate* delegate_ = nullptr;
+  raw_ptr<QuickAnswersDelegate> delegate_ = nullptr;
   std::unique_ptr<SpellChecker> spell_checker_;
   std::unique_ptr<ResultLoader> result_loader_;
   std::unique_ptr<IntentGenerator> intent_generator_;

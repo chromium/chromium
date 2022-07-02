@@ -13,10 +13,9 @@
 'use strict';
 
 async function customFormatWriteBeforeTest() {
-  const format = 'text/customformat';
+  const format = 'web text/customformat';
   const blob = new Blob(['CustomFormatClipboardDisabled'], {type: format});
-  const clipboardItem = new ClipboardItem(
-    {[format]: blob}, {unsanitized: [format]});
+  const clipboardItem = new ClipboardItem({[format]: blob});
   await waitForUserActivation();
   await navigator.clipboard.write([clipboardItem]);
 }
@@ -32,20 +31,18 @@ promise_test(async t => {
   // message when the ClipboardCustomFormats flag isn't enabled.
   await customFormatWriteBeforeTest();
   const dataToWrite = 'Test text.';
-  const format = 'text/plain';
+  const format = 'web text/plain';
 
   const blobInput = new Blob([dataToWrite], {type: format});
   // Blob types are automatically converted to lower-case.
   assert_equals(blobInput.type, format.toLowerCase());
-  const clipboardItemInput = new ClipboardItem(
-      {[format]: blobInput}, {unsanitized: [format]});
+  const clipboardItemInput = new ClipboardItem({[format]: blobInput});
   await waitForUserActivation();
   await navigator.clipboard.write([clipboardItemInput]);
 
   // Items should be readable on a system clipboard after custom format write.
   await waitForUserActivation();
-  const clipboardItems = await navigator.clipboard.read(
-    {unsanitized: [format]});
+  const clipboardItems = await navigator.clipboard.read();
   assert_equals(clipboardItems.length, 1);
   const clipboardItem = clipboardItems[0];
   assert_true(clipboardItem instanceof ClipboardItem);
@@ -55,9 +52,9 @@ promise_test(async t => {
   const data = await (new Response(blobOutput)).text();
   assert_equals(data, dataToWrite);
 
-  // These examples use native text formats, so these formats should be
+  // These examples use web custom text format, so this format shouldn't be
   // accessible as text.
   const textOutput = await navigator.clipboard.readText();
-  assert_equals(textOutput, dataToWrite);
-}, 'Verify write and read clipboard given custom formats as input');
+  assert_not_equals(textOutput, dataToWrite);
+}, 'Verify write and read clipboard given web custom format as input');
 </script>

@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
 #import "base/callback.h"
+#import "base/files/file_util.h"
 #import "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #import "base/task/thread_pool.h"
@@ -23,6 +24,7 @@
 #include "components/optimization_guide/core/prediction_manager.h"
 #import "components/optimization_guide/core/top_host_provider.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
@@ -36,6 +38,30 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+const char kOldOptimizationGuidePredictionModelAndFeaturesStore[] =
+    "optimization_guide_model_and_features_store";
+
+// Deletes old store paths that were written in incorrect locations.
+void DeleteOldStorePaths(const base::FilePath& profile_path) {
+  // Added 05/2022.
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::GetDeletePathRecursivelyCallback(profile_path.Append(
+          kOldOptimizationGuidePredictionModelAndFeaturesStore)));
+
+  base::FilePath models_dir;
+  base::PathService::Get(ios::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                         &models_dir);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::GetDeletePathRecursivelyCallback(models_dir));
+}
+
+}  // namespace
 
 OptimizationGuideService::OptimizationGuideService(
     leveldb_proto::ProtoDatabaseProvider* proto_db_provider,
@@ -81,7 +107,7 @@ OptimizationGuideService::OptimizationGuideService(
               proto_db_provider,
               profile_path.Append(
                   optimization_guide::
-                      kOptimizationGuidePredictionModelAndFeaturesStore),
+                      kOptimizationGuidePredictionModelMetadataStore),
               base::ThreadPool::CreateSequencedTaskRunner(
                   {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
               pref_service);
@@ -96,8 +122,15 @@ OptimizationGuideService::OptimizationGuideService(
       optimization_guide_logger_.get());
 
   base::FilePath models_dir;
-  base::PathService::Get(ios::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-                         &models_dir);
+  if (!off_the_record_) {
+    // Do not explicitly hand off the model downloads directory to
+    // off-the-record profiles. Underneath the hood, this variable is only used
+    // in non off-the-record profiles to know where to download the model files
+    // to. Off-the-record profiles read the model locations from the original
+    // profiles they are associated with.
+    models_dir = profile_path.Append(
+        optimization_guide::kOptimizationGuidePredictionModelDownloads);
+  }
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     prediction_manager_ =
         std::make_unique<optimization_guide::PredictionManager>(
@@ -110,6 +143,14 @@ OptimizationGuideService::OptimizationGuideService(
                   ::prefs::kComponentUpdatesEnabled);
             }));
   }
+
+  // Some previous paths were written in incorrect locations. Delete the
+  // old paths.
+  //
+  // TODO(crbug.com/1328981): Remove this code in 05/2023 since it should be
+  // assumed that all clients that had the previous path have had their previous
+  // stores deleted.
+  DeleteOldStorePaths(profile_path);
 }
 
 OptimizationGuideService::~OptimizationGuideService() {
@@ -125,7 +166,8 @@ void OptimizationGuideService::DoFinalInit() {
                               optimization_guide_fetching_enabled);
     IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "SyntheticOptimizationGuideRemoteFetching",
-        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+        optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 }
 

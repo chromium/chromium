@@ -264,7 +264,7 @@ void ExtensionOptionsGuest::DidFinishNavigation(
 
   if (!url::IsSameOriginWith(navigation_handle->GetURL(), options_page_)) {
     bad_message::ReceivedBadMessage(
-        web_contents()->GetMainFrame()->GetProcess(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess(),
         bad_message::EOG_BAD_ORIGIN);
   }
 }

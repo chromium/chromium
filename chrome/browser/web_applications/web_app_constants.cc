@@ -164,6 +164,18 @@ std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
   }
 }
 
+apps::RunOnOsLoginMode ConvertOsLoginMode(
+    web_app::RunOnOsLoginMode login_mode) {
+  switch (login_mode) {
+    case web_app::RunOnOsLoginMode::kWindowed:
+      return apps::RunOnOsLoginMode::kWindowed;
+    case web_app::RunOnOsLoginMode::kNotRun:
+      return apps::RunOnOsLoginMode::kNotRun;
+    case web_app::RunOnOsLoginMode::kMinimized:
+      return apps::RunOnOsLoginMode::kUnknown;
+  }
+}
+
 const char* IconsDownloadedResultToString(IconsDownloadedResult result) {
   switch (result) {
     case IconsDownloadedResult::kCompleted:

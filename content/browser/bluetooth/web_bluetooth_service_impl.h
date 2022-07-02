@@ -155,9 +155,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            DeviceGattServicesDiscoveryTimeout);
 #if PAIR_BLUETOOTH_ON_DEMAND()
-  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            ReadCharacteristicValueNotAuthorized);
-  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            IncompletePairingOnShutdown);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
@@ -465,6 +465,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       const std::u16string& device_identifier,
       BluetoothCredentialsCallback callback) override;
 
+  void PromptForBluetoothPairConfirm(
+      const std::u16string& device_identifier,
+      BluetoothPairConfirmCallback callback) override;
+
+  void PairConfirmed(const blink::WebBluetoothDeviceId& device_id) override;
   // Used to open a BluetoothChooser and start a device discovery session.
   std::unique_ptr<BluetoothDeviceChooserController> device_chooser_controller_;
 

@@ -14,7 +14,7 @@ pybind_extension(
     ],
     module_name = "image_utils",
     deps = [
-        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
+        "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "@pybind11",
         "@pybind11_abseil//pybind11_abseil:status_casters",
     ],

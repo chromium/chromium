@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -108,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   CommitObserver observer(
       RenderFrame::FromRoutingID(
-          shell()->web_contents()->GetMainFrame()->GetRoutingID())
+          shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID())
           ->GetWebFrame()
           ->View());
 
@@ -122,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
       base::BindOnce(&VisualStateTest::AssertIsIdle, base::Unretained(this)));
 
   // Insert a visual state callback.
-  shell()->web_contents()->GetMainFrame()->InsertVisualStateCallback(
+  shell()->web_contents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
       base::BindOnce(&VisualStateTest::InvokeVisualStateCallback,
                      base::Unretained(this)));
 

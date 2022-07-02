@@ -34,6 +34,10 @@
     background-color: transparent;
   }
 
+  #buttons cr-button {
+    margin-inline-start: 8px;
+  }
+
   #error-message-container {
     min-height: 16px;
   }
@@ -112,15 +116,24 @@
       </div>
     </template>
   </div>
-  <div slot="button-container">
-    <cr-button on-click="close" class="cancel-button">$i18n{cancel}</cr-button>
-    <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
-      disabled="[[submitDisabled]]">
-      $i18n{submit}
-    </cr-button>
-    <cr-button id="backButton" on-click="switchToCodeInput"
-      class="action-button">
-      $i18n{back}
-    </cr-button>
+  <div slot="button-container" id="buttons">
+    <template is="dom-if" if="[[!isWin]]">
+      <cr-button on-click="cancelButtonPressed">
+        $i18n{cancel}
+      </cr-button>
+    </template>
+      <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
+        disabled="[[submitDisabled]]">
+        $i18n{submit}
+      </cr-button>
+      <cr-button id="backButton" on-click="switchToCodeInput"
+        class="action-button">
+        $i18n{back}
+      </cr-button>
+    <template is="dom-if" if="[[isWin]]">
+      <cr-button on-click="cancelButtonPressed">
+        $i18n{cancel}
+      </cr-button>
+    </template>
   </div>
 </cr-dialog>

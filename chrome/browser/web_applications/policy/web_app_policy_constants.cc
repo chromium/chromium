@@ -16,6 +16,7 @@ const char kCustomNameKey[] = "custom_name";
 const char kCustomIconKey[] = "custom_icon";
 const char kCustomIconURLKey[] = "url";
 const char kCustomIconHashKey[] = "hash";
+const char kUninstallAndReplaceKey[] = "uninstall_and_replace";
 
 const char kWildcard[] = "*";
 

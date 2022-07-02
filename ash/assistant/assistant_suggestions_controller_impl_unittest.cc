@@ -7,7 +7,7 @@
 #include "ash/assistant/model/assistant_suggestions_model.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 
 namespace ash {
 

@@ -6,7 +6,10 @@ from __future__ import print_function
 
 import sys
 import time
+import typing
+import unittest
 
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
 import gpu_path_util
@@ -14,16 +17,16 @@ import gpu_path_util
 
 class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     return 'noop_sleep'
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = (('DoNothing', 'empty.html'), )
     for t in tests:
-      yield (t[0], t[1], ('_' + t[0]))
+      yield (t[0], t[1], ['_' + t[0]])
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     test_name = args[0]
     tab = self.tab
     if not tab.browser.supports_tab_control:
@@ -31,13 +34,13 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     getattr(self, test_name)(test_path)
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(NoopSleepIntegrationTest, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
-  def _Navigate(self, test_path):
+  def _Navigate(self, test_path: str) -> None:
     url = self.UrlOfStaticFilePath(test_path)
     tab = self.tab
     tab.Navigate(url)
@@ -46,11 +49,12 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   # given in GenerateGpuTests, so in order to hand-write our tests but
   # also go through the _RunGpuTest trampoline, the test needs to be
   # slightly differently named.
-  def _DoNothing(self, test_path):
+  def _DoNothing(self, test_path: str) -> None:
     self._Navigate(test_path)
     time.sleep(180)
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

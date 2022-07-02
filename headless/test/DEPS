@@ -12,3 +12,9 @@ include_rules = [
   "+components/prefs",
   "+services/device/public/cpp/test/fake_geolocation_manager.h",
 ]
+specific_include_rules = {
+  "headless_browser_browsertest.*": [
+    "+storage/browser",
+    "+ui/shell_dialogs",
+  ],
+}

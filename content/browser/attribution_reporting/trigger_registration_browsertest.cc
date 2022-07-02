@@ -73,7 +73,7 @@ class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::raw_ptr<MockAttributionHost> mock_attribution_host_;
+  base::raw_ptr<MockAttributionHost, DanglingUntriaged> mock_attribution_host_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,

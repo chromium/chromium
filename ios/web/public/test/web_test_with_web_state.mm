@@ -70,7 +70,7 @@ void WebTestWithWebState::AddPendingItem(const GURL& url,
       .AddPendingItem(url, Referrer(), transition,
                       web::NavigationInitiationType::BROWSER_INITIATED,
                       /*is_post_navigation=*/false,
-                      /*is_using_https_as_default_scheme=*/false);
+                      web::HttpsUpgradeType::kNone);
 }
 
 bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
@@ -142,17 +142,11 @@ id WebTestWithWebState::ExecuteJavaScriptForFeature(
       JavaScriptFeatureManager::FromBrowserState(GetBrowserState());
   JavaScriptContentWorld* world =
       feature_manager->GetContentWorldForFeature(feature);
-  // JS execution in particular content worlds is only available on iOS 14+.
-  DCHECK(base::ios::IsRunningOnIOS14OrLater());
 
-  if (@available(ios 14, *)) {
-    WKWebView* web_view =
-        [web::test::GetWebController(web_state()) ensureWebViewCreated];
-    return web::test::ExecuteJavaScript(web_view, world->GetWKContentWorld(),
-                                        script);
-  }
-
-  return nil;
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  return web::test::ExecuteJavaScript(web_view, world->GetWKContentWorld(),
+                                      script);
 }
 
 id WebTestWithWebState::ExecuteJavaScript(NSString* script) {

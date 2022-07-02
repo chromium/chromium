@@ -27,8 +27,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/common/extension_id.h"
 
 class BackgroundModeOptimizer;
@@ -63,8 +61,7 @@ using CommandIdHandlerVector = std::vector<base::RepeatingClosure>;
 // Additionally, when in background mode, Chrome will launch on OS login with
 // no open windows to allow apps with the "background" permission to run in the
 // background.
-class BackgroundModeManager : public content::NotificationObserver,
-                              public BrowserListObserver,
+class BackgroundModeManager : public BrowserListObserver,
                               public BackgroundApplicationListModel::Observer,
                               public ProfileAttributesStorage::Observer,
                               public StatusIconMenuModel::Delegate {
@@ -271,10 +268,7 @@ class BackgroundModeManager : public content::NotificationObserver,
   using BackgroundModeInfoMap =
       std::map<const Profile*, std::unique_ptr<BackgroundModeData>>;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnAppTerminating();
 
   // Called when ExtensionSystem is ready.
   void OnExtensionsReady(Profile* profile);
@@ -421,7 +415,7 @@ class BackgroundModeManager : public content::NotificationObserver,
   raw_ptr<ProfileAttributesStorage> profile_storage_;
 
   // Registrars for managing our change observers.
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
   PrefChangeRegistrar pref_registrar_;
 
   // The profile-keyed data for this background mode manager. Keyed on profile.

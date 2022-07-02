@@ -45,9 +45,9 @@
 #ifndef BASE_LAZY_INSTANCE_H_
 #define BASE_LAZY_INSTANCE_H_
 
+#include <atomic>
 #include <new>  // For placement new.
 
-#include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/leak_annotations.h"
@@ -157,7 +157,7 @@ class LazyInstance {
 #endif
 
     return subtle::GetOrCreateLazyPointer(
-        &private_instance_, &Traits::New, private_buf_,
+        private_instance_, &Traits::New, private_buf_,
         Traits::kRegisterOnExit ? OnExit : nullptr, this);
   }
 
@@ -168,7 +168,7 @@ class LazyInstance {
     // created right now (i.e. |private_instance_| has value of
     // internal::kLazyInstanceStateCreating) or was already created (i.e.
     // |private_instance_| has any other non-zero value).
-    return 0 != subtle::NoBarrier_Load(&private_instance_);
+    return 0 != private_instance_.load(std::memory_order_relaxed);
   }
 
   // MSVC gives a warning that the alignment expands the size of the
@@ -176,13 +176,13 @@ class LazyInstance {
   // is expected in this case.
 #if BUILDFLAG(IS_WIN)
 #pragma warning(push)
-#pragma warning(disable: 4324)
+#pragma warning(disable : 4324)
 #endif
 
   // Effectively private: member data is only public to allow the linker to
   // statically initialize it and to maintain a POD class. DO NOT USE FROM
   // OUTSIDE THIS CLASS.
-  subtle::AtomicWord private_instance_;
+  std::atomic<uintptr_t> private_instance_;
 
   // Preallocated space for the Type instance.
   alignas(Type) char private_buf_[sizeof(Type)];
@@ -193,7 +193,8 @@ class LazyInstance {
 
  private:
   Type* instance() {
-    return reinterpret_cast<Type*>(subtle::NoBarrier_Load(&private_instance_));
+    return reinterpret_cast<Type*>(
+        private_instance_.load(std::memory_order_relaxed));
   }
 
   // Adapter function for use with AtExit.  This should be called single
@@ -203,7 +204,7 @@ class LazyInstance {
     LazyInstance<Type, Traits>* me =
         reinterpret_cast<LazyInstance<Type, Traits>*>(lazy_instance);
     Traits::Delete(me->instance());
-    subtle::NoBarrier_Store(&me->private_instance_, 0);
+    me->private_instance_.store(0, std::memory_order_relaxed);
   }
 };
 

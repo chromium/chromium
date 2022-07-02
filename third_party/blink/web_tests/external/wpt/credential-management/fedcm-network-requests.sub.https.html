@@ -6,17 +6,81 @@
 
 <body>
 
-<script>
+<script type="module">
+import {set_fedcm_cookie} from './support/fedcm-helper.js';
+
 const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/';
+const test_options = {
+  federated: {
+    providers: [{
+      url: url_prefix,
+      clientId: '1',
+      nonce: '2',
+    }]
+  }
+};
+
 promise_test(async t => {
-  // Install and wait for the identity provider's cookie to be installed.
-  await new Promise(resolve => {
-    const img = document.createElement('img');
-    img.src = url_prefix + 'set_cookie';
-    img.addEventListener('error', resolve);
-    document.body.appendChild(img);
+  await set_fedcm_cookie();
+  const cred = await navigator.credentials.get(test_options);
+  assert_equals(cred.idToken, "token");
+}, "Successfully obtaining id_token should resolve the promise.");
+
+promise_test(async t => {
+  await set_fedcm_cookie();
+  const first = navigator.credentials.get(test_options);
+  const second = navigator.credentials.get(test_options);
+
+  // We have to call promise_rejects_dom here, because if we call it after
+  // the promise gets rejected, the unhandled rejection event handler is called
+  // and fails the test even if we handle the rejection later.
+  const rej = promise_rejects_dom(t, 'AbortError', second);
+
+  const first_cred = await first;
+  assert_equals(first_cred.idToken, "token");
+
+  return rej;
+},
+"When there's a pending request, a second `get` call should be rejected. ");
+
+promise_test(async t => {
+  const cred = navigator.credentials.get({
+  federated: {
+    providers: [{
+      clientId: '1',
+      nonce: '2',
+    }]
+  }
   });
-  const result = await navigator.credentials.get({
+  return promise_rejects_js(t, TypeError, cred);
+}, "Reject when url is missing" );
+
+promise_test(async t => {
+  const cred = navigator.credentials.get({
+  federated: {
+    providers: [{
+      url: 'test',
+      clientId: '1',
+    }]
+  }
+  });
+  return promise_rejects_dom(t, "InvalidStateError", cred);
+}, "Reject when url is invalid");
+
+promise_test(async t => {
+  const cred = navigator.credentials.get({
+  federated: {
+    providers: [{
+      url: 'https://idp.test',
+      clientId: '',
+    }]
+  }
+  });
+  return promise_rejects_dom(t, "InvalidStateError", cred);
+}, "Reject when clientId is empty");
+
+promise_test(async t => {
+  const cred = await navigator.credentials.get({
     federated: {
       providers: [{
         url: url_prefix,
@@ -24,7 +88,73 @@ promise_test(async t => {
       }]
     }
   });
-  const token = await result.login({nonce: '1'});
-  assert_equals(token.idToken, 'token');
+  assert_equals(cred.idToken, "token");
+}, "nonce is not required in FederatedIdentityProvider.");
+
+promise_test(async t => {
+  const cred = navigator.credentials.get({
+  federated: {
+    providers: [{
+      url: 'https://idp.test',
+    }]
+  }
+  });
+  return promise_rejects_js(t, TypeError, cred);
+}, "Reject when clientId is missing" );
+
+promise_test(async t => {
+  let controller = new AbortController();
+  const cred = navigator.credentials.get({
+    federated: test_options.federated,
+    signal: controller.signal,
+  });
+  controller.abort();
+  return promise_rejects_dom(t, 'AbortError', cred);
+}, "Test the abort signal");
+
+promise_test(async t => {
+  let controller = new AbortController();
+  const first_cred = navigator.credentials.get({
+    federated: test_options.federated,
+    signal: controller.signal,
+  });
+  controller.abort();
+  await promise_rejects_dom(t, 'AbortError', first_cred);
+
+  const second_cred = await navigator.credentials.get(test_options);
+  assert_equals(second_cred.idToken, "token");
+}, "Get after abort should work");
+
+promise_test(async t => {
+  const cred = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'https://other-idp.test/',
+        clientId: '1',
+      }]
+    }
+  });
+  return promise_rejects_dom(t, "NetworkError", cred);
+}, "Provider URL should honor Content-Security-Policy.");
+
+promise_test(async t => {
+  await set_fedcm_cookie();
+  const cred = await navigator.credentials.get(test_options);
+  assert_equals(cred.idToken, 'token');
 }, 'Test that COEP policy do not apply to FedCM requests');
+
+promise_test(async t => {
+  await set_fedcm_cookie();
+  const cred = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: url_prefix + "fedcm-manifest-not-in-list/",
+        clientId: '1',
+        nonce: '2',
+      }]
+    }
+  });
+  return promise_rejects_dom(t, 'NetworkError', cred);
+}, 'Test that the promise is rejected if the manifest is not in the manifest list');
+
 </script>

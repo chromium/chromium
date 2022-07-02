@@ -9,28 +9,24 @@
 #include "base/debug/leak_annotations.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/system_display/system_display_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/mock_display_info_provider.h"
-#include "extensions/browser/mock_screen.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/display/test/scoped_screen_override.h"
 
 namespace extensions {
 
-using display::Screen;
-using display::test::ScopedScreenOverride;
-
 class SystemDisplayApiTest : public ShellApiTest {
  public:
-  SystemDisplayApiTest()
-      : provider_(new MockDisplayInfoProvider), screen_(new MockScreen) {}
+  SystemDisplayApiTest() : provider_(new MockDisplayInfoProvider) {}
 
   SystemDisplayApiTest(const SystemDisplayApiTest&) = delete;
   SystemDisplayApiTest& operator=(const SystemDisplayApiTest&) = delete;
@@ -39,15 +35,7 @@ class SystemDisplayApiTest : public ShellApiTest {
 
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
-    ANNOTATE_LEAKING_OBJECT_PTR(Screen::GetScreen());
-    scoped_screen_override_ =
-        std::make_unique<ScopedScreenOverride>(screen_.get());
     DisplayInfoProvider::InitializeForTesting(provider_.get());
-  }
-
-  void TearDownOnMainThread() override {
-    ShellApiTest::TearDownOnMainThread();
-    scoped_screen_override_.reset();
   }
 
  protected:
@@ -58,8 +46,6 @@ class SystemDisplayApiTest : public ShellApiTest {
         base::BindOnce([](absl::optional<std::string>) {}));
   }
   std::unique_ptr<MockDisplayInfoProvider> provider_;
-  std::unique_ptr<Screen> screen_;
-  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -114,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
   std::unique_ptr<base::DictionaryValue> set_info_value =
       provider_->GetSetInfoValue();
   ASSERT_TRUE(set_info_value);
-  base::Value::DictStorage set_info =
-      std::move(*set_info_value).TakeDictDeprecated();
+  base::Value::Dict set_info = std::move(set_info_value->GetDict());
 
   EXPECT_TRUE(api_test_utils::GetBoolean(set_info, "isPrimary"));
   EXPECT_EQ("mirroringId",
@@ -123,8 +108,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
   EXPECT_EQ(100, api_test_utils::GetInteger(set_info, "boundsOriginX"));
   EXPECT_EQ(200, api_test_utils::GetInteger(set_info, "boundsOriginY"));
   EXPECT_EQ(90, api_test_utils::GetInteger(set_info, "rotation"));
-  base::Value::DictStorage overscan =
-      api_test_utils::GetDict(set_info, "overscan");
+  base::Value::Dict overscan = api_test_utils::GetDict(set_info, "overscan");
   EXPECT_EQ(1, api_test_utils::GetInteger(overscan, "left"));
   EXPECT_EQ(2, api_test_utils::GetInteger(overscan, "top"));
   EXPECT_EQ(3, api_test_utils::GetInteger(overscan, "right"));
@@ -326,6 +310,49 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                             browser_context()));
     EXPECT_EQ(api::system_display::MIRROR_MODE_OFF, provider_->mirror_mode());
   }
+}
+
+// Tests that Overscan is reset only when the primary main frame is removed.
+IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
+  const std::string id = "display0";
+  api::system_display::DisplayProperties params;
+  SetInfo(id, params);
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadApp("system/display/overscan_no_complete");
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  ExtensionHost* host = ProcessManager::Get(browser_context())
+                            ->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->host_contents());
+
+  // Add a sub frame.
+  ASSERT_TRUE(content::ExecJs(host->host_contents(), R"(
+          var bar_frame = document.createElement('iframe');
+          document.body.appendChild(bar_frame);
+      )"));
+  content::RenderFrameHostWrapper sub_frame_rfh_wrapper(
+      ChildFrameAt(host->host_contents()->GetPrimaryMainFrame(), 0));
+
+  // By loading the app, calibration is started.
+  ASSERT_TRUE(provider_->calibration_started(id));
+
+  EXPECT_TRUE(ExecJs(host->host_contents()->GetPrimaryMainFrame(),
+                     "const iframe = document.querySelector('iframe');\
+                     iframe.remove();"));
+  ASSERT_TRUE(sub_frame_rfh_wrapper.WaitUntilRenderFrameDeleted());
+
+  // Removing the sub frame doesn't affect calibration.
+  ASSERT_TRUE(provider_->calibration_started(id));
+
+  content::RenderFrameHostWrapper main_frame_rfh_wrapper(
+      host->host_contents()->GetPrimaryMainFrame());
+  host->host_contents()->ClosePage();
+  ASSERT_TRUE(main_frame_rfh_wrapper.WaitUntilRenderFrameDeleted());
+
+  ASSERT_FALSE(provider_->calibration_started(id));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -6,8 +6,10 @@ from absl import flags
 import os
 
 from infra import ChromeEnterpriseTestCase
-from chrome_ent_test.infra.core import before_all, category, environment, test
-
+from chrome_ent_test.infra.core import before_all
+from chrome_ent_test.infra.core import category
+from chrome_ent_test.infra.core import environment
+from chrome_ent_test.infra.core import test
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(

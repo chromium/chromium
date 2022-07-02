@@ -30,17 +30,14 @@ class AX_EXPORT AXFuchsiaSemanticProviderImpl
   // Arguments:
   // |view_ref|: identifies the view providing semantics. Please consult
   // |fuchsia.accessibility.semantics| API documentation.
-  // |get_pixel_scale|: Callback to retrieve the pixel scale factor.
   // |delegate|: Handles semantic requests, please see Delegate class for more
   // documentation. Caller is responsible for ensuring that |delegate| outlives
   // |this|.
   // During construction, this class connects to
   // |fuchsia.accessibility.semantics.SemanticsManager| to register itself as a
   // semantic provider.
-  AXFuchsiaSemanticProviderImpl(
-      fuchsia::ui::views::ViewRef view_ref,
-      base::RepeatingCallback<float()> get_pixel_scale,
-      Delegate* delegate);
+  AXFuchsiaSemanticProviderImpl(fuchsia::ui::views::ViewRef view_ref,
+                                Delegate* delegate);
   ~AXFuchsiaSemanticProviderImpl() override;
 
   // Returns true if Fuchsia has enabled semantics.
@@ -54,6 +51,7 @@ class AX_EXPORT AXFuchsiaSemanticProviderImpl
       fuchsia::accessibility::semantics::SemanticEvent event) override;
   bool HasPendingUpdates() const override;
   float GetPixelScale() const override;
+  void SetPixelScale(float pixel_scale) override;
 
  private:
   // Holds information about a Fuchsia Semantic Node. It contains only the
@@ -152,9 +150,6 @@ class AX_EXPORT AXFuchsiaSemanticProviderImpl
 
   fuchsia::ui::views::ViewRef view_ref_;
 
-  // Callback used to retrieve the pixel scale.
-  base::RepeatingCallback<float()> get_pixel_scale_;
-
   Delegate* const delegate_;
 
   fidl::Binding<fuchsia::accessibility::semantics::SemanticListener>
@@ -186,6 +181,10 @@ class AX_EXPORT AXFuchsiaSemanticProviderImpl
   std::vector<Batch> batches_;
 
   bool commit_inflight_ = false;
+
+  // The scale factor used to convert between the coordinate space chrome
+  // allocates for the view and the view's logical size reported by scenic.
+  float pixel_scale_ = 1.f;
 };
 
 }  // namespace ui

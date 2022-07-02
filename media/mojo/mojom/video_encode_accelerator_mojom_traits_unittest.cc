@@ -21,6 +21,8 @@ TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
   input.max_resolution = gfx::Size(4096, 4096);
   input.max_framerate_numerator = 30;
   input.max_framerate_denominator = 1;
+  input.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                             VideoEncodeAccelerator::kVariableMode;
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL1T3);
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL3T3Key);
 

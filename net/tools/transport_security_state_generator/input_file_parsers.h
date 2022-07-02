@@ -12,9 +12,7 @@ namespace base {
 class Time;
 }
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 class Pinsets;
 
@@ -36,8 +34,6 @@ bool ParseJSON(base::StringPiece json,
                TransportSecurityStateEntries* entries,
                Pinsets* pinsets);
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_INPUT_FILE_PARSERS_H_

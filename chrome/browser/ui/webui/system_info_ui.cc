@@ -87,7 +87,7 @@ class SystemInfoHandler : public WebUIMessageHandler {
 
   // Callback for the "requestSystemInfo" message. This asynchronously requests
   // system info and eventually returns it to the front end.
-  void HandleRequestSystemInfo(const base::ListValue* args);
+  void HandleRequestSystemInfo(const base::Value::List& args);
 
   void OnSystemInfo(std::unique_ptr<SystemLogsResponse> sys_info);
 
@@ -111,15 +111,15 @@ void SystemInfoHandler::OnJavascriptDisallowed() {
 }
 
 void SystemInfoHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestSystemInfo",
       base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
                           base::Unretained(this)));
 }
 
-void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue* args) {
+void SystemInfoHandler::HandleRequestSystemInfo(const base::Value::List& args) {
   AllowJavascript();
-  callback_id_ = args->GetListDeprecated()[0].GetString();
+  callback_id_ = args[0].GetString();
 
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildAboutSystemLogsFetcher();

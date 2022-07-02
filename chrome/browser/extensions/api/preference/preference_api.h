@@ -23,7 +23,9 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
@@ -59,11 +61,38 @@ class PreferenceEventRouter : public ProfileObserver {
   PrefChangeRegistrar registrar_;
   std::unique_ptr<PrefChangeRegistrar> incognito_registrar_;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Callback for extension-controlled prefs where the underlying pref lives
+  // in ash. An event fires when the value of the pref in ash changes.
+  void OnAshPrefChanged(crosapi::mojom::PrefPath pref_path,
+                        const std::string& extension_pref,
+                        const std::string& browser_pref,
+                        base::Value value);
+
+  // Second callback to return additional detail about the extension-controlled
+  // pref.
+  void OnAshGetSuccess(const std::string& browser_pref,
+                       absl::optional<::base::Value> opt_value,
+                       crosapi::mojom::PrefControlState control_state);
+
+  // Callback for lacros version of the prefs, to update ash in the event that
+  // they are changed.
+  void OnControlledPrefChanged(PrefService* pref_service,
+                               const std::string& browser_pref);
+
+  std::vector<std::unique_ptr<crosapi::mojom::PrefObserver>>
+      extension_pref_observers_;
+#endif
+
   // Weak, owns us (transitively via ExtensionService).
   raw_ptr<Profile> profile_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::WeakPtrFactory<PreferenceEventRouter> weak_factory_{this};
+#endif
 };
 
 // The class containing the implementation for extension-controlled preference
@@ -134,6 +163,9 @@ class PreferenceAPI : public PreferenceAPIBase,
 
   // EventRouter::Observer implementation.
   void OnListenerAdded(const EventListenerInfo& details) override;
+
+  // Ensures that a PreferenceEventRouter is created only once.
+  void EnsurePreferenceEventRouterCreated();
 
  private:
   friend class BrowserContextKeyedAPIFactory<PreferenceAPI>;

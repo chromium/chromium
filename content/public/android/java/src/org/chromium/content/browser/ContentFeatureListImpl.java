@@ -41,10 +41,25 @@ public class ContentFeatureListImpl {
                 featureName, paramName, defaultValue);
     }
 
+    /**
+     * Returns a field trial param as a boolean for the specified feature.
+     * {@see ContentFeatureList#getFieldTrialParamByFeatureAsBoolean}
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in content/browser/android/content_feature_list.cc
+     */
+    public static boolean getFieldTrialParamByFeatureAsBoolean(
+            String featureName, String paramName, boolean defaultValue) {
+        return ContentFeatureListImplJni.get().getFieldTrialParamByFeatureAsBoolean(
+                featureName, paramName, defaultValue);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isEnabled(String featureName);
         int getFieldTrialParamByFeatureAsInt(
                 String featureName, String paramName, int defaultValue);
+        boolean getFieldTrialParamByFeatureAsBoolean(
+                String featureName, String paramName, boolean defaultValue);
     }
 }

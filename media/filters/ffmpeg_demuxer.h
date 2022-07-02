@@ -44,13 +44,12 @@
 #include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
-#include "media/ffmpeg/ffmpeg_deleters.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/blocking_url_protocol.h"
 #include "media/media_buildflags.h"
 
 // FFmpeg forward declarations.
 struct AVFormatContext;
-struct AVPacket;
 struct AVRational;
 struct AVStream;
 
@@ -60,12 +59,6 @@ class MediaLog;
 class FFmpegBitstreamConverter;
 class FFmpegDemuxer;
 class FFmpegGlue;
-
-typedef std::unique_ptr<AVPacket, ScopedPtrAVFreePacket> ScopedAVPacket;
-
-// Use av_packet_alloc() to create a packet, which is scoped to delete with
-// av_packet_free at the end of it's lifetime.
-MEDIA_EXPORT ScopedAVPacket MakeScopedAVPacket();
 
 class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
  public:

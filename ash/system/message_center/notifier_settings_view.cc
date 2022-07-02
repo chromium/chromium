@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event_utils.h"
@@ -379,22 +380,6 @@ class AdaptiveBadgingIcon : public ::views::ImageView {
   }
 };
 
-//
-class AdaptiveSeparator : public ::views::Separator {
- public:
-  AdaptiveSeparator() = default;
-  AdaptiveSeparator(const AdaptiveSeparator&) = delete;
-  AdaptiveSeparator& operator=(const AdaptiveSeparator&) = delete;
-  ~AdaptiveSeparator() override = default;
-
- private:
-  void OnThemeChanged() override {
-    views::Separator::OnThemeChanged();
-    SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparatorColor));
-  }
-};
-
 }  // namespace
 
 // NotifierSettingsView::NotifierButton ---------------------------------------
@@ -561,8 +546,6 @@ NotifierSettingsView::NotifierSettingsView() {
       ContentLayerType::kTextColorPrimary);
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kIconColorPrimary);
-  const SkColor separator_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSeparatorColor);
 
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
@@ -594,8 +577,8 @@ NotifierSettingsView::NotifierSettingsView() {
   header_view->AddChildView(std::move(app_badging_view));
 
   // Separator between toggle button rows.
-  auto separator = std::make_unique<AdaptiveSeparator>();
-  separator->SetColor(separator_color);
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   header_view->AddChildView(std::move(separator));
 
   // Row for the quiet mode toggle button.

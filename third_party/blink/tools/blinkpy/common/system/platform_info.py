@@ -30,6 +30,8 @@ import re
 import sys
 from six.moves import map
 
+from blinkpy.common.system.executive import ScriptError
+
 
 class PlatformInfo(object):
     """This class provides a consistent (and mockable) interpretation of
@@ -56,7 +58,7 @@ class PlatformInfo(object):
             self.os_version = platform_module.release()
         if self.os_name.startswith('mac'):
             self.os_version = self._determine_mac_version(
-                platform_module.mac_ver()[0])
+                self._raw_mac_version(platform_module))
         if self.os_name.startswith('win'):
             self.os_version = self._determine_win_version(
                 self._win_version_tuple())
@@ -162,6 +164,18 @@ class PlatformInfo(object):
 
         return 'unknown'
 
+    def _raw_mac_version(self, platform_module):
+        """Read this Mac's version string (starts with "<major>.<minor>")."""
+        try:
+            # crbug/1294954: Python's `platform.mac_ver()` can be unreliable.
+            command = ['sw_vers', '-productVersion']
+            output = self._executive.run_command(command).strip()
+            if re.match(r'\d+\.\d+', output):
+                return output
+        except (OSError, SystemError, ScriptError):
+            pass
+        return platform_module.mac_ver()[0]
+
     def _determine_os_name(self, sys_platform):
         if sys_platform == 'darwin':
             return 'mac'
@@ -178,7 +192,7 @@ class PlatformInfo(object):
         major_release = int(mac_version_string.split('.')[0])
         minor_release = int(mac_version_string.split('.')[1])
         if major_release == 10:
-            assert 10 <= minor_release <= 16, 'Unsupported mac OS version: %s' % mac_version_string
+            assert 13 <= minor_release <= 16, 'Unsupported mac OS version: %s' % mac_version_string
             return 'mac{major_release}.{minor_release}'.format(
                 major_release=major_release,
                 minor_release=minor_release,

@@ -6,8 +6,6 @@
 #define CONTENT_RENDERER_RENDER_PROCESS_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "content/child/child_process.h"
@@ -24,9 +22,8 @@ namespace content {
 class RenderProcess : public ChildProcess {
  public:
   RenderProcess() = default;
-  RenderProcess(const std::string& thread_pool_name,
-                std::unique_ptr<base::ThreadPoolInstance::InitParams>
-                    thread_pool_init_params);
+  explicit RenderProcess(std::unique_ptr<base::ThreadPoolInstance::InitParams>
+                             thread_pool_init_params);
 
   RenderProcess(const RenderProcess&) = delete;
   RenderProcess& operator=(const RenderProcess&) = delete;

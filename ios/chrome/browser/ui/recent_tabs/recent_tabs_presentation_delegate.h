@@ -18,10 +18,10 @@ class DistantSession;
 // tab UI is already visible. Receiver may also dismiss recent tabs.
 - (void)showActiveRegularTabFromRecentTabs;
 // Tells the receiver to show the history UI. Receiver may also dismiss recent
-// tabs. If |searchTerms| is not empty, it will be used to pre-populate the
+// tabs. If `searchTerms` is not empty, it will be used to pre-populate the
 // search bar and filter results.
 - (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms;
-// Tells the receiver to open all tabs from the given |session|.
+// Tells the receiver to open all tabs from the given `session`.
 - (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session;
 
 @optional

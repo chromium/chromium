@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
@@ -18,8 +19,6 @@
 
 namespace content {
 
-class DocumentOverlayWindow;
-class OverlayWindow;
 class WebContents;
 class WebContentsImpl;
 enum class PictureInPictureResult;
@@ -56,10 +55,8 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   WebContents* GetWebContents() override;
 
   // DocumentPictureInPictureWindowController:
-  void SetChildWebContents(
-      std::unique_ptr<WebContents> child_contents) override;
+  void SetChildWebContents(WebContents* child_contents) override;
   WebContents* GetChildWebContents() override;
-  DocumentOverlayWindow* GetWindowForTesting() override;
 
   // WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -74,53 +71,51 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   explicit DocumentPictureInPictureWindowControllerImpl(
       WebContents* web_contents);
 
-  // Signal to the media player that |this| is leaving Picture-in-Picture mode.
-  // The should_pause_video argument signals the user's intent. If true, the
-  // user explicitly closed the window and any active media should be paused.
-  // If false, the user used a "return to tab" feature with the expectation
-  // that any active media will continue playing in the parent tab.
-  // TODO(klausw): connect this to the requestPictureInPicture API and/or
-  // onleavepictureinpicture event once that's implemented.
-  void OnLeavingPictureInPicture(bool should_pause_video);
+  // Internal method to set the states after the pip has been stopped, whether
+  // via the page or by the browser.  Notifies the opener that pip has ended.
+  // This is the only thing that should clear `child_contents_`, and it should
+  // always clear `child_contents_`.
+  void NotifyClosedAndStopObserving(bool should_pause_video);
 
-  // Internal method to set the states after the window was closed, whether via
-  // the system or by the browser.
-  void CloseInternal(bool should_pause_video);
+  // Called when the child WebContents discovers that it's being deleted.
+  void OnChildContentsDestroyed();
 
   // Returns the web_contents() as a WebContentsImpl*.
   WebContentsImpl* GetWebContentsImpl();
 
-  void EnsureWindow();
-
-  // Convenience routine for cases in which we'd like to cause the picture in
-  // picture window to close. This will close the window, then clean up the
-  // internal state.
-  void ForceClosePictureInPicture();
-
-  // If true, the PiP window is currently in the process of being closed.
-  bool closing_ = false;
-
-  // The controller owns both the overlay window and the child web contents
-  // shown within the overlay window.
-  std::unique_ptr<OverlayWindow> window_;
-  std::unique_ptr<WebContents> child_contents_;
+  // The WebContents for the PiP window. If this is null, then we have already
+  // closed / stopped Picture in Picture.
+  raw_ptr<WebContents> child_contents_ = nullptr;
 
   class ChildContentsObserver : public WebContentsObserver {
    public:
-    // Will call `close_cb` when `web_contents` navigates.
+    // Will post `force_close_cb` when `web_contents` navigates, or at similar
+    // times when the PiP session should end. `contents_destroyed_cb` will be
+    // called in-line (not posted) when our WebContents has been destroyed and
+    // the pointer should be discarded.
     ChildContentsObserver(WebContents* web_contents,
-                          base::OnceClosure close_cb);
+                          base::OnceClosure force_close_cb,
+                          base::OnceClosure contents_destroyed_cb);
     ~ChildContentsObserver() override;
 
-    // Check both `PrimaryPageChanged` and `DidStartNavigation`. We check
-    // navigations immediately to fail as sooner, rather than fetch and then
-    // fail on commit. We still check on commit as a fail-safe.
-    void PrimaryPageChanged(Page&) override;
+    // Watch for navigations in the child contents, so that we can close the PiP
+    // window if it navigates away.  Some navigations (e.g., same-document) are
+    // allowed here.
     void DidStartNavigation(NavigationHandle*) override;
 
+    // If the PiP window is destroyed, notify the opener.
+    void WebContentsDestroyed() override;
+
    private:
-    base::OnceClosure close_cb_;
+    // Called, via post, to request that the pip session end.
+    base::OnceClosure force_close_cb_;
+
+    // Called, without posting, when the raw ptr to our WebContents is about to
+    // be invalidated.
+    base::OnceClosure contents_destroyed_cb_;
   };
+
+  raw_ptr<WebContents> opener_web_contents_ = nullptr;
 
   // WebContentsObserver to watch for changes in `child_contents_`.
   std::unique_ptr<ChildContentsObserver> child_contents_observer_;

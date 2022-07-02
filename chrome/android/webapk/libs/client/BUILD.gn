@@ -20,7 +20,8 @@ android_library("client_java") {
   ]
 }
 
-junit_binary("webapk_client_junit_tests") {
+robolectric_binary("webapk_client_junit_tests") {
+  package_name = "org.chromium.test"
   sources = [
     "junit/src/org/chromium/webapk/lib/client/WebApkIdentityServiceClientTest.java",
     "junit/src/org/chromium/webapk/lib/client/WebApkServiceConnectionManagerTest.java",
@@ -30,7 +31,6 @@ junit_binary("webapk_client_junit_tests") {
     ":client_java",
     "//base:base_java",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
     "//chrome/android/webapk/test:junit_test_support",

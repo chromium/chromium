@@ -47,6 +47,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+namespace {
+String OverflowForReplacedElementRules() {
+  return RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()
+             ? UncompressResourceAsASCIIString(
+                   IDR_UASTYLE_OVERFLOW_REPLACED_CSS)
+             : "";
+}
+}  // namespace
 
 CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
   DEFINE_STATIC_LOCAL(Persistent<CSSDefaultStyleSheets>,
@@ -99,6 +107,7 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
     : media_controls_style_sheet_loader_(nullptr) {
   // Strict-mode rules.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
+                         OverflowForReplacedElementRules() +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
 
   default_style_sheet_ = ParseUASheet(default_rules);
@@ -140,6 +149,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   marker_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
+                         OverflowForReplacedElementRules() +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
   default_style_sheet_ = ParseUASheet(default_rules);
 

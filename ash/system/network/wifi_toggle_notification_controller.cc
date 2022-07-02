@@ -39,7 +39,8 @@ std::unique_ptr<Notification> CreateNotification(bool wifi_enabled) {
           network_icon::GetImageForWiFiEnabledState(wifi_enabled)),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierWifiToggle),
+                                 kNotifierWifiToggle,
+                                 NotificationCatalogName::kWifiToggle),
       message_center::RichNotificationData(), nullptr);
   return notification;
 }

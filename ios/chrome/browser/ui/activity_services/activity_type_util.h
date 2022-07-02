@@ -49,12 +49,12 @@ enum ActivityType {
   UNKNOWN,
 };
 
-// Returns the ActivityType enum associated with |activityString|, which is the
-// bundle ID of a iOS App Extension. Returns UNKNOWN if |activityString| does
-// match any known App Extensions. |activityString| must not be nil.
+// Returns the ActivityType enum associated with `activityString`, which is the
+// bundle ID of a iOS App Extension. Returns UNKNOWN if `activityString` does
+// match any known App Extensions. `activityString` must not be nil.
 ActivityType TypeFromString(NSString* activityString);
 
-// Records the UMA for activity |type|.
+// Records the UMA for activity `type`.
 void RecordMetricForActivity(ActivityType type);
 
 }  // namespace activity_type_util

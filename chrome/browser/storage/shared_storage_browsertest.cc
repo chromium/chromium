@@ -57,8 +57,8 @@ MakeFilter(std::vector<std::string> possible_last_messages) {
 }
 
 std::string GetSharedStorageDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error:\nError: ",
-                       content::GetSharedStorageDisabledMessage(), "\n"});
+  return base::StrCat({"a JavaScript error: \"Error: ",
+                       content::GetSharedStorageDisabledMessage(), "\"\n"});
 }
 
 }  // namespace
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, AddModule) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ("a JavaScript error:\nError: sharedStorage is disabled\n",
+    EXPECT_EQ("a JavaScript error: \"Error: sharedStorage is disabled\"\n",
               result.error);
     EXPECT_EQ(0u, console_observer.messages().size());
     return;
@@ -327,8 +327,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.selectURL(
           'test-url-selection-operation',
-          ["fenced_frames/title0.html", "fenced_frames/title1.html",
-          "fenced_frames/title2.html"], {data: {'mockResult': 1}});
+          [{url: "fenced_frames/title0.html"},
+           {url: "fenced_frames/title1.html",
+            reportingMetadata: {"click": "fenced_frames/report1.html"}},
+           {url: "fenced_frames/title2.html"}],
+          {data: {'mockResult': 1}});
     )");
 
   if (!SuccessExpected()) {

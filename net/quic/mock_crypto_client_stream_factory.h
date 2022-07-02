@@ -56,11 +56,12 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
   void SetConfig(const quic::QuicConfig& config);
 
  private:
-  MockCryptoClientStream::HandshakeMode handshake_mode_;
-  raw_ptr<MockCryptoClientStream> last_stream_;
+  MockCryptoClientStream::HandshakeMode handshake_mode_ =
+      MockCryptoClientStream::CONFIRM_HANDSHAKE;
+  raw_ptr<MockCryptoClientStream> last_stream_ = nullptr;
   base::queue<const ProofVerifyDetailsChromium*> proof_verify_details_queue_;
   std::unique_ptr<quic::QuicConfig> config_;
-  bool use_mock_crypter_;
+  bool use_mock_crypter_ = false;
 };
 
 }  // namespace net

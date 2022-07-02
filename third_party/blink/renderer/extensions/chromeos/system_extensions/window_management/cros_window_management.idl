@@ -3,5 +3,11 @@
 // found in the LICENSE file.
 
 interface CrosWindowManagement : EventTarget {
-  [CallWith=ScriptState] Promise<sequence<CrosWindow>> getWindows();
+  [CallWith=ScriptState] Promise<FrozenArray<CrosWindow>> getWindows();
+
+  // Returns the list of screens that are currently available.
+  [CallWith=ScriptState] Promise<FrozenArray<CrosScreen>> getScreens();
+
+  // Cached property of windows visible to the window manager.
+  readonly attribute FrozenArray<CrosWindow> windows;
 };

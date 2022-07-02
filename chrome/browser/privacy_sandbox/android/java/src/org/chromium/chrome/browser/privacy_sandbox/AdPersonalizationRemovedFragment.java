@@ -13,24 +13,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 
 /**
  * Settings fragment for privacy sandbox settings.
  */
 public class AdPersonalizationRemovedFragment
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
     private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
+    private static final String FLEDGE_CATEGORY_PREFERENCE = "fledge_interests";
+    private static final String EMPTY_FLEDGE_PREFERENCE = "empty_fledge";
 
     private PreferenceCategory mTopicsCategory;
-    private SnackbarManager mSnackbarManager;
     private Preference mEmptyTopicsPreference;
+    private PreferenceCategory mFledgeCategory;
+    private Preference mEmptyFledgePreference;
+    private SnackbarManager mSnackbarManager;
+    private LargeIconBridge mLargeIconBridge;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
@@ -41,6 +47,7 @@ public class AdPersonalizationRemovedFragment
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_remove_interest_title);
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_removed_preference);
@@ -48,6 +55,15 @@ public class AdPersonalizationRemovedFragment
         assert mTopicsCategory != null;
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         assert mEmptyTopicsPreference != null;
+
+        mFledgeCategory = findPreference(FLEDGE_CATEGORY_PREFERENCE);
+        assert mFledgeCategory != null;
+        mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
+        assert mEmptyFledgePreference != null;
+
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        }
 
         for (Topic topic : PrivacySandboxBridge.getBlockedTopics()) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
@@ -58,6 +74,16 @@ public class AdPersonalizationRemovedFragment
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(preference);
+        }
+        for (String site : PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay()) {
+            FledgePreference preference =
+                    new FledgePreference(getContext(), site, mLargeIconBridge);
+            preference.setImage(R.drawable.ic_add,
+                    getResources().getString(
+                            R.string.privacy_sandbox_add_site_button_description, site));
+            preference.setDividerAllowedBelow(false);
+            preference.setOnPreferenceClickListener(this);
+            mFledgeCategory.addPreference(preference);
         }
         updateEmptyState();
     }
@@ -71,8 +97,21 @@ public class AdPersonalizationRemovedFragment
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
+    }
+
     private void allowTopic(Topic topic) {
         PrivacySandboxBridge.setTopicAllowed(topic, true);
+    }
+
+    private void allowFledge(String site) {
+        PrivacySandboxBridge.setFledgeJoiningAllowed(site, true);
     }
 
     @Override
@@ -80,16 +119,26 @@ public class AdPersonalizationRemovedFragment
         if (preference instanceof TopicPreference) {
             allowTopic(((TopicPreference) preference).getTopic());
             mTopicsCategory.removePreference(preference);
-            updateEmptyState();
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_add_interest_snackbar), null,
                     Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST));
             RecordUserAction.record("Settings.PrivacySandbox.RemovedInterests.TopicAdded");
+        } else if (preference instanceof FledgePreference) {
+            allowFledge(((FledgePreference) preference).getSite());
+            mFledgeCategory.removePreference(preference);
+            mSnackbarManager.showSnackbar(Snackbar.make(
+                    getResources().getString(R.string.privacy_sandbox_add_site_snackbar), null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST));
+            RecordUserAction.record("Settings.PrivacySandbox.RemovedInterests.SiteAdded");
+        } else {
+            assert false; // NOTREACHED
         }
+        updateEmptyState();
         return true;
     }
 
     private void updateEmptyState() {
         mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
+        mEmptyFledgePreference.setVisible(mFledgeCategory.getPreferenceCount() == 0);
     }
 }

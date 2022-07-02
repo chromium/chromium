@@ -22,11 +22,9 @@ bool FakeInputMethodContext::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
 void FakeInputMethodContext::Reset() {
 }
 
-void FakeInputMethodContext::Focus() {
-}
-
-void FakeInputMethodContext::Blur() {
-}
+void FakeInputMethodContext::UpdateFocus(bool has_client,
+                                         TextInputType old_type,
+                                         TextInputType new_type) {}
 
 void FakeInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 }
@@ -39,6 +37,9 @@ void FakeInputMethodContext::SetContentType(TextInputType type,
                                             TextInputMode mode,
                                             uint32_t flags,
                                             bool should_do_learning) {}
+
+void FakeInputMethodContext::SetGrammarFragmentAtCursor(
+    const ui::GrammarFragment& fragment) {}
 
 VirtualKeyboardController*
 FakeInputMethodContext::GetVirtualKeyboardController() {

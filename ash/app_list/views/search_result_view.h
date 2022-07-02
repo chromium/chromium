@@ -191,6 +191,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // Callback for query suggstion removal confirmation.
   void OnQueryRemovalAccepted(bool accepted);
 
+  // Called when the result selection controller selects a new result.
+  void OnSelectedResultChanged();
+
   // views::View overrides:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;

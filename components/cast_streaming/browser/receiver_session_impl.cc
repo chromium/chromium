@@ -95,11 +95,8 @@ void ReceiverSessionImpl::OnSessionInitialization(
             base::BindOnce(&ReceiverSessionImpl::OnMojoDisconnect,
                            weak_factory_.GetWeakPtr()),
             std::move(initialization_info.audio_stream_info->config));
-    audio_demuxer_stream_data_provider_->SetOnNoBuffersAvailableCallback(
-        std::move(
-            initialization_info.audio_stream_info->on_no_buffers_callback));
-    audio_demuxer_stream_data_provider_->SetOnErrorCallback(
-        std::move(initialization_info.audio_stream_info->on_error_callback));
+    audio_demuxer_stream_data_provider_->SetClient(std::move(
+        initialization_info.audio_stream_info->demuxer_stream_client));
     audio_info = mojom::AudioStreamInitializationInfo::New(
         std::move(audio_receiver),
         mojom::AudioStreamInfo::New(
@@ -117,11 +114,8 @@ void ReceiverSessionImpl::OnSessionInitialization(
             base::BindOnce(&ReceiverSessionImpl::OnMojoDisconnect,
                            weak_factory_.GetWeakPtr()),
             std::move(initialization_info.video_stream_info->config));
-    video_demuxer_stream_data_provider_->SetOnNoBuffersAvailableCallback(
-        std::move(
-            initialization_info.video_stream_info->on_no_buffers_callback));
-    video_demuxer_stream_data_provider_->SetOnErrorCallback(
-        std::move(initialization_info.video_stream_info->on_error_callback));
+    video_demuxer_stream_data_provider_->SetClient(std::move(
+        initialization_info.video_stream_info->demuxer_stream_client));
     video_info = mojom::VideoStreamInitializationInfo::New(
         std::move(video_receiver),
         mojom::VideoStreamInfo::New(
@@ -163,11 +157,8 @@ void ReceiverSessionImpl::OnSessionReinitialization(
   if (audio_pipe_consumer) {
     if (!audio_demuxer_stream_data_provider_->config().Matches(
             initialization_info.audio_stream_info->config)) {
-      audio_demuxer_stream_data_provider_->SetOnNoBuffersAvailableCallback(
-          std::move(
-              initialization_info.audio_stream_info->on_no_buffers_callback));
-      audio_demuxer_stream_data_provider_->SetOnErrorCallback(
-          std::move(initialization_info.audio_stream_info->on_error_callback));
+      audio_demuxer_stream_data_provider_->SetClient(std::move(
+          initialization_info.audio_stream_info->demuxer_stream_client));
       audio_demuxer_stream_data_provider_->OnNewStreamInfo(
           std::move(initialization_info.audio_stream_info->config),
           std::move(*audio_pipe_consumer));
@@ -180,11 +171,8 @@ void ReceiverSessionImpl::OnSessionReinitialization(
   if (video_pipe_consumer) {
     if (!video_demuxer_stream_data_provider_->config().Matches(
             initialization_info.video_stream_info->config)) {
-      video_demuxer_stream_data_provider_->SetOnNoBuffersAvailableCallback(
-          std::move(
-              initialization_info.video_stream_info->on_no_buffers_callback));
-      video_demuxer_stream_data_provider_->SetOnErrorCallback(
-          std::move(initialization_info.video_stream_info->on_error_callback));
+      video_demuxer_stream_data_provider_->SetClient(std::move(
+          initialization_info.video_stream_info->demuxer_stream_client));
       video_demuxer_stream_data_provider_->OnNewStreamInfo(
           std::move(initialization_info.video_stream_info->config),
           std::move(*video_pipe_consumer));

@@ -62,11 +62,9 @@ enum class DelayedWarningEvent {
 // Name of the recorded histograms when the user did not disable URL elision via
 // "Always Show Full URLs" menu option or by installing Suspicious Site Reporter
 // extension.
-extern const char kDelayedWarningsHistogram[];
 extern const char kDelayedWarningsTimeOnPageHistogram[];
 
 // Same as above but only recorded if the user disabled URL elision.
-extern const char kDelayedWarningsWithElisionDisabledHistogram[];
 extern const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[];
 
 // Observes user interactions and shows an interstitial if necessary.
@@ -132,8 +130,6 @@ class SafeBrowsingUserInteractionObserver
       const security_interstitials::UnsafeResource& resource,
       bool is_main_frame,
       scoped_refptr<SafeBrowsingUIManager> ui_manager);
-
-  void RecordUMA(DelayedWarningEvent event);
 
   bool HandleKeyPress(const content::NativeWebKeyboardEvent& event);
   bool HandleMouseEvent(const blink::WebMouseEvent& event);

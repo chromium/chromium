@@ -138,7 +138,7 @@ using UkmEnumVariant = absl::variant<TriggerScriptProto::TriggerUIType,
                                      Metrics::AutofillAssistantStarted,
                                      Metrics::AutofillAssistantCaller,
                                      Metrics::AutofillAssistantSource,
-                                     Metrics::AutofillAssistantIntent,
+                                     AutofillAssistantIntent,
                                      Metrics::AutofillAssistantExperiment,
                                      Metrics::Onboarding>;
 

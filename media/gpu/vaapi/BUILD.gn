@@ -79,7 +79,7 @@ source_set("vaapi") {
     "vp9_vaapi_video_encoder_delegate.cc",
     "vp9_vaapi_video_encoder_delegate.h",
   ]
-  if (enable_platform_hevc_decoding) {
+  if (enable_hevc_parser_and_hw_decoder) {
     sources += [
       "h265_vaapi_video_decoder_delegate.cc",
       "h265_vaapi_video_decoder_delegate.h",
@@ -207,6 +207,7 @@ source_set("common") {
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
+    "//ui/gfx/linux:drm",
     "//ui/gl",
   ]
   if (use_ozone) {
@@ -368,6 +369,12 @@ executable("decode_test") {
     "test/av1_decoder.cc",
     "test/av1_decoder.h",
     "test/decode.cc",
+    "test/h264_decoder.cc",
+    "test/h264_decoder.h",
+    "test/h264_dpb.cc",
+    "test/h264_dpb.h",
+    "test/h264_vaapi_wrapper.cc",
+    "test/h264_vaapi_wrapper.h",
     "test/macros.h",
     "test/scoped_va_config.cc",
     "test/scoped_va_config.h",

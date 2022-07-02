@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
 enum ChromeInsetsMetric {

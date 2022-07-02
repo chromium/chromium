@@ -3465,7 +3465,7 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
-      "device_id": ["0x98e4", "0x15d8", "0x15dd"],
+      "device_id": ["0x98e4", "0x15dd"],
       "features": [
         "disable_d3d11_video_decoder"
       ],
@@ -4011,6 +4011,60 @@
       ],
       "features": [
           "disable_vp_super_resolution"
+      ]
+    },
+    {
+      "id": 395,
+      "cr_bugs": [1327088],
+      "description": "Don't use MPO on Intel TigerLake GPUs with old drivers due to VideoProcessorBlt crash.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "12"
+      },
+      "driver_version": {
+        "op": "<=",
+        "value": "27.20.100.9168"
+      },
+      "features": [
+        "disable_direct_composition_video_overlays"
+      ]
+    },
+    {
+      "id": 396,
+      "cr_bugs": [1327044],
+      "description": "Add fence to SharedImageBackingOzone::BeginAccess when on same GL context",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali.*",
+      "features": [
+        "add_fence_for_same_gl_context"
+      ]
+    },
+    {
+      "id": 397,
+      "description": "VPx decoding crashes due to a buggy driver / chipset combo.",
+      "cr_bugs": [1333299],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": ">=",
+          "value": "10"
+        }
+      },
+      "vendor_id": "0x8086",
+      "device_id": [ "0x591B" ],
+      "driver_version": {
+        "op": "=",
+        "value": "26.20.100.6998"
+      },
+      "features": [
+        "disable_accelerated_vp9_decode"
       ]
     }
   ]

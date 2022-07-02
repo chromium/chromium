@@ -10,7 +10,7 @@
 // Protocol that describes the commands that loads a result in the omnibox.
 @protocol LoadQueryCommands
 
-// Loads |query| in the omnibox. If |immediately| is true, it is loading the
+// Loads `query` in the omnibox. If `immediately` is true, it is loading the
 // page associated with it.
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately;
 

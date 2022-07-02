@@ -6,8 +6,10 @@
 
 namespace autofill {
 MockSingleFieldFormFillRouter::MockSingleFieldFormFillRouter(
-    AutocompleteHistoryManager* autocomplete_history_manager)
-    : SingleFieldFormFillRouter(autocomplete_history_manager) {}
+    AutocompleteHistoryManager* autocomplete_history_manager,
+    MerchantPromoCodeManager* merchant_promo_code_manager)
+    : SingleFieldFormFillRouter(autocomplete_history_manager,
+                                merchant_promo_code_manager) {}
 
 MockSingleFieldFormFillRouter::~MockSingleFieldFormFillRouter() = default;
 

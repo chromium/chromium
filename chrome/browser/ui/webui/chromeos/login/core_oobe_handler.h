@@ -36,9 +36,10 @@ class CoreOobeView {
   virtual void ShowScreenWithData(const ash::OobeScreenId& screen,
                                   absl::optional<base::Value::Dict> data) = 0;
   virtual void ReloadContent(base::Value::Dict dictionary) = 0;
-  virtual void FocusReturned(bool reverse) = 0;
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
   virtual void ToggleSystemInfo() = 0;
+  virtual void ForwardCancel() = 0;
+  virtual void LaunchHelpApp(int help_topic_id) = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -81,21 +82,17 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Show or hide OOBE UI.
   void ShowOobeUI(bool show);
 
-  // Notify WebUI of the user count on the views login screen.
-  void SetLoginUserCount(int user_count);
-
-  // Forwards an accelerator value to cr.ui.Oobe.handleAccelerator.
-  void ForwardAccelerator(std::string accelerator_name);
-
  private:
   // CoreOobeView implementation:
   void ShowScreenWithData(const ash::OobeScreenId& screen,
                           absl::optional<base::Value::Dict> data) override;
   void ReloadContent(base::Value::Dict dictionary) override;
-  void FocusReturned(bool reverse) override;
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize(const gfx::Size& size) override;
   void ToggleSystemInfo() override;
+  // Forwards the cancel accelerator value to the shown screen.
+  void ForwardCancel() override;
+  void LaunchHelpApp(int help_topic_id) override;
 
   // ash::TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -111,7 +108,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleEnableShelfButtons(bool enable);
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
-  void HandleSkipToLoginForTesting();
   void HandleLaunchHelpApp(int help_topic_id);
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.
@@ -130,6 +126,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
+
+  bool is_oobe_display_ = false;
 };
 
 }  // namespace chromeos

@@ -500,7 +500,10 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
           // If we don't have a per-sample IV, get the constant IV.
           bool is_encrypted = index == 0 ? track_encryption->is_encrypted
                                          : info_entry->is_encrypted;
-#if BUILDFLAG(IS_CHROMECAST)
+
+          // TODO(crbug.com/1336055): Investigate if this is a hardware or
+          // cast-related limitation.
+#if BUILDFLAG(IS_CASTOS)
           // On Chromecast, we only support setting the pattern values in the
           // 'tenc' box for the track (not varying on per sample group basis).
           // Thus we need to verify that the settings in the sample group
@@ -519,7 +522,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
                                 "sample group does not match that in the tenc "
                                 "box . This is not currently supported.");
           }
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_CASTOS)
           if (is_encrypted && !iv_size) {
             const uint8_t constant_iv_size =
                 index == 0 ? track_encryption->default_constant_iv_size

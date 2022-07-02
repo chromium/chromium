@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -21,7 +22,6 @@ constexpr char kUserActionBack[] = "back";
 constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 constexpr char kUserActionReloadDefault[] = "reloadDefault";
-constexpr char kUserActionSAMLVideoTimeout[] = "samlVideoTimeout";
 constexpr char kUserActionRetry[] = "retry";
 
 }  // namespace
@@ -37,8 +37,6 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "EnterpriseEnroll";
     case Result::START_CONSUMER_KIOSK:
       return "StartConsumerKiosk";
-    case Result::SAML_VIDEO_TIMEOUT:
-      return "SAMLVideoTimeout";
   }
 }
 
@@ -48,7 +46,9 @@ GaiaScreen::GaiaScreen(base::WeakPtr<TView> view,
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-GaiaScreen::~GaiaScreen() = default;
+GaiaScreen::~GaiaScreen() {
+  backlights_forced_off_observation_.Reset();
+}
 
 void GaiaScreen::LoadOnline(const AccountId& account) {
   if (!view_)
@@ -84,9 +84,26 @@ void GaiaScreen::ShowAllowlistCheckFailedError() {
   view_->ShowAllowlistCheckFailedError();
 }
 
+void GaiaScreen::Reset() {
+  if (!view_)
+    return;
+  view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
+  view_->Reset();
+}
+
+void GaiaScreen::ReloadGaiaAuthenticator() {
+  if (!view_)
+    return;
+  view_->ReloadGaiaAuthenticator();
+}
+
 void GaiaScreen::ShowImpl() {
   if (!view_)
     return;
+  if (!backlights_forced_off_observation_.IsObserving()) {
+    backlights_forced_off_observation_.Observe(
+        Shell::Get()->backlights_forced_off_setter());
+  }
   // Landed on the login screen. No longer skipping enrollment for tests.
   context()->skip_to_login_for_tests = false;
   view_->Show();
@@ -97,6 +114,7 @@ void GaiaScreen::HideImpl() {
     return;
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->Hide();
+  backlights_forced_off_observation_.Reset();
 }
 
 void GaiaScreen::OnUserAction(const base::Value::List& args) {
@@ -112,9 +130,6 @@ void GaiaScreen::OnUserAction(const base::Value::List& args) {
     LoadOnline(EmptyAccountId());
   } else if (action_id == kUserActionRetry) {
     LoadOnline(EmptyAccountId());
-  } else if (action_id == kUserActionSAMLVideoTimeout) {
-    DCHECK(features::IsRedirectToDefaultIdPEnabled());
-    exit_callback_.Run(Result::SAML_VIDEO_TIMEOUT);
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -130,6 +145,13 @@ bool GaiaScreen::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
   return false;
+}
+
+void GaiaScreen::OnScreenBacklightStateChanged(
+    ScreenBacklightState screen_backlight_state) {
+  if (screen_backlight_state == ScreenBacklightState::ON)
+    return;
+  exit_callback_.Run(Result::CANCEL);
 }
 
 }  // namespace ash

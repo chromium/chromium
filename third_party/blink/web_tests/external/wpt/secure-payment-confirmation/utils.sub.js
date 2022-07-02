@@ -64,17 +64,32 @@ async function createCredentialForAltDomain() {
   frame.src = 'https://{{hosts[alt][]}}:{{ports[https][0]}}' +
       '/secure-payment-confirmation/resources/iframe-enroll.html';
 
-  return new Promise(resolve => {
+  // Wait for the iframe to load.
+  const readyPromise = new Promise(resolve => {
       window.addEventListener('message', function handler(evt) {
-        if (evt.source === frame.contentWindow) {
+        if (evt.source === frame.contentWindow && evt.data.type == 'loaded') {
+          window.removeEventListener('message', handler);
+
+          resolve(evt.data);
+        }
+      });
+  });
+  document.body.appendChild(frame);
+  await readyPromise;
+
+  // Setup the result promise, and then trigger credential creation.
+  const resultPromise = new Promise(resolve => {
+      window.addEventListener('message', function handler(evt) {
+        if (evt.source === frame.contentWindow && evt.data.type == 'spc_result') {
           document.body.removeChild(frame);
           window.removeEventListener('message', handler);
 
           resolve(evt.data);
         }
       });
-      document.body.appendChild(frame);
   });
+  frame.contentWindow.postMessage({ userActivation: true }, '*');
+  return resultPromise;
 }
 
 function arrayBufferToString(buffer) {

@@ -76,41 +76,6 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testCannotMakePayment_UserAbort_WithBasicCardEnabled() throws TimeoutException {
-        // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "queryShow", mPaymentRequestTestRule.getReadyForInput());
-
-        // Press the back button.
-        int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPaymentRequestTestRule.getPaymentRequestUI()
-                                   .getDialogForTest()
-                                   .onBackPressed());
-        mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.NEEDS_COMPLETION_PAYMENT;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving no as a response, still showing the Payment Request and the user aborts
-     * the flow.
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
     @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testCannotMakePayment_UserAbort() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
@@ -139,51 +104,6 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
                 | Event.REQUEST_METHOD_OTHER | Event.HAS_ENROLLED_INSTRUMENT_TRUE
                 | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving no as a response, still showing the Payment Request and the user
-     * completes the flow.
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testCannotMakePayment_Complete_WithBasicCardEnabled() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "queryShow", mPaymentRequestTestRule.getReadyForInput());
-
-        // Add a new credit card.
-        mPaymentRequestTestRule.clickInPaymentMethodAndWait(
-                R.id.payments_section, mPaymentRequestTestRule.getReadyToEdit());
-        mPaymentRequestTestRule.setSpinnerSelectionsInCardEditorAndWait(
-                new int[] {DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS},
-                mPaymentRequestTestRule.getBillingAddressChangeProcessed());
-        mPaymentRequestTestRule.setTextInCardEditorAndWait(
-                new String[] {"4111111111111111", "Jon Doe"},
-                mPaymentRequestTestRule.getEditorTextUpdate());
-        mPaymentRequestTestRule.clickInCardEditorAndWait(
-                R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
-
-        // Complete the transaction.
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
-                | Event.COMPLETED | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_CREDIT_CARD
-                | Event.NEEDS_COMPLETION_PAYMENT;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -467,39 +387,6 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_FALSE
                 | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_OTHER
                 | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * not calling it but still showing the Payment Request and the user aborts the flow.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1222944")
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testNoQuery_UserAbort_WithBasicCardEnabled() throws TimeoutException {
-        // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "noQueryShow", mPaymentRequestTestRule.getReadyForInput());
-
-        // Press the back button.
-        int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPaymentRequestTestRule.getPaymentRequestUI()
-                                   .getDialogForTest()
-                                   .onBackPressed());
-        mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure no canMakePayment events were logged.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.NEEDS_COMPLETION_PAYMENT;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));

@@ -9,20 +9,20 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/security_token_pin/constants.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
+#include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_challenge_key_handler.h"
+#include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -85,6 +85,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
   // Show error UI at the end of GAIA flow when user is not allowlisted.
   virtual void ShowAllowlistCheckFailedError() = 0;
+  // Reloads authenticator.
+  virtual void ReloadGaiaAuthenticator() = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -92,6 +94,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void ShowSigninScreenForTest(const std::string& username,
                                        const std::string& password,
                                        const std::string& services) = 0;
+  // Reset authenticator.
+  virtual void Reset() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
@@ -133,10 +137,12 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void Hide() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
   void ShowAllowlistCheckFailedError() override;
+  void ReloadGaiaAuthenticator() override;
 
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
                                const std::string& services) override;
+  void Reset() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
@@ -205,6 +211,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
       const base::Value::List& scraped_saml_passwords_value,
       bool using_saml,
       const base::Value::List& services_list,
+      bool services_provided,
       const base::Value::Dict& password_attributes,
       const base::Value::Dict& sync_trusted_vault_keys);
   void HandleCompleteLogin(const std::string& gaia_id,

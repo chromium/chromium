@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/known_user.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
@@ -137,12 +137,6 @@ void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   if (is_enabled && host_->GetOobeUI() != nullptr) {
     host_->GetOobeUI()->ShowOobeUI(false);
   }
-}
-
-void LoginDisplayMojo::Login(const UserContext& user_context,
-                             const SigninSpecifics& specifics) {
-  if (delegate_)
-    delegate_->Login(user_context, specifics);
 }
 
 bool LoginDisplayMojo::IsSigninInProgress() const {

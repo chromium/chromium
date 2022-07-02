@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,
                           const char* interface_name,
-                          MessageToStableIPCHashCallback ipc_hash_callback,
+                          MessageToMethodInfoCallback method_info_callback,
                           MessageToMethodNameCallback method_name_callback);
 
   InterfaceEndpointClient(const InterfaceEndpointClient&) = delete;
@@ -193,8 +193,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void MaybeSendNotifyIdle();
 
   const char* interface_name() const { return interface_name_; }
-  MessageToStableIPCHashCallback ipc_hash_callback() const {
-    return ipc_hash_callback_;
+  MessageToMethodInfoCallback method_info_callback() const {
+    return method_info_callback_;
   }
   MessageToMethodNameCallback method_name_callback() const {
     return method_name_callback_;
@@ -327,7 +327,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   internal::ControlMessageProxy control_message_proxy_{this};
   internal::ControlMessageHandler control_message_handler_;
   const char* interface_name_;
-  const MessageToStableIPCHashCallback ipc_hash_callback_;
+  const MessageToMethodInfoCallback method_info_callback_;
   const MessageToMethodNameCallback method_name_callback_;
 
 #if DCHECK_IS_ON()

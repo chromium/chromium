@@ -31,6 +31,11 @@ BLINK_COMMON_EXPORT bool IsTrialEnabledForInsecureContext(
 BLINK_COMMON_EXPORT bool IsTrialEnabledForThirdPartyOrigins(
     base::StringPiece trial_name);
 
+// Returns true if |trial_name| should be enabled until the next response
+// from the same origin is received.
+BLINK_COMMON_EXPORT bool IsTrialPersistentToNextResponse(
+    base::StringPiece trial_name);
+
 // Returns the trial type of the given |feature|.
 OriginTrialType GetTrialType(OriginTrialFeature feature);
 

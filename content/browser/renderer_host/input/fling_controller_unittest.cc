@@ -216,6 +216,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool first_wheel_event_sent_ = false;
   int sent_scroll_gesture_count_ = 0;
 #if BUILDFLAG(IS_WIN)
+  // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
 
@@ -787,7 +788,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)
@@ -834,7 +835,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)

@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_file_selector.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -59,7 +61,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void OnCrostiniDialogStatusChanged(crostini::DialogType dialog_type,
                                      bool open) override;
   // crostini::CrostiniContainerPropertiesObserver
-  void OnContainerOsReleaseChanged(const crostini::ContainerId& container_id,
+  void OnContainerOsReleaseChanged(const guest_os::GuestId& container_id,
                                    bool can_upgrade) override;
   // Handle a request for the CrostiniExportImport operation status.
   void HandleCrostiniExportImportOperationStatusRequest(
@@ -120,9 +122,9 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Checks if Crostini is running.
   void HandleCheckCrostiniIsRunning(const base::Value::List& args);
   // crostini::ContainerStartedObserver
-  void OnContainerStarted(const crostini::ContainerId& container_id) override;
+  void OnContainerStarted(const guest_os::GuestId& container_id) override;
   // crostini::ContainerShutdownObserver
-  void OnContainerShutdown(const crostini::ContainerId& container_id) override;
+  void OnContainerShutdown(const guest_os::GuestId& container_id) override;
   // Handles a request to shut down Crostini.
   void HandleShutdownCrostini(const base::Value::List& args);
   // Handle a request for checking permission for changing ARC adb sideloading.
@@ -142,9 +144,16 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Handle a request to stop a running lxd container
   void HandleStopContainer(const base::Value::List& args);
 
+  // Handle a request to upload an Ansible Playbook
+  void HandleApplyAnsiblePlaybook(const base::Value::List& args);
+  // Callback for AnsibleFileSelector
+  void OnAnsiblePlaybookSelected(const std::string& callback_id,
+                                 const base::FilePath& path);
+
   Profile* profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<crostini::AnsibleFileSelector> ansible_file_selector_;
 
   // |handler_weak_ptr_factory_| is used for callbacks handling messages from
   // the WebUI page, and certain observers. These callbacks usually have the

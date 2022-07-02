@@ -60,11 +60,13 @@ BlinkStorageKey::BlinkStorageKey(
           blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()
               ? top_level_site
               : BlinkSchemefulSite(origin)),
+      top_level_site_if_third_party_enabled_(top_level_site),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
       ancestor_chain_bit_(
           blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()
               ? ancestor_chain_bit
-              : mojom::blink::AncestorChainBit::kSameSite) {
+              : mojom::blink::AncestorChainBit::kSameSite),
+      ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {
   DCHECK(origin_);
 }
 
@@ -87,15 +89,29 @@ BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
 BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)
     : BlinkStorageKey(
           SecurityOrigin::CreateFromUrlOrigin(storage_key.origin()),
-          BlinkSchemefulSite(storage_key.top_level_site()),
+          BlinkSchemefulSite(
+              storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning()
+                  .top_level_site()),
           storage_key.nonce() ? &storage_key.nonce().value() : nullptr,
-          storage_key.nonce() ? mojom::blink::AncestorChainBit::kSameSite
-                              : storage_key.ancestor_chain_bit()) {}
+          storage_key.nonce()
+              ? mojom::blink::AncestorChainBit::kSameSite
+              : storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning()
+                    .ancestor_chain_bit()) {
+  // We use `CopyWithForceEnabledThirdPartyStoragePartitioning` to preserve the
+  // partitioned values. The constructor on the other side restores the default
+  // values if `kThirdPartyStoragePartitioning` is disabled.
+}
 
 BlinkStorageKey::operator StorageKey() const {
+  // We use `top_level_site_if_third_party_enabled_` and
+  // `ancestor_chain_bit_if_third_party_enabled_` to preserve the partitioned
+  // values. The constructor on the other side restores the default values if
+  // `kThirdPartyStoragePartitioning` is disabled.
   return StorageKey::CreateWithOptionalNonce(
-      origin_->ToUrlOrigin(), static_cast<net::SchemefulSite>(top_level_site_),
-      base::OptionalOrNullptr(nonce_), ancestor_chain_bit_);
+      origin_->ToUrlOrigin(),
+      static_cast<net::SchemefulSite>(top_level_site_if_third_party_enabled_),
+      base::OptionalOrNullptr(nonce_),
+      ancestor_chain_bit_if_third_party_enabled_);
 }
 
 String BlinkStorageKey::ToDebugString() const {

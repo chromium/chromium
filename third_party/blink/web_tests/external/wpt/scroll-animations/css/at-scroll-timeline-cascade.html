@@ -5,7 +5,7 @@
 <script src="/web-animations/testcommon.js"></script>
 <style>
   #scroller {
-    overflow: scroll;
+    overflow: hidden;
     width: 100px;
     height: 100px;
   }
@@ -17,14 +17,10 @@
     to { width: 200px; }
   }
   @scroll-timeline timeline {
-    source: selector(#scroller);
-    start: 0px;
-    end: 100px;
+    /* default source */
   }
   @scroll-timeline timeline {
     source: selector(#scroller);
-    start: 0px;
-    end: 50px;
   }
   #element {
     animation: expand 10s linear;
@@ -43,6 +39,6 @@
   promise_test(async (t) => {
     scroller.scrollTop = 25;
     await waitForNextFrame();
-    assert_equals(getComputedStyle(element).width, '150px');
+    assert_equals(getComputedStyle(element).width, '125px');
   }, 'Latest @scroll-timeline rule wins');
 </script>

@@ -42,6 +42,13 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultFrequencyValue = 440.0;
+constexpr double kDefaultDetuneValue = 0.0;
+
+}  // namespace
+
 OscillatorNode::OscillatorNode(BaseAudioContext& context,
                                const String& oscillator_type,
                                PeriodicWave* wave_table)
@@ -51,21 +58,21 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypeOscillatorFrequency,
-                             440,
+                             kDefaultFrequencyValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
-                             -context.sampleRate() / 2,
-                             context.sampleRate() / 2)),
+                             /*min_value=*/-context.sampleRate() / 2,
+                             /*max_value=*/context.sampleRate() / 2)),
       // Default to no detuning.
-      detune_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypeOscillatorDetune,
-                             0,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable,
-                             -1200 * log2f(std::numeric_limits<float>::max()),
-                             1200 * log2f(std::numeric_limits<float>::max()))) {
+      detune_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeOscillatorDetune,
+          kDefaultDetuneValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          /*min_value=*/-1200 * log2f(std::numeric_limits<float>::max()),
+          /*max_value=*/1200 * log2f(std::numeric_limits<float>::max()))) {
   SetHandler(
       OscillatorHandler::Create(*this, context.sampleRate(), oscillator_type,
                                 wave_table ? wave_table->impl() : nullptr,

@@ -21,7 +21,6 @@
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/frame_renderer_thumbnail.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
@@ -118,7 +117,7 @@ class VideoDecoderTest : public ::testing::Test {
   std::unique_ptr<VideoPlayer> CreateVideoPlayer(
       const Video* video,
       VideoDecoderClientConfig config = VideoDecoderClientConfig(),
-      std::unique_ptr<FrameRenderer> frame_renderer =
+      std::unique_ptr<FrameRendererDummy> frame_renderer =
           FrameRendererDummy::Create()) {
     LOG_ASSERT(video);
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors;
@@ -183,9 +182,8 @@ class VideoDecoderTest : public ::testing::Test {
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
 
-    auto video_player = VideoPlayer::Create(
-        config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
-        std::move(frame_processors));
+    auto video_player = VideoPlayer::Create(config, std::move(frame_renderer),
+                                            std::move(frame_processors));
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
@@ -510,8 +508,7 @@ TEST_F(VideoDecoderTest, Reinitialize) {
 TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
   VideoDecoderClientConfig config = VideoDecoderClientConfig();
   config.implementation = g_env->GetDecoderImplementation();
-  auto tvp = VideoPlayer::Create(config, g_env->GetGpuMemoryBufferFactory(),
-                                 FrameRendererDummy::Create());
+  auto tvp = VideoPlayer::Create(config, FrameRendererDummy::Create());
   EXPECT_NE(tvp, nullptr);
 }
 

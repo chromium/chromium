@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/common/content_export.h"
@@ -77,7 +78,7 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
                                          bool became_visible) override;
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
 
-  Delegate* delegate_;  // Weak. Owns |this|.
+  raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 
   base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
       observation_{this};

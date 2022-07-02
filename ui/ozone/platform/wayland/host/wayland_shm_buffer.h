@@ -13,7 +13,7 @@
 
 namespace ui {
 
-class WaylandShm;
+class WaylandBufferFactory;
 
 // Encapsulates a Wayland SHM buffer, covering basically 2 use cases:
 // (1) Buffers created and mmap'ed locally to draw skia bitmap(s) into; and
@@ -23,7 +23,7 @@ class WaylandShm;
 // wl_buffer and WritableSharedMemoryMapping (if any) instance.
 class WaylandShmBuffer {
  public:
-  WaylandShmBuffer(WaylandShm* shm, const gfx::Size& size);
+  WaylandShmBuffer(WaylandBufferFactory* buffer_factory, const gfx::Size& size);
 
   WaylandShmBuffer(const WaylandShmBuffer&) = delete;
   WaylandShmBuffer& operator=(const WaylandShmBuffer&) = delete;
@@ -50,7 +50,7 @@ class WaylandShmBuffer {
   int stride() const { return stride_; }
 
  private:
-  void Initialize(WaylandShm* shm);
+  void Initialize(WaylandBufferFactory* buffer_factory);
 
   gfx::Size size_;
   int stride_;

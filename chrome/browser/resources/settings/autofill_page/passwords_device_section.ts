@@ -15,7 +15,7 @@ import './passwords_list_handler.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../settings_shared_css.js';
 import './avatar_icon.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 import './password_list_item.js';
 import './password_move_multiple_passwords_to_account_dialog.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -192,6 +192,14 @@ export class PasswordsDeviceSectionElement extends
         type: String,
         value: '',
       },
+
+      isPasswordViewPageEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordViewPage');
+        },
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -217,6 +225,7 @@ export class PasswordsDeviceSectionElement extends
   private showMoveMultiplePasswordsDialog_: boolean;
   private currentRoute_: Route|null;
   private devicePasswordsLabel_: string;
+  private isPasswordViewPageEnabled_: boolean;
   private accountStorageOptInStateListener_:
       AccountStorageOptInStateChangedListener|null = null;
 

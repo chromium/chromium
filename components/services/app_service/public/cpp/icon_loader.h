@@ -11,8 +11,6 @@
 #include "base/callback_forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
@@ -78,31 +76,6 @@ class IconLoader {
                                      int32_t size_hint_in_dip,
                                      bool allow_placeholder_icon,
                                      apps::LoadIconCallback callback);
-
-  // This can return nullptr, meaning that the IconLoader does not track when
-  // the icon is no longer actively used by the caller.
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  virtual std::unique_ptr<Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) = 0;
-
-  // Convenience method that calls "LoadIconFromIconKey(app_type, app_id,
-  // GetIconKey(app_id), etc)".
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  std::unique_ptr<Releaser> LoadIcon(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback);
 
  protected:
   // A struct containing the arguments (other than the callback) to

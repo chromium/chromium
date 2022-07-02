@@ -20,8 +20,8 @@ class AppLauncherBrowserAgent
   ~AppLauncherBrowserAgent() override;
 
  private:
-  explicit AppLauncherBrowserAgent(Browser* browser);
   friend class BrowserUserData<AppLauncherBrowserAgent>;
+  explicit AppLauncherBrowserAgent(Browser* browser);
 
   // Helper object that handles delegated AppLauncherTabHelper functionality.
   class TabHelperDelegate : public AppLauncherTabHelperDelegate {
@@ -39,7 +39,7 @@ class AppLauncherBrowserAgent
         base::OnceCallback<void(bool)> completion) override;
 
     // Returns the OverlayRequestQueue to use for app launch dialogs from
-    // |web_state|.  Returns the queue for |web_state|'s opener if |web_state|
+    // `web_state`.  Returns the queue for `web_state`'s opener if `web_state`
     // is expected to be closed before the app launcher dialog can be shown.
     OverlayRequestQueue* GetQueueForAppLaunchDialog(web::WebState* web_state);
 

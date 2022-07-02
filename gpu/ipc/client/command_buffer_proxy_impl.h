@@ -51,13 +51,11 @@ class HistogramBase;
 
 namespace gfx {
 struct GpuFenceHandle;
-struct PresentationFeedback;
 }
 
 namespace gpu {
 struct ContextCreationAttribs;
 struct Mailbox;
-struct SwapBuffersCompleteParams;
 struct SyncToken;
 }
 
@@ -121,6 +119,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       TransferBufferAllocationOption option =
           TransferBufferAllocationOption::kLoseContextOnOOM) override;
   void DestroyTransferBuffer(int32_t id) override;
+  void ForceLostContext(error::ContextLostReason reason) override;
 
   // gpu::GpuControl implementation:
   void SetGpuControlClient(GpuControlClient* client) override;
@@ -130,7 +129,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   void SetLock(base::Lock* lock) override;
   void EnsureWorkVisible() override;
@@ -152,12 +150,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void RemoveDeletionObserver(DeletionObserver* observer);
 
   bool EnsureBackbuffer();
-
-  using UpdateVSyncParametersCallback =
-      base::RepeatingCallback<void(base::TimeTicks timebase,
-                                   base::TimeDelta interval)>;
-  void SetUpdateVSyncParametersCallback(
-      const UpdateVSyncParametersCallback& callback);
 
   int32_t route_id() const { return route_id_; }
 
@@ -194,9 +186,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error) override;
-  void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params) override;
-  void OnBufferPresented(uint64_t swap_id,
-                         const gfx::PresentationFeedback& feedback) override;
   void OnReturnData(const std::vector<uint8_t>& data) override;
   void OnSignalAck(uint32_t id, const CommandBuffer::State& state) override;
 
@@ -296,8 +285,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   gpu::Capabilities capabilities_;
 
-  UpdateVSyncParametersCallback update_vsync_parameters_completion_callback_;
-
   // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
   raw_ptr<base::HistogramBase> uma_histogram_ensure_work_visible_duration_ =
       nullptr;
@@ -308,7 +295,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   // TODO(1321521) remove this member and instead let callers of
   // CreateTransferBuffer specify the mapper to use so that only the buffers
   // used for WebGPU ArrayBuffers use a non-default mapper.
-  base::SharedMemoryMapper* transfer_buffer_mapper_;
+  raw_ptr<base::SharedMemoryMapper> transfer_buffer_mapper_;
 
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};
 };

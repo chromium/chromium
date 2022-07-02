@@ -23,17 +23,16 @@ JSONFeatureProviderSource::~JSONFeatureProviderSource() {
 void JSONFeatureProviderSource::LoadJSON(int resource_id) {
   const base::StringPiece features_file =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(features_file);
+  auto result = base::JSONReader::ReadAndReturnValueWithError(features_file);
 
-  DCHECK(result.value) << "Could not load features: " << name_ << " "
-                       << result.error_message;
+  DCHECK(result.has_value())
+      << "Could not load features: " << name_ << " " << result.error().message;
 
   std::unique_ptr<base::DictionaryValue> value_as_dict;
-  if (result.value) {
-    CHECK(result.value->is_dict()) << name_;
+  if (result.has_value()) {
+    CHECK(result->is_dict()) << name_;
     value_as_dict = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(std::move(*result.value)));
+        base::Value::ToUniquePtrValue(std::move(*result)));
   } else {
     // There was some error loading the features file.
     // http://crbug.com/176381

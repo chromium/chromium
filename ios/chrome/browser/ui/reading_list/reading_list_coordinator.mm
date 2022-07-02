@@ -116,7 +116,7 @@
 
   itemFactory.accessibilityDelegate = self.tableViewController;
 
-  // Add the "Done" button and hook it up to |stop|.
+  // Add the "Done" button and hook it up to `stop`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
@@ -129,7 +129,7 @@
   self.navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.tableViewController];
 
-  // The initial call to |readingListHasItems:| may have been received before
+  // The initial call to `readingListHasItems:` may have been received before
   // all UI elements were initialized. Call the callback directly to set up
   // everything correctly.
   [self readingListHasItems:self.mediator.hasElements];
@@ -277,13 +277,13 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
 #pragma mark - URL Loading Helpers
 
-// Loads reading list URLs. If |offlineURL| is valid and |loadOfflineVersion| is
-// true, the item will be loaded offline; otherwise |entryURL| is loaded.
-// |newTab| and |incognito| can be used to optionally open the URL in a new tab
+// Loads reading list URLs. If `offlineURL` is valid and `loadOfflineVersion` is
+// true, the item will be loaded offline; otherwise `entryURL` is loaded.
+// `newTab` and `incognito` can be used to optionally open the URL in a new tab
 // or in incognito.  The coordinator is also stopped after the load is
 // requested.
-// NOTE: |loadOfflineVersion| may not be used with |inNewTab|.
-// TODO(crbug.com/1313458):  Remove |inNewTab| and |withOfflineURL| when
+// NOTE: `loadOfflineVersion` may not be used with `inNewTab`.
+// TODO(crbug.com/1313458):  Remove `inNewTab` and `withOfflineURL` when
 // migration is complete.
 - (void)loadEntryURL:(const GURL&)entryURL
         withOfflineURL:(const GURL&)offlineURL
@@ -507,8 +507,8 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
 #pragma mark - Private
 
-// Triggers the URL sharing flow for the given |URL| and |title|, with the
-// origin |view| representing the UI component for that URL.
+// Triggers the URL sharing flow for the given `URL` and `title`, with the
+// origin `view` representing the UI component for that URL.
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         fromView:(UIView*)view {

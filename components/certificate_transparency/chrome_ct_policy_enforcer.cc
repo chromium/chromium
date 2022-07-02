@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/certificate_transparency/ct_features.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_policy_status.h"
@@ -246,14 +245,12 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   // months.
   // Increases the SCT requirements for certificates with a lifetime between
   // 180 days and 15 months, from 2 to 3.
+  // This conditional, and the pre-2022 policy logic can be removed after June
+  // 1, 2023, since all publicly trusted certificates issued prior to the
+  // policy change date will have expired by then.
   const base::Time kPolicyUpdateDate =
       base::Time::UnixEpoch() + base::Seconds(1649980800);
-  bool use_2022_policy =
-      base::FeatureList::IsEnabled(
-          features::kCertificateTransparency2022PolicyAllCerts) ||
-      (base::FeatureList::IsEnabled(
-           features::kCertificateTransparency2022Policy) &&
-       issuance_date >= kPolicyUpdateDate);
+  bool use_2022_policy = issuance_date >= kPolicyUpdateDate;
 
   bool has_valid_google_sct = false;
   bool has_valid_nongoogle_sct = false;
@@ -374,18 +371,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     // AND there is at least one embedded SCT from a non-Google Log once or
     //   currently qualified;
     // ...
-    //
-    // Note: This policy language is only enforced after the below issuance
-    // date, as that's when the diversity policy first came into effect for
-    // SCTs embedded in certificates.
-    // The date when diverse SCTs requirement is effective from.
-    // 2015-07-01 00:00:00 UTC.
-    // TODO(carlosil): There are no more valid certificates from before this
-    // date, so this date and the associated logic should be cleaned up.
-    const base::Time kDiverseSCTRequirementStartDate =
-        base::Time::UnixEpoch() + base::Seconds(1435708800);
-    if (issuance_date >= kDiverseSCTRequirementStartDate &&
-        !(has_embedded_google_sct && has_embedded_nongoogle_sct)) {
+    if (!(has_embedded_google_sct && has_embedded_nongoogle_sct)) {
       // Note: This also covers the case for non-embedded SCTs, as it's only
       // possible to reach here if both sets are not diverse enough.
       return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;

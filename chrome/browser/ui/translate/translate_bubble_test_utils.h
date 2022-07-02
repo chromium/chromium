@@ -17,19 +17,19 @@ namespace translate {
 // bubble has been migrated over to the new Bubble system.
 namespace test_utils {
 
-// Obtain the TranslateModel associated with the current bubble.
+// Obtain the TranslateBubbleModel associated with the current bubble.
 const TranslateBubbleModel* GetCurrentModel(Browser* browser);
 
 void CloseCurrentBubble(Browser* browser);
 
-// Presses 'Translate' on the currently open translate bubble.
+// Presses 'Translate' on the currently open Full Page Translate bubble.
 void PressTranslate(Browser* browser);
 
-// Presses 'Revert' on the currently opened translate bubble.
+// Presses 'Revert' on the currently opened Full Page Translate bubble.
 void PressRevert(Browser* browser);
 
 // Selects the target language with the given display name on the opened
-// translate bubble.
+// Full Page Translate bubble.
 void SelectTargetLanguageByDisplayName(Browser* browser,
                                        const std::u16string& display_name);
 

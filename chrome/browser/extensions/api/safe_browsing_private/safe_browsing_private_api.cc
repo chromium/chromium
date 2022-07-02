@@ -66,7 +66,8 @@ SafeBrowsingPrivateGetReferrerChainFunction::Run() {
   safe_browsing::ReferrerChain referrer_chain;
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       navigation_observer_manager->IdentifyReferrerChainByRenderFrameHost(
-          contents->GetMainFrame(), kReferrerUserGestureLimit, &referrer_chain);
+          contents->GetPrimaryMainFrame(), kReferrerUserGestureLimit,
+          &referrer_chain);
 
   // If the referrer chain is incomplete we'll append the most recent
   // navigations to referrer chain for diagnostic purposes. This only happens if

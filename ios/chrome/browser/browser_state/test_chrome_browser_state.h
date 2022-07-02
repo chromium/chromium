@@ -56,7 +56,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
-  PrefService* GetPrefs() override;
+  sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
@@ -177,8 +177,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // The path to this browser state.
   base::FilePath state_path_;
 
-  // If non-null, |testing_prefs_| points to |prefs_|. It is there to avoid
-  // casting as |prefs_| may not be a TestingPrefServiceSyncable.
+  // If non-null, `testing_prefs_` points to `prefs_`. It is there to avoid
+  // casting as `prefs_` may not be a TestingPrefServiceSyncable.
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
 

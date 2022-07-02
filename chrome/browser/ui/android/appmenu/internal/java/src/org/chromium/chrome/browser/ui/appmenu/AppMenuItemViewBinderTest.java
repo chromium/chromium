@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -48,7 +47,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for {@link AppMenuItemViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@Batch(Batch.UNIT_TESTS)
 public class AppMenuItemViewBinderTest {
     static class TestClickHandler implements AppMenuClickHandler {
         public CallbackHelper onClickCallback = new CallbackHelper();
@@ -179,10 +178,8 @@ public class AppMenuItemViewBinderTest {
     }
 
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-    private static Activity sActivity;
-    private static FrameLayout sParentView;
 
     static final int MENU_ID1 = 100;
     static final int MENU_ID2 = 200;
@@ -199,6 +196,7 @@ public class AppMenuItemViewBinderTest {
     static final String TITLE_6 = "Menu Item Six";
     static final String TITLE_7 = "Menu Item Seven";
 
+    private Activity mActivity;
     private ModelListAdapter.ModelList mMenuList;
     private ModelListAdapter mModelListAdapter;
 
@@ -206,9 +204,7 @@ public class AppMenuItemViewBinderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { sActivity = activityTestRule.getActivity(); });
+        sActivityTestRule.launchActivity(null);
     }
 
     @Before
@@ -217,6 +213,7 @@ public class AppMenuItemViewBinderTest {
         mClickHandler = new TestClickHandler();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity = sActivityTestRule.getActivity();
             mMenuList = new ModelListAdapter.ModelList();
             mModelListAdapter = new ModelListAdapter(mMenuList);
 
@@ -334,7 +331,7 @@ public class AppMenuItemViewBinderTest {
     public void testStandardMenuItem() throws ExecutionException, TimeoutException {
         PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         TextView titleView = view.findViewById(R.id.menu_item_text);
         ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
@@ -355,12 +352,12 @@ public class AppMenuItemViewBinderTest {
     public void testStandardMenuItem_WithMenuIcon() throws ExecutionException, TimeoutException {
         PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
 
         standardModel.set(AppMenuItemProperties.ICON,
-                AppCompatResources.getDrawable(sActivity,
+                AppCompatResources.getDrawable(mActivity,
                         org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                 .test_ic_vintage_filter));
         Assert.assertNotNull("Should have icon for item 1", itemIcon.getDrawable());
@@ -375,7 +372,7 @@ public class AppMenuItemViewBinderTest {
         PropertyModel standardModel2 = createStandardMenuItem(MENU_ID2, TITLE_2);
         standardModel2.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         TextView titleView = view1.findViewById(R.id.menu_item_text);
 
@@ -401,7 +398,7 @@ public class AppMenuItemViewBinderTest {
         Assert.assertEquals("Wrong item view type", AppMenuItemType.TITLE_BUTTON,
                 mModelListAdapter.getItemViewType(0));
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         TextViewWithCompoundDrawables titleView =
                 (TextViewWithCompoundDrawables) view1.findViewById(R.id.title);
@@ -420,7 +417,7 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_Reused_TitleMenuItem_WithMenuIcon() {
-        Drawable icon = AppCompatResources.getDrawable(sActivity,
+        Drawable icon = AppCompatResources.getDrawable(mActivity,
                 org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
         createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, true, true);
         createTitleMenuItem(MENU_ID4, MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, true, false);
@@ -428,7 +425,7 @@ public class AppMenuItemViewBinderTest {
         Assert.assertEquals("Wrong item view type", AppMenuItemType.TITLE_BUTTON,
                 mModelListAdapter.getItemViewType(0));
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         TextViewWithCompoundDrawables titleView = view1.findViewById(R.id.title);
         Drawable[] drawables = titleView.getCompoundDrawablesRelative();
@@ -439,14 +436,14 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_Reused_IconRow() {
-        Drawable icon = AppCompatResources.getDrawable(sActivity,
+        Drawable icon = AppCompatResources.getDrawable(mActivity,
                 org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3,
                 TITLE_3, icon, View.NO_ID, null, null, View.NO_ID, null, null);
         createIconRowMenuItem(1, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon, MENU_ID6,
                 TITLE_6, icon, View.NO_ID, null, null, View.NO_ID, null, null);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         View buttonOne = view1.findViewById(R.id.button_one);
 
@@ -471,7 +468,7 @@ public class AppMenuItemViewBinderTest {
         Assert.assertEquals("Wrong item view type for item 2", AppMenuItemType.TITLE_BUTTON,
                 mModelListAdapter.getItemViewType(1));
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         TextView titleView = view1.findViewById(R.id.menu_item_text);
 
@@ -490,14 +487,14 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testConvertView_NotReused_IconRow() {
-        Drawable icon = AppCompatResources.getDrawable(sActivity,
+        Drawable icon = AppCompatResources.getDrawable(mActivity,
                 org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3,
                 TITLE_3, icon, View.NO_ID, null, null, View.NO_ID, null, null);
         createIconRowMenuItem(2, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon, MENU_ID6,
                 TITLE_6, icon, MENU_ID7, TITLE_7, icon, View.NO_ID, null, null);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view1 = mModelListAdapter.getView(0, null, parentView);
         View view2 = mModelListAdapter.getView(1, view1, parentView);
         Assert.assertNotEquals("Convert view should not have been re-used", view1, view2);
@@ -527,7 +524,7 @@ public class AppMenuItemViewBinderTest {
         createCustomMenuItem(customBinder2.supportedId1,
                 AppMenuItemType.NUM_ENTRIES + customBinder1.getViewTypeCount(), customBinder2);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         TextView titleView = view.findViewById(R.id.menu_item_text);
         Assert.assertEquals("Incorrect title text for item 1", TITLE_1, titleView.getText());
@@ -563,7 +560,7 @@ public class AppMenuItemViewBinderTest {
     public void testTitleMenuItem_Checkbox() {
         createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, true);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         AppMenuItemIcon checkbox = view.findViewById(R.id.checkbox);
 
@@ -576,7 +573,7 @@ public class AppMenuItemViewBinderTest {
     public void testTitleMenuItem_ToggleCheckbox() {
         createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, true, false);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         AppMenuItemIcon checkbox = view.findViewById(R.id.checkbox);
 
@@ -593,12 +590,12 @@ public class AppMenuItemViewBinderTest {
     @UiThreadTest
     @MediumTest
     public void testIconRowViewBinders() {
-        Drawable icon = AppCompatResources.getDrawable(sActivity,
+        Drawable icon = AppCompatResources.getDrawable(mActivity,
                 org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3,
                 TITLE_3, icon, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon);
 
-        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
         ImageButton button = view.findViewById(R.id.button_one);
         Assert.assertEquals("Incorrect content description for icon 1", TITLE_1,

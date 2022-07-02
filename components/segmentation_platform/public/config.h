@@ -8,7 +8,8 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
 
@@ -33,10 +34,18 @@ const char kQueryTilesSegmentationKey[] = "query_tiles";
 const char kChromeLowUserEngagementSegmentationKey[] =
     "chrome_low_user_engagement";
 
+// The key is used to decide whether the user likes to use Feed.
+const char kFeedUserSegmentationKey[] = "feed_user_segment";
+
+// The key is used to show a contextual page action.
+const char kContextualPageActionsKey[] = "contextual_page_actions";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =
     "segment_ids_allowed_for_reporting";
+
+const char kSubsegmentDiscreteMappingSuffix[] = "_subsegment";
 
 // Contains various finch configuration params used by the segmentation
 // platform.
@@ -52,6 +61,10 @@ struct Config {
   // discrete mapping and writing results to prefs.
   std::string segmentation_key;
 
+  // The trigger event type that triggers segment selection. If trigger is
+  // non-none, |on_demand_execution| must be true.
+  TriggerType trigger = TriggerType::kNone;
+
   // Time to live for a segment selection. Segment selection can't be changed
   // before this duration.
   base::TimeDelta segment_selection_ttl;
@@ -64,7 +77,12 @@ struct Config {
   base::TimeDelta unknown_selection_ttl;
 
   // List of segment ids that the current config requires to be available.
-  std::vector<optimization_guide::proto::OptimizationTarget> segment_ids;
+  std::vector<proto::SegmentId> segment_ids;
+
+  // The selection only supports returning results from on-demand model
+  // executions instead of returning result from previous sessions. The
+  // selection TTLs are ignored in this config.
+  bool on_demand_execution = false;
 };
 
 }  // namespace segmentation_platform

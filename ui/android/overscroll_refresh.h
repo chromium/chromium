@@ -38,7 +38,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
  public:
   // The default distance in dp from a side of the device to start a navigation
   // from.
-  enum { kDefaultNavigationEdgeWidth = 24 };
+  static constexpr int kDefaultNavigationEdgeWidth = 24;
 
   OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
 

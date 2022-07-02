@@ -55,7 +55,10 @@ enum class ManagePasswordsReferrer {
   // On Desktop, the Google Password Manager link was clicked in the password
   // generation prompt in the Autofill dropdown.
   kPasswordGenerationPrompt = 12,
-  kMaxValue = kPasswordGenerationPrompt,
+  // Corresponds to the situation when Chrome opens native Password Manager UI
+  // when navigating to specified website.
+  kPasswordsGoogleWebsite = 13,
+  kMaxValue = kPasswordsGoogleWebsite,
 };
 
 }  // namespace password_manager

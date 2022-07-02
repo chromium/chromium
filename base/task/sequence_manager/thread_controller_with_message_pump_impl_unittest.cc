@@ -15,8 +15,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_features.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -28,20 +30,18 @@ using testing::_;
 using testing::Invoke;
 using testing::ElementsAre;
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager::internal {
 
 namespace {
 
-class ThreadControllerForTest
-    : public internal::ThreadControllerWithMessagePumpImpl {
+class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
  public:
   ThreadControllerForTest(std::unique_ptr<MessagePump> pump,
                           const SequenceManager::Settings& settings)
       : ThreadControllerWithMessagePumpImpl(std::move(pump), settings) {}
 
   ~ThreadControllerForTest() override {
-    if (trace_observer)
+    if (trace_observer_)
       RunLevelTracker::SetTraceObserverForTesting(nullptr);
   }
 
@@ -58,20 +58,20 @@ class ThreadControllerForTest
   using ThreadControllerWithMessagePumpImpl::
       ThreadControllerPowerMonitorForTesting;
 
-  class MockTraceObserver : public internal::ThreadController::RunLevelTracker::
-                                TraceObserverForTesting {
+  class MockTraceObserver
+      : public ThreadController::RunLevelTracker::TraceObserverForTesting {
    public:
     MOCK_METHOD0(OnThreadControllerActiveBegin, void());
     MOCK_METHOD0(OnThreadControllerActiveEnd, void());
   };
 
   void InstallTraceObserver() {
-    trace_observer.emplace();
-    RunLevelTracker::SetTraceObserverForTesting(&trace_observer.value());
+    trace_observer_.emplace();
+    RunLevelTracker::SetTraceObserverForTesting(&trace_observer_.value());
   }
 
   // Optionally emplaced, strict from then on.
-  absl::optional<testing::StrictMock<MockTraceObserver>> trace_observer;
+  absl::optional<testing::StrictMock<MockTraceObserver>> trace_observer_;
 };
 
 class MockMessagePump : public MessagePump {
@@ -112,12 +112,13 @@ class FakeTaskRunner : public SingleThreadTaskRunner {
   ~FakeTaskRunner() override = default;
 };
 
-class FakeSequencedTaskSource : public internal::SequencedTaskSource {
+class FakeSequencedTaskSource : public SequencedTaskSource {
  public:
   explicit FakeSequencedTaskSource(TickClock* clock) : clock_(clock) {}
   ~FakeSequencedTaskSource() override = default;
 
   absl::optional<SelectedTask> SelectNextTask(
+      LazyNow& lazy_now,
       SelectTaskOption option) override {
     if (tasks_.empty())
       return absl::nullopt;
@@ -132,7 +133,7 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
     return SelectedTask(running_stack_.back(), TaskExecutionTraceLogger());
   }
 
-  void DidRunTask() override { running_stack_.pop_back(); }
+  void DidRunTask(LazyNow& lazy_now) override { running_stack_.pop_back(); }
 
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override {}
 
@@ -154,13 +155,12 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
 
   void AddTask(Location posted_from,
                OnceClosure task,
-               TimeTicks delayed_run_time) {
+               TimeTicks delayed_run_time = TimeTicks()) {
     DCHECK(tasks_.empty() || delayed_run_time.is_null() ||
            tasks_.back().delayed_run_time < delayed_run_time);
     tasks_.push(
-        Task(internal::PostedTask(nullptr, std::move(task), posted_from,
-                                  delayed_run_time,
-                                  base::subtle::DelayPolicy::kFlexibleNoSooner),
+        Task(PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
+                        base::subtle::DelayPolicy::kFlexibleNoSooner),
              EnqueueOrder::FromIntForTesting(13)));
   }
 
@@ -181,14 +181,6 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
   bool has_pending_high_resolution_tasks = false;
 };
 
-TimeTicks Seconds(int seconds) {
-  return TimeTicks() + base::Seconds(seconds);
-}
-
-TimeTicks Days(int seconds) {
-  return TimeTicks() + base::Days(seconds);
-}
-
 }  // namespace
 
 class ThreadControllerWithMessagePumpTest : public testing::Test {
@@ -200,18 +192,23 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
         thread_controller_(std::unique_ptr<MessagePump>(message_pump_),
                            settings_),
         task_source_(&clock_) {
+    // SimpleTestTickClock starts at zero, but that also satisfies
+    // TimeTicks::is_null() and that throws off some ThreadController state.
+    // Move away from 0. All ThreadControllerWithMessagePumpTests should favor
+    // Advance() over SetNowTicks() for this reason.
+    clock_.Advance(Seconds(1000));
+
     thread_controller_.SetWorkBatchSize(1);
     thread_controller_.SetSequencedTaskSource(&task_source_);
   }
 
   void SetUp() override {
-    internal::ThreadControllerPowerMonitor::OverrideUsePowerMonitorForTesting(
-        true);
+    ThreadControllerPowerMonitor::OverrideUsePowerMonitorForTesting(true);
   }
 
-  void TearDown() override {
-    internal::ThreadControllerPowerMonitor::ResetForTesting();
-  }
+  void TearDown() override { ThreadControllerPowerMonitor::ResetForTesting(); }
+
+  TimeTicks FromNow(TimeDelta delta) { return clock_.NowTicks() + delta; }
 
  protected:
   raw_ptr<MockMessagePump> message_pump_;
@@ -223,26 +220,26 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
 
 TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(10));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)));
   MockCallback<OnceClosure> task2;
-  task_source_.AddTask(FROM_HERE, task2.Get(), TimeTicks());
+  task_source_.AddTask(FROM_HERE, task2.Get());
   MockCallback<OnceClosure> task3;
-  task_source_.AddTask(FROM_HERE, task3.Get(), Seconds(20));
+  task_source_.AddTask(FROM_HERE, task3.Get(), FromNow(Seconds(20)));
 
   // Call a no-op DoWork. Expect that it doesn't do any work.
-  clock_.SetNowTicks(Seconds(5));
+  clock_.Advance(Seconds(5));
   EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(_)).Times(0);
   {
     auto next_work_info = thread_controller_.DoWork();
     EXPECT_FALSE(next_work_info.is_immediate());
-    EXPECT_EQ(next_work_info.delayed_run_time, Seconds(10));
+    EXPECT_EQ(next_work_info.delayed_run_time, FromNow(Seconds(5)));
   }
   testing::Mock::VerifyAndClearExpectations(message_pump_);
 
   // Call DoWork after the expiration of the delay.
   // Expect that |task1| runs and the return value indicates that |task2| can
   // run immediately.
-  clock_.SetNowTicks(Seconds(11));
+  clock_.Advance(Seconds(6));
   EXPECT_CALL(task1, Run()).Times(1);
   {
     auto next_work_info = thread_controller_.DoWork();
@@ -256,13 +253,13 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
   {
     auto next_work_info = thread_controller_.DoWork();
     EXPECT_FALSE(next_work_info.is_immediate());
-    EXPECT_EQ(next_work_info.delayed_run_time, Seconds(20));
+    EXPECT_EQ(next_work_info.delayed_run_time, FromNow(Seconds(9)));
   }
   testing::Mock::VerifyAndClearExpectations(&task2);
 
   // Call DoWork for the last task and expect to be told
   // about the lack of further delayed work (next run time being TimeTicks()).
-  clock_.SetNowTicks(Seconds(21));
+  clock_.Advance(Seconds(10));
   EXPECT_CALL(task3, Run()).Times(1);
   {
     auto next_work_info = thread_controller_.DoWork();
@@ -273,34 +270,36 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork) {
-  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(Seconds(123)));
+  EXPECT_CALL(*message_pump_,
+              ScheduleDelayedWork_TimeTicks(FromNow(Seconds(123))));
 
   LazyNow lazy_now(&clock_);
-  thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{Seconds(123)});
+  thread_controller_.SetNextDelayedDoWork(&lazy_now,
+                                          WakeUp{FromNow(Seconds(123))});
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork_CapAtOneDay) {
-  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(Days(1)));
+  EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(FromNow(Days(1))));
 
   LazyNow lazy_now(&clock_);
-  thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{Days(2)});
+  thread_controller_.SetNextDelayedDoWork(&lazy_now, WakeUp{FromNow(Days(2))});
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, DelayedWork_CapAtOneDay) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), Days(10));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Days(10)));
 
   auto next_work_info = thread_controller_.DoWork();
-  EXPECT_EQ(next_work_info.delayed_run_time, Days(1));
+  EXPECT_EQ(next_work_info.delayed_run_time, FromNow(Days(1)));
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, DoWorkDoesntScheduleDelayedWork) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(10));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)));
 
   EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(_)).Times(0);
   auto next_work_info = thread_controller_.DoWork();
-  EXPECT_EQ(next_work_info.delayed_run_time, Seconds(10));
+  EXPECT_EQ(next_work_info.delayed_run_time, FromNow(Seconds(10)));
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, NestedExecution) {
@@ -446,7 +445,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetDefaultTaskRunner) {
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, EnsureWorkScheduled) {
-  task_source_.AddTask(FROM_HERE, DoNothing(), TimeTicks());
+  task_source_.AddTask(FROM_HERE, DoNothing());
 
   // Ensure that the first ScheduleWork() call results in the pump being called.
   EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -538,13 +537,13 @@ TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  auto delayed_time = Seconds(10);
+  const auto delayed_time = FromNow(Seconds(10));
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        clock_.SetNowTicks(Seconds(5));
+        clock_.Advance(Seconds(5));
         MockCallback<OnceClosure> tasks[5];
 
-        // A: Post 4 application tasks, 3 immediate 1 delayed.
+        // A: Post 5 application tasks, 4 immediate 1 delayed.
         // B: Run one of them (enter active)
         //   C: Expect we return immediate work item without yield_to_native
         //      (default behaviour).
@@ -557,10 +556,10 @@ TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
         //   I: Expect we return a delayed work item with yield_to_native.
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[2].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[3].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get());
+        task_source_.AddTask(FROM_HERE, tasks[2].Get());
+        task_source_.AddTask(FROM_HERE, tasks[3].Get());
         task_source_.AddTask(FROM_HERE, tasks[4].Get(), delayed_time);
 
         // B:
@@ -571,7 +570,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
         EXPECT_FALSE(next_work_item.yield_to_native);
 
         // D:
-        thread_controller_.PrioritizeYieldingToNative(Seconds(8));
+        thread_controller_.PrioritizeYieldingToNative(FromNow(Seconds(3)));
         EXPECT_CALL(tasks[1], Run());
         next_work_item = thread_controller_.DoWork();
         // E:
@@ -579,7 +578,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
         EXPECT_TRUE(next_work_item.yield_to_native);
 
         // F:
-        clock_.SetNowTicks(Seconds(8));
+        clock_.Advance(Seconds(3));
         EXPECT_CALL(tasks[2], Run());
         next_work_item = thread_controller_.DoWork();
         // G:
@@ -663,7 +662,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
 
         // Simulate a native callback which posts a task, this
         // should now ask the pump to ScheduleWork();
-        task_source_.AddTask(FROM_HERE, DoNothing(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, DoNothing());
         EXPECT_CALL(*message_pump_, ScheduleWork());
         thread_controller_.ScheduleWork();
         testing::Mock::VerifyAndClearExpectations(message_pump_);
@@ -674,7 +673,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
         // we've left the native loop. This should not ScheduleWork
         // on the pump because the ThreadController will do that
         // after this task finishes.
-        task_source_.AddTask(FROM_HERE, DoNothing(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, DoNothing());
         EXPECT_CALL(*message_pump_, ScheduleWork()).Times(0);
         thread_controller_.ScheduleWork();
 
@@ -691,23 +690,25 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, RunWithTimeout) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(5));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(5)));
   MockCallback<OnceClosure> task2;
-  task_source_.AddTask(FROM_HERE, task2.Get(), Seconds(10));
+  task_source_.AddTask(FROM_HERE, task2.Get(), FromNow(Seconds(10)));
   MockCallback<OnceClosure> task3;
-  task_source_.AddTask(FROM_HERE, task3.Get(), Seconds(20));
+  task_source_.AddTask(FROM_HERE, task3.Get(), FromNow(Seconds(20)));
 
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate*) {
-        clock_.SetNowTicks(Seconds(5));
+        clock_.Advance(Seconds(5));
         EXPECT_CALL(task1, Run()).Times(1);
-        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, Seconds(10));
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  FromNow(Seconds(5)));
 
-        clock_.SetNowTicks(Seconds(10));
+        clock_.Advance(Seconds(5));
         EXPECT_CALL(task2, Run()).Times(1);
-        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, Seconds(15));
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  FromNow(Seconds(5)));
 
-        clock_.SetNowTicks(Seconds(15));
+        clock_.Advance(Seconds(5));
         EXPECT_CALL(task3, Run()).Times(0);
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
@@ -715,13 +716,13 @@ TEST_F(ThreadControllerWithMessagePumpTest, RunWithTimeout) {
         EXPECT_CALL(*message_pump_, Quit());
         EXPECT_FALSE(thread_controller_.DoIdleWork());
       }));
-  thread_controller_.Run(true, base::Seconds(15));
+  thread_controller_.Run(true, Seconds(15));
 }
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(ThreadControllerWithMessagePumpTest, SetHighResolutionTimer) {
   MockCallback<OnceClosure> task;
-  task_source_.AddTask(FROM_HERE, task.Get(), Seconds(5));
+  task_source_.AddTask(FROM_HERE, task.Get(), FromNow(Seconds(5)));
 
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
@@ -756,7 +757,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetHighResolutionTimer) {
 TEST_F(ThreadControllerWithMessagePumpTest,
        SetHighResolutionTimerWithPowerSuspend) {
   MockCallback<OnceClosure> task;
-  task_source_.AddTask(FROM_HERE, task.Get(), Seconds(5));
+  task_source_.AddTask(FROM_HERE, task.Get(), FromNow(Seconds(5)));
 
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
@@ -798,16 +799,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(10));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)));
   MockCallback<OnceClosure> task2;
-  task_source_.AddTask(FROM_HERE, task2.Get(), Seconds(15));
+  task_source_.AddTask(FROM_HERE, task2.Get(), FromNow(Seconds(15)));
 
-  clock_.SetNowTicks(Seconds(5));
+  clock_.Advance(Seconds(5));
 
   // Call a no-op DoWork. Expect that it doesn't do any work.
   EXPECT_CALL(task1, Run()).Times(0);
   EXPECT_CALL(task2, Run()).Times(0);
-  EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, Seconds(10));
+  EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, FromNow(Seconds(5)));
   testing::Mock::VerifyAndClearExpectations(&task1);
   testing::Mock::VerifyAndClearExpectations(&task2);
 
@@ -822,7 +823,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::Mock::VerifyAndClearExpectations(&task2);
 
   // Move time after the expiration delay of tasks.
-  clock_.SetNowTicks(Seconds(17));
+  clock_.Advance(Seconds(42));
 
   // Should not process delayed tasks. The process is still in suspended power
   // state.
@@ -853,7 +854,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -865,24 +866,24 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // "ThreadController active" state 5 consecutive times.
         for (int i = 0; i < 5; ++i, first_pass = false) {
           if (!first_pass) {
-            EXPECT_CALL(*thread_controller_.trace_observer,
+            EXPECT_CALL(*thread_controller_.trace_observer_,
                         OnThreadControllerActiveBegin);
           }
           MockCallback<OnceClosure> task;
-          task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+          task_source_.AddTask(FROM_HERE, task.Get());
           EXPECT_CALL(task, Run());
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
 
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           EXPECT_FALSE(thread_controller_.DoIdleWork());
 
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
         }
       }));
 
@@ -898,7 +899,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -906,7 +907,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // Post 5 tasks, run them, go idle. Expected to only exit
         // "ThreadController active" state at the end.
         for (auto& t : tasks)
-          task_source_.AddTask(FROM_HERE, t.Get(), TimeTicks());
+          task_source_.AddTask(FROM_HERE, t.Get());
         for (size_t i = 0; i < std::size(tasks); ++i) {
           const TimeTicks expected_delayed_run_time =
               i < std::size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
@@ -916,7 +917,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                     expected_delayed_run_time);
         }
 
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
       }));
@@ -933,7 +934,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -945,25 +946,62 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // to enter/exit "ThreadController active" state 5 consecutive times.
         for (int i = 0; i < 5; ++i, first_pass = false) {
           if (!first_pass) {
-            EXPECT_CALL(*thread_controller_.trace_observer,
+            EXPECT_CALL(*thread_controller_.trace_observer_,
                         OnThreadControllerActiveBegin);
           }
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
 
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           EXPECT_FALSE(thread_controller_.DoIdleWork());
 
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
         }
       }));
 
   RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  scoped_feature_list_.InitAndEnableFeature(kRunTasksByBatches);
+  ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+
+  int task_counter = 0;
+  for (int i = 0; i < 2; i++) {
+    task_source_.AddTask(
+        FROM_HERE, BindLambdaForTesting([&] { task_counter++; }), TimeTicks());
+  }
+  thread_controller_.DoWork();
+
+  EXPECT_EQ(task_counter, 2);
+  ThreadControllerWithMessagePumpImpl::ResetFeatures();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  scoped_feature_list_.InitAndEnableFeature(kRunTasksByBatches);
+  ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+
+  int task_counter = 0;
+
+  for (int i = 0; i < 4; i++) {
+    task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] {
+                           clock_.Advance(Milliseconds(4));
+                           task_counter++;
+                         }));
+  }
+  thread_controller_.DoWork();
+
+  EXPECT_EQ(task_counter, 2);
+  ThreadControllerWithMessagePumpImpl::ResetFeatures();
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest,
@@ -975,7 +1013,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -994,81 +1032,82 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // 😅
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([]() {
-          // C1:
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+          // C:
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnThreadControllerActiveBegin);
+          EXPECT_CALL(*message_pump_, Run(_))
+              .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+                // D:
+                EXPECT_CALL(tasks[1], Run());
+                EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                          TimeTicks::Max());
+                testing::Mock::VerifyAndClearExpectations(
+                    &*thread_controller_.trace_observer_);
+
+                // E:
+                EXPECT_CALL(*thread_controller_.trace_observer_,
+                            OnThreadControllerActiveEnd);
+                EXPECT_FALSE(thread_controller_.DoIdleWork());
+                testing::Mock::VerifyAndClearExpectations(
+                    &*thread_controller_.trace_observer_);
+
+                // F:
+                task_source_.AddTask(FROM_HERE, tasks[2].Get());
+                task_source_.AddTask(FROM_HERE, tasks[3].Get());
+
+                EXPECT_CALL(*thread_controller_.trace_observer_,
+                            OnThreadControllerActiveBegin);
+
+                // G:
+                EXPECT_CALL(tasks[2], Run());
+                EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                          TimeTicks());
+                testing::Mock::VerifyAndClearExpectations(
+                    &*thread_controller_.trace_observer_);
+
+                // H:
+                EXPECT_CALL(*thread_controller_.trace_observer_,
+                            OnThreadControllerActiveEnd);
+              }));
           RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
         }));
-        EXPECT_CALL(*thread_controller_.trace_observer,
-                    OnThreadControllerActiveBegin);
-        // C2:
-        EXPECT_CALL(*message_pump_, Run(_))
-            .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-              // D:
-              EXPECT_CALL(tasks[1], Run());
-              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
-                        TimeTicks::Max());
-              testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
-
-              // E:
-              EXPECT_CALL(*thread_controller_.trace_observer,
-                          OnThreadControllerActiveEnd);
-              EXPECT_FALSE(thread_controller_.DoIdleWork());
-              testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
-
-              // F:
-              task_source_.AddTask(FROM_HERE, tasks[2].Get(), TimeTicks());
-              task_source_.AddTask(FROM_HERE, tasks[3].Get(), TimeTicks());
-
-              EXPECT_CALL(*thread_controller_.trace_observer,
-                          OnThreadControllerActiveBegin);
-
-              // G:
-              EXPECT_CALL(tasks[2], Run());
-              EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
-                        TimeTicks());
-              testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
-
-              // H
-              EXPECT_CALL(*thread_controller_.trace_observer,
-                          OnThreadControllerActiveEnd);
-            }));
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // I:
         EXPECT_CALL(tasks[3], Run());
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
 
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
 
         // J:
-        task_source_.AddTask(FROM_HERE, tasks[4].Get(), TimeTicks());
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        task_source_.AddTask(FROM_HERE, tasks[4].Get());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveBegin);
         EXPECT_CALL(tasks[4], Run());
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
 
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1083,7 +1122,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -1101,8 +1140,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // I: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
@@ -1114,11 +1153,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // a nested native loop which would invoke OnBeginWorkItem()
 
           // D:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
           thread_controller_.OnEndWorkItem();
 
           // E:
@@ -1126,25 +1165,25 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
           // F:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           EXPECT_FALSE(thread_controller_.DoIdleWork());
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
           // G:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
           thread_controller_.OnEndWorkItem();
 
           // H:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           thread_controller_.SetTaskExecutionAllowed(false);
         }));
@@ -1152,13 +1191,15 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // I:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1173,7 +1214,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -1187,8 +1228,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // F: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
@@ -1202,18 +1243,22 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // E:
         EXPECT_CALL(tasks[1], Run());
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // F:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1228,7 +1273,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -1244,26 +1289,28 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // G: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
           // D:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
           thread_controller_.OnEndWorkItem();
 
           // E:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
         }));
 
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // F:
         EXPECT_CALL(tasks[1], Run());
@@ -1271,11 +1318,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                   TimeTicks::Max());
 
         // G:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1290,7 +1337,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -1308,7 +1355,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // J: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
 
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           for (int i = 0; i < 2; ++i) {
@@ -1319,35 +1366,37 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
             // D & G:
             if (i == 0) {
-              EXPECT_CALL(*thread_controller_.trace_observer,
+              EXPECT_CALL(*thread_controller_.trace_observer_,
                           OnThreadControllerActiveBegin);
             }
             thread_controller_.OnBeginWorkItem();
             testing::Mock::VerifyAndClearExpectations(
-                &*thread_controller_.trace_observer);
+                &*thread_controller_.trace_observer_);
             thread_controller_.OnEndWorkItem();
 
             // E & H:
             thread_controller_.SetTaskExecutionAllowed(false);
             testing::Mock::VerifyAndClearExpectations(
-                &*thread_controller_.trace_observer);
+                &*thread_controller_.trace_observer_);
           }
 
           // I:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
         }));
 
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // J:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1362,7 +1411,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -1387,7 +1436,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // it reaches idle.
 
         // A:
-        task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, task.Get());
 
         EXPECT_CALL(task, Run()).WillOnce(Invoke([&]() {
           // C:
@@ -1396,46 +1445,48 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.SetTaskExecutionAllowed(true);
 
           // D:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
           thread_controller_.OnEndWorkItem();
 
           // E:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           thread_controller_.BeforeWait();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
           // F:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
           thread_controller_.OnEndWorkItem();
 
           // G:
           thread_controller_.SetTaskExecutionAllowed(false);
 
           // H:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
         }));
 
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // I:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1450,7 +1501,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
@@ -1467,8 +1518,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // I: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get(), TimeTicks());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, tasks[0].Get());
+        task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
@@ -1477,20 +1528,20 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.SetTaskExecutionAllowed(true);
 
           // D:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           EXPECT_CALL(tasks[1], Run());
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
           // E:
-          EXPECT_CALL(*thread_controller_.trace_observer,
+          EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           thread_controller_.BeforeWait();
           testing::Mock::VerifyAndClearExpectations(
-              &*thread_controller_.trace_observer);
+              &*thread_controller_.trace_observer_);
 
           // F + G:
           thread_controller_.SetTaskExecutionAllowed(false);
@@ -1501,13 +1552,15 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // I:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1527,16 +1580,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         // Start this test idle for a change.
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
 
         MockCallback<OnceClosure> task;
 
@@ -1548,38 +1601,40 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // F: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, task.Get());
 
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveBegin)
             .WillOnce(Invoke([&]() {
               // C:
               EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
 
               // D:
-              EXPECT_CALL(*thread_controller_.trace_observer,
+              EXPECT_CALL(*thread_controller_.trace_observer_,
                           OnThreadControllerActiveBegin);
               EXPECT_CALL(task, Run());
               EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                         TimeTicks::Max());
               testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
+                  &*thread_controller_.trace_observer_);
             }));
 
         // B:
         thread_controller_.OnBeginWorkItem();
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // E:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         thread_controller_.OnEndWorkItem();
 
         // F:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
@@ -1602,16 +1657,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   testing::InSequence sequence;
 
   RunLoop run_loop;
-  EXPECT_CALL(*thread_controller_.trace_observer,
+  EXPECT_CALL(*thread_controller_.trace_observer_,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         // Start this test idle for a change.
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
 
         MockCallback<OnceClosure> task;
 
@@ -1625,9 +1680,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // H: Go idle (exit active)
 
         // A:
-        task_source_.AddTask(FROM_HERE, task.Get(), TimeTicks());
+        task_source_.AddTask(FROM_HERE, task.Get());
 
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveBegin)
             .WillOnce(Invoke([&]() {
               // C + D:
@@ -1635,16 +1690,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               EXPECT_CALL(*message_pump_, ScheduleWork());
               thread_controller_.SetTaskExecutionAllowed(true);
               testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
+                  &*thread_controller_.trace_observer_);
 
               // E:
-              EXPECT_CALL(*thread_controller_.trace_observer,
+              EXPECT_CALL(*thread_controller_.trace_observer_,
                           OnThreadControllerActiveBegin);
               EXPECT_CALL(task, Run());
               EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                         TimeTicks::Max());
               testing::Mock::VerifyAndClearExpectations(
-                  &*thread_controller_.trace_observer);
+                  &*thread_controller_.trace_observer_);
 
               // F:
               EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -1653,22 +1708,23 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         // B:
         thread_controller_.OnBeginWorkItem();
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
 
         // G:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         thread_controller_.OnEndWorkItem();
 
         // H:
-        EXPECT_CALL(*thread_controller_.trace_observer,
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
-            &*thread_controller_.trace_observer);
+            &*thread_controller_.trace_observer_);
       }));
 
   RunLoop().Run();
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

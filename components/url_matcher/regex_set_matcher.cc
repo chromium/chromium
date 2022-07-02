@@ -15,7 +15,7 @@
 #include "third_party/re2/src/re2/filtered_re2.h"
 #include "third_party/re2/src/re2/re2.h"
 
-using base::StringPattern;
+using base::MatcherStringPattern;
 
 namespace url_matcher {
 
@@ -23,7 +23,7 @@ RegexSetMatcher::RegexSetMatcher() = default;
 RegexSetMatcher::~RegexSetMatcher() = default;
 
 void RegexSetMatcher::AddPatterns(
-    const std::vector<const StringPattern*>& regex_list) {
+    const std::vector<const MatcherStringPattern*>& regex_list) {
   if (regex_list.empty())
     return;
   for (size_t i = 0; i < regex_list.size(); ++i) {
@@ -39,7 +39,7 @@ void RegexSetMatcher::ClearPatterns() {
 }
 
 bool RegexSetMatcher::Match(const std::string& text,
-                            std::set<StringPattern::ID>* matches) const {
+                            std::set<MatcherStringPattern::ID>* matches) const {
   size_t old_number_of_matches = matches->size();
   if (regexes_.empty())
     return false;
@@ -56,7 +56,7 @@ bool RegexSetMatcher::Match(const std::string& text,
   filtered_re2_->AllMatches(text, atoms, &re2_ids);
 
   for (size_t i = 0; i < re2_ids.size(); ++i) {
-    StringPattern::ID id = re2_id_map_[re2_ids[i]];
+    MatcherStringPattern::ID id = re2_id_map_[re2_ids[i]];
     matches->insert(id);
   }
   return old_number_of_matches != matches->size();
@@ -68,7 +68,7 @@ bool RegexSetMatcher::IsEmpty() const {
 
 std::vector<RegexSetMatcher::RE2ID> RegexSetMatcher::FindSubstringMatches(
     const std::string& text) const {
-  std::set<int> atoms_set;
+  std::set<base::MatcherStringPattern::ID> atoms_set;
   substring_matcher_->Match(text, &atoms_set);
   return std::vector<RE2ID>(atoms_set.begin(), atoms_set.end());
 }
@@ -97,7 +97,7 @@ void RegexSetMatcher::RebuildMatcher() {
   std::vector<std::string> strings_to_match;
   filtered_re2_->Compile(&strings_to_match);
 
-  std::vector<StringPattern> substring_patterns;
+  std::vector<MatcherStringPattern> substring_patterns;
   substring_patterns.reserve(strings_to_match.size());
 
   // Build SubstringSetMatcher from |strings_to_match|.

@@ -24,33 +24,33 @@
 // simplicity.)
 @interface ChromeBroadcaster : NSObject
 
-// Makes the value (property) of |object| identified by |valueKey| observable
-// via |selector|. It is an error if |selector| is not defined in the
+// Makes the value (property) of `object` identified by `valueKey` observable
+// via `selector`. It is an error if `selector` is not defined in the
 // BroadcastObserver protocol, or if a value is already being broadcast
-// for |selector|.
-// If there are already observers for |selector|, they will have their observer
+// for `selector`.
+// If there are already observers for `selector`, they will have their observer
 // methods called immediately with the current broadcast value, before this
 // method returns.
 - (void)broadcastValue:(NSString*)valueKey
               ofObject:(NSObject*)object
               selector:(SEL)selector;
 
-// Stop broadcasting for |selector|. This doesn't remove or change any
-// observers for that selector. If |selector| is not being broadcast, this
+// Stop broadcasting for `selector`. This doesn't remove or change any
+// observers for that selector. If `selector` is not being broadcast, this
 // method does nothing.
 - (void)stopBroadcastingForSelector:(SEL)selector;
 
-// Adds |observer| as an observer for |selector|. If |selector| is already being
-// broadcast, |selector| will be called on |observer| with the current value of
+// Adds `observer` as an observer for `selector`. If `selector` is already being
+// broadcast, `selector` will be called on `observer` with the current value of
 // the broadcast property before this method returns.
-// It is an error if |selector| is not one of the methods in the
-// BroadcastObserver protocol, or if |observer| does not respond to |selector|.
+// It is an error if `selector` is not one of the methods in the
+// BroadcastObserver protocol, or if `observer` does not respond to `selector`.
 - (void)addObserver:(id<ChromeBroadcastObserver>)observer
         forSelector:(SEL)selector;
 
-// Removes |observer| from the observers for |selector|. If |observer| is also
+// Removes `observer` from the observers for `selector`. If `observer` is also
 // an observer for another selector, this method will not change that.
-// It is an error if |selector| is not one of the methods in the
+// It is an error if `selector` is not one of the methods in the
 // BroadcastObserver protocol.
 - (void)removeObserver:(id<ChromeBroadcastObserver>)observer
            forSelector:(SEL)selector;

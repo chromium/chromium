@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -29,7 +31,12 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * the tablet.
  */
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
+    // Tab Strip
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
+
+    // Theme Color
+    TopUiThemeColorProvider mTopUiThemeColorProvider;
+    ThemeColorObserver mThemeColorObserver;
 
     // Internal State
     /** A {@link TitleCache} instance that stores all title/favicon bitmaps as CC resources. */
@@ -42,7 +49,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
+     * @param tabSwitcherViewHolder {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      */
@@ -50,18 +57,24 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator,
+            ViewGroup tabSwitcherViewHolder, ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(host, contentContainer,
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
                 tabContentManagerSupplier, topUiThemeColorProvider, jankTracker,
-                tabSwitcherScrimAnchor, scrimCoordinator);
+                tabSwitcherViewHolder, scrimCoordinator);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
                 mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);
         addSceneOverlay(mTabStripLayoutHelperManager);
-
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
+
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(mHost.getContext())) {
+            mThemeColorObserver =
+                    (color, shouldAnimate) -> tabSwitcherViewHolder.setBackgroundColor(color);
+            mTopUiThemeColorProvider = topUiThemeColorProvider.get();
+            mTopUiThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
+        }
 
         setNextLayout(null, true);
     }
@@ -79,6 +92,12 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             removeObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
             mTabStripLayoutHelperManager.destroy();
             mTabStripLayoutHelperManager = null;
+        }
+
+        if (mTopUiThemeColorProvider != null && mThemeColorObserver != null) {
+            mTopUiThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
+            mTopUiThemeColorProvider = null;
+            mThemeColorObserver = null;
         }
     }
 

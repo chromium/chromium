@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +41,7 @@ AdbSideloadingPolicyChangeNotification::
 void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   std::u16string title, text;
   std::string notification_id;
+  NotificationCatalogName catalog_name;
   bool pinned = false;
   std::vector<message_center::ButtonInfo> notification_actions;
 
@@ -60,6 +62,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_MESSAGE,
           enterprise_manager, device_type);
       notification_id = kAdbSideloadingDisallowedNotificationId;
+      catalog_name = NotificationCatalogName::kAdbSideloadingDisallowed;
       break;
     case Type::kPowerwashPlanned:
       title = l10n_util::GetStringFUTF16(
@@ -69,6 +72,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_PLANNED_NOTIFICATION_MESSAGE,
           enterprise_manager, device_type);
       notification_id = kAdbSideloadingPowerwashPlannedNotificationId;
+      catalog_name = NotificationCatalogName::kAdbSideloadingPowerwashPlanned;
       break;
     case Type::kPowerwashOnNextReboot:
       title = l10n_util::GetStringFUTF16(
@@ -78,6 +82,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_ON_REBOOT_NOTIFICATION_MESSAGE,
           enterprise_manager, device_type);
       notification_id = kAdbSideloadingPowerwashOnRebootNotificationId;
+      catalog_name = NotificationCatalogName::kAdbSideloadingPowerwashOnReboot;
       pinned = true;
       notification_actions.push_back(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
@@ -90,7 +95,8 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           text, std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, notification_id),
+              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+              catalog_name),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&AdbSideloadingPolicyChangeNotification::

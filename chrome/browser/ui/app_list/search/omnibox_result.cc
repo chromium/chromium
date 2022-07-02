@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,6 +68,7 @@ Subtype MatchTypeToSubtype(AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
+    case AutocompleteMatchType::HISTORY_CLUSTER:
       return Subtype::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
@@ -173,9 +175,15 @@ OmniboxResult::OmniboxResult(Profile* profile,
              ash::features::IsProductivityLauncherEnabled()) {
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
   }
+
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->AddObserver(this);
 }
 
-OmniboxResult::~OmniboxResult() = default;
+OmniboxResult::~OmniboxResult() {
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->RemoveObserver(this);
+}
 
 void OmniboxResult::Open(int event_flags) {
   list_controller_->OpenURL(profile_, match_.destination_url, match_.transition,
@@ -250,9 +258,15 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::OPEN_TAB:
+    case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::NUM_TYPES:
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
+}
+
+void OmniboxResult::OnColorModeChanged(bool dark_mode_enabled) {
+  if (uses_generic_icon_)
+    SetGenericIcon();
 }
 
 void OmniboxResult::UpdateIcon() {
@@ -274,6 +288,11 @@ void OmniboxResult::UpdateIcon() {
     }
   }
 
+  SetGenericIcon();
+}
+
+void OmniboxResult::SetGenericIcon() {
+  uses_generic_icon_ = true;
   // If this is neither a rich entity nor eligible for a favicon, use either
   // the generic bookmark or another generic icon as appropriate.
   BookmarkModel* bookmark_model =

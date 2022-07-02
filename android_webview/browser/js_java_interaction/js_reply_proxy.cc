@@ -36,7 +36,7 @@ void JsReplyProxy::PostMessage(
   std::unique_ptr<js_injection::WebMessage> web_message =
       std::make_unique<js_injection::WebMessage>();
   web_message->message = base::android::ConvertJavaStringToUTF16(env, message);
-  reply_proxy_->PostMessage(std::move(web_message));
+  reply_proxy_->PostWebMessage(std::move(web_message));
 }
 
 }  // namespace android_webview

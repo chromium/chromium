@@ -68,8 +68,7 @@ bool PopulateItem(const base::Value& from, T* out, std::u16string* error) {
 // Populates |out| with |list|. Returns false if there is no list at the
 // specified key or if the list has anything other than |T|.
 template <class T>
-bool PopulateArrayFromList(const base::Value::ConstListView& list,
-                           std::vector<T>* out) {
+bool PopulateArrayFromList(const base::Value::List& list, std::vector<T>* out) {
   out->clear();
   T item;
   for (const auto& value : list) {
@@ -86,7 +85,7 @@ bool PopulateArrayFromList(const base::Value::ConstListView& list,
 // Populates |out| with |list|. Returns false and sets |error| if there is no
 // list at the specified key or if the list has anything other than |T|.
 template <class T>
-bool PopulateArrayFromList(const base::Value::ConstListView& list,
+bool PopulateArrayFromList(const base::Value::List& list,
                            std::vector<T>* out,
                            std::u16string* error) {
   out->clear();
@@ -110,7 +109,7 @@ bool PopulateArrayFromList(const base::Value::ConstListView& list,
 // true on success or if there is nothing at the specified key. Returns false
 // if anything other than a list of |T| is at the specified key.
 template <class T>
-bool PopulateOptionalArrayFromList(const base::Value::ConstListView& list,
+bool PopulateOptionalArrayFromList(const base::Value::List& list,
                                    std::unique_ptr<std::vector<T>>* out) {
   out->reset(new std::vector<T>());
   if (!PopulateArrayFromList(list, out->get())) {
@@ -121,7 +120,7 @@ bool PopulateOptionalArrayFromList(const base::Value::ConstListView& list,
 }
 
 template <class T>
-bool PopulateOptionalArrayFromList(const base::Value::ConstListView& list,
+bool PopulateOptionalArrayFromList(const base::Value::List& list,
                                    std::unique_ptr<std::vector<T>>* out,
                                    std::u16string* error) {
   out->reset(new std::vector<T>());

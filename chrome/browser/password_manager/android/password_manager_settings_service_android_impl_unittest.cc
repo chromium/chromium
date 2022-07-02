@@ -219,6 +219,9 @@ void PasswordManagerSettingsServiceAndroidImplTest::RegisterPrefs() {
       ::prefs::kGoogleServicesLastUsername, kTestAccount);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kSettingsMigratedToUPM, false);
+  test_pref_service_.registry()->RegisterBooleanPref(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      false);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -373,6 +376,33 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TestNewMigrationUserUnenrolledFromUPM) {
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  ASSERT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPM));
+  // Set an explicit value on the "Offer to save passwords" pref.
+  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
+                             false);
+
+  // No migration should happen if passwords sync is broken, no prefs should
+  // change and no metrcis should be recorded.
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  histogram_tester()->ExpectTotalCount(
+      "PasswordManager.MigratedSettingsUPMAndroid", 0);
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kOfferToSavePasswordsEnabledGMS),
+            nullptr);
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kAutoSignInEnabledGMS),
+            nullptr);
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPM));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        OnSaveSettingFetchSyncingBoth) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -518,6 +548,21 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       OnSaveSettingAbsentUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(false));
+  EXPECT_CALL(*bridge(), SetPasswordSettingValue(_, _, _)).Times(0);
+  updater_bridge_consumer()->OnSettingValueAbsent(
+      PasswordManagerSetting::kOfferToSavePasswords);
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        OnAutoSignInAbsentDefaultSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -552,6 +597,20 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       PasswordManagerSetting::kAutoSignIn);
 }
 
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       OnAutoSignInAbsentSetValueUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  pref_service()->SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
+                              base::Value(false));
+  EXPECT_CALL(*bridge(), SetPasswordSettingValue(_, _, _)).Times(0);
+  updater_bridge_consumer()->OnSettingValueAbsent(
+      PasswordManagerSetting::kAutoSignIn);
+}
+
 // Checks that general syncable prefs are dumped into the android-only GMS
 // prefs before settings are requested when sync is enabled.
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -574,6 +633,34 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
   EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+// Checks that general syncable prefs are dumped into the android-only GMS
+// prefs before settings are requested when sync is enabled.
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       PasswordSyncEnablingPrefsUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(false));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableAutosignin,
+      base::Value(false));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  SetPasswordsSync(/*enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  sync_service()->FireStateChanged();
+
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
+  EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
@@ -774,6 +861,23 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       SavePasswordsSettingUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(false));
+  EXPECT_TRUE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        AutoSignInSettingNotSyncing) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
@@ -826,6 +930,22 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       AutoSignInSettingUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableAutosignin, base::Value(true));
+  pref_service()->SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
+                              base::Value(false));
+  EXPECT_TRUE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kAutoSignIn));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        SettingsAreRequestedFromBackendWhenPasswordSyncEnabled) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -837,6 +957,17 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        SettingsAreNotRequestedFromBackendWhenPasswordSyncDisabled) {
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
+  ExpectSettingsRetrievalFromBackend(/*times=*/0);
+  settings_service()->RequestSettingsFromBackend();
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       SettingsAreNotRequestedFromBackendWhenUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
   ExpectSettingsRetrievalFromBackend(/*times=*/0);
   settings_service()->RequestSettingsFromBackend();
 }
@@ -917,5 +1048,27 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin));
   EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TurnOffAutoSignInSyncingUserUnenrolledFromUPM) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  EXPECT_CALL(*bridge(), SetPasswordSettingValue(
+                             _, Eq(PasswordManagerSetting::kAutoSignIn), _))
+      .Times(0);
+  settings_service()->TurnOffAutoSignIn();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kAutoSignInEnabledGMS));
 }

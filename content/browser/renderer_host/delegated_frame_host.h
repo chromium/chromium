@@ -127,6 +127,9 @@ class CONTENT_EXPORT DelegatedFrameHost
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
   void CancelPresentationTimeRequest();
 
+  // Cancel a presentation time request using the kUnhandled result code.
+  void UnhandledPresentationTimeRequest();
+
   void EmbedSurface(const viz::LocalSurfaceId& local_surface_id,
                     const gfx::Size& dip_size,
                     cc::DeadlinePolicy deadline_policy);

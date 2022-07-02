@@ -6,10 +6,10 @@
 
 #include "ui/wm/core/window_animations.h"
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT,
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM),
                                        wm::WindowVisibilityAnimationTransition)
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT, float)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM), float)
 
 namespace wm {
 

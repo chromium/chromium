@@ -7,14 +7,22 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/process_handle.h"
+#include "content/browser/interest_group/auction_process_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "url/gurl.h"
+
+namespace perfetto {
+class TracedValue;
+}  // namespace perfetto
 
 namespace content {
 
@@ -25,6 +33,13 @@ class RenderFrameHostImpl;
 // DebuggableAuctionWorkletTracker will notify of creation/destruction of these.
 class CONTENT_EXPORT DebuggableAuctionWorklet {
  public:
+  enum class WorkletType {
+    kBidder,
+    kSeller,
+  };
+
+  using PidCallback = base::OnceCallback<void(base::ProcessId)>;
+
   explicit DebuggableAuctionWorklet(const DebuggableAuctionWorklet&) = delete;
   DebuggableAuctionWorklet& operator=(const DebuggableAuctionWorklet&) = delete;
 
@@ -34,6 +49,11 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // Human-readable description of the worklet. (For English-speaking humans,
   // anyway).
   std::string Title() const;
+
+  // Returns a random GUID associated with this worklet.
+  const std::string& UniqueId() const { return unique_id_; }
+
+  WorkletType Type() const;
 
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
@@ -49,13 +69,16 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // Registers `this` with DebuggableAuctionWorkletTracker, and passes through
   // NotifyCreated() observers.
   //
-  // The mojo pipe must outlive `this`, as must `owning_frame`.
+  // The mojo pipe must outlive `this`, as must `owning_frame` and
+  // `process_handle`.
   DebuggableAuctionWorklet(
       RenderFrameHostImpl* owning_frame,
+      AuctionProcessManager::ProcessHandle* process_handle,
       const GURL& url,
       auction_worklet::mojom::BidderWorklet* bidder_worklet);
   DebuggableAuctionWorklet(
       RenderFrameHostImpl* owning_frame,
+      AuctionProcessManager::ProcessHandle* process_handle,
       const GURL& url,
       auction_worklet::mojom::SellerWorklet* seller_worklet);
 
@@ -63,14 +86,25 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // NotifyDestroyed() observers.
   ~DebuggableAuctionWorklet();
 
-  const raw_ptr<RenderFrameHostImpl> owning_frame_ = nullptr;
-  const GURL url_;
+  void RequestPid();
+  void OnHavePid(base::ProcessId process_id);
 
+  // Records parameter data for auction process assignment events.
+  void TraceProcessData(perfetto::TracedValue trace_context);
+
+  const raw_ptr<RenderFrameHostImpl> owning_frame_ = nullptr;
+  const raw_ptr<AuctionProcessManager::ProcessHandle> process_handle_ = nullptr;
+  const GURL url_;
+  const std::string unique_id_;
+
+  absl::optional<base::ProcessId> pid_;
   bool should_pause_on_start_ = false;
 
   absl::variant<auction_worklet::mojom::BidderWorklet*,
                 auction_worklet::mojom::SellerWorklet*>
       worklet_;
+
+  base::WeakPtrFactory<DebuggableAuctionWorklet> weak_ptr_factory_{this};
 };
 
 }  // namespace content

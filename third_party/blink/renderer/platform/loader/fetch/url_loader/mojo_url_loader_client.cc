@@ -344,8 +344,43 @@ void MojoURLLoaderClient::OnReceiveResponse(
   if (!weak_this)
     return;
 
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+  if (!body)
+    return;
+
+  has_received_response_body_ = true;
+
+  if (!NeedsStoringMessage()) {
+    // Send the message immediately.
+    resource_request_sender_->OnStartLoadingResponseBody(std::move(body));
+    return;
+  }
+
+  if (freeze_mode_ != WebLoaderFreezeMode::kBufferIncoming) {
+    // Defer the message, storing the original body pipe.
+    StoreAndDispatch(
+        std::make_unique<DeferredOnStartLoadingResponseBody>(std::move(body)));
+    return;
+  }
+
+  DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
+  // We want to run loading tasks while deferred (but without dispatching the
+  // messages). Drain the original pipe containing the response body into a
+  // new pipe so that we won't block the network service if we're deferred for
+  // a long time.
+  mojo::ScopedDataPipeProducerHandle new_body_producer;
+  mojo::ScopedDataPipeConsumerHandle new_body_consumer;
+  MojoResult result =
+      mojo::CreateDataPipe(nullptr, new_body_producer, new_body_consumer);
+  if (result != MOJO_RESULT_OK) {
+    OnComplete(
+        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+    return;
+  }
+  body_buffer_ = std::make_unique<BodyBuffer>(
+      this, std::move(body), std::move(new_body_producer), task_runner_);
+
+  StoreAndDispatch(std::make_unique<DeferredOnStartLoadingResponseBody>(
+      std::move(new_body_consumer)));
 }
 
 BackForwardCacheLoaderHelper*
@@ -398,7 +433,7 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     return;
   }
   if (!bypass_redirect_checks_ &&
-      !Platform::Current()->IsRedirectSafe(last_loaded_url_,
+      !Platform::Current()->IsRedirectSafe(GURL(last_loaded_url_),
                                            redirect_info.new_url)) {
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
     return;
@@ -442,49 +477,6 @@ void MojoURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   } else {
     resource_request_sender_->OnTransferSizeUpdated(transfer_size_diff);
   }
-}
-
-void MojoURLLoaderClient::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT1("loading", "MojoURLLoaderClient::OnStartLoadingResponseBody",
-               "url", last_loaded_url_.GetString().Utf8());
-
-  DCHECK(has_received_response_head_);
-  DCHECK(!has_received_response_body_);
-  has_received_response_body_ = true;
-
-  if (!NeedsStoringMessage()) {
-    // Send the message immediately.
-    resource_request_sender_->OnStartLoadingResponseBody(std::move(body));
-    return;
-  }
-
-  if (freeze_mode_ != WebLoaderFreezeMode::kBufferIncoming) {
-    // Defer the message, storing the original body pipe.
-    StoreAndDispatch(
-        std::make_unique<DeferredOnStartLoadingResponseBody>(std::move(body)));
-    return;
-  }
-
-  DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
-  // We want to run loading tasks while deferred (but without dispatching the
-  // messages). Drain the original pipe containing the response body into a
-  // new pipe so that we won't block the network service if we're deferred for
-  // a long time.
-  mojo::ScopedDataPipeProducerHandle new_body_producer;
-  mojo::ScopedDataPipeConsumerHandle new_body_consumer;
-  MojoResult result =
-      mojo::CreateDataPipe(nullptr, new_body_producer, new_body_consumer);
-  if (result != MOJO_RESULT_OK) {
-    OnComplete(
-        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
-    return;
-  }
-  body_buffer_ = std::make_unique<BodyBuffer>(
-      this, std::move(body), std::move(new_body_producer), task_runner_);
-
-  StoreAndDispatch(std::make_unique<DeferredOnStartLoadingResponseBody>(
-      std::move(new_body_consumer)));
 }
 
 void MojoURLLoaderClient::OnComplete(

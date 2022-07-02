@@ -5,8 +5,9 @@
 import os
 import math
 import re
-from style_variable_generator.base_generator import Color, Modes, VariableType
+from style_variable_generator.color import Color
 from style_variable_generator.css_generator import CSSStyleGenerator
+from style_variable_generator.model import Modes, VariableType
 
 
 class ViewsStyleGenerator(CSSStyleGenerator):
@@ -18,7 +19,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
     def GetParameters(self):
         return {
             'colors': self._CreateColorList(),
-            'opacities': self.model[VariableType.OPACITY],
+            'opacities': self.model.opacities,
         }
 
     def GetFilters(self):
@@ -33,17 +34,23 @@ class ViewsStyleGenerator(CSSStyleGenerator):
 
     def GetGlobals(self):
         globals = {
-            'Modes': Modes,
-            'out_file_path': None,
-            'namespace_name': None,
-            'header_file': None,
-            'in_files': sorted(self.in_file_to_context.keys()),
-            'css_color_var': self.CSSColorVar,
+            'Modes':
+            Modes,
+            'out_file_path':
+            None,
+            'namespace_name':
+            self.generator_options.get(
+                'cpp_namespace',
+                os.path.splitext(os.path.basename(self.out_file_path))[0]),
+            'header_file':
+            None,
+            'in_files':
+            self.GetInputFiles(),
+            'css_color_var':
+            self.CSSColorVar,
         }
         if self.out_file_path:
             globals['out_file_path'] = self.out_file_path
-            globals['namespace_name'] = os.path.splitext(
-                os.path.basename(self.out_file_path))[0]
             header_file = self.out_file_path.replace(".cc", ".h")
             header_file = re.sub(r'.*gen/', '', header_file)
             globals['header_file'] = header_file
@@ -52,13 +59,13 @@ class ViewsStyleGenerator(CSSStyleGenerator):
 
     def _CreateColorList(self):
         color_list = []
-        for name, mode_values in self.model[VariableType.COLOR].items():
+        for name, mode_values in self.model.colors.items():
             color_list.append({'name': name, 'mode_values': mode_values})
 
         return color_list
 
     def _ToConstName(self, var_name):
-        return 'k%s' % var_name.title().replace('_', '')
+        return 'k%s' % re.sub(r'[_\-\.]', '', var_name.title())
 
     def _AlphaToHex(self, opacity):
         return '0x%X' % math.floor(opacity.a * 255)
@@ -96,12 +103,8 @@ class ViewsCCStyleGenerator(ViewsStyleGenerator):
     def GetName():
         return 'ViewsCC'
 
-    def GetContextKey(self):
-        return ViewsStyleGenerator.GetName()
-
     def Render(self):
-        self.Validate()
-        return self.ApplyTemplate(self, 'views_generator_cc.tmpl',
+        return self.ApplyTemplate(self, 'templates/views_generator_cc.tmpl',
                                   self.GetParameters())
 
 
@@ -110,10 +113,6 @@ class ViewsHStyleGenerator(ViewsStyleGenerator):
     def GetName():
         return 'ViewsH'
 
-    def GetContextKey(self):
-        return ViewsStyleGenerator.GetName()
-
     def Render(self):
-        self.Validate()
-        return self.ApplyTemplate(self, 'views_generator_h.tmpl',
+        return self.ApplyTemplate(self, 'templates/views_generator_h.tmpl',
                                   self.GetParameters())

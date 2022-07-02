@@ -77,9 +77,6 @@ public class OptionalNewTabButtonController
         }
     }
 
-    /** Minimum width to show the new tab button. */
-    public static final int MIN_WIDTH_DP = 360;
-
     /** Context used for fetching resources and window size. */
     private final Context mContext;
     private final Delegate mDelegate;
@@ -203,7 +200,7 @@ public class OptionalNewTabButtonController
             return false;
         }
         // The screen is too narrow to fit the icon.
-        if (mScreenWidthDp < MIN_WIDTH_DP) {
+        if (mScreenWidthDp < AdaptiveToolbarFeatures.getDeviceMinimumWidthForShowingButton()) {
             return false;
         }
         // On tablets a new tab button is shown on the tab strip.
@@ -237,13 +234,6 @@ public class OptionalNewTabButtonController
                 /* stringId = */ R.string.adaptive_toolbar_button_new_tab_iph,
                 /* accessibilityStringId = */ R.string.adaptive_toolbar_button_new_tab_iph)
                                                       .setHighlightParams(params);
-
-        ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
-        ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
-                currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
-                currentSpec.getSupportsTinting(), iphCommandBuilder,
-                currentSpec.getButtonVariant());
-
-        mButtonData.setButtonSpec(newSpec);
+        mButtonData.updateIPHCommandBuilder(iphCommandBuilder);
     }
 }

@@ -56,7 +56,7 @@ class TimeRangeSelectorTableViewControllerTest
     return factory.Create(registry.get());
   }
 
-  // Verifies that the cell at |item| in |section| has the given |accessory|
+  // Verifies that the cell at `item` in `section` has the given `accessory`
   // type.
   void CheckTextItemAccessoryType(UITableViewCellAccessoryType accessory_type,
                                   int section,

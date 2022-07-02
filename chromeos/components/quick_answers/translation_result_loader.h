@@ -37,11 +37,6 @@ class TranslationResultLoader : public ResultLoader {
                        ResponseParserCallback complete_callback) override;
 
  private:
-  void OnRequestAccessTokenComplete(
-      const PreprocessedOutput& preprocessed_output,
-      BuildRequestCallback callback,
-      const std::string& access_token) const;
-
   std::unique_ptr<TranslationResponseParser> translation_response_parser_;
 };
 

@@ -62,4 +62,7 @@ const BASE_EXPORT Feature kAlignWakeUps = {"AlignWakeUps",
 const BASE_EXPORT Feature kExplicitHighResolutionTimerWin = {
     "ExplicitHighResolutionTimerWin", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const BASE_EXPORT Feature kRunTasksByBatches = {
+    "RunTasksByBatches", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace base

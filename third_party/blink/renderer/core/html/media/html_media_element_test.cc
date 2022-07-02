@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
@@ -297,7 +296,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   HTMLMediaElement* Media() const { return media_.Get(); }
   void SetCurrentSrc(const AtomicString& src) {
     KURL url(src);
-    Media()->current_src_ = url;
+    Media()->current_src_.SetSource(
+        url, HTMLMediaElement::SourceMetadata::SourceVisibility::kVisibleToApp);
   }
 
   MockWebMediaPlayer* MockMediaPlayer() { return media_player_; }
@@ -864,9 +864,9 @@ TEST_P(HTMLMediaElementTest, CapturesRedirectedSrc) {
   // Should start at the original.
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
 
-  GURL redirected_url("https://redirected.com");
+  KURL redirected_url("https://redirected.com");
   EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects())
-      .WillRepeatedly(Return(redirected_url));
+      .WillRepeatedly(Return(GURL(redirected_url)));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   EXPECT_EQ(Media()->downloadURL(), redirected_url);
@@ -1206,9 +1206,8 @@ TEST_P(HTMLMediaElementTest,
 TEST_P(HTMLMediaElementTest,
        DestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsNotEnabled) {
   // Ensure that the WebMediaPlayer is destroyed when moving to a same-origin
-  // document, if `kReuseMediaPlayer` is not enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(media::kReuseMediaPlayer);
+  // document, if `kPictureInPictureV2` is not enabled.
+  ScopedPictureInPictureV2ForTest scoped_feature(false);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
                                       /*should_destroy=*/true);
 }
@@ -1217,9 +1216,8 @@ TEST_P(
     HTMLMediaElementTest,
     DestroyMediaPlayerWhenSwitchingDifferentOriginDocumentsIfReuseIsNotEnabled) {
   // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
-  // document, if `kReuseMediaPlayer` is not enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(media::kReuseMediaPlayer);
+  // document, if `kPictureInPictureV2` is not enabled.
+  ScopedPictureInPictureV2ForTest scoped_feature(false);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
                                       /*should_destroy=*/true);
 }
@@ -1228,8 +1226,9 @@ TEST_P(
     HTMLMediaElementTest,
     DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is re-used when moving to a same-origin
-  // document, if `kReuseMediaPlayer` is enabled.
-  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+  // document, if `kPictureInPictureV2` is enabled.
+  ScopedPictureInPictureAPIForTest scoped_dependency(true);
+  ScopedPictureInPictureV2ForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
                                       /*should_destroy=*/false);
 }
@@ -1238,9 +1237,10 @@ TEST_P(
     HTMLMediaElementTest,
     DestroyMediaPlayerWhenSwitchingDifferentOriginDocumentsIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
-  // document, if `kReuseMediaPlayer` is enabled.  Re-use should only occur if
-  // it's a same-orign document.
-  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+  // document, if `kPictureInPictureV2` is enabled. Re-use should only occur if
+  // it's a same-origin document.
+  ScopedPictureInPictureAPIForTest scoped_dependency(true);
+  ScopedPictureInPictureV2ForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
                                       /*should_destroy=*/true);
 }
@@ -1249,8 +1249,8 @@ TEST_P(HTMLMediaElementTest,
        DestroyMediaPlayerWhenUnloadingOpenerIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is re-used, that navigating the opener away
   // causes the player to be destroyed.
-  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
-
+  ScopedPictureInPictureAPIForTest scoped_dependency(true);
+  ScopedPictureInPictureV2ForTest scoped_feature(true);
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);
   WaitForPlayer();
@@ -1264,7 +1264,8 @@ TEST_P(HTMLMediaElementTest,
 
 TEST_P(HTMLMediaElementTest,
        CreateMediaPlayerAfterMovingElementUsesOpenerFrameIfReuseIsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(media::kReuseMediaPlayer);
+  ScopedPictureInPictureAPIForTest scoped_dependency(true);
+  ScopedPictureInPictureV2ForTest scoped_feature(true);
   // Move the element before creating the player.
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);
@@ -1279,8 +1280,7 @@ TEST_P(HTMLMediaElementTest,
 
 TEST_P(HTMLMediaElementTest,
        CreateMediaPlayerAfterMovingElementUsesNewFrameIfReuseIsNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(media::kReuseMediaPlayer);
+  ScopedPictureInPictureV2ForTest scoped_feature(false);
   // Move the element before creating the player.
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);

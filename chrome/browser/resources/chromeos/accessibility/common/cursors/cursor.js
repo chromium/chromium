@@ -48,6 +48,9 @@ cursors.Unit = {
   /** A leaf node. */
   NODE: 'node',
 
+  /** A leaf node for guesture navigation. */
+  GESTURE_NODE: 'gesture_node',
+
   /**
    * A node or in line textbox that immediately precedes or follows a visual
    *     line break.
@@ -123,6 +126,22 @@ cursors.Cursor = class {
    */
   static fromNode(node) {
     return new cursors.Cursor(node, cursors.NODE_INDEX);
+  }
+
+  /**
+   * Gives a function that returns true for leaf types for |unit| navigations.
+   * @param {!cursor.Unit} unit
+   * @return {function}
+   */
+  static getLeafPredForUnit(unit) {
+    switch (unit) {
+      case cursors.Unit.TEXT:
+        return AutomationPredicate.leaf;
+      case cursors.Unit.GESTURE_NODE:
+        return AutomationPredicate.gestureObject;
+      default:
+        return AutomationPredicate.object;
+    }
   }
 
   /**
@@ -341,7 +360,7 @@ cursors.Cursor = class {
               newIndex = dir === Dir.FORWARD ? firstWordStart - 1 :
                                                this.getText().length;
             }
-            // fallthrough
+          // fallthrough
           case cursors.Movement.DIRECTIONAL: {
             let wordStarts, wordEnds;
             let start;
@@ -395,14 +414,13 @@ cursors.Cursor = class {
         break;
       case cursors.Unit.TEXT:
       case cursors.Unit.NODE:
+      case cursors.Unit.GESTURE_NODE:
         switch (movement) {
           case cursors.Movement.BOUND:
             newIndex = dir === Dir.FORWARD ? this.getText().length - 1 : 0;
             break;
           case cursors.Movement.DIRECTIONAL:
-            const pred = unit === cursors.Unit.TEXT ?
-                AutomationPredicate.leaf :
-                AutomationPredicate.object;
+            const pred = cursors.Cursor.getLeafPredForUnit(unit);
             newNode =
                 AutomationUtil.findNextNode(newNode, dir, pred) || originalNode;
             newIndex = cursors.NODE_INDEX;
@@ -646,8 +664,7 @@ cursors.WrappingCursor = class extends cursors.Cursor {
     // For 2, place range on the root (if not already there). If at root,
     // try to descend to the first leaf-like object.
     if (movement === cursors.Movement.DIRECTIONAL && result.equals(this)) {
-      const pred = unit === cursors.Unit.NODE ? AutomationPredicate.object :
-                                                AutomationPredicate.leaf;
+      const pred = cursors.Cursor.getLeafPredForUnit(unit);
       let endpoint = this.node;
       if (!endpoint) {
         return this;

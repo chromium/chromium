@@ -77,9 +77,8 @@ class ProcessMemoryMetricsEmitter
 
   // Virtual for testing. Returns the process uptime of the given process. Does
   // not return a value when the process startup time is not set.
-  virtual absl::optional<base::TimeDelta> GetProcessUptime(
-      const base::Time& now,
-      base::ProcessId pid);
+  virtual absl::optional<base::TimeDelta> GetProcessUptime(base::TimeTicks now,
+                                                           base::ProcessId pid);
 
  private:
   friend class base::RefCountedThreadSafe<ProcessMemoryMetricsEmitter>;
@@ -131,7 +130,7 @@ struct ProcessMemoryMetricsEmitter::ProcessInfo {
 
   base::ProcessId pid;
   std::vector<PageInfo> page_infos;
-  base::Time launch_time;
+  base::TimeTicks launch_time;
 };
 
 #endif  // CHROME_BROWSER_METRICS_PROCESS_MEMORY_METRICS_EMITTER_H_

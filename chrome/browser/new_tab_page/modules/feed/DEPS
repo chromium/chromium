@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "feed_handler\.cc": [
+    "+chrome/browser/ui/views",
+  ]
+}

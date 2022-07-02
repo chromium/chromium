@@ -131,6 +131,9 @@
                 android:checkable="true" />
           </menu>
         </item>
+        <item android:id="@+id/page_zoom_id"
+            android:title="@string/page_zoom_title"
+            android:icon="@drawable/ic_zoom" />
         <item android:id="@+id/paint_preview_show_id"
             android:title="@string/menu_paint_preview_show"
             android:icon="@drawable/ic_photo_camera" />

@@ -1,10 +1,14 @@
-# crbug.com/431213, Fuchsia's sanitizer runtimes don't support source-based
-# suppressions
+# On other platforms, these are suppressed by the suppressions for
+# http://crbug.com/416665 in //build/sanitizers/lsan_suppressions.cc.
+# Fuchsia's sanitizer runtimes don't support source-based suppressions.
+# TODO(http://crbug.com/1339448): Add suppression in source code.
 -APIBinding*
 -APIEventHandlerTest*
 -APILastErrorTest*
 -APIRequestHandlerTest.SettingLastError
 -All/ResponseValidationNativeExtensionBindingsSystemUnittest.ResponseValidation*
+-All/SignatureValidationNativeExtensionBindingsSystemUnittest.EventArgumentValidation*
+-All/SignatureValidationNativeExtensionBindingsSystemUnittest.ResponseValidation*
 -DeclarativeEventTest.TestRulesSchema
 -DeclarativeEventWithSchemaTest.TestAllMethods
 -EventEmitterUnittest.ListenersDestroyingContext

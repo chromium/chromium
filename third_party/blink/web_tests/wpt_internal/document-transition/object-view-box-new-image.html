@@ -15,6 +15,7 @@
   position: relative;
   top: 200px;
   left: 200px;
+  page-transition-tag: target;
 }
 
 .embedded {
@@ -27,6 +28,7 @@
   width: 10px;
   height: 10px;
   background: grey;
+  page-transition-tag: hidden;
 }
 
 html::page-transition-container(hidden) { animation-duration: 300s; }
@@ -35,6 +37,7 @@ html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
 html::page-transition-outgoing-image(target) {
   animation: unset;
   opacity: 0;
+  height: 100%;
 }
 html::page-transition-incoming-image(target) {
   animation: unset;
@@ -42,6 +45,8 @@ html::page-transition-incoming-image(target) {
   object-view-box: inset(50px 0px 0px 0px);
   object-fit: none;
   object-position: 0% 0%;
+  height: 100%;
+  contain: paint;
 }
 
 </style>
@@ -55,12 +60,7 @@ html::page-transition-incoming-image(target) {
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-  t.setElement(target, "target");
   t.start(() => {
-    t.setElement(hidden, "hidden");
-    t.setElement(target, "target");
-
     requestAnimationFrame(() =>  requestAnimationFrame(takeScreenshot));
   });
 }

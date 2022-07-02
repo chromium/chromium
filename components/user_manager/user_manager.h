@@ -267,6 +267,9 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void SaveUserDisplayEmail(const AccountId& account_id,
                                     const std::string& display_email) = 0;
 
+  // Returns stored user type or USER_TYPE_REGULAR by default.
+  virtual UserType GetUserType(const AccountId& account_id) = 0;
+
   // Saves user's type for |user| into local state preferences.
   virtual void SaveUserType(const User* user) = 0;
 
@@ -360,6 +363,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if |user| is allowed depending on device policies.
   // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST, USER_TYPE_CHILD.
   virtual bool IsUserAllowed(const User& user) const = 0;
+
+  // Returns true if trusted device policies have successfully been retrieved
+  // and ephemeral users are enabled.
+  virtual bool AreEphemeralUsersEnabled() const = 0;
 
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;

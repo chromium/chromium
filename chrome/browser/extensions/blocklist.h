@@ -60,6 +60,8 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
 
   using IsBlocklistedCallback = base::OnceCallback<void(BlocklistState)>;
 
+  using DatabaseReadyCallback = base::OnceCallback<void(bool)>;
+
   explicit Blocklist(ExtensionPrefs* prefs);
 
   Blocklist(const Blocklist&) = delete;
@@ -109,6 +111,10 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   // Adds/removes an observer to the blocklist.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Invokes the callback method with a boolean indicating
+  // whether the database is ready.
+  void IsDatabaseReady(DatabaseReadyCallback callback);
 
  private:
   friend class ScopedDatabaseManagerForTest;

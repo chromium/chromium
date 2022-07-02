@@ -26,7 +26,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
-#include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -44,8 +43,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/top_sites.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -96,8 +95,8 @@ const char* const kChromeSettingsSubPages[] = {
     chrome::kPaymentsSubPage,         chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,    chrome::kSyncSetupSubPage,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    chrome::kCreateProfileSubPage,    chrome::kImportDataSubPage,
-    chrome::kManageProfileSubPage,    chrome::kPeopleSubPage,
+    chrome::kImportDataSubPage,       chrome::kManageProfileSubPage,
+    chrome::kPeopleSubPage,
 #endif
 };
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -135,6 +134,10 @@ PrefService* ChromeAutocompleteProviderClient::GetLocalState() {
   return g_browser_process->local_state();
 }
 
+std::string ChromeAutocompleteProviderClient::GetApplicationLocale() const {
+  return g_browser_process->GetApplicationLocale();
+}
+
 const AutocompleteSchemeClassifier&
 ChromeAutocompleteProviderClient::GetSchemeClassifier() const {
   return scheme_classifier_;
@@ -158,15 +161,6 @@ ChromeAutocompleteProviderClient::GetHistoryClustersService() {
 scoped_refptr<history::TopSites>
 ChromeAutocompleteProviderClient::GetTopSites() {
   return TopSitesFactory::GetForProfile(profile_);
-}
-
-ntp_tiles::MostVisitedSites*
-ChromeAutocompleteProviderClient::GetNtpMostVisitedSites() {
-  if (!most_visited_sites_) {
-    most_visited_sites_ =
-        ChromeMostVisitedSitesFactory::NewForProfile(profile_);
-  }
-  return most_visited_sites_.get();
 }
 
 bookmarks::BookmarkModel* ChromeAutocompleteProviderClient::GetBookmarkModel() {

@@ -100,7 +100,7 @@ MediaFoundationRendererClientFactory::CreateRenderer(
       media_task_runner, media_log_->Clone(), std::move(mojo_renderer),
       std::move(renderer_extension_remote),
       std::move(client_extension_receiver), std::move(dcomp_texture_wrapper),
-      std::move(observe_overlay_state_cb_), video_renderer_sink,
+      observe_overlay_state_cb_, video_renderer_sink,
       std::move(media_foundation_renderer_observer_remote));
 }
 

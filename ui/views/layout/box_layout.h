@@ -210,7 +210,7 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     bool VisibleToLayout() const;
 
    private:
-    raw_ptr<View> view_ = nullptr;
+    raw_ptr<View, DanglingUntriaged> view_ = nullptr;
     raw_ptr<const BoxLayout> layout_ = nullptr;
     gfx::Insets margins_;
   };

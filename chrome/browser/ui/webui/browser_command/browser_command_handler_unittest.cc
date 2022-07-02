@@ -322,18 +322,9 @@ TEST_F(BrowserCommandHandlerTest, OpenFeedbackFormCommand) {
 }
 
 TEST_F(BrowserCommandHandlerTest, CanExecuteCommand_OpenPrivacyGuide) {
-  // Showing the Privacy Guide promo is not allowed if the experimental
-  // flag is disabled.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPrivacyGuide);
-  EXPECT_FALSE(CanExecuteCommand(Command::kOpenPrivacyGuide));
-
-  // Once the flag is enabled, it is allowed.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeature(features::kPrivacyGuide);
   EXPECT_TRUE(CanExecuteCommand(Command::kOpenPrivacyGuide));
 
-  // If the browser is managed, it is again not allowed.
+  // Showing the Privacy Guide promo is not allowed if the browser is managed.
   {
     TestingProfile::Builder builder;
     builder.OverridePolicyConnectorIsManagedForTesting(true);

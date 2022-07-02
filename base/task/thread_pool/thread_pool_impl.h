@@ -28,12 +28,9 @@
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/task/updateable_sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-#include "base/task/thread_pool/task_tracker_posix.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
@@ -43,18 +40,14 @@ namespace base {
 
 namespace internal {
 
-// Default ThreadPoolInstance implementation. This class is thread-safe.
+// Default ThreadPoolInstance implementation. This class is thread-safe, except
+// for methods noted otherwise in thread_pool_instance.h.
 class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
                                    public TaskExecutor,
                                    public ThreadGroup::Delegate,
                                    public PooledTaskRunnerDelegate {
  public:
-  using TaskTrackerImpl =
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-      TaskTrackerPosix;
-#else
-      TaskTracker;
-#endif
+  using TaskTrackerImpl = TaskTracker;
 
   // Creates a ThreadPoolImpl with a production TaskTracker. |histogram_label|
   // is used to label histograms. No histograms are recorded if it is empty.
@@ -71,7 +64,9 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // ThreadPoolInstance:
   void Start(const ThreadPoolInstance::InitParams& init_params,
              WorkerThreadObserver* worker_thread_observer) override;
-  int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+  bool WasStarted() const final;
+  bool WasStartedUnsafe() const final;
+  size_t GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const override;
   void Shutdown() override;
   void FlushForTesting() override;
@@ -162,18 +157,16 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // which can race with its initialization.
   std::atomic<TimeDelta> task_leeway_{PendingTask::kDefaultLeeway};
 
-  // Whether this TaskScheduler was started. Access controlled by
-  // |sequence_checker_|.
-  bool started_ = false;
+  // Whether this TaskScheduler was started.
+  bool started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Whether the --disable-best-effort-tasks switch is preventing execution of
   // BEST_EFFORT tasks until shutdown.
   const bool has_disable_best_effort_switch_;
 
   // Number of fences preventing execution of tasks of any/BEST_EFFORT priority.
-  // Access controlled by |sequence_checker_|.
-  int num_fences_ = 0;
-  int num_best_effort_fences_ = 0;
+  int num_fences_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  int num_best_effort_fences_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
 #if DCHECK_IS_ON()
   // Set once JoinForTesting() has returned.

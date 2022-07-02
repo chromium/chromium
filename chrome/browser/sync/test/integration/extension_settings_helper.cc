@@ -107,8 +107,9 @@ void SetExtensionSettings(Profile* profile,
 
 void SetExtensionSettingsForAllProfiles(const std::string& id,
                                         const base::DictionaryValue& settings) {
-  for (int i = 0; i < test()->num_clients(); ++i)
+  for (int i = 0; i < test()->num_clients(); ++i) {
     SetExtensionSettings(test()->GetProfile(i), id, settings);
+  }
   SetExtensionSettings(test()->verifier(), id, settings);
 }
 

@@ -87,6 +87,7 @@ interface CoreProbes {
   void DidFireWebGLErrorOrWarning(Element*, const String& message);
   void DidResizeMainFrame(LocalFrame*);
   void ApplyAcceptLanguageOverride(ExecutionContext*, String* accept_language);
+  void ApplyHardwareConcurrencyOverride(CoreProbeSink*, unsigned int& hardware_concurrency);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
   void ApplyUserAgentMetadataOverride(CoreProbeSink*, absl::optional<blink::UserAgentMetadata>* ua_metadata_override);
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const ResourceLoaderOptions&, ResourceRequestBlockedReason, ResourceType);
@@ -111,7 +112,7 @@ interface CoreProbes {
   void DidReceiveScriptResponse(ExecutionContext*, uint64_t identifier);
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
-  void FrameAttachedToParent([Keep] LocalFrame*, const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack);
+  void FrameAttachedToParent([Keep] LocalFrame*, const absl::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
   void DidStartProvisionalLoad([Keep] LocalFrame*);
   void DidFailProvisionalLoad([Keep] LocalFrame*);
@@ -142,6 +143,7 @@ interface CoreProbes {
   void LayerTreeDidChange(LocalFrame*);
   void LayerTreePainted(LocalFrame*);
   void PseudoElementCreated([Keep] PseudoElement*);
+  void TopLayerElementsChanged(Document*);
   void PseudoElementDestroyed([Keep] PseudoElement*);
   void DidCreateAnimation(Document*, unsigned);
   void AnimationPlayStateChanged(Document*, Animation*, Animation::AnimationPlayState old_play_state, Animation::AnimationPlayState new_play_state);
@@ -177,7 +179,7 @@ interface CoreProbes {
   void ApplyCompilationModeOverride(ExecutionContext*, const ClassicScript&, v8::ScriptCompiler::CachedData** cached_data, v8::ScriptCompiler::CompileOptions*);
   void NodeCreated([Keep] Node* node);
   void PortalRemoteFrameCreated(Document*, HTMLPortalElement* portal_element);
-  void FileChooserOpened([Keep] LocalFrame* frame, HTMLInputElement* element, bool* intercepted);
+  void FileChooserOpened([Keep] LocalFrame* frame, HTMLInputElement* element, bool multiple, bool* intercepted);
   void PlayerErrorsRaised(ExecutionContext* context, String player_id, const Vector<InspectorPlayerError>& errors);
   void PlayerEventsAdded(ExecutionContext* context, String player_id, const Vector<InspectorPlayerEvent>& events);
   void PlayerMessagesLogged(ExecutionContext* context, String player_id, const Vector<InspectorPlayerMessage>& messages);

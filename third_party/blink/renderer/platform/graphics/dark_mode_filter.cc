@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/lru_cache.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
-#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 
 namespace blink {
@@ -86,10 +86,10 @@ class DarkModeInvertedColorCache {
   ~DarkModeInvertedColorCache() = default;
 
   SkColor GetInvertedColor(DarkModeColorFilter* filter, SkColor color) {
-    WTF::IntegralWithAllKeys<SkColor> key(color);
-    SkColor* cached_value = cache_.Get(key);
-    if (cached_value)
-      return *cached_value;
+    SkColor key(color);
+    auto it = cache_.Get(key);
+    if (it != cache_.end())
+      return it->second;
 
     SkColor inverted_color = filter->InvertColor(color);
     cache_.Put(key, static_cast<SkColor>(inverted_color));
@@ -101,7 +101,7 @@ class DarkModeInvertedColorCache {
   size_t size() { return cache_.size(); }
 
  private:
-  WTF::LruCache<WTF::IntegralWithAllKeys<SkColor>, SkColor> cache_;
+  base::HashingLRUCache<SkColor, SkColor> cache_;
 };
 
 DarkModeFilter::DarkModeFilter(const DarkModeSettings& settings)
@@ -206,6 +206,16 @@ sk_sp<SkColorFilter> DarkModeFilter::GenerateImageFilter(
 sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() const {
   DCHECK(immutable_.image_filter);
   return immutable_.image_filter;
+}
+
+DarkModeFilter::ElementRole DarkModeFilter::BorderElementRole(
+    SkColor border_color,
+    SkColor background_color) {
+  if (background_color == 0 ||
+      DarkModeColorClassifier::CalculateColorBrightness(border_color) <
+          DarkModeColorClassifier::CalculateColorBrightness(background_color))
+    return ElementRole::kForeground;
+  return ElementRole::kBackground;
 }
 
 absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(

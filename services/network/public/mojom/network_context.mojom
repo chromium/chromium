@@ -21,6 +21,7 @@ import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
+import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
@@ -33,7 +34,6 @@ import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
@@ -42,6 +42,7 @@ import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/socket_broker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/transferable_directory.mojom";
@@ -212,7 +213,7 @@ struct NetworkContextFilePaths {
 
   // Points to a path that might contain existing network service data files and
   // databases from network contexts created with the same `data_directory`.
-  // This parameter must be specified if `perform_migration` is set to true.
+  // This parameter must be specified if `trigger_migration` is set to true.
   // Once migration has been successful (see below), data is no longer read from
   // this path. Data could continue to be read from this path if migration
   // fails, or if `trigger_migration` has never been set to true.
@@ -405,6 +406,10 @@ struct NetworkContextParams {
   // settings.
   pending_remote<ProxyErrorClient>? proxy_error_client;
 
+  // Broker used by the network service sandbox to create sockets in
+  // the browser. Set when the sandbox is enabled.
+  pending_remote<SocketBroker>? socket_broker;
+
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
   // lookups that are slow or are blockholed, at the cost of making it more
@@ -524,6 +529,14 @@ struct NetworkContextParams {
 
   // Is true, Trust Token operations should be blocked.
   bool block_trust_tokens;
+
+  // Parameters for constructing the FirstPartySetsAccessDelegate.
+  // |first_party_sets_access_delegate_params| is the initial configuration to
+  // use. If nullptr, uses the default configuration. Updated configurations
+  // can be passed in via |first_party_sets_access_delegate_receiver|.
+  FirstPartySetsAccessDelegateParams? first_party_sets_access_delegate_params;
+  pending_receiver<FirstPartySetsAccessDelegate>?
+      first_party_sets_access_delegate_receiver;
 };
 
 struct NetworkConditions {
@@ -766,16 +779,18 @@ struct URLLoaderFactoryParams {
 // Implemented by the browser process.
 interface NetworkContextClient {
   // Called when file uploading was requested.
-  // If the process that requested the uploads has permission to read all of
-  // the files referenced by |file_paths|, the callback arguments will be
-  // net::OK, along with an array of open file handles. The array will contain
-  // exactly one handle for each path in |file_paths|, in the same order.
-  // If any files referenced by |file_paths| cannot be read, a net::ERROR will
-  // be returned, and |files| will be an empty list. If the |async| parameter
-  // is true, the files will be opened with FLAG_ASYNC.
+  // If the process that requested the uploads to |destination_url| has
+  // permission to read all of the files referenced by |file_paths|,
+  // the callback arguments will be net::OK, along with an array of open file
+  // handles. The array will contain exactly one handle for each path in
+  // |file_paths|, in the same order. If any files referenced by |file_paths|
+  // cannot be read, a net::ERROR will be returned, and |files| will be an empty
+  // list. If the |async| parameter is true, the files will be opened with
+  // FLAG_ASYNC.
   OnFileUploadRequested(int32 process_id,
                         bool async,
-                        array<mojo_base.mojom.FilePath> file_paths) =>
+                        array<mojo_base.mojom.FilePath> file_paths,
+                        url.mojom.Url destination_url) =>
       (int32 net_error, array<mojo_base.mojom.ReadOnlyFile> files);
 
   // Checks if network error reports could be sent for the given origins.
@@ -993,9 +1008,6 @@ interface NetworkContext {
   ClearDomainReliability(ClearDataFilter? filter,
                          DomainReliabilityClearMode mode) => ();
 
-  // Returns a JSON value containing data for displaying on a debugging page.
-  GetDomainReliabilityJSON() => (mojo_base.mojom.Value data);
-
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.
   // |reporting_source| is a token which identifies the document or worker with
@@ -1052,7 +1064,7 @@ interface NetworkContext {
               mojo_base.mojom.UnguessableToken? reporting_source,
               NetworkIsolationKey network_isolation_key,
               string? user_agent,
-              mojo_base.mojom.DeprecatedDictionaryValue body);
+              mojo_base.mojom.DictionaryValue body);
 
   // Queues a signed exchange report.
   //
@@ -1109,7 +1121,7 @@ interface NetworkContext {
   [EnableIf=is_ct_supported]
   GetExpectCTState(string domain,
                    NetworkIsolationKey network_isolation_key)
-                   => (mojo_base.mojom.DeprecatedDictionaryValue state);
+                   => (mojo_base.mojom.DictionaryValue state);
 
   // Creates a UDP socket. Caller can supply a |listener| interface pointer
   // to listen for incoming datagrams. A null |listener| is acceptable if caller
@@ -1356,7 +1368,7 @@ interface NetworkContext {
   // Retrieve values from the HSTS state from the associated contexts
   // transport security state.
   GetHSTSState(string domain)
-      => (mojo_base.mojom.DeprecatedDictionaryValue state);
+      => (mojo_base.mojom.DictionaryValue state);
 
   // Sets allowed and blocked origins respectively for the URLLoaderFactory
   // consumers to access beyond the same-origin policy. The list is managed per
@@ -1452,10 +1464,6 @@ interface NetworkContext {
   // Forces all pending Domain Reliability uploads to run now, even if their
   // minimum delay has not yet passed.
   ForceDomainReliabilityUploadsForTesting() => ();
-
-  // Gets the OriginPolicyManager associated with this network context.
-  GetOriginPolicyManager(
-      pending_receiver<OriginPolicyManager> origin_policy_manager);
 
   // Set the SCT auditing mode for this NetworkContext.
   [EnableIf=is_ct_supported]

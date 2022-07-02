@@ -13,10 +13,7 @@ namespace net {
 
 UDPServerSocket::UDPServerSocket(net::NetLog* net_log,
                                  const net::NetLogSource& source)
-    : socket_(DatagramSocket::DEFAULT_BIND, net_log, source),
-      allow_address_reuse_(false),
-      allow_broadcast_(false),
-      allow_address_sharing_for_multicast_(false) {}
+    : socket_(DatagramSocket::DEFAULT_BIND, net_log, source) {}
 
 UDPServerSocket::~UDPServerSocket() = default;
 

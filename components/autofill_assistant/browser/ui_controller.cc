@@ -78,7 +78,23 @@ bool ShouldShowFeedbackChipForReason(Metrics::DropOutReason reason) {
 
 bool ShouldReloadData(const CollectUserDataOptions& options,
                       UserDataEventType event_type) {
-  if (!options.use_gms_core_edit_dialogs) {
+  if (!options.use_alternative_edit_dialogs) {
+    return false;
+  }
+  switch (event_type) {
+    case UserDataEventType::ENTRY_CREATED:
+    case UserDataEventType::ENTRY_EDITED:
+      return true;
+    case UserDataEventType::UNKNOWN:
+    case UserDataEventType::NO_NOTIFICATION:
+    case UserDataEventType::SELECTION_CHANGED:
+      return false;
+  }
+}
+
+bool ShouldStoreTemporaryData(const CollectUserDataOptions& options,
+                              UserDataEventType event_type) {
+  if (!options.use_alternative_edit_dialogs) {
     return false;
   }
   switch (event_type) {
@@ -857,9 +873,10 @@ void UiController::HandleContactInfoChange(
   collect_user_data_options_->selected_user_data_changed_callback.Run(
       UserDataEventField::CONTACT_EVENT, event_type);
 
-  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
-    ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
-    return;
+  if (ShouldStoreTemporaryData(*collect_user_data_options_, event_type)) {
+    UserData* user_data = GetUserData();
+    DCHECK(user_data);
+    user_data::UpsertContact(*profile, user_data->transient_contacts_);
   }
 
   DCHECK(!collect_user_data_options_->contact_details_name.empty());
@@ -877,9 +894,10 @@ void UiController::HandlePhoneNumberChange(
   collect_user_data_options_->selected_user_data_changed_callback.Run(
       UserDataEventField::PHONE_NUMBER_EVENT, event_type);
 
-  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
-    ReloadUserData(UserDataEventField::PHONE_NUMBER_EVENT, event_type);
-    return;
+  if (ShouldStoreTemporaryData(*collect_user_data_options_, event_type)) {
+    UserData* user_data = GetUserData();
+    DCHECK(user_data);
+    user_data::UpsertPhoneNumber(*profile, user_data->transient_phone_numbers_);
   }
 
   GetUserData()->SetSelectedPhoneNumber(std::move(profile));
@@ -1041,11 +1059,6 @@ void UiController::OnFeedbackSent() {
   execution_delegate_->ShutdownIfNecessary();
 }
 
-void UiController::OnStateChanged(AutofillAssistantState state) {}
-
-void UiController::OnKeyboardSuppressionStateChanged(
-    bool should_suppress_keyboard) {}
-void UiController::CloseCustomTab() {}
 void UiController::OnError(const std::string& error_message,
                            Metrics::DropOutReason reason) {
   show_feedback_chip_ = ShouldShowFeedbackChipForReason(reason);
@@ -1057,16 +1070,6 @@ void UiController::OnUserDataChanged(const UserData& user_data,
                                      UserDataFieldChange field_change) {
   UpdateCollectUserDataActions();
 }
-void UiController::OnTouchableAreaChanged(
-    const RectF& visual_viewport,
-    const std::vector<RectF>& touchable_areas,
-    const std::vector<RectF>& restricted_areas) {}
-void UiController::OnViewportModeChanged(ViewportMode mode) {}
-void UiController::OnOverlayColorsChanged(
-    const ExecutionDelegate::OverlayColors& colors) {}
-void UiController::OnClientSettingsChanged(const ClientSettings& settings) {}
-void UiController::OnShouldShowOverlayChanged(bool should_show) {}
-void UiController::OnShutdown(Metrics::DropOutReason reason) {}
 
 void UiController::OnExecuteScript(const std::string& start_message) {
   if (!start_message.empty())
@@ -1161,10 +1164,15 @@ bool UiController::SupportsExternalActions() {
 }
 
 void UiController::ExecuteExternalAction(
-    const external::Action& info,
-    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {
+    const external::Action& external_action,
+    base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+        start_dom_checks_callback,
+    base::OnceCallback<void(const external::Result& result)>
+        end_action_callback) {
   NOTREACHED() << "Flows using default UI don't support external actions.";
 }
+
+void UiController::OnInterruptStarted() {}
+void UiController::OnInterruptFinished() {}
 
 }  // namespace autofill_assistant

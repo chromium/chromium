@@ -44,19 +44,15 @@ JSON schema for the input of the simulator.
         },
 
         // Optional uint64 formatted as a base-10 string. Defaults to null.
-        "debug_key": "987"
-      },
+        "debug_key": "987",
 
-      // Optional list of zero or more aggregatable keys.
-      "Attribution-Reporting-Register-Aggregatable-Source": [
-        {
-          // Required string to identify the key.
-          "id": "a",
-
-          // Required uint128 formatted as a base-16 string.
-          "key_piece": "0x1"
+        // Optional dictionary of aggregation key identifiers and corresponding
+        // key pieces.
+        "aggregation_keys": {
+            // Value is uint128 formatted as a base-16 string.
+            "a": "0x1"
         }
-      ]
+      }
     }
   ],
 
@@ -73,74 +69,76 @@ JSON schema for the input of the simulator.
       // Required origin on which the trigger is being registered.
       "destination_origin": "https://destination.example",
 
-      // Optional list of zero or more event trigger data.
-      "Attribution-Reporting-Register-Event-Trigger": [
-        {
-          // Optional uint64 formatted as a base-10 string.
-          // Defaults to 0.
-          "trigger_data": "3",
+      "Attribution-Reporting-Register-Trigger": {
+        // Optional list of zero or more event trigger data.
+        "event_trigger_data": [
+          {
+            // Optional uint64 formatted as a base-10 string.
+            // Defaults to 0.
+            "trigger_data": "3",
 
-          // Optional int64 formatted as a base-10 string.
-          // Defaults to 0.
-          "priority": "-456",
+            // Optional int64 formatted as a base-10 string.
+            // Defaults to 0.
+            "priority": "-456",
 
-          // Optional uint64 formatted as a base-10 string. Defaults to null.
-          "deduplication_key": "654",
+            // Optional uint64 formatted as a base-10 string. Defaults to null.
+            "deduplication_key": "654",
 
-          // Optional dictionary of filters and corresponding values. Defaults
-          // to empty.
-          "filters": {
-            "a": ["b", "c"],
-            "d": []
-          },
+            // Optional dictionary of filters and corresponding values. Defaults
+            // to empty.
+            "filters": {
+              "a": ["b", "c"],
+              "d": []
+            },
 
-          // Optional dictionary of negated filters and corresponding values.
-          // Defaults to empty.
-          "not_filters": {
-            "x": ["y"],
-            "z": []
+            // Optional dictionary of negated filters and corresponding values.
+            // Defaults to empty.
+            "not_filters": {
+              "x": ["y"],
+              "z": []
+            }
           }
-        }
-      ],
+        ],
 
-      // Optional list of zero or more aggregatable trigger data.
-      "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [
-        {
-          // Required uint128 formatted as a base-16 string.
-          "key_piece": "0x10",
+        // Optional list of zero or more aggregatable trigger data.
+        "aggregatable_trigger_data": [
+          {
+            // Required uint128 formatted as a base-16 string.
+            "key_piece": "0x10",
 
-          // Required list of key identifiers.
-          "source_keys": ["a"],
+            // Required list of key identifiers.
+            "source_keys": ["a"],
 
-          // Optional dictionary of filters and corresponding values. Defaults
-          // to empty.
-          "filters": {
-            "a": ["b", "c"],
-            "d": []
-          },
+            // Optional dictionary of filters and corresponding values. Defaults
+            // to empty.
+            "filters": {
+              "a": ["b", "c"],
+              "d": []
+            },
 
-          // Optional dictionary of negated filters and corresponding values.
-          // Defaults to empty.
-          "not_filters": {
-            "x": ["y"],
-            "z": []
+            // Optional dictionary of negated filters and corresponding values.
+            // Defaults to empty.
+            "not_filters": {
+              "x": ["y"],
+              "z": []
+            }
           }
+        ],
+
+        // Optional dictionary of key identifiers and corresponding values.
+        "aggregatable_values": {
+          "a": 123
+        },
+
+        // Optional uint64 formatted as a base-10 string. Defaults to null.
+        "debug_key": "789",
+
+        // Optional dictionary of filters and corresponding values. Defaults to
+        // empty.
+        "filters": {
+          "a": ["b", "c"],
+          "d": []
         }
-      ],
-
-      // Optional dictionary of key identifiers and corresponding values.
-      "Attribution-Reporting-Register-Aggregatable-Values": {
-        "a": 123
-      },
-
-      // Optional uint64 formatted as a base-10 string. Defaults to null.
-      "Attribution-Reporting-Trigger-Debug-Key": "789",
-
-      // Optional dictionary of filters and corresponding values. Defaults to
-      // empty.
-      "Attribution-Reporting-Filters": {
-        "a": ["b", "c"],
-        "d": []
       }
     }
   ],
@@ -208,7 +206,7 @@ JSON schema for the output of the simulator.
       },
 
       // The report itself. See
-      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
+      // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-reports
       // for details about its fields.
       "report": {}
     },
@@ -240,7 +238,7 @@ JSON schema for the output of the simulator.
         ],
 
         // The report itself. See
-        // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports
+        // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#aggregatable-reports
         // for details about its fields.
         "report": {}
       }
@@ -293,7 +291,7 @@ JSON schema for the output of the simulator.
       },
 
       // The report itself. See
-      // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports
+      // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-reports
       // for details about its fields.
       "report": {}
     }

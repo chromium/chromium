@@ -28,7 +28,6 @@ struct DecoderStatusTraits {
     kMalformedBitstream = 104,
     kFailedToGetDecoderBuffer = 107,
     kDecoderStreamInErrorState = 108,
-    kDecoderStreamReinitFailed = 109,
     kDecoderStreamDemuxerError = 110,
     kKeyFrameRequired = 111,
     kMissingTimestamp = 112,

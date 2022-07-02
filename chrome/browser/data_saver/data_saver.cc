@@ -16,9 +16,6 @@
 namespace {
 absl::optional<bool> g_override_data_saver_for_testing;
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kDataSaverSettingBlockWhenUninitialized{
-    "DataSaverSettingBlockWhenUninitialized", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether the Data Saver Android setting was set last time we checked it.
 // This can be a global variable because this is an OS setting that does not
 // vary based on Chrome profiles.
@@ -63,18 +60,11 @@ bool IsDataSaverEnabled(content::BrowserContext* browser_context) {
   }
 
   if (!g_cached_data_saver_setting) {
-    if (base::FeatureList::IsEnabled(kDataSaverSettingBlockWhenUninitialized)) {
-      // No cached value, so block until we find the result. Note that
-      // FetchDataSaverOSSettingAsynchronously is called on startup, so we
-      // expect this case to rarely happen.
-      base::Time start = base::Time::Now();
-      g_cached_data_saver_setting = IsDataSaverEnabledBlockingCall();
-      UmaHistogramTimes("DataSaver.BlockingReadOSSettingCall",
-                        base::Time::Now() - start);
-      return g_cached_data_saver_setting.value();
-    }
-    // Assume Data Saver is disabled for now.
-    g_cached_data_saver_setting = false;
+    // No cached value, so block until we find the result. Note that
+    // FetchDataSaverOSSettingAsynchronously is called on startup, so we
+    // expect this case to rarely happen.
+    g_cached_data_saver_setting = IsDataSaverEnabledBlockingCall();
+    return g_cached_data_saver_setting.value();
   }
 
   // There is a cached value, updated it asynchronously and return the cached

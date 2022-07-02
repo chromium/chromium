@@ -234,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "enhancedNetworkVoices", "googleTtsLanguagePacks"],
+        "enum": [ "enhancedNetworkVoices", "googleTtsLanguagePacks", "dictationPumpkinParsing"],
         "description": "Subset of accessibility features."
       },
       {
@@ -246,7 +246,7 @@
       {
         "id": "SetNativeChromeVoxResponse",
         "type": "string",
-        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" ],
+        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" , "needDeprecationConfirmation" ],
         "description": "Response code for onNativeChromeVoxArcSupportResult"
       },
       {
@@ -327,6 +327,22 @@
             {
               "name": "batteryDescription",
               "type": "string"
+            }
+          ]
+        }
+      },
+      {
+        "name": "installPumpkinForDictation",
+        "type": "function",
+        "description": "Called to request an install of the Pumpkin semantic parser for Dictation.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Runs when Pumpkin download finishes.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
             }
           ]
         }

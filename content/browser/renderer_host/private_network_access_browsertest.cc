@@ -455,7 +455,7 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
  public:
   RenderFrameHostImpl* root_frame_host() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
  protected:
@@ -574,6 +574,9 @@ class PrivateNetworkAccessBrowserTest
                 blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
+                // TODO(https://crbug.com/1332598): Remove all the filesystem:
+                // URL tests when removing filesystem: navigation for good.
+                blink::features::kFileSystemUrlNavigation,
             },
             {}) {}
 };
@@ -1224,9 +1227,9 @@ RenderFrameHostImpl* AddSandboxedChildFromFilesystem(
 // |shell| must not be nullptr.
 //
 // Helper for OpenWindow*().
-RenderFrameHostImpl* GetMainFrameHostImpl(Shell* shell) {
+RenderFrameHostImpl* GetPrimaryMainFrameHostImpl(Shell* shell) {
   return static_cast<RenderFrameHostImpl*>(
-      shell->web_contents()->GetMainFrame());
+      shell->web_contents()->GetPrimaryMainFrame());
 }
 
 // Opens a new window from within |parent|, pointed at the given |url|.
@@ -1236,7 +1239,7 @@ RenderFrameHostImpl* GetMainFrameHostImpl(Shell* shell) {
 // |parent| must not be nullptr.
 RenderFrameHostImpl* OpenWindowFromURL(RenderFrameHostImpl* parent,
                                        const GURL& url) {
-  return GetMainFrameHostImpl(OpenPopup(parent, url, "_blank"));
+  return GetPrimaryMainFrameHostImpl(OpenPopup(parent, url, "_blank"));
 }
 
 RenderFrameHostImpl* OpenWindowFromAboutBlank(RenderFrameHostImpl* parent) {
@@ -1249,9 +1252,9 @@ RenderFrameHostImpl* OpenWindowFromAboutBlankNoOpener(
   // Setting the "noopener" window feature makes `window.open()` return `null`.
   constexpr bool kNoExpectReturnFromWindowOpen = false;
 
-  return GetMainFrameHostImpl(OpenPopup(parent, GURL("about:blank"), "_blank",
-                                        "noopener",
-                                        kNoExpectReturnFromWindowOpen));
+  return GetPrimaryMainFrameHostImpl(OpenPopup(parent, GURL("about:blank"),
+                                               "_blank", "noopener",
+                                               kNoExpectReturnFromWindowOpen));
 }
 
 RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
@@ -1265,7 +1268,7 @@ RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
   )";
   EXPECT_TRUE(ExecJs(parent, JsReplace(script_template, url, features)));
 
-  return GetMainFrameHostImpl(observer.GetShell());
+  return GetPrimaryMainFrameHostImpl(observer.GetShell());
 }
 
 RenderFrameHostImpl* OpenWindowInitialEmptyDoc(RenderFrameHostImpl* parent) {

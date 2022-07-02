@@ -68,6 +68,10 @@ class URLDataSourceIOSImpl
   // Replacements for i18n or null if no replacements are desired.
   virtual const ui::TemplateReplacements* GetReplacements() const;
 
+  // Whether to perform i18n replacements in JS files (needed by WebUIs that are
+  // using Web Components).
+  virtual bool ShouldReplaceI18nInJS() const;
+
  protected:
   virtual ~URLDataSourceIOSImpl();
 

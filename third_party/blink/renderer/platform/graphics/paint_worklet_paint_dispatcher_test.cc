@@ -9,7 +9,6 @@
 #include "cc/paint/paint_worklet_job.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -22,7 +21,7 @@ namespace blink {
 namespace {
 // We need a thread (or multiple threads) for the (mock) worklets to run on.
 std::unique_ptr<Thread> CreateTestThread(const char* name) {
-  return Platform::Current()->CreateThread(
+  return Thread::CreateThread(
       ThreadCreationParams(ThreadType::kTestThread).SetThreadNameForTest(name));
 }
 

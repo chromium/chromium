@@ -43,8 +43,8 @@ source_set("feedback_private") {
 
     deps += [
       "//ash/public/cpp",
-      "//chromeos/services/assistant/public/cpp",
-      "//chromeos/services/assistant/public/mojom",
+      "//chromeos/ash/services/assistant/public/cpp",
+      "//chromeos/ash/services/assistant/public/mojom",
     ]
   }
 }

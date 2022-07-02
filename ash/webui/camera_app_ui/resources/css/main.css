@@ -121,6 +121,13 @@ input[type=checkbox] {
   width: 40px;
 }
 
+.menu-item > input.icon {
+  outline-offset: -4px;
+}
+input[type=radio].icon {
+  border-radius: 50%;
+}
+
 ::-webkit-scrollbar {
   height: 0;
   width: 0;
@@ -246,6 +253,7 @@ body.tablet-landscape .actions-group {
 #modes-group {
   display: block;
   overflow: auto;
+  padding: 10px 0;
   pointer-events: auto;
   text-align: center;
   user-select: none;
@@ -281,9 +289,6 @@ body.should-handle-intent-result #modes-group {
 }
 
 #modes-group .mode-item {
-  --focus-ring-gap: 7px;
-  --focus-ring-border: 2px;
-
   display: inline-block;
   font-size: 0; /* Remove space between inline-block. */
   margin: 0 8px;
@@ -307,6 +312,10 @@ body.should-handle-intent-result #modes-group {
   transform: none;
 }
 
+div.mode-item>input {
+  border-radius: 16px/50%;
+}
+
 div.mode-item>span {
   border-radius: 16px/50%;
   color: white;
@@ -320,10 +329,8 @@ div.mode-item>span {
 }
 
 .mode-item>input {
-  --focus-ring-size: 7px;
-  --focus-ring-style: mode-item-input;
-
   height: 100%;
+  outline-offset: 7px;
   position: absolute;
   width: 100%;
   z-index: 1;
@@ -336,15 +343,10 @@ div.mode-item>span {
   text-shadow: none;
 }
 
-#focus-ring.mode-item-input {
-  border-radius: 23px/50%;
-}
-
 button.shutter {
-  --focus-ring-size: 9px;
-
   display: none;
   height: 60px;
+  outline-offset: 9px;
   width: 60px;
   z-index: 1;  /* On top of transforming switch-mode buttons. */
 }
@@ -376,14 +378,18 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
   background-image: url(/images/camera_shutter_photo_start.svg);
 }
 
-#start-takephoto:hover,
+body:not(.taking) #start-takephoto:hover,
 #video-snapshot:hover {
   background-image: url(/images/camera_shutter_photo_start_hover.svg);
 }
 
-#start-takephoto:active,
+body:not(.taking) #start-takephoto:active,
 #video-snapshot:active {
   background-image: url(/images/camera_shutter_photo_start_active.svg);
+}
+
+body.taking #start-takephoto:active {
+  transform: unset;
 }
 
 #stop-takephoto {
@@ -544,10 +550,9 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
-  --focus-ring-size: 8px;
-
   background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
+  outline-offset: 8px;
   width: var(--big-icon);
 }
 
@@ -596,7 +601,7 @@ body.should-handle-intent-result #gallery-enter {
   --option-item-vpadding: 12px;
   --switch-device-gap: 32px;
   bottom: calc(var(--bottom-line) + (var(--big-icon) / 2) + var(--switch-device-gap) - var(--option-item-vpadding));
-  flex-direction: column-reverse;
+  flex-direction: column;
   transition: bottom var(--fast1-duration);
 }
 
@@ -825,6 +830,7 @@ body.mirror #preview-document-corner-overlay .corner-container {
 }
 
 #preview-video {
+  pointer-events: none;
   transition: opacity var(--fast2-duration) ease-in-out;
 }
 
@@ -1220,14 +1226,13 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
 }
 
 button.menu-item {
-  --focus-ring-size: -3px;
+  outline-offset: -3px;
 }
 
 .menu-header button.icon {
   /* Icon image is small enough and won't be covered by -1px */
-  --focus-ring-size: -1px;
-
   background-image: url(/images/settings_button_back.svg);
+  outline-offset: -1px;
 }
 
 html[dir=rtl] .menu-header .icon {
@@ -1355,17 +1360,17 @@ body.scan #settings-video-resolution {
   padding: 6px 18px;
 }
 
-body.tab-navigation .dialog-buttons button:focus {
+body.keyboard-navigation .dialog-buttons button:focus {
   background-color: var(--blue-300);
   border-color: var(--blue-300);
   color: white;
 }
 
-body.tab-navigation .dialog-buttons button:focus::after {
+body.keyboard-navigation .dialog-buttons button:focus::after {
   border: none;
 }
 
-#spinner {
+.spinner {
   background-image: url(/images/spinner.svg);
   height: 32px;
   visibility: hidden;
@@ -1373,13 +1378,13 @@ body.tab-navigation .dialog-buttons button:focus::after {
   z-index: 1;
 }
 
+body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
+  visibility: visible;
+}
+
 #view-splash {
   background: no-repeat center url(/images/camera_mode_photo.svg), var(--grey-900);
   z-index: 2;
-}
-
-body:not(.mode-switching):not(.streaming) #spinner {
-  visibility: visible;
 }
 
 .hidden {
@@ -1491,4 +1496,17 @@ body:not(.video) #settings-video-resolution {
 
 #view-video-resolution-settings .fps-60.checked {
   background-image: url(/images/camera_button_fps_60_checked.svg);
+}
+
+[tabindex='0'] {
+  outline: none;
+  outline-offset: 3px;
+}
+
+[tabindex='0']:focus-visible {
+  outline: 2px solid var(--blue-300);
+}
+
+.circle :is(button, input) {
+  border-radius: 50%;
 }

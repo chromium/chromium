@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "components/autofill_assistant/browser/starter.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -78,13 +79,14 @@ class StarterDelegateAndroid
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
+  bool GetIsSupervisedUser() override;
   bool GetIsCustomTab() const override;
   bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
-  const CommonDependencies* GetCommonDependencies() override;
-  const PlatformDependencies* GetPlatformDependencies() override;
+  const CommonDependencies* GetCommonDependencies() const override;
+  const PlatformDependencies* GetPlatformDependencies() const override;
   base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
@@ -129,10 +131,14 @@ class StarterDelegateAndroid
 
   void CreateJavaDependenciesIfNecessary();
 
+  void HeadlessControllerDoneCallback(
+      HeadlessScriptController::ScriptResult result);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   base::WeakPtr<Starter> starter_;
   // Contains AssistantStaticDependencies which do not change.
   const std::unique_ptr<const DependenciesAndroid> dependencies_;
+  std::unique_ptr<HeadlessScriptController> headless_script_controller_;
   // Can change based on activity attachment.
   base::android::ScopedJavaGlobalRef<jobject> java_dependencies_;
 

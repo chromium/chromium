@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -46,7 +47,7 @@ constexpr int kIconSize = 16;
 // RECIPIENT type.
 ServerFieldType AddressFieldToServerFieldTypeWithHonorificPrefix(
     ::i18n::addressinput::AddressField address_field) {
-  ServerFieldType type = autofill::AddressFieldToServerFieldType(address_field);
+  ServerFieldType type = autofill::i18n::TypeForField(address_field);
   return type == NAME_FULL ? NAME_FULL_WITH_HONORIFIC_PREFIX : type;
 }
 

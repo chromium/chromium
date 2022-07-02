@@ -25,7 +25,7 @@ class LayoutObject;
 
 class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
-  using Flags = uint32_t;
+  using Flags = uint64_t;
 
   static const CSSProperty& Get(CSSPropertyID);
 
@@ -65,12 +65,15 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
-  bool IsValidForHighlight() const { return flags_ & kValidForHighlight; }
   bool IsValidForCanvasFormattedText() const {
     return flags_ & kValidForCanvasFormattedText;
   }
   bool IsValidForCanvasFormattedTextRun() const {
     return flags_ & kValidForCanvasFormattedTextRun;
+  }
+  bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
+  bool IsValidForPositionFallback() const {
+    return flags_ & kValidForPositionFallback;
   }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
@@ -163,8 +166,10 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kBorderRadius = 1 << 17,
     // Set if the property values are tree-scoped references.
     kTreeScopedValue = 1 << 18,
-    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1 << 19,
+    // Similar to the list at
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling, with some
+    // differences for compatibility reasons.
+    kValidForHighlightLegacy = 1 << 19,
     // https://drafts.csswg.org/css-logical/#logical-property-group
     kInLogicalPropertyGroup = 1 << 20,
     // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
@@ -184,6 +189,16 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // https://github.com/WICG/canvas-formatted-text
     kValidForCanvasFormattedText = 1 << 26,
     kValidForCanvasFormattedTextRun = 1 << 27,
+    // See overlapping in css_properties.json5.
+    kOverlapping = 1 << 28,
+    // See legacy_overlapping in css_properties.json5.
+    kLegacyOverlapping = 1 << 29,
+    // See valid_for_keyframes in css_properties.json5
+    kValidForKeyframe = 1 << 30,
+    // See valid_for_position_fallback in css_properties.json5
+    kValidForPositionFallback = 1ull << 31,
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
+    kValidForHighlight = 1ull << 32,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

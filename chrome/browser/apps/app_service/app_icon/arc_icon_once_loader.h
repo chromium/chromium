@@ -88,7 +88,7 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   void MaybeLoadPendingIconRequest();
 
   Profile* const profile_;
-  bool stop_observing_called_;
+  bool stop_observing_called_ = false;
   std::map<SizeAndType, std::unique_ptr<SizeSpecificLoader>>
       size_specific_loaders_;
 

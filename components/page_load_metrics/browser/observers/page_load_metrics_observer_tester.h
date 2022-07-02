@@ -117,6 +117,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const mojom::FrameRenderDataUpdate& render_data);
   void SimulateRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
                                 content::RenderFrameHost* render_frame_host);
+  void SimulateSoftNavigationCountUpdate(uint32_t soft_navigation_count);
 
   // Simulates a loaded resource. Main frame resources must specify a
   // GlobalRequestID, using the SimulateLoadedResource() method that takes a
@@ -139,6 +140,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
 
   // Simulate playing a media element.
   void SimulateMediaPlayed();
+  void SimulateMediaPlayed(content::RenderFrameHost* rfh);
 
   // Simulate accessingcookies.
   void SimulateCookieAccess(const content::CookieAccessDetails& details);
@@ -177,7 +179,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const mojom::CpuTiming& cpu_timing,
       const mojom::InputTiming& input_timing,
       const blink::MobileFriendliness& mobile_friendliness,
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* rfh,
+      uint32_t soft_navigation_count = 0);
 
   content::WebContents* web_contents() const { return web_contents_; }
 

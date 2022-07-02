@@ -52,7 +52,7 @@
         Memoria atzitzeko baimena duten aplikazioek atzi ditzakete argazkiak eta bideoak.</translation>
 <translation id="3067436040345934772">Mugitu eskuinera</translation>
 <translation id="3081586908890909590">Aldatu bideoak grabatzeko modura</translation>
-<translation id="313467653172006084">30 f/s</translation>
+<translation id="313467653172006084">30 fps</translation>
 <translation id="3183731565330012717">Sareta mota</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3240426699337459095">Esteka kopiatu da</translation>
@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Eskaneatu barra-kodea</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Dokumentuak eskaneatzeko eginbidea deskargatzen</translation>
 <translation id="4118525110028899586">Pausatu grabaketa</translation>
 <translation id="4121305183798804752">Hauteman egin da dokumentua</translation>
 <translation id="414641094616694804">Kamerak ezin du aldatu bereizmena</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Utzi argazkia ateratzeari</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Aurreko kamera</translation>
+<translation id="4620818268515773682">Aktibatu edo desaktibatu mikrofonoa. Mikrofonoa aktibatuta dago.</translation>
 <translation id="4628948037717959914">Argazkia</translation>
 <translation id="4649291346448517080">Ezin da gorde fitxategia</translation>
 <translation id="4695379108709712600">Gora mugitzen ari da</translation>
@@ -143,8 +145,9 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="761421184377987513">Behera eta ezkerrera mugitzen ari da</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
-<translation id="7670511624014457267">60 f/s</translation>
+<translation id="7670511624014457267">60 fps</translation>
 <translation id="7671804233658741790">Dokumentuaren beheko eskuinaldeko ertza</translation>
+<translation id="7692090236657809299">Gaitu irudia okertuta mugitzeko zooma</translation>
 <translation id="7726641833034062494">Grabatu bideo normal bat</translation>
 <translation id="7748344063862150053">Dokumentuaren goiko eskuinaldeko ertza</translation>
 <translation id="7933675232020478311">Behera eta eskuinera mugitzen ari da</translation>
@@ -158,6 +161,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8425673304802773841">Okertu beherantz</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Aktibatu edo desaktibatu mikrofonoa. Mikrofonoa desaktibatuta dago.</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8732462232047530626">Aurreikusi metadatuak</translation>

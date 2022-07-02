@@ -110,6 +110,10 @@ class MockInputMethod : public ime::mojom::InputMethod {
               OnQuickSettingsUpdated,
               (ime::mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
+  MOCK_METHOD(void,
+              IsReadyForTesting,
+              (IsReadyForTestingCallback callback),
+              (override));
 
   mojo::AssociatedRemote<ime::mojom::InputMethodHost> host;
 
@@ -133,7 +137,10 @@ void SetInputMethodOptions(Profile& profile,
 
 void SetPinyinLayoutPrefs(Profile& profile, const std::string& layout) {
   base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  // TODO(b/175085612): Remove pinyin.xkbLayout once we migrated from the
+  // legacy pref keys.
   input_method_setting.SetStringPath("pinyin.xkbLayout", layout);
+  input_method_setting.SetStringPath("zh-t-i0-pinyin.xkbLayout", layout);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           input_method_setting);
 }
@@ -261,16 +268,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     });
   }
 
-  void EnableDefaultFeatureListWithMultiWordAndLacros() {
-    EnableFeatureList({
-        features::kAssistPersonalInfo,
-        features::kAssistPersonalInfoEmail,
-        features::kAssistPersonalInfoName,
-        features::kAssistMultiWord,
-        features::kLacrosSupport,
-    });
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
@@ -354,27 +351,6 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdEs);
-  engine.FlushForTesting();  // ensure input_method is connected.
-  EXPECT_FALSE(engine.IsConnectedForTesting());
-
-  InputMethodManager::Shutdown();
-}
-
-TEST_F(NativeInputMethodEngineTest,
-       PredictiveWritingDoesNotLaunchImeServiceWithLacrosEnabled) {
-  TestingProfile testing_profile;
-  EnableDefaultFeatureListWithMultiWordAndLacros();
-  SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
-                        /*predictive_writing_enabled=*/true);
-
-  testing::StrictMock<MockInputMethod> mock_input_method;
-  InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
-  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
-                    /*extension_id=*/"", &testing_profile);
-
-  engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
   EXPECT_FALSE(engine.IsConnectedForTesting());
 
@@ -655,7 +631,7 @@ TEST_F(
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
                                 /*autocorrect=*/true,
-                                /*predictive_writing=*/false)));
+                                /*predictive_writing=*/true)));
               std::move(callback).Run(true);
             }));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
@@ -740,7 +716,7 @@ TEST_F(NativeInputMethodEngineTest,
 
     // Each character in "你好" is three UTF-8 code units.
     EXPECT_CALL(mock_input_method,
-                OnSurroundingTextChanged(u8"你好",
+                OnSurroundingTextChanged("你好",
                                          /*offset=*/0,
                                          MojoEq(ime::mojom::SelectionRange(
                                              /*anchor=*/6, /*focus=*/6))));

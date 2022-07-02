@@ -68,6 +68,17 @@ void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 }
 
+void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
+                                            bool enabled,
+                                            TestingProfile* profile) {
+  auto dict = TemplateURLDataToDictionary(data);
+  dict->SetBoolean(DefaultSearchManager::kDisabledByPolicy, !enabled);
+
+  profile->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(dict));
+}
+
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::u16string& keyword,
     const std::string& url,

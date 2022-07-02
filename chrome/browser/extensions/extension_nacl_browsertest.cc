@@ -259,7 +259,8 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
   // Sanity check - the test setup should cause main frame and subframe to be in
   // a different process.
   content::RenderFrameHost* subframe = ChildFrameAt(web_contents, 0);
-  EXPECT_NE(web_contents->GetMainFrame()->GetProcess(), subframe->GetProcess());
+  EXPECT_NE(web_contents->GetPrimaryMainFrame()->GetProcess(),
+            subframe->GetProcess());
 
   // Insert a plugin element into the subframe.  Before the fix from
   // https://crrev.com/2932703005 this would have trigerred a crash reported in

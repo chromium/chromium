@@ -90,6 +90,15 @@ bool FileHandlerCanHandleEntry(const apps::FileHandlerInfo& handler,
 bool WebAppFileHandlerCanHandleEntry(const apps::FileHandler& handler,
                                      const EntryInfo& entry);
 
+// Creates a new file entry and allows |renderer_id| to access |path|, with
+// specified permissions. This registers a new file system for |path|. Note
+// that |can_create| and |can_delete| both require |can_write|.
+GrantedFileEntry CreateFileEntryWithPermissions(int renderer_id,
+                                                const base::FilePath& path,
+                                                bool can_write,
+                                                bool can_create,
+                                                bool can_delete);
+
 // Creates a new file entry and allows |renderer_id| to access |path|. This
 // registers a new file system for |path|.
 GrantedFileEntry CreateFileEntry(content::BrowserContext* context,

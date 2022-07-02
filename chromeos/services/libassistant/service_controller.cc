@@ -8,11 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "build/buildflag.h"
-#include "chromeos/assistant/internal/buildflags.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
@@ -120,13 +118,22 @@ void ServiceController::Initialize(
     return;
   }
 
-  libassistant_factory_.LoadLibassistantLibraryFromDlc(config->dlc_path);
+  // Currently only V1 library is uploaded to DLC.
+  // If V2 flag is enabled, will fallback to load libassistant.so from rootfs.
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    libassistant_factory_.LoadLibassistantLibraryFromDlc(config->dlc_path);
+  }
 
   auto assistant_manager = libassistant_factory_.CreateAssistantManager(
       ToLibassistantConfig(*config));
-  auto* assistant_manager_internal =
-      libassistant_factory_.UnwrapAssistantManagerInternal(
-          assistant_manager.get());
+  assistant_client::AssistantManagerInternal* assistant_manager_internal =
+      nullptr;
+
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    assistant_manager_internal =
+        libassistant_factory_.UnwrapAssistantManagerInternal(
+            assistant_manager.get());
+  }
 
   assistant_client_ = AssistantClient::Create(std::move(assistant_manager),
                                               assistant_manager_internal);
@@ -284,6 +291,14 @@ void ServiceController::OnAllServicesReady() {
 void ServiceController::OnServicesBootingUp() {
   DVLOG(1) << "Started Libassistant service";
 
+  // We set one precondition of BootupState to reach `INITIALIZING_INTERNAL`
+  // is to wait for the gRPC HttpConnection be ready. Only after the BootupState
+  // meets the state, can AssistantManager start.
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    assistant_client_->StartGrpcHttpConnectionClient(
+        chromium_api_delegate_->GetHttpConnectionFactory());
+  }
+
   // The Libassistant BootupState goes to `RUNNING` right after
   // `SETTING_UP_ESSENTIAL_SERVICES` if AssistantManager::Start() is called
   // right after the AssistantManager is created. And Libassistant emits signals
@@ -321,9 +336,9 @@ void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
-#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
-  assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
-#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
+  }
 }
 
 void ServiceController::CreateChromiumApiDelegate(

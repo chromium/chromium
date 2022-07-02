@@ -48,8 +48,8 @@ class ASH_EXPORT LockOnLeaveController
   void OnOrientationChanged(bool suitable_for_human_presence) override;
 
   // chromeos::HumanPresenceDBusClient::Observer:
-  void OnHpsSenseChanged(hps::HpsResult state) override;
-  void OnHpsNotifyChanged(hps::HpsResult state) override;
+  void OnHpsSenseChanged(const hps::HpsResultProto&) override;
+  void OnHpsNotifyChanged(const hps::HpsResultProto&) override;
   // Re-enables LockOnLeave on human presence service restart if it was enabled
   // before.
   void OnRestart() override;

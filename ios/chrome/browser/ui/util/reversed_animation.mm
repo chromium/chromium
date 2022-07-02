@@ -23,23 +23,23 @@ typedef enum {
   ANIMATION_DIRECTION_NORMAL,
   ANIMATION_DIRECTION_REVERSE
 } AnimationDirection;
-// Returns the AnimationDirection opposite of |direction|.
+// Returns the AnimationDirection opposite of `direction`.
 AnimationDirection AnimationDirectionOpposite(AnimationDirection direction) {
   return direction == ANIMATION_DIRECTION_NORMAL ? ANIMATION_DIRECTION_REVERSE
                                                  : ANIMATION_DIRECTION_NORMAL;
 }
 }  // namespace
 
-// Returns an animation that reverses |animation| when added to |layer|, given
-// that |animation| is in |parent|'s timespace, which begins at
-// |parentBeginTime|.
+// Returns an animation that reverses `animation` when added to `layer`, given
+// that `animation` is in `parent`'s timespace, which begins at
+// `parentBeginTime`.
 CAAnimation* CAAnimationMakeReverse(CAAnimation* animation,
                                     CALayer* layer,
                                     CAAnimationGroup* parent,
                                     CFTimeInterval parentBeginTime);
-// Updates |reversedAnimation|'s properties for |animationToReverse|, given that
-// |animationToReverse| is in |parent|'s timespace, which begins at
-// |parentBeginTime|.
+// Updates `reversedAnimation`'s properties for `animationToReverse`, given that
+// `animationToReverse` is in `parent`'s timespace, which begins at
+// `parentBeginTime`.
 void UpdateReversedAnimation(ReversedAnimation* reversedAnimation,
                              CAAnimation* animationToReverse,
                              CALayer* layer,
@@ -64,9 +64,9 @@ void UpdateReversedAnimation(ReversedAnimation* reversedAnimation,
 
 @interface ReversedBasicAnimation : CABasicAnimation<ReversedAnimationProtocol>
 
-// Returns an animation that performs |animation| in reverse when added to
-// |layer|.  |parentBeginTime| should be set to the beginTime in absolute time
-// of |animation|'s parent in the timing hierarchy.
+// Returns an animation that performs `animation` in reverse when added to
+// `layer`.  `parentBeginTime` should be set to the beginTime in absolute time
+// of `animation`'s parent in the timing hierarchy.
 + (instancetype)reversedAnimationForAnimation:(CABasicAnimation*)animation
                                      forLayer:(CALayer*)layer
                                        parent:(CAAnimationGroup*)parent
@@ -92,7 +92,7 @@ void UpdateReversedAnimation(ReversedAnimation* reversedAnimation,
                                      forLayer:(CALayer*)layer
                                        parent:(CAAnimationGroup*)parent
                               parentBeginTime:(CFTimeInterval)parentBeginTime {
-  // Create new animation and copy properties.  Note that we can't use |-copy|
+  // Create new animation and copy properties.  Note that we can't use `-copy`
   // because we need the new animation to be the correct class.
   NSString* keyPath = animation.keyPath;
   CFTimeInterval now =
@@ -128,9 +128,9 @@ void UpdateReversedAnimation(ReversedAnimation* reversedAnimation,
 
 @interface ReversedAnimationGroup : CAAnimationGroup<ReversedAnimationProtocol>
 
-// Returns an animation that performs |animation| in reverse when added to
-// |layer|.  |parentBeginTime| should be set to the beginTime in absolute time
-// of the animation group to which |animation| belongs.
+// Returns an animation that performs `animation` in reverse when added to
+// `layer`.  `parentBeginTime` should be set to the beginTime in absolute time
+// of the animation group to which `animation` belongs.
 + (instancetype)reversedAnimationGroupForGroup:(CAAnimationGroup*)group
                                       forLayer:(CALayer*)layer
                                         parent:(CAAnimationGroup*)parent
@@ -156,7 +156,7 @@ void UpdateReversedAnimation(ReversedAnimation* reversedAnimation,
                                       forLayer:(CALayer*)layer
                                         parent:(CAAnimationGroup*)parent
                                parentBeginTime:(CFTimeInterval)parentBeginTime {
-  // Create new animation and copy properties.  Note that we can't use |-copy|
+  // Create new animation and copy properties.  Note that we can't use `-copy`
   // because we need the new animation to be the correct class.
   ReversedAnimationGroup* reversedGroup = [ReversedAnimationGroup animation];
   UpdateReversedAnimation(reversedGroup, group, layer, parent, parentBeginTime);

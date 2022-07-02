@@ -15,7 +15,6 @@ component_js_files = [
   "emoji_picker.js",
   "emoji_search.js",
   "emoji_variants.js",
-  "emoticon_group.js",
   "icons.js",
   "text_group_button.js",
 ]
@@ -196,7 +195,6 @@ js_library("emoji_picker") {
     ":emoji_group_button",
     ":emoji_picker_api_proxy",
     ":emoji_search",
-    ":emoticon_group",
     ":events",
     ":store",
     ":text_group_button",
@@ -266,13 +264,6 @@ js_library("emoji_search") {
   externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
 }
 
-js_library("emoticon_group") {
-  deps = [
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("icons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg",
@@ -329,7 +320,6 @@ js_type_check("closure_compile") {
     ":emoji_picker_api_proxy",
     ":emoji_search",
     ":emoji_variants",
-    ":emoticon_group",
     ":events",
     ":icons",
     ":store",

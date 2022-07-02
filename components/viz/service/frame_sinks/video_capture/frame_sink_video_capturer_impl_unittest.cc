@@ -130,6 +130,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
   MockConsumer() {}
 
   MOCK_METHOD0(OnFrameCapturedMock, void());
+  MOCK_METHOD1(OnNewCropVersion, void(uint32_t));
   MOCK_METHOD0(OnStopped, void());
   MOCK_METHOD1(OnLog, void(const std::string&));
 

@@ -32,10 +32,10 @@ class DevToolsClient {
 
   virtual bool WasCrashed() = 0;
 
+  virtual bool IsNull() const = 0;
+
   // Connect to DevTools if the DevToolsClient is disconnected.
   virtual Status ConnectIfNecessary() = 0;
-
-  virtual Status SetUpDevTools() = 0;
 
   virtual Status SendCommand(
       const std::string& method,
@@ -94,7 +94,9 @@ class DevToolsClient {
 
   virtual DevToolsClient* GetRootClient() = 0;
 
-  virtual bool IsMainPage();
+  virtual DevToolsClient* GetParentClient() const = 0;
+
+  virtual bool IsMainPage() const = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVTOOLS_CLIENT_H_

@@ -42,7 +42,6 @@ enum class UiTab {
 
 void ValidateHistoryClustersUKMEntry(const ukm::mojom::UkmEntry* entry,
                                      HistoryClustersInitialState init_state,
-                                     HistoryClustersFinalState final_state,
                                      int num_queries,
                                      int num_toggles_to_basic_history) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -51,11 +50,6 @@ void ValidateHistoryClustersUKMEntry(const ukm::mojom::UkmEntry* entry,
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::HistoryClusters::kInitialStateName,
       static_cast<int>(init_state));
-  EXPECT_TRUE(ukm_recorder.EntryHasMetric(
-      entry, ukm::builders::HistoryClusters::kFinalStateName));
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm::builders::HistoryClusters::kFinalStateName,
-      static_cast<int>(final_state));
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry, ukm::builders::HistoryClusters::kNumQueriesName));
   ukm_recorder.ExpectEntryMetric(
@@ -143,7 +137,6 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(0u, entries.size());
-  histogram_tester.ExpectTotalCount("History.Clusters.Actions.FinalState", 0);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.DidMakeQuery", 0);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
@@ -168,13 +161,10 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0];
   ValidateHistoryClustersUKMEntry(
-      entry, HistoryClustersInitialState::kDirectNavigation,
-      HistoryClustersFinalState::kCloseTab, 0, 0);
+      entry, HistoryClustersInitialState::kDirectNavigation, 0, 0);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
-                                      HistoryClustersFinalState::kCloseTab, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
@@ -214,13 +204,10 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0];
   ValidateHistoryClustersUKMEntry(
-      entry, HistoryClustersInitialState::kDirectNavigation,
-      HistoryClustersFinalState::kCloseTab, 2, 0);
+      entry, HistoryClustersInitialState::kDirectNavigation, 2, 0);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
-                                      HistoryClustersFinalState::kCloseTab, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       true, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.NumQueries", 2,
@@ -252,14 +239,10 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   EXPECT_EQ(1u, entries.size());
   auto* ukm_entry = entries[0];
   ValidateHistoryClustersUKMEntry(
-      ukm_entry, HistoryClustersInitialState::kDirectNavigation,
-      HistoryClustersFinalState::kSameDocNavigation, 0, 1);
+      ukm_entry, HistoryClustersInitialState::kDirectNavigation, 0, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Actions.FinalState",
-      HistoryClustersFinalState::kSameDocNavigation, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
@@ -282,13 +265,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1u, entries.size());
   auto* ukm_entry = entries[0];
   ValidateHistoryClustersUKMEntry(
-      ukm_entry, HistoryClustersInitialState::kIndirectNavigation,
-      HistoryClustersFinalState::kCloseTab, 0, 1);
+      ukm_entry, HistoryClustersInitialState::kIndirectNavigation, 0, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kIndirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
-                                      HistoryClustersFinalState::kCloseTab, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
@@ -316,113 +296,13 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   EXPECT_EQ(1u, entries.size());
   auto* ukm_entry = entries[0];
   ValidateHistoryClustersUKMEntry(
-      ukm_entry, HistoryClustersInitialState::kIndirectNavigation,
-      HistoryClustersFinalState::kCloseTab, 0, 0);
+      ukm_entry, HistoryClustersInitialState::kIndirectNavigation, 0, 0);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Actions.InitialState",
       HistoryClustersInitialState::kIndirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
-                                      HistoryClustersFinalState::kCloseTab, 1);
   histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
                                       false, 1);
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
-}
-
-// Assumed to be flaky since the above tests are flaky.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_LinkClick DISABLED_LinkClick
-#else
-#define MAYBE_LinkClick LinkClick
-#endif
-IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest, MAYBE_LinkClick) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
-  FollowBrowserManagedLink();
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
-
-  auto entries =
-      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  auto* ukm_entry = entries[0];
-  ValidateHistoryClustersUKMEntry(
-      ukm_entry, HistoryClustersInitialState::kDirectNavigation,
-      HistoryClustersFinalState::kLinkClick, 0, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Actions.InitialState",
-      HistoryClustersInitialState::kDirectNavigation, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
-                                      HistoryClustersFinalState::kLinkClick, 1);
-  histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                      false, 1);
-  histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
-}
-
-// Assumed to be flaky since the above tests are flaky.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_Refresh DISABLED_Refresh
-#else
-#define MAYBE_Refresh Refresh
-#endif
-IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest, MAYBE_Refresh) {
-  {
-    SCOPED_TRACE("Refresh");
-    base::HistogramTester histogram_tester;
-    ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
-    RefreshHistoryClusters();
-
-    auto entries = ukm_recorder.GetEntriesByName(
-        ukm::builders::HistoryClusters::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-    auto* ukm_entry = entries[0];
-    ValidateHistoryClustersUKMEntry(
-        ukm_entry, HistoryClustersInitialState::kDirectNavigation,
-        HistoryClustersFinalState::kRefreshTab, 0, 0);
-
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.Actions.InitialState",
-        HistoryClustersInitialState::kDirectNavigation, 1);
-    histogram_tester.ExpectUniqueSample("History.Clusters.Actions.FinalState",
-                                        HistoryClustersFinalState::kRefreshTab,
-                                        1);
-    histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                        false, 1);
-    histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
-  }
-
-  {
-    SCOPED_TRACE("Navigate away after refresh");
-    base::HistogramTester histogram_tester;
-    ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
-
-    auto entries = ukm_recorder.GetEntriesByName(
-        ukm::builders::HistoryClusters::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-    auto* ukm_entry = entries[0];
-    ValidateHistoryClustersUKMEntry(
-        ukm_entry, HistoryClustersInitialState::kDirectNavigation,
-        HistoryClustersFinalState::kCloseTab, 0, 0);
-
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.Actions.InitialState",
-        HistoryClustersInitialState::kDirectNavigation, 1);
-    histogram_tester.ExpectBucketCount("History.Clusters.Actions.FinalState",
-                                       HistoryClustersFinalState::kCloseTab, 1);
-    histogram_tester.ExpectUniqueSample("History.Clusters.Actions.DidMakeQuery",
-                                        false, 1);
-    histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
-  }
 }
 
 }  // namespace history_clusters

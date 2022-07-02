@@ -52,11 +52,13 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
       return "same-origin";
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       return "same-origin-allow-popups";
+    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
+      return "restrict-properties";
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return "same-origin-plus-coep";
     case network::mojom::CrossOriginOpenerPolicyValue::
-        kSameOriginAllowPopupsPlusCoep:
-      return "same-origin-allow-popups-plus-coep";
+        kRestrictPropertiesPlusCoep:
+      return "restrict-properties-plus-coep";
   }
 }
 
@@ -194,13 +196,13 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
   if (!endpoint)
     return;
 
-  base::DictionaryValue body;
-  body.SetString(kDisposition,
-                 is_report_only ? kDispositionReporting : kDispositionEnforce);
-  body.SetString(kPreviousURL,
-                 same_origin_with_previous ? SanitizedURL(previous_url) : "");
-  body.SetString(kReferrer, context_referrer_url_);
-  body.SetString(kType, kTypeToResponse);
+  base::Value::Dict body;
+  body.Set(kDisposition,
+           is_report_only ? kDispositionReporting : kDispositionEnforce);
+  body.Set(kPreviousURL,
+           same_origin_with_previous ? SanitizedURL(previous_url) : "");
+  body.Set(kReferrer, context_referrer_url_);
+  body.Set(kType, kTypeToResponse);
   QueueNavigationReport(std::move(body), *endpoint, is_report_only);
 }
 
@@ -218,9 +220,9 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationAwayFromCOOPReport(
   std::string sanitized_next_url;
   if (is_current_source || same_origin_with_next)
     sanitized_next_url = SanitizedURL(next_url);
-  base::DictionaryValue body;
-  body.SetString(kNextURL, sanitized_next_url);
-  body.SetString(kType, kTypeFromResponse);
+  base::Value::Dict body;
+  body.Set(kNextURL, sanitized_next_url);
+  body.Set(kType, kTypeFromResponse);
   QueueNavigationReport(std::move(body), *endpoint, is_report_only);
 }
 
@@ -240,38 +242,37 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   DCHECK(base::FeatureList::IsEnabled(
       network::features::kCrossOriginOpenerPolicy));
 
-  base::DictionaryValue body;
-  body.SetStringPath(kType, network::CoopAccessReportTypeToString(report_type));
-  body.SetStringPath(kDisposition, kDispositionReporting);
-  body.SetStringPath(kEffectivePolicy,
-                     ToString(coop_.report_only_value));
-  body.SetStringPath(kProperty, property);
+  base::Value::Dict body;
+  body.Set(kType, network::CoopAccessReportTypeToString(report_type));
+  body.Set(kDisposition, kDispositionReporting);
+  body.Set(kEffectivePolicy, ToString(coop_.report_only_value));
+  body.Set(kProperty, property);
   if (network::IsAccessFromCoopPage(report_type) &&
       source_location->url != "") {
-    body.SetStringPath(kSourceFile, source_location->url);
-    body.SetIntPath(kLineNumber, source_location->line);
-    body.SetIntPath(kColumnNumber, source_location->column);
+    body.Set(kSourceFile, source_location->url);
+    body.Set(kLineNumber, static_cast<int>(source_location->line));
+    body.Set(kColumnNumber, static_cast<int>(source_location->column));
   }
 
   switch (report_type) {
     // Reporter is the openee:
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpener:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
-      body.SetStringPath(kOpenerURL, reported_window_url);
-      body.SetStringPath(kReferrer, context_referrer_url_);
+      body.Set(kOpenerURL, reported_window_url);
+      body.Set(kReferrer, context_referrer_url_);
       break;
 
     // Reporter is the opener:
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpenee:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
-      body.SetStringPath(kOpeneeURL, reported_window_url);
-      body.SetStringPath(kInitialPopupURL, initial_popup_url);
+      body.Set(kOpeneeURL, reported_window_url);
+      body.Set(kInitialPopupURL, initial_popup_url);
       break;
 
     // Other:
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOther:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
-      body.SetStringPath(kOtherDocumentURL, reported_window_url);
+      body.Set(kOtherDocumentURL, reported_window_url);
       break;
   }
 
@@ -281,14 +282,13 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
-    base::DictionaryValue body,
+    base::Value::Dict body,
     const std::string& endpoint,
     bool is_report_only) {
-  body.SetString(kDisposition,
-                 is_report_only ? kDispositionReporting : kDispositionEnforce);
-  body.SetString(
-      kEffectivePolicy,
-      ToString(is_report_only ? coop_.report_only_value : coop_.value));
+  body.Set(kDisposition,
+           is_report_only ? kDispositionReporting : kDispositionEnforce);
+  body.Set(kEffectivePolicy,
+           ToString(is_report_only ? coop_.report_only_value : coop_.value));
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
       /*user_agent=*/absl::nullopt, std::move(body));

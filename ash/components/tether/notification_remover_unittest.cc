@@ -13,7 +13,7 @@
 #include "ash/components/tether/fake_notification_presenter.h"
 #include "ash/components/tether/host_scan_test_util.h"
 #include "base/test/task_environment.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

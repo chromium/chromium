@@ -10,12 +10,13 @@
 // Interface for the PendingBeacon API.
 // https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
 [RuntimeEnabled = PendingBeaconAPI, Exposed = Window] interface PendingBeacon {
-  [CallWith = ExecutionContext] constructor(
+  [Measure, CallWith = ExecutionContext] constructor(
       USVString url, optional BeaconOptions options);
-  attribute USVString url;
-  attribute BeaconMethod method;
-  attribute long pageHideTimeout;
-  readonly attribute BeaconState state;
-  void deactivate();
-  void setData((ReadableStream or XMLHttpRequestBodyInit) data);
+  [Measure] attribute USVString url;
+  [Measure] attribute BeaconMethod method;
+  [Measure] attribute long pageHideTimeout;
+  [Measure] readonly attribute BeaconState state;
+  [Measure] void deactivate();
+  [Measure] void setData((ReadableStream or XMLHttpRequestBodyInit) data);
+  [Measure] void sendNow();
 };

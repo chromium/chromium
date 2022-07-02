@@ -183,10 +183,6 @@ void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
       preexisting_payment_instrument_ids, std::move(callback), std::string());
 }
 
-void ServiceImpl::SetDisableRpcSigning(bool disable_rpc_signing) {
-  request_sender_->SetDisableRpcSigning(disable_rpc_signing);
-}
-
 void ServiceImpl::SendUserDataRequest(
     uint64_t run_id,
     bool request_name,
@@ -208,6 +204,18 @@ void ServiceImpl::SendUserDataRequest(
           client_token),
       ServiceRequestSender::AuthMode::OAUTH_STRICT, std::move(callback),
       RpcType::GET_USER_DATA);
+}
+
+void ServiceImpl::SetDisableRpcSigning(bool disable_rpc_signing) {
+  request_sender_->SetDisableRpcSigning(disable_rpc_signing);
+}
+
+void ServiceImpl::UpdateAnnotateDomModelContext(int64_t model_version) {
+  client_context_->UpdateAnnotateDomModelContext(model_version);
+}
+
+void ServiceImpl::UpdateJsFlowLibraryLoaded(const bool js_flow_library_loaded) {
+  client_context_->UpdateJsFlowLibraryLoaded(js_flow_library_loaded);
 }
 
 }  // namespace autofill_assistant

@@ -557,8 +557,10 @@ TEST(HTTPParsersTest, ParseServerTimingHeader) {
                          {{"metric1", "0", "d1"}, {"metric2", "0", ""}});
 
   // nonsense - extraneous characters after entry name token
-  testServerTimingHeader("metric==   \"\"foo;dur=123.4", {{"metric", "0", ""}});
-  testServerTimingHeader("metric1==   \"\"foo,metric2", {{"metric1", "0", ""}});
+  testServerTimingHeader("metric==   \"\"foo;dur=123.4",
+                         {{"metric", "123.4", ""}});
+  testServerTimingHeader("metric1==   \"\"foo,metric2",
+                         {{"metric1", "0", ""}, {"metric2", "0", ""}});
 
   // nonsense - extraneous characters after param name token
   testServerTimingHeader("metric;dur foo=12", {{"metric", "0", ""}});
@@ -588,7 +590,8 @@ TEST(HTTPParsersTest, ParseServerTimingHeader) {
   testServerTimingHeader("{", {{"{", "0", ""}});
   testServerTimingHeader("}", {{"}", "0", ""}});
   testServerTimingHeader("{}", {{"{}", "0", ""}});
-  testServerTimingHeader("{\"foo\":\"bar\"},metric", {{"{", "0", ""}});
+  testServerTimingHeader("{\"foo\":\"bar\"},metric",
+                         {{"{", "0", ""}, {"metric", "0", ""}});
 }
 
 TEST(HTTPParsersTest, ParseContentTypeOptionsTest) {

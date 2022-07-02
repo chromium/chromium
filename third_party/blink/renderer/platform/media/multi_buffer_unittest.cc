@@ -97,7 +97,8 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
     --blocks_until_deferred_;
 
     bool ret = true;
-    auto block = base::MakeRefCounted<media::DataBuffer>(kBlockSize);
+    auto block =
+        base::MakeRefCounted<media::DataBuffer>(static_cast<int>(kBlockSize));
     size_t x = 0;
     size_t byte_pos = (fifo_.size() + pos_) * kBlockSize;
     for (x = 0; x < kBlockSize; x++, byte_pos++) {

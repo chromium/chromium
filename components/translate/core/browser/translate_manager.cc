@@ -27,7 +27,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/page_translated_details.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -995,11 +994,8 @@ void TranslateManager::FilterForUserPrefs(
     TranslateTriggerDecision* decision,
     TranslatePrefs* translate_prefs,
     const std::string& page_language_code) {
-  TranslateAcceptLanguages* accept_languages =
-      translate_client_->GetTranslateAcceptLanguages();
   // Don't translate any user blocklisted languages.
-  if (!translate_prefs->CanTranslateLanguage(accept_languages,
-                                             page_language_code)) {
+  if (!translate_prefs->CanTranslateLanguage(page_language_code)) {
     decision->SetIsInLanguageBlocklist();
 
     decision->PreventAutoTranslate();

@@ -44,10 +44,10 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-class AmbientAnimationStaticResources;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
+class AmbientWeatherController;
 
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
@@ -127,6 +127,7 @@ class ASH_EXPORT AmbientController
   std::unique_ptr<views::Widget> CreateWidget(aura::Window* container);
 
   AmbientBackendModel* GetAmbientBackendModel();
+  AmbientWeatherModel* GetAmbientWeatherModel();
 
   AmbientBackendController* ambient_backend_controller() {
     return ambient_backend_controller_.get();
@@ -134,6 +135,10 @@ class ASH_EXPORT AmbientController
 
   AmbientPhotoController* ambient_photo_controller() {
     return ambient_photo_controller_.get();
+  }
+
+  AmbientWeatherController* ambient_weather_controller() {
+    return ambient_weather_controller_.get();
   }
 
   AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
@@ -160,7 +165,7 @@ class ASH_EXPORT AmbientController
 
   void StartRefreshingImages();
   void StopRefreshingImages();
-  AmbientPhotoConfig CreatePhotoConfigForCurrentTheme();
+  AmbientAnimationTheme GetCurrentTheme() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
@@ -184,6 +189,7 @@ class ASH_EXPORT AmbientController
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
   void OnAnimationThemePrefChanged();
+  void OnAnimationPlaybackSpeedChanged();
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;
@@ -195,6 +201,7 @@ class ASH_EXPORT AmbientController
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
+  std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;
@@ -236,14 +243,6 @@ class ASH_EXPORT AmbientController
   // Set to the off value in |ScreenIdleState| when ScreenIdleState() is
   // called. Used to prevent Ambient mode starting after screen is off.
   bool is_screen_off_ = false;
-
-  // Transient location to hold an animation's static resources while the
-  // model is being buffered with an initial set of topics. Once the animation
-  // is ready to be rendered, this gets transferred to an AmbientAnimationView.
-  //
-  // Null if the slideshow theme is active.
-  std::unique_ptr<AmbientAnimationStaticResources>
-      pending_animation_static_resources_;
 
   // Not set until the AmbientAnimationTheme is initially read from pref
   // storage when ambient mode is enabled.

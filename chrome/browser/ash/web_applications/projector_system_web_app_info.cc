@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,10 +28,10 @@ SkColor GetBgColor(bool use_dark_mode) {
 }  // namespace
 
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PROJECTOR,
-                                    "Projector",
-                                    GURL(ash::kChromeUITrustedProjectorAppUrl),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::PROJECTOR,
+                                "Projector",
+                                GURL(ash::kChromeUITrustedProjectorAppUrl),
+                                profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 

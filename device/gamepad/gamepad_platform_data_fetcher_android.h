@@ -14,6 +14,7 @@
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_provider.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
+#include "device/gamepad/haptic_gamepad_android.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 
 namespace device {
@@ -31,14 +32,42 @@ class GamepadPlatformDataFetcherAndroid : public GamepadDataFetcher {
       GamepadPlatformDataFetcherAndroid&&) = delete;
   ~GamepadPlatformDataFetcherAndroid() override;
 
+  // wrap java setVibration method.
+  static void SetVibration(int device_index,
+                           double strong_magnitude,
+                           double weak_magnitude);
+  // wrap java setZeroVibration method.
+  static void SetZeroVibration(int device_index);
+
   GamepadSource source() override;
 
   void PauseHint(bool paused) override;
 
   void GetGamepadData(bool devices_changed_hint) override;
 
+  void PlayEffect(
+      int source_id,
+      mojom::GamepadHapticEffectType type,
+      mojom::GamepadEffectParametersPtr params,
+      mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_runner) override;
+
+  void ResetVibration(
+      int source_id,
+      mojom::GamepadHapticsManager::ResetVibrationActuatorCallback callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_runner) override;
+
+  void SetDualRumbleVibrationActuator(int source_id);
+
+  void TryShutdownDualRumbleVibrationActuator(int source_id);
+
  private:
+  using VibrationActuatorMap =
+      base::flat_map<int, std::unique_ptr<HapticGamepadAndroid>>;
+
   void OnAddedToProvider() override;
+
+  VibrationActuatorMap vibration_actuators_;
 };
 
 }  // namespace device

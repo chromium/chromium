@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
@@ -49,6 +50,11 @@ using signin_metrics::PromoAction;
 @property(nonatomic, assign, readonly) AddAccountSigninIntent signinIntent;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+// Activity overlay coordinator needed while waiting for the add account sign-in
+// manager to be presented. This is needed if the network is slow or not
+// responding.
+@property(nonatomic, strong)
+    ActivityOverlayCoordinator* activityOverlayCoordinator;
 
 @end
 
@@ -77,10 +83,10 @@ using signin_metrics::PromoAction;
                  completion:(ProceduralBlock)completion {
   if (self.userSigninCoordinator) {
     DCHECK(!self.addAccountSigninManager);
-    // When interrupting |self.userSigninCoordinator|,
-    // |self.userSigninCoordinator.signinCompletion| is called. This callback
-    // is in charge to call |[self runCompletionCallbackWithSigninResult:
-    // completionInfo:].
+    // When interrupting `self.userSigninCoordinator`,
+    // `self.userSigninCoordinator.signinCompletion` is called. This callback
+    // is in charge to call `[self runCompletionCallbackWithSigninResult:
+    // completionInfo:]`.
     [self.userSigninCoordinator interruptWithAction:action
                                          completion:completion];
     return;
@@ -104,6 +110,10 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
+  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  [self.activityOverlayCoordinator start];
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -127,6 +137,9 @@ using signin_metrics::PromoAction;
 
 - (void)stop {
   [super stop];
+  DCHECK(self.activityOverlayCoordinator);
+  [self.activityOverlayCoordinator stop];
+  self.activityOverlayCoordinator = nil;
   // If one of those 3 DCHECK() fails, -[AddAccountSigninCoordinator
   // runCompletionCallbackWithSigninResult] has not been called.
   DCHECK(!self.addAccountSigninManager);
@@ -162,7 +175,7 @@ using signin_metrics::PromoAction;
     // is already stopped. This call can be ignored.
     return;
   }
-  // Add account is done, we don't need |self.AddAccountSigninManager|
+  // Add account is done, we don't need `self.AddAccountSigninManager`
   // anymore.
   self.addAccountSigninManager = nil;
   if (signinResult == SigninCoordinatorResultInterrupted) {
@@ -234,7 +247,7 @@ using signin_metrics::PromoAction;
                               identity:(ChromeIdentity*)identity {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.userSigninCoordinator);
-  // |identity| is set, only and only if the sign-in is successful.
+  // `identity` is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
   SigninCompletionInfo* completionInfo =
@@ -243,7 +256,7 @@ using signin_metrics::PromoAction;
                                completionInfo:completionInfo];
 }
 
-// Presents the user consent screen with |identity| pre-selected.
+// Presents the user consent screen with `identity` pre-selected.
 - (void)presentUserConsentWithIdentity:(ChromeIdentity*)identity {
   // The UserSigninViewController is presented on top of the currently displayed
   // view controller.
@@ -264,6 +277,18 @@ using signin_metrics::PromoAction;
                                         identity:signinCompletionInfo.identity];
       };
   [self.userSigninCoordinator start];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, signinIntent: %lu, accessPoint: %d, "
+                       @"userSigninCoordinator: %p, addAccountSigninManager: "
+                       @"%p, alertCoordinator: %p>",
+                       self.class.description, self, self.signinIntent,
+                       self.accessPoint, self.userSigninCoordinator,
+                       self.addAccountSigninManager, self.alertCoordinator];
 }
 
 @end

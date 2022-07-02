@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium でパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="3472200483164753384">Chromium Canary ではサポートされていません</translation>
 <translation id="3567399274263440288">Chromium を最大限に活用するには、Google アカウントで Chromium にログインしてください。</translation>
+<translation id="3619462831205197427">このサイト、Google アカウント、Chromium にログインします。</translation>
 <translation id="3639997914391704523">Google アカウントでログインすると、Chromium でパスワードを確認できるようになります。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> は Chromium を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
 <translation id="3805899903892079518">Chromium で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
@@ -77,7 +78,6 @@
 1. [設定] を開きます。
 2. [デフォルトのブラウザアプリ] をタップします。
 3. Chromium を選択します。</translation>
-<translation id="6155422572367400359">このサイト、Google アカウント、Chromium にログインします。同期は後でオンにできます。</translation>
 <translation id="6183442264225539303">このサイトと Chromium にログインしてください。同期は後でオンにできます。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="632825460376924298">Chromium へのログインを許可する</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Chromium データをこのデバイスから削除しますか？</translation>
 <translation id="8175055321229419309">ヒント: <ph name="BEGIN_LINK" />Chromium を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
 <translation id="8240981428553046115">Chromium でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="8308172444429103994">Chromium のヒント。キーボードの上部で保存したパスワードを選択すると、すばやくログインできます。</translation>
 <translation id="858114650497379505">他のアプリや iPhone でパスワード マネージャに保存したパスワードを使用できます。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="865600487977764604">ログイン時に、Chromium を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>

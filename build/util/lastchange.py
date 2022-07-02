@@ -221,12 +221,22 @@ def main(argv=None):
   parser.add_argument("-m", "--version-macro",
                     help=("Name of C #define when using --header. Defaults to "
                           "LAST_CHANGE."))
-  parser.add_argument("-o", "--output", metavar="FILE",
-                    help=("Write last change to FILE. "
-                          "Can be combined with --header to write both files."))
-  parser.add_argument("--header", metavar="FILE",
-                    help=("Write last change to FILE as a C/C++ header. "
-                          "Can be combined with --output to write both files."))
+  parser.add_argument("-o",
+                      "--output",
+                      metavar="FILE",
+                      help=("Write last change to FILE. "
+                            "Can be combined with other file-output-related "
+                            "options to write multiple files."))
+  parser.add_argument("--header",
+                      metavar="FILE",
+                      help=("Write last change to FILE as a C/C++ header. "
+                            "Can be combined with other file-output-related "
+                            "options to write multiple files."))
+  parser.add_argument("--revision",
+                      metavar="FILE",
+                      help=("Write last change to FILE as a one-line revision. "
+                            "Can be combined with other file-output-related "
+                            "options to write multiple files."))
   parser.add_argument("--merge-base-ref",
                     default=None,
                     help=("Only consider changes since the merge "
@@ -255,6 +265,7 @@ def main(argv=None):
 
   out_file = args.output
   header = args.header
+  revision = args.revision
   commit_filter=args.filter
 
   while len(extras) and out_file is None:
@@ -311,7 +322,7 @@ def main(argv=None):
         "LASTCHANGE_YEAR=%s" % lastchange_year,
     ]
     contents = '\n'.join(contents_lines) + '\n'
-    if not out_file and not args.header:
+    if not out_file and not header and not revision:
       sys.stdout.write(contents)
     else:
       if out_file:
@@ -324,6 +335,8 @@ def main(argv=None):
         WriteIfChanged(header,
                        GetHeaderContents(header, args.version_macro,
                                          revision_string))
+      if revision:
+        WriteIfChanged(revision, revision_string)
 
   return 0
 

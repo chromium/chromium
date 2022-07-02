@@ -105,10 +105,6 @@ const double kTaskSamplingRateForRecordingCPUTime = 0.01;
 // enabling advanced metrics.
 const double kThreadSamplingRateForRecordingCPUTime = 0.0001;
 
-// Magic value to protect against memory corruption and bail out
-// early when detected.
-constexpr int kMemoryCorruptionSentinelValue = 0xdeadbeef;
-
 void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   queue->ReclaimMemory(lazy_now->Now());
   // If the queue was shut down as a side-effect of reclaiming memory, |queue|
@@ -213,7 +209,6 @@ SequenceManagerImpl::SequenceManagerImpl(
       add_queue_time_to_tasks_(settings_.add_queue_time_to_tasks),
 
       empty_queues_to_reload_(associated_thread_),
-      memory_corruption_sentinel_(kMemoryCorruptionSentinelValue),
       main_thread_only_(this, associated_thread_, settings_, settings_.clock),
       clock_(settings_.clock) {
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
@@ -287,7 +282,7 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
       non_waking_wake_up_queue(
           std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {
   if (settings.randomised_sampling_enabled) {
-    random_generator = base::InsecureRandomGenerator();
+    metrics_subsampler = base::MetricsSubSampler();
   }
 }
 
@@ -406,7 +401,8 @@ void SequenceManagerImpl::SetTimeDomain(TimeDomain* time_domain) {
 
 void SequenceManagerImpl::ResetTimeDomain() {
   controller_->SetTickClock(main_thread_only().default_clock);
-  clock_.store(main_thread_only().default_clock, std::memory_order_release);
+  clock_.store(main_thread_only().default_clock.get(),
+               std::memory_order_release);
   main_thread_only().time_domain = nullptr;
 }
 
@@ -569,8 +565,10 @@ const char* RunTaskTraceNameForPriority(TaskQueue::QueuePriority priority) {
 }  // namespace
 
 absl::optional<SequenceManagerImpl::SelectedTask>
-SequenceManagerImpl::SelectNextTask(SelectTaskOption option) {
-  absl::optional<SelectedTask> selected_task = SelectNextTaskImpl(option);
+SequenceManagerImpl::SelectNextTask(LazyNow& lazy_now,
+                                    SelectTaskOption option) {
+  absl::optional<SelectedTask> selected_task =
+      SelectNextTaskImpl(lazy_now, option);
   if (!selected_task)
     return selected_task;
 
@@ -642,15 +640,13 @@ void SequenceManagerImpl::LogTaskDebugInfo(
 #endif  // DCHECK_IS_ON() && !BUILDFLAG(IS_NACL)
 
 absl::optional<SequenceManagerImpl::SelectedTask>
-SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
-  CHECK(Validate());
-
+SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
+                                        SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::SelectNextTask");
 
   ReloadEmptyWorkQueues();
-  LazyNow lazy_now(main_thread_clock());
   MoveReadyDelayedTasksToWorkQueues(&lazy_now);
 
   // If we sampled now, check if it's time to reclaim memory next time we go
@@ -725,8 +721,7 @@ bool SequenceManagerImpl::ShouldRunTaskOfPriority(
   return priority <= *main_thread_only().pending_native_work.begin();
 }
 
-void SequenceManagerImpl::DidRunTask() {
-  LazyNow lazy_now(main_thread_clock());
+void SequenceManagerImpl::DidRunTask(LazyNow& lazy_now) {
   ExecutingTask& executing_task =
       *main_thread_only().task_execution_stack.rbegin();
 
@@ -1152,9 +1147,9 @@ bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
   DCHECK(ThreadTicks::IsSupported() ||
          !metric_recording_settings_.records_cpu_time_for_some_tasks());
   return metric_recording_settings_.records_cpu_time_for_some_tasks() &&
-         main_thread_only().random_generator->RandDouble() <
+         main_thread_only().metrics_subsampler->ShouldSample(
              metric_recording_settings_
-                 .task_sampling_rate_for_recording_cpu_time;
+                 .task_sampling_rate_for_recording_cpu_time);
 }
 
 const SequenceManager::MetricRecordingSettings&
@@ -1224,7 +1219,7 @@ void SequenceManagerImpl::RemoveDestructionObserver(
 
 void SequenceManagerImpl::RegisterOnNextIdleCallback(
     OnceClosure on_next_idle_callback) {
-  DCHECK(!main_thread_only().on_next_idle_callback);
+  DCHECK(!main_thread_only().on_next_idle_callback || !on_next_idle_callback);
   main_thread_only().on_next_idle_callback = std::move(on_next_idle_callback);
 }
 
@@ -1247,10 +1242,6 @@ MessagePump* SequenceManagerImpl::GetMessagePump() const {
 
 bool SequenceManagerImpl::IsType(MessagePumpType type) const {
   return settings_.message_loop_type == type;
-}
-
-NOINLINE bool SequenceManagerImpl::Validate() {
-  return memory_corruption_sentinel_ == kMemoryCorruptionSentinelValue;
 }
 
 void SequenceManagerImpl::EnableCrashKeys(const char* async_stack_crash_key) {
@@ -1293,8 +1284,9 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   *(--pos) = ' ';
   pos = PrependHexAddress(pos - 1, pending_task.posted_from.program_counter());
   DCHECK_GE(pos, buffer);
-  debug::SetCrashKeyString(main_thread_only().async_stack_crash_key,
-                           StringPiece(pos, buffer_end - pos));
+  debug::SetCrashKeyString(
+      main_thread_only().async_stack_crash_key,
+      StringPiece(pos, static_cast<size_t>(buffer_end - pos)));
 #endif  // BUILDFLAG(IS_NACL)
 }
 

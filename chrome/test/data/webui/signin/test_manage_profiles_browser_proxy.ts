@@ -17,7 +17,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'openManageProfileSettingsSubPage', 'launchSelectedProfile',
       'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
       'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'loadSignInProfileCreationFlow', 'createProfile', 'setProfileName',
+      'selectAccountLacros', 'createProfile', 'setProfileName',
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
       'confirmProfileSwitch', 'cancelProfileSwitch',
       // <if expr="chromeos_lacros">
@@ -100,8 +100,8 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('getProfileStatistics', profilePath);
   }
 
-  loadSignInProfileCreationFlow(profileColor: number|null, gaiaId: string) {
-    this.methodCalled('loadSignInProfileCreationFlow', [profileColor, gaiaId]);
+  selectAccountLacros(profileColor: number|null, gaiaId: string) {
+    this.methodCalled('selectAccountLacros', [profileColor, gaiaId]);
   }
 
   createProfile(

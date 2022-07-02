@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -138,7 +139,7 @@ class TestUkmRecorderObserver : public ukm::UkmRecorderObserver {
  private:
   bool expected_allowed_;
   base::OnceClosure quit_closure_;
-  ukm::UkmRecorderImpl* ukm_recorder_;
+  raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -959,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
   EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
   ukm::SourceId new_id = sync_browser->tab_strip_model()
                              ->GetActiveWebContents()
-                             ->GetMainFrame()
+                             ->GetPrimaryMainFrame()
                              ->GetPageUkmSourceId();
   ukm::UkmSource* new_tab_source = ukm_test_helper.GetSource(new_id);
   EXPECT_NE(nullptr, new_tab_source);
@@ -1006,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
   EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
   ukm::SourceId new_id = sync_browser->tab_strip_model()
                              ->GetActiveWebContents()
-                             ->GetMainFrame()
+                             ->GetPrimaryMainFrame()
                              ->GetPageUkmSourceId();
   ukm::UkmSource* new_tab_source = ukm_test_helper.GetSource(new_id);
   EXPECT_NE(nullptr, new_tab_source);

@@ -31,8 +31,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/notification_observer.h"
@@ -191,8 +191,7 @@ class AutoLaunchedKioskTestBase : public OobeBaseTest {
     // Listeners created in IN_PROC_BROWSER_TEST might miss the messages sent
     // from the kiosk app.
     app_window_loaded_listener_ =
-        std::make_unique<ExtensionTestMessageListener>("appWindowLoaded",
-                                                       false);
+        std::make_unique<ExtensionTestMessageListener>("appWindowLoaded");
     termination_observer_ = std::make_unique<TerminationObserver>();
     InProcessBrowserTest::PreRunTestOnMainThread();
   }
@@ -388,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
 
   EXPECT_TRUE(IsKioskAppAutoLaunched(kTestNonKioskEnabledApp));
 
-  ExtensionTestMessageListener listener("launchRequested", false);
+  ExtensionTestMessageListener listener("launchRequested");
 
   content::WindowedNotificationObserver termination_waiter(
       chrome::NOTIFICATION_APP_TERMINATING,

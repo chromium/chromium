@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -33,6 +34,8 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/win/app_command_runner.h"
+#include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -102,8 +105,8 @@ HRESULT LaunchCmd(const std::wstring& cmd,
 }
 
 // Extracts a string from a VARIANT if the VARIANT is VT_BSTR or VT_BSTR |
-// VT_BYREF. Returns an empty string if the VARIANT is not a BSTR.
-std::wstring StringFromVariant(const VARIANT& source) {
+// VT_BYREF. Returns absl::nullopt if the VARIANT is not a BSTR.
+absl::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   if (V_VT(&source) == VT_BSTR) {
     return V_BSTR(&source);
   }
@@ -113,112 +116,6 @@ std::wstring StringFromVariant(const VARIANT& source) {
   }
 
   return {};
-}
-
-// Formats a single `parameter` and returns the result. Any placeholder `%N` in
-// `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
-// be escaped with a `%`.
-//
-// Returns `absl::nullopt` if:
-// * a placeholder %N is encountered where N > substitutions.size().
-// * a literal `%` is not escaped with a `%`.
-//
-// See examples in the LegacyAppCommandWebImplTest.FormatParameters* unit tests.
-absl::optional<std::wstring> FormatParameter(
-    const std::vector<std::wstring>& substitutions,
-    const std::wstring& parameter) {
-  DCHECK_LE(substitutions.size(), 9U);
-
-  std::wstring formatted_parameter;
-  for (auto i = parameter.begin(); i != parameter.end(); ++i) {
-    if (*i != '%') {
-      formatted_parameter.push_back(*i);
-      continue;
-    }
-
-    if (++i == parameter.end())
-      return absl::nullopt;
-
-    if (*i == '%') {
-      formatted_parameter.push_back('%');
-      continue;
-    }
-
-    if (*i < '1' || *i > '9')
-      return absl::nullopt;
-
-    const size_t index = *i - '1';
-    if (index >= substitutions.size())
-      return absl::nullopt;
-
-    formatted_parameter.append(substitutions[index]);
-  }
-
-  return formatted_parameter;
-}
-
-// Quotes `input` if necessary so that it will be interpreted as a single
-// command-line parameter according to the rules for ::CommandLineToArgvW.
-//
-// ::CommandLineToArgvW has a special interpretation of backslash characters
-// when they are followed by a quotation mark character ("). This interpretation
-// assumes that any preceding argument is a valid file system path, or else it
-// may behave unpredictably.
-//
-// This special interpretation controls the "in quotes" mode tracked by the
-// parser. When this mode is off, whitespace terminates the current argument.
-// When on, whitespace is added to the argument like all other characters.
-
-// * 2n backslashes followed by a quotation mark produce n backslashes followed
-// by begin/end quote. This does not become part of the parsed argument, but
-// toggles the "in quotes" mode.
-// * (2n) + 1 backslashes followed by a quotation mark again produce n
-// backslashes followed by a quotation mark literal ("). This does not toggle
-// the "in quotes" mode.
-// * n backslashes not followed by a quotation mark simply produce n
-// backslashes.
-//
-// See examples in the LegacyAppCommandWebImplTest.ParameterQuoting unit test.
-std::wstring QuoteForCommandLineToArgvW(const std::wstring& input) {
-  if (input.empty())
-    return L"\"\"";
-
-  std::wstring output;
-  const bool contains_whitespace =
-      input.find_first_of(L" \t") != std::wstring::npos;
-  if (contains_whitespace)
-    output.push_back(L'"');
-
-  size_t slash_count = 0;
-  for (auto i = input.begin(); i != input.end(); ++i) {
-    if (*i == L'"') {
-      // Before a quote, output 2n backslashes.
-      while (slash_count > 0) {
-        output.append(L"\\\\");
-        --slash_count;
-      }
-      output.append(L"\\\"");
-    } else if (*i != L'\\' || i + 1 == input.end()) {
-      // At the end of the string, or before a regular character, output queued
-      // slashes.
-      while (slash_count > 0) {
-        output.push_back(L'\\');
-        --slash_count;
-      }
-      // If this is a slash, it's also the last character. Otherwise, it is just
-      // a regular non-quote/non-slash character.
-      output.push_back(*i);
-    } else if (*i == L'\\') {
-      // This is a slash, possibly followed by a quote, not the last character.
-      // Queue it up and output it later.
-      ++slash_count;
-    }
-  }
-
-  if (contains_whitespace)
-    output.push_back(L'"');
-
-  return output;
 }
 
 }  // namespace
@@ -365,10 +262,8 @@ STDMETHODIMP LegacyOnDemandImpl::get_nextVersionWeb(IDispatch** next) {
 
 STDMETHODIMP LegacyOnDemandImpl::get_command(BSTR command_id,
                                              IDispatch** command) {
-  // TODO(crbug/1318293): Verify AppCommand executables are authenticode signed
-  // by Google before executing them.
-  // TODO(crbug/1318304): Add integration tests for AppCommands.
-  return E_NOTIMPL;
+  return LegacyAppCommandWebImpl::CreateAppCommandWeb(
+      GetUpdaterScope(), base::UTF8ToWide(app_id()), command_id, command);
 }
 
 STDMETHODIMP LegacyOnDemandImpl::get_currentState(IDispatch** current_state) {
@@ -690,83 +585,26 @@ HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
     const std::wstring& app_id,
     const std::wstring& command_id,
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl) {
-  const HKEY root = UpdaterScopeToHKeyRoot(scope);
-  const std::wstring app_key_name = base::StrCat({CLIENTS_KEY, app_id});
-  std::wstring command_format;
-
-  if (const base::win::RegKey command_key(
-          root,
-          base::StrCat({app_key_name, L"\\", kRegKeyCommands, command_id})
-              .c_str(),
-          Wow6432(KEY_QUERY_VALUE));
-      !command_key.Valid()) {
-    const base::win::RegKey app_key(root, app_key_name.c_str(),
-                                    Wow6432(KEY_QUERY_VALUE));
-    if (!app_key.HasValue(command_id.c_str()))
-      return HRESULT_FROM_WIN32(ERROR_BAD_COMMAND);
-
-    // Older command layout format:
-    //     Update\Clients\{`app_id`}
-    //         REG_SZ `command_id` == {command format}
-    if (const LONG result =
-            app_key.ReadValue(command_id.c_str(), &command_format);
-        result != ERROR_SUCCESS) {
-      return HRESULT_FROM_WIN32(result);
-    }
-  } else {
-    // New command layout format:
-    //     Update\Clients\{`app_id`}\Commands\`command_id`
-    //         REG_SZ "CommandLine" == {command format}
-    if (const LONG result =
-            command_key.ReadValue(kRegValueCommandLine, &command_format);
-        result != ERROR_SUCCESS) {
-      return HRESULT_FROM_WIN32(result);
-    }
-  }
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> web;
 
   if (HRESULT hr =
-          Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(&web_impl);
+          Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(&web);
       FAILED(hr)) {
     return hr;
   }
 
-  return web_impl->Initialize(command_format);
-}
-
-HRESULT LegacyAppCommandWebImpl::Initialize(std::wstring command_format) {
-  int num_args = 0;
-  ScopedLocalAlloc args(::CommandLineToArgvW(&command_format[0], &num_args));
-  if (!args.is_valid() || num_args < 1)
-    return E_INVALIDARG;
-
-  const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
-  executable_ = base::FilePath(argv[0]);
-  parameters_.clear();
-  for (int i = 1; i < num_args; ++i)
-    parameters_.push_back(argv[i]);
-
-  return S_OK;
-}
-
-absl::optional<std::wstring> LegacyAppCommandWebImpl::FormatCommandLine(
-    const std::vector<std::wstring>& parameters) const {
-  std::wstring formatted_command_line;
-  for (size_t i = 0; i < parameters_.size(); ++i) {
-    absl::optional<std::wstring> formatted_parameter =
-        FormatParameter(parameters, parameters_[i]);
-    if (!formatted_parameter) {
-      VLOG(1) << __func__ << " FormatParameter failed";
-      return absl::nullopt;
-    }
-
-    formatted_command_line.append(
-        QuoteForCommandLineToArgvW(*formatted_parameter));
-
-    if (i + 1 < parameters_.size())
-      formatted_command_line.push_back(L' ');
+  if (HRESULT hr = AppCommandRunner::LoadAppCommand(scope, app_id, command_id,
+                                                    web->app_command_runner_);
+      FAILED(hr)) {
+    return hr;
   }
 
-  return formatted_command_line;
+  if (HRESULT hr = web->InitializeTypeInfo(); FAILED(hr)) {
+    return hr;
+  }
+
+  web_impl.Swap(web);
+  return S_OK;
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
@@ -800,72 +638,102 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT parameter1,
-                                              VARIANT parameter2,
-                                              VARIANT parameter3,
-                                              VARIANT parameter4,
-                                              VARIANT parameter5,
-                                              VARIANT parameter6,
-                                              VARIANT parameter7,
-                                              VARIANT parameter8,
-                                              VARIANT parameter9) {
-  if (executable_.empty() || process_.IsValid()) {
-    return E_UNEXPECTED;
-  }
-
-  std::vector<std::wstring> parameters;
-  for (const VARIANT& parameter :
-       {parameter1, parameter2, parameter3, parameter4, parameter5, parameter6,
-        parameter7, parameter8, parameter9}) {
-    const std::wstring parameter_string = StringFromVariant(parameter);
-    if (parameter_string.empty())
+STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
+                                              VARIANT substitution2,
+                                              VARIANT substitution3,
+                                              VARIANT substitution4,
+                                              VARIANT substitution5,
+                                              VARIANT substitution6,
+                                              VARIANT substitution7,
+                                              VARIANT substitution8,
+                                              VARIANT substitution9) {
+  std::vector<std::wstring> substitutions;
+  for (const VARIANT& substitution :
+       {substitution1, substitution2, substitution3, substitution4,
+        substitution5, substitution6, substitution7, substitution8,
+        substitution9}) {
+    const absl::optional<std::wstring> substitution_string =
+        StringFromVariant(substitution);
+    if (!substitution_string)
       break;
-    parameters.push_back(parameter_string);
+
+    VLOG(2) << __func__
+            << " substitution_string: " << substitution_string.value();
+    substitutions.push_back(substitution_string.value());
   }
 
-  absl::optional<std::wstring> command_line = FormatCommandLine(parameters);
-  if (!command_line)
+  return app_command_runner_.Run(substitutions, process_);
+}
+
+STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT* type_info_count) {
+  *type_info_count = 1;
+  return S_OK;
+}
+
+STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfo(UINT type_info_index,
+                                                  LCID locale_id,
+                                                  ITypeInfo** type_info) {
+  if (type_info_index != 0)
     return E_INVALIDARG;
 
-  STARTUPINFOW si = {sizeof(si)};
-  PROCESS_INFORMATION pi = {0};
-  if (!::CreateProcess(executable_.value().c_str(), &(*command_line)[0],
-                       nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr,
-                       nullptr, &si, &pi)) {
-    return HRESULTFromLastError();
+  return type_info_.CopyTo(type_info);
+}
+
+STDMETHODIMP LegacyAppCommandWebImpl::GetIDsOfNames(
+    REFIID iid,
+    LPOLESTR* names_to_be_mapped,
+    UINT count_of_names_to_be_mapped,
+    LCID locale_id,
+    DISPID* dispatch_ids) {
+  return type_info_->GetIDsOfNames(names_to_be_mapped,
+                                   count_of_names_to_be_mapped, dispatch_ids);
+}
+
+STDMETHODIMP LegacyAppCommandWebImpl::Invoke(DISPID dispatch_id,
+                                             REFIID iid,
+                                             LCID locale_id,
+                                             WORD flags,
+                                             DISPPARAMS* dispatch_parameters,
+                                             VARIANT* result,
+                                             EXCEPINFO* exception_info,
+                                             UINT* arg_error_index) {
+  HRESULT hr = type_info_->Invoke(
+      Microsoft::WRL::ComPtr<IAppCommandWeb>(this).Get(), dispatch_id, flags,
+      dispatch_parameters, result, exception_info, arg_error_index);
+  if (FAILED(hr)) {
+    LOG(ERROR) << __func__ << " type_info_->Invoke failed: " << dispatch_id
+               << ": " << std::hex << hr;
   }
 
-  ::CloseHandle(pi.hThread);
-
-  process_ = base::Process(pi.hProcess);
-  return process_.IsValid() ? S_OK : E_UNEXPECTED;
+  return hr;
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT*) {
-  return E_NOTIMPL;
-}
+HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
+  base::FilePath typelib_path;
+  if (!base::PathService::Get(base::DIR_EXE, &typelib_path))
+    return E_UNEXPECTED;
 
-STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  return E_NOTIMPL;
-}
+  typelib_path =
+      typelib_path.Append(kUpdaterProcessName)
+          .Append(GetComTypeLibResourceIndex(__uuidof(IAppCommandWeb)));
 
-STDMETHODIMP LegacyAppCommandWebImpl::GetIDsOfNames(REFIID,
-                                                    LPOLESTR*,
-                                                    UINT,
-                                                    LCID,
-                                                    DISPID*) {
-  return E_NOTIMPL;
-}
+  Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+  if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
+      FAILED(hr)) {
+    LOG(ERROR) << __func__ << " ::LoadTypeLib failed: " << typelib_path << ": "
+               << std::hex << hr;
+    return hr;
+  }
 
-STDMETHODIMP LegacyAppCommandWebImpl::Invoke(DISPID,
-                                             REFIID,
-                                             LCID,
-                                             WORD,
-                                             DISPPARAMS*,
-                                             VARIANT*,
-                                             EXCEPINFO*,
-                                             UINT*) {
-  return E_NOTIMPL;
+  if (HRESULT hr =
+          type_lib->GetTypeInfoOfGuid(__uuidof(IAppCommandWeb), &type_info_);
+      FAILED(hr)) {
+    LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
+               << ": " << std::hex << hr;
+    return hr;
+  }
+
+  return S_OK;
 }
 
 }  // namespace updater

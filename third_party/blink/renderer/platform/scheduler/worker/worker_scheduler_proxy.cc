@@ -39,7 +39,7 @@ void WorkerSchedulerProxy::OnWorkerSchedulerCreated(
   worker_scheduler_ = std::move(worker_scheduler);
   worker_thread_task_runner_ = worker_scheduler_->GetWorkerThreadScheduler()
                                    ->ControlTaskQueue()
-                                   ->task_runner();
+                                   ->GetTaskRunnerWithDefaultTaskType();
   initialized_ = true;
 }
 

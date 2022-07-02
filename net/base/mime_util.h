@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "net/base/net_export.h"
 
@@ -82,7 +83,7 @@ NET_EXPORT bool ParseMimeType(const std::string& type_str,
 //
 // This function strips leading and trailing whitespace from the MIME type.
 // TODO: investigate if we should strip strictly HTTP whitespace.
-NET_EXPORT bool ParseMimeTypeWithoutParameter(const std::string& type_string,
+NET_EXPORT bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
                                               std::string* top_level_type,
                                               std::string* subtype);
 

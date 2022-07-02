@@ -27,10 +27,9 @@ void HostStopper::StopLocalHost(std::string access_token,
       base::BindOnce(&HostStopper::OnConfigLoaded, weak_ptr_));
 }
 
-void HostStopper::OnConfigLoaded(
-    std::unique_ptr<base::DictionaryValue> config) {
+void HostStopper::OnConfigLoaded(absl::optional<base::Value::Dict> config) {
   const std::string* hostId = nullptr;
-  if (!config || !(hostId = config->FindStringPath("host_id"))) {
+  if (!config || !(hostId = config->FindString("host_id"))) {
     std::move(on_done_).Run();
     return;
   }

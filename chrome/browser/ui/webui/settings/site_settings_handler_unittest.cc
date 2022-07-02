@@ -603,7 +603,8 @@ class SiteSettingsHandlerTest : public testing::Test,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
-  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service_;
+  raw_ptr<browsing_topics::MockBrowsingTopicsService>
+      mock_browsing_topics_service_;
 };
 
 // True if testing for handle clear unpartitioned usage with HTTPS scheme URL.
@@ -730,7 +731,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url4, ContentSettingsType::NOTIFICATIONS)
-          .content_setting);
+          ->content_setting);
   handler()->HandleGetAllSites(get_all_sites_args.GetList());
 
   {
@@ -768,12 +769,11 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
-          .content_setting);
+          ->content_setting);
   clock.Advance(base::Days(8));
-  EXPECT_EQ(
-      CONTENT_SETTING_ASK,
+  EXPECT_FALSE(
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
-          .content_setting);
+          .has_value());
 
   handler()->HandleGetAllSites(get_all_sites_args.GetList());
   {
@@ -797,12 +797,11 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
-          .content_setting);
+          ->content_setting);
   clock.Advance(base::Days(8));
-  EXPECT_EQ(
-      CONTENT_SETTING_ASK,
+  EXPECT_FALSE(
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
-          .content_setting);
+          .has_value());
 
   handler()->HandleGetAllSites(get_all_sites_args.GetList());
   {
@@ -1249,7 +1248,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         CONTENT_SETTING_BLOCK,
         auto_blocker
             ->GetEmbargoResult(GURL(kOriginToEmbargo), kPermissionNotifications)
-            .content_setting);
+            ->content_setting);
   }
 
   // Check there are 2 blocked origins.

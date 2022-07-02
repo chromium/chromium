@@ -67,6 +67,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      const gfx::ColorSpace& color_space,
       gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override;

@@ -18,16 +18,22 @@ import {getTemplate} from './viewer-bookmark.html.js';
 /** Amount that each level of bookmarks is indented by (px). */
 const BOOKMARK_INDENT: number = 20;
 
+export enum ChangePageOrigin {
+  BOOKMARK = 'bookmark',
+  THUMBNAIL = 'thumbnail',
+  PAGE_SELECTOR = 'pageSelector',
+}
+
 export type ChangePageAndXyDetail = {
   page: number,
   x: number,
   y: number,
-  origin: string,
+  origin: ChangePageOrigin,
 };
 
 export type ChangePageDetail = {
   page: number,
-  origin: 'bookmark'|'thumbnail'|'pageSelector',
+  origin: ChangePageOrigin,
 };
 
 export type ChangeZoomDetail = {
@@ -129,11 +135,12 @@ export class ViewerBookmarkElement extends PolymerElement {
           page: this.bookmark.page,
           x: this.bookmark.x,
           y: this.bookmark.y,
-          origin: 'bookmark',
+          origin: ChangePageOrigin.BOOKMARK,
         });
       } else {
         this.fire_(
-            'change-page', {page: this.bookmark.page, origin: 'bookmark'});
+            'change-page',
+            {page: this.bookmark.page, origin: ChangePageOrigin.BOOKMARK});
       }
     } else if (this.bookmark.uri != null) {
       this.fire_('navigate', {uri: this.bookmark.uri, newtab: true});

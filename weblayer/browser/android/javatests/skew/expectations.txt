@@ -5,11 +5,15 @@
 # with versions less than or equal to $VERSION of the implementation.
 #
 # These lines are not comments! They define the set of known tags and other information.
-# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 client_lte_98 impl_lte_98 ]
+# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 client_lte_98 impl_lte_98 client_lte_103 ]
 # 'all' disables the test from any skew test.
 # tags: [ all ]
 # results: [ Skip ]
 # conflicts_allowed: True
+
+# Test is flaky, with the particular flake signaled in the bug below but the underlying cause likely
+# being crbug.com/1277901.
+crbug.com/1329813 [ all ] org.chromium.weblayer.test.ExternalNavigationTest#testNonHandledExternalIntentWithFallbackUrlThatLaunchesIntentAfterRedirectBlocksFallbackIntent [ Skip ]
 
 # No real changes to weblayer APIs, changes should only affect chrome-internal behavior around
 # navigation which the test depends on.
@@ -111,3 +115,6 @@ crbug.com/1278017 [ client_lte_98 ] org.chromium.weblayer.test.ExternalNavigatio
 crbug.com/1278017 [ client_lte_98 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserClicksLinkToPageWithExternalIntentLaunchedViaOnLoad [ Skip ]
 crbug.com/1278017 [ client_lte_98 ] org.chromium.weblayer.test.ExternalNavigationTest#testAvoidDisambiguationDialog [ Skip ]
 crbug.com/1278017 [ impl_lte_98 ] org.chromium.weblayer.test.ExternalNavigationTest#testAvoidDisambiguationDialog [ Skip ]
+
+# In 104 we started to cap maximum cookie expiration date
+crbug.com/1264458 [ client_lte_103 ] org.chromium.weblayer.test.CookieManagerTest#testGetResponseCookiesAllAttributes [ Skip ]

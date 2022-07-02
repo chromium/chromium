@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.module_installer.builder.ModuleInterface;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.lang.annotation.Retention;
@@ -67,6 +68,9 @@ public interface TabManagementDelegate {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
      * @param rootView The root view of the app.
+     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
+     * @param snackbarManager Manages the snackbar.
+     * @param modalDialogManager Manages modal dialogs.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createGridTabSwitcher(@NonNull Activity activity,
@@ -79,7 +83,10 @@ public interface TabManagementDelegate {
             @NonNull ViewGroup containerView,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView);
+            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in carousel.
@@ -95,6 +102,9 @@ public interface TabManagementDelegate {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
      * @param rootView The root view of the app.
+     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
+     * @param snackbarManager Manages the snackbar.
+     * @param modalDialogManager Manages modal dialogs.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createCarouselTabSwitcher(@NonNull Activity activity,
@@ -107,7 +117,10 @@ public interface TabManagementDelegate {
             @NonNull ViewGroup containerView,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView);
+            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager);
 
     /**
      * Create the {@link TabGroupUi}.

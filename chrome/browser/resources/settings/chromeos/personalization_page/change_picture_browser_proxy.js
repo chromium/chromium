@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * An object describing a default image.
  * @typedef {{
@@ -63,10 +61,23 @@ export class ChangePictureBrowserProxy {
   requestSelectedImage() {}
 }
 
+/** @type {?ChangePictureBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {ChangePictureBrowserProxy}
  */
 export class ChangePictureBrowserProxyImpl {
+  /** @return {!ChangePictureBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new ChangePictureBrowserProxyImpl());
+  }
+
+  /** @param {!ChangePictureBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   initialize() {
     chrome.send('onChangePicturePageInitialized');
@@ -102,7 +113,3 @@ export class ChangePictureBrowserProxyImpl {
     chrome.send('requestSelectedImage');
   }
 }
-
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(ChangePictureBrowserProxyImpl);

@@ -3494,26 +3494,6 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   EXPECT_EQ("selector(#scroller3)", rule3->GetSource()->CssText());
 }
 
-TEST_F(StyleEngineTest, SystemColorComputeToSelfUseCount) {
-  // Don't count system color use by itself - only in conjunction with
-  // color-scheme.
-  GetDocument().body()->setInnerHTML(
-      "<style>div { color: MenuText; }</style><div></div>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kCSSSystemColorComputeToSelf));
-
-  // Count system color use when used on an element with a different
-  // color-scheme from its parent.
-  GetDocument().body()->setInnerHTML(
-      "<style>"
-      "div { color: MenuText; color-scheme: dark; }"
-      "</style><div></div>");
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kCSSSystemColorComputeToSelf));
-}
-
 // https://crbug.com/1050564
 TEST_F(StyleEngineTest, MediaAttributeChangeUpdatesFontCacheVersion) {
   GetDocument().body()->setInnerHTML(R"HTML(
@@ -3758,10 +3738,10 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
   // See step 10.8 (call to CallMediaQueryListListeners) in
   // ScriptedAnimationController::ServiceScriptedAnimations.
 
-  auto mq_static = MediaQuerySet::Create("(min-width: 50vh)",
-                                         GetDocument().GetExecutionContext());
+  MediaQuerySet* mq_static = MediaQuerySet::Create(
+      "(min-width: 50vh)", GetDocument().GetExecutionContext());
   ASSERT_TRUE(mq_static);
-  matcher.Evaluate(mq_static.get());
+  matcher.Evaluate(mq_static);
   GetDocument().DynamicViewportUnitsChanged();
   SimulateFrame();
   EXPECT_FALSE(listener->notified);
@@ -3769,10 +3749,10 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
   // Evaluating a media query with dv* units will mark the MediaQueryMatcher
   // as dependent on such units, hence we should see events when calling
   // DynamicViewportUnitsChanged after that.
-  auto mq_dynamic = MediaQuerySet::Create("(min-width: 50dvh)",
-                                          GetDocument().GetExecutionContext());
+  MediaQuerySet* mq_dynamic = MediaQuerySet::Create(
+      "(min-width: 50dvh)", GetDocument().GetExecutionContext());
   ASSERT_TRUE(mq_dynamic);
-  matcher.Evaluate(mq_dynamic.get());
+  matcher.Evaluate(mq_dynamic);
   GetDocument().DynamicViewportUnitsChanged();
   SimulateFrame();
   EXPECT_TRUE(listener->notified);
@@ -3950,14 +3930,14 @@ TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container1, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container1, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // The first span.affected child and #container2
   EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container2, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container2, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // Three direct span.affected children, and the two display:none elements.
   EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
@@ -4014,7 +3994,7 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // Even though none of the inner containers are eligible for containment,
   // they are still containers for the purposes of evaluating container
@@ -4050,7 +4030,7 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // The two ::before elements + #span.
   EXPECT_EQ(3u, GetStyleEngine().StyleForElementCount() - start_count);
@@ -4088,7 +4068,7 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // Input elements mark their InnerEditorElement() style-dirty when they are
   // recalculated. That means the UpdateStyleAndLayoutTreeForContainer() call
@@ -4969,13 +4949,14 @@ TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
     @layer base, override;
 
     #scroller {
-      overflow: scroll;
+      overflow: hidden;
       width: 100px;
       height: 100px;
     }
 
     #scroll-contents {
       height: 200px;
+      width: 300px;
     }
 
     @keyframes expand {
@@ -4992,16 +4973,14 @@ TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
     @layer override {
       @scroll-timeline timeline {
         source: selector(#scroller);
-        start: 0px;
-        end: 50px;
+        orientation: block;
       }
     }
 
     @layer base {
       @scroll-timeline timeline {
         source: selector(#scroller);
-        start: 0px;
-        end: 100px;
+        orientation: inline;
       }
     }
   )CSS");
@@ -5017,7 +4996,7 @@ TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
   UpdateAllLifecyclePhases();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(150, target->OffsetWidth());
+  EXPECT_EQ(125, target->OffsetWidth());
 }
 
 TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
@@ -5029,7 +5008,7 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
     @layer base, override;
 
     #scroller {
-      overflow: scroll;
+      overflow: hidden;
       width: 100px;
       height: 100px;
     }
@@ -5046,8 +5025,7 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
     @layer override {
       @scroll-timeline timeline {
         source: selector(#scroller);
-        start: 0px;
-        end: 100px;
+        orientation: inline;
       }
     }
   )CSS");
@@ -5058,8 +5036,7 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
     <style>
       @scroll-timeline timeline {
         source: selector(#scroller);
-        start: 0px;
-        end: 50px;
+        orientation: block;
       }
 
       #target {
@@ -5079,12 +5056,10 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
   // User-defined scroll timelines should not override author-defined
   // scroll timelines regardless of cascade layers.
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(150, target->OffsetWidth());
+  EXPECT_EQ(125, target->OffsetWidth());
 }
 
 TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
-  ScopedCSSFontFaceSizeAdjustForTest size_adjust_enabled_scope(true);
-
   SimRequest main_resource("https://example.com", "text/html");
   SimSubresourceRequest ahem_resource("https://example.com/ahem.woff2",
                                       "font/woff2");
@@ -5139,8 +5114,6 @@ TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
-  ScopedCSSFontFaceSizeAdjustForTest size_adjust_enabled_scope(true);
-
   SimRequest main_resource("https://example.com", "text/html");
   SimSubresourceRequest ahem_resource("https://example.com/ahem.woff2",
                                       "font/woff2");
@@ -5808,6 +5781,178 @@ TEST_F(StyleEngineTest, RevertLayerWithPresentationalHints) {
   Element* img = GetElementById("img");
   EXPECT_EQ(44, img->OffsetWidth());
   EXPECT_EQ(33, img->OffsetHeight());
+}
+
+TEST_F(StyleEngineSimTest, ResizeWithBlockingSheetTransition) {
+  WebView().MainFrameWidget()->Resize(gfx::Size(500, 500));
+
+  SimRequest html_request("https://example.com/test.html", "text/html");
+  SimSubresourceRequest css_request("https://example.com/slow.css", "text/css");
+
+  LoadURL("https://example.com/test.html");
+  html_request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #trans {
+          transition-duration: 30s;
+          color: red;
+        }
+      </style>
+      <link rel="stylesheet" href="slow.css">
+      <div id="trans"></div>
+  )HTML");
+
+  css_request.Start();
+  WebView().MainFrameWidget()->Resize(gfx::Size(800, 800));
+
+  css_request.Complete(R"CSS(
+    #trans { color: green; }
+  )CSS");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  Element* trans = GetDocument().getElementById("trans");
+  ASSERT_TRUE(trans);
+
+  // Completing the linked stylesheet should not start a transition since the
+  // sheet is render-blocking.
+  EXPECT_EQ(
+      trans->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      MakeRGB(0, 128, 0));
+}
+
+namespace {
+
+const String CQLegacyWarningText() {
+  return String(
+      "Using container queries or units with printing, or in combination with "
+      "tables inside multicol will not work correctly.");
+}
+
+}  // namespace
+
+TEST_F(StyleEngineSimTest, ContainerQueryLegacyNoWarning) {
+  ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"HTML(
+    <div style="container-type:size">
+      <div style="columns:1">
+        <table></table>
+      </div>
+    </div>
+    <div style="columns:1">
+      <table></table>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains(CQLegacyWarningText()));
+}
+
+TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddContainer) {
+  // For the ng-disabled bots:
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"HTML(
+    <div style="columns:1">
+      <table>
+        <div id="container"></div>
+      </table>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains(CQLegacyWarningText()));
+
+  Element* container = GetDocument().getElementById("container");
+  container->SetInlineStyleProperty(CSSPropertyID::kContainerType, "size");
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_TRUE(ConsoleMessages().Contains(CQLegacyWarningText()));
+}
+
+TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddTable) {
+  // For the ng-disabled bots:
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"HTML(
+    <div style="columns:1">
+      <div style="container-type:size">
+        <div id="table"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains(CQLegacyWarningText()));
+
+  Element* table = GetDocument().getElementById("table");
+  table->SetInlineStyleProperty(CSSPropertyID::kDisplay, "table");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(ConsoleMessages().Contains(CQLegacyWarningText()));
+}
+
+TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddColumns) {
+  // For the ng-disabled bots:
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"HTML(
+    <div id="columns">
+      <div style="container-type:size">
+        <table></table>
+      </div>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains(CQLegacyWarningText()));
+
+  Element* columns = GetDocument().getElementById("columns");
+  columns->SetInlineStyleProperty(CSSPropertyID::kColumns, "1");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(ConsoleMessages().Contains(CQLegacyWarningText()));
 }
 
 }  // namespace blink

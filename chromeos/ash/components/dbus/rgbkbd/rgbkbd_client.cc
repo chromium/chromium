@@ -26,7 +26,6 @@ class RgbkbdClientImpl : public RgbkbdClient {
   RgbkbdClientImpl() = default;
   RgbkbdClientImpl(const RgbkbdClientImpl&) = delete;
   RgbkbdClientImpl& operator=(const RgbkbdClientImpl&) = delete;
-  ~RgbkbdClientImpl() override = default;
 
   void GetRgbKeyboardCapabilities(
       GetRgbKeyboardCapabilitiesCallback callback) override {
@@ -118,6 +117,28 @@ class RgbkbdClientImpl : public RgbkbdClient {
         rgbkbd::RgbKeyboardCapabilities(keyboard_capabilities));
   }
 
+  void CapabilityUpdatedForTestingReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    uint32_t capability;
+
+    if (!reader.PopUint32(&capability)) {
+      LOG(ERROR) << "rgbkbd: Error reading capability for testing response: "
+                 << signal->ToString();
+      return;
+    }
+    for (auto& observer : observers_) {
+      observer.OnCapabilityUpdatedForTesting(  // IN-TEST
+          rgbkbd::RgbKeyboardCapabilities(capability));
+    }
+  }
+
+  void CapabilityUpdatedForTestingConnected(const std::string& interface_name,
+                                            const std::string& signal_name,
+                                            bool success) {
+    LOG_IF(WARNING, !success)
+        << "Failed to connect to CapabilityUpdatedForTesting signal.";
+  }
+
   dbus::ObjectProxy* rgbkbd_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
@@ -131,6 +152,14 @@ void RgbkbdClientImpl::Init(dbus::Bus* bus) {
   CHECK(bus);
   rgbkbd_proxy_ = bus->GetObjectProxy(
       rgbkbd::kRgbkbdServiceName, dbus::ObjectPath(rgbkbd::kRgbkbdServicePath));
+
+  rgbkbd_proxy_->ConnectToSignal(
+      rgbkbd::kRgbkbdServiceName, rgbkbd::kCapabilityUpdatedForTesting,
+      base::BindRepeating(
+          &RgbkbdClientImpl::CapabilityUpdatedForTestingReceived,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&RgbkbdClientImpl::CapabilityUpdatedForTestingConnected,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 RgbkbdClient::RgbkbdClient() {
@@ -163,6 +192,14 @@ void RgbkbdClient::Shutdown() {
 // static
 RgbkbdClient* RgbkbdClient::Get() {
   return g_instance;
+}
+
+void RgbkbdClient::AddObserver(RgbkbdClient::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RgbkbdClient::RemoveObserver(RgbkbdClient::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash

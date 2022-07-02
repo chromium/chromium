@@ -9,9 +9,7 @@
 #include "net/cert/ct_serialization.h"
 #include "net/cert/x509_certificate.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 MerkleTreeLeaf::MerkleTreeLeaf() = default;
 
@@ -53,6 +51,4 @@ bool GetMerkleTreeLeaf(const X509Certificate* cert,
   return true;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

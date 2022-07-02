@@ -59,15 +59,15 @@ net::IPAddress RtcIPAddressToNetIPAddress(const rtc::IPAddress& ip_address) {
 
 std::string SerializeP2PCandidate(const cricket::Candidate& candidate) {
   // TODO(sergeyu): Use SDP to format candidates?
-  base::DictionaryValue value;
-  value.SetString("ip", candidate.address().ipaddr().ToString());
-  value.SetInteger("port", candidate.address().port());
-  value.SetString("type", candidate.type());
-  value.SetString("protocol", candidate.protocol());
-  value.SetString("username", candidate.username());
-  value.SetString("password", candidate.password());
-  value.SetDouble("preference", candidate.preference());
-  value.SetInteger("generation", candidate.generation());
+  base::Value::Dict value;
+  value.Set("ip", candidate.address().ipaddr().ToString());
+  value.Set("port", candidate.address().port());
+  value.Set("type", candidate.type());
+  value.Set("protocol", candidate.protocol());
+  value.Set("username", candidate.username());
+  value.Set("password", candidate.password());
+  value.Set("preference", candidate.preference());
+  value.Set("generation", static_cast<int>(candidate.generation()));
 
   std::string result;
   base::JSONWriter::Write(value, &result);
@@ -76,41 +76,35 @@ std::string SerializeP2PCandidate(const cricket::Candidate& candidate) {
 
 bool DeserializeP2PCandidate(const std::string& candidate_str,
                              cricket::Candidate* candidate) {
-  std::unique_ptr<base::Value> value(base::JSONReader::ReadDeprecated(
-      candidate_str, base::JSON_ALLOW_TRAILING_COMMAS));
-  if (!value.get() || !value->is_dict()) {
+  absl::optional<base::Value> value(
+      base::JSONReader::Read(candidate_str, base::JSON_ALLOW_TRAILING_COMMAS));
+  if (!value || !value->is_dict()) {
     return false;
   }
 
-  base::DictionaryValue* dic_value =
-      static_cast<base::DictionaryValue*>(value.get());
+  base::Value::Dict& dic_value = value->GetDict();
 
-  std::string ip;
-  int port = 0;
-  std::string type;
-  std::string protocol;
-  std::string username;
-  std::string password;
-  absl::optional<double> preference = dic_value->FindDoubleKey("preference");
-  int generation = 0;
+  std::string* ip = dic_value.FindString("ip");
+  absl::optional<int> port = dic_value.FindInt("port");
+  std::string* type = dic_value.FindString("type");
+  std::string* protocol = dic_value.FindString("protocol");
+  std::string* username = dic_value.FindString("username");
+  std::string* password = dic_value.FindString("password");
+  absl::optional<double> preference = dic_value.FindDouble("preference");
+  absl::optional<int> generation = dic_value.FindInt("generation");
 
-  if (!dic_value->GetString("ip", &ip) ||
-      !dic_value->GetInteger("port", &port) ||
-      !dic_value->GetString("type", &type) ||
-      !dic_value->GetString("protocol", &protocol) ||
-      !dic_value->GetString("username", &username) ||
-      !dic_value->GetString("password", &password) || !preference ||
-      !dic_value->GetInteger("generation", &generation)) {
+  if (!ip || !port || !type || !protocol || !username || !password ||
+      !preference || !generation) {
     return false;
   }
 
-  candidate->set_address(rtc::SocketAddress(ip, port));
-  candidate->set_type(type);
-  candidate->set_protocol(protocol);
-  candidate->set_username(username);
-  candidate->set_password(password);
+  candidate->set_address(rtc::SocketAddress(std::move(*ip), *port));
+  candidate->set_type(std::move(*type));
+  candidate->set_protocol(std::move(*protocol));
+  candidate->set_username(std::move(*username));
+  candidate->set_password(std::move(*password));
   candidate->set_preference(static_cast<float>(*preference));
-  candidate->set_generation(generation);
+  candidate->set_generation(*generation);
 
   return true;
 }

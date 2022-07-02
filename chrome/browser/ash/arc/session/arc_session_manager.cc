@@ -19,15 +19,13 @@
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/session/serial_number_util.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -63,7 +61,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper_chromeos.h"
@@ -73,8 +71,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
-#include "crypto/random.h"
-#include "crypto/sha2.h"
 #include "ui/display/types/display_constants.h"
 
 // Enable VLOG level 1.
@@ -98,39 +94,11 @@ bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
 absl::optional<bool> g_enable_check_android_management_in_tests;
 
 constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
-constexpr const size_t kArcSaltFileSize = 16;
 
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
 constexpr base::TimeDelta kWaitForPoliciesTimeout = base::Seconds(20);
-
-// Generates a unique, 20-character hex string from |chromeos_user| and
-// |salt| which can be used as Android's ro.boot.serialno and ro.serialno
-// properties. Note that Android treats serialno in a case-insensitive manner.
-// |salt| cannot be the hex-encoded one.
-// Note: The function must be the exact copy of the one in platform2/arc/setup/.
-std::string GenerateFakeSerialNumber(const std::string& chromeos_user,
-                                     const std::string& salt) {
-  constexpr size_t kMaxHardwareIdLen = 20;
-  const std::string hash(crypto::SHA256HashString(chromeos_user + salt));
-  return base::HexEncode(hash.data(), hash.length())
-      .substr(0, kMaxHardwareIdLen);
-}
-
-// Returns true if the hex-encoded salt in Local State is valid.
-bool IsValidHexSalt(const std::string& hex_salt) {
-  std::string salt;
-  if (!base::HexStringToString(hex_salt, &salt)) {
-    LOG(WARNING) << "Not a hex string: " << hex_salt;
-    return false;
-  }
-  if (salt.size() != kArcSaltFileSize) {
-    LOG(WARNING) << "Salt size invalid: " << salt.size();
-    return false;
-  }
-  return true;
-}
 
 // Maximum amount of time we'll wait for ARC to finish booting up. Once this
 // timeout expires, keep ARC running in case the user wants to file feedback,
@@ -239,67 +207,6 @@ void SetArcEnabledStateMetric(bool enabled) {
   if (!stability_metrics_manager)
     return;
   stability_metrics_manager->SetArcEnabledState(enabled);
-}
-
-// Generates and returns a serial number from the salt in |local_state| and
-// |chromeos_user|. When |local_state| does not have it (or has a corrupted
-// one), this function creates a new random salt. When creates it, the function
-// copies |arc_salt_on_disk| to |local_state| if |arc_salt_on_disk| is not
-// empty.
-std::string GetOrCreateSerialNumber(PrefService* local_state,
-                                    const std::string& chromeos_user,
-                                    const std::string& arc_salt_on_disk) {
-  DCHECK(local_state);
-  DCHECK(!chromeos_user.empty());
-
-  std::string hex_salt = local_state->GetString(prefs::kArcSerialNumberSalt);
-  if (hex_salt.empty() || !IsValidHexSalt(hex_salt)) {
-    // This path is taken 1) on the very first ARC boot, 2) on the first boot
-    // after powerwash, 3) on the first boot after upgrading to ARCVM, or 4)
-    // when the salt in local state is corrupted.
-    if (arc_salt_on_disk.empty()) {
-      // The device doesn't have the salt file for ARC container. Create it from
-      // scratch in the same way as ARC container.
-      char rand_value[kArcSaltFileSize];
-      crypto::RandBytes(rand_value, kArcSaltFileSize);
-      hex_salt = base::HexEncode(rand_value, kArcSaltFileSize);
-    } else {
-      // The device has the one for container. Reuse it for ARCVM.
-      DCHECK_EQ(kArcSaltFileSize, arc_salt_on_disk.size());
-      hex_salt =
-          base::HexEncode(arc_salt_on_disk.data(), arc_salt_on_disk.size());
-    }
-    local_state->SetString(prefs::kArcSerialNumberSalt, hex_salt);
-  }
-
-  // We store hex-encoded version of the salt in the local state, but to compute
-  // the serial number, we use the decoded version to be compatible with the
-  // arc-setup code for P.
-  std::string decoded_salt;
-  const bool result = base::HexStringToString(hex_salt, &decoded_salt);
-  DCHECK(result) << hex_salt;
-  return GenerateFakeSerialNumber(chromeos_user, decoded_salt);
-}
-
-// Reads a salt from |salt_path| and stores it in |out_salt|. Returns true
-// when the file read is successful or the file does not exist.
-bool ReadSaltOnDisk(const base::FilePath& salt_path, std::string* out_salt) {
-  DCHECK(out_salt);
-  if (!base::PathExists(salt_path)) {
-    VLOG(2) << "ARC salt file doesn't exist: " << salt_path;
-    return true;
-  }
-  if (!base::ReadFileToString(salt_path, out_salt)) {
-    PLOG(ERROR) << "Failed to read " << salt_path;
-    return false;
-  }
-  if (out_salt->size() != kArcSaltFileSize) {
-    LOG(WARNING) << "Ignoring invalid ARC salt on disk. size="
-                 << out_salt->size();
-    out_salt->clear();
-  }
-  VLOG(1) << "Successfully read ARC salt on disk: " << salt_path;
-  return true;
 }
 
 int GetSignInErrorCode(const arc::mojom::ArcSignInError* sign_in_error) {
@@ -465,10 +372,11 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
   DCHECK(arc::IsArcVmEnabled());
 
   // For ARCVM, read |kArcSaltPath| if that exists.
-  std::string salt;
-  if (!ReadSaltOnDisk(base::FilePath(kArcSaltPath), &salt))
+  absl::optional<std::string> salt =
+      ReadSaltOnDisk(base::FilePath(kArcSaltPath));
+  if (!salt)
     return ArcSessionManager::ExpansionResult{{}, false};
-  return ArcSessionManager::ExpansionResult{salt, true};
+  return ArcSessionManager::ExpansionResult{std::move(*salt), true};
 }
 
 // Checks whether ARC DLCs needs to be installed/uninstalled. Currently,
@@ -566,8 +474,8 @@ ArcSessionManager::ArcSessionManager(
   arc_session_runner_->AddObserver(this);
   arc_session_runner_->SetDemoModeDelegate(
       std::make_unique<ArcDemoModeDelegateImpl>());
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->AddObserver(this);
+  if (ash::SessionManagerClient::Get())
+    ash::SessionManagerClient::Get()->AddObserver(this);
   ResetStabilityMetrics();
   ash::ConciergeClient::Get()->AddVmObserver(this);
   arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
@@ -579,8 +487,8 @@ ArcSessionManager::~ArcSessionManager() {
 
   ash::ConciergeClient::Get()->RemoveVmObserver(this);
 
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->RemoveObserver(this);
+  if (ash::SessionManagerClient::Get())
+    ash::SessionManagerClient::Get()->RemoveObserver(this);
 
   Shutdown();
   arc_session_runner_->RemoveObserver(this);
@@ -609,28 +517,6 @@ void ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
 // static
 void ArcSessionManager::EnableCheckAndroidManagementForTesting(bool enable) {
   g_enable_check_android_management_in_tests = enable;
-}
-
-// static
-std::string ArcSessionManager::GenerateFakeSerialNumberForTesting(
-    const std::string& chromeos_user,
-    const std::string& salt) {
-  return GenerateFakeSerialNumber(chromeos_user, salt);
-}
-
-// static
-std::string ArcSessionManager::GetOrCreateSerialNumberForTesting(
-    PrefService* local_state,
-    const std::string& chromeos_user,
-    const std::string& arc_salt_on_disk) {
-  return GetOrCreateSerialNumber(local_state, chromeos_user, arc_salt_on_disk);
-}
-
-// static
-bool ArcSessionManager::ReadSaltOnDiskForTesting(
-    const base::FilePath& salt_path,
-    std::string* out_salt) {
-  return ReadSaltOnDisk(salt_path, out_salt);
 }
 
 void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
@@ -1576,6 +1462,10 @@ void ArcSessionManager::StartArc() {
   arc_session_runner_->RequestUpgrade(std::move(params));
 }
 
+void ArcSessionManager::RequestStopOnLowDiskSpace() {
+  arc_session_runner_->RequestStop();
+}
+
 void ArcSessionManager::StopArc() {
   // TODO(hidehiko): This STOPPED guard should be unnecessary. Remove it later.
   // |reenable_arc_| may be set in |StopAndEnableArc| in case enterprise
@@ -1808,30 +1698,11 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   // For ARCVM, generate <dest_path>/{combined.prop,fstab}. For ARC, generate
   // <dest_path>/{default,build,vendor_build}.prop.
   const bool is_arcvm = arc::IsArcVmEnabled();
-  bool add_native_bridge_64bit_support = false;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcEnableNativeBridge64BitSupportExperiment)) {
-    PrefService* local_pref_service = g_browser_process->local_state();
-    if (base::FeatureList::IsEnabled(
-            arc::kNativeBridge64BitSupportExperimentFeature)) {
-      // Note that we treat this experiment as a one-way off->on switch, across
-      // all users of the device, as the lifetime of ARC mini-container and user
-      // sessions are different in different scenarios, and removing the
-      // experiment after it has been in effect for a user's ARC instance can
-      // lead to unexpected, and unsupported, results.
-      local_pref_service->SetBoolean(
-          prefs::kNativeBridge64BitSupportExperimentEnabled, true);
-    }
-    add_native_bridge_64bit_support = local_pref_service->GetBoolean(
-        prefs::kNativeBridge64BitSupportExperimentEnabled);
-  }
 
   std::deque<JobDesc> jobs = {
       JobDesc{kArcPrepareHostGeneratedDirJobName,
               UpstartOperation::JOB_START,
-              {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0"),
-               std::string("ADD_NATIVE_BRIDGE_64BIT_SUPPORT=") +
-                   (add_native_bridge_64bit_support ? "1" : "0")}},
+              {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0")}},
   };
   ConfigureUpstartJobs(std::move(jobs),
                        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,

@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/tablet_state.h"
@@ -39,20 +40,19 @@ namespace ui {
 class DeviceHotplugEventObserver;
 class OrgKdeKwinIdle;
 class SurfaceAugmenter;
+class WaylandBufferFactory;
 class WaylandBufferManagerHost;
 class WaylandCursor;
 class WaylandCursorBufferListener;
-class WaylandDrm;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
-class WaylandShm;
 class WaylandZAuraShell;
 class WaylandZcrCursorShapes;
+class WaylandZcrTouchpadHaptics;
 class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
-class WaylandZwpLinuxDmabuf;
 class WaylandDataDeviceManager;
 class WaylandCursorPosition;
 class WaylandWindowDragController;
@@ -129,6 +129,7 @@ class WaylandConnection {
   keyboard_shortcuts_inhibit_manager_v1() const {
     return keyboard_shortcuts_inhibit_manager_v1_.get();
   }
+  zcr_stylus_v2* stylus_v2() const { return zcr_stylus_v2_.get(); }
   zwp_text_input_manager_v1* text_input_manager_v1() const {
     return text_input_manager_v1_.get();
   }
@@ -183,14 +184,16 @@ class WaylandConnection {
     return zcr_cursor_shapes_.get();
   }
 
-  WaylandZwpLinuxDmabuf* zwp_dmabuf() const { return zwp_dmabuf_.get(); }
-
-  WaylandDrm* drm() const { return drm_.get(); }
-
-  WaylandShm* shm() const { return shm_.get(); }
+  WaylandZcrTouchpadHaptics* zcr_touchpad_haptics() const {
+    return zcr_touchpad_haptics_.get();
+  }
 
   WaylandWindowManager* wayland_window_manager() {
     return &wayland_window_manager_;
+  }
+
+  WaylandBufferFactory* wayland_buffer_factory() const {
+    return wayland_buffer_factory_.get();
   }
 
   WaylandDataDeviceManager* data_device_manager() const {
@@ -290,6 +293,9 @@ class WaylandConnection {
            tablet_layout_state_ == display::TabletState::kEnteringTabletMode;
   }
 
+  const gfx::PointF MaybeConvertLocation(const gfx::PointF& location,
+                                         const WaylandWindow* window) const;
+
  private:
   friend class WaylandConnectionTestApi;
 
@@ -305,12 +311,10 @@ class WaylandConnection {
   friend class OverlayPrioritizer;
   friend class SurfaceAugmenter;
   friend class WaylandDataDeviceManager;
-  friend class WaylandDrm;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandShm;
   friend class WaylandZAuraShell;
-  friend class WaylandZwpLinuxDmabuf;
+  friend class WaylandZcrTouchpadHaptics;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
@@ -365,6 +369,7 @@ class WaylandConnection {
   wl::Object<zcr_keyboard_extension_v1> keyboard_extension_v1_;
   wl::Object<zwp_keyboard_shortcuts_inhibit_manager_v1>
       keyboard_shortcuts_inhibit_manager_v1_;
+  wl::Object<zcr_stylus_v2> zcr_stylus_v2_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
   wl::Object<zcr_text_input_extension_v1> text_input_extension_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
@@ -380,21 +385,23 @@ class WaylandConnection {
   // outlives them so thus being able to properly handle their destruction.
   std::unique_ptr<WaylandEventSource> event_source_;
 
+  // Factory that wraps all the supported wayland objects that are provide
+  // capabilities to create wl_buffers.
+  std::unique_ptr<WaylandBufferFactory> wayland_buffer_factory_;
+
   std::unique_ptr<WaylandCursor> cursor_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
   std::unique_ptr<WaylandCursorPosition> wayland_cursor_position_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
+  std::unique_ptr<WaylandZcrTouchpadHaptics> zcr_touchpad_haptics_;
   std::unique_ptr<WaylandZwpPointerConstraints>
       wayland_zwp_pointer_constraints_;
   std::unique_ptr<WaylandZwpRelativePointerManager>
       wayland_zwp_relative_pointer_manager_;
   std::unique_ptr<WaylandZwpPointerGestures> wayland_zwp_pointer_gestures_;
-  std::unique_ptr<WaylandZwpLinuxDmabuf> zwp_dmabuf_;
-  std::unique_ptr<WaylandDrm> drm_;
   std::unique_ptr<WaylandSeat> seat_;
-  std::unique_ptr<WaylandShm> shm_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
   std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;
@@ -426,7 +433,7 @@ class WaylandConnection {
   // created when platform window test config is set.
   std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
 
-  WaylandCursorBufferListener* listener_ = nullptr;
+  raw_ptr<WaylandCursorBufferListener> listener_ = nullptr;
 
   // The current window table mode layout state.
   display::TabletState tablet_layout_state_ =

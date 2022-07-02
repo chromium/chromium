@@ -11,6 +11,15 @@
 #error "This file requires ARC support."
 #endif
 
+@interface GradientView ()
+
+// The color at the top of the gradient.
+@property(nonatomic, strong) UIColor* topColor;
+// The color at the bottom of the gradient.
+@property(nonatomic, strong) UIColor* bottomColor;
+
+@end
+
 @implementation GradientView
 
 #pragma mark - Public
@@ -19,9 +28,12 @@
   return [CAGradientLayer class];
 }
 
-- (instancetype)init {
+- (instancetype)initWithTopColor:(UIColor*)topColor
+                     bottomColor:(UIColor*)bottomColor {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.topColor = topColor;
+    self.bottomColor = bottomColor;
     self.userInteractionEnabled = NO;
     [self updateColors];
   }
@@ -51,9 +63,8 @@
   [CATransaction setDisableActions:YES];
 
   self.gradientLayer.colors = @[
-    (id)[[UIColor colorNamed:kPrimaryBackgroundColor] colorWithAlphaComponent:0]
-        .CGColor,
-    (id)[UIColor colorNamed:kPrimaryBackgroundColor].CGColor,
+    (id)self.topColor.CGColor,
+    (id)self.bottomColor.CGColor,
   ];
   [CATransaction commit];
 }

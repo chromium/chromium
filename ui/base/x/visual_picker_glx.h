@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/glx.h"
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
 
   void FillConfigMap();
 
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
 
   x11::VisualId system_visual_{};
   x11::VisualId rgba_visual_{};

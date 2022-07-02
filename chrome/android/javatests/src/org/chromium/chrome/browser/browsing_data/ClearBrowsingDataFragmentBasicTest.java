@@ -4,14 +4,27 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,17 +38,23 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -47,6 +66,7 @@ import java.util.HashSet;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.ENABLE_CBD_SIGN_OUT})
 public class ClearBrowsingDataFragmentBasicTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -61,7 +81,7 @@ public class ClearBrowsingDataFragmentBasicTest {
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -126,9 +146,48 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     @Test
     @LargeTest
+    public void testSignOutLinkNotOfferedToSupervisedAccounts() {
+        mSigninTestRule.addChildTestAccountThenWaitForSignin();
+        setSyncable(false);
+        mSettingsActivityTestRule.startSettingsActivity();
+        waitForOptionsMenu();
+
+        final ClearBrowsingDataFragmentBasic clearBrowsingDataFragmentBasic =
+                mSettingsActivityTestRule.getFragment();
+        onView(withText(clearBrowsingDataFragmentBasic.buildSignOutOfChromeText().toString()))
+                .check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    public void testSigningOut() {
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        setSyncable(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+        waitForOptionsMenu();
+
+        final ClearBrowsingDataFragmentBasic clearBrowsingDataFragmentBasic =
+                mSettingsActivityTestRule.getFragment();
+        onView(withText(clearBrowsingDataFragmentBasic.buildSignOutOfChromeText().toString()))
+                .perform(clickOnSignOutLink());
+        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> !IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .hasPrimaryAccount(ConsentLevel.SIGNIN),
+                "Account should be signed out!");
+
+        // Footer should be hidden after sign-out.
+        onView(withText(clearBrowsingDataFragmentBasic.buildSignOutOfChromeText().toString()))
+                .check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSignedInAndSyncing() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -154,7 +213,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedInGoogleDSE() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
         setSyncable(false);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -168,7 +227,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedInKnownNonGoogleDSE() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -186,7 +245,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedInUnknownNonGoogleDSE() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -230,5 +289,35 @@ public class ClearBrowsingDataFragmentBasicTest {
                             .findViewById(android.R.id.content)
                             .getRootView();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_out");
+    }
+
+    // TODO(https://crbug.com/1334586): Move this to a test util class.
+    private ViewAction clickOnSignOutLink() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return Matchers.instanceOf(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Clicks on the sign out link in the clear browsing data footer";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView textView = (TextView) view;
+                Spanned spannedString = (Spanned) textView.getText();
+                ClickableSpan[] spans =
+                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+                if (spans.length != 1) {
+                    throw new NoMatchingViewException.Builder()
+                            .includeViewHierarchy(true)
+                            .withRootView(textView)
+                            .build();
+                }
+                spans[0].onClick(view);
+            }
+        };
     }
 }

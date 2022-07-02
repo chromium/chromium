@@ -22,23 +22,3 @@ source_set("utils") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
   ]
 }
-
-source_set("features") {
-  public = [ "signals_features.h" ]
-
-  sources = [ "signals_features.cc" ]
-
-  public_deps = [ "//base" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "signals_features_unittest.cc" ]
-
-  deps = [
-    ":features",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
-}

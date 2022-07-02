@@ -150,11 +150,9 @@ static LayoutPoint ComputeRelativeOffset(const LayoutObject* layout_object,
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
                                          const ScrollableArea* scroller) {
-  if (const ComputedStyle* style = candidate->Style()) {
-    if (style->HasViewportConstrainedPosition() ||
-        style->HasStickyConstrainedPosition())
-      return false;
-  }
+  if (candidate->IsFixedPositioned() ||
+      candidate->StyleRef().HasStickyConstrainedPosition())
+    return false;
 
   LayoutObject::AncestorSkipInfo skip_info(ScrollerLayoutBox(scroller));
   candidate->Container(&skip_info);
@@ -376,7 +374,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
   LayoutObject* candidate = nullptr;
   ExamineResult result{kSkip};
   auto* focused_element = document.FocusedElement();
-  if (focused_element && HasEditableStyle(*focused_element)) {
+  if (focused_element && IsEditable(*focused_element)) {
     candidate = PriorityCandidateFromNode(focused_element);
     if (candidate) {
       result = ExaminePriorityCandidate(candidate);

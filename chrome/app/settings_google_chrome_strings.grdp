@@ -152,6 +152,11 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">
     Open PDFs in Chrome
   </message>
+  <if expr="not chromeos_ash and not chromeos_lacros">
+    <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user will be signed out of Chrome each time they close all Chrome windows.">
+      When on, you'll also be signed out of Chrome
+    </message>
+  </if>
 
   <!-- Privacy Guide -->
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_PROMO_BODY" desc="Body text of a card in the settings page that explains what the 'Privacy Guide' feature is.">
@@ -299,6 +304,11 @@
   </message>
   <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chrome.">
     Sign in to sync and personalize Chrome across your devices
+  </message>
+
+  <!-- Autofill Assistant settings -->
+  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF" translateable="false" desc="The documentation string of the 'Use Google Assistant' preference to help with automated flows on the web">
+    Google Assistant in Chrome
   </message>
 
   <!-- Languages Page -->

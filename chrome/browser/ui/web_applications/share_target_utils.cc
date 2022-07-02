@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "extensions/common/constants.h"
+#include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -38,7 +39,7 @@ bool SharedField::operator==(const SharedField& other) const {
 
 std::vector<SharedField> ExtractSharedFields(
     const apps::ShareTarget& share_target,
-    const apps::mojom::Intent& intent) {
+    const apps::Intent& intent) {
   std::vector<SharedField> result;
 
   if (!share_target.params.title.empty() && intent.share_title.has_value() &&
@@ -67,7 +68,7 @@ std::vector<SharedField> ExtractSharedFields(
 NavigateParams NavigateParamsForShareTarget(
     Browser* browser,
     const apps::ShareTarget& share_target,
-    const apps::mojom::Intent& intent,
+    const apps::Intent& intent,
     const std::vector<base::FilePath>& launch_files) {
   NavigateParams nav_params(browser, share_target.action,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
@@ -81,16 +82,16 @@ NavigateParams NavigateParamsForShareTarget(
   std::vector<mojo::PendingRemote<network::mojom::DataPipeGetter>>
       data_pipe_getters;
 
-  if (intent.mime_type.has_value() && intent.files.has_value()) {
+  if (intent.mime_type.has_value() && !intent.files.empty()) {
     if (!launch_files.empty()) {
-      DCHECK_EQ(launch_files.size(), intent.files->size());
+      DCHECK_EQ(launch_files.size(), intent.files.size());
     }
 
     // Files for Web Share intents are created by the browser in
     // a .WebShare directory, with generated file names and file urls - see
     // //chrome/browser/webshare/chromeos/sharesheet_client.cc
-    for (size_t i = 0; i < intent.files->size(); ++i) {
-      const apps::mojom::IntentFilePtr& file = (*intent.files)[i];
+    for (size_t i = 0; i < intent.files.size(); ++i) {
+      const apps::IntentFilePtr& file = intent.files[i];
 
       const std::string& mime_type = file->mime_type.has_value()
                                          ? file->mime_type.value()
@@ -121,7 +122,8 @@ NavigateParams NavigateParamsForShareTarget(
       file_system_url =
           file_system_context->CrackURLInFirstPartyContext(file->url);
 
-      if (!file_system_url.is_valid()) {
+      if (!file_system_url.is_valid() && !file->url.SchemeIsFile()) {
+        // We have an ARC content uri.
         // TODO(crbug.com/1166982): We could be more intelligent here and
         // decide which cracking method to use based on the scheme.
         auto file_system_url_and_handle =
@@ -152,7 +154,13 @@ NavigateParams NavigateParamsForShareTarget(
       names.push_back(name);
 
       if (launch_files.empty()) {
-        values.push_back(file_system_url.path().AsUTF8Unsafe());
+        if (file->url.SchemeIsFile()) {
+          base::FilePath file_path;
+          net::FileURLToFilePath(file->url, &file_path);
+          values.push_back(file_path.value());
+        } else {
+          values.push_back(file_system_url.path().AsUTF8Unsafe());
+        }
       } else {
         values.push_back(launch_files[i].value());
       }

@@ -124,6 +124,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
       PaymentHandlerOpenWindowCallback callback) override;
   void RetryDialog() override;
   void ConfirmPaymentForTesting() override;
+  bool ClickOptOutForTesting() override;
 
   // PaymentRequestSpec::Observer:
   void OnStartUpdating(PaymentRequestSpec::UpdateReason reason) override;

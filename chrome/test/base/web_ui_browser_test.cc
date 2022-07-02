@@ -113,11 +113,10 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
   ~WebUITestMessageHandler() override = default;
 
   // Receives testResult messages.
-  void HandleTestResult(const base::ListValue* test_result) {
+  void HandleTestResult(const base::Value::List& list) {
     // To ensure this gets done, do this before ASSERT* calls.
     RunQuitClosure();
 
-    const auto& list = test_result->GetListDeprecated();
     ASSERT_FALSE(list.empty());
     const bool test_succeeded = list[0].is_bool() && list[0].GetBool();
     std::string message;
@@ -131,7 +130,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "testResult",
         base::BindRepeating(&WebUITestMessageHandler::HandleTestResult,
                             base::Unretained(this)));

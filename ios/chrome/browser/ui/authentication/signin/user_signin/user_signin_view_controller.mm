@@ -274,9 +274,9 @@ enum AuthenticationButtonType {
 
   [NSLayoutConstraint activateConstraints:@[
     // Note that the bottom constraint of the container view and
-    // |embeddedViewController.view| is dependent on the selected
+    // `embeddedViewController.view` is dependent on the selected
     // Accessibility options in Settings, e.g. text size. These constraints
-    // are computed in |setAccessibilityLayoutConstraints|.
+    // are computed in `setAccessibilityLayoutConstraints`.
     [self.containerView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [self.containerView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
@@ -376,7 +376,10 @@ enum AuthenticationButtonType {
 
 - (UIView*)gradientView {
   if (!_gradientView) {
-    _gradientView = [[GradientView alloc] init];
+    _gradientView = [[GradientView alloc]
+        initWithTopColor:[[UIColor colorNamed:kPrimaryBackgroundColor]
+                             colorWithAlphaComponent:0]
+             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   }
   return _gradientView;
 }
@@ -444,7 +447,7 @@ enum AuthenticationButtonType {
           constraintEqualToConstant:kUserConsentMaxSize],
     ];
     for (NSLayoutConstraint* constraints in lowerPriorityConstraints) {
-      // We do not use |UILayoutPriorityDefaultHigh| because it makes some
+      // We do not use `UILayoutPriorityDefaultHigh` because it makes some
       // multiline labels on one line and truncated on iPad.
       constraints.priority = UILayoutPriorityRequired - 1;
     }
@@ -509,7 +512,7 @@ enum AuthenticationButtonType {
       CreateOpaqueOrTransparentButtonPointerStyleProvider();
 }
 
-// Applies font and inset to |button| according to the current size class.
+// Applies font and inset to `button` according to the current size class.
 - (void)applyDefaultSizeWithButton:(UIButton*)button
                          fontStyle:(UIFontTextStyle)fontStyle {
   const AuthenticationViewConstants& constants =

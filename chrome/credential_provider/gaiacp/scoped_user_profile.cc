@@ -12,7 +12,6 @@
 #include <objidl.h>
 #include <security.h>
 #include <shlobj.h>
-#include <shlwapi.h>
 #include <userenv.h>
 
 #include <vector>
@@ -26,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"

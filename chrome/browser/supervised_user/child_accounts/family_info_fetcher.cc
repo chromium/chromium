@@ -89,8 +89,6 @@ FamilyInfoFetcher::FamilyInfoFetcher(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : consumer_(consumer),
-      primary_account_id_(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       access_token_expired_(false) {}
@@ -222,7 +220,10 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
     access_token_expired_ = true;
     OAuth2AccessTokenManager::ScopeSet scopes;
     scopes.insert(GaiaConstants::kKidFamilyReadonlyOAuth2Scope);
-    identity_manager_->RemoveAccessTokenFromCache(primary_account_id_, scopes,
+    CoreAccountId primary_account_id =
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    DCHECK(!primary_account_id.empty());
+    identity_manager_->RemoveAccessTokenFromCache(primary_account_id, scopes,
                                                   access_token_);
     StartFetchingAccessToken();
     return;

@@ -114,6 +114,13 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Called when the bubble is resized.
   virtual void BubbleResized(const TrayBubbleView* bubble_view);
 
+  // Updates this bubble about visibility change of *ANY* tray bubble
+  // including itself.
+  // `bubble_widget` is the bubble with visibility change. Please note that it
+  // can be the current bubble as well.
+  virtual void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                            bool visible);
+
   // Hides the bubble associated with |bubble_view|. Called when the widget
   // is closed.
   virtual void HideBubbleWithView(const TrayBubbleView* bubble_view) = 0;

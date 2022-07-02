@@ -16,7 +16,7 @@
 // to be executed when the scene reach the required state.
 @property(nonatomic, strong) AppStartupParameters* startupParameters;
 
-// Flag that is set when the |startupParameters| start being handled.
+// Flag that is set when the `startupParameters` start being handled.
 // Checking this flag prevents reentrant startup parameter handling.
 @property(nonatomic, assign) BOOL startupParametersAreBeingHandled;
 

@@ -150,6 +150,11 @@ void SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished() {
   update_complete_callback_list_.Notify();
 }
 
+bool SafeBrowsingDatabaseManager::IsDatabaseReady() {
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
+  return enabled_;
+}
+
 SafeBrowsingDatabaseManager::SafeBrowsingApiCheck::SafeBrowsingApiCheck(
     const GURL& url,
     Client* client)

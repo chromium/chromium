@@ -173,6 +173,12 @@ class MEDIA_EXPORT Picture {
     return scoped_shared_images_[plane];
   }
 
+  void set_is_webgpu_compatible(bool is_webgpu_compatible) {
+    is_webgpu_compatible_ = is_webgpu_compatible;
+  }
+
+  bool is_webgpu_compatible() { return is_webgpu_compatible_; }
+
  private:
   int32_t picture_buffer_id_;
   int32_t bitstream_buffer_id_;
@@ -183,6 +189,7 @@ class MEDIA_EXPORT Picture {
   bool size_changed_;
   bool texture_owner_;
   bool wants_promotion_hint_;
+  bool is_webgpu_compatible_;
   std::array<scoped_refptr<ScopedSharedImage>, VideoFrame::kMaxPlanes>
       scoped_shared_images_;
 };

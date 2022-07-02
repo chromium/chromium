@@ -205,17 +205,18 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
     TCHAR filename[MAX_PATH];
     GetModuleFileName(modules[i], filename, std::size(filename));
     std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
-    if (base::LowerCaseEqualsASCII(module_name, "fsdomsrv.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll"))
       g_jaws = true;
-    if (base::LowerCaseEqualsASCII(module_name, "vbufbackend_gecko_ia2.dll") ||
-        base::LowerCaseEqualsASCII(module_name, "nvdahelperremote.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name,
+                                         "vbufbackend_gecko_ia2.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll"))
       g_nvda = true;
-    if (base::LowerCaseEqualsASCII(module_name, "stsaw32.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "stsaw32.dll"))
       satogo = true;
-    if (base::LowerCaseEqualsASCII(module_name, "dolwinhk.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll"))
       g_supernova = true;
-    if (base::LowerCaseEqualsASCII(module_name, "zslhook.dll") ||
-        base::LowerCaseEqualsASCII(module_name, "zslhook64.dll"))
+    if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll"))
       g_zoomtext = true;
   }
 

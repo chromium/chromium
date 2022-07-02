@@ -681,6 +681,11 @@ void InputMethodEngine::SetCompositionBounds(
   observer_->OnCompositionBoundsChanged(bounds);
 }
 
+void InputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds)
+{
+  observer_->OnCaretBoundsChanged(caret_bounds);
+}
+
 void InputMethodEngine::PropertyActivate(const std::string& property_name) {
   observer_->OnMenuItemActivated(active_component_id_, property_name);
 }
@@ -725,6 +730,12 @@ ui::VirtualKeyboardController* InputMethodEngine::GetVirtualKeyboardController()
   return keyboard::KeyboardUIController::Get()->virtual_keyboard_controller();
 }
 
+bool InputMethodEngine::IsReadyForTesting() {
+  // For extension-based IMEs, we cannot tell if they are ready or not, so just
+  // return false.
+  return false;
+}
+
 void InputMethodEngine::OnSuggestionsChanged(
     const std::vector<std::string>& suggestions) {
   observer_->OnSuggestionsChanged(suggestions);
@@ -758,6 +769,7 @@ void InputMethodEngine::ClickButton(
 bool InputMethodEngine::AcceptSuggestionCandidate(
     int context_id,
     const std::u16string& suggestion,
+    size_t delete_previous_utf16_len,
     std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
@@ -766,6 +778,11 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
   if (context_id != context_id_ || context_id_ == -1) {
     *error = kErrorWrongContext;
     return false;
+  }
+
+  if (delete_previous_utf16_len) {
+    DeleteSurroundingText(context_id_, -delete_previous_utf16_len,
+                          delete_previous_utf16_len, error);
   }
 
   CommitText(context_id, suggestion, error);
@@ -839,10 +856,9 @@ bool InputMethodEngine::SetCandidateWindowVisible(bool visible,
   return true;
 }
 
-bool InputMethodEngine::SetCandidates(
-    int context_id,
-    const std::vector<Candidate>& candidates,
-    std::string* error) {
+bool InputMethodEngine::SetCandidates(int context_id,
+                                      const std::vector<Candidate>& candidates,
+                                      std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
     return false;

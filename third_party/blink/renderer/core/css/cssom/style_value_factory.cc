@@ -271,7 +271,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
 
-  HeapVector<CSSPropertyValue, 256> parsed_properties;
+  HeapVector<CSSPropertyValue, 64> parsed_properties;
   if (property_id != CSSPropertyID::kVariable &&
       CSSPropertyParser::ParseValue(property_id, false, range, parser_context,
                                     parsed_properties,

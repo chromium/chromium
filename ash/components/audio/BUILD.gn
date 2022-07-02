@@ -10,12 +10,14 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 component("audio") {
   defines = [ "IS_ASH_COMPONENTS_AUDIO_IMPL" ]
   deps = [
+    "//ash/components/audio/public/mojom",
     "//ash/constants",
     "//base",
-    "//chromeos/dbus/audio",
+    "//chromeos/ash/components/dbus/audio",
     "//components/prefs",
     "//device/bluetooth",
     "//media/base:video_facing",
+    "//mojo/public/cpp/bindings",
     "//services/media_session/public/mojom",
     "//ui/events/devices",
   ]
@@ -30,20 +32,43 @@ component("audio") {
     "audio_pref_observer.h",
     "cras_audio_handler.cc",
     "cras_audio_handler.h",
+    "cros_audio_config.cc",
+    "cros_audio_config.h",
+    "cros_audio_config_impl.cc",
+    "cros_audio_config_impl.h",
     "sounds.h",
   ]
+}
+
+component("in_process_audio_config") {
+  sources = [
+    "in_process_instance.cc",
+    "in_process_instance.h",
+  ]
+
+  defines = [ "IS_IN_PROCESS_AUDIO_CONFIG_IMPL" ]
+
+  public_deps = [
+    "//ash/components/audio/public/mojom",
+    "//ash/constants",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [ ":audio" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":audio",
+    "//ash/components/audio/public/mojom",
     "//ash/constants",
     "//base/test:test_support",
-    "//chromeos/dbus/audio",
+    "//chromeos/ash/components/dbus/audio",
     "//components/prefs:test_support",
     "//device/bluetooth",
     "//media/base:video_facing",
+    "//mojo/public/cpp/bindings",
     "//services/media_session/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
@@ -51,5 +76,6 @@ source_set("unit_tests") {
   sources = [
     "audio_devices_pref_handler_impl_unittest.cc",
     "cras_audio_handler_unittest.cc",
+    "cros_audio_config_impl_unittest.cc",
   ]
 }

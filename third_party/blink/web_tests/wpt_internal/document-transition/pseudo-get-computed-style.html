@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: check pseudo element's display property</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  contain: paint;
+  page-transition-tag: target;
+}
+::page-transition-image-wrapper(target) {
+  position: fixed;
+}
+</style>
+
+<div id=target></div>
+
+<script>
+async_test(t => {
+  document.createDocumentTransition().start(() => {
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
+    // We changed this in the style block above.
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "fixed");
+
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute");
+
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute");
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute");
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute");
+    t.done();
+  });
+}, "position property of pseudo elements");
+</script>

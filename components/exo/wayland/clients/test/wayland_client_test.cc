@@ -24,4 +24,8 @@ void WaylandClientTest::TearDown() {
   test_helper_.TearDown();
 }
 
+wayland::Server* WaylandClientTest::GetServer() {
+  return test_helper_.wayland_server();
+}
+
 }  // namespace exo

@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   // Simulate a condition where the RFH can't create a
   // BrowserAccessibilityManager - like if there's no view.
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   frame->set_no_create_browser_accessibility_manager_for_testing(true);
   ASSERT_EQ(nullptr, frame->GetOrCreateBrowserAccessibilityManager());
 
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Make sure we still didn't create a BrowserAccessibilityManager.
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
                                            ax::mojom::Event::kChildrenChanged);
     ASSERT_TRUE(ExecJs(
         shell(), "document.getElementById('p1').style.display = 'none';"));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Show that accessibility was reset because the frame doesn't have a
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
     ASSERT_TRUE(ExecJs(shell(), "document.getElementById('button').focus();"));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     tree = &waiter.GetAXTree();
   }
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   GURL url(url_str);
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
 
   {
     // Enable accessibility (passing ui::kAXModeComplete to
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Construct a bad accessibility message that BrowserAccessibilityManager
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Wait for the renderer to be killed.

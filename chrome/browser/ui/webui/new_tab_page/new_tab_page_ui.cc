@@ -27,9 +27,9 @@
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
@@ -73,6 +73,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "url/url_util.h"
@@ -187,6 +188,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
           profile->GetPrefs()->GetBoolean(prefs::kNtpPromoVisible));
+  source->AddBoolean(
+      "middleSlotPromoDismissalEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromoDismissal));
   source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));
@@ -351,6 +355,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesPhotosMemoriesSoftOptOut", IDS_NTP_MODULES_PHOTOS_SOFT_OPT_OUT},
       {"modulesPhotosMemoriesWelcomeExample",
        IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_EXAMPLE},
+      {"modulesPhotosMemoriesBaloonIllustrationTitle",
+       IDS_NTP_MODULES_PHOTOS_BALOON_ILLUSTRATION_TITLE},
       {"modulesPhotosNew", IDS_NTP_MODULES_PHOTOS_NEW},
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
@@ -432,6 +438,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
                         ntp_features::kNtpPhotosModuleOptInArtWorkParam));
+  source->AddBoolean("photosModuleSplitSvgCustomArtWork",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpPhotosModuleSplitSvgOptInArtWork));
   source->AddBoolean(
       "ruleBasedDiscountEnabled",
       base::GetFieldTrialParamValueByFeature(
@@ -667,8 +676,8 @@ void NewTabPageUI::BindInterface(
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
         pending_page_handler) {
-  cart_handler_ =
-      std::make_unique<CartHandler>(std::move(pending_page_handler), profile_);
+  cart_handler_ = std::make_unique<CartHandler>(std::move(pending_page_handler),
+                                                profile_, web_contents_);
 }
 
 void NewTabPageUI::CreatePageHandler(
@@ -724,18 +733,9 @@ void NewTabPageUI::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
 void NewTabPageUI::OnThemeChanged() {
   base::Value::Dict update;
-
-  const ui::ThemeProvider* theme_provider =
-      webui::GetThemeProvider(web_contents_);
-  // TODO(crbug.com/1299925): Always mock theme provider in tests so that
-  // `theme_provider` is never nullptr.
-  if (theme_provider) {
-    auto background_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
-    update.Set("backgroundColor", skia::SkColorToHexString(background_color));
-  } else {
-    update.Set("backgroundColor", "");
-  }
+  const ui::ColorProvider& color_provider = web_contents_->GetColorProvider();
+  auto background_color = color_provider.GetColor(kColorNewTabPageBackground);
+  update.Set("backgroundColor", skia::SkColorToHexString(background_color));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

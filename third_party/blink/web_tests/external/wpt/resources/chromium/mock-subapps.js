@@ -20,9 +20,9 @@ self.SubAppsServiceTest = (() => {
       this.receiver_.$.close();
     }
 
-    add(install_path) {
+    add(sub_apps) {
       return Promise.resolve({
-        result: testInternal.serviceResultCode
+        result: [],
       });
     }
 

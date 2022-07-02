@@ -117,10 +117,10 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnReadFileRequested::kEventName,
       event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetListDeprecated().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetListDeprecated()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   ReadFileRequestedOptions options;
@@ -168,15 +168,14 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   const bool has_more = false;
   const int execution_time = 0;
 
-  std::vector<base::Value> values_as_list;
-  values_as_list.emplace_back(kFileSystemId);
-  values_as_list.emplace_back(kRequestId);
-  values_as_list.emplace_back(
-      base::Value(base::as_bytes(base::make_span(data))));
-  values_as_list.emplace_back(has_more);
-  values_as_list.emplace_back(execution_time);
+  base::Value::List list;
+  list.Append(kFileSystemId);
+  list.Append(kRequestId);
+  list.Append(base::Value(base::as_bytes(base::make_span(data))));
+  list.Append(has_more);
+  list.Append(execution_time);
 
-  std::unique_ptr<Params> params(Params::Create(std::move(values_as_list)));
+  std::unique_ptr<Params> params(Params::Create(std::move(list)));
   ASSERT_TRUE(params.get());
   std::unique_ptr<RequestValue> request_value(
       RequestValue::CreateForReadFileSuccess(std::move(params)));

@@ -141,8 +141,9 @@ class ChromeSessionManagerExistingUsersTest : public ChromeSessionManagerTest {
   LoginManagerMixin login_manager_{&mixin_host_};
 };
 
+// http://crbug.com/1338401
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
-                       LoginExistingUsers) {
+                       DISABLED_LoginExistingUsers) {
   // Verify that session state is LOGIN_PRIMARY with existing user data dir.
   session_manager::SessionManager* manager =
       session_manager::SessionManager::Get();

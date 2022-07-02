@@ -68,7 +68,7 @@ void AssociatedReceiverBase::BindImpl(
     scoped_refptr<base::SequencedTaskRunner> runner,
     uint32_t interface_version,
     const char* interface_name,
-    MessageToStableIPCHashCallback ipc_hash_callback,
+    MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
   DCHECK(handle.is_valid());
 
@@ -76,7 +76,7 @@ void AssociatedReceiverBase::BindImpl(
       std::move(handle), receiver, std::move(payload_validator),
       expect_sync_requests,
       internal::GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)),
-      interface_version, interface_name, ipc_hash_callback,
+      interface_version, interface_name, method_info_callback,
       method_name_callback);
 }
 

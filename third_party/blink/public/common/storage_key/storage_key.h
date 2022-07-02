@@ -144,10 +144,16 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Return the "site for cookies" for the StorageKey's frame (or worker).
   //
-  // Right now this "site for cookies" is not entirely accurate. For example
-  // consider if A.com embeds B.com which embeds A.com in a child frame. The
-  // site for cookies according to this method will be A.com, but according to
-  // the spec it should be an opaque origin.
+  // While the SiteForCookie object returned matches the current default
+  // behavior it's important to note that it may not exactly match a
+  // SiteForCookies created for the same frame context and could cause
+  // behavioral difference for users using the
+  // LegacySameSiteCookieBehaviorEnabledForDomainList enterprise policy. The
+  // impact is expected to be minimal however.
+  //
+  // (The difference is due to StorageKey not tracking the same state as
+  // SiteForCookies, see see net::SiteForCookies::schemefully_same_ for more
+  // info.)
   const net::SiteForCookies ToNetSiteForCookies() const;
 
   // Returns true if the registration key string is partitioned by top-level
@@ -159,9 +165,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Returns a copy of what this storage key would have been if
   // `kThirdPartyStoragePartitioning` were enabled. This is a convenience
-  // function for callsites that benefit from future functionality that
-  // should be removed when storage partitioning is fully launched.
-  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  // function for callsites that benefit from future functionality.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   StorageKey CopyWithForceEnabledThirdPartyStoragePartitioning() const {
     StorageKey storage_key = *this;
     storage_key.top_level_site_ =
@@ -233,9 +238,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Stores the value `top_level_site_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
-  // serialization or comparison, and this information is lost if you convert
-  // to a BlinkStorageKey or send it via mojom.
-  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  // serialization or comparison.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   net::SchemefulSite top_level_site_if_third_party_enabled_;
 
   // An optional nonce, forcing a partitioned storage from anything else. Used
@@ -251,9 +255,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Stores the value `ancestor_chain_bit_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
-  // serialization or comparison, and this information is lost if you convert
-  // to a BlinkStorageKey or send it via mojom.
-  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  // serialization or comparison.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_{
       blink::mojom::AncestorChainBit::kSameSite};
 };

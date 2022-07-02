@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -67,7 +68,8 @@ void AddNotification(const std::string& notification_id,
   const message_center::NotifierId notifier_id =
       notifier_title.empty()
           ? message_center::NotifierId(
-                message_center::NotifierType::SYSTEM_COMPONENT, "system")
+                message_center::NotifierType::SYSTEM_COMPONENT, "system",
+                NotificationCatalogName::kHPSNotify)
           : message_center::NotifierId(/*url=*/GURL(), notifier_title);
 
   message_center::MessageCenter::Get()->AddNotification(
@@ -199,7 +201,9 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
     chromeos::HumanPresenceDBusClient::InitializeFake();
     auto* dbus_client = chromeos::FakeHumanPresenceDBusClient::Get();
     dbus_client->set_hps_service_is_available(true);
-    dbus_client->set_hps_notify_result(hps::HpsResult::NEGATIVE);
+    hps::HpsResultProto state;
+    state.set_value(hps::HpsResult::NEGATIVE);
+    dbus_client->set_hps_notify_result(state);
 
     AshTestBase::SetUp();
 
@@ -256,7 +260,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, Snooping) {
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*state=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // When snooping is detected, the popup notification should be hidden but
   // remain in the notification queue. Note that, since the popup has been
@@ -272,7 +278,8 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, Snooping) {
 
   // Simulate snooper absence. We wait for a moment to bypass the controller's
   // hysteresis logic.
-  controller_->OnHpsNotifyChanged(/*state=*/hps::HpsResult::NEGATIVE);
+  state.set_value(hps::HpsResult::NEGATIVE);
+  controller_->OnHpsNotifyChanged(state);
   task_environment()->FastForwardBy(base::Seconds(10));
 
   // The unshown popups should appear since snooper has left.
@@ -291,7 +298,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, Pref) {
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // Notifications should be visible up until the user enables the feature.
   EXPECT_EQ(VisiblePopupCount(), 1u);
@@ -339,7 +348,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, SystemNotification) {
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // The safe notification shouldn't be suppressed, but the sensitive
   // notification should be.
@@ -357,7 +368,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, InfoPopup) {
   SetBlockerPref(true);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // Two notifications we're blocking.
   AddNotification("notification-1", u"notifier-1");
@@ -386,7 +399,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, InfoPopupOtherBlocker) {
   SetBlockerPref(true);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // One notification only we are blocking, and one notification that is also
   // blocked by another blocker.
@@ -416,7 +431,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest,
   SetBlockerPref(true);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // Newer notifiers should come before older ones.
   AddNotification("notification-1", u"notifier-1");
@@ -462,7 +479,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, ShowButtonClicked) {
   SetBlockerPref(true);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   AddNotification("notification-1", u"notifier-1");
   AddNotification("notification-2", u"notifier-2");
@@ -479,7 +498,9 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, SettingsButtonClicked) {
   SetBlockerPref(true);
 
   // Simulate snooper presence.
-  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   AddNotification("notification-1", u"notifier-1");
   AddNotification("notification-2", u"notifier-2");

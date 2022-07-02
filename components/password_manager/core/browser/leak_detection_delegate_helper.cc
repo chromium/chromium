@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 
 namespace password_manager {
 
@@ -90,12 +91,27 @@ void LeakDetectionDelegateHelper::ProcessResults() {
     }
   }
 
-  IsSaved is_saved(
-      base::ranges::any_of(partial_results_, [this](const auto& form) {
-        return form->url == url_ && form->username_value == username_ &&
+  // Returns true if the urls are identical or one is a PSL match of the other.
+  auto are_urls_equivalent = [&](const GURL& url1, const GURL& url2) -> bool {
+    return url1 == url2 || IsPublicSuffixDomainMatch(url1.spec(), url2.spec());
+  };
+
+  IsSaved is_saved(base::ranges::any_of(
+      partial_results_, [this, are_urls_equivalent](const auto& form) {
+        return are_urls_equivalent(form->url, url_) &&
+               form->username_value == username_ &&
                form->password_value == password_;
       }));
-  IsReused is_reused(partial_results_.size() > (is_saved ? 1 : 0));
+
+  // Check if the password is reused on a different origin, or on the same
+  // origin with a different username.
+  IsReused is_reused(base::ranges::any_of(
+      partial_results_, [this, are_urls_equivalent](const auto& form) {
+        return form->password_value == password_ &&
+               (!are_urls_equivalent(form->url, url_) ||
+                form->username_value != username_);
+      }));
+
   HasChangeScript has_change_script(script_is_available_);
 
   std::move(callback_).Run(is_saved, is_reused, has_change_script,

@@ -69,7 +69,6 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   init_params.insets = gfx::Insets::TLBR(0, kCollisionWindowWorkAreaInsetsDp,
                                          kCollisionWindowWorkAreaInsetsDp,
                                          kCollisionWindowWorkAreaInsetsDp);
-  init_params.has_shadow = false;
   init_params.max_height = kFloatingMenuHeight;
   init_params.translucent = true;
   init_params.close_on_deactivate = false;

@@ -24,7 +24,7 @@
 - (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
      movedFromParent:(const bookmarks::BookmarkNode*)oldParent
             toParent:(const bookmarks::BookmarkNode*)newParent;
-// |node| was deleted from |folder|.
+// `node` was deleted from `folder`.
 - (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
                  fromFolder:(const bookmarks::BookmarkNode*)folder;
 // All non-permanent nodes have been removed.

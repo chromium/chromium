@@ -23,7 +23,10 @@ namespace blink {
 
 class ComputedStyle;
 class Font;
+class NGDecoratingBox;
+class NGInlinePaintContext;
 class SimpleFontData;
+class TextDecorationOffsetBase;
 
 enum class ResolvedUnderlinePosition {
   kNearAlphabeticBaselineAuto,
@@ -44,52 +47,78 @@ class CORE_EXPORT TextDecorationInfo {
   TextDecorationInfo(
       PhysicalOffset local_origin,
       LayoutUnit width,
-      FontBaseline baseline_type,
-      const ComputedStyle& style,
-      const Font& scaled_font,
+      const ComputedStyle& target_style,
+      const NGInlinePaintContext* inline_context,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
-      const ComputedStyle* decorating_box_style,
+      const Font* font_override = nullptr,
       MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
-      float scaling_factor = 1.0f);
+      float scaling_factor = 1.0f,
+      // Following arguments are used only in legacy. They're deprecated.
+      absl::optional<FontBaseline> baseline_type_override = absl::nullopt,
+      const ComputedStyle* decorating_box_style = nullptr);
+
+  const AppliedTextDecoration& GetAppliedTextDecoration() const {
+    DCHECK(applied_text_decoration_);
+    return *applied_text_decoration_;
+  }
+  bool HasUnderline() const { return has_underline_; }
+  bool HasOverline() const { return has_overline_; }
+  bool HasLineThrough() const { return Has(TextDecorationLine::kLineThrough); }
+  bool HasSpellingError() const {
+    return Has(TextDecorationLine::kSpellingError);
+  }
+  bool HasGrammarError() const {
+    return Has(TextDecorationLine::kGrammarError);
+  }
+  bool HasSpellingOrGrammerError() const {
+    return HasSpellingError() || HasGrammarError();
+  }
 
   // Set the decoration to use when painting and returning values.
-  // Must be set before calling any other method, and can be called
-  // again at any time. This object will use the most recently given
-  // index for any computation that uses data from an
-  // AppliedTextDecoration object. The index must be a valid index
-  // the AppliedTextDecorations contained within the style passed
-  // at construction.
+  //
+  // This is set to 0 when constructed, and can be called again at any time.
+  // This object will use the most recently given index for any computation that
+  // uses data from an AppliedTextDecoration object or a decorating box.
+  //
+  // The index must be a valid index the AppliedTextDecorations contained within
+  // the style passed at construction.
   void SetDecorationIndex(int decoration_index);
 
   // Set data for one of the text decoration lines: over, under or
   // through. Must be called before trying to paint or compute bounds
   // for a line.
   void SetLineData(TextDecorationLine line, float line_offset);
+  void SetUnderlineLineData(const TextDecorationOffsetBase& decoration_offset);
+  void SetOverlineLineData(const TextDecorationOffsetBase& decoration_offset);
+  void SetLineThroughLineData();
+  void SetSpellingOrGrammarErrorLineData(const TextDecorationOffsetBase&);
 
-  // These methods do not depend on SetDecorationIndex
+  // These methods do not depend on |SetDecorationIndex|.
   LayoutUnit Width() const { return width_; }
-  float Baseline() const { return baseline_; }
-  const ComputedStyle& Style() const { return style_; }
-  float ComputedFontSize() const { return computed_font_size_; }
-  const SimpleFontData* FontData() const { return font_data_; }
+  const ComputedStyle& TargetStyle() const { return target_style_; }
+  float TargetAscent() const { return target_ascent_; }
   // Returns the scaling factor for the decoration.
   // It can be different from NGFragmentItem::SvgScalingFactor() if the
   // text works as a resource.
   float ScalingFactor() const { return scaling_factor_; }
-  ResolvedUnderlinePosition UnderlinePosition() const {
-    return underline_position_;
-  }
   bool ShouldAntialias() const { return antialias_; }
   float InkSkipClipUpper(float bounds_upper) const {
-    return -baseline_ + bounds_upper - local_origin_.y();
+    return -TargetAscent() + bounds_upper - local_origin_.top.ToFloat();
   }
 
-  // SetDecorationIndex must be called before using these methods.
+  // |SetDecorationIndex| may change the results of these methods.
+  float ComputedFontSize() const { return computed_font_size_; }
+  const SimpleFontData* FontData() const { return font_data_; }
+  float Ascent() const { return ascent_; }
   ETextDecorationStyle DecorationStyle() const;
-  Color LineColor() const;
-  float ResolvedThickness() const {
-    return applied_decorations_thickness_[decoration_index_];
+  ResolvedUnderlinePosition FlippedUnderlinePosition() const {
+    return flipped_underline_position_;
   }
+  ResolvedUnderlinePosition OriginalUnderlinePosition() const {
+    return original_underline_position_;
+  }
+  Color LineColor() const;
+  float ResolvedThickness() const { return resolved_thickness_; }
   enum StrokeStyle StrokeStyle() const;
 
   // SetLineData must be called before using the remaining methods.
@@ -106,9 +135,12 @@ class CORE_EXPORT TextDecorationInfo {
   void SetHighlightOverrideColor(const absl::optional<Color>&);
 
  private:
+  bool Has(TextDecorationLine line) const { return EnumHasFlags(lines_, line); }
+  LayoutUnit OffsetFromDecoratingBox() const;
+  float ComputeThickness() const;
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
-      const ComputedStyle* decorating_box_style);
+      const ComputedStyle* decorating_box_style) const;
 
   gfx::RectF BoundsForDottedOrDashed() const;
   gfx::RectF BoundsForWavy() const;
@@ -122,20 +154,55 @@ class CORE_EXPORT TextDecorationInfo {
            line_data_.line == TextDecorationLine::kGrammarError;
   }
 
-  const ComputedStyle& style_;
+  void UpdateForDecorationIndex();
+
+  // The |ComputedStyle| of the target text/box to paint decorations for.
+  const ComputedStyle& target_style_;
+  // The |ComputedStyle| of the [decorating box]. Decorations are computed from
+  // this style.
+  // [decorating box]: https://drafts.csswg.org/css-text-decor-3/#decorating-box
+  const ComputedStyle* decorating_box_style_ = nullptr;
+
+  // Decorating box properties for the current |decoration_index_|.
+  const NGInlinePaintContext* const inline_context_ = nullptr;
+  const NGDecoratingBox* decorating_box_ = nullptr;
+  const AppliedTextDecoration* applied_text_decoration_ = nullptr;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
-  const FontBaseline baseline_type_;
+  const Font* font_ = nullptr;
+  const SimpleFontData* font_data_ = nullptr;
+
+  // These "overrides" fields force using the specified style or font instead
+  // of the one from the decorating box. Note that using them means that the
+  // [decorating box] is not supported.
+  const Font* const font_override_ = nullptr;
+  const ComputedStyle* const decorating_box_style_override_ = nullptr;
+  const absl::optional<FontBaseline> baseline_type_override_;
+
+  // Geometry of the target text/box.
+  const PhysicalOffset local_origin_;
   const LayoutUnit width_;
-  const SimpleFontData* font_data_;
-  const float baseline_;
-  const float computed_font_size_;
+
+  // Cached properties for the current |decoration_index_|.
+  const float target_ascent_ = 0.f;
+  float ascent_ = 0.f;
+  float computed_font_size_ = 0.f;
+  float resolved_thickness_ = 0.f;
   const float scaling_factor_;
-  ResolvedUnderlinePosition underline_position_;
-  gfx::PointF local_origin_;
-  const bool minimum_thickness_is_one_;
-  bool antialias_;
-  Vector<float> applied_decorations_thickness_;
-  int decoration_index_;
+
+  int decoration_index_ = 0;
+
+  TextDecorationLine lines_ = TextDecorationLine::kNone;
+  ResolvedUnderlinePosition original_underline_position_ =
+      ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
+  ResolvedUnderlinePosition flipped_underline_position_ =
+      ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
+
+  bool has_underline_ = false;
+  bool has_overline_ = false;
+  bool flip_underline_and_overline_ = false;
+  bool use_decorating_box_ = false;
+  const bool minimum_thickness_is_one_ = false;
+  const bool antialias_ = false;
 
   struct LineData {
     TextDecorationLine line;

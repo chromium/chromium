@@ -42,6 +42,7 @@
 #include "base/base_export.h"
 #include "base/json/json_common.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -86,24 +87,22 @@ enum JSONParserOptions {
 
 class BASE_EXPORT JSONReader {
  public:
-  struct BASE_EXPORT ValueWithError {
-    ValueWithError();
-    ValueWithError(ValueWithError&& other);
-    ValueWithError& operator=(ValueWithError&& other);
+  struct BASE_EXPORT Error {
+    Error();
+    Error(Error&& other);
+    Error& operator=(Error&& other);
 
-    ValueWithError(const ValueWithError&) = delete;
-    ValueWithError& operator=(const ValueWithError&) = delete;
+    Error(const Error&) = delete;
+    Error& operator=(const Error&) = delete;
 
-    ~ValueWithError();
+    ~Error();
 
-    absl::optional<Value> value;
-
-    // Contains default values if |value| exists, or the error status if |value|
-    // is absl::nullopt.
-    std::string error_message;
-    int error_line = 0;
-    int error_column = 0;
+    std::string message;
+    int line = 0;
+    int column = 0;
   };
+
+  using Result = base::expected<Value, Error>;
 
   // This class contains only static methods.
   JSONReader() = delete;
@@ -127,10 +126,11 @@ class BASE_EXPORT JSONReader {
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
-  // Reads and parses |json| like Read(). Returns a ValueWithError, which on
-  // error, will be populated with a formatted error message, an error code, and
-  // the error location if appropriate.
-  static ValueWithError ReadAndReturnValueWithError(
+  // Reads and parses |json| like Read(). On success returns a Value as the
+  // expected value. Otherwise, it returns an Error instance, populated with a
+  // formatted error message, an error code, and the error location if
+  // appropriate as the error value of the expected type.
+  static Result ReadAndReturnValueWithError(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
 };

@@ -57,7 +57,7 @@ const CGFloat kAnimationDuration = 0.25;
 
   // Save the pre-layout frame for the navigation and destination views. These
   // will be replaced with the post-layout frames if the underlying child view
-  // controller requires a layout change in |layoutFittingSizeForWidth:|.
+  // controller requires a layout change in `layoutFittingSizeForWidth:`.
   CGRect viewControllerFrame = self.navigationController.view.frame;
   CGRect fromViewFrame = fromView.frame;
 

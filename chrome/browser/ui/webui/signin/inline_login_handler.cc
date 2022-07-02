@@ -34,6 +34,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 const char kSignInPromoQueryKeyShowAccountManagement[] =
     "showAccountManagement";
@@ -54,23 +55,23 @@ InlineLoginHandler::CompleteLoginParams::operator=(
 InlineLoginHandler::CompleteLoginParams::~CompleteLoginParams() = default;
 
 void InlineLoginHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize",
       base::BindRepeating(&InlineLoginHandler::HandleInitializeMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "authExtensionReady",
       base::BindRepeating(&InlineLoginHandler::HandleAuthExtensionReadyMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "completeLogin",
       base::BindRepeating(&InlineLoginHandler::HandleCompleteLoginMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "switchToFullTab",
       base::BindRepeating(&InlineLoginHandler::HandleSwitchToFullTabMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "dialogClose", base::BindRepeating(&InlineLoginHandler::HandleDialogClose,
                                          base::Unretained(this)));
 }
@@ -79,7 +80,8 @@ void InlineLoginHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
+void InlineLoginHandler::HandleInitializeMessage(
+    const base::Value::List& args) {
   AllowJavascript();
   content::WebContents* contents = web_ui()->GetWebContents();
   content::StoragePartition* partition =
@@ -97,8 +99,8 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
         value == "0") {
       partition->ClearData(
           content::StoragePartition::REMOVE_DATA_MASK_ALL,
-          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          base::Time(), base::Time::Max(),
+          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+          blink::StorageKey(), base::Time(), base::Time::Max(),
           base::BindOnce(&InlineLoginHandler::ContinueHandleInitializeMessage,
                          weak_ptr_factory_.GetWeakPtr()));
     } else {
@@ -127,9 +129,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
     signin_metrics::LogSigninAccessPointStarted(
         access_point,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-    signin_metrics::RecordSigninUserActionForAccessPoint(
-        access_point,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+    signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
     params.Set("isLoginPrimaryAccount", true);
   }
@@ -162,7 +162,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // When the network service is enabled, the webRequest API doesn't expose
   // cookie headers. So manually fetch the cookies for the GAIA URL from the
   // CookieManager.
@@ -175,15 +175,14 @@ void InlineLoginHandler::HandleCompleteLoginMessage(
       net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&InlineLoginHandler::HandleCompleteLoginMessageWithCookies,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::ListValue(args->GetListDeprecated())));
+                     weak_ptr_factory_.GetWeakPtr(), args.Clone()));
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
-    const base::ListValue& args,
+    const base::Value::List& args,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  const base::Value& dict = args.GetListDeprecated()[0];
+  const base::Value& dict = args[0];
 
   CompleteLoginParams params;
   params.email = dict.FindKey("email")->GetString();
@@ -209,7 +208,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
 }
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   if (browser) {
@@ -219,7 +218,7 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
 
   // Note: URL string is expected to be in the first argument,
   // but it is not used.
-  CHECK(args->GetListDeprecated()[0].is_string());
+  CHECK(args[0].is_string());
 
   Profile* profile = Profile::FromWebUI(web_ui());
   GURL main_frame_url(web_ui()->GetWebContents()->GetLastCommittedURL());
@@ -240,7 +239,7 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
   CloseDialogFromJavascript();
 }
 
-void InlineLoginHandler::HandleDialogClose(const base::ListValue* args) {
+void InlineLoginHandler::HandleDialogClose(const base::Value::List& args) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Does nothing if profile picker is not showing.
   ProfilePickerForceSigninDialog::HideDialog();

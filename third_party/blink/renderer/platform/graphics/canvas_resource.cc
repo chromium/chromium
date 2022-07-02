@@ -157,7 +157,10 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
 
   out_resource->color_space = GetColorSpace();
   out_resource->format = GetResourceFormat();
-  out_resource->read_lock_fences_enabled = NeedsReadLockFences();
+  if (NeedsReadLockFences()) {
+    out_resource->synchronization_type =
+        viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
+  }
 
   return true;
 }

@@ -42,7 +42,7 @@ WGPUBufferDescriptor AsDawnType(const GPUBufferDescriptor* webgpu_desc,
 
   WGPUBufferDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.usage = AsDawnEnum<WGPUBufferUsage>(webgpu_desc->usage());
+  dawn_desc.usage = AsDawnFlags<WGPUBufferUsage>(webgpu_desc->usage());
   dawn_desc.size = webgpu_desc->size();
   dawn_desc.mappedAtCreation = webgpu_desc->mappedAtCreation();
   if (webgpu_desc->hasLabel()) {
@@ -208,6 +208,14 @@ void GPUBuffer::destroy(ScriptState* script_state) {
   // Drop the reference to the mapped buffer handles. No longer
   // need to remove the WGPUBuffer from this set in ~GPUBuffer.
   mappable_buffer_handles_ = nullptr;
+}
+
+uint64_t GPUBuffer::size() const {
+  return size_;
+}
+
+uint32_t GPUBuffer::usage() const {
+  return GetProcs().bufferGetUsage(GetHandle());
 }
 
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
@@ -396,7 +404,8 @@ void GPUBuffer::DetachMappedArrayBuffers(v8::Isolate* isolate) {
     DCHECK(array_buffer->IsDetachable(isolate));
 
     array_buffer->DetachContents(isolate);
-    DCHECK(array_buffer->IsDetached());
+    // TODO(crbug.com/1326210): Temporary CHECK to prevent aliased array buffers.
+    CHECK(array_buffer->IsDetached());
   }
   mapped_array_buffers_.clear();
 }

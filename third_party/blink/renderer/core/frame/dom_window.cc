@@ -476,7 +476,7 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   }
 
   // If we're a top level window, bring the window to the front.
-  if (frame->IsMainFrame() && allow_focus) {
+  if (frame->IsOutermostMainFrame() && allow_focus) {
     frame->FocusPage(incumbent_window->GetFrame());
   } else if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     // We are depending on user activation twice since IsFocusAllowed() will
@@ -524,6 +524,7 @@ void DOMWindow::InstallCoopAccessMonitor(
   CoopAccessMonitor monitor;
 
   DCHECK(accessing_frame->IsMainFrame());
+  DCHECK(!accessing_frame->IsInFencedFrameTree());
   monitor.report_type = coop_reporter_params->report_type;
   monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
   monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
@@ -580,18 +581,15 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   // Iframes are allowed to trigger reports, only when they are same-origin with
   // their top-level document.
-  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
-  // so we should use IsCrossOriginToOutermostMainFrame when we intend to check
-  // if any embedded frame (eg, iframe or fenced frame) is cross-origin with
-  // respect to the outermost main frame. Follow up to confirm correctness.
   if (accessing_frame->IsCrossOriginToOutermostMainFrame())
     return;
 
-  // See https://crbug.com/1183571
-  // We assumed accessing_frame->IsCrossOriginToMainFrame() implies
-  // accessing_frame->Tree().Top() to be a LocalFrame. This might not be the
-  // case after all, some crashes are reported. This block speculatively returns
-  // early to avoid crashing.
+  // We returned early if accessing_frame->IsCrossOriginToOutermostMainFrame()
+  // was true. This means we are not in a fenced frame and that the nearest main
+  // frame is same-origin. This generally implies accessing_frame->Tree().Top()
+  // to be a LocalFrame. On rare occasions same-origin frames in a page might
+  // not share a process. This block speculatively returns early to avoid
+  // crashing.
   // TODO(https://crbug.com/1183571): Check if crashes are still happening and
   // remove this block.
   if (!accessing_frame->Tree().Top().IsLocalFrame()) {
@@ -761,14 +759,15 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   if (options->includeUserActivation())
     user_activation = UserActivation::CreateSnapshot(source);
 
-  // TODO(mustaq): This is an ad-hoc mechanism to support delegating a single
-  // capability.  We need to add a structure to support passing multiple
-  // capabilities.  An explainer for the general delegation API is here:
-  // https://github.com/mustaqahmed/capability-delegation
+  // Capability Delegation permits a script to delegate its ability to call a
+  // restricted API to another browsing context it trusts. User activation is
+  // currently consumed when a supported capability is specified, to prevent
+  // potentially abusive repeated delegation attempts.
+  // https://wicg.github.io/capability-delegation/spec.html
+  // TODO(mustaq): Explore use cases for delegating multiple capabilities.
   mojom::blink::DelegatedCapability delegated_capability =
       mojom::blink::DelegatedCapability::kNone;
-  if (LocalFrame::HasTransientUserActivation(source_frame) &&
-      options->hasDelegate()) {
+  if (options->hasDelegate()) {
     Vector<String> capability_list;
     options->delegate().Split(' ', capability_list);
     if (capability_list.Contains("payment")) {
@@ -776,7 +775,31 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
     } else if (capability_list.Contains("fullscreen")) {
       delegated_capability =
           mojom::blink::DelegatedCapability::kFullscreenRequest;
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Delegation of \'" + options->delegate() + "\' is not supported.");
+      return;
     }
+
+    // TODO(mustaq): Add checks for allowed-to-use policy as proposed here:
+    // https://wicg.github.io/capability-delegation/spec.html#monkey-patch-to-html-initiating-delegation
+
+    if (!target) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Delegation to target origin '*' is not allowed.");
+      return;
+    }
+
+    if (!LocalFrame::HasTransientUserActivation(source_frame)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Delegation is not allowed without transient user activation.");
+      return;
+    }
+
+    LocalFrame::ConsumeTransientUserActivation(source_frame);
   }
 
   PostedMessage* posted_message = MakeGarbageCollected<PostedMessage>();

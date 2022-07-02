@@ -25,7 +25,7 @@ class UkmDataManagerImpl;
 // entries or on source URL changes.
 class UkmObserver : public ukm::UkmRecorderObserver {
  public:
-  UkmObserver(ukm::UkmRecorderImpl* ukm_recorder, bool is_ukm_allowed);
+  explicit UkmObserver(ukm::UkmRecorderImpl* ukm_recorder);
   ~UkmObserver() override;
 
   UkmObserver(UkmObserver&) = delete;

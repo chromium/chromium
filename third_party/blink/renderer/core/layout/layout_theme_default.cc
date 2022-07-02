@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_default.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ui_base_features.h"
 
@@ -141,10 +141,7 @@ int LayoutThemeDefault::SliderTickOffsetFromTrackCenter() const {
 }
 
 void LayoutThemeDefault::AdjustSliderThumbSize(ComputedStyle& style) const {
-  if (!Platform::Current()->ThemeEngine())
-    return;
-
-  gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(
+  gfx::Size size = WebThemeEngineHelper::GetNativeThemeEngine()->GetSize(
       WebThemeEngine::kPartSliderThumb);
 
   float zoom_level = style.EffectiveZoom();
@@ -170,7 +167,7 @@ void LayoutThemeDefault::SetSelectionColors(Color active_background_color,
 
 void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
     ComputedStyle& style) const {
-  gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(
+  gfx::Size size = WebThemeEngineHelper::GetNativeThemeEngine()->GetSize(
       WebThemeEngine::kPartInnerSpinButton);
 
   float zoom_level = style.EffectiveZoom();
@@ -239,8 +236,7 @@ int LayoutThemeDefault::PopupInternalPaddingBottom(
 }
 
 int LayoutThemeDefault::MenuListArrowWidthInDIP() const {
-  int width = Platform::Current()
-                  ->ThemeEngine()
+  int width = WebThemeEngineHelper::GetNativeThemeEngine()
                   ->GetSize(WebThemeEngine::kPartScrollbarUpArrow)
                   .width();
   return width > 0 ? width : 15;

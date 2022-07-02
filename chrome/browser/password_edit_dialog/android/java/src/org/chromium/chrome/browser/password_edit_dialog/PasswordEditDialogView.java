@@ -67,4 +67,13 @@ abstract class PasswordEditDialogView extends LinearLayout {
      * Note: override this in the inheritor if password change needs to be handled
      */
     void setPasswordChangedCallback(Callback<String> callback) {}
+
+    /**
+     * Sets password error to be displayed in UI.
+     * Setting null error means that no error will be displayed.
+     * Note: override this in the inheritor if setting password error is needed
+     *
+     * @param error Error text
+     */
+    void setPasswordError(String error) {}
 }

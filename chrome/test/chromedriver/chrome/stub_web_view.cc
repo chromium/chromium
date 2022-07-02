@@ -28,10 +28,6 @@ Status StubWebView::ConnectIfNecessary() {
   return Status(kOk);
 }
 
-Status StubWebView::SetUpDevTools() {
-  return Status(kOk);
-}
-
 Status StubWebView::HandleReceivedEvents() {
   return Status(kOk);
 }
@@ -256,10 +252,6 @@ Status StubWebView::SynthesizeScrollGesture(int x,
 }
 
 bool StubWebView::IsNonBlocking() const {
-  return false;
-}
-
-bool StubWebView::IsOOPIF(const std::string& frame_id) {
   return false;
 }
 

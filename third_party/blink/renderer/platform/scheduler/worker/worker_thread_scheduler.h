@@ -127,6 +127,7 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   const ThreadType thread_type_;
+  scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
   IdleHelper idle_helper_;
   bool initialized_ = false;
   scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;

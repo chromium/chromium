@@ -53,16 +53,14 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   void Start();
 
- private:
-  friend class TestWebAppIconDownloader;
+  size_t pending_requests() const { return in_progress_requests_.size(); }
 
+ private:
   // Initiates a download of the image at |url| and returns the download id.
-  // This is overridden in testing.
-  virtual int DownloadImage(const GURL& url);
+  int DownloadImage(const GURL& url);
 
   // Queries WebContents for the page's current favicon URLs.
-  // This is overridden in testing.
-  virtual const std::vector<blink::mojom::FaviconURLPtr>&
+  const std::vector<blink::mojom::FaviconURLPtr>&
   GetFaviconURLsFromWebContents();
 
   // Fetches icons for the given urls.
@@ -82,6 +80,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   void DidUpdateFaviconURL(
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+  void WebContentsDestroyed() override;
 
   void CompleteCallback();
   void CancelDownloads(IconsDownloadedResult result,

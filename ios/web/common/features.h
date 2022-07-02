@@ -43,13 +43,6 @@ extern const base::Feature kRecordSnapshotSize;
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 extern const base::Feature kSetRequestAttribution;
 
-// When enabled, display non-live preview for context menus in web content.
-extern const base::Feature kWebViewNativeContextMenuPhase2;
-
-// When enabled, uses a screenshot transition to display context menus in web
-// content.
-extern const base::Feature kWebViewNativeContextMenuPhase2Screenshot;
-
 // When enabled, the default context menu from WKWebView is used.
 extern const base::Feature kDefaultWebViewContextMenu;
 
@@ -76,7 +69,7 @@ extern const base::Feature kEnableUnrealizedWebStates;
 // for its current site.
 extern const base::Feature kMediaPermissionsControl;
 
-// Enables the Fullscreen API in WebKit (supported on iOS 15.4+). This API
+// Enables the Fullscreen API in WebKit (supported on iOS 16.0+). This API
 // allows web sites to enter fullscreen mode, with all browser UI hidden.
 extern const base::Feature kEnableFullscreenAPI;
 

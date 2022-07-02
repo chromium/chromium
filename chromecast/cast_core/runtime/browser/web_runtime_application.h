@@ -24,24 +24,20 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   ~WebRuntimeApplication() override;
 
  private:
-  // RuntimeApplication implementation:
-  const GURL& GetApplicationUrl() const override;
-
   // RuntimeApplicationBase implementation:
   cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
       cast::web::Message message) override;
-  void InitializeApplication(
-      base::OnceClosure app_initialized_callback) override;
+  void LaunchApplication() override;
   bool IsStreamingApplication() const override;
 
   // CastWebContents::Observer implementation:
   void InnerContentsCreated(CastWebContents* inner_contents,
                             CastWebContents* outer_contents) override;
+  void PageStateChanged(PageState page_state) override;
+  void PageStopped(PageState page_state, int32_t error_code) override;
 
   void OnAllBindingsReceived(
-      base::OnceClosure app_initialized_callback,
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
-  void OnApplicationStateChanged(grpc::Status status);
 
   const GURL app_url_;
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;

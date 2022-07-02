@@ -380,7 +380,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  TRACE_EVENT0("media", "aom_codec_encode");
+  TRACE_EVENT1("media", "aom_codec_encode", "timestamp", frame->timestamp());
   // Use artificial timestamps, so the encoder will not be misled by frame's
   // fickle timestamps when doing rate control.
   auto error =
@@ -498,7 +498,7 @@ void Av1VideoEncoder::DrainOutputs(int temporal_id,
       result.temporal_id = temporal_id;
     }
 
-    result.data.reset(new uint8_t[result.size]);
+    result.data = std::make_unique<uint8_t[]>(result.size);
     memcpy(result.data.get(), pkt->data.frame.buf, result.size);
     output_cb_.Run(std::move(result), {});
   }

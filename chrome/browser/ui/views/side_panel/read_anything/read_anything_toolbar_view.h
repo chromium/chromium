@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_TOOLBAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_TOOLBAR_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "ui/base/models/combobox_model.h"
@@ -39,7 +40,7 @@ class ReadAnythingToolbarView : public views::View,
 
   raw_ptr<views::Combobox> font_combobox_;
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;
-  ReadAnythingCoordinator* coordinator_;
+  raw_ptr<ReadAnythingCoordinator> coordinator_;
 
   base::WeakPtrFactory<ReadAnythingToolbarView> weak_pointer_factory_{this};
 };

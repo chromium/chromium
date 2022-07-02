@@ -64,7 +64,7 @@ const float kDimmedCardIconOpacity = 0.33f;
 
 // This is not quite right but is the closest server type that wasn't already
 // used.
-const auto kBillingAddressType = autofill::ADDRESS_BILLING_LINE1;
+const auto kBillingAddressType = autofill::ADDRESS_HOME_LINE1;
 
 bool IsCardExpired(const std::u16string& month,
                    const std::u16string& year,

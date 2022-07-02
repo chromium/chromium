@@ -63,8 +63,8 @@ class SyncAppListHelper {
                  ChromeAppListItem* item,
                  const std::string& label);
 
-  SyncTest* test_;
-  bool setup_completed_;
+  SyncTest* test_ = nullptr;
+  bool setup_completed_ = false;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_APP_LIST_HELPER_H_

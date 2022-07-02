@@ -15,7 +15,7 @@ namespace content {
 constexpr base::TaskTraits traits = {BrowserThread::UI,
                                      BrowserThread::IO};
 #elif defined(NCTEST_BROWSER_TASK_TRAITS_MULTIPLE_TASK_TYPES)  // [r"The traits bag contains multiple traits of the same type."]
-constexpr base::TaskTraits traits = {BrowserTaskType::kBootstrap, BrowserTaskType::kPreconnect};
+constexpr base::TaskTraits traits = {BrowserTaskType::kBootstrap, BrowserTaskType::kUserInput};
 #endif
 
 

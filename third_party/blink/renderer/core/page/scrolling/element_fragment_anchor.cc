@@ -160,7 +160,7 @@ void ElementFragmentAnchor::Trace(Visitor* visitor) const {
   FragmentAnchor::Trace(visitor);
 }
 
-void ElementFragmentAnchor::PerformPreRafActions() {
+void ElementFragmentAnchor::PerformScriptableActions() {
   ApplyFocusIfNeeded();
 }
 
@@ -210,10 +210,6 @@ void ElementFragmentAnchor::ApplyFocusIfNeeded() {
     frame_->GetDocument()->ClearFocusedElement();
   }
   needs_focus_ = false;
-}
-
-bool ElementFragmentAnchor::Dismiss() {
-  return false;
 }
 
 }  // namespace blink

@@ -34,11 +34,12 @@ class CORE_EXPORT ClassicScript final : public Script {
       SingleCachedMetadataHandler* = nullptr,
       const TextPosition& start_position = TextPosition::MinimumPosition(),
       ScriptStreamer::NotStreamingReason =
-          ScriptStreamer::NotStreamingReason::kInlineScript);
+          ScriptStreamer::NotStreamingReason::kInlineScript,
+      InlineScriptStreamer* = nullptr);
   static ClassicScript* CreateFromResource(ScriptResource*,
                                            const KURL& base_url,
                                            const ScriptFetchOptions&,
-                                           ScriptStreamer*,
+                                           ResourceScriptStreamer*,
                                            ScriptStreamer::NotStreamingReason,
                                            ScriptCacheConsumer*);
 

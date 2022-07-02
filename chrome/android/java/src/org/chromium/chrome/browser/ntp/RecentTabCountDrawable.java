@@ -40,7 +40,7 @@ public class RecentTabCountDrawable extends DrawableWrapper {
      * @param context The context for getting resources.
      */
     public RecentTabCountDrawable(Context context) {
-        super(UiUtils.getTintedDrawable(context, R.drawable.ic_recent_tabs_bulk_24dp,
+        super(UiUtils.getTintedDrawable(context, R.drawable.ic_recent_tabs_bulk_20dp,
                 R.color.default_icon_color_tint_list));
 
         mTextPaint = new TextPaint();

@@ -219,7 +219,7 @@ class ExtensionService : public ExtensionServiceInterface,
       const ExternalInstallInfoFile& info) override;
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override;
+      bool force_update) override;
   void OnExternalProviderReady(
       const ExternalProviderInterface* provider) override;
   void OnExternalProviderUpdateComplete(
@@ -502,6 +502,8 @@ class ExtensionService : public ExtensionServiceInterface,
       content::BrowserContext* browser_context,
       ExtensionHost* extension_host) override;
 
+  void OnAppTerminating();
+
   // content::NotificationObserver implementation:
   void Observe(int type,
                const content::NotificationSource& source,
@@ -678,6 +680,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Our extension updater, if updates are turned on.
   std::unique_ptr<ExtensionUpdater> updater_;
 
+  base::CallbackListSubscription on_app_terminating_subscription_;
   content::NotificationRegistrar registrar_;
 
   // Keeps track of loading and unloading component extensions.

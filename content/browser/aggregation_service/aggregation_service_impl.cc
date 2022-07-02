@@ -75,7 +75,7 @@ AggregationServiceImpl::AggregationServiceImpl(
     const base::Clock* clock,
     std::unique_ptr<AggregatableReportAssembler> assembler,
     std::unique_ptr<AggregatableReportSender> sender)
-    : key_storage_(base::SequenceBound<AggregationServiceStorageSql>(
+    : storage_(base::SequenceBound<AggregationServiceStorageSql>(
           g_storage_task_runner.Get(),
           run_in_memory,
           user_data_directory,
@@ -101,16 +101,15 @@ void AggregationServiceImpl::SendReport(const GURL& url,
   sender_->SendReport(url, contents, std::move(callback));
 }
 
-const base::SequenceBound<AggregationServiceKeyStorage>&
-AggregationServiceImpl::GetKeyStorage() {
-  return key_storage_;
+const base::SequenceBound<AggregationServiceStorage>&
+AggregationServiceImpl::GetStorage() {
+  return storage_;
 }
 
 void AggregationServiceImpl::ClearData(base::Time delete_begin,
                                        base::Time delete_end,
                                        base::OnceClosure done) {
-  key_storage_
-      .AsyncCall(&AggregationServiceKeyStorage::ClearPublicKeysFetchedBetween)
+  storage_.AsyncCall(&AggregationServiceStorage::ClearPublicKeysFetchedBetween)
       .WithArgs(delete_begin, delete_end)
       .Then(std::move(done));
 }
@@ -118,7 +117,7 @@ void AggregationServiceImpl::ClearData(base::Time delete_begin,
 void AggregationServiceImpl::SetPublicKeysForTesting(
     const GURL& url,
     const PublicKeyset& keyset) {
-  key_storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
+  storage_.AsyncCall(&AggregationServiceStorage::SetPublicKeys)
       .WithArgs(url, keyset);
 }
 

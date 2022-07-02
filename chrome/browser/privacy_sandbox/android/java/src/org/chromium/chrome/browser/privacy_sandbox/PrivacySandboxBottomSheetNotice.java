@@ -4,19 +4,103 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Bottom sheet view for displaying the Privacy Sandbox notice. */
 public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
-    private final View mContentView;
+    private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver;
+    private final Context mContext;
+    private final SettingsLauncher mSettingsLauncher;
 
-    PrivacySandboxBottomSheetNotice(View contentView) {
-        mContentView = contentView;
+    private boolean mOpenedSettings;
+    private View mContentView;
+
+    PrivacySandboxBottomSheetNotice(Context context, BottomSheetController bottomSheetController,
+            SettingsLauncher settingsLauncher) {
+        mBottomSheetController = bottomSheetController;
+        mContext = context;
+        mSettingsLauncher = settingsLauncher;
+        mOpenedSettings = false;
+
+        mContentView = LayoutInflater.from(context).inflate(
+                R.layout.privacy_sandbox_notice_bottom_sheet, null);
+
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                if (mOpenedSettings) {
+                    // Action already recorded.
+                    return;
+                }
+                if (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
+                        || reason == BottomSheetController.StateChangeReason.BACK_PRESS
+                        || reason == BottomSheetController.StateChangeReason.INTERACTION_COMPLETE) {
+                    PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+                } else {
+                    // The sheet was closed by a non-user action.
+                    PrivacySandboxBridge.promptActionOccurred(
+                            PromptAction.NOTICE_CLOSED_NO_INTERACTION);
+                }
+            }
+        };
+
+        TextView description =
+                mContentView.findViewById(R.id.privacy_sandbox_notice_sheet_description);
+        description.setText(SpanApplier.applySpans(
+                context.getString(R.string.privacy_sandbox_notice_sheet_description),
+                new SpanInfo(
+                        "<link>", "</link>", new NoUnderlineClickableSpan(context, (widget) -> {
+                            mSettingsLauncher.launchSettingsActivity(
+                                    context, LearnMoreFragment.class);
+                        }))));
+        description.setMovementMethod(LinkMovementMethod.getInstance());
+
+        View ackButton = mContentView.findViewById(R.id.ack_button);
+        ackButton.setOnClickListener((v) -> {
+            mBottomSheetController.hideContent(this, /* animate= */ true,
+                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        });
+        View settingsButton = mContentView.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener((v) -> {
+            mOpenedSettings = true;
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
+            mBottomSheetController.hideContent(this, /* animate= */ true,
+                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+            PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+                    mContext, mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+        });
     }
+
+    public void showNotice(boolean animate) {
+        // Reset whether the user opened settings.
+        mOpenedSettings = false;
+        if (!mBottomSheetController.requestShowContent(this, animate)) {
+            mBottomSheetController.hideContent(
+                    this, /* animate= */ false, BottomSheetController.StateChangeReason.NONE);
+            destroy();
+            return;
+        }
+        PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
+        mBottomSheetController.addObserver(mBottomSheetObserver);
+    }
+
+    // BottomSheetContent implementation.
 
     @Override
     public View getContentView() {
@@ -35,7 +119,9 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
 
     @Override
     public int getPriority() {
@@ -59,7 +145,7 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.privacy_sandbox_notice_sheet_content_description;
+        return R.string.privacy_sandbox_notice_sheet_title;
     }
 
     @Override

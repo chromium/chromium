@@ -62,6 +62,7 @@ extern const wchar_t kRegValueInstallerSuccessLaunchCmdLine[];
 // AppCommand registry constants.
 extern const wchar_t kRegKeyCommands[];
 extern const wchar_t kRegValueCommandLine[];
+extern const wchar_t kRegValueAutoRunOnOSUpgrade[];
 
 // Device management.
 //

@@ -22,7 +22,8 @@ bool IsVideoInputMediaType(mojom::MediaStreamType type) {
           type == mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE ||
           type == mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
           type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
-          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
 }
 
 bool IsScreenCaptureMediaType(mojom::MediaStreamType type) {
@@ -42,7 +43,8 @@ bool IsDesktopCaptureMediaType(mojom::MediaStreamType type) {
 bool IsVideoDesktopCaptureMediaType(mojom::MediaStreamType type) {
   return (type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
           type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
-          type == mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
+          type == mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
 }
 
 bool IsTabCaptureMediaType(mojom::MediaStreamType type) {
@@ -144,16 +146,19 @@ bool MediaStreamDevice::IsSameDevice(
          session_id_ == other_device.session_id_;
 }
 
-// TODO(crbug/1313021): Remove this function and use blink::mojom::StreaDevices
-// directly everywhere.
-blink::MediaStreamDevices StreamDevicesToMediaStreamDevicesList(
-    const blink::mojom::StreamDevices& devices) {
-  blink::MediaStreamDevices all_devices;
-  if (devices.audio_device.has_value())
-    all_devices.push_back(devices.audio_device.value());
-  if (devices.video_device.has_value())
-    all_devices.push_back(devices.video_device.value());
-  return all_devices;
+blink::MediaStreamDevices ToMediaStreamDevicesList(
+    const blink::mojom::StreamDevicesSet& stream_devices_set) {
+  blink::MediaStreamDevices devices;
+  for (const blink::mojom::StreamDevicesPtr& devices_to_insert :
+       stream_devices_set.stream_devices) {
+    if (devices_to_insert->audio_device.has_value()) {
+      devices.push_back(devices_to_insert->audio_device.value());
+    }
+    if (devices_to_insert->video_device.has_value()) {
+      devices.push_back(devices_to_insert->video_device.value());
+    }
+  }
+  return devices;
 }
 
 size_t CountDevices(const blink::mojom::StreamDevices& devices) {

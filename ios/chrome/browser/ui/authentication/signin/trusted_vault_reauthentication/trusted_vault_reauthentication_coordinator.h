@@ -19,9 +19,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-// |viewController| presents the sign-in.
-// |intent| Dialog to present.
-// |trigger| UI elements where the trusted vault reauth has been triggered.
+// `viewController` presents the sign-in.
+// `intent` Dialog to present.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser

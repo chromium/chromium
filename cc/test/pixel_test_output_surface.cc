@@ -21,9 +21,7 @@ namespace cc {
 
 PixelTestOutputSurface::PixelTestOutputSurface(
     std::unique_ptr<viz::SoftwareOutputDevice> software_device)
-    : OutputSurface(std::move(software_device)) {
-  capabilities_.supports_stencil = true;
-}
+    : OutputSurface(std::move(software_device)) {}
 
 PixelTestOutputSurface::~PixelTestOutputSurface() = default;
 
@@ -35,17 +33,9 @@ void PixelTestOutputSurface::EnsureBackbuffer() {}
 
 void PixelTestOutputSurface::DiscardBackbuffer() {}
 
-void PixelTestOutputSurface::BindFramebuffer() {}
-
 void PixelTestOutputSurface::Reshape(const ReshapeParams& params) {
   software_device()->Resize(params.size, params.device_scale_factor);
 }
-
-bool PixelTestOutputSurface::HasExternalStencilTest() const {
-  return false;
-}
-
-void PixelTestOutputSurface::ApplyExternalStencil() {}
 
 void PixelTestOutputSurface::SwapBuffers(viz::OutputSurfaceFrame frame) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -64,21 +54,6 @@ void PixelTestOutputSurface::SwapBuffersCallback() {
 
 bool PixelTestOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
-}
-
-unsigned PixelTestOutputSurface::GetOverlayTextureId() const {
-  return 0;
-}
-
-uint32_t PixelTestOutputSurface::GetFramebufferCopyTextureFormat() {
-  // This format will work if the |context_provider| has an RGB or RGBA
-  // framebuffer. For now assume tests do not want/care about alpha in
-  // the root render pass.
-  return GL_RGB;
-}
-
-unsigned PixelTestOutputSurface::UpdateGpuFence() {
-  return 0;
 }
 
 void PixelTestOutputSurface::SetUpdateVSyncParametersCallback(

@@ -11,9 +11,16 @@ class CommandLine;
 
 namespace upgrade_util {
 
-// If the new_chrome.exe exists (placed by the installer then is swapped
-// to chrome.exe and the old chrome is renamed to old_chrome.exe. If there
-// is no new_chrome.exe or the swap fails the return is false;
+// This function is called from chrome.exe and checks if new_chrome.exe exists
+// and if so, it attempts to swap it to become chrome.exe. new_chrome.exe is
+// placed by the installer if there is an update while the browser is being
+// used. If there is no new_chrome.exe or the swap fails the function returns
+// false.
+// To peform the swap, chrome.exe is renamed to old_chrome.exe and moved to a
+// temporary folder, then new_chrome.exe is renamed to chrome.exe. The instance
+// performing the swap runs as old_chrome.exe until it exits.
+// The caller must own the browser ChromeProcessSingleton.
+// TODO: enforce via DCHECK that the caller owns the ChromeProcessSingleton.
 bool SwapNewChromeExeIfPresent();
 
 // Returns true if the currently running browser is running from old_chrome.exe.
@@ -30,6 +37,8 @@ bool IsRunningOldChrome();
 // existing browser process. If this returns true before message loop is
 // executed, simply exit the main function. If browser is already running, you
 // will need to exit it.
+// The caller must own the browser ChromeProcessSingleton.
+// TODO: enforce via DCHECK that the caller owns the ChromeProcessSingleton.
 bool DoUpgradeTasks(const base::CommandLine& command_line);
 
 }  // namespace upgrade_util

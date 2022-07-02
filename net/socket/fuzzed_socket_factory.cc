@@ -107,7 +107,7 @@ class FailingSSLClientSocket : public SSLClientSocket {
 }  // namespace
 
 FuzzedSocketFactory::FuzzedSocketFactory(FuzzedDataProvider* data_provider)
-    : data_provider_(data_provider), fuzz_connect_result_(true) {}
+    : data_provider_(data_provider) {}
 
 FuzzedSocketFactory::~FuzzedSocketFactory() = default;
 

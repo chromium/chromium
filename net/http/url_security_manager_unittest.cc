@@ -93,9 +93,8 @@ TEST(URLSecurityManager, CanDelegate_NoAllowlist) {
       URLSecurityManager::Create());
   ASSERT_TRUE(url_security_manager.get());
 
-  for (size_t i = 0; i < std::size(kTestDataList); ++i) {
-    url::SchemeHostPort scheme_host_port(
-        GURL(kTestDataList[i].scheme_host_port));
+  for (const auto& test : kTestDataList) {
+    url::SchemeHostPort scheme_host_port(GURL(test.scheme_host_port));
     bool can_delegate = url_security_manager->CanDelegate(scheme_host_port);
     EXPECT_FALSE(can_delegate);
   }

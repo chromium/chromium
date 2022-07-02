@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксела</translation>
+<translation id="4096701159033358951">Функцията за сканиране на документи се изтегля</translation>
 <translation id="4118525110028899586">Пауза на записа</translation>
 <translation id="4121305183798804752">Открит е документ</translation>
 <translation id="414641094616694804">Разделителната способност на тази камера не може да се променя</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Спиране на правенето на снимка</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
 <translation id="4570032796877367747">Предна камера</translation>
+<translation id="4620818268515773682">Превключване на спирането на звука на микрофона. Функцията за спиране на звука е изключена</translation>
 <translation id="4628948037717959914">Снимка</translation>
 <translation id="4649291346448517080">Файлът не може да бъде запазен</translation>
 <translation id="4695379108709712600">Премества се нагоре</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7670511624014457267">60 кдр/сек</translation>
 <translation id="7671804233658741790">Долен десен ъгъл на документа</translation>
+<translation id="7692090236657809299">Активиране на панорамното придвижване, накланянето и промяната на мащаба</translation>
 <translation id="7726641833034062494">Записване на обикновен видеоклип</translation>
 <translation id="7748344063862150053">Горен десен ъгъл на документа</translation>
 <translation id="7933675232020478311">Премества се надолу и надясно</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">Накланяне надолу</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8687491812650032292">HD при <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Превключване на спирането на звука на микрофона. Функцията за спиране на звука е включена</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Преглед на метаданните</translation>

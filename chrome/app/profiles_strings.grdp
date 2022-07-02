@@ -486,7 +486,7 @@
   </if>
 
   <if expr="not chromeos_ash and not is_android">
-    <!-- Profile customization bubble -->
+    <!-- Profile Customization Web UI -->
     <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
       Done
     </message>
@@ -495,6 +495,9 @@
     </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL" desc="Not displayed. Used by screen readers to describe the input used to rename the profile.">
       Rename your profile
+    </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL" desc="Text for the Skip button on the profile customization dialog">
+      Skip
     </message>
 
     <!-- Enterprise profile welcome screen -->
@@ -664,9 +667,6 @@
       <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the session is managed.">
         Your session is managed by your organization. Administrators can delete your profile and also monitor your network traffic.
       </message>
-      <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS" desc="Label for a button that prompts user to sign in">
-        Next
-      </message>
       <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE" desc="Profile picker, account selection screen title">
         Choose an account
       </message>
@@ -689,22 +689,10 @@
         Delete this profile and browsing data?
       </message>
       <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-          This will permanently delete browsing data from this device. The Google Accounts in this profile may be used by other apps on your Chromebook. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$1<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$2<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-      </message>
-      <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE" desc="Title of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-        Welcome to Chrome, <ph name="ACCOUNT_FIRST_NAME">$1<ex>Jane</ex></ph>
-      </message>
-      <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE" desc="Title of the screen shown when the user runs Chrome for the first time. A simple, generic welcome message.">
-        Welcome to Chrome
-      </message>
-      <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE" desc="Subtitle of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-        Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>
+        This will permanently delete browsing data from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL" desc="Label of the 'next' button of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
         Let's go
-      </message>
-      <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the landing screen in first run experience for the primary profile, informing that the session is managed by an administrator.">
-        Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history, and passwords.
       </message>
     </if>
 

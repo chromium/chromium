@@ -72,11 +72,6 @@ void MockMediaStreamVideoSource::OnHasConsumers(bool has_consumers) {
   is_suspended_ = !has_consumers;
 }
 
-VideoCaptureFeedbackCB MockMediaStreamVideoSource::GetFeedbackCallback() const {
-  return WTF::BindRepeating(&MockMediaStreamVideoSource::OnFrameFeedback,
-                            WTF::Unretained(this));
-}
-
 base::WeakPtr<MediaStreamVideoSource> MockMediaStreamVideoSource::GetWeakPtr()
     const {
   return weak_factory_.GetWeakPtr();
@@ -89,7 +84,8 @@ void MockMediaStreamVideoSource::DoChangeSource(
 
 void MockMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback) {
+    EncodedVideoFrameCB encoded_frame_callback,
+    VideoCaptureCropVersionCB crop_version_callback) {
   DCHECK(frame_callback_.is_null());
   DCHECK(encoded_frame_callback_.is_null());
   attempted_to_start_ = true;

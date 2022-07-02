@@ -30,6 +30,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_version_info.h"
@@ -193,6 +194,7 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<gles2::MockCopyTextureResourceManager>
       copy_texture_manager_;  // not owned
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 class RasterDecoderManualInitTest : public RasterDecoderTestBase {

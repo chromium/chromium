@@ -24,12 +24,15 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/native_widget_types.h"
 
 using web_app::AppId;
 
@@ -139,6 +142,47 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   EXPECT_TRUE(was_uninstalled);
 }
 
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/1224161
+#define MAYBE_UninstallOnCancelShutdownBrowser \
+  DISABLED_UninstallOnCancelShutdownBrowser
+#else
+#define MAYBE_UninstallOnCancelShutdownBrowser UninstallOnCancelShutdownBrowser
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
+                       MAYBE_UninstallOnCancelShutdownBrowser) {
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::CANCEL);
+  AppId app_id = InstallTestWebApp(browser()->profile());
+
+  std::unique_ptr<web_app::WebAppUninstallDialog> dialog(
+      web_app::WebAppUninstallDialog::Create(browser()->profile(),
+                                             gfx::kNullNativeWindow));
+
+  base::RunLoop().RunUntilIdle();
+
+  base::RunLoop run_loop;
+  bool was_uninstalled = true;
+  // ScopedKeepAlive is used by `UninstallWebAppWithDialogFromStartupSwitch`.
+  // ScopedKeepAlive's destruction triggers browser shutdown when there is no
+  // open window. This verifies the destruction doesn't race with the dialog
+  // shutdown itself.
+  std::unique_ptr<ScopedKeepAlive> scoped_keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_UNINSTALL,
+                                        KeepAliveRestartOption::DISABLED);
+
+  chrome::CloseWindow(browser());
+
+  dialog->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
+                           base::BindLambdaForTesting([&](bool uninstalled) {
+                             was_uninstalled = uninstalled;
+                             scoped_keep_alive.reset();
+                             run_loop.Quit();
+                           }));
+  run_loop.Run();
+  EXPECT_FALSE(was_uninstalled);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Cancel) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
@@ -191,8 +235,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that we don't crash when uninstalling a web app from a web app window in
 // Ash. Context: crbug.com/825554
+// TODO(crbug.com/1332923): The test is flaky.
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
-                       WebAppWindowAshCrash) {
+                       DISABLED_WebAppWindowAshCrash) {
   AppId app_id = InstallTestWebApp(browser()->profile());
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);

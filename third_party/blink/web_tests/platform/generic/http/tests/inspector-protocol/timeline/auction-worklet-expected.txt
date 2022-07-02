@@ -1,0 +1,11 @@
+Tracing of FLEDGE worklets.
+Recording started
+Auction winner:undefined
+Tracing complete
+Saw too few bidders:0
+Saw too few sellers:0
+Saw process assignment for bidder for host:nope
+Saw process assignment for seller for host:nope
+Saw process release for bidder for host:nope
+Saw process release for seller for host:nope
+

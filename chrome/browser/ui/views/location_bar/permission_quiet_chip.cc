@@ -7,11 +7,15 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
+#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_request.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -19,11 +23,6 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
-
-#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
-#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
 namespace {
 
@@ -48,15 +47,7 @@ PermissionQuietChip::PermissionQuietChip(
     Browser* browser,
     permissions::PermissionPrompt::Delegate* delegate,
     bool should_expand)
-    : PermissionChip(
-          delegate,
-          // `PermissionQuietChip` displays only permissions blocked icon.
-          {GetBlockedPermissionIconId(delegate),
-           GetBlockedPermissionIconId(delegate), GetPermissionMessage(delegate),
-           false,
-           /*is_prominent=*/false, OmniboxChipButton::Theme::kLowVisibility,
-           /*should_expand=*/should_expand}),
-      browser_(browser) {
+    : browser_(browser), delegate_(delegate), should_expand_(should_expand) {
   DCHECK_EQ(1u, delegate->Requests().size());
   chip_shown_time_ = base::TimeTicks::Now();
 }
@@ -74,14 +65,10 @@ views::View* PermissionQuietChip::CreateBubble() {
         content_setting_bubble_model =
             std::make_unique<ContentSettingQuietRequestBubbleModel>(
                 lbv->GetContentSettingBubbleModelDelegate(), web_contents);
-    content_setting_bubble_model->SetOnBubbleDismissedByUserCallback(
-        base::BindOnce(&PermissionQuietChip::OnPromptBubbleDismissed,
-                       base::Unretained(this)));
     ContentSettingBubbleContents* quiet_request_bubble =
         new ContentSettingBubbleContents(
             std::move(content_setting_bubble_model), web_contents, lbv,
             views::BubbleBorder::TOP_LEFT);
-    quiet_request_bubble->SetHighlightedButton(button());
     bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
 
@@ -96,8 +83,36 @@ views::View* PermissionQuietChip::CreateBubble() {
 void PermissionQuietChip::ShowBubble() {
   if (bubble_widget_) {
     bubble_widget_->Show();
-    bubble_widget_->AddObserver(this);
   }
+}
+
+const gfx::VectorIcon& PermissionQuietChip::GetIconOn() {
+  return GetBlockedPermissionIconId(delegate_);
+}
+
+const gfx::VectorIcon& PermissionQuietChip::GetIconOff() {
+  return GetBlockedPermissionIconId(delegate_);
+}
+
+std::u16string PermissionQuietChip::GetMessage() {
+  return GetPermissionMessage(delegate_);
+}
+
+bool PermissionQuietChip::ShouldStartOpen() {
+  return should_bubble_start_open_;
+}
+
+bool PermissionQuietChip::ShouldExpand() {
+  return should_expand_;
+}
+
+OmniboxChipTheme PermissionQuietChip::GetTheme() {
+  return OmniboxChipTheme::kLowVisibility;
+}
+
+permissions::PermissionPrompt::Delegate*
+PermissionQuietChip::GetPermissionPromptDelegate() {
+  return delegate_;
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {
@@ -108,6 +123,3 @@ void PermissionQuietChip::RecordChipButtonPressed() {
 LocationBarView* PermissionQuietChip::GetLocationBarView() {
   return BrowserView::GetBrowserViewForBrowser(browser_)->GetLocationBarView();
 }
-
-BEGIN_METADATA(PermissionQuietChip, views::View)
-END_METADATA

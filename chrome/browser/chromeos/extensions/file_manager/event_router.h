@@ -45,9 +45,15 @@
 class PrefChangeRegistrar;
 class Profile;
 
+using OutputsType =
+    extensions::api::file_manager_private::ProgressStatus::OutputsType;
 using file_manager::util::EntryDefinition;
 
 namespace file_manager {
+
+namespace {
+class RecalculateTasksObserver;
+}  // namespace
 
 // Monitors changes in disk mounts, network connection state and preferences
 // affecting File Manager. Dispatches appropriate File Browser events.
@@ -206,6 +212,12 @@ class EventRouter
                     guest_os::GuestOsMountProvider* provider) override;
   void OnUnregistered(guest_os::GuestOsMountProviderRegistry::Id id) override;
 
+  // Use this method for unit tests to bypass checking if there are any SWA
+  // windows.
+  void ForceBroadcastingForTesting(bool enabled) {
+    force_broadcasting_for_testing_ = enabled;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
 
@@ -276,6 +288,17 @@ class EventRouter
   // Called to refresh the list of guests and broadcast it.
   void OnMountableGuestsChanged();
 
+  // After resolving all file definitions, ensure they are available on the
+  // `event_status`.
+  void OnConvertFileDefinitionListToEntryDefinitionList(
+      file_manager_private::ProgressStatus event_status,
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list);
+
+  // Broadcast the `event_status` to all open SWA windows.
+  void BroadcastIOTask(
+      const file_manager_private::ProgressStatus& event_status);
+
   base::Time last_copy_progress_event_;
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
@@ -287,9 +310,13 @@ class EventRouter
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
   std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
+  std::unique_ptr<RecalculateTasksObserver> recalculate_tasks_observer_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
+
+  // Set this to true to ignore the DoFilesSwaWindowsExist check for testing.
+  bool force_broadcasting_for_testing_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

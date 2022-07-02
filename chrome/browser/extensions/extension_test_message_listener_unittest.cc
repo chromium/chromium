@@ -24,7 +24,7 @@ class ExtensionTestMessageListenerUnittest : public ExtensionApiUnittest {};
 TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   // A basic test of sending a message and ensuring the listener is satisfied.
   {
-    ExtensionTestMessageListener listener(kTestMessage, false);  // won't reply
+    ExtensionTestMessageListener listener(kTestMessage);
     EXPECT_FALSE(listener.was_satisfied());
     RunFunction(new TestSendMessageFunction,
                 base::StringPrintf(kFormat, kTestMessage));
@@ -34,7 +34,7 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
 
   // Test that we can receive an arbitrary message.
   {
-    ExtensionTestMessageListener listener(false);  // won't reply
+    ExtensionTestMessageListener listener;  // won't reply
     EXPECT_FALSE(listener.was_satisfied());
     RunFunction(new TestSendMessageFunction,
                 base::StringPrintf(kFormat, kTestMessage2));
@@ -45,7 +45,7 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   // Test that we can set the listener to be reused, and send/receive multiple
   // messages.
   {
-    ExtensionTestMessageListener listener(false);  // won't reply
+    ExtensionTestMessageListener listener;  // won't reply
     EXPECT_FALSE(listener.was_satisfied());
     RunFunction(new TestSendMessageFunction,
                 base::StringPrintf(kFormat, kTestMessage));
@@ -63,7 +63,7 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   // Test that we can listen for two explicit messages: a success, and a
   // failure.
   {
-    ExtensionTestMessageListener listener(kTestMessage, false);  // won't reply
+    ExtensionTestMessageListener listener(kTestMessage);
     listener.set_failure_message(kFailureMessage);
     RunFunction(new TestSendMessageFunction,
                 base::StringPrintf(kFormat, kTestMessage));

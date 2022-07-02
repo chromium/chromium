@@ -114,12 +114,13 @@ void URLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,
     uint32_t options,
-    const ResourceRequest& url_request,
+    const ResourceRequest& resource_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  CreateLoaderAndStartWithSyncClient(
-      std::move(receiver), request_id, options, url_request, std::move(client),
-      /* sync_client= */ nullptr, traffic_annotation);
+  CreateLoaderAndStartWithSyncClient(std::move(receiver), request_id, options,
+                                     resource_request, std::move(client),
+                                     /* sync_client= */ nullptr,
+                                     traffic_annotation);
 }
 
 void URLLoaderFactory::Clone(
@@ -159,10 +160,6 @@ URLLoaderFactory::GetUrlLoaderHeaderClient() const {
   return header_client_.is_bound() ? header_client_.get() : nullptr;
 }
 
-mojom::OriginPolicyManager* URLLoaderFactory::GetOriginPolicyManager() const {
-  return context_->origin_policy_manager();
-}
-
 const cors::OriginAccessList& URLLoaderFactory::GetOriginAccessList() const {
   return context_->cors_origin_access_list();
 }
@@ -175,18 +172,20 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,
     uint32_t options,
-    const ResourceRequest& url_request,
+    const ResourceRequest& resource_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     base::WeakPtr<mojom::URLLoaderClient> sync_client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // Requests with |trusted_params| when params_->is_trusted is not set should
   // have been rejected at the CorsURLLoader layer.
-  DCHECK(!url_request.trusted_params || params_->is_trusted);
+  DCHECK(!resource_request.trusted_params || params_->is_trusted);
 
   std::string origin_string;
-  bool has_origin = url_request.headers.GetHeader("Origin", &origin_string) &&
-                    origin_string != "null";
-  absl::optional<url::Origin> request_initiator = url_request.request_initiator;
+  bool has_origin =
+      resource_request.headers.GetHeader("Origin", &origin_string) &&
+      origin_string != "null";
+  absl::optional<url::Origin> request_initiator =
+      resource_request.request_initiator;
   if (has_origin && request_initiator.has_value()) {
     bool origin_head_same_as_request_origin =
         request_initiator.value().IsSameOriginWith(GURL(origin_string));
@@ -195,8 +194,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
         origin_head_same_as_request_origin);
   }
 
-  if (url_request.web_bundle_token_params.has_value() &&
-      url_request.destination !=
+  if (resource_request.web_bundle_token_params.has_value() &&
+      resource_request.destination !=
           network::mojom::RequestDestination::kWebBundle) {
     mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client;
     if (header_client_ && (options & mojom::kURLLoadOptionUseHeaderClient)) {
@@ -208,7 +207,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
 
     // Load a subresource from a WebBundle.
     context_->GetWebBundleManager().StartSubresourceRequest(
-        std::move(receiver), url_request, std::move(client),
+        std::move(receiver), resource_request, std::move(client),
         params_->process_id, std::move(trusted_header_client));
     return;
   }
@@ -226,12 +225,12 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   }
 
   int keepalive_request_size = 0;
-  if (url_request.keepalive && keepalive_statistics_recorder) {
-    const size_t url_size = url_request.url.spec().size();
+  if (resource_request.keepalive && keepalive_statistics_recorder) {
+    const size_t url_size = resource_request.url.spec().size();
     size_t headers_size = 0;
 
-    net::HttpRequestHeaders merged_headers = url_request.headers;
-    merged_headers.MergeFrom(url_request.cors_exempt_headers);
+    net::HttpRequestHeaders merged_headers = resource_request.headers;
+    merged_headers.MergeFrom(resource_request.cors_exempt_headers);
 
     for (const auto& pair : merged_headers.GetHeaderVector()) {
       headers_size += (pair.key.size() + pair.value.size());
@@ -266,7 +265,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   MaybeStartUpdateLoadInfoTimer();
 
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_factory;
-  if (url_request.trust_token_params) {
+  if (resource_request.trust_token_params) {
     trust_token_factory = std::make_unique<TrustTokenRequestHelperFactory>(
         context_->trust_token_store(),
         context_->network_service()->trust_token_key_commitments(),
@@ -292,49 +291,62 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
   }
 
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
-  if (url_request.trusted_params &&
-      url_request.trusted_params->cookie_observer) {
+  if (resource_request.trusted_params &&
+      resource_request.trusted_params->cookie_observer) {
     cookie_observer =
         std::move(const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
-            url_request.trusted_params->cookie_observer));
+            resource_request.trusted_params->cookie_observer));
   }
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer;
-  if (url_request.trusted_params &&
-      url_request.trusted_params->url_loader_network_observer) {
+  if (resource_request.trusted_params &&
+      resource_request.trusted_params->url_loader_network_observer) {
     url_loader_network_observer =
         std::move(const_cast<
                   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
-            url_request.trusted_params->url_loader_network_observer));
+            resource_request.trusted_params->url_loader_network_observer));
   }
 
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
-  if (url_request.trusted_params &&
-      url_request.trusted_params->devtools_observer) {
+  if (resource_request.trusted_params &&
+      resource_request.trusted_params->devtools_observer) {
     devtools_observer =
         std::move(const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
-            url_request.trusted_params->devtools_observer));
+            resource_request.trusted_params->devtools_observer));
   }
 
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
-  if (url_request.trusted_params &&
-      url_request.trusted_params->accept_ch_frame_observer) {
+  if (resource_request.trusted_params &&
+      resource_request.trusted_params->accept_ch_frame_observer) {
     accept_ch_frame_observer = std::move(
         const_cast<mojo::PendingRemote<mojom::AcceptCHFrameObserver>&>(
-            url_request.trusted_params->accept_ch_frame_observer));
+            resource_request.trusted_params->accept_ch_frame_observer));
   }
+
+  // Check for third party cookies being disabled by testing a non-existant
+  // third-party cookie. This will also be false if all cookies are disabled.
+  const auto dummy_cookie = net::CanonicalCookie::Create(
+      GURL("https://does-not-exist./"), "a=n", base::Time::Now(), absl::nullopt,
+      absl::nullopt);
+
+  const bool third_party_cookies_enabled =
+      context_->cookie_manager()->cookie_settings().IsCookieAccessible(
+          *dummy_cookie, GURL("https://also-does-not-exist./"),
+          net::SiteForCookies(net::SchemefulSite(url::Origin())),
+          url::Origin());
 
   auto loader = std::make_unique<URLLoader>(
       *this,
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
-      std::move(receiver), options, url_request, std::move(client),
+      std::move(receiver), options, resource_request, std::move(client),
       std::move(sync_client),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       request_id, keepalive_request_size,
       std::move(keepalive_statistics_recorder), std::move(trust_token_factory),
       std::move(cookie_observer), std::move(url_loader_network_observer),
-      std::move(devtools_observer), std::move(accept_ch_frame_observer));
+      std::move(devtools_observer), std::move(accept_ch_frame_observer),
+      third_party_cookies_enabled);
 
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }

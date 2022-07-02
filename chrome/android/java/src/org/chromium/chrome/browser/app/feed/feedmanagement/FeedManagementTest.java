@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -53,7 +53,7 @@ public final class FeedManagementTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Before
     public void setUp() {
@@ -79,7 +79,7 @@ public final class FeedManagementTest {
     @MediumTest
     public void launchNTP_launchFeedManagement() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         // Bring up the gear icon menu.
@@ -92,7 +92,7 @@ public final class FeedManagementTest {
     @MediumTest
     public void launchNTP_launchActivitySettings() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
 

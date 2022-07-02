@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)copyToCOptions:(TfLiteClassificationOptions*)cClassificationOptions
                  error:(NSError**)error;
 
-- (void)deleteCStringArraysOfClassificationOptions:
+- (void)deleteAllocatedMemoryOfClassificationOptions:
     (TfLiteClassificationOptions*)cClassificationOptions;
 @end
 

@@ -28,7 +28,6 @@
 namespace blink {
 
 class Document;
-class DocumentTransitionSetElementOptions;
 class Element;
 class ExceptionState;
 class LayoutObject;
@@ -61,25 +60,18 @@ class CORE_EXPORT DocumentTransition
   // can be started.
   bool StartNewTransition();
 
-  // JavaScript API implementation.
-  void setElement(ScriptState*,
-                  Element*,
-                  const AtomicString&,
-                  const DocumentTransitionSetElementOptions*,
-                  ExceptionState&);
   ScriptPromise start(ScriptState*, ExceptionState&);
   ScriptPromise start(ScriptState*,
                       V8DocumentTransitionCallback* callback,
                       ExceptionState&);
-  void ignoreCSSTaggedElements(ScriptState*, ExceptionState&);
   void abandon(ScriptState*, ExceptionState&);
 
   // This uses std::move semantics to take the request from this object.
   std::unique_ptr<DocumentTransitionRequest> TakePendingRequest();
 
-  // Returns true if this object participates in an active transition (if there
-  // is one).
-  bool IsTransitionParticipant(const LayoutObject& object) const;
+  // Returns true if this object needs to create an EffectNode for the shared
+  // element transition.
+  bool NeedsSharedElementEffectNode(const LayoutObject& object) const;
 
   // Updates an effect node. This effect populates the shared element id and the
   // shared element resource id. The return value is a result of updating the

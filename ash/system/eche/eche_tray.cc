@@ -8,10 +8,16 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -37,10 +43,13 @@
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -55,9 +64,15 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/views_delegate.h"
 #include "url/gurl.h"
+
+// Uncomment the following line to make a fake
+// bubble for local testing only.
+// #define FAKE_BUBBLE_FOR_DEBUG
 
 namespace ash {
 
@@ -86,6 +101,13 @@ constexpr float kMaxHeightPercentage = 0.85;
 // Unload timeout to close Eche Bubble in case error from Ech web during closing
 constexpr base::TimeDelta kUnloadTimeoutDuration = base::Milliseconds(500);
 
+// The ID for the "Copy/paste not yet implemented" toast.
+constexpr char kEcheTrayCopyPasteNotImplementedToastId[] =
+    "eche_tray_toast_ids.copy_paste_not_implemented";
+// The ID for the "Tablet mode not supported" toast.
+constexpr char kEcheTrayTabletModeNotSupportedId[] =
+    "eche_tray_toast_ids.tablet_mode_not_supported";
+
 // Creates a button with the given callback, icon, and tooltip text.
 // `message_id` is the resource id of the tooltip text of the icon.
 std::unique_ptr<views::Button> CreateButton(
@@ -108,10 +130,22 @@ std::unique_ptr<views::Button> CreateButton(
 
 }  // namespace
 
+EcheTray::EventInterceptor::EventInterceptor(EcheTray* eche_tray)
+    : eche_tray_(eche_tray) {}
+EcheTray::EventInterceptor::~EventInterceptor() = default;
+
+void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
+  if (eche_tray_->ProcessAcceleratorKeys(event)) {
+    event->StopPropagation();
+    return;
+  }
+}
+
 EcheTray::EcheTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
-      icon_(tray_container()->AddChildView(
-          std::make_unique<views::ImageView>())) {
+      icon_(
+          tray_container()->AddChildView(std::make_unique<views::ImageView>())),
+      event_interceptor_(std::make_unique<EventInterceptor>(this)) {
   const int icon_padding = (kTrayItemSize - kIconSize) / 2;
 
   icon_->SetBorder(
@@ -121,6 +155,10 @@ EcheTray::EcheTray(Shelf* shelf)
   // Note: `ScreenLayoutObserver` starts observing at its constructor.
   observed_session_.Observe(Shell::Get()->session_controller());
   icon_->SetTooltipText(GetAccessibleNameForTray());
+  icon_->SetImage(CreateVectorIcon(
+      kPhoneHubPhoneIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   shelf_observation_.Observe(shelf);
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   shell_observer_.Observe(Shell::Get());
@@ -164,7 +202,11 @@ void EcheTray::Initialize() {
   TrayBackgroundView::Initialize();
 
   // By default the icon is not visible until Eche notification is clicked on.
-  SetVisiblePreferred(false);
+  bool visibility = false;
+#ifdef FAKE_BUBBLE_FOR_DEBUG
+  visibility = true;
+#endif
+  SetVisiblePreferred(visibility);
 }
 
 void EcheTray::CloseBubble() {
@@ -192,13 +234,19 @@ void EcheTray::ShowBubble() {
   // We need this as `WorkspaceLayoutManager` conflicts with our resizing.
   // See b/229111865#comment5
   window_state->set_ignore_keyboard_bounds_change(true);
+  bubble_->GetBubbleWidget()->GetNativeWindow()->AddPreTargetHandler(
+      event_interceptor_.get());
 }
 
 bool EcheTray::PerformAction(const ui::Event& event) {
   // Simply toggle between visible/invisibvle
-  if (bubble_ && bubble_->bubble_view()->GetVisible()) {
+  if (IsBubbleVisible()) {
     HideBubble();
   } else {
+#ifdef FAKE_BUBBLE_FOR_DEBUG
+    LoadBubble(GURL("http://google.com"), std::move(gfx::Image()),
+               u"visible_name");
+#endif
     ShowBubble();
   }
   return true;
@@ -210,6 +258,22 @@ TrayBubbleView* EcheTray::GetBubbleView() {
 
 views::Widget* EcheTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
+}
+
+void EcheTray::OnVirtualKeyboardVisibilityChanged() {
+  OnKeyboardVisibilityChanged(KeyboardController::Get()->IsKeyboardVisible());
+  TrayBackgroundView::OnVirtualKeyboardVisibilityChanged();
+}
+
+void EcheTray::OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                            bool visible) {
+  // We only care about "other" bubbles being shown.
+  if (!bubble_ || bubble_widget == GetBubbleWidget())
+    return;
+
+  // Another bubble has become visible, so minimize this one.
+  if (visible && IsBubbleVisible())
+    HideBubble();
 }
 
 std::u16string EcheTray::GetAccessibleNameForBubble() {
@@ -249,13 +313,13 @@ void EcheTray::OnLockStateChanged(bool locked) {
 }
 
 void EcheTray::OnKeyboardUIDestroyed() {
-  if (!bubble_ || !bubble_->bubble_view()->GetVisible())
+  if (!IsBubbleVisible())
     return;
   UpdateBubbleBounds();
 }
 
 void EcheTray::OnKeyboardVisibilityChanged(bool visible) {
-  if (visible || !bubble_ || !bubble_->bubble_view()->GetVisible())
+  if (visible || !IsBubbleVisible())
     return;
   UpdateBubbleBounds();
 }
@@ -280,16 +344,26 @@ void EcheTray::SetIcon(const gfx::Image& icon,
   }
 }
 
-void EcheTray::LoadBubble(const GURL& url,
+bool EcheTray::LoadBubble(const GURL& url,
                           const gfx::Image& icon,
                           const std::u16string& visible_name) {
+  if (Shell::Get()->IsInTabletMode()) {
+    ash::ToastManager::Get()->Show(ash::ToastData(
+        kEcheTrayTabletModeNotSupportedId,
+        ash::ToastCatalogName::kEcheTrayTabletModeNotSupported,
+        l10n_util::GetStringUTF16(IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED),
+        ash::ToastData::kDefaultToastDuration,
+        /*visible_on_lock_screen=*/false));
+    PA_LOG(WARNING) << "Eche load failed due to tablet mode.";
+    return false;
+  }
   SetUrl(url);
   SetIcon(icon, /*tooltip_text=*/visible_name);
   // If the bubble is already initialized, setting the icon and url was enough
   // to navigate the bubble to the new address.
   if (IsInitialized()) {
     ShowBubble();
-    return;
+    return true;
   }
   InitBubble();
   StartLoadingAnimation();
@@ -300,6 +374,7 @@ void EcheTray::LoadBubble(const GURL& url,
   }
   // Hide bubble first until the streaming is ready.
   HideBubble();
+  return true;
 }
 
 void EcheTray::PurgeAndClose() {
@@ -338,32 +413,11 @@ void EcheTray::SetGracefulGoBackCallback(
   graceful_go_back_callback_ = std::move(graceful_go_back_callback);
 }
 
-void EcheTray::StartGracefulClose() {
-  if (init_stream_timestamp_.has_value()) {
-    base::UmaHistogramLongTimes100(
-        "Eche.StreamEvent.Duration.FromInitializeToClose",
-        base::TimeTicks::Now() - *init_stream_timestamp_);
-    init_stream_timestamp_.reset();
-  }
-
-  if (!graceful_close_callback_) {
-    PurgeAndClose();
-    return;
-  }
-  HideBubble();
-  std::move(graceful_close_callback_).Run();
-  // Graceful close will let Eche Web to close connection release then notify
-  // back to native code to close window. In case there is any exception happens
-  // in js layer, start a timer to force close widget in case unload can't be
-  // finished.
-  if (!unload_timer_) {
-    unload_timer_ = std::make_unique<base::DelayTimer>(
-        FROM_HERE, kUnloadTimeoutDuration, this, &EcheTray::PurgeAndClose);
-    unload_timer_->Reset();
-  }
-}
-
 void EcheTray::HideBubble() {
+  if (!bubble_)
+    return;
+  bubble_->GetBubbleWidget()->GetNativeWindow()->RemovePreTargetHandler(
+      event_interceptor_.get());
   SetIsActive(false);
   bubble_->bubble_view()->SetVisible(false);
   bubble_->GetBubbleWidget()->Deactivate();
@@ -389,7 +443,6 @@ void EcheTray::InitBubble() {
   const gfx::Size eche_size = CalculateSizeForEche();
   init_params.preferred_width = eche_size.width();
   init_params.close_on_deactivate = false;
-  init_params.has_shadow = false;
   init_params.translucent = true;
   init_params.reroute_event_handler = false;
   init_params.corner_radius = kTrayItemCornerRadius;
@@ -399,6 +452,11 @@ void EcheTray::InitBubble() {
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
   auto* header_view = bubble_view->AddChildView(CreateBubbleHeaderView());
+
+  // We need the header be always visible with the same size.
+  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
+      ->SetFlexForView(header_view, 0, true);
+
   // The layer is needed to draw the header non-opaquely that is needed to
   // match the phone hub behavior.
   header_view->SetPaintToLayer();
@@ -417,6 +475,31 @@ void EcheTray::InitBubble() {
 
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
+}
+
+void EcheTray::StartGracefulClose() {
+  if (init_stream_timestamp_.has_value()) {
+    base::UmaHistogramLongTimes100(
+        "Eche.StreamEvent.Duration.FromInitializeToClose",
+        base::TimeTicks::Now() - *init_stream_timestamp_);
+    init_stream_timestamp_.reset();
+  }
+
+  if (!graceful_close_callback_) {
+    PurgeAndClose();
+    return;
+  }
+  HideBubble();
+  std::move(graceful_close_callback_).Run();
+  // Graceful close will let Eche Web to close connection release then notify
+  // back to native code to close window. In case there is any exception happens
+  // in js layer, start a timer to force close widget in case unload can't be
+  // finished.
+  if (!unload_timer_) {
+    unload_timer_ = std::make_unique<base::DelayTimer>(
+        FROM_HERE, kUnloadTimeoutDuration, this, &EcheTray::PurgeAndClose);
+    unload_timer_->Reset();
+  }
 }
 
 gfx::Size EcheTray::CalculateSizeForEche() const {
@@ -556,7 +639,7 @@ EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
 }
 
 void EcheTray::UpdateBubbleBounds() {
-  if (!bubble_)
+  if (!bubble_ || !bubble_->GetBubbleView())
     return;
   bubble_->GetBubbleView()->ChangeAnchorRect(GetAnchor());
 }
@@ -574,7 +657,15 @@ void EcheTray::OnShelfIconPositionsChanged() {
 }
 
 void EcheTray::OnTabletModeStarted() {
-  UpdateBubbleBounds();
+  if (!IsBubbleVisible())
+    return;
+  ash::ToastManager::Get()->Show(ash::ToastData(
+      kEcheTrayTabletModeNotSupportedId,
+      ash::ToastCatalogName::kEcheTrayTabletModeNotSupported,
+      l10n_util::GetStringUTF16(IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED),
+      ash::ToastData::kDefaultToastDuration,
+      /*visible_on_lock_screen=*/false));
+  PurgeAndClose();
 }
 
 void EcheTray::OnTabletModeEnded() {
@@ -587,6 +678,74 @@ void EcheTray::OnShelfAlignmentChanged(aura::Window* root_window,
 
 gfx::Rect EcheTray::GetAnchor() {
   return shelf()->GetSystemTrayAnchorRect();
+}
+
+// TODO(b/234848974): Try to use View::AddAccelerator for the bubble view
+// and then add the handler in View::AcceleratorPressed.
+bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
+  ui::Accelerator accelerator(*event);
+
+  auto* accelerator_controller = AcceleratorController::Get();
+
+  // Process minimize action
+  // Please note that the bubble is not a normal window and it has a special
+  // minimize behavior that is closer to hide than real minimize.
+  //
+  // TODO(https://crbug/1338650): See if we can just leave this to be handled
+  // upper in the chain and perform the minimize by reacting to
+  // ToggleMinimized().
+  if (accelerator_controller->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::WINDOW_MINIMIZE)) {
+    CloseBubble();
+    return true;
+  }
+
+  if (accelerator_controller->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::OPEN_FEEDBACK_PAGE) ||
+      accelerator_controller->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::EXIT)) {
+    views::ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+        accelerator);
+    event->StopPropagation();
+    return true;
+  }
+
+  const ui::KeyboardCode key_code = event->key_code();
+  const bool is_only_control_down = ui::Accelerator::MaskOutKeyEventFlags(
+                                        event->flags()) == ui::EF_CONTROL_DOWN;
+
+  if (event->type() == ui::ET_KEY_PRESSED && is_only_control_down) {
+    switch (key_code) {
+      case ui::VKEY_C:
+      case ui::VKEY_V:
+      case ui::VKEY_X:
+        ash::ToastManager::Get()->Show(ash::ToastData(
+            kEcheTrayCopyPasteNotImplementedToastId,
+            ash::ToastCatalogName::kEcheTrayCopyPasteNotImplemented,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED),
+            ash::ToastData::kDefaultToastDuration,
+            /*visible_on_lock_screen=*/false));
+        return true;
+      case ui::VKEY_W:
+        // Please note that ctrl+w does not have a global accelerator action
+        // similar to AcceleratorAction::WINDOW_MINIMIZE that was used above.
+        //
+        // TODO(https://crbug/1338650): See if we can just leave this to be
+        // handled upper in the chain.
+        StartGracefulClose();
+        return true;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+  return false;
+}
+
+bool EcheTray::IsBubbleVisible() {
+  return bubble_ && bubble_->GetBubbleView() &&
+         bubble_->GetBubbleView()->GetVisible();
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)

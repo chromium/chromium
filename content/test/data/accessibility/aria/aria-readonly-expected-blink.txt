@@ -19,6 +19,12 @@ rootWebArea
 ++++++textField name='Readonly-true role unimplemented textbox' restriction=readOnly
 ++++++textField name='Readonly-false contenteditable textbox'
 ++++++textField name='Readonly-true contenteditable textbox' restriction=readOnly
+++++++grid
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++cell name='Readonly-false gridcell'
+++++++++++++cell name='Readonly-true gridcell' restriction=readOnly
+++++++++++++cell name='Readonly not specified gridcell'
 ++++++checkBox name='Readonly checkbox' restriction=readOnly
 ++++++textFieldWithComboBox name='Readonly combobox' restriction=readOnly haspopup=listbox
 ++++++++genericContainer

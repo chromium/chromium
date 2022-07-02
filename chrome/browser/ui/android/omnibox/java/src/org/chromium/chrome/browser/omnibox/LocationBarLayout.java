@@ -295,6 +295,11 @@ public class LocationBarLayout extends FrameLayout {
         return mStatusCoordinator;
     }
 
+    @VisibleForTesting
+    public void setStatusCoordinatorForTesting(StatusCoordinator statusCoordinator) {
+        mStatusCoordinator = statusCoordinator;
+    }
+
     /* package */ void setUrlActionContainerVisibility(int visibility) {
         mUrlActionContainer.setVisibility(visibility);
     }

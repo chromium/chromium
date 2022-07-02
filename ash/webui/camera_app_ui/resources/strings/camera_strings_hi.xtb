@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">बारकोड स्कैन करें</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> एमपी</translation>
+<translation id="4096701159033358951">दस्तावेज़ स्कैन करने की सुविधा डाउनलोड हो रही है</translation>
 <translation id="4118525110028899586">रिकॉर्डिंग रोकें</translation>
 <translation id="4121305183798804752">दस्तावेज़ मिल गया है</translation>
 <translation id="414641094616694804">कैमरे का रिज़ॉल्यूशन नहीं बदला जा सकता</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">फ़ोटो न खींचें</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> मेगापिक्सेल</translation>
 <translation id="4570032796877367747">सामने का कैमरा</translation>
+<translation id="4620818268515773682">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें. म्यूट बटन बंद है</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4649291346448517080">फ़ाइल सेव नहीं की जा सकी</translation>
 <translation id="4695379108709712600">सबसे ऊपर की ओर जा रहा है</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7670511624014457267">60 FPS (फ़्रेम प्रति सेकंड)</translation>
 <translation id="7671804233658741790">दस्तावेज़ का सबसे नीचे वाला दायां कोना</translation>
+<translation id="7692090236657809299">'पैन करें, झुकाएं, और ज़ूम करें' को चालू करें</translation>
 <translation id="7726641833034062494">सामान्य वीडियो रिकॉर्ड करें</translation>
 <translation id="7748344063862150053">दस्तावेज़ का सबसे ऊपर वाला दायां कोना</translation>
 <translation id="7933675232020478311">सबसे नीचे दाईं ओर जा रहा है</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">नीचे झुकाएं</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8687491812650032292">एचडी <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें. म्यूट बटन चालू है</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8732462232047530626">मेटाडेटा की झलक देखें</translation>

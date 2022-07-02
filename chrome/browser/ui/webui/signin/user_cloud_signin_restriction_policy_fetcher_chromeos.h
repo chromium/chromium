@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -108,7 +109,7 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
   // Protected for testing.
  protected:
   // UserInfoFetcher::Delegate.
-  void OnGetUserInfoSuccess(const base::DictionaryValue* user_info) override;
+  void OnGetUserInfoSuccess(const base::Value::Dict& user_info) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
   // UserInfoFetcher::OAuth2AccessTokenConsumer.

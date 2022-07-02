@@ -25,11 +25,20 @@ constexpr char kExampleUrl1[] = "https://example1.com/somepath";
 constexpr char kExampleUrl2[] = "https://example2.com/some2path";
 constexpr char kExampleUrl3[] = "https://example3.com/some3path";
 
-const base::Value origins[]{base::Value(kExampleDomain1),
-                            base::Value(kExampleDomain2)};
-const base::Value more_origins[]{base::Value(kExampleDomain1),
-                                 base::Value(kExampleDomain2),
-                                 base::Value(kExampleDomain3)};
+base::Value::List GetOrigins() {
+  base::Value::List origins;
+  origins.Append(kExampleDomain1);
+  origins.Append(kExampleDomain2);
+  return origins;
+}
+
+base::Value::List GetMoreOrigins() {
+  base::Value::List more_origins;
+  more_origins.Append(kExampleDomain1);
+  more_origins.Append(kExampleDomain2);
+  more_origins.Append(kExampleDomain3);
+  return more_origins;
+}
 
 }  // namespace
 
@@ -52,17 +61,17 @@ class DeviceTrustConnectorServiceTest
 
   void EnableServicePolicy() {
     prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       std::make_unique<base::ListValue>(origins));
+                       base::Value(GetOrigins()));
   }
 
   void UpdateServicePolicy() {
     prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       std::make_unique<base::ListValue>(more_origins));
+                       base::Value(GetMoreOrigins()));
   }
 
   void DisableServicePolicy() {
     prefs_.SetUserPref(kContextAwareAccessSignalsAllowlistPref,
-                       std::make_unique<base::ListValue>());
+                       base::Value(base::Value::List()));
   }
 
   std::unique_ptr<DeviceTrustConnectorService> CreateService() {

@@ -70,6 +70,9 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   views::View* GetDefaultFocusableChild() override;
 
   views::FlexLayout* layout_manager_for_testing() { return layout_manager_; }
+  raw_ptr<views::View> GetTabStripContainerForTesting() {
+    return tab_strip_container_;
+  }
 
  private:
   // Updates the border padding for |new_tab_button_|.  This should be called

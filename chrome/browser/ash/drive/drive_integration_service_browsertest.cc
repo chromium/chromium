@@ -12,6 +12,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,9 +21,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/pref_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace drive {
+
+using ::base::test::RunClosure;
 
 class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -575,6 +580,36 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(temp_dir.Delete());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       MachineRootIDPersistedAndAvailable) {
+  ToggleMirrorSync(true);
+
+  // Ensure the initial machine root ID is unset.
+  EXPECT_EQ(browser()->profile()->GetPrefs()->GetString(
+                prefs::kDriveFsMirrorSyncMachineRootId),
+            "");
+
+  // Invoke the delegate method to persist the machine root ID and wait for the
+  // prefs key to change to the expected value.
+  drivefs::FakeDriveFs* fake = GetFakeDriveFsForProfile(browser()->profile());
+  fake->delegate()->PersistMachineRootID("test-machine-id");
+  WaitForPrefValue(browser()->profile()->GetPrefs(),
+                   prefs::kDriveFsMirrorSyncMachineRootId,
+                   base::Value("test-machine-id"));
+
+  // Setup the callback for the GetMachineRootID method to assert it gets run
+  // with the "test-machine-id".
+  base::RunLoop run_loop;
+  base::MockOnceCallback<void(const std::string&)> machine_root_id_callback;
+  EXPECT_CALL(machine_root_id_callback, Run("test-machine-id"))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  // Kick off the GetMachineRootID method and wait for it to return
+  // successfully.
+  fake->delegate()->GetMachineRootID(machine_root_id_callback.Get());
+  run_loop.Run();
 }
 
 }  // namespace drive

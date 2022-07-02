@@ -45,10 +45,6 @@ class FileAnalyzer {
     // inspection (does it contain binaries/archives?). So we return a type.
     ClientDownloadRequest::DownloadType type;
 
-    // For archive files, whether the archive is valid. Has unspecified contents
-    // for non-archive files.
-    ArchiveValid archive_is_valid = ArchiveValid::UNSET;
-
     // For archive files, whether the archive contains an executable. Has
     // unspecified contents for non-archive files.
     bool archived_executable = false;
@@ -78,14 +74,11 @@ class FileAnalyzer {
         detached_code_signatures;
 #endif
 
-    // For archive files, the number of contained files.
-    int file_count = 0;
-
-    // For archive files, the number of contained directories.
-    int directory_count = 0;
-
     // For office documents, the features and metadata extracted from the file.
     ClientDownloadRequest::DocumentSummary document_summary;
+
+    // For archives, the features and metadata extracted from the file.
+    ClientDownloadRequest::ArchiveSummary archive_summary;
   };
 
   explicit FileAnalyzer(
@@ -118,10 +111,13 @@ class FileAnalyzer {
       const DocumentAnalyzerResults& document_results);
 #endif
 
+  void LogAnalysisDurationWithAndWithoutSuffix(const std::string& suffix);
+
   base::FilePath target_path_;
   base::FilePath tmp_path_;
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   base::OnceCallback<void(Results)> callback_;
+  base::Time start_time_;
   Results results_;
 
   scoped_refptr<SandboxedZipAnalyzer> zip_analyzer_;

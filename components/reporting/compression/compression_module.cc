@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 #include "components/reporting/compression/compression_module.h"
 
-#include "base/feature_list.h"
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
@@ -55,6 +57,7 @@ scoped_refptr<CompressionModule> CompressionModule::Create(
 
 void CompressionModule::CompressRecord(
     std::string record,
+    scoped_refptr<ResourceInterface> memory_resource,
     base::OnceCallback<void(std::string,
                             absl::optional<CompressionInformation>)> cb) const {
   if (!is_enabled()) {
@@ -89,7 +92,7 @@ void CompressionModule::CompressRecord(
       }
       // Before doing compression, we must make sure there is enough memory - we
       // are going to temporarily double the record.
-      ScopedReservation scoped_reservation(record.size(), GetMemoryResource());
+      ScopedReservation scoped_reservation(record.size(), memory_resource);
       if (!scoped_reservation.reserved()) {
         base::UmaHistogramEnumeration(
             kCompressionThresholdCountMetricsName,

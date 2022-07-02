@@ -129,6 +129,8 @@ PermissionType EnumTraits<PermissionType, apps::PermissionType>::ToMojom(
       return PermissionType::kStorage;
     case apps::PermissionType::kPrinting:
       return PermissionType::kPrinting;
+    case apps::PermissionType::kFileHandling:
+      return PermissionType::kFileHandling;
   }
 }
 
@@ -159,6 +161,9 @@ bool EnumTraits<PermissionType, apps::PermissionType>::FromMojom(
       return true;
     case PermissionType::kPrinting:
       *output = apps::PermissionType::kPrinting;
+      return true;
+    case PermissionType::kFileHandling:
+      *output = apps::PermissionType::kFileHandling;
       return true;
   }
 }

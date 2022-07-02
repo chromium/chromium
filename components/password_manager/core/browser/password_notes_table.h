@@ -34,16 +34,16 @@ class PasswordNotesTable {
 
   // Adds the note if it doesn't exist.
   // If it does, it removes the previous entry and adds the new one.
-  // Note that it sets the key column as empty string.
   bool InsertOrReplace(FormPrimaryKey parent_id, const PasswordNote& note);
 
-  // Removes the note corresponding to `parent_id`.
-  bool RemovePasswordNote(FormPrimaryKey parent_id);
+  // Removes the notes corresponding to `parent_id`.
+  bool RemovePasswordNotes(FormPrimaryKey parent_id);
 
-  // Gets the note in the database for `parent_id`.
-  absl::optional<PasswordNote> GetPasswordNote(FormPrimaryKey parent_id) const;
+  // Gets the notes in the database for `parent_id`.
+  std::vector<PasswordNote> GetPasswordNotes(FormPrimaryKey parent_id) const;
 
-  std::map<FormPrimaryKey, PasswordNote> GetAllPasswordNotesForTest() const;
+  std::map<FormPrimaryKey, std::vector<PasswordNote>>
+  GetAllPasswordNotesForTest() const;
 
  private:
   sql::Database* db_ = nullptr;

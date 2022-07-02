@@ -26,8 +26,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {

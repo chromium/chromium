@@ -30,12 +30,12 @@
 
 #include "third_party/blink/renderer/modules/webmidi/midi_input.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_message_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -90,7 +90,7 @@ void MIDIInput::DidReceiveMIDIData(unsigned port_index,
   if (data[0] == 0xf0 && !midiAccess()->sysexEnabled())
     return;
   DOMUint8Array* array =
-      DOMUint8Array::Create(data, SafeCast<unsigned>(length));
+      DOMUint8Array::Create(data, base::checked_cast<unsigned>(length));
   DispatchEvent(*MakeGarbageCollected<MIDIMessageEvent>(time_stamp, array));
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kMIDIMessageEvent);

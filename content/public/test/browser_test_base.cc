@@ -134,7 +134,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/build_info.h"
+#include "base/fuchsia/system_info.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -407,12 +407,12 @@ void BrowserTestBase::SetUp() {
 
   ui::fuchsia::IgnorePresentCallsForTest();
 
-  // Clear the per-process cached BuildInfo, which was initialized by
+  // Clear the per-process cached system info, which was initialized by
   // TestSuite::Initialize(), to prevent a DCHECK for multiple calls during
   // in-process browser tests. There is not a single TestSuite for all browser
   // tests and some use the cached values, so skipping the earlier
   // initialization is not an option.
-  base::ClearCachedBuildInfoForTesting();
+  base::ClearCachedSystemInfoForTesting();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -619,11 +619,11 @@ void BrowserTestBase::SetUp() {
 
     delegate->PreSandboxStartup();
 
+    const ContentMainDelegate::InvokedInBrowserProcess invoked_in_browser{
+        .is_running_test = true};
     DCHECK(!field_trial_list_);
-    if (delegate->ShouldCreateFeatureList()) {
+    if (delegate->ShouldCreateFeatureList(invoked_in_browser))
       field_trial_list_ = SetUpFieldTrialsAndFeatureList();
-      delegate->PostFieldTrialInitialization();
-    }
 
     base::ThreadPoolInstance::Create("Browser");
 
@@ -636,7 +636,7 @@ void BrowserTestBase::SetUp() {
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    delegate->PostEarlyInitialization(/*is_running_tests=*/true);
+    delegate->PostEarlyInitialization(invoked_in_browser);
 
     StartBrowserThreadPool();
     BrowserTaskExecutor::PostFeatureListSetup();

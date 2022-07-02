@@ -255,10 +255,7 @@ base::Value NetLogFetcherDoneParams(int fetcher_index, int net_error) {
 
 DhcpPacFileFetcherWin::DhcpPacFileFetcherWin(
     URLRequestContext* url_request_context)
-    : state_(STATE_START),
-      num_pending_fetchers_(0),
-      destination_string_(nullptr),
-      url_request_context_(url_request_context),
+    : url_request_context_(url_request_context),
       task_runner_(base::MakeRefCounted<TaskRunnerWithCap>()) {
   DCHECK(url_request_context_);
 }
@@ -601,6 +598,6 @@ bool DhcpPacFileFetcherWin::AdapterQuery::ImplGetCandidateAdapterNames(
                                                          info);
 }
 
-DhcpPacFileFetcherWin::AdapterQuery::~AdapterQuery() {}
+DhcpPacFileFetcherWin::AdapterQuery::~AdapterQuery() = default;
 
 }  // namespace net

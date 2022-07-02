@@ -102,16 +102,17 @@ void AutofillProviderAndroid::DetachFromJavaAutofillProvider(JNIEnv* env) {
 
 void AutofillProviderAndroid::OnAskForValuesToFill(
     AndroidAutofillManager* manager,
-    int32_t id,
+    int32_t query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    bool /*unused_autoselect_first_suggestion*/) {
+    bool /*unused_autoselect_first_suggestion*/,
+    TouchToFillEligible /*unused_touch_to_fill_eligible*/) {
   // The id isn't passed to Java side because Android API guarantees the
   // response is always for current session, so we just use the current id
   // in response, see OnAutofillAvailable.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  id_ = id;
+  id_ = query_id;
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.

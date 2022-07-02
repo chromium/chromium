@@ -141,17 +141,17 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
 
   // Things which should be consistent after first call to GenerateAuthToken.
-  bool already_called_;
-  bool has_credentials_;
+  bool already_called_ = false;
+  bool has_credentials_ = false;
   AuthCredentials credentials_;
   std::string spn_;
   std::string channel_bindings_;
 
   // Things which vary each round.
   CompletionOnceCallback callback_;
-  raw_ptr<std::string> auth_token_;
+  raw_ptr<std::string> auth_token_ = nullptr;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   raw_ptr<const HttpAuthPreferences> http_auth_preferences_;
 };

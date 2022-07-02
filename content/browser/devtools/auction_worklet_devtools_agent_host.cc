@@ -5,7 +5,6 @@
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 
 #include "base/bind.h"
-#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -81,7 +80,7 @@ bool AuctionWorkletDevToolsAgentHost::AttachSession(DevToolsSession* session,
 
 AuctionWorkletDevToolsAgentHost::AuctionWorkletDevToolsAgentHost(
     DebuggableAuctionWorklet* worklet)
-    : DevToolsAgentHostImpl(base::GenerateGUID()), worklet_(worklet) {
+    : DevToolsAgentHostImpl(worklet->UniqueId()), worklet_(worklet) {
   mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgent> agent;
   worklet->ConnectDevToolsAgent(agent.InitWithNewEndpointAndPassReceiver());
   NotifyCreated();

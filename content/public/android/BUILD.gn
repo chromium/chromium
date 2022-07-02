@@ -203,6 +203,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BindingManager.java",
     "java/src/org/chromium/content/browser/BrowserContextHandleImpl.java",
+    "java/src/org/chromium/content/browser/ChildProcessConnectionMetrics.java",
     "java/src/org/chromium/content/browser/ChildProcessLauncherHelperImpl.java",
     "java/src/org/chromium/content/browser/ChildProcessRanking.java",
     "java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
@@ -368,7 +369,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/SpeechRecognition.java",
     "java/src/org/chromium/content_public/browser/ViewEventSink.java",
     "java/src/org/chromium/content_public/browser/WebAuthenticationDelegate.java",
-    "java/src/org/chromium/content_public/browser/WebAuthnCredentialDetails.java",
     "java/src/org/chromium/content_public/browser/WebContents.java",
     "java/src/org/chromium/content_public/browser/WebContentsAccessibility.java",
     "java/src/org/chromium/content_public/browser/WebContentsInternals.java",
@@ -619,9 +619,10 @@ android_library("content_javatests") {
   data_deps = [ "//net:test_support" ]
 }
 
-junit_binary("content_junit_tests") {
+robolectric_binary("content_junit_tests") {
   sources = [
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
+    "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessRankingTest.java",
     "junit/src/org/chromium/content/browser/ScreenOrientationProviderImplTest.java",
     "junit/src/org/chromium/content/browser/SpareChildConnectionTest.java",
@@ -641,13 +642,13 @@ junit_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
     "junit/src/org/chromium/content_public/browser/MessagePayloadTest.java",
   ]
+
   deps = [
     ":content_java",
     "//base:base_java",
     "//base:base_java_process_launcher_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",
     "//media/mojo/mojom:mojom_java",
     "//mojo/public/java:base_java",
@@ -658,9 +659,10 @@ junit_binary("content_junit_tests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/gfx/geometry/mojom:mojom_java",
   ]
-
   data_deps = [ "//testing/buildbot/filters:content_junit_tests_filters" ]
 }

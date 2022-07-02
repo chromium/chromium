@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ui/wm/core/wm_core_export.h"
+#include "base/component_export.h"
 
 namespace wm {
 
@@ -16,7 +16,7 @@ class TransientWindowController;
 class TransientWindowStackingClient;
 
 // Installs state needed by the window manager.
-class WM_CORE_EXPORT WMState {
+class COMPONENT_EXPORT(UI_WM) WMState {
  public:
   WMState();
 

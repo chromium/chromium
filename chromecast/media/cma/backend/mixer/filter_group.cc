@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/media/audio/audio_log.h"
@@ -56,16 +57,34 @@ FilterGroup::GroupInput::GroupInput(GroupInput&& other) = default;
 FilterGroup::GroupInput::~GroupInput() = default;
 
 FilterGroup::FilterGroup(int num_channels,
-                         const std::string& name,
-                         std::unique_ptr<PostProcessingPipeline> pipeline,
+                         std::string name,
+                         base::Value prerender_filter_list,
+                         const base::Value* filter_list,
+                         PostProcessingPipelineFactory* ppp_factory,
                          const base::Value* volume_limits)
     : num_channels_(num_channels),
-      name_(name),
-      post_processing_pipeline_(std::move(pipeline)) {
+      name_(std::move(name)),
+      prerender_filter_list_(std::move(prerender_filter_list)),
+      ppp_factory_(ppp_factory),
+      tag_(base::MakeRefCounted<FilterGroupTag>()),
+      post_processing_pipeline_(
+          ppp_factory_->CreatePipeline(name_, filter_list, num_channels_)) {
+  LOG(INFO) << "Done creating postrender pipeline for " << name_;
   ParseVolumeLimits(volume_limits);
 }
 
 FilterGroup::~FilterGroup() = default;
+
+std::unique_ptr<PostProcessingPipeline> FilterGroup::CreatePrerenderPipeline(
+    int num_channels) {
+  ++prerender_creation_count_;
+  LOG(INFO) << "Creating prerender pipeline for " << name_;
+  auto result = ppp_factory_->CreatePipeline(
+      "prerender_" + name_ + base::NumberToString(prerender_creation_count_),
+      &prerender_filter_list_, num_channels);
+  LOG(INFO) << "Done creating prerender pipeline for " << name_;
+  return result;
+}
 
 void FilterGroup::AddMixedInput(FilterGroup* input) {
   // Channel mixers are created in Initialize().
@@ -109,9 +128,10 @@ void FilterGroup::Initialize(const AudioPostProcessor2::Config& output_config) {
 
   // Run a buffer of 0's to initialize rendering delay.
   std::fill_n(interleaved_.data(), interleaved_.size(), 0.0f);
-  delay_seconds_ = post_processing_pipeline_->ProcessFrames(
+  post_processing_pipeline_->ProcessFrames(
       interleaved_.data(), input_frames_per_write_, last_volume_, last_volume_,
       true /* is_silence */);
+  delay_seconds_ = post_processing_pipeline_->GetDelaySeconds();
 }
 
 void FilterGroup::ParseVolumeLimits(const base::Value* volume_limits) {
@@ -176,7 +196,16 @@ float FilterGroup::MixAndFilter(
     content_type = std::max(content_type, filter_group.group->content_type());
   }
 
-  // |volume| can only be 0 if no |mixed_inputs_| have data.
+  // Render direct inputs.
+  for (MixerInput* input : active_inputs_) {
+    if (input->Render(input_frames_per_write_, rendering_delay)) {
+      volume = std::max(volume, input->InstantaneousVolume());
+      target_volume = std::max(target_volume, input->TargetVolume());
+      content_type = std::max(content_type, input->content_type());
+    }
+  }
+
+  // |volume| can only be 0 if no |mixed_inputs_| or |active_inputs_| have data.
   // This is true because FilterGroup can only return 0 if:
   // a) It has no data and its PostProcessorPipeline is not ringing.
   //    (early return, below) or
@@ -185,44 +214,30 @@ float FilterGroup::MixAndFilter(
   //    In this case, there was never any data in the pipeline.
   if (active_inputs_.empty() && volume == 0.0f &&
       !post_processing_pipeline_->IsRinging()) {
+    last_volume_ = 0.0f;
+    output_buffer_ = interleaved_.data();
     ZeroOutputBufferIfNeeded();
-    return 0.0f;  // Output will be silence, no need to mix.
+    return 0.0f;  // Output will be silence, no need to mix/process.
   }
 
-  // Mix InputQueues
-  mixed_->ZeroFramesPartial(0, input_frames_per_write_);
-  bool filled_some = false;
-  for (MixerInput* input : active_inputs_) {
-    ::media::AudioBus* temp = temp_buffer_.get();
-    int filled =
-        input->FillAudioData(input_frames_per_write_, rendering_delay, temp);
-    if (filled > 0) {
-      filled_some = true;
-      for (int c = 0; c < num_channels_; ++c) {
-        input->VolumeScaleAccumulate(temp->channel(c), filled,
-                                     mixed_->channel(c));
-      }
-
-      volume = std::max(volume, input->InstantaneousVolume());
-      target_volume = std::max(volume, input->TargetVolume());
-      content_type = std::max(content_type, input->content_type());
-    }
-  }
-  if (!filled_some && volume == 0.0f &&
-      !post_processing_pipeline_->IsRinging()) {
-    ZeroOutputBufferIfNeeded();
-    return 0.0f;  // Output will be silence, no need to process.
-  }
-
-  frames_zeroed_ = 0;
-  mixed_->ToInterleaved<::media::FloatSampleTypeTraitsNoClip<float>>(
-      input_frames_per_write_, interleaved_.data());
+  output_frames_zeroed_ = 0;
+  std::fill_n(interleaved_.data(), interleaved_.size(), 0.0f);
 
   // Mix FilterGroups
   for (const auto& input : mixed_inputs_) {
     if (input.group->last_volume() > 0.0f) {
       float* buffer = input.channel_mixer->Transform(
           input.group->GetOutputBuffer(), input_frames_per_write_);
+      for (int i = 0; i < input_frames_per_write_ * num_channels_; ++i) {
+        interleaved_[i] += buffer[i];
+      }
+    }
+  }
+
+  // Mix direct inputs.
+  for (MixerInput* input : active_inputs_) {
+    if (input->has_render_output()) {
+      float* buffer = input->RenderedAudioBuffer();
       for (int i = 0; i < input_frames_per_write_ * num_channels_; ++i) {
         interleaved_[i] += buffer[i];
       }
@@ -244,14 +259,17 @@ float FilterGroup::MixAndFilter(
     }
   }
 
-  delay_seconds_ = post_processing_pipeline_->ProcessFrames(
+  post_processing_pipeline_->ProcessFrames(
       interleaved_.data(), input_frames_per_write_, last_volume_,
       target_volume_, is_silence);
+  delay_seconds_ = post_processing_pipeline_->GetDelaySeconds();
+  output_buffer_ = post_processing_pipeline_->GetOutputBuffer();
   return last_volume_;
 }
 
 float* FilterGroup::GetOutputBuffer() {
-  return post_processing_pipeline_->GetOutputBuffer();
+  DCHECK(output_buffer_);
+  return output_buffer_;
 }
 
 int64_t FilterGroup::GetRenderingDelayMicroseconds() {
@@ -272,35 +290,27 @@ int FilterGroup::GetOutputChannelCount() const {
 
 void FilterGroup::ZeroOutputBufferIfNeeded() {
   const int num_output_frames = output_config_.output_frames_per_write;
-  if (frames_zeroed_ < num_output_frames) {
-    std::fill_n(GetOutputBuffer(), num_output_frames * GetOutputChannelCount(),
-                0);
-    frames_zeroed_ = num_output_frames;
+  if (output_frames_zeroed_ < num_output_frames) {
+    float* buffer = GetOutputBuffer();
+    std::fill_n(buffer, num_output_frames * GetOutputChannelCount(), 0);
+    output_frames_zeroed_ = num_output_frames;
   }
 }
 
 void FilterGroup::ResizeBuffers() {
-  mixed_ = ::media::AudioBus::Create(num_channels_, input_frames_per_write_);
-  mixed_->Zero();
-  temp_buffer_ =
-      ::media::AudioBus::Create(num_channels_, input_frames_per_write_);
-  temp_buffer_->Zero();
-  interleaved_.assign(input_frames_per_write_ * num_channels_, 0.0f);
-  frames_zeroed_ = 0;
+  int frames =
+      std::max(input_frames_per_write_, output_config_.output_frames_per_write);
+  int channels = std::max(num_channels_, GetOutputChannelCount());
+  interleaved_.assign(frames * channels, 0.0f);
+  output_frames_zeroed_ = 0;
 }
 
 void FilterGroup::SetPostProcessorConfig(const std::string& name,
                                          const std::string& config) {
   post_processing_pipeline_->SetPostProcessorConfig(name, config);
-}
-
-void FilterGroup::UpdatePlayoutChannel(int playout_channel) {
-  if (playout_channel >= num_channels_) {
-    AUDIO_LOG(ERROR) << "only " << num_channels_ << " present, wanted channel #"
-                     << playout_channel;
-    return;
+  for (MixerInput* input : active_inputs_) {
+    input->SetPostProcessorConfig(name, config);
   }
-  post_processing_pipeline_->UpdatePlayoutChannel(playout_channel);
 }
 
 bool FilterGroup::IsRinging() const {

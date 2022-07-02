@@ -101,6 +101,13 @@ std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool TestExtensionsBrowserClient::IsFromMainProfile(
+    content::BrowserContext* context) {
+  return context == main_context_;
+}
+#endif
+
 bool TestExtensionsBrowserClient::IsGuestSession(
     BrowserContext* context) const {
   return false;

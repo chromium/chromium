@@ -42,6 +42,7 @@ enum PermissionType {
   kContacts        = 5,
   kStorage         = 6,
   kPrinting        = 7,
+  kFileHandling    = 8,
 };
 
 enum TriState {

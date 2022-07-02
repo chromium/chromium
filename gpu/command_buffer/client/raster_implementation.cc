@@ -581,18 +581,6 @@ void RasterImplementation::OnGpuControlErrorMessage(const char* message,
     error_message_callback_.Run(message, id);
 }
 
-void RasterImplementation::OnGpuControlSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params,
-    gfx::GpuFenceHandle release_fence) {
-  NOTREACHED();
-}
-
-void RasterImplementation::OnSwapBufferPresented(
-    uint64_t swap_id,
-    const gfx::PresentationFeedback& feedback) {
-  NOTREACHED();
-}
-
 void RasterImplementation::OnGpuControlReturnData(
     base::span<const uint8_t> data) {
   NOTIMPLEMENTED();
@@ -619,47 +607,6 @@ void RasterImplementation::SetAggressivelyFreeResources(
     temp_raster_offsets_.clear();
     temp_raster_offsets_.shrink_to_fit();
   }
-}
-
-void RasterImplementation::Swap(
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::SwapWithBounds(
-    const std::vector<gfx::Rect>& /* rects */,
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::PartialSwapBuffers(
-    const gfx::Rect& /* sub_buffer */,
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::CommitOverlayPlanes(
-    uint32_t /* flags */,
-    SwapCompletedCallback /* swap_completed */,
-    PresentationCallback /* presentation_callback */) {
-  NOTREACHED();
-}
-
-void RasterImplementation::ScheduleOverlayPlane(
-    int /* plane_z_order */,
-    gfx::OverlayTransform /* plane_transform */,
-    unsigned /* overlay_texture_id */,
-    const gfx::Rect& /* display_bounds */,
-    const gfx::RectF& /* uv_rect */,
-    bool /* enable_blend */,
-    unsigned /* gpu_fence_id */) {
-  NOTREACHED();
 }
 
 uint64_t RasterImplementation::ShareGroupTracingGUID() const {
@@ -1340,7 +1287,7 @@ void RasterImplementation::ConvertRGBAToYUVAMailboxes(
 }
 
 void RasterImplementation::BeginRasterCHROMIUM(
-    GLuint sk_color,
+    SkColor4f sk_color_4f,
     GLboolean needs_clear,
     GLuint msaa_sample_count,
     MsaaMode msaa_mode,
@@ -1350,11 +1297,12 @@ void RasterImplementation::BeginRasterCHROMIUM(
     const GLbyte* mailbox) {
   DCHECK(!raster_properties_);
 
-  helper_->BeginRasterCHROMIUMImmediate(sk_color, needs_clear,
-                                        msaa_sample_count, msaa_mode,
-                                        can_use_lcd_text, visible, mailbox);
+  helper_->BeginRasterCHROMIUMImmediate(
+      sk_color_4f.fR, sk_color_4f.fG, sk_color_4f.fB, sk_color_4f.fA,
+      needs_clear, msaa_sample_count, msaa_mode, can_use_lcd_text, visible,
+      mailbox);
 
-  raster_properties_.emplace(sk_color, can_use_lcd_text,
+  raster_properties_.emplace(sk_color_4f, can_use_lcd_text,
                              color_space.ToSkColorSpace());
 }
 
@@ -1398,7 +1346,8 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   preamble.post_translation = post_translate;
   preamble.post_scale = post_scale;
   preamble.requires_clear = requires_clear;
-  preamble.background_color = raster_properties_->background_color;
+  // TODO(aaronhk): change the preamble to float color
+  preamble.background_color = raster_properties_->background_color.toSkColor();
 
   // Wrap the provided provider in a stashing provider so that we can delay
   // unrefing images until we have serialized dependent commands.
@@ -1936,7 +1885,7 @@ void RasterImplementation::SetRasterMappedBufferForTesting(
 }
 
 RasterImplementation::RasterProperties::RasterProperties(
-    SkColor background_color,
+    SkColor4f background_color,
     bool can_use_lcd_text,
     sk_sp<SkColorSpace> color_space)
     : background_color(background_color),

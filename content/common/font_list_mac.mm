@@ -195,7 +195,7 @@ class FontFamilyResolver {
 
 }  // namespace
 
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
+base::Value::List GetFontList_SlowBlocking() {
   @autoreleasepool {
     FontFamilyResolver resolver;
 
@@ -233,20 +233,18 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
     NSArray* sorted_localized_family_names = [family_name_map
         keysSortedByValueUsingSelector:@selector(localizedStandardCompare:)];
 
-    std::vector<base::Value> font_list;
+    base::Value::List font_list;
     for (NSString* localized_family_name in sorted_localized_family_names) {
       NSString* family_name = family_name_map[localized_family_name];
 
-      std::vector<base::Value> font_list_item;
+      base::Value::List font_list_item;
       font_list_item.reserve(2);
-      font_list_item.emplace_back(base::SysNSStringToUTF8(family_name));
-      font_list_item.emplace_back(
-          base::SysNSStringToUTF8(localized_family_name));
-      font_list.emplace_back(std::move(font_list_item));
+      font_list_item.Append(base::SysNSStringToUTF8(family_name));
+      font_list_item.Append(base::SysNSStringToUTF8(localized_family_name));
+      font_list.Append(std::move(font_list_item));
     }
 
-    return std::make_unique<base::ListValue>(
-        base::Value(font_list).TakeListDeprecated());
+    return font_list;
   }
 }
 

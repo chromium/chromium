@@ -458,9 +458,11 @@ ProfileImpl::ProfileImpl(
   if (path == ProfileManager::GetGuestProfilePath()) {
       profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kGuest);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (path == ProfileManager::GetSystemProfilePath()) {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kSystem);
+#endif
   } else {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kRegular);
@@ -902,6 +904,11 @@ ProfileImpl::~ProfileImpl() {
 
   FullBrowserTransitionManager::Get()->OnProfileDestroyed(this);
 
+  // Records the number of active KeyedServices for SystemProfile right before
+  // shutting the Services.
+  if (IsSystemProfile())
+    ProfileMetrics::LogSystemProfileKeyedServicesCount(this);
+
   // The SimpleDependencyManager should always be passed after the
   // BrowserContextDependencyManager. This is because the KeyedService instances
   // in the BrowserContextDependencyManager's dependency graph can depend on the
@@ -925,7 +932,8 @@ std::string ProfileImpl::GetProfileUserName() const {
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(this);
   if (identity_manager) {
-    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+    return identity_manager
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
         .email;
   }
 

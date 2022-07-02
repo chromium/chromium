@@ -13,6 +13,10 @@ namespace display {
 namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+DISPLAY_EXPORT extern const base::Feature kRoundedDisplay;
+
+DISPLAY_EXPORT bool IsRoundedDisplayEnabled();
+
 DISPLAY_EXPORT extern const base::Feature kUseHDRTransferFunction;
 #endif
 

@@ -7,6 +7,8 @@
 #include <string.h>
 #include <wrl/client.h>
 
+#include <vector>
+
 #include "base/strings/string_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_com_initializer.h"

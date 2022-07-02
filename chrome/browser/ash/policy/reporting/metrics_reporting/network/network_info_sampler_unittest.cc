@@ -10,13 +10,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,8 +61,6 @@ class NetworkInfoSamplerTest : public ::testing::Test {
 };
 
 TEST_F(NetworkInfoSamplerTest, AllTypes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   ::chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
       dbus::ObjectPath("path0"), kEid0, true, 1);
   ::chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
@@ -168,52 +165,6 @@ TEST_F(NetworkInfoSamplerTest, AllTypes) {
             kEid0);
   EXPECT_EQ(result.info_data().networks_info().network_interfaces(2).eids(1),
             kEid1);
-}
-
-TEST_F(NetworkInfoSamplerTest, Cellular_ESimPolicyDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kESimPolicy);
-  ::chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-      dbus::ObjectPath("path1"), kEid0, true, 1);
-
-  device_client_->AddDevice(kCellularPath, shill::kTypeCellular, "cellular");
-  device_client_->SetDeviceProperty(kCellularPath, shill::kMeidProperty,
-                                    base::Value(kMeid),
-                                    /*notify_changed=*/true);
-
-  base::RunLoop().RunUntilIdle();
-
-  MetricData result;
-  NetworkInfoSampler sampler;
-  sampler.MaybeCollect(
-      base::BindLambdaForTesting([&](absl::optional<MetricData> metric_data) {
-        ASSERT_TRUE(metric_data.has_value());
-        result = std::move(metric_data.value());
-      }));
-
-  ASSERT_TRUE(result.has_info_data());
-  ASSERT_TRUE(result.info_data().has_networks_info());
-  ASSERT_EQ(result.info_data().networks_info().network_interfaces_size(), 1);
-  EXPECT_EQ(result.info_data().networks_info().network_interfaces(0).type(),
-            NetworkDeviceType::CELLULAR_DEVICE);
-  EXPECT_EQ(result.info_data().networks_info().network_interfaces(0).meid(),
-            kMeid);
-  EXPECT_EQ(
-      result.info_data().networks_info().network_interfaces(0).device_path(),
-      kCellularPath);
-  EXPECT_FALSE(result.info_data()
-                   .networks_info()
-                   .network_interfaces(0)
-                   .has_mac_address());
-  EXPECT_FALSE(
-      result.info_data().networks_info().network_interfaces(0).has_imei());
-  EXPECT_FALSE(
-      result.info_data().networks_info().network_interfaces(0).has_iccid());
-  EXPECT_FALSE(
-      result.info_data().networks_info().network_interfaces(0).has_mdn());
-  // No eid reported, feature is disabled.
-  EXPECT_TRUE(
-      result.info_data().networks_info().network_interfaces(0).eids().empty());
 }
 
 TEST_F(NetworkInfoSamplerTest, NoDevices) {

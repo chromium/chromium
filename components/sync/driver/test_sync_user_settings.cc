@@ -63,6 +63,8 @@ UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
 
 void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
+  // TODO(crbug.com/1330894): take custom logic for Lacros apps into account.
+  // It's probably easier to address TODO about logic inversion above first.
   sync_everything_enabled_ = sync_everything;
 
   if (sync_everything_enabled_) {
@@ -118,6 +120,20 @@ void TestSyncUserSettings::SetSelectedOsTypes(bool sync_all_os_types,
 UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
     const {
   return UserSelectableOsTypeSet::All();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TestSyncUserSettings::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
+  syncer::ModelTypeSet preferred_types = service_->GetPreferredDataTypes();
+  if (apps_sync_enabled) {
+    preferred_types.PutAll(
+        UserSelectableTypeToAllModelTypes(UserSelectableType::kApps));
+  } else {
+    preferred_types.RemoveAll(
+        UserSelectableTypeToAllModelTypes(UserSelectableType::kApps));
+  }
+  service_->SetPreferredDataTypes(preferred_types);
 }
 #endif
 

@@ -119,8 +119,10 @@ void SetWindowState(aura::Window* window, ui::WindowShowState state) {
 }
 
 void Restore(aura::Window* window) {
+  window->SetProperty(aura::client::kIsRestoringKey, true);
   window->SetProperty(aura::client::kShowStateKey,
                       window->GetProperty(aura::client::kRestoreShowStateKey));
+  window->ClearProperty(aura::client::kIsRestoringKey);
 }
 
 void Unminimize(aura::Window* window) {

@@ -23,7 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_QUOTE_H_
 
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/style/quotes_data.h"
+#include "third_party/blink/renderer/platform/text/quotes_data.h"
 
 namespace blink {
 
@@ -64,7 +64,7 @@ class LayoutQuote final : public LayoutInline {
 
   String ComputeText() const;
   void UpdateText();
-  const QuotesData* GetQuotesData() const;
+  scoped_refptr<const QuotesData> GetQuotesData() const;
   void UpdateDepth();
   bool IsAttached() {
     NOT_DESTROYED();

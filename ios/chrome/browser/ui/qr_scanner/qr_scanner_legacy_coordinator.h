@@ -11,6 +11,14 @@
 // feature.
 @interface QRScannerLegacyCoordinator : ChromeCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+
+// The view controller this coordinator was initialized with.
+@property(weak, nonatomic) UIViewController* baseViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_QR_SCANNER_QR_SCANNER_LEGACY_COORDINATOR_H_

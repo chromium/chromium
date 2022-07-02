@@ -4,6 +4,8 @@
 
 #include "ui/views/linux_ui/linux_ui_factory.h"
 
+#include <utility>
+
 #include "ui/base/buildflags.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
@@ -18,10 +20,17 @@ std::unique_ptr<views::LinuxUI> CreateLinuxUi() {
   // TODO(thomasanderson): LinuxUI backend should be chosen depending on the
   // environment.
 #if BUILDFLAG(USE_QT)
-  auto qt_ui = qt::CreateQtUi();
-  if (qt_ui->Initialize())
-    return qt_ui;
-  qt_ui.reset();  // Reset to prevent 2 active LinuxUI instances.
+  {
+    std::unique_ptr<views::LinuxUI> fallback_linux_ui;
+#if BUILDFLAG(USE_GTK)
+    fallback_linux_ui = BuildGtkUi();
+    if (!fallback_linux_ui->Initialize())
+      fallback_linux_ui.reset();
+#endif
+    auto qt_ui = qt::CreateQtUi(std::move(fallback_linux_ui));
+    if (qt_ui->Initialize())
+      return qt_ui;
+  }
 #endif
 #if BUILDFLAG(USE_GTK)
   {

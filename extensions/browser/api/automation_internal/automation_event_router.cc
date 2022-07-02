@@ -68,6 +68,14 @@ void AutomationEventRouter::RegisterListenerWithDesktopPermission(
            ui::AXTreeIDUnknown(), true);
 }
 
+void AutomationEventRouter::UnregisterListenerWithDesktopPermission(
+    int listener_process_id) {
+  content::RenderProcessHost* host =
+      content::RenderProcessHost::FromID(listener_process_id);
+  if (host)
+    RemoveAutomationListener(host);
+}
+
 void AutomationEventRouter::DispatchAccessibilityEventsInternal(
     const ExtensionMsg_AccessibilityEventBundleParams& event_bundle) {
   content::BrowserContext* active_context =
@@ -212,8 +220,8 @@ AutomationEventRouter::AutomationListener::AutomationListener(
 
 AutomationEventRouter::AutomationListener::~AutomationListener() = default;
 
-void AutomationEventRouter::AutomationListener::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+void AutomationEventRouter::AutomationListener::PrimaryPageChanged(
+    content::Page& page) {
   router->RemoveAutomationListener(
       content::RenderProcessHost::FromID(process_id));
 }
@@ -293,7 +301,8 @@ void AutomationEventRouter::RemoveAutomationListener(
   base::EraseIf(listeners_, [process_id](const auto& item) {
     return item->process_id == process_id;
   });
-  rph_observers_.RemoveObservation(host);
+  if (rph_observers_.IsObservingSource(host))
+    rph_observers_.RemoveObservation(host);
   UpdateActiveProfile();
 
   if (rph_observers_.GetSourcesCount() == 0) {

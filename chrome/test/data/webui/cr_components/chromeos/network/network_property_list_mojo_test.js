@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
-// #import {FAKE_CREDENTIAL} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {FAKE_CREDENTIAL} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkPropertyListMojoTest', function() {
   /** @type {!NetworkPropertyListMojo|undefined} */
@@ -29,7 +27,7 @@ suite('NetworkPropertyListMojoTest', function() {
     ];
 
     document.body.appendChild(propertyList);
-    Polymer.dom.flush();
+    flush();
   });
 
   function verifyEditableFieldTypes() {
@@ -41,14 +39,14 @@ suite('NetworkPropertyListMojoTest', function() {
     propertyList.editFieldTypes = {
       'ipv4.ipAddress': 'String',
     };
-    Polymer.dom.flush();
+    flush();
 
     // The input to edit the property now exists.
     assertNotEquals(null, propertyList.$$('cr-input'));
   }
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -105,7 +103,7 @@ suite('NetworkPropertyListMojoTest', function() {
 
         // Simulate user switching off automatic.
         propertyList.allFieldsReadOnly = false;
-        Polymer.dom.flush();
+        flush();
 
         // Focus event has not fired, and the edited attribute still remains
         // false.

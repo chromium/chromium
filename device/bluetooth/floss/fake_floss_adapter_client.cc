@@ -222,16 +222,17 @@ void FakeFlossAdapterClient::SetPin(ResponseCallback<Void> callback,
                                  /*err=*/absl::nullopt));
 }
 
-void FakeFlossAdapterClient::GetBondedDevices(
-    ResponseCallback<std::vector<FlossDeviceId>> callback) {
+void FakeFlossAdapterClient::GetBondedDevices() {
   std::vector<FlossDeviceId> known_devices;
   known_devices.push_back(
       FlossDeviceId({.address = kBondedAddress1, .name = ""}));
   known_devices.push_back(
       FlossDeviceId({.address = kBondedAddress2, .name = ""}));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), known_devices,
-                                /*err=*/absl::nullopt));
+  for (const auto& device_id : known_devices) {
+    for (auto& observer : observers_) {
+      observer.AdapterFoundDevice(device_id);
+    }
+  }
 }
 
 }  // namespace floss

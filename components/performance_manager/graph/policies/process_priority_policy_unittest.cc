@@ -112,7 +112,7 @@ TEST_F(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
 
   // Set the active contents in the RenderViewHostTestHarness.
   SetContents(CreateTestWebContents());
-  auto* rvh = web_contents()->GetMainFrame()->GetRenderViewHost();
+  auto* rvh = web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
   DCHECK(rvh);
   auto* rph = rvh->GetProcess();
   DCHECK(rph);

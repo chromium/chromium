@@ -429,7 +429,7 @@ Status FindElementCommon(int interval_ms,
       }
       if (!temp->is_list())
         return Status(kUnknownError, "script returns unexpected result");
-      if (temp->GetListDeprecated().size() > 0U) {
+      if (temp->GetList().size() > 0U) {
         *value = std::move(temp);
         return Status(kOk);
       }
@@ -529,8 +529,7 @@ Status IsDocumentTypeXml(
                                "document.contentType", false, &contentType);
   if (status.IsError())
           return status;
-  if (base::LowerCaseEqualsASCII(contentType->GetString(),
-                                 "text/xml"))
+  if (base::EqualsCaseInsensitiveASCII(contentType->GetString(), "text/xml"))
     *is_xml_document = true;
   else
     *is_xml_document = false;
@@ -567,7 +566,7 @@ Status IsElementAttributeEqualToIgnoreCase(
     return status;
   if (result->is_string()) {
     *is_equal =
-        base::LowerCaseEqualsASCII(result->GetString(), attribute_value);
+        base::EqualsCaseInsensitiveASCII(result->GetString(), attribute_value);
   } else {
     *is_equal = false;
   }
@@ -1015,13 +1014,13 @@ Status GetAXNodeByElementId(Session* session,
   if (!nodes)
     return Status(kUnknownError, "No `nodes` found in CDP response");
 
-  base::Value::ListView nodesList = nodes->GetListDeprecated();
-  if (nodesList.size() < 1)
+  base::Value::List& nodes_list = nodes->GetList();
+  if (nodes_list.size() < 1)
     return Status(kUnknownError, "Empty nodes list in CDP response");
 
-  if (nodesList.size() > 1)
+  if (nodes_list.size() > 1)
     return Status(kUnknownError, "Non-unique node in CDP response");
 
-  *axNode = std::make_unique<base::Value>(std::move(nodesList[0]));
+  *axNode = std::make_unique<base::Value>(std::move(nodes_list[0]));
   return Status(kOk);
 }

@@ -51,6 +51,13 @@ extern const char kEnableAssistantMessagePipe[];
 // Enable a standalone demo app to control privileged features.
 extern const char kEnableDemoStandaloneMode[];
 
+// Cast Core constants for ApplicationConfig.extra_features.
+extern const char kCastCoreRendererFeatures[];
+extern const char kCastCoreEnforceFeaturePermissions[];
+extern const char kCastCoreFeaturePermissions[];
+extern const char kCastCoreFeaturePermissionOrigins[];
+extern const char kCastCoreIsAudioOnly[];
+
 }  // namespace feature
 }  // namespace chromecast
 

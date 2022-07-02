@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,9 @@ inline constexpr char kJoinSecurityDomainsErrorDetailTypeURL[] =
     "google.internal.identity.securitydomain.v1.JoinSecurityDomainErrorDetail";
 inline constexpr char kGetSecurityDomainURLPathAndQuery[] =
     "users/me/securitydomains/chromesync?view=2";
+
+inline constexpr char kQueryParameterAlternateOutputKey[] = "alt";
+inline constexpr char kQueryParameterAlternateOutputProto[] = "proto";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();
 std::string GetGetSecurityDomainMemberURLPathAndQuery(

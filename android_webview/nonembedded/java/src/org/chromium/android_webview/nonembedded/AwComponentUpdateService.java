@@ -32,6 +32,7 @@ import java.io.File;
  * registration. It has to be launched via JobScheduler. This is a JobService rather just a Service
  * because the new restrictions introduced in Android O+ on background execution.
  */
+// TODO(ntfschr): consider using BackgroundTaskScheduler
 @JNINamespace("android_webview")
 public class AwComponentUpdateService extends JobService {
     private static final String TAG = "AwCUS";

@@ -7,12 +7,12 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_watcher.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
@@ -32,13 +32,11 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
     CastWebService* web_service,
     CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
     cast_streaming::NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller,
-    RuntimeApplicationWatcher* application_watcher)
+    media::VideoPlaneController* video_plane_controller)
     : web_service_(web_service),
       network_context_getter_(std::move(network_context_getter)),
       metrics_recorder_(event_builder_factory),
       video_plane_controller_(video_plane_controller),
-      application_watcher_(application_watcher),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(web_service_);
 
@@ -48,6 +46,18 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
 RuntimeApplicationDispatcher::~RuntimeApplicationDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
+}
+
+void RuntimeApplicationDispatcher::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void RuntimeApplicationDispatcher::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(observer);
+  observers_.RemoveObserver(observer);
 }
 
 bool RuntimeApplicationDispatcher::Start(
@@ -108,7 +118,7 @@ bool RuntimeApplicationDispatcher::Start(
 
 void RuntimeApplicationDispatcher::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ResetApp();
+  loaded_apps_.clear();
 
   if (heartbeat_reactor_) {
     heartbeat_timer_.Stop();
@@ -116,17 +126,16 @@ void RuntimeApplicationDispatcher::Stop() {
     heartbeat_reactor_ = nullptr;
   }
 
-  if (grpc_server_) {
-    grpc_server_->Stop();
-    grpc_server_.reset();
-  }
-
   if (metrics_recorder_service_) {
     metrics_recorder_service_->OnCloseSoon(base::DoNothing());
     metrics_recorder_service_.reset();
   }
 
-  LOG(INFO) << "Runtime service stopped";
+  if (grpc_server_) {
+    grpc_server_->Stop();
+    grpc_server_.reset();
+    LOG(INFO) << "Runtime service stopped";
+  }
 }
 
 void RuntimeApplicationDispatcher::HandleLoadApplication(
@@ -138,66 +147,92 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
                                 "Application session ID is missing"));
     return;
   }
+  if (loaded_apps_.contains(request.cast_session_id())) {
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "Application already exists"));
+    return;
+  }
   if (!request.has_application_config()) {
     reactor->Write(
         grpc::Status(grpc::INVALID_ARGUMENT, "Application config is missing"));
     return;
   }
 
-  const std::string& app_id = request.application_config().app_id();
-  if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
+  std::unique_ptr<RuntimeApplication> app;
+  if (openscreen::cast::IsCastStreamingReceiverAppId(
+          request.application_config().app_id())) {
     DCHECK(video_plane_controller_);
     // Deliberately copy |network_context_getter_|.
-    app_ = std::make_unique<StreamingRuntimeApplication>(
+    app = std::make_unique<StreamingRuntimeApplication>(
         request.cast_session_id(), request.application_config(), web_service_,
         task_runner_, network_context_getter_, video_plane_controller_);
   } else {
-    app_ = std::make_unique<WebRuntimeApplication>(request.cast_session_id(),
-                                                   request.application_config(),
-                                                   web_service_, task_runner_);
+    app = std::make_unique<WebRuntimeApplication>(request.cast_session_id(),
+                                                  request.application_config(),
+                                                  web_service_, task_runner_);
   }
 
-  if (application_watcher_) {
-    application_watcher_->OnRuntimeApplicationChanged(app_.get());
-  }
+  // TODO(b/232140331): Call this only when foreground app changes.
+  base::ranges::for_each(observers_, [app = app.get()](auto& observer) {
+    observer.OnForegroundApplicationChanged(app);
+  });
 
-  app_->Load(
+  // Need to cache session_id as |request| object is moved.
+  std::string session_id = request.cast_session_id();
+  app->Load(
       std::move(request),
       base::BindPostTask(
           task_runner_,
           base::BindOnce(&RuntimeApplicationDispatcher::OnApplicationLoaded,
-                         weak_factory_.GetWeakPtr(), std::move(reactor))));
+                         weak_factory_.GetWeakPtr(), session_id,
+                         std::move(reactor))));
+
+  loaded_apps_.emplace(std::move(session_id), std::move(app));
 }
 
 void RuntimeApplicationDispatcher::HandleLaunchApplication(
     cast::runtime::LaunchApplicationRequest request,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  app_->Launch(
+  // Need to cache session_id as |request| object is moved.
+  std::string session_id = request.cast_session_id();
+  auto* app = GetApp(session_id);
+  if (!app) {
+    LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
+    reactor->Write(
+        grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
+    return;
+  }
+
+  app->Launch(
       std::move(request),
       base::BindPostTask(
           task_runner_,
           base::BindOnce(&RuntimeApplicationDispatcher::OnApplicationLaunched,
-                         weak_factory_.GetWeakPtr(), std::move(reactor))));
+                         weak_factory_.GetWeakPtr(), std::move(session_id),
+                         std::move(reactor))));
 }
 
 void RuntimeApplicationDispatcher::HandleStopApplication(
     cast::runtime::StopApplicationRequest request,
     cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!app_) {
-    reactor->Write(grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
-                                "No application is running"));
+  auto* app = GetApp(request.cast_session_id());
+  if (!app) {
+    LOG(ERROR) << "Application doesn't exist anymore: session_id"
+               << request.cast_session_id();
+    reactor->Write(
+        grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
     return;
   }
 
   // Reset the app only after the response is constructed.
   cast::runtime::StopApplicationResponse response;
-  response.set_app_id(app_->GetAppConfig().app_id());
-  response.set_cast_session_id(app_->GetCastSessionId());
-
-  ResetApp();
+  response.set_app_id(app->GetAppConfig().app_id());
+  response.set_cast_session_id(app->GetCastSessionId());
   reactor->Write(std::move(response));
+
+  ResetApp(request.cast_session_id());
 }
 
 void RuntimeApplicationDispatcher::HandleHeartbeat(
@@ -259,34 +294,52 @@ void RuntimeApplicationDispatcher::HandleStopMetricsRecorder(
 }
 
 void RuntimeApplicationDispatcher::OnApplicationLoaded(
+    std::string session_id,
     cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
     grpc::Status status) {
+  auto* app = GetApp(session_id);
+  if (!app) {
+    LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
+    reactor->Write(
+        grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
+    return;
+  }
+
   if (!status.ok()) {
-    LOG(ERROR) << "Failed to load application: " << *app_
+    LOG(ERROR) << "Failed to load application: " << *app
                << ", status=" << cast::utils::GrpcStatusToString(status);
-    ResetApp();
+    ResetApp(session_id);
     reactor->Write(status);
     return;
   }
 
-  LOG(INFO) << "Application loaded: " << *app_;
+  LOG(INFO) << "Application loaded: " << *app;
   cast::runtime::LoadApplicationResponse response;
   response.mutable_message_port_info();
   reactor->Write(std::move(response));
 }
 
 void RuntimeApplicationDispatcher::OnApplicationLaunched(
+    std::string session_id,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
     grpc::Status status) {
+  auto* app = GetApp(session_id);
+  if (!app) {
+    LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
+    reactor->Write(
+        grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
+    return;
+  }
+
   if (!status.ok()) {
-    LOG(ERROR) << "Failed to launch application: " << *app_
+    LOG(ERROR) << "Failed to launch application: " << *app
                << ", status=" << cast::utils::GrpcStatusToString(status);
-    ResetApp();
+    ResetApp(session_id);
     reactor->Write(status);
     return;
   }
 
-  LOG(INFO) << "Application launched: " << *app_;
+  LOG(INFO) << "Application launched: " << *app;
   reactor->Write(cast::runtime::LaunchApplicationResponse());
 }
 
@@ -357,24 +410,31 @@ void RuntimeApplicationDispatcher::OnMetricsRecorderServiceStopped(
   reactor->Write(cast::runtime::StopMetricsRecorderResponse());
 }
 
-void RuntimeApplicationDispatcher::ResetApp() {
-  app_.reset();
-  if (application_watcher_) {
-    application_watcher_->OnRuntimeApplicationChanged(nullptr);
+RuntimeApplication* RuntimeApplicationDispatcher::GetApp(
+    const std::string& session_id) const {
+  auto iter = loaded_apps_.find(session_id);
+  if (iter == loaded_apps_.end()) {
+    return nullptr;
   }
+  return iter->second.get();
+}
+
+void RuntimeApplicationDispatcher::ResetApp(const std::string& session_id) {
+  auto iter = loaded_apps_.find(session_id);
+  DCHECK(iter != loaded_apps_.end());
+  loaded_apps_.erase(iter);
+
+  // TODO(b/232140331): Call this only when foreground app changes.
+  base::ranges::for_each(observers_, [](auto& observer) {
+    observer.OnForegroundApplicationChanged(nullptr);
+  });
 }
 
 const std::string& RuntimeApplicationDispatcher::GetCastMediaServiceEndpoint()
     const {
-  return app_->GetCastMediaServiceEndpoint();
-}
-
-CastWebService* RuntimeApplicationDispatcher::GetCastWebService() const {
-  return web_service_;
-}
-
-RuntimeApplication* RuntimeApplicationDispatcher::GetRuntimeApplication() {
-  return app_.get();
+  // TODO(b/232140331): Call this only when foreground app changes.
+  DCHECK(!loaded_apps_.empty());
+  return loaded_apps_.begin()->second->GetCastMediaServiceEndpoint();
 }
 
 }  // namespace chromecast

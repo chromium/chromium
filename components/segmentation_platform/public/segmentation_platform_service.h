@@ -10,8 +10,10 @@
 #include "base/callback.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
+#include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/trigger.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -22,6 +24,9 @@ class PrefRegistrySimple;
 namespace segmentation_platform {
 class ServiceProxy;
 struct SegmentSelectionResult;
+class TriggerContext;
+
+using CallbackId = base::IdType32<class OnDemandSegmentSelectionCallbackTag>;
 
 // The core class of segmentation platform that integrates all the required
 // pieces on the client side.
@@ -63,6 +68,23 @@ class SegmentationPlatformService : public KeyedService,
   // result.
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
+
+  // Called to register a callback that will be invoked on segment selection
+  // on-demand. Returns a callback ID that can be used for unregister.
+  using OnDemandSegmentSelectionCallback =
+      base::RepeatingCallback<void(const SegmentSelectionResult&,
+                                   const TriggerContext&)>;
+  virtual CallbackId RegisterOnDemandSegmentSelectionCallback(
+      const std::string& segmentation_key,
+      const OnDemandSegmentSelectionCallback& callback) = 0;
+
+  // Called to unregister the callback with the given callback_id.
+  virtual void UnregisterOnDemandSegmentSelectionCallback(
+      CallbackId callback_id,
+      const std::string& segmentation_key) = 0;
+
+  // Called when a trigger event happens.
+  virtual void OnTrigger(std::unique_ptr<TriggerContext> trigger_context) = 0;
 
   // Called to enable or disable metrics collection. Must be explicitly called
   // on startup.

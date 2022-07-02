@@ -8,14 +8,7 @@
 
 namespace net {
 
-HttpRequestInfo::HttpRequestInfo()
-    : is_subframe_document_resource(false),
-      upload_data_stream(nullptr),
-      load_flags(0),
-      privacy_mode(PRIVACY_MODE_DISABLED),
-      secure_dns_policy(SecureDnsPolicy::kAllow),
-      reporting_upload_depth(0),
-      idempotency(net::DEFAULT_IDEMPOTENCY) {}
+HttpRequestInfo::HttpRequestInfo() = default;
 
 HttpRequestInfo::HttpRequestInfo(const HttpRequestInfo& other) = default;
 

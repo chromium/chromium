@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
                     bool has_sync_methods,
                     MessageReceiverWithResponderStatus* stub,
                     uint32_t interface_version,
-                    MessageToStableIPCHashCallback ipc_hash_callback,
+                    MessageToMethodInfoCallback method_info_callback,
                     MessageToMethodNameCallback method_name_callback);
 
   scoped_refptr<internal::MultiplexRouter> router_;
@@ -122,7 +122,7 @@ class BindingState : public BindingStateBase {
         std::move(receiver_state), runner, Interface::Name_,
         std::make_unique<typename Interface::RequestValidator_>(),
         Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_, &stub_,
-        Interface::Version_, Interface::MessageToStableIPCHash_,
+        Interface::Version_, Interface::MessageToMethodInfo_,
         Interface::MessageToMethodName_);
   }
 

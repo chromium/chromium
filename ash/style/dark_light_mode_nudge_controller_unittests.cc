@@ -5,10 +5,14 @@
 #include "ash/style/dark_light_mode_nudge_controller.h"
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 
@@ -33,12 +37,26 @@ class DarkLightModeNudgeControllerTest : public NoSessionAshTestBase {
       const DarkLightModeNudgeControllerTest&) = delete;
   ~DarkLightModeNudgeControllerTest() override = default;
 
+  // NoSessionAshTestBase:
+  void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+    Shell::Get()->dark_light_mode_controller()->SetShowNudgeForTesting(true);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DarkLightModeNudgeControllerTest, NoNudgeInGuestSession) {
   SimulateGuestLogin();
+  EXPECT_EQ(kDarkLightModeNudgeMaxShownCount,
+            DarkLightModeNudgeController::GetRemainingShownCount());
+}
+
+TEST_F(DarkLightModeNudgeControllerTest, NoNudgeWhenSkippedByCommandLineFlag) {
+  // Unit tests run with a scoped command line, so directly set the flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kAshNoNudges);
+  SimulateUserLogin(account_id);
   EXPECT_EQ(kDarkLightModeNudgeMaxShownCount,
             DarkLightModeNudgeController::GetRemainingShownCount());
 }

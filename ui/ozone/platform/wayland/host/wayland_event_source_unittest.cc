@@ -4,6 +4,7 @@
 
 #include <linux/input.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -52,7 +53,7 @@ class WaylandEventSourceTest : public WaylandTest {
     return window;
   }
 
-  WaylandPointer::Delegate* pointer_delegate_ = nullptr;
+  raw_ptr<WaylandPointer::Delegate> pointer_delegate_ = nullptr;
 };
 
 // Verify WaylandEventSource properly manages its internal state as pointer

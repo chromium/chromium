@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,17 +39,6 @@ using autofill_helper::ProfilesMatch;
 using autofill_helper::RemoveProfile;
 using autofill_helper::SetCreditCards;
 using autofill_helper::UpdateProfile;
-
-// Copied from data_type_debug_info_emitter.cc.
-enum ModelTypeEntityChange {
-  LOCAL_DELETION = 0,
-  LOCAL_CREATION = 1,
-  LOCAL_UPDATE = 2,
-  REMOTE_DELETION = 3,
-  REMOTE_NON_INITIAL_UPDATE = 4,
-  REMOTE_INITIAL_UPDATE = 5,
-  MODEL_TYPE_ENTITY_CHANGE_COUNT = 6
-};
 
 class TwoClientAutofillProfileSyncTest : public SyncTest {
  public:
@@ -104,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
 
   // Each of the clients deletes one profile.
   histograms.ExpectBucketCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                               LOCAL_DELETION, 2);
+                               syncer::ModelTypeEntityChange::kLocalDeletion,
+                               2);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
@@ -132,11 +123,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   // back as a non-initial update, for a total of 1 initial and 3 non-initial
   // updates.
   histograms.ExpectBucketCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                               LOCAL_CREATION, 2);
-  histograms.ExpectBucketCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                               REMOTE_INITIAL_UPDATE, 1);
-  histograms.ExpectBucketCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                               REMOTE_NON_INITIAL_UPDATE, 3);
+                               syncer::ModelTypeEntityChange::kLocalCreation,
+                               2);
+  histograms.ExpectBucketCount(
+      "Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
+      syncer::ModelTypeEntityChange::kRemoteInitialUpdate, 1);
+  histograms.ExpectBucketCount(
+      "Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
+      syncer::ModelTypeEntityChange::kRemoteNonInitialUpdate, 3);
   histograms.ExpectTotalCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
                               6);
 }

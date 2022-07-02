@@ -16,6 +16,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "media/base/video_frame.h"
+#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
@@ -490,6 +491,48 @@ TEST_F(VideoFrameCompositorTest, PreferredRenderInterval) {
   compositor_->Stop();
   EXPECT_EQ(compositor_->GetPreferredRenderInterval(),
             viz::BeginFrameArgs::MinInterval());
+}
+
+TEST_F(VideoFrameCompositorTest, OnContextLost) {
+  scoped_refptr<media::VideoFrame> non_gpu_frame = CreateOpaqueFrame();
+
+  gfx::Size encode_size(320, 240);
+  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
+      std::make_unique<media::FakeGpuMemoryBuffer>(
+          encode_size, gfx::BufferFormat::YUV_420_BIPLANAR);
+  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<media::VideoFrame> gpu_frame =
+      media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          gfx::Rect(encode_size), encode_size, std::move(gmb), mailbox_holders,
+          base::DoNothing(), base::TimeDelta());
+
+  compositor_->set_background_rendering_for_testing(true);
+
+  EXPECT_CALL(*submitter_, IsDrivingFrameUpdates)
+      .Times(AnyNumber())
+      .WillRepeatedly(Return(true));
+
+  // Move the clock forward. Otherwise, the current time will be 0, will appear
+  // null, and will cause DCHECKs.
+  tick_clock_.Advance(base::Seconds(1));
+
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillOnce(Return(non_gpu_frame));
+  StartVideoRendererSink();
+  compositor()->OnContextLost();
+  // frame which dose not have gpu resource should be maintained even though
+  // context is lost.
+  EXPECT_EQ(non_gpu_frame, compositor()->GetCurrentFrame());
+
+  tick_clock_.Advance(base::Seconds(1));
+  EXPECT_CALL(*this, Render(_, _, _)).WillOnce(Return(gpu_frame));
+  compositor()->UpdateCurrentFrameIfStale(
+      VideoFrameCompositor::UpdateType::kBypassClient);
+  compositor()->OnContextLost();
+  // frame which has gpu resource should be reset if context is lost
+  EXPECT_NE(gpu_frame, compositor()->GetCurrentFrame());
+
+  StopVideoRendererSink(true);
 }
 
 }  // namespace blink

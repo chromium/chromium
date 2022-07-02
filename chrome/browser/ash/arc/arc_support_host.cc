@@ -683,8 +683,8 @@ void ArcSupportHost::OnDisplayMetricsChanged(const display::Display& display,
   message_host_->SendMessage(message);
 }
 
-void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
-  const std::string* event = message.FindStringKey(kEvent);
+void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
+  const std::string* event = message.FindString(kEvent);
   if (!event) {
     NOTREACHED();
     return;
@@ -703,7 +703,7 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
     auth_delegate_->OnAuthSucceeded();
   } else if (*event == kEventOnAuthFailed) {
     DCHECK(auth_delegate_);
-    const std::string* error_message = message.FindStringKey(kAuthErrorMessage);
+    const std::string* error_message = message.FindString(kAuthErrorMessage);
     if (!error_message) {
       NOTREACHED();
       return;
@@ -715,19 +715,19 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
     auth_delegate_->OnAuthFailed(*error_message);
   } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
     DCHECK(tos_delegate_);
-    absl::optional<bool> tos_shown = message.FindBoolKey(kTosShown);
+    absl::optional<bool> tos_shown = message.FindBool(kTosShown);
     absl::optional<bool> is_metrics_enabled =
-        message.FindBoolKey(kIsMetricsEnabled);
+        message.FindBool(kIsMetricsEnabled);
     absl::optional<bool> is_backup_restore_enabled =
-        message.FindBoolKey(kIsBackupRestoreEnabled);
+        message.FindBool(kIsBackupRestoreEnabled);
     absl::optional<bool> is_backup_restore_managed =
-        message.FindBoolKey(kIsBackupRestoreManaged);
+        message.FindBool(kIsBackupRestoreManaged);
     absl::optional<bool> is_location_service_enabled =
-        message.FindBoolKey(kIsLocationServiceEnabled);
+        message.FindBool(kIsLocationServiceEnabled);
     absl::optional<bool> is_location_service_managed =
-        message.FindBoolKey(kIsLocationServiceManaged);
+        message.FindBool(kIsLocationServiceManaged);
 
-    const std::string* tos_content = message.FindStringKey(kTosContent);
+    const std::string* tos_content = message.FindString(kTosContent);
     if (!tos_content || !tos_shown.has_value() ||
         !is_metrics_enabled.has_value() ||
         !is_backup_restore_enabled.has_value() ||

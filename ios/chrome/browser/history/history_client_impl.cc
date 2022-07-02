@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/history/core/browser/history_service.h"
 #include "ios/chrome/browser/history/history_backend_client_impl.h"
@@ -60,6 +62,18 @@ std::unique_ptr<history::HistoryBackendClient>
 HistoryClientImpl::CreateBackendClient() {
   return std::make_unique<HistoryBackendClientImpl>(
       bookmark_model_ ? bookmark_model_->model_loader() : nullptr);
+}
+
+void HistoryClientImpl::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                                   base::Time time) {
+  if (!bookmark_model_)
+    return;
+  const bookmarks::BookmarkNode* node =
+      GetBookmarkNodeByID(bookmark_model_, bookmark_node_id);
+  // This call is async so the BookmarkNode could have already been deleted.
+  if (!node)
+    return;
+  bookmark_model_->UpdateLastUsedTime(node, time);
 }
 
 void HistoryClientImpl::BookmarkModelChanged() {

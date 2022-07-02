@@ -24,6 +24,9 @@ const char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 //     "https://canvas.apps.chrome/"))
 const char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
+// TODO(crbug.com/1334053)
+const char kCloudGamingPartnerPlatform[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome-untrusted://crosh/"))
 const char kCroshAppId[] = "cgfnfgkafmcdkdgilmojlnaadileaach";

@@ -15,9 +15,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/network/cellular_utils.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -379,7 +379,6 @@ std::string NetworkState::connection_state() const {
          connection_state_ == shill::kStateAssociation ||
          connection_state_ == shill::kStateConfiguration ||
          connection_state_ == shill::kStateReady ||
-         connection_state_ == shill::kStatePortal ||
          connection_state_ == shill::kStateNoConnectivity ||
          connection_state_ == shill::kStateRedirectFound ||
          connection_state_ == shill::kStatePortalSuspected ||
@@ -606,8 +605,7 @@ bool NetworkState::StateIsConnecting(const std::string& connection_state) {
 
 // static
 bool NetworkState::StateIsPortalled(const std::string& connection_state) {
-  return (connection_state == shill::kStatePortal ||
-          connection_state == shill::kStateNoConnectivity ||
+  return (connection_state == shill::kStateNoConnectivity ||
           connection_state == shill::kStateRedirectFound ||
           connection_state == shill::kStatePortalSuspected);
 }
@@ -658,8 +656,7 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
           .value_or(0);
   if (connection_state_ == shill::kStateNoConnectivity) {
     portal_state_ = PortalState::kNoInternet;
-  } else if (connection_state_ == shill::kStatePortal ||
-             connection_state_ == shill::kStateRedirectFound) {
+  } else if (connection_state_ == shill::kStateRedirectFound) {
     portal_state_ = status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED
                         ? PortalState::kProxyAuthRequired
                         : PortalState::kPortal;
@@ -671,13 +668,10 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
 
   UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult", portal_state_);
   if (portal_state_ != PortalState::kOnline) {
-    portal_status_code_ = status_code;
     NET_LOG(EVENT) << "Network is in captive portal state: " << NetworkId(this)
-                   << " status_code=" << portal_status_code_;
+                   << " status_code=" << status_code;
     base::UmaHistogramSparse("CaptivePortal.NetworkStateStatusCode",
-                             std::abs(portal_status_code_));
-  } else {
-    portal_status_code_ = 0;
+                             std::abs(status_code));
   }
 }
 

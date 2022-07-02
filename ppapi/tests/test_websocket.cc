@@ -249,7 +249,7 @@ std::string TestWebSocket::GetFullURL(const char* url) {
     rv += instance_->websocket_host();
   if (instance_->websocket_port() != -1) {
     char buffer[10];
-    sprintf(buffer, ":%d", instance_->websocket_port());
+    snprintf(buffer, sizeof(buffer), ":%d", instance_->websocket_port());
     rv += std::string(buffer);
   }
   rv += "/";

@@ -18,16 +18,15 @@ namespace segmentation_platform {
 namespace {
 
 // Test Ids.
-const OptimizationTarget kSegmentId =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-const OptimizationTarget kSegmentId2 =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+const SegmentId kSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+const SegmentId kSegmentId2 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 
-std::string ToString(OptimizationTarget segment_id) {
+std::string ToString(SegmentId segment_id) {
   return base::NumberToString(static_cast<int>(segment_id));
 }
 
-proto::SegmentInfo CreateSegment(OptimizationTarget segment_id,
+proto::SegmentInfo CreateSegment(SegmentId segment_id,
                                  absl::optional<int> result = absl::nullopt) {
   proto::SegmentInfo info;
   info.set_segment_id(segment_id);
@@ -71,14 +70,13 @@ class SegmentInfoDatabaseTest : public testing::Test {
     segment_db_.reset();
   }
 
-  void VerifyDb(std::vector<OptimizationTarget> expected_ids) {
+  void VerifyDb(std::vector<SegmentId> expected_ids) {
     EXPECT_EQ(expected_ids.size(), db_entries_.size());
     for (auto segment_id : expected_ids)
       EXPECT_TRUE(db_entries_.find(ToString(segment_id)) != db_entries_.end());
   }
 
-  void WriteResult(OptimizationTarget segment_id,
-                   absl::optional<float> result) {
+  void WriteResult(SegmentId segment_id, absl::optional<float> result) {
     proto::PredictionResult prediction_result;
     if (result.has_value())
       prediction_result.set_result(result.value());
@@ -92,8 +90,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
     db_->UpdateCallback(true);
   }
 
-  void VerifyResult(OptimizationTarget segment_id,
-                    absl::optional<float> result) {
+  void VerifyResult(SegmentId segment_id, absl::optional<float> result) {
     segment_db_->GetSegmentInfo(
         segment_id, base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                                    base::Unretained(this)));

@@ -95,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
 
   // Switch tabs so the paint events occur.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   waiter->Wait();
 

@@ -73,6 +73,11 @@ class PLATFORM_EXPORT LayoutRect {
     return gfx::RectF(X(), Y(), Width(), Height());
   }
 
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LayoutRect(double, double, double, double) = delete;
+
   constexpr LayoutPoint Location() const { return location_; }
   constexpr LayoutSize Size() const { return size_; }
 

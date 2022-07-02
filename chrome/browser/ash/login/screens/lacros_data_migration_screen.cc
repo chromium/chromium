@@ -115,7 +115,13 @@ void LacrosDataMigrationScreen::ShowImpl() {
         g_browser_process->local_state());
   }
 
-  migrator_->Migrate(base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,
+  auto mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
+                  switches::kBrowserDataMigrationMoveMode)
+                  ? crosapi::browser_util::MigrationMode::kMove
+                  : crosapi::browser_util::MigrationMode::kCopy;
+
+  migrator_->Migrate(mode,
+                     base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,
                                     weak_factory_.GetWeakPtr()));
 
   // Show the screen.

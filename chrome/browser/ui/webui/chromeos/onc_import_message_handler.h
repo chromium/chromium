@@ -8,11 +8,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace net {
 class NSSCertDatabase;
@@ -38,7 +35,7 @@ class OncImportMessageHandler : public content::WebUIMessageHandler {
   void Respond(const std::string& callback_id,
                const std::string& result,
                bool is_error);
-  void OnImportONC(const base::ListValue* list);
+  void OnImportONC(const base::Value::List& list);
   void ImportONCToNSSDB(const std::string& callback_id,
                         const std::string& onc_blob,
                         net::NSSCertDatabase* nssdb);

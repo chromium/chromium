@@ -29,10 +29,23 @@ export class DeviceNameBrowserProxy {
   attemptSetDeviceName(name) {}
 }
 
+/** @type {?DeviceNameBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {DeviceNameBrowserProxy}
  */
 export class DeviceNameBrowserProxyImpl {
+  /** @return {!DeviceNameBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new DeviceNameBrowserProxyImpl());
+  }
+
+  /** @param {!DeviceNameBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   notifyReadyForDeviceName() {
     return chrome.send('notifyReadyForDeviceName');
@@ -42,17 +55,4 @@ export class DeviceNameBrowserProxyImpl {
   attemptSetDeviceName(name) {
     return sendWithPromise('attemptSetDeviceName', name);
   }
-
-  /** @return {!DeviceNameBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new DeviceNameBrowserProxyImpl());
-  }
-
-  /** @param {!DeviceNameBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?DeviceNameBrowserProxy} */
-let instance = null;

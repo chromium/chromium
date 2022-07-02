@@ -245,6 +245,11 @@ message WinPlatformDebugInfo {
   optional bytes authroot_sequence_number = 2;
 }
 
+message ChromeRootStoreDebugInfo {
+  // The version of the Chrome root store used.
+  optional int64 chrome_root_store_version = 1;
+}
+
 // Contains the results of verification by the trial verifier. All fields
 // have the same meaning as those of the same name in CertLoggerRequest.
 message TrialVerificationInfo {
@@ -299,6 +304,7 @@ message TrialVerificationInfo {
     MAC_TRUST_IMPL_DOMAIN_CACHE = 1;
     MAC_TRUST_IMPL_SIMPLE = 2;
     MAC_TRUST_IMPL_MRU_CACHE = 3;
+    MAC_TRUST_IMPL_DOMAIN_CACHE_FULL_CERTS = 4;
   };
   optional MacTrustImplType mac_trust_impl = 13;
 
@@ -322,4 +328,7 @@ message TrialVerificationInfo {
 
   // Debug information from CertVerifyProcWin (if it was the primary verifier).
   optional WinPlatformDebugInfo win_platform_debug_info = 14;
+
+  // Debug information pertaining to the Chrome Root Store (if it was used).
+  optional ChromeRootStoreDebugInfo chrome_root_store_debug_info = 15;
 }

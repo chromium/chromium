@@ -10,7 +10,7 @@ namespace download {
 // The source of download.
 // Used in UMA metrics and persisted to disk.
 // Entries in this enum can only be appended instead of being deleted or reused.
-// Any changes here also needs to apply to enums.xml.
+// Any changes here also needs to apply to histogram_suffixes_list.xml.
 enum class DownloadSource {
   // The source is unknown.
   UNKNOWN = 0,
@@ -45,6 +45,9 @@ enum class DownloadSource {
   // Retry download. On desktop, the download is initiated in chrome://download
   // web UI. On Android, there is no renderer associated with it.
   RETRY = 10,
+
+  // Retry download triggered through the downloads bubble.
+  RETRY_FROM_BUBBLE = 11,
 };
 
 }  // namespace download

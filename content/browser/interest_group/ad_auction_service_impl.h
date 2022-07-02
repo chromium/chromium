@@ -20,6 +20,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
@@ -51,7 +52,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                           LeaveInterestGroupCallback callback) override;
   void LeaveInterestGroupForDocument() override;
   void UpdateAdInterestGroups() override;
-  void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
+  void RunAdAuction(const blink::AuctionConfig& config,
                     RunAdAuctionCallback callback) override;
   void DeprecatedGetURLFromURN(
       const GURL& urn_url,
@@ -63,13 +64,13 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
   void FinalizeAd(const std::string& ads_guid,
-                  blink::mojom::AuctionAdConfigPtr config,
+                  const blink::AuctionConfig& config,
                   FinalizeAdCallback callback) override;
 
   scoped_refptr<network::WrapperSharedURLLoaderFactory>
   GetRefCountedTrustedURLLoaderFactory();
 
-  // AuctionRunner::Delegate implementation:
+  // AuctionWorkletManager::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
   RenderFrameHostImpl* GetFrame() override;

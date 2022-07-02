@@ -80,11 +80,6 @@ bool IsSupportedLocaleForFeature(const std::string locale,
 const base::Feature kOptimizationHints{"OptimizationHints",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature flag that contains a feature param that specifies the field trials
-// that are allowed to be sent up to the Optimization Guide Server.
-const base::Feature kOptimizationHintsFieldTrials{
-    "OptimizationHintsFieldTrials", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables fetching from a remote Optimization Guide Service.
 const base::Feature kRemoteOptimizationGuideFetching{
     "OptimizationHintsFetching", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -131,7 +126,7 @@ const base::Feature kPageVisibilityPageContentAnnotations{
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
 const base::Feature kPageEntitiesModelBypassFilters{
-    "PageEntitiesModelBypassFilters", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PageEntitiesModelBypassFilters", enabled_by_default_desktop_only};
 
 // This feature flag enables resetting the entities model on shutdown.
 const base::Feature kPageEntitiesModelResetOnShutdown{
@@ -175,6 +170,9 @@ const base::Feature kOverrideNumThreadsForModelExecution{
 const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite{
     "OptGuideEnableXNNPACKDelegateWithTFLite",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kOptimizationHintsComponent{
+    "OptimizationHintsComponent", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
@@ -445,22 +443,6 @@ base::TimeDelta ModelExecutionWatchdogDefaultTimeout() {
       ));
 }
 
-base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch() {
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      kOptimizationHintsFieldTrials, "allowed_field_trial_names");
-  if (value.empty())
-    return {};
-
-  std::vector<std::string> allowed_field_trial_names = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::flat_set<uint32_t> allowed_field_trial_name_hashes;
-  for (const auto& allowed_field_trial_name : allowed_field_trial_names) {
-    allowed_field_trial_name_hashes.insert(
-        variations::HashName(allowed_field_trial_name));
-  }
-  return allowed_field_trial_name_hashes;
-}
-
 bool IsModelDownloadingEnabled() {
   return base::FeatureList::IsEnabled(kOptimizationGuideModelDownloading);
 }
@@ -643,6 +625,12 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
 
 bool TFLiteXNNPACKDelegateEnabled() {
   return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
+}
+
+bool ShouldCheckFailedComponentVersionPref() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOptimizationHintsComponent, "check_failed_component_version_pref",
+      false);
 }
 
 }  // namespace features

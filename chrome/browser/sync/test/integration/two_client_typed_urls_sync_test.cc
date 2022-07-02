@@ -46,7 +46,6 @@ using typed_urls_helper::GetAllSyncMetadata;
 using typed_urls_helper::GetTypedUrlsFromClient;
 using typed_urls_helper::GetUrlFromClient;
 using typed_urls_helper::GetVisitsFromClient;
-using typed_urls_helper::RemoveVisitsFromClient;
 using typed_urls_helper::WriteMetadataToClient;
 
 namespace {
@@ -61,19 +60,21 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   TwoClientTypedUrlsSyncTest& operator=(const TwoClientTypedUrlsSyncTest&) =
       delete;
 
-  ~TwoClientTypedUrlsSyncTest() override {}
+  ~TwoClientTypedUrlsSyncTest() override = default;
 
   ::testing::AssertionResult CheckClientsEqual() {
     history::URLRows urls = GetTypedUrlsFromClient(0);
     history::URLRows urls2 = GetTypedUrlsFromClient(1);
-    if (!CheckURLRowVectorsAreEqualForTypedURLs(urls, urls2))
+    if (!CheckURLRowVectorsAreEqualForTypedURLs(urls, urls2)) {
       return ::testing::AssertionFailure() << "URLVectors are not equal";
+    }
     // Now check the visits.
     for (size_t i = 0; i < urls.size() && i < urls2.size(); i++) {
       history::VisitVector visit1 = GetVisitsFromClient(0, urls[i].id());
       history::VisitVector visit2 = GetVisitsFromClient(1, urls2[i].id());
-      if (!AreVisitsEqual(visit1, visit2))
+      if (!AreVisitsEqual(visit1, visit2)) {
         return ::testing::AssertionFailure() << "Visits are not equal";
+      }
     }
     return ::testing::AssertionSuccess();
   }
@@ -81,10 +82,11 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   bool CheckNoDuplicateVisits() {
     for (int i = 0; i < num_clients(); ++i) {
       history::URLRows urls = GetTypedUrlsFromClient(i);
-      for (size_t j = 0; j < urls.size(); ++j) {
-        history::VisitVector visits = GetVisitsFromClient(i, urls[j].id());
-        if (!AreVisitsUnique(visits))
+      for (const history::URLRow& url : urls) {
+        history::VisitVector visits = GetVisitsFromClient(i, url.id());
+        if (!AreVisitsUnique(visits)) {
           return false;
+        }
       }
     }
     return true;
@@ -92,10 +94,11 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
 
   int GetVisitCountForFirstURL(int index) {
     history::URLRows urls = GetTypedUrlsFromClient(index);
-    if (urls.empty())
+    if (urls.empty()) {
       return 0;
-    else
+    } else {
       return urls[0].visit_count();
+    }
   }
 };
 
@@ -735,8 +738,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, SkipImportedVisits) {
   ASSERT_EQ(2U, urls.size());
 
   // Make sure the imported URL didn't make it over.
-  for (size_t i = 0; i < urls.size(); ++i) {
-    ASSERT_NE(imported_url, urls[i].url());
+  for (const history::URLRow& url : urls) {
+    ASSERT_NE(imported_url, url.url());
   }
 }
 
@@ -836,6 +839,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
   EXPECT_EQ(count_for_dummy, 1u);
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
-      /*bucket=*/ModelTypeHistogramValue(syncer::TYPED_URLS),
-      /*count=*/1);
+      /*sample=*/ModelTypeHistogramValue(syncer::TYPED_URLS),
+      /*expected_count=*/1);
 }

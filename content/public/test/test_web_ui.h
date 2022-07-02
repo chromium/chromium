@@ -30,6 +30,10 @@ class TestWebUI : public WebUI {
 
   void ClearTrackedCalls();
   void HandleReceivedMessage(const std::string& handler_name,
+                             const base::Value::List& args);
+  // TODO(crbug.com/1187062): Remove this HandleReceivedMessage() variant and
+  // switch to the one above.
+  void HandleReceivedMessage(const std::string& handler_name,
                              const base::ListValue* args);
   void set_web_contents(WebContents* web_contents) {
     web_contents_ = web_contents;
@@ -54,7 +58,7 @@ class TestWebUI : public WebUI {
       const DeprecatedMessageCallback& callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
-                           const base::ListValue& args) override {}
+                           base::Value::List args) override {}
   bool CanCallJavascript() override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name) override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name,

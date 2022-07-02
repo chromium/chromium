@@ -26,16 +26,16 @@ void UmaHistogramBoolean(const char* name, bool sample) {
 void UmaHistogramExactLinear(const std::string& name,
                              int sample,
                              int exclusive_max) {
-  HistogramBase* histogram =
-      LinearHistogram::FactoryGet(name, 1, exclusive_max, exclusive_max + 1,
-                                  HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      name, 1, exclusive_max, static_cast<size_t>(exclusive_max + 1),
+      HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
 void UmaHistogramExactLinear(const char* name, int sample, int exclusive_max) {
-  HistogramBase* histogram =
-      LinearHistogram::FactoryGet(name, 1, exclusive_max, exclusive_max + 1,
-                                  HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      name, 1, exclusive_max, static_cast<size_t>(exclusive_max + 1),
+      HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
@@ -60,7 +60,7 @@ void UmaHistogramCustomCounts(const std::string& name,
                               int sample,
                               int min,
                               int exclusive_max,
-                              int buckets) {
+                              size_t buckets) {
   HistogramBase* histogram =
       Histogram::FactoryGet(name, min, exclusive_max, buckets,
                             HistogramBase::kUmaTargetedHistogramFlag);
@@ -71,7 +71,7 @@ void UmaHistogramCustomCounts(const char* name,
                               int sample,
                               int min,
                               int exclusive_max,
-                              int buckets) {
+                              size_t buckets) {
   HistogramBase* histogram =
       Histogram::FactoryGet(name, min, exclusive_max, buckets,
                             HistogramBase::kUmaTargetedHistogramFlag);
@@ -130,7 +130,7 @@ void UmaHistogramCustomTimes(const std::string& name,
                              TimeDelta sample,
                              TimeDelta min,
                              TimeDelta max,
-                             int buckets) {
+                             size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMillisecondsGranularity(sample);
@@ -140,7 +140,7 @@ void UmaHistogramCustomTimes(const char* name,
                              TimeDelta sample,
                              TimeDelta min,
                              TimeDelta max,
-                             int buckets) {
+                             size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMillisecondsGranularity(sample);
@@ -182,7 +182,7 @@ void UmaHistogramCustomMicrosecondsTimes(const std::string& name,
                                          TimeDelta sample,
                                          TimeDelta min,
                                          TimeDelta max,
-                                         int buckets) {
+                                         size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryMicrosecondsTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMicrosecondsGranularity(sample);
@@ -192,7 +192,7 @@ void UmaHistogramCustomMicrosecondsTimes(const char* name,
                                          TimeDelta sample,
                                          TimeDelta min,
                                          TimeDelta max,
-                                         int buckets) {
+                                         size_t buckets) {
   HistogramBase* histogram = Histogram::FactoryMicrosecondsTimeGet(
       name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddTimeMicrosecondsGranularity(sample);

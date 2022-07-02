@@ -43,6 +43,10 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetAppsSyncEnabledByOs(bool apps_sync_enabled) override;
+#endif
+
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 

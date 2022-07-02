@@ -74,7 +74,7 @@ std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
       dict->FindKeyOfType("returns_async", base::Value::Type::DICTIONARY);
 
   return APISignature::CreateFromValues(*params, returns_async, access_checker,
-                                        api_name);
+                                        api_name, false /*is_event_signature*/);
 }
 
 void RunAPIBindingHandlerCallback(
@@ -330,6 +330,21 @@ APIBinding::APIBinding(const std::string& api_name,
           DCHECK(!supports_lazy_listeners)
               << "Don't specify supportsLazyListeners: true; it's the default.";
         }
+      }
+
+      if (binding::IsResponseValidationEnabled()) {
+        const base::Value* params =
+            event_dict->FindKeyOfType("parameters", base::Value::Type::LIST);
+        // NOTE: At least in tests, events may omit "parameters". It's unclear
+        // if real schemas do, too. For now, sub in an empty list if necessary.
+        // TODO(devlin): Track this down and CHECK(params).
+        base::Value empty_params(base::Value::Type::LIST);
+        std::unique_ptr<APISignature> event_signature =
+            APISignature::CreateFromValues(
+                params ? *params : empty_params, nullptr /*returns_async*/,
+                access_checker, name, true /*is_event_signature*/);
+        DCHECK(!event_signature->has_async_return());
+        type_refs_->AddEventSignature(full_name, std::move(event_signature));
       }
 
       events_.push_back(std::make_unique<EventData>(
@@ -600,6 +615,7 @@ void APIBinding::HandleCall(const std::string& name,
 
   bool invalid_invocation = false;
   v8::Local<v8::Function> custom_callback;
+  binding::ResultModifierFunction result_modifier;
   bool updated_args = false;
   int old_request_id = request_handler_->last_sent_request_id();
   {
@@ -641,6 +657,7 @@ void APIBinding::HandleCall(const std::string& name,
         break;  // Handle in the default manner.
     }
     custom_callback = hooks_result.custom_callback;
+    result_modifier = std::move(hooks_result.result_modifier);
   }
 
   if (invalid_invocation) {
@@ -685,7 +702,8 @@ void APIBinding::HandleCall(const std::string& name,
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, name, std::move(parse_result.arguments_list),
-      parse_result.async_type, parse_result.callback, custom_callback);
+      parse_result.async_type, parse_result.callback, custom_callback,
+      std::move(result_modifier));
   if (!promise.IsEmpty())
     arguments->Return(promise);
 }

@@ -385,7 +385,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
   }
 
  private:
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   quic::ParsedQuicVersion version_;
   const url::Origin origin_;
   base::test::TaskEnvironment task_environment_;

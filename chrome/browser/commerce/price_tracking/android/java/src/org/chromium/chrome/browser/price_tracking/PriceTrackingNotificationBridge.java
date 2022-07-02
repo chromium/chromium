@@ -65,7 +65,7 @@ public class PriceTrackingNotificationBridge {
             long nativePriceTrackingNotificationBridge) {
         return new PriceTrackingNotificationBridge(nativePriceTrackingNotificationBridge,
                 PriceDropNotifier.create(ContextUtils.getApplicationContext()),
-                new PriceDropNotificationManager());
+                PriceDropNotificationManagerFactory.create());
     }
 
     @VisibleForTesting

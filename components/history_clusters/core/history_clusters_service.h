@@ -76,9 +76,10 @@ class HistoryClustersService : public base::SupportsUserData,
     virtual void OnDebugMessage(const std::string& message) = 0;
   };
 
-  // Use std::unordered_set here because we have ~1000 elements at the 99th
+  // Use std::unordered_map here because we have ~1000 elements at the 99th
   // percentile, and we do synchronous lookups as the user types in the omnibox.
-  using KeywordSet = std::unordered_set<std::u16string>;
+  using KeywordMap =
+      std::unordered_map<std::u16string, history::ClusterKeywordData>;
   using URLKeywordSet = std::unordered_set<std::string>;
 
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
@@ -162,18 +163,14 @@ class HistoryClustersService : public base::SupportsUserData,
                 QueryClustersContinuationParams continuation_params,
                 QueryClustersCallback callback);
 
-  // Removes all visits to the specified URLs in the specified time ranges in
-  // `expire_list`. Calls `closure` when done.
-  void RemoveVisits(const std::vector<history::ExpireHistoryArgs>& expire_list,
-                    base::OnceClosure closure,
-                    base::CancelableTaskTracker* task_tracker);
-
-  // Returns true synchronously if `query` matches a cluster keyword. This
-  // ignores clusters with only one visit to avoid overtriggering.
-  // Note: This depends on the cache state, so this may kick off a cache refresh
-  // request while immediately returning false. It's expected that on the next
-  // keystroke, the cache may be ready and return true then.
-  bool DoesQueryMatchAnyCluster(const std::string& query);
+  // Returns matched keyword data from cache synchronously if `query` matches a
+  // cluster keyword. This ignores clusters with only one visit to avoid
+  // overtriggering. Note: This depends on the cache state, so this may kick off
+  // a cache refresh request while immediately returning null data. It's
+  // expected that on the next keystroke, the cache may be ready and return the
+  // matched keyword data then.
+  absl::optional<history::ClusterKeywordData> DoesQueryMatchAnyCluster(
+      const std::string& query);
 
   // Returns true if `url_keyword` matches a URL in a significant cluster. This
   // may kick off a cache refresh while still immediately returning false.
@@ -197,9 +194,9 @@ class HistoryClustersService : public base::SupportsUserData,
   void PopulateClusterKeywordCache(
       base::ElapsedTimer total_latency_timer,
       base::Time begin_time,
-      std::unique_ptr<KeywordSet> keyword_accumulator,
+      std::unique_ptr<KeywordMap> keyword_accumulator,
       std::unique_ptr<URLKeywordSet> url_keyword_accumulator,
-      KeywordSet* cache,
+      KeywordMap* cache,
       URLKeywordSet* url_cache,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams continuation_params);
@@ -222,7 +219,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // synchronously as the user types in the omnibox. Also save the timestamp
   // the cache was generated so we can periodically re-generate.
   // TODO(tommycli): Make a smarter mechanism for regenerating the cache.
-  KeywordSet all_keywords_cache_;
+  KeywordMap all_keywords_cache_;
   URLKeywordSet all_url_keywords_cache_;
   base::Time all_keywords_cache_timestamp_;
 
@@ -236,7 +233,7 @@ class HistoryClustersService : public base::SupportsUserData,
   //  2) Exclude keywords since keywords of size-1 clusters are not cached.
   // TODO(manukh) This is a "band aid" fix to missing keywords for recent
   //  visits.
-  KeywordSet short_keyword_cache_;
+  KeywordMap short_keyword_cache_;
   URLKeywordSet short_url_keywords_cache_;
   base::Time short_keyword_cache_timestamp_;
 

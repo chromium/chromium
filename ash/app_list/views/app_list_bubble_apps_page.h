@@ -16,6 +16,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -28,25 +29,26 @@ class Layer;
 }  // namespace ui
 
 namespace views {
+class Label;
 class Separator;
 }  // namespace views
 
 namespace ash {
 
-class AppListConfig;
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
+class AppListConfig;
 class AppListFolderController;
+class AppListKeyboardController;
 class AppListNudgeController;
 class AppListViewDelegate;
 class ContinueSectionView;
-class PillButton;
+class IconButton;
 class RecentAppsView;
 class RoundedScrollBar;
-class SearchResultPageDialogController;
-class SearchBoxView;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
+class SearchBoxView;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -67,7 +69,6 @@ class ASH_EXPORT AppListBubbleAppsPage
                         ApplicationDragAndDropHost* drag_and_drop_host,
                         AppListConfig* app_list_config,
                         AppListA11yAnnouncer* a11y_announcer,
-                        SearchResultPageDialogController* dialog_controller,
                         AppListFolderController* folder_controller,
                         SearchBoxView* search_box);
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;
@@ -80,9 +81,9 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Starts the launcher show animation.
   void AnimateShowLauncher(bool is_side_shelf);
 
-  // Starts the launcher hide animation. None of the child views animate, but
+  // Prepares for launcher hide animation. None of the child views animate, but
   // this disables the scroll view gradient mask to improve performance.
-  void AnimateHideLauncher();
+  void PrepareForHideLauncher();
 
   // Starts the animation for showing the apps page, coming from another page.
   void AnimateShowPage();
@@ -115,7 +116,6 @@ class ASH_EXPORT AppListBubbleAppsPage
   // views::View:
   void Layout() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
-  void OnThemeChanged() override;
 
   // view::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -137,14 +137,13 @@ class ASH_EXPORT AppListBubbleAppsPage
   // AppsGridViewFocusDelegate:
   bool MoveFocusUpFromAppsGrid(int column) override;
 
-  // Helper functions to move the focus to RecentAppsView/AppsGridView.
-  bool HandleMovingFocusToRecents(int column);
-  bool HandleMovingFocusToAppsGrid(int column);
-
   // Updates the visibility of the continue section based on user preference.
   void UpdateContinueSectionVisibility();
 
   views::ScrollView* scroll_view() { return scroll_view_; }
+  IconButton* toggle_continue_section_button() {
+    return toggle_continue_section_button_;
+  }
   ScrollableAppsGridView* scrollable_apps_grid_view() {
     return scrollable_apps_grid_view_;
   }
@@ -152,8 +151,8 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Which layer animates is an implementation detail.
   ui::Layer* GetPageAnimationLayerForTest();
 
-  PillButton* show_continue_section_button_for_test() {
-    return show_continue_section_button_;
+  views::View* continue_label_container_for_test() {
+    return continue_label_container_;
   }
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
   views::Separator* separator_for_test() { return separator_; }
@@ -171,6 +170,14 @@ class ASH_EXPORT AppListBubbleAppsPage
 
  private:
   friend class AppListTestHelper;
+
+  // Creates the `continue_label_container_` view and its contents, the
+  // continue label and the toggle continue section button.
+  void InitContinueLabelContainer(views::View* scroll_contents);
+
+  // Updates the continue label container and its child views, including the
+  // container visibility and the toggle button state.
+  void UpdateContinueLabelContainer();
 
   void UpdateSeparatorVisibility();
 
@@ -205,15 +212,27 @@ class ASH_EXPORT AppListBubbleAppsPage
   // animates back to its original position with `duration`.
   void SlideViewIntoPosition(views::View* view,
                              int vertical_offset,
-                             base::TimeDelta duration);
+                             base::TimeDelta duration,
+                             gfx::Tween::Type tween_type);
 
-  // Button press callback for `show_continue_section_button_`.
-  void OnPressShowContinueSection(const ui::Event& event);
+  // Animates `view` using a layer fade-in animation as part of the show
+  // continue section animation. Takes `view` because the same animation is used
+  // for continue tasks and for recent apps.
+  void FadeInContinueSectionView(views::View* view);
+
+  // Pressed callback for `toggle_continue_section_button_`.
+  void OnToggleContinueSection();
 
   AppListViewDelegate* view_delegate_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   RoundedScrollBar* scroll_bar_ = nullptr;
-  PillButton* show_continue_section_button_ = nullptr;
+
+  // Wraps both the continue label and the toggle continue section button.
+  // Only exists when feature LauncherHideContinueSection is enabled.
+  views::View* continue_label_container_ = nullptr;
+  views::Label* continue_label_ = nullptr;
+  IconButton* toggle_continue_section_button_ = nullptr;
+
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
@@ -223,10 +242,8 @@ class ASH_EXPORT AppListBubbleAppsPage
   // The search box owned by AppListBubbleView.
   SearchBoxView* search_box_ = nullptr;
 
+  std::unique_ptr<AppListKeyboardController> app_list_keyboard_controller_;
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
-
-  // Controller for showing a modal dialog in the continue section.
-  SearchResultPageDialogController* const dialog_controller_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -45,8 +46,8 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
   ~TimeZoneMonitorLinux() override;
 
   void NotifyClientsFromImpl() {
-#if BUILDFLAG(IS_CHROMECAST)
-    // On Chromecast, ICU's default time zone is already set to a new zone. No
+#if BUILDFLAG(IS_CASTOS)
+    // On CastOS, ICU's default time zone is already set to a new zone. No
     // need to redetect it with detectHostTimeZone() or to update ICU.
     // See http://b/112498903 and http://b/113344065.
     std::unique_ptr<icu::TimeZone> new_zone(icu::TimeZone::createDefault());
@@ -64,7 +65,7 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
     }
 
     UpdateIcuAndNotifyClients(std::move(new_zone));
-#endif  // defined(IS_CHROMECAST)
+#endif  // defined(IS_CASTOS)
   }
 
  private:
@@ -171,7 +172,7 @@ class TimeZoneMonitorLinuxImpl
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  TimeZoneMonitorLinux* owner_;
+  raw_ptr<TimeZoneMonitorLinux> owner_;
 };
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/scoped_mock_context.h"
@@ -87,4 +88,54 @@ TEST_F(ServiceMainTest, ExitSignalTest) {
   }
 
   ASSERT_TRUE(service_main()->IsExitSignaled());
+}
+
+TEST_F(ServiceMainTest, EncryptDecryptTest) {
+  elevation_service::ScopedMockContext mock_context;
+  ASSERT_TRUE(mock_context.Succeeded());
+
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  ASSERT_HRESULT_SUCCEEDED(
+      ::CoCreateInstance(install_static::GetElevatorClsid(), nullptr,
+                         CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&unknown)));
+
+  Microsoft::WRL::ComPtr<IElevator> elevator;
+  ASSERT_HRESULT_SUCCEEDED(unknown.As(&elevator));
+  unknown.Reset();
+
+  std::string plaintext("hello world");
+  BSTR input = ::SysAllocStringByteLen(nullptr, plaintext.length());
+  ASSERT_TRUE(input);
+
+  memcpy(input, plaintext.data(), plaintext.length());
+  base::win::ScopedBstr output;
+  DWORD last_error;
+  HRESULT hr = elevator->EncryptData(ProtectionLevel::PATH_VALIDATION, input,
+                                     output.Receive(), &last_error);
+  ::SysFreeString(input);
+
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  std::string encrypted;
+  encrypted.assign(reinterpret_cast<const char*>(output.Get()),
+                   output.ByteLength());
+
+  BSTR input2 = ::SysAllocStringByteLen(nullptr, encrypted.length());
+  memcpy(input2, encrypted.data(), encrypted.length());
+  base::win::ScopedBstr original;
+
+  hr = elevator->DecryptData(input2, original.Receive(), &last_error);
+
+  ::SysFreeString(input);
+
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  elevator.Reset();
+
+  std::string original_string;
+  original_string.assign(reinterpret_cast<const char*>(original.Get()),
+                         original.ByteLength());
+
+  ASSERT_EQ(plaintext.length(), original_string.length());
+  ASSERT_EQ(plaintext, original_string);
 }

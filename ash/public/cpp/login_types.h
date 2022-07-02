@@ -6,13 +6,13 @@
 #define ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 
 #include "ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
-#include "ash/components/security_token_pin/constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -390,16 +390,16 @@ struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {
   AccountId account_id;
 
   // Type of the code requested from the user.
-  ash::security_token_pin::CodeType code_type =
-      ash::security_token_pin::CodeType::kPin;
+  chromeos::security_token_pin::CodeType code_type =
+      chromeos::security_token_pin::CodeType::kPin;
 
   // Whether the UI controls that allow user to enter the value should be
   // enabled. MUST be |false| when |attempts_left| is zero.
   bool enable_user_input = true;
 
   // An optional error to be displayed to the user.
-  ash::security_token_pin::ErrorLabel error_label =
-      ash::security_token_pin::ErrorLabel::kNone;
+  chromeos::security_token_pin::ErrorLabel error_label =
+      chromeos::security_token_pin::ErrorLabel::kNone;
 
   // When non-negative, the UI should indicate this number to the user;
   // otherwise must be equal to -1.

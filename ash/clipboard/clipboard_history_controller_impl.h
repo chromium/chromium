@@ -72,13 +72,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       const ClipboardHistoryControllerImpl&) = delete;
   ~ClipboardHistoryControllerImpl() override;
 
-  // Clean up th child widgets prior to destruction.
+  // Clean up the child widgets prior to destruction.
   void Shutdown();
-
-  void AddObserver(
-      ClipboardHistoryController::Observer* observer) const override;
-  void RemoveObserver(
-      ClipboardHistoryController::Observer* observer) const override;
 
   // Returns if the contextual menu is currently showing.
   bool IsMenuShowing() const;
@@ -88,6 +83,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void ToggleMenuShownByAccelerator();
 
   // ClipboardHistoryController:
+  void AddObserver(ClipboardHistoryController::Observer* observer) override;
+  void RemoveObserver(ClipboardHistoryController::Observer* observer) override;
   void ShowMenu(const gfx::Rect& anchor_rect,
                 ui::MenuSourceType source_type,
                 crosapi::mojom::ClipboardHistoryControllerShowSource
@@ -216,9 +213,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Called when the contextual menu is closed.
   void OnMenuClosed();
 
-  // Mutable to allow adding/removing from |observers_| through a const
-  // ClipboardHistoryControllerImpl.
-  mutable base::ObserverList<ClipboardHistoryController::Observer> observers_;
+  // Observers notified when clipboard history is shown, used, or updated.
+  base::ObserverList<ClipboardHistoryController::Observer> observers_;
 
   // The menu being shown.
   std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;

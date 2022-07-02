@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_MOVE_CLIENT_PLATFORM_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_MOVE_CLIENT_PLATFORM_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/views_export.h"
 #include "ui/wm/public/window_move_client.h"
 
@@ -29,7 +30,7 @@ class VIEWS_EXPORT WindowMoveClientPlatform : public wm::WindowMoveClient {
 
  private:
   // The RunMoveLoop request is forwarded to this host.
-  DesktopWindowTreeHostPlatform* host_ = nullptr;
+  raw_ptr<DesktopWindowTreeHostPlatform> host_ = nullptr;
 };
 
 }  // namespace views

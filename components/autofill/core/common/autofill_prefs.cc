@@ -65,11 +65,6 @@ const char kAutofillJapanCityFieldMigratedDeprecated[] =
 // was run. This routine will be run once per version.
 const char kAutofillLastVersionDeduped[] = "autofill.last_version_deduped";
 
-// Integer that is set to the last version where the profile validation routine
-// was run. We validate profiles at least once per version to keep track of the
-// changes in the validation logic.
-const char kAutofillLastVersionValidated[] = "autofill.last_version_validated";
-
 // Integer that is set to the last version where disused addresses were
 // deleted. This deletion will be run once per version.
 const char kAutofillLastVersionDisusedAddressesDeleted[] =
@@ -85,12 +80,6 @@ const char kAutofillOrphanRowsRemoved[] = "autofill.orphan_rows_removed";
 
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 const char kAutofillProfileEnabled[] = "autofill.profile_enabled";
-
-// The field type, validity state map of all profiles.
-// TODO(crbug.com/910596): Pref name is "autofill_" instead of "autofill."
-// because of a mismatch when the priorify prefs were generated. Consider
-// migrating this back to "autofill." in the future.
-const char kAutofillProfileValidity[] = "autofill_profile_validity";
 
 // This pref stores the file path where the autofill states data is
 // downloaded to.
@@ -139,9 +128,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDeduped, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kAutofillLastVersionValidated, 0,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedAddressesDeleted, 0,
@@ -149,9 +135,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(
-      prefs::kAutofillProfileValidity, "",
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
   registry->RegisterBooleanPref(prefs::kAutofillCreditCardFidoAuthEnabled,
@@ -260,13 +243,6 @@ bool IsPaymentsIntegrationEnabled(const PrefService* prefs) {
 
 void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillWalletImportEnabled, enabled);
-}
-
-std::string GetAllProfilesValidityMapsEncodedString(const PrefService* prefs) {
-  std::string value = prefs->GetString(kAutofillProfileValidity);
-  if (base::Base64Decode(value, &value))
-    return value;
-  return std::string();
 }
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,

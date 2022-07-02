@@ -14,6 +14,7 @@
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -171,11 +172,24 @@ const char
 const char kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[] =
     "ContentSuggestions.Feed.Management.TappedUnfollowTryAgainOnSnackbar";
 
+// User action names for first follow surface.
+const char kFirstFollowGoToFeedButtonTapped[] =
+    "ContentSuggestions.Follow.FirstFollow.GoToFeedButtonTapped";
+const char kFirstFollowGotItButtonTapped[] =
+    "ContentSuggestions.Follow.FirstFollow.GotItButtonTapped";
+
 // User action name for engaging with feed.
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 
 // User action indicating that the feed will refresh.
 const char kFeedWillRefresh[] = "ContentSuggestions.Feed.WillRefresh";
+
+// User action indicating that the Discover feed was selected.
+const char kDiscoverFeedSelected[] = "ContentSuggestions.Feed.Selected";
+
+// User action indicating that the Following feed was selected.
+const char kFollowingFeedSelected[] =
+    "ContentSuggestions.Feed.WebFeed.Selected";
 
 // User action triggered when the NTP view hierarchy was fixed after being
 // detected as broken.
@@ -261,6 +275,23 @@ const char kDiscoverFeedBrokenNTPHierarchy[] =
 // Histogram name for the Feed settings when the App is being start.
 const char kFeedUserSettingsOnStart[] =
     "ContentSuggestions.Feed.UserSettingsOnStart";
+
+// Histogram names for logging followed publisher count after certain events.
+// After showing Following feed with content.
+const char kFollowCountFollowingContentShown[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.ContentShown";
+// After showing Following feed without content.
+const char kFollowCountFollowingNoContentShown[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.NoContentShown";
+// After following a channel.
+const char kFollowCountAfterFollow[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow";
+// After unfollowing a channel.
+const char kFollowCountAfterUnfollow[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
+// After engaging with the Following feed.
+const char kFollowCountWhenEngaged[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged";
 
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
@@ -606,6 +637,53 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
 }
 
+- (void)recordFeedSelected:(FeedType)feedType {
+  DCHECK(self.followDelegate);
+  switch (feedType) {
+    case FeedTypeDiscover:
+      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                      kDiscoverFeedSelected];
+      base::RecordAction(base::UserMetricsAction(kDiscoverFeedSelected));
+      break;
+    case FeedTypeFollowing:
+      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                      kFollowingFeedSelected];
+      base::RecordAction(base::UserMetricsAction(kFollowingFeedSelected));
+      NSUInteger followCount = [self.followDelegate followedPublisherCount];
+      if (followCount > 0 &&
+          [self.followDelegate doesFollowingFeedHaveContent]) {
+        [self recordFollowCount:followCount
+                   forLogReason:FollowCountLogReasonContentShown];
+      } else {
+        [self recordFollowCount:followCount
+                   forLogReason:FollowCountLogReasonNoContentShown];
+      }
+      break;
+  }
+}
+
+- (void)recordFollowCount:(NSUInteger)followCount
+             forLogReason:(FollowCountLogReason)logReason {
+  switch (logReason) {
+    case FollowCountLogReasonContentShown:
+      base::UmaHistogramSparse(kFollowCountFollowingContentShown, followCount);
+      break;
+    case FollowCountLogReasonNoContentShown:
+      base::UmaHistogramSparse(kFollowCountFollowingNoContentShown,
+                               followCount);
+      break;
+    case FollowCountLogReasonAfterFollow:
+      base::UmaHistogramSparse(kFollowCountAfterFollow, followCount);
+      break;
+    case FollowCountLogReasonAfterUnfollow:
+      base::UmaHistogramSparse(kFollowCountAfterUnfollow, followCount);
+      break;
+    case FollowCountLogReasonEngaged:
+      base::UmaHistogramSparse(kFollowCountWhenEngaged, followCount);
+      break;
+  }
+}
+
 - (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
                                          feedVisible:(BOOL)feedVisible
                                             signedIn:(BOOL)signedIn
@@ -625,7 +703,6 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 #pragma mark - Follow
 
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
-  // TODO(crbug.com/1324452): Record histogram.
   switch (followRequestType) {
     case FollowRequestType::kFollowRequestFollow:
       base::RecordAction(base::UserMetricsAction(kFollowRequested));
@@ -636,34 +713,67 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
+- (void)recordFollowFromMenu {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedFollowButton];
+  base::RecordAction(base::UserMetricsAction("MobileMenuUnfollow"));
+}
+
+- (void)recordUnfollowFromMenu {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedUnfollowButton];
+  base::RecordAction(base::UserMetricsAction("MobileMenuFollow"));
+}
+
 - (void)recordFollowConfirmationShownWithType:
     (FollowConfirmationType)followConfirmationType {
-  // TODO(crbug.com/1324452): Record histogram.
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
+                            FeedUserActionType::kShowSnackbar);
   switch (followConfirmationType) {
     case FollowConfirmationType::kFollowSucceedSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
+                                FeedUserActionType::kShowFollowSucceedSnackbar);
+      break;
     case FollowConfirmationType::kFollowErrorSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
+                                FeedUserActionType::kShowFollowFailedSnackbar);
+      break;
     case FollowConfirmationType::kUnfollowSucceedSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(
+          kDiscoverFeedUserActionHistogram,
+          FeedUserActionType::kShowUnfollowSucceedSnackbar);
+      break;
     case FollowConfirmationType::kUnfollowErrorSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(
+          kDiscoverFeedUserActionHistogram,
+          FeedUserActionType::kShowUnfollowFailedSnackbar);
       break;
   }
 }
 
 - (void)recordFollowSnackbarTappedWithAction:
     (FollowSnackbarActionType)followSnackbarActionType {
-  // TODO(crbug.com/1324452): Record histogram.
   switch (followSnackbarActionType) {
     case FollowSnackbarActionType::kSnackbarActionGoToFeed:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedGoToFeedOnSnackbar];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarGoToFeedButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionUndo:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
       base::RecordAction(base::UserMetricsAction(kSnackbarUndoButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionRetryFollow:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedFollowTryAgainOnSnackbar];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarRetryFollowButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionRetryUnfollow:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarRetryUnfollowButtonTapped));
       break;
@@ -691,6 +801,28 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
       kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
+- (void)recordFirstFollowShown {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kFirstFollowSheetShown];
+}
+
+- (void)recordFirstFollowTappedGoToFeed {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kFirstFollowSheetTappedGoToFeed];
+  base::RecordAction(base::UserMetricsAction(kFirstFollowGoToFeedButtonTapped));
+}
+
+- (void)recordFirstFollowTappedGotIt {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kFirstFollowSheetTappedGotIt];
+  base::RecordAction(base::UserMetricsAction(kFirstFollowGotItButtonTapped));
+}
+
+- (void)recordFollowRecommendationIPHShown {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kFollowRecommendationIPHShown];
+}
+
 #pragma mark - Private
 
 // Returns the UserSettingsOnStart value based on the user settings.
@@ -716,7 +848,9 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   const base::TimeDelta delta = base::Time::Now() - lastRefreshTime;
-  if (delta >= base::TimeDelta() && delta <= kUserSettingsMaxAge) {
+  const BOOL hasRecentData =
+      delta >= base::TimeDelta() && delta <= kUserSettingsMaxAge;
+  if (!hasRecentData) {
     return UserSettingsOnStart::kSignedInNoRecentData;
   }
 
@@ -782,7 +916,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
-// Records simple engagement for the current |selectedFeed|.
+// Records simple engagement for the current `selectedFeed`.
 - (void)recordEngagedSimple {
   // If neither feed has been engaged with, log "AllFeeds" simple engagement.
   if (!self.engagedSimpleReportedDiscover &&
@@ -830,6 +964,11 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);
     self.engagedReportedFollowing = YES;
+
+    // Log follow count when engaging with Following feed.
+    // TODO(crbug.com/1322640): `followDelegate` is nil when navigating to an
+    // article, since NTPCoordinator is stopped first. When this is fixed, we
+    // should call `recordFollowCount` here.
   }
 
   // TODO(crbug.com/1322640): Separate user action for Following feed
@@ -856,7 +995,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   self.scrolledReportedFollowing = NO;
 }
 
-// Records the |durationInSeconds| it took to Discover feed to perform any
+// Records the `durationInSeconds` it took to Discover feed to perform any
 // network operation.
 - (void)recordNetworkRequestDurationInSeconds:
     (NSTimeInterval)durationInSeconds {

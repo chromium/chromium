@@ -24,32 +24,26 @@ source_set("feature_list") {
   ]
 
   deps = [
+    ":commerce_heuristics_data",
     "//base",
     "//components/flags_ui",
     "//components/search",
     "//third_party/re2:re2",
     "//url:url",
   ]
-
-  if (!is_android) {
-    deps += [ ":commerce_heuristics_data" ]
-  }
 }
 
 source_set("feature_list_unittests") {
   testonly = true
   sources = [ "commerce_feature_list_unittest.cc" ]
   deps = [
+    ":commerce_heuristics_data",
     ":feature_list",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
     "//third_party/re2:re2",
   ]
-
-  if (!is_android) {
-    deps += [ ":commerce_heuristics_data" ]
-  }
 }
 
 static_library("metrics") {
@@ -69,7 +63,10 @@ static_library("metrics") {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "proto/price_tracking.proto" ]
+  sources = [
+    "proto/merchant_trust.proto",
+    "proto/price_tracking.proto",
+  ]
 }
 
 if (is_android) {
@@ -77,52 +74,70 @@ if (is_android) {
     proto_path = "."
     sources = [ "proto/price_tracking.proto" ]
   }
+
+  proto_library("merchant_signal_db_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/merchant_signal_db_content.proto" ]
+  }
+
+  proto_library("commerce_subscription_db_content_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/commerce_subscription_db_content.proto" ]
+  }
+} else {
+  proto_library("cart_db_content_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/cart_db_content.proto" ]
+  }
+
+  proto_library("coupon_db_content_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/coupon_db_content.proto" ]
+  }
 }
 
-if (!is_android) {
-  source_set("commerce_heuristics_data") {
-    sources = [
-      "commerce_heuristics_data.cc",
-      "commerce_heuristics_data.h",
-      "commerce_heuristics_data_metrics_helper.cc",
-      "commerce_heuristics_data_metrics_helper.h",
-    ]
+source_set("commerce_heuristics_data") {
+  sources = [
+    "commerce_heuristics_data.cc",
+    "commerce_heuristics_data.h",
+    "commerce_heuristics_data_metrics_helper.cc",
+    "commerce_heuristics_data_metrics_helper.h",
+  ]
 
-    deps = [
-      "//base",
-      "//third_party/re2:re2",
-    ]
-  }
+  deps = [
+    "//base",
+    "//third_party/re2:re2",
+  ]
+}
 
-  source_set("commerce_heuristics_data_unittests") {
-    testonly = true
-    sources = [ "commerce_heuristics_data_unittest.cc" ]
-    deps = [
-      ":commerce_heuristics_data",
-      "//base",
-      "//base/test:test_support",
-      "//testing/gtest",
-      "//third_party/re2:re2",
-    ]
-  }
+source_set("commerce_heuristics_data_unittests") {
+  testonly = true
+  sources = [ "commerce_heuristics_data_unittest.cc" ]
+  deps = [
+    ":commerce_heuristics_data",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/re2:re2",
+  ]
+}
 
-  source_set("heuristics_provider") {
-    sources = [
-      "heuristics/commerce_heuristics_provider.cc",
-      "heuristics/commerce_heuristics_provider.h",
-    ]
+source_set("heuristics_provider") {
+  sources = [
+    "heuristics/commerce_heuristics_provider.cc",
+    "heuristics/commerce_heuristics_provider.h",
+  ]
 
-    deps = [
-      ":commerce_heuristics_data",
-      ":feature_list",
-      "//base",
-      "//components/resources:components_resources_grit",
-      "//net",
-      "//third_party/re2:re2",
-      "//ui/base",
-      "//url:url",
-    ]
-  }
+  deps = [
+    ":commerce_heuristics_data",
+    ":feature_list",
+    "//base",
+    "//components/resources:components_resources_grit",
+    "//net",
+    "//third_party/re2:re2",
+    "//ui/base",
+    "//url:url",
+  ]
 }
 
 static_library("shopping_service") {
@@ -133,11 +148,14 @@ static_library("shopping_service") {
     "shopping_bookmark_model_observer.h",
     "shopping_service.cc",
     "shopping_service.h",
+    "web_wrapper.h",
   ]
 
   deps = [
     ":feature_list",
+    ":metrics",
     ":proto",
+    ":subscriptions",
     "//base",
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
@@ -166,21 +184,60 @@ if (is_android) {
   }
 }
 
-source_set("shopping_service_unit_tests") {
+source_set("shopping_service_test_support") {
   testonly = true
 
-  sources = [ "shopping_service_unittest.cc" ]
+  sources = [
+    "shopping_service_test_base.cc",
+    "shopping_service_test_base.h",
+  ]
 
   deps = [
     ":feature_list",
     ":shopping_service",
-    "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
     "//testing/gtest",
     "//url:url",
+  ]
+}
+
+source_set("shopping_service_unit_tests") {
+  testonly = true
+
+  sources = [
+    "pdp_metrics_unittest.cc",
+    "shopping_service_unittest.cc",
+  ]
+
+  deps = [
+    ":feature_list",
+    ":metrics",
+    ":shopping_service",
+    ":shopping_service_test_support",
+    "//base/test:test_support",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}
+
+source_set("subscriptions") {
+  sources = [
+    "subscriptions/commerce_subscription.cc",
+    "subscriptions/commerce_subscription.h",
+    "subscriptions/subscriptions_manager.cc",
+    "subscriptions/subscriptions_manager.h",
+  ]
+
+  deps = [
+    ":feature_list",
+    "//base",
   ]
 }

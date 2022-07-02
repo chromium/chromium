@@ -17,7 +17,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "crypto/sha2.h"
@@ -172,7 +172,7 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
           cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
               user_context));
   request.set_unlock_webauthn_secret(unlock_webauthn_secret);
-  chromeos::UserDataAuthClient::Get()->CheckKey(
+  UserDataAuthClient::Get()->CheckKey(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::CheckKeyReply>,
                               this, "Cryptohome-CheckKeyEx-End", user_context,

@@ -11,7 +11,7 @@ boundary effectively within this regime. CXX fills in the low level stuff so
 that you get a safe binding, preventing the pitfalls of doing a foreign function
 interface over unsafe C-style signatures.
 
-<div style="height:226px;padding:34px 0 24px">
+<div style="height:190px;width=718px;padding:44px 0 44px">
 <object type="image/svg+xml" data="overview.svg"></object>
 </div>
 

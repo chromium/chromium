@@ -103,6 +103,8 @@ std::string V4L2DecodeSurface::ToString() const {
   return out;
 }
 
+// ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
 void V4L2ConfigStoreDecodeSurface::PrepareSetCtrls(
     struct v4l2_ext_controls* ctrls) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -140,6 +142,7 @@ bool V4L2ConfigStoreDecodeSurface::Submit() {
 
   return false;
 }
+#endif
 
 void V4L2RequestDecodeSurface::PrepareSetCtrls(
     struct v4l2_ext_controls* ctrls) const {

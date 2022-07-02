@@ -128,6 +128,7 @@
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredDark) \
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredLight) \
   E_CPONLY(kColorProgressBar) \
+  E_CPONLY(kColorProgressBarPaused) \
   E_CPONLY(kColorSeparator) \
   E_CPONLY(kColorShadowBase) \
   E_CPONLY(kColorShadowValueAmbientShadowElevationSixteen) \
@@ -184,10 +185,35 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
+  /* NOTE: Nearly all of the following CrOS color ids will need to be re- */ \
+  /* evaluated once CrOS fully supports the color pipeline. */ \
+  E_CPONLY(kColorAshActionLabelFocusRingEdit) \
+  E_CPONLY(kColorAshActionLabelFocusRingError) \
+  E_CPONLY(kColorAshActionLabelFocusRingHover) \
+  \
+  /* TODO(skau): Remove Compat value when dark/light mode launches. */ \
+  E_CPONLY(kColorAshAppListFocusRingCompat) \
+  E_CPONLY(kColorAshAppListFocusRingNoKeyboard) \
+  E_CPONLY(kColorAshAppListSeparator) \
+  E_CPONLY(kColorAshAppListSeparatorLight) \
+  E_CPONLY(kColorAshArcInputMenuSeparator) \
+  E_CPONLY(kColorAshFocusRing) \
+  /* TODO(kylixrd): Determine whether this special color should follow */ \
+  /* light/dark mode. Remove if it should equal kColorAshFocusRing. */ \
+  E_CPONLY(kColorAshEditFinishFocusRing) \
+  E_CPONLY(kColorAshIconInOobe) \
+  \
+  /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
+  E_CPONLY(kColorAshLightFocusRing) \
+  \
+  E_CPONLY(kColorAshOnboardingFocusRing) \
+  \
   E_CPONLY(kColorAshSystemUIBorderColor1) \
   E_CPONLY(kColorAshSystemUIBorderColor2) \
+  E_CPONLY(kColorAshSystemUIBorderColor3) \
   E_CPONLY(kColorAshSystemUIHighlightColor1) \
   E_CPONLY(kColorAshSystemUIHighlightColor2) \
+  E_CPONLY(kColorAshSystemUIHighlightColor3) \
   \
   /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
   E_CPONLY(kColorAshSystemUILightBorderColor1) \
@@ -199,6 +225,7 @@
   E_CPONLY(kColorAshSystemUIMenuIcon) \
   E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \
   E_CPONLY(kColorAshSystemUIMenuSeparator) \
+  \
   E_CPONLY(kColorNativeColor1) \
   E_CPONLY(kColorNativeColor1Shade1) \
   E_CPONLY(kColorNativeColor1Shade2) \
@@ -211,81 +238,16 @@
   E_CPONLY(kColorNativeSecondaryColor)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E_CPONLY(kColorNativeButtonBackground) \
-  E_CPONLY(kColorNativeButtonBackgroundDisabled) \
-  E_CPONLY(kColorNativeButtonBorder) \
-  E_CPONLY(kColorNativeButtonForeground) \
-  E_CPONLY(kColorNativeButtonForegroundDisabled) \
-  E_CPONLY(kColorNativeButtonIcon) \
-  E_CPONLY(kColorNativeComboboxBackground) \
-  E_CPONLY(kColorNativeComboboxBackgroundHovered) \
-  E_CPONLY(kColorNativeComboboxForeground) \
-  E_CPONLY(kColorNativeComboboxForegroundHovered) \
-  E_CPONLY(kColorNativeFrameActive) \
-  E_CPONLY(kColorNativeFrameInactive) \
-  E_CPONLY(kColorNativeFrameBorder) \
+  E_CPONLY(kColorNativeButtonBorder)\
   E_CPONLY(kColorNativeHeaderButtonBorderActive) \
   E_CPONLY(kColorNativeHeaderButtonBorderInactive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderActive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderInactive) \
-  E_CPONLY(kColorNativeImageButtonForeground) \
-  E_CPONLY(kColorNativeImageButtonForegroundHovered) \
-  E_CPONLY(kColorNativeLabelBackgroundSelected) \
   E_CPONLY(kColorNativeLabelForeground) \
-  E_CPONLY(kColorNativeLabelForegroundDisabled) \
-  E_CPONLY(kColorNativeLabelForegroundSelected) \
-  E_CPONLY(kColorNativeLinkForeground) \
-  E_CPONLY(kColorNativeLinkForegroundDisabled) \
-  E_CPONLY(kColorNativeLinkForegroundHovered) \
-  E_CPONLY(kColorNativeMenuBackground) \
-  E_CPONLY(kColorNativeMenuBorder) \
-  E_CPONLY(kColorNativeMenuItemAccelerator) \
-  E_CPONLY(kColorNativeMenuItemBackgroundHovered) \
-  E_CPONLY(kColorNativeMenuItemForeground) \
-  E_CPONLY(kColorNativeMenuItemForegroundDisabled) \
-  E_CPONLY(kColorNativeMenuItemForegroundHovered) \
-  E_CPONLY(kColorNativeMenuRadio) \
-  E_CPONLY(kColorNativeMenuSeparator) \
-  E_CPONLY(kColorNativeScaleHighlightBackground) \
-  E_CPONLY(kColorNativeScaleHighlightBackgroundDisabled) \
-  E_CPONLY(kColorNativeScaleTroughBackground) \
-  E_CPONLY(kColorNativeScaleTroughBackgroundDisabled) \
-  E_CPONLY(kColorNativeScrollbarSliderBackground) \
-  E_CPONLY(kColorNativeScrollbarSliderBackgroundHovered) \
-  E_CPONLY(kColorNativeScrollbarTroughBackground) \
-  E_CPONLY(kColorNativeScrollbarTroughBackgroundHovered) \
-  E_CPONLY(kColorNativeSeparator) \
-  E_CPONLY(kColorNativeSpinner) \
-  E_CPONLY(kColorNativeSpinnerDisabled) \
-  E_CPONLY(kColorNativeStatusbarBackground) \
-  E_CPONLY(kColorNativeTabBackgroundChecked) \
-  E_CPONLY(kColorNativeTabBackgroundCheckedFocused) \
   E_CPONLY(kColorNativeTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorNativeTabForegroundInactiveFrameInactive) \
-  E_CPONLY(kColorNativeTextareaBackground) \
-  E_CPONLY(kColorNativeTextareaBackgroundDisabled) \
-  E_CPONLY(kColorNativeTextareaBackgroundSelected) \
-  E_CPONLY(kColorNativeTextareaForeground) \
-  E_CPONLY(kColorNativeTextareaForegroundDisabled) \
-  E_CPONLY(kColorNativeTextareaForegroundSelected) \
-  E_CPONLY(kColorNativeTextfieldBorderUnfocused) \
-  E_CPONLY(kColorNativeTextfieldBorderFocused) \
-  E_CPONLY(kColorNativeTextfieldForegroundPlaceholder) \
-  E_CPONLY(kColorNativeToggleButtonBackgroundChecked) \
-  E_CPONLY(kColorNativeToggleButtonBackgroundUnchecked) \
-  E_CPONLY(kColorNativeToolbarBackground) \
-  E_CPONLY(kColorNativeTooltipBackground) \
-  E_CPONLY(kColorNativeTooltipForeground) \
-  E_CPONLY(kColorNativeTreeHeaderBackground) \
-  E_CPONLY(kColorNativeTreeHeaderBorder) \
-  E_CPONLY(kColorNativeTreeHeaderForeground) \
-  E_CPONLY(kColorNativeTreeNodeBackground) \
-  E_CPONLY(kColorNativeTreeNodeBackgroundSelected) \
-  E_CPONLY(kColorNativeTreeNodeBackgroundSelectedFocused) \
-  E_CPONLY(kColorNativeTreeNodeForeground) \
-  E_CPONLY(kColorNativeTreeNodeForegroundSelected) \
-  E_CPONLY(kColorNativeTreeNodeForegroundSelectedFocused) \
-  E_CPONLY(kColorNativeWindowBackground)
+  E_CPONLY(kColorNativeTextfieldBorderUnfocused)\
+  E_CPONLY(kColorNativeToolbarBackground)
 #elif BUILDFLAG(IS_WIN)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNative3dDkShadow) \

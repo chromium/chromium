@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +35,7 @@ class MetricsReportingObserverTest : public ::testing::Test {
   }
 
  private:
-  MockMetricsServiceProxy* mock_metrics_service_;
+  raw_ptr<MockMetricsServiceProxy> mock_metrics_service_;
   std::unique_ptr<MetricsReportingObserver> observer_;
 };
 

@@ -17,31 +17,58 @@ namespace blink {
 
 namespace {
 
+// Gets the resolved direction for any inline, including non-atomic inline
+// boxes.
+//
+// TODO(yosin): We should share |ResolvedDirection()| with "bidi_adjustment.cc"
+TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
+  if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
+    return cursor.Current().ResolvedDirection();
+
+  // TODO(andreubotella): We should define the |TextDirection| of an inline box,
+  // which is used to determine at which edge of a non-editable box to place the
+  // text editing caret. We currently use the line's base direction, but this is
+  // wrong:
+  //   <div dir=ltr>abc A<b>B</b>C abc</div>
+  NGInlineCursor line_box;
+  line_box.MoveTo(cursor);
+  line_box.MoveToContainingLine();
+  return line_box.Current().BaseDirection();
+}
+
 PhysicalRect ComputeLocalCaretRectByBoxSide(const NGInlineCursor& cursor,
                                             NGCaretPositionType position_type) {
   const bool is_horizontal = cursor.Current().Style().IsHorizontalWritingMode();
   NGInlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   DCHECK(line_box);
-  const PhysicalOffset offset_to_line_box =
-      cursor.Current().OffsetInContainerFragment() -
+  const PhysicalOffset offset = cursor.Current().OffsetInContainerFragment();
+  const PhysicalOffset line_box_offset =
       line_box.Current().OffsetInContainerFragment();
   LayoutUnit caret_height = is_horizontal ? line_box.Current().Size().height
                                           : line_box.Current().Size().width;
-  LayoutUnit caret_top =
-      is_horizontal ? -offset_to_line_box.top : -offset_to_line_box.left;
+  LayoutUnit caret_top;
+  if (cursor.Current().IsAtomicInline()) {
+    caret_top = is_horizontal ? line_box_offset.top - offset.top
+                              : line_box_offset.left - offset.left;
+  } else {
+    caret_top = is_horizontal ? line_box_offset.top : line_box_offset.left;
+  }
 
   const LocalFrameView* frame_view =
       cursor.Current().GetLayoutObject()->GetDocument().View();
   LayoutUnit caret_width = frame_view->CaretWidth();
 
-  const bool is_ltr = IsLtr(cursor.Current().ResolvedDirection());
+  const bool is_ltr = IsLtr(ResolvedDirection(cursor));
   LayoutUnit caret_left;
+  if (!cursor.Current().IsAtomicInline()) {
+    caret_left = is_horizontal ? offset.left : offset.top;
+  }
   if (is_ltr != (position_type == NGCaretPositionType::kBeforeBox)) {
     if (is_horizontal)
-      caret_left = cursor.Current().Size().width - caret_width;
+      caret_left += cursor.Current().Size().width - caret_width;
     else
-      caret_left = cursor.Current().Size().height - caret_width;
+      caret_left += cursor.Current().Size().height - caret_width;
   }
 
   if (!is_horizontal) {
@@ -133,7 +160,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
       ShouldAlignCaretRight(block_style.GetTextAlign(is_last_line),
                             line_box.Current().BaseDirection()) &&
       (style.GetUnicodeBidi() != UnicodeBidi::kPlaintext ||
-       IsLtr(cursor.Current().ResolvedDirection()));
+       IsLtr(ResolvedDirection(cursor)));
 
   // For horizontal text, adjust the location in the x direction to ensure that
   // it completely falls in the union of line box and containing block, and

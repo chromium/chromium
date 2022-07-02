@@ -32,6 +32,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -130,7 +130,8 @@ class BitmapImageTest : public testing::Test {
 
     void DecodedSizeChangedTo(const Image*, size_t new_size) override {
       last_decoded_size_changed_delta_ =
-          SafeCast<int>(new_size) - SafeCast<int>(last_decoded_size_);
+          base::checked_cast<int>(new_size) -
+          base::checked_cast<int>(last_decoded_size_);
       last_decoded_size_ = new_size;
     }
     bool ShouldPauseAnimation(const Image*) override { return false; }

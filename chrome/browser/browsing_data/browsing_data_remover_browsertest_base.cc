@@ -446,6 +446,7 @@ BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Profile* profile) {
       std::move(container), profile->GetExtensionSpecialStoragePolicy());
   model->AddCookiesTreeObserver(&observer);
   run_loop.Run();
+  model->RemoveCookiesTreeObserver(&observer);
   return model;
 }
 

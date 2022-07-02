@@ -11,8 +11,10 @@
 
 namespace commerce::metrics {
 
+const char kPDPStateHistogramName[] = "Commerce.PDPStateOnNavigation";
+
 void RecordPDPStateToUma(ShoppingPDPState state) {
-  base::UmaHistogramEnumeration("Commerce.PDPStateOnNavigation", state);
+  base::UmaHistogramEnumeration(kPDPStateHistogramName, state);
 }
 
 ShoppingPDPState ComputeStateForOptGuideResult(

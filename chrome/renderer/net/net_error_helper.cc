@@ -39,7 +39,6 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -285,8 +284,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
                                   extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
   // "t" is the id of the template's root node.
-  *error_html =
-      webui::GetTemplatesHtml(template_html, &page_state.strings, "t");
+  *error_html = webui::GetTemplatesHtml(template_html, page_state.strings, "t");
   return page_state;
 }
 

@@ -37,7 +37,7 @@ suite('TimezoneSubpageTests', function() {
 
   test('Timezone autodetect by geolocation radio', async () => {
     const timezoneRadioGroup =
-        assert(timezoneSubpage.$$('#timeZoneRadioGroup'));
+        assert(timezoneSubpage.shadowRoot.querySelector('#timeZoneRadioGroup'));
 
     // Resolve timezone by geolocation is on.
     timezoneSubpage.setPrefValue(
@@ -52,16 +52,16 @@ suite('TimezoneSubpageTests', function() {
     assertEquals('false', timezoneRadioGroup.selected);
 
     // Set timezone autodetect on by clicking the 'on' radio.
-    const timezoneAutodetectOn =
-        assert(timezoneSubpage.$$('#timeZoneAutoDetectOn'));
+    const timezoneAutodetectOn = assert(
+        timezoneSubpage.shadowRoot.querySelector('#timeZoneAutoDetectOn'));
     timezoneAutodetectOn.click();
     assertTrue(timezoneSubpage
                    .getPref('generated.resolve_timezone_by_geolocation_on_off')
                    .value);
 
     // Turn timezone autodetect off by clicking the 'off' radio.
-    const timezoneAutodetectOff =
-        assert(timezoneSubpage.$$('#timeZoneAutoDetectOff'));
+    const timezoneAutodetectOff = assert(
+        timezoneSubpage.shadowRoot.querySelector('#timeZoneAutoDetectOff'));
     timezoneAutodetectOff.click();
     assertFalse(timezoneSubpage
                     .getPref('generated.resolve_timezone_by_geolocation_on_off')
@@ -78,7 +78,8 @@ suite('TimezoneSubpageTests', function() {
     Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE, params);
 
     const deepLinkElement =
-        timezoneSubpage.$$('#timeZoneAutoDetectOn').$$('#button');
+        timezoneSubpage.shadowRoot.querySelector('#timeZoneAutoDetectOn')
+            .shadowRoot.querySelector('#button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

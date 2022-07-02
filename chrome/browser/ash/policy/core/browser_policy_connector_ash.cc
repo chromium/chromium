@@ -72,12 +72,12 @@
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -159,7 +159,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
               device_active_directory_policy_manager_));
     } else {
       state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
-          chromeos::SessionManagerClient::Get());
+          ash::SessionManagerClient::Get());
 
       const base::FilePath device_policy_external_data_path =
           base::PathService::CheckedGet(ash::DIR_DEVICE_POLICY_EXTERNAL_DATA);
@@ -211,8 +211,8 @@ void BrowserPolicyConnectorAsh::Init(
   if (!ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
     device_local_account_policy_service_ =
         std::make_unique<DeviceLocalAccountPolicyService>(
-            chromeos::SessionManagerClient::Get(),
-            ash::DeviceSettingsService::Get(), ash::CrosSettings::Get(),
+            ash::SessionManagerClient::Get(), ash::DeviceSettingsService::Get(),
+            ash::CrosSettings::Get(),
             affiliated_invalidation_service_provider_.get(),
             CreateBackgroundTaskRunner(), CreateBackgroundTaskRunner(),
             CreateBackgroundTaskRunner(), url_loader_factory);
@@ -221,7 +221,7 @@ void BrowserPolicyConnectorAsh::Init(
     // Initialize state keys and enrollment ID upload mechanisms to DM Server in
     // Active Directory mode.
     state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
-        chromeos::SessionManagerClient::Get());
+        ash::SessionManagerClient::Get());
     active_directory_device_state_uploader_ =
         std::make_unique<ActiveDirectoryDeviceStateUploader>(
             /*client_id=*/GetInstallAttributes()->GetDeviceId(),

@@ -209,13 +209,6 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   if (ShouldSkipWindow(window))
     return std::string();
 
-  ash::ShelfID shelf_id =
-      ash::ShelfID::Deserialize(window->GetProperty(ash::kShelfIDKey));
-  if (shelf_id.app_id == crostini::kCrostiniInstallerShelfId ||
-      shelf_id.app_id == crostini::kCrostiniUpgraderShelfId) {
-    return shelf_id.app_id;
-  }
-
   // Handle browser windows.
   Browser* browser = chrome::FindBrowserWithWindow(window);
   if (browser)

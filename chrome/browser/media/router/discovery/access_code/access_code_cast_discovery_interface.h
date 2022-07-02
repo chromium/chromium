@@ -9,12 +9,12 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
-#include "components/leveldb_proto/public/proto_database.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -88,12 +88,12 @@ class AccessCodeCastDiscoveryInterface {
   AddSinkResultCode IsResponseValid(
       const absl::optional<base::Value>& response);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   // Access code passed down from the WebUI and used in the construction of the
   // discovery interface object.
   const std::string access_code_;
 
-  LoggerImpl* const logger_;
+  const raw_ptr<LoggerImpl> logger_;
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
 

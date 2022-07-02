@@ -35,6 +35,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -55,9 +56,9 @@ END_METADATA
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
-  views::SetCascadingThemeProviderColor(
+  views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
-      ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE);
+      kColorTabBackgroundInactiveFrameInactive);
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -163,13 +164,26 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
 
   // Perform a hit test against the |tab_strip_container_| to ensure that the
   // rect is within the visible portion of the |tab_strip_| before calling the
-  // tab strip's |IsRectInWindowCaption()|.
+  // tab strip's |IsRectInWindowCaption()| for scrolling disabled. Defer to
+  // scroll container if scrolling is enabled.
   // TODO(tluk): Address edge case where |rect| might partially intersect with
   // the |tab_strip_container_| and the |tab_strip_| but not over the same
   // pixels. This could lead to this returning false when it should be returning
   // true.
-  if (tab_strip_container_->HitTestRect(get_target_rect(tab_strip_container_)))
-    return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
+
+  if (tab_strip_container_->HitTestRect(
+          get_target_rect(tab_strip_container_))) {
+    if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+      TabStripScrollContainer* scroll_container =
+          views::AsViewClass<TabStripScrollContainer>(tab_strip_container_);
+
+      return scroll_container->IsRectInWindowCaption(
+          get_target_rect(scroll_container));
+
+    } else {
+      return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
+    }
+  }
 
   // The child could have a non-rectangular shape, so if the rect is not in the
   // visual portions of the child view we treat it as a click to the caption.

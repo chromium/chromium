@@ -5,8 +5,11 @@
 #include "third_party/blink/public/web/web_element.h"
 
 #include <memory>
+#include <vector>
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -159,6 +162,34 @@ TEST_F(WebElementTest, ComputedStyleProperties) {
     element.SetAttribute("style", "color: red");
     EXPECT_EQ(element.GetComputedValue("color"), "rgb(255, 0, 0)");
   }
+}
+
+TEST_F(WebElementTest, Labels) {
+  auto ExpectLabelIdsEqual = [&](const std::vector<WebString>& expected_ids) {
+    std::vector<WebString> label_ids;
+    for (const WebLabelElement& label : TestElement().Labels())
+      label_ids.push_back(label.GetIdAttribute());
+    EXPECT_THAT(label_ids, ::testing::UnorderedElementsAreArray(expected_ids));
+  };
+
+  // No label.
+  InsertHTML("<input id=testElement>");
+  ExpectLabelIdsEqual({});
+
+  // A single label.
+  InsertHTML(R"HTML(
+    <label id=testLabel for=testElement>Label</label>
+    <input id=testElement>
+  )HTML");
+  ExpectLabelIdsEqual({"testLabel"});
+
+  // Multiple labels.
+  InsertHTML(R"HTML(
+    <label id=testLabel1 for=testElement>Label 1</label>
+    <label id=testLabel2 for=testElement>Label 2</label>
+    <input id=testElement>
+  )HTML");
+  ExpectLabelIdsEqual({"testLabel1", "testLabel2"});
 }
 
 }  // namespace blink

@@ -757,13 +757,17 @@ int UserImageManagerImpl::GetDesiredImageSideLength() const {
 }
 
 signin::IdentityManager* UserImageManagerImpl::GetIdentityManager() {
+  const user_manager::User* user = GetUser();
+  DCHECK(user && user->is_profile_created());
   return IdentityManagerFactory::GetForProfile(
-      ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser()));
+      ProfileHelper::Get()->GetProfileByUser(user));
 }
 
 network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {
+  const user_manager::User* user = GetUser();
+  DCHECK(user && user->is_profile_created());
   return ProfileHelper::Get()
-      ->GetProfileByUserUnsafe(GetUser())
+      ->GetProfileByUser(user)
       ->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       .get();

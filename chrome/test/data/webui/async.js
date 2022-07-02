@@ -13,27 +13,13 @@ function testFailsAssert() {
 }
 
 /**
- * Records failure.
- */
-function testFailsExpect() {
-  expectNotReached();
-  chrome.send('testContinues');
-  expectNotReached();
-}
-
-/**
  * Passes and sends testDone message for browser_test to call
  * testDone().
  */
 function testPasses() {
-  expectTrue(true);
+  assertTrue(true);
   chrome.send('testContinues');
   assertFalse(false);
-}
-
-function testAsyncDoneFailFirstSyncPass() {
-  expectNotReached();
-  chrome.send('testContinues');
 }
 
 /**

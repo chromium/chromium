@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 
-#include <memory>
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-
 namespace blink {
 
 void ResourceTimingInfo::AddRedirect(const ResourceResponse& redirect_response,

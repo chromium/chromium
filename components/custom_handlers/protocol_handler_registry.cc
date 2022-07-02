@@ -62,6 +62,23 @@ GURL TranslateUrl(
 
 // ProtocolHandlerRegistry -----------------------------------------------------
 
+std::unique_ptr<ProtocolHandlerRegistry> ProtocolHandlerRegistry::Create(
+    PrefService* prefs,
+    std::unique_ptr<Delegate> delegate) {
+  auto registry =
+      std::make_unique<ProtocolHandlerRegistry>(prefs, std::move(delegate));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If installing defaults, they must be installed prior calling
+  // InitProtocolSettings.
+  registry->InstallDefaultsForChromeOS();
+#endif
+
+  registry->InitProtocolSettings();
+
+  return registry;
+}
+
 ProtocolHandlerRegistry::ProtocolHandlerRegistry(
     PrefService* prefs,
     std::unique_ptr<Delegate> delegate)

@@ -42,8 +42,8 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 // This property needs to be set before the view is loaded.
 @property(nonatomic, assign) SigninScreenConsumerSigninStatus signinStatus;
 
-// Sets the |userName|, |email|, |givenName| and |avatar| of the selected
-// identity. The |userName| and |givenName| can be nil. Notifies the UI that an
+// Sets the `userName`, `email`, `givenName` and `avatar` of the selected
+// identity. The `userName` and `givenName` can be nil. Notifies the UI that an
 // identity is available.
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email

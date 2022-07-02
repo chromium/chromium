@@ -50,9 +50,11 @@ struct HarfBuzzFontData;
 
 // |HarfBuzzFace| is a thread specific data associated to |FontPlatformData|,
 // hold by |HarfBuzzFontCache|.
-class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
+class HarfBuzzFace final {
+  USING_FAST_MALLOC(HarfBuzzFace);
+
  public:
-  static scoped_refptr<HarfBuzzFace> Create(FontPlatformData* platform_data);
+  static std::unique_ptr<HarfBuzzFace> Create(FontPlatformData* platform_data);
 
   HarfBuzzFace(const HarfBuzzFace&) = delete;
   HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
@@ -68,7 +70,12 @@ class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
   // object will be used.
   hb_font_t* GetScaledFont(scoped_refptr<UnicodeRangeSet>,
                            VerticalLayoutCallbacks,
-                           float specified_size = -1) const;
+                           float specified_size) const;
+
+  // Returns `hb_font_t` as same as `GetScaledFont()` with null
+  // `UnicodeRangeSet`, `HarfBuzzFace::kNoVerticalLayout`, and
+  // `platform_data_.size()`.
+  hb_font_t* GetScaledFont() const;
 
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures);
   unsigned UnitsPerEmFromHeadTable();

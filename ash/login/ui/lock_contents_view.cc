@@ -63,6 +63,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_type.h"
+#include "lock_contents_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -610,6 +611,8 @@ LockContentsView::LockContentsView(
   data_dispatcher_->AddObserver(this);
   Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
+  enterprise_domain_model_observation_.Observe(
+      Shell::Get()->system_tray_model()->enterprise_domain());
 
   // We reuse the focusable state on this view as a signal that focus should
   // switch to the system tray. LockContentsView should otherwise not be
@@ -700,7 +703,7 @@ LockContentsView::LockContentsView(
 
   // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
   // it's false by default.
-  if (features::IsKioskEnrollmentInOobeEnabled()) {
+  if (features::IsKioskLoginScreenEnabled()) {
     kiosk_license_mode_ =
         Shell::Get()
             ->system_tray_model()
@@ -848,24 +851,10 @@ void LockContentsView::ShowParentAccessDialog() {
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(false);
 }
 
-void LockContentsView::SetKioskAppsButtonPresence(
-    bool is_kiosk_apps_button_present) {
-  if (!kiosk_license_mode_)
-    return;
+void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
+  has_kiosk_apps_ = has_kiosk_apps;
 
-  // check if the kiosk app button is visible
-  if (is_kiosk_apps_button_present) {
-    if (kiosk_default_message_)
-      kiosk_default_message_->GetWidget()->Hide();
-  } else {
-    if (!kiosk_default_message_) {
-      // KioskAppDefaultMessage is owned by itself and would be destroyed when
-      // its widget got destroyed, which happened when the widget's window got
-      // destroyed.
-      kiosk_default_message_ = new KioskAppDefaultMessage();
-    }
-    kiosk_default_message_->GetWidget()->Show();
-  }
+  UpdateKioskDefaultMessageVisibility();
 }
 
 void LockContentsView::Layout() {
@@ -1569,6 +1558,23 @@ void LockContentsView::SuspendImminent(
     big_user->auth_user()->password_view()->Reset();
 }
 
+void LockContentsView::OnDeviceEnterpriseInfoChanged() {
+  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
+  // it's false by default.
+  if (!features::IsKioskLoginScreenEnabled())
+    return;
+
+  kiosk_license_mode_ =
+      Shell::Get()
+          ->system_tray_model()
+          ->enterprise_domain()
+          ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+
+  UpdateKioskDefaultMessageVisibility();
+}
+
+void LockContentsView::OnEnterpriseAccountDomainChanged() {}
+
 void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
   unlock_attempt_ = unlock_attempt;
   ShowAuthErrorMessage();
@@ -2246,6 +2252,8 @@ void LockContentsView::ShowAuthErrorMessage() {
       unlock_attempt_ >= kLoginAttemptsBeforeGaiaDialog &&
       Shell::Get()->session_controller()->GetSessionState() !=
           session_manager::SessionState::LOGIN_SECONDARY) {
+    // TODO(crbug.com/1335222): Once implemented, we should show the recovery
+    // flow here instead of just gaia signin.
     Shell::Get()->login_screen_controller()->ShowGaiaSignin(
         big_view->auth_user()->current_user().basic_user_info.account_id);
     return;
@@ -2298,9 +2306,25 @@ void LockContentsView::ShowAuthErrorMessage() {
   container->AddChildView(std::move(label));
   container->AddChildView(std::move(learn_more_button));
 
+  if (ash::features::IsCryptohomeRecoveryFlowUIEnabled()) {
+    // The forgot password flow is only accessible from the login screen but
+    // not from the lock screen.
+    if (screen_type_ == LockScreen::ScreenType::kLogin &&
+        Shell::Get()->session_controller()->GetSessionState() !=
+            session_manager::SessionState::LOGIN_SECONDARY) {
+      auto forgot_password_button = std::make_unique<SystemLabelButton>(
+          base::BindRepeating(&LockContentsView::ForgotPasswordButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_FORGOT_PASSWORD),
+          /*multiline=*/true);
+
+      container->AddChildView(std::move(forgot_password_button));
+    }
+  }
+
   auth_error_bubble_->SetAnchorView(
       big_view->auth_user()->GetActiveInputView());
-  auth_error_bubble_->SetContent(container.release());
+  auth_error_bubble_->SetContent(std::move(container));
   auth_error_bubble_->set_accessible_name(error_text);
   auth_error_bubble_->Show();
 }
@@ -2394,6 +2418,20 @@ void LockContentsView::LearnMoreButtonPressed() {
   HideAuthErrorMessage();
 }
 
+void LockContentsView::ForgotPasswordButtonPressed() {
+  LoginBigUserView* big_view = CurrentBigUserView();
+  if (!big_view->auth_user()) {
+    LOG(ERROR) << "Forgot password button pressed without focused user";
+    return;
+  }
+
+  // TODO(crbug.com/1335222): Initiate recovery flow instead of blanked gaia
+  // sign in.
+  Shell::Get()->login_screen_controller()->ShowGaiaSignin(
+      big_view->auth_user()->current_user().basic_user_info.account_id);
+  HideAuthErrorMessage();
+}
+
 std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
     const LoginUserInfo& user,
     bool is_primary) {
@@ -2456,7 +2494,10 @@ LoginUserView* LockContentsView::TryToFindUserView(const AccountId& user) {
     return big_view->GetUserView();
 
   // Try to find |user| in users_list_.
-  return users_list_->GetUserView(user);
+  if (users_list_)
+    return users_list_->GetUserView(user);
+
+  return nullptr;
 }
 
 void LockContentsView::SetDisplayStyle(DisplayStyle style) {
@@ -2490,7 +2531,8 @@ void LockContentsView::RegisterAccelerators() {
     // accelerator is pressed. So we register WebUI acceleratos here
     // and then start WebUI when needed and pass the accelerator.
     if (!kLoginAcceleratorData[i].global &&
-        MapToWebUIAccelerator(kLoginAcceleratorData[i].action).empty()) {
+        kLoginAcceleratorData[i].action !=
+            LoginAcceleratorAction::kCancelScreenAction) {
       continue;
     }
     if ((screen_type_ == LockScreen::ScreenType::kLogin) &&
@@ -2595,9 +2637,26 @@ void LockContentsView::OnBackToSigninButtonTapped() {
       /*prefilled_account=*/EmptyAccountId());
 }
 
+void LockContentsView::UpdateKioskDefaultMessageVisibility() {
+  if (!kiosk_license_mode_)
+    return;
+
+  if (!kiosk_default_message_) {
+    kiosk_default_message_ =
+        AddChildView(std::make_unique<KioskAppDefaultMessage>());
+  }
+
+  kiosk_default_message_->SetVisible(!has_kiosk_apps_);
+}
+
 void LockContentsView::SetKioskLicenseModeForTesting(
     bool is_kiosk_license_mode) {
   kiosk_license_mode_ = is_kiosk_license_mode;
+
+  // Normally when management device mode is updated, via
+  // OnDeviceEnterpriseInfoChanged, it updates the visibility of Kiosk default
+  // meesage too.
+  UpdateKioskDefaultMessageVisibility();
 }
 
 BEGIN_METADATA(LockContentsView, NonAccessibleView)

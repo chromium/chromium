@@ -134,6 +134,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Borealis.Disk.StatefulReadsDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis stateful KiB read per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.StatefulWritesDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis stateful KiB written per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.SwapReadsDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis swap file KiB read per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.SwapWritesDaily" units="KiB"
+    expires_after="2023-05-05">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>Borealis swap file KiB written per day. Reported daily.</summary>
+</histogram>
+
 <histogram name="Borealis.EngagementTime.{Variant}" units="ms"
     expires_after="2023-02-01">
   <owner>lqu@google.com</owner>

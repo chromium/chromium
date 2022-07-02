@@ -50,6 +50,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "query-tiles",
     "navsuggest-tiles",
     "open-tab",
+    "history-cluster",
   };
   // clang-format on
   static_assert(std::size(strings) == AutocompleteMatchType::NUM_TYPES,
@@ -139,6 +140,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // TILE_SUGGESTION
       0,                                     // TILE_NAVSUGGEST
       0,                                     // OPEN_TAB
+      0,                                     // HISTORY_CLUSTER
   };
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");

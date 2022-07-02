@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATIONS_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_update.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
@@ -194,7 +195,7 @@ class CORE_EXPORT CSSAnimations final {
     scoped_refptr<const ComputedStyle> before_change_style;
     scoped_refptr<const ComputedStyle> cloned_style;
     const TransitionMap* active_transitions;
-    HashSet<PropertyHandle>& listed_properties;
+    HashSet<PropertyHandle>* listed_properties;
     const CSSTransitionData* transition_data;
   };
 

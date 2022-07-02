@@ -358,7 +358,10 @@ void UserManagerBase::RemoveNonOwnerUserInternal(const AccountId& account_id,
   NotifyUserToBeRemoved(account_id);
   AsyncRemoveCryptohome(account_id);
   RemoveUserFromList(account_id);
-  NotifyUserRemoved(account_id, reason);
+  // |account_id| cannot be used after the |RemoveUserFromList| call, use
+  // |account_id_copy| instead if needed.
+
+  NotifyUserRemoved(account_id_copy, reason);
 
   if (delegate)
     delegate->OnUserRemoved(account_id_copy);
@@ -505,6 +508,12 @@ void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
 
   DictionaryPrefUpdate display_email_update(GetLocalState(), kUserDisplayEmail);
   display_email_update->SetStringKey(account_id.GetUserEmail(), display_email);
+}
+
+UserType UserManagerBase::GetUserType(const AccountId& account_id) {
+  const base::Value* prefs_user_types =
+      GetLocalState()->GetDictionary(kUserType);
+  return GetStoredUserType(prefs_user_types, account_id);
 }
 
 void UserManagerBase::SaveUserType(const User* user) {

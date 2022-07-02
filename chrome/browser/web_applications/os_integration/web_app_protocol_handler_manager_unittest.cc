@@ -155,13 +155,13 @@ TEST_F(WebAppProtocolHandlerManagerTest, GetAllowedHandlersForProtocol) {
   std::vector<ProtocolHandler> handlers =
       protocol_handler_manager().GetAllowedHandlersForProtocol("web+test");
   ASSERT_EQ(handlers.size(), 2U);
-  for (size_t i = 0; i < handlers.size(); i++) {
-    ASSERT_EQ(handlers[i].protocol(), "web+test");
-    if (handlers[i].web_app_id() == app_id1) {
-      ASSERT_EQ(handlers[i].url(), GURL("http://example.com/test=%s"));
+  for (const ProtocolHandler& handler : handlers) {
+    ASSERT_EQ(handler.protocol(), "web+test");
+    if (handler.web_app_id() == app_id1) {
+      ASSERT_EQ(handler.url(), GURL("http://example.com/test=%s"));
     } else {
-      ASSERT_EQ(handlers[i].web_app_id(), app_id2);
-      ASSERT_EQ(handlers[i].url(), GURL("http://example2.com/test=%s"));
+      ASSERT_EQ(handler.web_app_id(), app_id2);
+      ASSERT_EQ(handler.url(), GURL("http://example2.com/test=%s"));
     }
   }
 }
@@ -180,13 +180,13 @@ TEST_F(WebAppProtocolHandlerManagerTest, GetDisallowedHandlersForProtocol) {
   std::vector<ProtocolHandler> handlers =
       protocol_handler_manager().GetDisallowedHandlersForProtocol("web+test");
   ASSERT_EQ(handlers.size(), 2U);
-  for (size_t i = 0; i < handlers.size(); i++) {
-    ASSERT_EQ(handlers[i].protocol(), "web+test");
-    if (handlers[i].web_app_id() == app_id1) {
-      ASSERT_EQ(handlers[i].url(), GURL("http://example.com/test=%s"));
+  for (const ProtocolHandler& handler : handlers) {
+    ASSERT_EQ(handler.protocol(), "web+test");
+    if (handler.web_app_id() == app_id1) {
+      ASSERT_EQ(handler.url(), GURL("http://example.com/test=%s"));
     } else {
-      ASSERT_EQ(handlers[i].web_app_id(), app_id2);
-      ASSERT_EQ(handlers[i].url(), GURL("http://example2.com/test=%s"));
+      ASSERT_EQ(handler.web_app_id(), app_id2);
+      ASSERT_EQ(handler.url(), GURL("http://example2.com/test=%s"));
     }
   }
 }

@@ -125,7 +125,7 @@ class TabUnderBlockerFencedFrameTest : public TabUnderBlockerBrowserTest {
     const GURL fenced_frame_url =
         embedded_test_server()->GetURL("/fenced_frames/title1.html");
     ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-        web_contents->GetMainFrame(), fenced_frame_url));
+        web_contents->GetPrimaryMainFrame(), fenced_frame_url));
     EXPECT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
   }
 

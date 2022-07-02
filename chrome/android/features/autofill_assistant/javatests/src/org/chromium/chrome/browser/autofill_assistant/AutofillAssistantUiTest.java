@@ -42,7 +42,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantCoordinator;
@@ -134,7 +134,7 @@ public class AutofillAssistantUiTest {
     public void testStartAndAccept() {
         InOrder inOrder = inOrder(mRunnableMock);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
         AssistantCoordinator assistantCoordinator = createAndShowAssistantCoordinator();
 
@@ -262,7 +262,7 @@ public class AutofillAssistantUiTest {
         InOrder inOrder = inOrder(mRunnableMock);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
         AssistantCoordinator assistantCoordinator = createAndShowAssistantCoordinator();
 

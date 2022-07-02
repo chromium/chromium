@@ -25,6 +25,9 @@ struct IntentFile {
   IntentFile& operator=(const IntentFile&) = delete;
   ~IntentFile();
 
+  bool operator==(const IntentFile& other) const;
+  bool operator!=(const IntentFile& other) const;
+
   std::unique_ptr<IntentFile> Clone() const;
 
   // Returns true if matches `condition_value`, otherwise, returns false.
@@ -70,6 +73,9 @@ struct Intent {
   Intent& operator=(const Intent&) = delete;
   ~Intent();
 
+  bool operator==(const Intent& other) const;
+  bool operator!=(const Intent& other) const;
+
   std::unique_ptr<Intent> Clone() const;
 
   // Gets the field that need to be checked/matched based on `condition_type`.
@@ -84,6 +90,9 @@ struct Intent {
 
   // Returns true if matches all existing conditions in the filter.
   bool MatchFilter(const IntentFilterPtr& filter);
+
+  // Returns true if `intent` corresponds to a share intent.
+  bool IsShareIntent();
 
   // Intent action. e.g. view, send.
   std::string action;

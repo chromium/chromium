@@ -68,7 +68,8 @@ bool KeywordEditorController::CanMakeDefault(const TemplateURL* url) const {
 
 bool KeywordEditorController::CanRemove(const TemplateURL* url) const {
   return (url->type() == TemplateURL::NORMAL) &&
-         (url != url_model_->GetDefaultSearchProvider());
+         (url != url_model_->GetDefaultSearchProvider()) &&
+         (url->starter_pack_id() == 0);
 }
 
 bool KeywordEditorController::CanActivate(const TemplateURL* url) const {

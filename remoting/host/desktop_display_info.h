@@ -7,12 +7,17 @@
 
 #include <stddef.h>
 #include <iosfwd>
+#include <memory>
 
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
+
+namespace protocol {
+class VideoLayout;
+}  // namespace protocol
 
 struct DisplayGeometry {
   webrtc::ScreenId id;
@@ -51,6 +56,8 @@ class DesktopDisplayInfo {
   bool operator!=(const DesktopDisplayInfo& other) const;
 
   const std::vector<DisplayGeometry>& displays() const { return displays_; }
+
+  std::unique_ptr<protocol::VideoLayout> GetVideoLayoutProto() const;
 
  private:
   std::vector<DisplayGeometry> displays_;

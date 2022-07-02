@@ -236,10 +236,7 @@ bool HttpAuthCache::Entry::IsEqualForTesting(const Entry& other) const {
   return true;
 }
 
-HttpAuthCache::Entry::Entry()
-    : scheme_(HttpAuth::AUTH_SCHEME_MAX),
-      nonce_count_(0) {
-}
+HttpAuthCache::Entry::Entry() = default;
 
 void HttpAuthCache::Entry::AddPath(const std::string& path) {
   std::string parent_dir = GetParentDirectory(path);

@@ -34,6 +34,8 @@ class X509CertificateModel {
   // nickname for the certificate, if available.
   X509CertificateModel(bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
                        std::string nickname);
+  X509CertificateModel(X509CertificateModel&& other);
+  X509CertificateModel& operator=(X509CertificateModel&& other) = default;
   ~X509CertificateModel();
 
   // ---------------------------------------------------------------------------
@@ -101,6 +103,14 @@ class X509CertificateModel {
       base::StringPiece critical_label,
       base::StringPiece non_critical_label) const;
 
+  std::string ProcessSecAlgorithmSignature() const;
+  std::string ProcessSecAlgorithmSubjectPublicKey() const;
+  std::string ProcessSecAlgorithmSignatureWrap() const;
+
+  std::string ProcessSubjectPublicKeyInfo() const;
+
+  std::string ProcessRawBitsSignatureWrap() const;
+
  private:
   bool ParseExtensions(const net::der::Input& extensions_tlv);
   std::string ProcessExtension(base::StringPiece critical_label,
@@ -132,19 +142,10 @@ class X509CertificateModel {
 // decoded U-label form.  Otherwise, the string will be returned as is.
 std::string ProcessIDN(const std::string& input);
 
-// Format a buffer as |hex_separator| separated string, with 16 bytes on each
-// line separated using |line_separator|.
-std::string ProcessRawBytesWithSeparators(const unsigned char* data,
-                                          size_t data_length,
-                                          char hex_separator,
-                                          char line_separator);
-
-// Format a buffer as a space separated string, with 16 bytes on each line.
-std::string ProcessRawBytes(const unsigned char* data, size_t data_length);
-
-// Format a buffer as a space separated string, with 16 bytes on each line.
-// |data_length| is the length in bits.
-std::string ProcessRawBits(const unsigned char* data, size_t data_length);
+// Parses |public_key_spki_der| as a DER-encoded X.509 SubjectPublicKeyInfo,
+// then formats the public key as a string for displaying. Returns an empty
+// string on error.
+std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der);
 
 }  // namespace x509_certificate_model
 

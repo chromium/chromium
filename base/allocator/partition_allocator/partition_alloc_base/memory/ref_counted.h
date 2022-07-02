@@ -6,18 +6,17 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_base/atomic_ref_count.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
-#include "base/base_export.h"
-#include "base/check.h"
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
 namespace subtle {
 
-class BASE_EXPORT RefCountedThreadSafeBase {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) RefCountedThreadSafeBase {
  public:
   RefCountedThreadSafeBase(const RefCountedThreadSafeBase&) = delete;
   RefCountedThreadSafeBase& operator=(const RefCountedThreadSafeBase&) = delete;
@@ -29,12 +28,12 @@ class BASE_EXPORT RefCountedThreadSafeBase {
   explicit constexpr RefCountedThreadSafeBase(StartRefCountFromZeroTag) {}
   explicit constexpr RefCountedThreadSafeBase(StartRefCountFromOneTag)
       : ref_count_(1) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     needs_adopt_ref_ = true;
 #endif
   }
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   ~RefCountedThreadSafeBase();
 #else
   ~RefCountedThreadSafeBase() = default;
@@ -60,41 +59,41 @@ class BASE_EXPORT RefCountedThreadSafeBase {
   friend scoped_refptr<U> AdoptRef(U*);
 
   void Adopted() const {
-#if DCHECK_IS_ON()
-    DCHECK(needs_adopt_ref_);
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    PA_DCHECK(needs_adopt_ref_);
     needs_adopt_ref_ = false;
 #endif
   }
 
-  ALWAYS_INLINE void AddRefImpl() const {
-#if DCHECK_IS_ON()
-    DCHECK(!in_dtor_);
+  PA_ALWAYS_INLINE void AddRefImpl() const {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    PA_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
     // MakeRefCounted.
-    DCHECK(!needs_adopt_ref_);
+    PA_DCHECK(!needs_adopt_ref_);
 #endif
     ref_count_.Increment();
   }
 
-  ALWAYS_INLINE void AddRefWithCheckImpl() const {
-#if DCHECK_IS_ON()
-    DCHECK(!in_dtor_);
+  PA_ALWAYS_INLINE void AddRefWithCheckImpl() const {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    PA_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
     // MakeRefCounted.
-    DCHECK(!needs_adopt_ref_);
+    PA_DCHECK(!needs_adopt_ref_);
 #endif
-    CHECK_GT(ref_count_.Increment(), 0);
+    PA_CHECK(ref_count_.Increment() > 0);
   }
 
-  ALWAYS_INLINE bool ReleaseImpl() const {
-#if DCHECK_IS_ON()
-    DCHECK(!in_dtor_);
-    DCHECK(!ref_count_.IsZero());
+  PA_ALWAYS_INLINE bool ReleaseImpl() const {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    PA_DCHECK(!in_dtor_);
+    PA_DCHECK(!ref_count_.IsZero());
 #endif
     if (!ref_count_.Decrement()) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
       in_dtor_ = true;
 #endif
       return true;
@@ -103,7 +102,7 @@ class BASE_EXPORT RefCountedThreadSafeBase {
   }
 
   mutable AtomicRefCount ref_count_{0};
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   mutable bool needs_adopt_ref_ = false;
   mutable bool in_dtor_ = false;
 #endif
@@ -159,7 +158,7 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
 
   void Release() const {
     if (subtle::RefCountedThreadSafeBase::Release()) {
-      ANALYZER_SKIP_THIS_PATH();
+      PA_ANALYZER_SKIP_THIS_PATH();
       Traits::Destruct(static_cast<const T*>(this));
     }
   }

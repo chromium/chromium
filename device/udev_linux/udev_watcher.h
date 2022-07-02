@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "device/udev_linux/scoped_udev.h"
@@ -71,7 +72,7 @@ class UdevWatcher {
 
   ScopedUdevPtr udev_;
   ScopedUdevMonitorPtr udev_monitor_;
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
   const std::vector<Filter> udev_filters_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> file_watcher_;
   base::SequenceChecker sequence_checker_;

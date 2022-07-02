@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
 // Support class that allows callers to modify internal capability state
@@ -27,7 +28,7 @@ class AccountCapabilitiesTestMutator {
   void SetAllSupportedCapabilities(bool value);
 
  private:
-  AccountCapabilities* capabilities_;
+  raw_ptr<AccountCapabilities> capabilities_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_

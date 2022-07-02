@@ -20,6 +20,7 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -129,6 +130,10 @@ class UserPolicySigninServiceTest : public PlatformTest {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterBrowserStatePrefs(prefs->registry());
+
+    // Set the User Policy notification as seen by default.
+    prefs->SetBoolean(policy::policy_prefs::kUserPolicyNotificationWasShown,
+                      true);
 
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(
@@ -559,6 +564,34 @@ TEST_F(UserPolicySigninServiceTest, CanHandleOauthTokenError) {
   // The manager should still be initialized despite the failed registration.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(manager_->core()->service());
+}
+
+// Tests that the user policy manager isn't initialized when initializing the
+// user policy service if the user hasn't seen the User Policy notification,
+// even if the user is syncing with a managed account.
+TEST_F(UserPolicySigninServiceTest,
+       DontRegisterDuringInitializationBecauseUserHasntSeenNotification) {
+  // Set the managed account as signed in and syncing.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(kManagedTestUser);
+  identity_test_env()->SetPrimaryAccount(kManagedTestUser,
+                                         signin::ConsentLevel::kSync);
+
+  // Mark the store as loaded to allow registration during the initialization of
+  // the user policy service.
+  mock_store_->NotifyStoreLoaded();
+
+  // Set the User Policy notification has not seen.
+  browser_state_->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kUserPolicyNotificationWasShown, false);
+
+  // Initialize the UserPolicySigninService while the user has sync enabled,
+  // but hasn't seen the notification.
+  InitUserPolicySigninService();
+
+  // Expect that the UserCloudPolicyManager isn't initialized because the user
+  // hasn't seen the notification yet.
+  EXPECT_FALSE(manager_->core()->service());
 }
 
 }  // namespace policy

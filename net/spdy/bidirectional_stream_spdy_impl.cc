@@ -32,20 +32,7 @@ const int kBufferTimeMs = 1;
 BidirectionalStreamSpdyImpl::BidirectionalStreamSpdyImpl(
     const base::WeakPtr<SpdySession>& spdy_session,
     NetLogSource source_dependency)
-    : spdy_session_(spdy_session),
-      request_info_(nullptr),
-      delegate_(nullptr),
-      source_dependency_(source_dependency),
-      negotiated_protocol_(kProtoUnknown),
-      more_read_data_pending_(false),
-      read_buffer_len_(0),
-      written_end_of_stream_(false),
-      write_pending_(false),
-      stream_closed_(false),
-      closed_stream_status_(ERR_FAILED),
-      closed_stream_received_bytes_(0),
-      closed_stream_sent_bytes_(0),
-      closed_has_load_timing_info_(false) {}
+    : spdy_session_(spdy_session), source_dependency_(source_dependency) {}
 
 BidirectionalStreamSpdyImpl::~BidirectionalStreamSpdyImpl() {
   // Sends a RST to the remote if the stream is destroyed before it completes.

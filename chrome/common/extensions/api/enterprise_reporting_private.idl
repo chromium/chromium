@@ -125,6 +125,43 @@ namespace enterprise.reportingPrivate {
     EventType eventType;
   };
 
+  // Context object containing the content-area user's ID for whom the signals
+  // collection request is for. This will be used to identify the organization
+  // in which the user is, and can then be used to determine their affiliation
+  // with the current browser management state.
+  [platforms = ("win")]
+  dictionary UserContext {
+    DOMString userId;
+  };
+
+  // Enumeration of the various states an AntiVirus software product can be in.
+  [platforms = ("win")]
+  enum AntiVirusProductState { ON, OFF, SNOOZED, EXPIRED };
+
+  // Metadata about a specific AntiVirus software product.
+  [platforms = ("win")]
+  dictionary AntiVirusSignal {
+    DOMString displayName;
+    DOMString productId;
+    AntiVirusProductState state;
+  };
+
+  // Invoked by <code>getAvInfo</code> to return information about installed
+  // AntiVirus software.
+  [platforms = ("win")]
+  callback AvInfoCallback = void(AntiVirusSignal[] avSignals);
+
+  // ID of an installed hotfix system update.
+  [platforms = ("win")]
+  dictionary HotfixSignal {
+    DOMString hotfixId;
+  };
+
+  // Invoked by <code>getHotfixes</code> to return the IDs of installed hotfix
+  // system updates.
+  [platforms = ("win")]
+  callback HotfixesCallback = void(HotfixSignal[] hotfixSignals);
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -176,6 +213,22 @@ namespace enterprise.reportingPrivate {
     static void enqueueRecord(
         EnqueueRecordRequest request,
         optional DoneCallback callback);
+
+    // Gets information about AntiVirus software installed on the current
+    // device. <code>userContext</code> is used to verify the affiliation
+    // between the user's organization and the organization managing the
+    // browser. If the management, or affiliation, state is not suitable, no
+    // results will be returned.
+    [platforms = ("win"), supportsPromises]
+    static void getAvInfo(UserContext userContext, AvInfoCallback callback);
+
+    // Gets information about hotfix system updates installed on the current
+    // device. <code>userContext</code> is used to verify the affiliation
+    // between the user's organization and the organization managing the
+    // browser. If the management, or affiliation, state is not suitable, no
+    // results will be returned.
+    [platforms = ("win"), supportsPromises]
+    static void getHotfixes(UserContext userContext, HotfixesCallback callback);
   };
 
 };

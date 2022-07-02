@@ -242,6 +242,42 @@ void StyleSheetContents::ClearRules() {
   child_rules_.clear();
 }
 
+static wtf_size_t ReplaceRuleIfExistsInternal(
+    const StyleRuleBase* old_rule,
+    StyleRuleBase* new_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules) {
+  for (wtf_size_t i = 0; i < child_rules.size(); ++i) {
+    StyleRuleBase* rule = child_rules[i].Get();
+    if (rule == old_rule) {
+      child_rules[i] = new_rule;
+      return i;
+    }
+    if (IsA<StyleRuleGroup>(rule)) {
+      if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
+                                      To<StyleRuleGroup>(rule)->ChildRules()) !=
+          std::numeric_limits<wtf_size_t>::max()) {
+        return 0;  // Dummy non-failure value.
+      }
+    }
+  }
+
+  // Not found.
+  return std::numeric_limits<wtf_size_t>::max();
+}
+
+wtf_size_t StyleSheetContents::ReplaceRuleIfExists(
+    const StyleRuleBase* old_rule,
+    StyleRuleBase* new_rule,
+    wtf_size_t position_hint) {
+  if (position_hint < child_rules_.size() &&
+      child_rules_[position_hint] == old_rule) {
+    child_rules_[position_hint] = new_rule;
+    return position_hint;
+  }
+
+  return ReplaceRuleIfExistsInternal(old_rule, new_rule, child_rules_);
+}
+
 bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
                                            unsigned index) {
   DCHECK(is_mutable_);
@@ -562,6 +598,8 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kSupports:
       case StyleRuleBase::kViewport:
       case StyleRuleBase::kFontPaletteValues:
+      case StyleRuleBase::kPositionFallback:
+      case StyleRuleBase::kTry:
         break;
       case StyleRuleBase::kCounterStyle:
         if (To<StyleRuleCounterStyle>(rule)->HasFailedOrCanceledSubresources())

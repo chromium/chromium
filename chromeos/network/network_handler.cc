@@ -6,21 +6,22 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/network/auto_connect_handler.h"
-#include "chromeos/network/cellular_connection_handler.h"
-#include "chromeos/network/cellular_esim_installer.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
-#include "chromeos/network/cellular_esim_uninstall_handler.h"
-#include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/cellular_metrics_logger.h"
-#include "chromeos/network/cellular_policy_handler.h"
-#include "chromeos/network/client_cert_resolver.h"
-#include "chromeos/network/geolocation_handler.h"
-#include "chromeos/network/managed_cellular_pref_handler.h"
-#include "chromeos/network/managed_network_configuration_handler_impl.h"
-#include "chromeos/network/metrics/connection_info_metrics_logger.h"
-#include "chromeos/network/metrics/esim_policy_login_metrics_logger.h"
-#include "chromeos/network/metrics/vpn_network_metrics_helper.h"
+#include "chromeos/ash/components/network/auto_connect_handler.h"
+#include "chromeos/ash/components/network/cellular_connection_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_installer.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/cellular_policy_handler.h"
+#include "chromeos/ash/components/network/client_cert_resolver.h"
+#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
+#include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/network_activation_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_cert_migrator.h"
@@ -35,7 +36,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/stub_cellular_networks_provider.h"
 
 namespace chromeos {
@@ -57,11 +57,9 @@ NetworkHandler::NetworkHandler()
   network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
   cellular_esim_installer_.reset(new CellularESimInstaller());
   cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
-  if (features::IsESimPolicyEnabled()) {
-    cellular_policy_handler_.reset(new CellularPolicyHandler());
-    esim_policy_login_metrics_logger_.reset(new ESimPolicyLoginMetricsLogger());
-    managed_cellular_pref_handler_.reset(new ManagedCellularPrefHandler());
-  }
+  cellular_policy_handler_.reset(new CellularPolicyHandler());
+  esim_policy_login_metrics_logger_.reset(new ESimPolicyLoginMetricsLogger());
+  managed_cellular_pref_handler_.reset(new ManagedCellularPrefHandler());
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
@@ -115,17 +113,15 @@ void NetworkHandler::Init() {
       managed_cellular_pref_handler_.get(),
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get());
-  if (features::IsESimPolicyEnabled()) {
-    cellular_policy_handler_->Init(
-        cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-        network_profile_handler_.get(), network_state_handler_.get(),
-        managed_cellular_pref_handler_.get(),
-        managed_network_configuration_handler_.get());
-    managed_cellular_pref_handler_->Init(network_state_handler_.get());
-    esim_policy_login_metrics_logger_->Init(
-        network_state_handler_.get(),
-        managed_network_configuration_handler_.get());
-  }
+  cellular_policy_handler_->Init(
+      cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
+      network_profile_handler_.get(), network_state_handler_.get(),
+      managed_cellular_pref_handler_.get(),
+      managed_network_configuration_handler_.get());
+  managed_cellular_pref_handler_->Init(network_state_handler_.get());
+  esim_policy_login_metrics_logger_->Init(
+      network_state_handler_.get(),
+      managed_network_configuration_handler_.get());
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get(),
                                  cellular_esim_profile_handler_.get());
@@ -181,9 +177,7 @@ void NetworkHandler::InitializePrefServices(
     PrefService* logged_in_profile_prefs,
     PrefService* device_prefs) {
   cellular_esim_profile_handler_->SetDevicePrefs(device_prefs);
-  if (features::IsESimPolicyEnabled()) {
-    managed_cellular_pref_handler_->SetDevicePrefs(device_prefs);
-  }
+  managed_cellular_pref_handler_->SetDevicePrefs(device_prefs);
   ui_proxy_config_service_.reset(new UIProxyConfigService(
       logged_in_profile_prefs, device_prefs, network_state_handler_.get(),
       network_profile_handler_.get()));
@@ -197,9 +191,7 @@ void NetworkHandler::InitializePrefServices(
 
 void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
-  if (features::IsESimPolicyEnabled()) {
-    managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
-  }
+  managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
   network_metadata_store_.reset();
 }

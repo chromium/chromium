@@ -16,11 +16,11 @@ extern NSString* const kTabStripViewFrameDidChangeNotification;
 // The TabStripViewLayoutDelegate also forward notification of change of trait
 // collection that impact layout.
 @protocol TabStripViewLayoutDelegate
-// Called from |-layoutSubviews|.  Delegates should implement this method to
+// Called from `-layoutSubviews`.  Delegates should implement this method to
 // layout subviews based on the current contentOffset of the tab strip.
 // TabStripView does not perform any other subview layout.
 - (void)layoutTabStripSubviews;
-// Called from UIView |-traitCollectionDidChange:|.
+// Called from UIView `-traitCollectionDidChange:`.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection;
 @end
 

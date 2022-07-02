@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -13,10 +12,10 @@ assert(!is_official_build, "Demo Mode App is only built for unofficial builds")
 
 static_library("demo_mode_app_ui") {
   sources = [
-    "demo_mode_app_ui.cc",
-    "demo_mode_app_ui.h",
-    "demo_mode_page_handler.cc",
-    "demo_mode_page_handler.h",
+    "demo_mode_app_untrusted_ui.cc",
+    "demo_mode_app_untrusted_ui.h",
+    "demo_mode_untrusted_page_handler.cc",
+    "demo_mode_untrusted_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -31,6 +30,18 @@ static_library("demo_mode_app_ui") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "demo_mode_app_untrusted_ui_unittests.cc" ]
+  deps = [
+    ":demo_mode_app_ui",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 js_type_check("closure_compile") {
   deps = [ ":app" ]
   closure_flags = default_closure_args + mojom_js_args
@@ -41,14 +52,6 @@ js_library("app") {
   deps = [ "//ash/webui/demo_mode_app_ui/mojom:mojom_webui_js" ]
 }
 
-js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
-
-  sources = [ "test/demo_mode_app_ui_browsertest.js" ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-}
-
 grd_prefix = "ash_demo_mode_app"
 mojo_grdp_file = "$target_gen_dir/demo_mode_app_mojo_resources.grdp"
 
@@ -56,8 +59,7 @@ generate_grd("build_mojo_grdp") {
   out_grd = mojo_grdp_file
   grd_prefix = grd_prefix
   deps = [ "//ash/webui/demo_mode_app_ui/mojom:mojom_webui_js" ]
-  input_files =
-      [ "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom-webui.js" ]
+  input_files = [ "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom-webui.js" ]
   input_files_base_dir =
       rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
 }

@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A module for a prototype of the Read Anything feature.
+module read_anything.mojom;
+
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // TODO(crbug.com/1266555): Fill in with messages once Select to Read Anything
+  // is implemented.
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Trigger the frontend to update the current read anything display. Snapshot
+  // is an accessibility tree snapshot of a web page. Content node ids are node
+  // ids from that ax tree update, where each node is part of the main article
+  // for that web page.
+  OnAXTreeDistilled(ax.mojom.AXTreeUpdate snapshot,
+                    array<int32> content_node_ids);
+
+  // Send an updated font name to front end.
+  OnFontNameChange(string new_font_name);
+};

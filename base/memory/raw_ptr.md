@@ -105,7 +105,7 @@ below.
 
 ## Performance
 
-### Performance impact of using |raw_ptr&lt;T&gt;| instead of |T*|
+### Performance impact of using |raw_ptr&lt;T&gt;| instead of |T\*|
 
 Compared to a raw C++ pointer, on platforms where USE_BACKUP_REF_PTR is on,
 `raw_ptr<T>` incurs additional runtime
@@ -421,4 +421,193 @@ constexpr StepOrByte<S> Element(
     uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kString);
 }
+```
+
+## AddressSanitizer support
+
+For years, AddressSanitizer has been the main tool for diagnosing memory
+corruption issues in Chromium. MiraclePtr alters the security properties of some
+of some such issues, so ideally it should be integrated with ASan. That way an
+engineer would be able to check whether a given use-after-free vulnerability is
+covered by the protection without having to switch between ASan and non-ASan
+builds.
+
+Unfortunately, MiraclePtr relies heavily on PartitionAlloc, and ASan needs its
+own allocator to work. As a result, the default implementation of `raw_ptr<T>`
+can't be used with ASan builds. Instead, a special version of `raw_ptr<T>` has
+been implemented, which is based on the ASan quarantine and acts as a
+sufficiently close approximation for diagnostic purposes. At crash time, the
+tool will tell the user if the dangling pointer access would have been protected
+by MiraclePtr *in a regular build*.
+
+You can configure the diagnostic tool by modifying the parameters of the feature
+flag `PartitionAllocBackupRefPtr`. For example, launching Chromium as follows:
+
+```
+path/to/chrome --enable-features=PartitionAllocBackupRefPtr:enabled-processes/browser-only/asan-enable-dereference-check/true/asan-enable-extraction-check/true/asan-enable-instantiation-check/true
+```
+
+activates all available checks in the browser process.
+
+### Available checks
+
+MiraclePtr provides ASan users with three kinds of security checks, which differ
+in when a particular check occurs:
+
+#### Dereference
+
+This is the basic check type that helps diagnose regular heap-use-after-free
+bugs. It's enabled by default.
+
+#### Extraction
+
+The user will be warned if a dangling pointer is extracted from a `raw_ptr<T>`
+variable. If the pointer is then dereferenced, an ASan error report will follow.
+In some cases, extra work on the reproduction case is required to reach the
+faulty memory access. However, even without memory corruption, relying on the
+value of a dangling pointer may lead to problems. For example, it's a common
+(anti-)pattern in Chromium to use a raw pointer as a key in a container.
+Consider the following example:
+
+```
+std::map<T*, std::unique_ptr<Ext>> g_map;
+
+struct A {
+  A() {
+    g_map[this] = std::make_unique<Ext>(this);
+  }
+
+  ~A() {
+    g_map.erase(this);
+  }
+};
+
+raw_ptr<A> dangling = new A;
+// ...
+delete dangling.get();
+A* replacement = new A;
+// ...
+auto it = g_map.find(dangling);
+if (it == g_map.end())
+  return 0;
+it->second.DoStuff();
+```
+
+Depending on whether the allocator reuses the same memory region for the second
+`A` object, the program may inadvertently call `DoStuff()` on the wrong `Ext`
+instance. This, in turn, may corrupt the state of the program or bypass security
+controls if the two `A` objects belong to different security contexts.
+
+Given the proportion of false positives reported in the mode, it is disabled by
+default. It's mainly intended to be used by security researchers who are willing
+to spend a significant amount of time investigating these early warnings.
+
+#### Instantiation
+
+This check detects violations of the rule that when instantiating a `raw_ptr<T>`
+from a `T*` , it is only allowed if the `T*` is a valid (i.e. not dangling)
+pointer. This rule exists to help avoid an issue called "pointer laundering"
+which can result in unsafe `raw_ptr<T>` instances that point to memory that is
+no longer in quarantine. This is important, since subsequent use of these
+`raw_ptr<T>` might appear to be safe.
+
+In order for "pointer laundering" to occur, we need (1) a dangling `T*`
+(pointing to memory that has been freed) to be assigned to a `raw_ptr<T>`, while
+(2) there is no other `raw_ptr<T>` pointing to the same object/allocation at the
+time of assignment.
+
+The check only detects (1), a dangling `T*` being assigned to a `raw_ptr<T>`, so
+in order to determine whether "pointer laundering" has occurred, we need to
+determine whether (2) could plausibly occur, not just in the specific
+reproduction testcase, but in the more general case.
+
+In the absence of thorough reasoning about (2), the assumption here should be
+that any failure of this check is a security issue of the same severity as an
+unprotected use-after-free.
+
+### Protection status
+
+When ASan generates a heap-use-after-free report, it will include a new section
+near the bottom, which starts with the line `MiraclePtr Status: <status>`. At
+the moment, it has three possible options:
+
+#### Protected
+
+The system is sufficiently confident that MiraclePtr makes the discovered issue
+unexploitable. In the future, the security severity of such bugs will be
+reduced.
+
+#### Manual analysis required
+
+Dangling pointer extraction was detected before the crash, but there might be
+extra code between the extraction and dereference. Most of the time, the code in
+question will look similar to the following:
+
+```
+struct A {
+  raw_ptr<T> dangling_;
+};
+
+void trigger(A* a) {
+  // ...
+  T* local = a->dangling_;
+  DoStuff();
+  local->DoOtherStuff();
+  // ...
+}
+```
+
+In this scenario, even though `dangling_` points to freed memory, that memory
+is protected and will stay in quarantine until `dangling_` (and all other
+`raw_ptr<T>` variables pointing to the same region) changes its value or gets
+destroyed. Therefore, the expression `a_->dangling->DoOtherStuff()` wouldn't
+trigger an exploitable use-after-free.
+
+You will need to make sure that `DoStuff()` is sufficiently trivial and can't
+(not only for the particular reproduction case, but *even in principle*) make
+`dangling_` change its value or get destroyed. If that's the case, the
+`DoOtherStuff()` call may be considered protected. The tool will provide you
+with the stack trace for both the extraction and dereference events.
+
+#### Not protected
+
+The dangling `T*` doesn't appear to originate from a `raw_ptr<T>` variable,
+which means MiraclePtr can't prevent this issue from being exploited. In
+practice, there may still be a `raw_ptr<T>` in a different part of the code that
+protects the same allocation indirectly, but such protection won't be considered
+robust enough to impact security-related decisions.
+
+### Limitations
+
+The main limitation of MiraclePtr in ASan builds is the main limitation of ASan
+itself: the capacity of the quarantine is limited. Eventually, every allocation
+in quarantine will get reused regardless of whether there are still references
+to it.
+
+In the context of MiraclePtr combined with ASan, it's a problem when:
+
+1. A heap allocation that isn't supported by MiraclePtr is made. At the moment,
+   the only such class is allocations made early during the process startup
+   before MiraclePtr can be activated.
+2. Its address is assigned to a `raw_ptr<T>` variable.
+3. The allocation gets freed.
+4. A new allocation is made in the same memory region as the first one, but this
+   time it is supported.
+5. The second allocation gets freed.
+6. The `raw_ptr<T>` variable is accessed.
+
+In this case, MiraclePtr will incorrectly assume the memory access is protected.
+Luckily, considering the small number of unprotected allocations in Chromium,
+the size of the quarantine, and the fact that most reproduction cases take
+relatively short time to run, the odds of this happening are very low.
+
+The problem is relatively easy to spot if you look at the ASan report: the
+allocation and deallocation stack traces won't be consistent across runs and
+the allocation type won't match the use stack trace.
+
+If you encounter a suspicious ASan report, it may be helpful to re-run Chromium
+with an increased quarantine capacity as follows:
+
+```
+ASAN_OPTIONS=quarantine_size_mb=1024 path/to/chrome
 ```

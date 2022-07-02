@@ -172,11 +172,12 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(), main_url);
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
+            main_url);
 
   // Emulate a user gesture so that the current entry won't be skipped due to
   // the history manipulation intervention when we try to navigate back to it.
-  web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       std::u16string(), base::NullCallback());
 
   // Navigate subframe to an enabled extension URL.
@@ -188,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
 
   content::RenderFrameHost* subframe =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
   EXPECT_EQ(web_contents->GetController().GetEntryCount(), 3);
   scoped_refptr<content::SiteInstance> extension_site_instance =
@@ -218,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(web_contents->GetController().GetLastCommittedEntryIndex(), 2);
 
-  subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  subframe = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
 
   // The SiteInstance of the disabled extension frame should be different from
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // terminate the renderer and should go back to the original extension
   // SiteInstance.
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
-  subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  subframe = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(subframe->IsRenderFrameLive());
   EXPECT_EQ(subframe->GetSiteInstance(), extension_site_instance);
   EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());

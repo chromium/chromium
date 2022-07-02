@@ -197,7 +197,6 @@ void PhoneHubTray::ShowBubble() {
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
-  init_params.has_shadow = false;
   init_params.translucent = true;
   init_params.reroute_event_handler = true;
   init_params.corner_radius = kTrayItemCornerRadius;

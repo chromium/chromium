@@ -167,7 +167,7 @@ bool AccountChooserDialogAndroid::ShowDialog() {
   for (const auto& form : local_credentials_forms()) {
     FetchAvatar(dialog_jobject_, form.get(), avatar_index++,
                 loader_factory.get(),
-                web_contents_->GetMainFrame()->GetLastCommittedOrigin());
+                web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
   return true;
 }

@@ -52,7 +52,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
-  int GetMaxAttributionsPerOrigin(AttributionReport::ReportType) const override;
+  int GetMaxReportsPerDestination(AttributionReport::ReportType) const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   RateLimitConfig GetRateLimits() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
@@ -68,6 +68,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
       AttributionSourceType source_type) const override;
+  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.

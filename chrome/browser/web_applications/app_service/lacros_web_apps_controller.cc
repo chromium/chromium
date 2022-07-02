@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -71,6 +72,7 @@ LacrosWebAppsController::LacrosWebAppsController(Profile* profile)
       provider_(WebAppProvider::GetForWebApps(profile)),
       publisher_helper_(profile,
                         provider_,
+                        /*swa_manager=*/nullptr,
                         apps::AppType::kWeb,
                         this,
                         /*observe_media_requests=*/true) {
@@ -223,12 +225,14 @@ void LacrosWebAppsController::ExecuteContextMenuCommand(
     return;
   }
 
-  fre_service->OpenFirstRunIfNeeded(base::BindOnce(
-      &OnOpenPrimaryProfileFirstRunExited,
-      std::move(execution_finished_callback),
+  fre_service->OpenFirstRunIfNeeded(
+      LacrosFirstRunService::EntryPoint::kWebAppContextMenu,
       base::BindOnce(
-          &LacrosWebAppsController::ExecuteContextMenuCommandInternal,
-          weak_ptr_factory_.GetWeakPtr(), app_id, id)));
+          &OnOpenPrimaryProfileFirstRunExited,
+          std::move(execution_finished_callback),
+          base::BindOnce(
+              &LacrosWebAppsController::ExecuteContextMenuCommandInternal,
+              weak_ptr_factory_.GetWeakPtr(), app_id, id)));
 }
 
 void LacrosWebAppsController::ExecuteContextMenuCommandInternal(
@@ -276,18 +280,21 @@ void LacrosWebAppsController::Launch(
     return;
   }
 
-  fre_service->OpenFirstRunIfNeeded(base::BindOnce(
-      &OnOpenPrimaryProfileFirstRunExited, std::move(launch_finished_callback),
-      base::BindOnce(&LacrosWebAppsController::LaunchInternal,
-                     weak_ptr_factory_.GetWeakPtr(), launch_params->app_id,
-                     std::move(params))));
+  fre_service->OpenFirstRunIfNeeded(
+      LacrosFirstRunService::EntryPoint::kWebAppLaunch,
+      base::BindOnce(&OnOpenPrimaryProfileFirstRunExited,
+                     std::move(launch_finished_callback),
+                     base::BindOnce(&LacrosWebAppsController::LaunchInternal,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    launch_params->app_id, std::move(params))));
 }
 
 void LacrosWebAppsController::LaunchInternal(const std::string& app_id,
                                              apps::AppLaunchParams params,
                                              CommandFinishedCallback callback) {
   bool is_file_handling_launch =
-      !params.launch_files.empty() && !apps_util::IsShareIntent(params.intent);
+      !params.launch_files.empty() &&
+      !(params.intent && params.intent->IsShareIntent());
   if (is_file_handling_launch) {
     // File handling may create the WebContents asynchronously.
     publisher_helper().LaunchAppWithFilesCheckingUserPermission(

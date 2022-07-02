@@ -66,7 +66,7 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
     const absl::optional<const blink::DedicatedWorkerToken>& token) {
   DCHECK(IsParentContextThread());
 
-  KURL script_url = global_scope_creation_params->script_url.Copy();
+  KURL script_url = global_scope_creation_params->script_url;
 
   if (global_scope_creation_params->web_worker_fetch_context) {
     global_scope_creation_params->web_worker_fetch_context
@@ -77,7 +77,7 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
 
   auto devtools_params = DevToolsAgent::WorkerThreadCreated(
       execution_context_.Get(), worker_thread_.get(), script_url,
-      global_scope_creation_params->global_scope_name.IsolatedCopy(), token);
+      global_scope_creation_params->global_scope_name, token);
 
   worker_thread_->Start(std::move(global_scope_creation_params),
                         thread_startup_data, std::move(devtools_params));

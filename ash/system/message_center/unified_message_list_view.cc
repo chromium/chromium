@@ -306,6 +306,8 @@ class UnifiedMessageListView::MessageViewContainer
       return;
 
     int index = list_view_->GetIndexOf(this);
+    if (index < 0)
+      return;
     auto list_child_views = list_view_->children();
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
     below_view_ = (index == static_cast<int>(list_child_views.size()) - 1)
@@ -671,6 +673,11 @@ const char* UnifiedMessageListView::GetClassName() const {
   return "UnifiedMessageListView";
 }
 
+void UnifiedMessageListView::AnimateResize() {
+  // TODO(crbug/1330026): Refactor UnifiedMessageListView animations to use
+  // animation builder instead of the existing layout based animations.
+}
+
 message_center::MessageView*
 UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
   auto it =
@@ -689,8 +696,10 @@ UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
 void UnifiedMessageListView::ConvertNotificationViewToGroupedNotificationView(
     const std::string& ungrouped_notification_id,
     const std::string& new_grouped_notification_id) {
-  GetMessageViewForNotificationId(ungrouped_notification_id)
-      ->set_notification_id(new_grouped_notification_id);
+  auto* message_view =
+      GetMessageViewForNotificationId(ungrouped_notification_id);
+  if (message_view)
+    message_view->set_notification_id(new_grouped_notification_id);
 }
 
 void UnifiedMessageListView::ConvertGroupedNotificationViewToNotificationView(
@@ -705,10 +714,23 @@ void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
   if (!notification)
     return;
 
+  // A group child notification should be added to its parent's message view.
+  if (is_notifications_refresh_enabled_ && notification->group_child())
+    return;
+
   InterruptClearAll();
 
   // Collapse all notifications before adding new one.
   CollapseAllNotifications();
+
+  // We only need to update if we already have a message view associated with
+  // the notification. This happens when we convert a single notification to a
+  // group notification, ConvertNotificationViewToGroupedNotificationView()
+  // changes the id of the single notification to the parent's.
+  if (is_notifications_refresh_enabled_ && GetNotificationById(id)) {
+    OnNotificationUpdated(id);
+    return;
+  }
 
   // Find the correct index to insert the new notification based on the sorted
   // order.

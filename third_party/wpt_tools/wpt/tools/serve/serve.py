@@ -570,6 +570,8 @@ class RoutesBuilder:
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

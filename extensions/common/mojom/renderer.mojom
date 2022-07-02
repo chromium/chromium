@@ -127,6 +127,11 @@ interface Renderer {
         URLPatternSet default_policy_blocked_hosts,
         URLPatternSet default_policy_allowed_hosts);
 
+  // Tells the renderer to update the collection of user-restricted hosts.
+  UpdateUserHostRestrictions(
+        URLPatternSet user_blocked_hosts,
+        URLPatternSet user_allowed_hosts);
+
   // Tells the render view about new tab-specific permissions for an extension.
   UpdateTabSpecificPermissions(string extension_id,
                                URLPatternSet new_hosts,

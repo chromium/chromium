@@ -36,12 +36,12 @@ static_assert(sizeof(CPUContextX86::Fsave) ==
 #endif  // ARCH_CPU_X86
 
 template <typename T>
-bool HasContextPart(const T& context, uint32_t bits) {
-  return (context.ContextFlags & bits) == bits;
+bool HasContextPart(const T* context, uint32_t bits) {
+  return (context->ContextFlags & bits) == bits;
 }
 
 template <class T>
-void CommonInitializeX86Context(const T& context, CPUContextX86* out) {
+void CommonInitializeX86Context(const T* context, CPUContextX86* out) {
   // This function assumes that the WOW64_CONTEXT_* and x86 CONTEXT_* values
   // for ContextFlags are identical. This can be tested when targeting 32-bit
   // x86.
@@ -72,157 +72,187 @@ void CommonInitializeX86Context(const T& context, CPUContextX86* out) {
       << "non-x86 context";
 
   if (HasContextPart(context, WOW64_CONTEXT_CONTROL)) {
-    out->ebp = context.Ebp;
-    out->eip = context.Eip;
-    out->cs = static_cast<uint16_t>(context.SegCs);
-    out->eflags = context.EFlags;
-    out->esp = context.Esp;
-    out->ss = static_cast<uint16_t>(context.SegSs);
+    out->ebp = context->Ebp;
+    out->eip = context->Eip;
+    out->cs = static_cast<uint16_t>(context->SegCs);
+    out->eflags = context->EFlags;
+    out->esp = context->Esp;
+    out->ss = static_cast<uint16_t>(context->SegSs);
   }
 
   if (HasContextPart(context, WOW64_CONTEXT_INTEGER)) {
-    out->eax = context.Eax;
-    out->ebx = context.Ebx;
-    out->ecx = context.Ecx;
-    out->edx = context.Edx;
-    out->edi = context.Edi;
-    out->esi = context.Esi;
+    out->eax = context->Eax;
+    out->ebx = context->Ebx;
+    out->ecx = context->Ecx;
+    out->edx = context->Edx;
+    out->edi = context->Edi;
+    out->esi = context->Esi;
   }
 
   if (HasContextPart(context, WOW64_CONTEXT_SEGMENTS)) {
-    out->ds = static_cast<uint16_t>(context.SegDs);
-    out->es = static_cast<uint16_t>(context.SegEs);
-    out->fs = static_cast<uint16_t>(context.SegFs);
-    out->gs = static_cast<uint16_t>(context.SegGs);
+    out->ds = static_cast<uint16_t>(context->SegDs);
+    out->es = static_cast<uint16_t>(context->SegEs);
+    out->fs = static_cast<uint16_t>(context->SegFs);
+    out->gs = static_cast<uint16_t>(context->SegGs);
   }
 
   if (HasContextPart(context, WOW64_CONTEXT_DEBUG_REGISTERS)) {
-    out->dr0 = context.Dr0;
-    out->dr1 = context.Dr1;
-    out->dr2 = context.Dr2;
-    out->dr3 = context.Dr3;
+    out->dr0 = context->Dr0;
+    out->dr1 = context->Dr1;
+    out->dr2 = context->Dr2;
+    out->dr3 = context->Dr3;
 
     // DR4 and DR5 are obsolete synonyms for DR6 and DR7, see
     // https://en.wikipedia.org/wiki/X86_debug_register.
-    out->dr4 = context.Dr6;
-    out->dr5 = context.Dr7;
+    out->dr4 = context->Dr6;
+    out->dr5 = context->Dr7;
 
-    out->dr6 = context.Dr6;
-    out->dr7 = context.Dr7;
+    out->dr6 = context->Dr6;
+    out->dr7 = context->Dr7;
   }
 
   if (HasContextPart(context, WOW64_CONTEXT_EXTENDED_REGISTERS)) {
-    static_assert(sizeof(out->fxsave) == sizeof(context.ExtendedRegisters),
+    static_assert(sizeof(out->fxsave) == sizeof(context->ExtendedRegisters),
                   "fxsave types must be equivalent");
-    memcpy(&out->fxsave, &context.ExtendedRegisters, sizeof(out->fxsave));
+    memcpy(&out->fxsave, &context->ExtendedRegisters, sizeof(out->fxsave));
   } else if (HasContextPart(context, WOW64_CONTEXT_FLOATING_POINT)) {
     // The static_assert that validates this cast can’t be here because it
     // relies on field names that vary based on the template parameter.
     CPUContextX86::FsaveToFxsave(
-        *reinterpret_cast<const CPUContextX86::Fsave*>(&context.FloatSave),
+        *reinterpret_cast<const CPUContextX86::Fsave*>(&context->FloatSave),
         &out->fxsave);
   }
 }
+
+#if defined(ARCH_CPU_X86_64)
+DWORD64 CallGetEnabledXStateFeatures() {
+  // GetEnabledXStateFeatures needs Windows 7 SP1.
+  HINSTANCE kernel32 = GetModuleHandle(L"Kernel32.dll");
+  decltype(GetEnabledXStateFeatures)* get_enabled_xstate_features =
+      reinterpret_cast<decltype(GetEnabledXStateFeatures)*>(
+          GetProcAddress(kernel32, "GetEnabledXStateFeatures"));
+  if (!get_enabled_xstate_features)
+    return 0;
+  return get_enabled_xstate_features();
+}
+#endif  // defined(ARCH_CPU_X64)
 
 }  // namespace
 
 #if defined(ARCH_CPU_X86)
 
-void InitializeX86Context(const CONTEXT& context, CPUContextX86* out) {
+void InitializeX86Context(const CONTEXT* context, CPUContextX86* out) {
   CommonInitializeX86Context(context, out);
 }
 
 #elif defined(ARCH_CPU_X86_64)
 
-void InitializeX86Context(const WOW64_CONTEXT& context, CPUContextX86* out) {
+void InitializeX86Context(const WOW64_CONTEXT* context, CPUContextX86* out) {
   CommonInitializeX86Context(context, out);
 }
 
-void InitializeX64Context(const CONTEXT& context, CPUContextX86_64* out) {
+void InitializeX64Context(const CONTEXT* context, CPUContextX86_64* out) {
   memset(out, 0, sizeof(*out));
 
   LOG_IF(ERROR, !HasContextPart(context, CONTEXT_AMD64)) << "non-x64 context";
 
   if (HasContextPart(context, CONTEXT_CONTROL)) {
-    out->cs = context.SegCs;
-    out->rflags = context.EFlags;
-    out->rip = context.Rip;
-    out->rsp = context.Rsp;
+    out->cs = context->SegCs;
+    out->rflags = context->EFlags;
+    out->rip = context->Rip;
+    out->rsp = context->Rsp;
     // SegSs ignored.
   }
 
   if (HasContextPart(context, CONTEXT_INTEGER)) {
-    out->rax = context.Rax;
-    out->rbx = context.Rbx;
-    out->rcx = context.Rcx;
-    out->rdx = context.Rdx;
-    out->rdi = context.Rdi;
-    out->rsi = context.Rsi;
-    out->rbp = context.Rbp;
-    out->r8 = context.R8;
-    out->r9 = context.R9;
-    out->r10 = context.R10;
-    out->r11 = context.R11;
-    out->r12 = context.R12;
-    out->r13 = context.R13;
-    out->r14 = context.R14;
-    out->r15 = context.R15;
+    out->rax = context->Rax;
+    out->rbx = context->Rbx;
+    out->rcx = context->Rcx;
+    out->rdx = context->Rdx;
+    out->rdi = context->Rdi;
+    out->rsi = context->Rsi;
+    out->rbp = context->Rbp;
+    out->r8 = context->R8;
+    out->r9 = context->R9;
+    out->r10 = context->R10;
+    out->r11 = context->R11;
+    out->r12 = context->R12;
+    out->r13 = context->R13;
+    out->r14 = context->R14;
+    out->r15 = context->R15;
   }
 
   if (HasContextPart(context, CONTEXT_SEGMENTS)) {
-    out->fs = context.SegFs;
-    out->gs = context.SegGs;
+    out->fs = context->SegFs;
+    out->gs = context->SegGs;
     // SegDs ignored.
     // SegEs ignored.
   }
 
   if (HasContextPart(context, CONTEXT_DEBUG_REGISTERS)) {
-    out->dr0 = context.Dr0;
-    out->dr1 = context.Dr1;
-    out->dr2 = context.Dr2;
-    out->dr3 = context.Dr3;
+    out->dr0 = context->Dr0;
+    out->dr1 = context->Dr1;
+    out->dr2 = context->Dr2;
+    out->dr3 = context->Dr3;
 
     // DR4 and DR5 are obsolete synonyms for DR6 and DR7, see
     // https://en.wikipedia.org/wiki/X86_debug_register.
-    out->dr4 = context.Dr6;
-    out->dr5 = context.Dr7;
+    out->dr4 = context->Dr6;
+    out->dr5 = context->Dr7;
 
-    out->dr6 = context.Dr6;
-    out->dr7 = context.Dr7;
+    out->dr6 = context->Dr6;
+    out->dr7 = context->Dr7;
   }
 
   if (HasContextPart(context, CONTEXT_FLOATING_POINT)) {
-    static_assert(sizeof(out->fxsave) == sizeof(context.FltSave),
+    static_assert(sizeof(out->fxsave) == sizeof(context->FltSave),
                   "types must be equivalent");
-    memcpy(&out->fxsave, &context.FltSave, sizeof(out->fxsave));
+    memcpy(&out->fxsave, &context->FltSave, sizeof(out->fxsave));
   }
+}
+
+void InitializeX64XStateCet(const CONTEXT* context,
+                            XSAVE_CET_U_FORMAT* cet_u,
+                            CPUContextX86_64* out) {
+  if (HasContextPart(context, CONTEXT_XSTATE)) {
+    if (cet_u) {
+      out->xstate.enabled_features |= XSTATE_MASK_CET_U;
+      out->xstate.cet_u.cetmsr = cet_u->Ia32CetUMsr;
+      out->xstate.cet_u.ssp = cet_u->Ia32Pl3SspMsr;
+    }
+  }
+}
+
+bool IsXStateFeatureEnabled(DWORD64 features) {
+  static DWORD64 flags = CallGetEnabledXStateFeatures();
+  return (flags & features) == features;
 }
 
 #elif defined(ARCH_CPU_ARM64)
 
-void InitializeARM64Context(const CONTEXT& context, CPUContextARM64* out) {
+void InitializeARM64Context(const CONTEXT* context, CPUContextARM64* out) {
   memset(out, 0, sizeof(*out));
 
   LOG_IF(ERROR, !HasContextPart(context, CONTEXT_ARM64)) << "non-arm64 context";
 
   if (HasContextPart(context, CONTEXT_CONTROL)) {
-    out->spsr = context.Cpsr;
-    out->pc = context.Pc;
-    out->regs[30] = context.Lr;
-    out->sp = context.Sp;
-    out->regs[29] = context.Fp;
+    out->spsr = context->Cpsr;
+    out->pc = context->Pc;
+    out->regs[30] = context->Lr;
+    out->sp = context->Sp;
+    out->regs[29] = context->Fp;
   }
 
   if (HasContextPart(context, CONTEXT_INTEGER)) {
-    memcpy(&out->regs[0], &context.X0, 18 * sizeof(context.X0));
+    memcpy(&out->regs[0], &context->X0, 18 * sizeof(context->X0));
     // Don't copy x18 which is reserved as platform register.
-    memcpy(&out->regs[19], &context.X19, 10 * sizeof(context.X0));
+    memcpy(&out->regs[19], &context->X19, 10 * sizeof(context->X0));
   }
 
   if (HasContextPart(context, CONTEXT_FLOATING_POINT)) {
-    static_assert(sizeof(out->fpsimd) == sizeof(context.V),
+    static_assert(sizeof(out->fpsimd) == sizeof(context->V),
                   "types must be equivalent");
-    memcpy(&out->fpsimd, &context.V, sizeof(out->fpsimd));
+    memcpy(&out->fpsimd, &context->V, sizeof(out->fpsimd));
   }
 }
 

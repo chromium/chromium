@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -33,6 +32,7 @@ import android.view.WindowManager;
 import android.view.autofill.AutofillId;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -84,7 +84,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@SuppressLint("NewApi")
+@RequiresApi(Build.VERSION_CODES.O)
 public class AwAutofillTest {
     public static final boolean DEBUG = false;
     public static final String TAG = "AutofillTest";

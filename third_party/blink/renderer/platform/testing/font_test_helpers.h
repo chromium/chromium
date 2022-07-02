@@ -22,6 +22,13 @@ Font CreateTestFont(const AtomicString& family_name,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr);
 
+// Reads a font from raw font data, for use in fuzzing test only.
+Font CreateTestFont(const AtomicString& family_name,
+                    const uint8_t* data,
+                    size_t data_size,
+                    float size,
+                    const FontDescription::VariantLigatures* = nullptr);
+
 #if BUILDFLAG(IS_WIN)
 class TestFontPrewarmer : public WebFontPrewarmer {
  public:

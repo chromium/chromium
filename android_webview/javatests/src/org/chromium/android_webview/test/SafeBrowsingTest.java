@@ -197,7 +197,7 @@ public class SafeBrowsingTest {
     private static class MockAwBrowserContext extends AwBrowserContext {
         public MockAwBrowserContext(SharedPreferences sharedPreferences) {
             super(sharedPreferences, 0, true);
-            SafeBrowsingApiBridge.setSafeBrowsingHandlerType(MockSafeBrowsingApiHandler.class);
+            SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
         }
     }
 

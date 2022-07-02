@@ -10,60 +10,202 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/view.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace {
+
+// Ratios of element width and dialog width.
+constexpr double kAssistantLogoScaleFactor = 0.2;
+constexpr double kTitleScaleFactor = 0.8;
+constexpr double kDescriptionScaleFactor = 0.8;
+constexpr double kSeparatorScaleFactor = 0.8;
+constexpr double kConsentTestScaleFactor = 1.0;
+
+}  // namespace
 
 // Factory function to create onboarding prompts on desktop platforms.
-AssistantOnboardingPrompt* AssistantOnboardingPrompt::Create(
-    AssistantOnboardingController* controller,
-    AssistantDisplayDelegate* display_delegate) {
-  return new AssistantOnboardingView(controller, display_delegate);
+base::WeakPtr<AssistantOnboardingPrompt> AssistantOnboardingPrompt::Create(
+    base::WeakPtr<AssistantOnboardingController> controller) {
+  return (new AssistantOnboardingView(controller))->GetWeakPtr();
 }
 
 AssistantOnboardingView::AssistantOnboardingView(
-    AssistantOnboardingController* controller,
-    AssistantDisplayDelegate* display_delegate)
-    : controller_(controller), display_delegate_(display_delegate) {
-  // Since display_delegate_ owns |this|, it must never be a nullptr.
-  DCHECK(display_delegate_);
-  display_delegate_->SetView(base::WrapUnique(this));
+    base::WeakPtr<AssistantOnboardingController> controller)
+    : controller_(controller) {
+  DCHECK(controller_);
 }
 
-AssistantOnboardingView::~AssistantOnboardingView() {
-  if (controller_) {
-    std::exchange(controller_, nullptr)->OnClose();
-  }
-}
+AssistantOnboardingView::~AssistantOnboardingView() = default;
 
-void AssistantOnboardingView::Show() {
-  // TODO(crbug.com/1322387): Set up proper layout and content.
+void AssistantOnboardingView::Show(content::WebContents* web_contents) {
+  DCHECK(controller_);
+
+  InitDelegate();
+  InitDialog();
+  constrained_window::ShowWebModalDialogViews(this, web_contents);
 }
 
 void AssistantOnboardingView::OnControllerGone() {
   controller_ = nullptr;
-  Close();
-}
-
-void AssistantOnboardingView::Close() {
-  DCHECK(!controller_);
-  display_delegate_->RemoveView();
-}
-
-void AssistantOnboardingView::OnAccept() {
-  if (controller_) {
-    std::exchange(controller_, nullptr)->OnAccept();
+  if (GetWidget()) {
+    // Trigger own destruction.
+    GetWidget()->Close();
+  } else {
+    // If this is not owned by a widget, delete itself.
+    delete this;
   }
-  Close();
 }
 
-void AssistantOnboardingView::OnCancel() {
-  if (controller_) {
-    std::exchange(controller_, nullptr)->OnCancel();
-  }
-  Close();
+void AssistantOnboardingView::InitDelegate() {
+  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 controller_->GetOnboardingInformation().button_accept_text);
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 controller_->GetOnboardingInformation().button_cancel_text);
+
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
+
+  SetAcceptCallback(
+      base::BindOnce(&AssistantOnboardingController::OnAccept, controller_));
+  SetCancelCallback(
+      base::BindOnce(&AssistantOnboardingController::OnCancel, controller_));
+  SetCloseCallback(
+      base::BindOnce(&AssistantOnboardingController::OnClose, controller_));
 }
 
-BEGIN_METADATA(AssistantOnboardingView, views::View)
+void AssistantOnboardingView::InitDialog() {
+  // The dialog is not expected to be resized, so for our purposes, a
+  // `BoxLayout` is sufficient.
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_between_child_spacing(0);
+
+  const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+
+  auto ConvertScaleFactorToMargin = [dialog_width](double scale_factor) -> int {
+    return static_cast<int>((1.0 - scale_factor) * dialog_width / 2.0);
+  };
+
+  // The icon. The placeholder color is only used on non-branded developer
+  // builds.
+  AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImage(gfx::CreateVectorIcon(
+              GetAssistantIconOrFallback(),
+              kAssistantLogoScaleFactor * dialog_width, gfx::kPlaceholderColor))
+          .SetID(static_cast<int>(DialogViewID::HEADER_ICON))
+          .Build());
+
+  // The title.
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(controller_->GetOnboardingInformation().title)
+          .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_TITLE)
+          .SetTextStyle(views::style::TextStyle::STYLE_PRIMARY)
+          .SetMultiLine(true)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  /*top=*/views::LayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                  /*left=*/ConvertScaleFactorToMargin(kTitleScaleFactor),
+                  /*bottom=*/0,
+                  /*right=*/ConvertScaleFactorToMargin(kTitleScaleFactor)))
+          .SetID(static_cast<int>(DialogViewID::TITLE))
+          .Build());
+
+  // The description.
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(controller_->GetOnboardingInformation().description)
+          .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::TextStyle::STYLE_SECONDARY)
+          .SetMultiLine(true)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  views::LayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                  ConvertScaleFactorToMargin(kDescriptionScaleFactor), 0,
+                  ConvertScaleFactorToMargin(kDescriptionScaleFactor)))
+          .SetID(static_cast<int>(DialogViewID::DESCRIPTION))
+          .Build());
+
+  AddChildView(
+      views::Builder<views::Separator>()
+          .SetPreferredLength(dialog_width)
+          .SetOrientation(views::Separator::Orientation::kHorizontal)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                           ConvertScaleFactorToMargin(kSeparatorScaleFactor),
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                           ConvertScaleFactorToMargin(kSeparatorScaleFactor)))
+          .Build());
+
+  // Get the offset of the "Learn more" text to create a link style.
+  size_t offset = 0;
+  std::u16string consent_text = base::ReplaceStringPlaceholders(
+      controller_->GetOnboardingInformation().consent_text,
+      controller_->GetOnboardingInformation().learn_more_title, &offset);
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &AssistantOnboardingController::OnLearnMoreClicked, controller_));
+
+  // The actual consent text with the "Learn more" link.
+  AddChildView(
+      views::Builder<views::StyledLabel>()
+          .SetText(consent_text)
+          .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
+          .SetDefaultTextStyle(views::style::TextStyle::STYLE_HINT)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  0, ConvertScaleFactorToMargin(kConsentTestScaleFactor), 0,
+                  ConvertScaleFactorToMargin(kConsentTestScaleFactor)))
+          .SetID(static_cast<int>(DialogViewID::CONSENT_TEXT))
+          .AddStyleRange(
+              gfx::Range(offset,
+                         offset + controller_->GetOnboardingInformation()
+                                      .learn_more_title.length()),
+              link_style)
+          .Build());
+}
+
+base::WeakPtr<AssistantOnboardingView> AssistantOnboardingView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+BEGIN_METADATA(AssistantOnboardingView, views::DialogDelegateView)
 END_METADATA

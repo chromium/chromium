@@ -254,6 +254,10 @@ class WebContents : public PageNavigator,
     // Enables contents to hold wake locks, for example, to keep the screen on
     // while playing video.
     bool enable_wake_locks = true;
+
+    // Options specific to WebContents created for picture-in-picture windows.
+    float initial_picture_in_picture_aspect_ratio = 0;
+    bool lock_picture_in_picture_aspect_ratio = false;
   };
 
   // Creates a new WebContents.
@@ -357,11 +361,10 @@ class WebContents : public PageNavigator,
   // WebContents' main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
 
-  // Returns the main frame for the currently active view. Always non-null
-  // except during WebContents destruction. With MPArch, this returns the
-  // primary main frame. This WebContents may have additional main frames for
-  // prerendered pages, bfcached pages, etc.
-  virtual RenderFrameHost* GetMainFrame() = 0;
+  // Returns the primary main frame for the currently active page. Always
+  // non-null except during WebContents destruction. This WebContents may
+  // have additional main frames for prerendered pages, bfcached pages, etc.
+  virtual RenderFrameHost* GetPrimaryMainFrame() = 0;
 
   // Returns the current page in the primary frame tree of this WebContents.
   // If this WebContents is associated with an omnibox, usually the URL of the
@@ -417,15 +420,6 @@ class WebContents : public PageNavigator,
   // See RenderFrameHost::GetFrameTreeNodeId for documentation on this ID.
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) = 0;
-
-  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
-  // Calls |on_frame| for each frame in the currently active view.
-  // Note: The RenderFrameHost parameter is not guaranteed to have a live
-  // RenderFrame counterpart in the renderer process. Callbacks should check
-  // IsRenderFrameLive(), as sending IPC messages to it in this case will fail
-  // silently.
-  virtual void ForEachFrame(
-      const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) = 0;
 
   // Calls |on_frame| for every RenderFrameHost in this WebContents. Note that
   // this includes RenderFrameHosts that are not descended from the primary main
@@ -1318,6 +1312,12 @@ class WebContents : public PageNavigator,
 
   // Returns the value from CreateParams::creator_location.
   virtual const base::Location& GetCreatorLocation() = 0;
+
+  // Returns the initial_aspect_ratio value from CreateParams.
+  virtual float GetPictureInPictureInitialAspectRatio() = 0;
+
+  // Returns the lock_aspect_ratio value from CreateParams.
+  virtual bool GetPictureInPictureLockAspectRatio() = 0;
 
   // Hide or show the browser controls for the given WebContents, based on
   // allowed states, desired state and whether the transition should be animated

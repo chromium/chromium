@@ -12,7 +12,7 @@
 
 namespace net {
 
-SpdyReadQueue::SpdyReadQueue() : total_size_(0) {}
+SpdyReadQueue::SpdyReadQueue() = default;
 
 SpdyReadQueue::~SpdyReadQueue() {
   Clear();

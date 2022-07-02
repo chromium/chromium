@@ -13,9 +13,7 @@
 using content::WebContents;
 
 WebDragBookmarkHandlerMac::WebDragBookmarkHandlerMac()
-    : bookmark_tab_helper_(NULL),
-      web_contents_(NULL) {
-}
+    : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
 WebDragBookmarkHandlerMac::~WebDragBookmarkHandlerMac() {}
 

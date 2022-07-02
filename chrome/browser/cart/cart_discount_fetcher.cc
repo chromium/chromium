@@ -11,13 +11,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/cart/cart_db.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
-#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
-#include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
+#include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/search/ntp_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
@@ -452,37 +452,36 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
 std::string CartDiscountFetcher::generatePostData(
     std::vector<CartDB::KeyAndValue> proto_pairs,
     base::Time current_time) {
-  auto carts_list = std::make_unique<base::ListValue>();
+  base::Value::List carts_list;
 
   for (const CartDB::KeyAndValue& key_and_value : proto_pairs) {
     cart_db::ChromeCartContentProto cart_proto = key_and_value.second;
 
-    auto cart_dict = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict cart_dict;
     // Set merchantIdentifier.
-    auto* merchant_dict = cart_dict->SetKey(
-        "merchantIdentifier", base::Value(base::Value::Type::DICTIONARY));
-    merchant_dict->SetStringKey("cartUrl", cart_proto.merchant_cart_url());
+    base::Value* merchant_dict =
+        cart_dict.Set("merchantIdentifier", base::Value::Dict());
+    merchant_dict->GetDict().Set("cartUrl", cart_proto.merchant_cart_url());
 
     // Set CartAbandonedTimeMinutes.
     int cart_abandoned_time_mintues =
         (current_time - base::Time::FromDoubleT(cart_proto.timestamp()))
             .InMinutes();
-    cart_dict->SetInteger("cartAbandonedTimeMinutes",
-                          cart_abandoned_time_mintues);
+    cart_dict.Set("cartAbandonedTimeMinutes", cart_abandoned_time_mintues);
 
     // Set rawMerchantOffers.
-    auto offer_list = std::make_unique<base::ListValue>();
+    base::Value::List offer_list;
     for (const auto& product_proto : cart_proto.product_infos()) {
-      offer_list->Append(product_proto.product_id());
+      offer_list.Append(product_proto.product_id());
     }
-    cart_dict->SetList("rawMerchantOffers", std::move(offer_list));
+    cart_dict.Set("rawMerchantOffers", std::move(offer_list));
 
     // Add cart_dict to cart_list.
-    carts_list->Append(std::move(cart_dict));
+    carts_list.Append(std::move(cart_dict));
   }
 
-  base::DictionaryValue request_dic;
-  request_dic.SetList("carts", std::move(carts_list));
+  base::Value::Dict request_dic;
+  request_dic.Set("carts", std::move(carts_list));
 
   std::string request_json;
   base::JSONWriter::Write(request_dic, &request_json);

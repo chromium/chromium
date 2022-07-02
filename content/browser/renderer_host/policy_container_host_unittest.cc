@@ -30,6 +30,7 @@ struct SameSizeAsPolicyContainerPolicies {
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   network::mojom::WebSandboxFlags sandbox_flags;
+  bool is_anonymous;
 };
 
 }  // namespace
@@ -70,7 +71,8 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   PolicyContainerPolicies policies(network::mojom::ReferrerPolicy::kAlways,
                                    network::mojom::IPAddressSpace::kUnknown,
                                    /*is_web_secure_context=*/true,
-                                   std::move(csps), coop, coep, sandbox_flags);
+                                   std::move(csps), coop, coep, sandbox_flags,
+                                   /*is_anonymous=*/true);
 
   EXPECT_THAT(policies.Clone(), Eq(ByRef(policies)));
 }

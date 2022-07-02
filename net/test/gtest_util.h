@@ -17,8 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 // A GMock matcher that checks whether the argument is the expected net::Error.
 // On failure, the expected and actual net::Error names will be printed.
@@ -167,7 +166,6 @@ class StringPieceHasSubstrMatcher {
 
 #endif  // DCHECK_IS_ON()
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_TEST_GTEST_UTIL_H_

@@ -17,11 +17,13 @@
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -56,14 +58,31 @@ class ArcMetricsServiceTest : public testing::Test {
   ArcMetricsServiceTest& operator=(const ArcMetricsServiceTest&) = delete;
 
  protected:
-  ArcMetricsServiceTest() {
+  ArcMetricsServiceTest() : ArcMetricsServiceTest(false) {}
+
+  explicit ArcMetricsServiceTest(bool is_arcvm_enabled) {
     prefs::RegisterLocalStatePrefs(local_state_.registry());
     StabilityMetricsManager::Initialize(&local_state_);
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    ash::SessionManagerClient::InitializeFakeInMemory();
+    ash::FakeSessionManagerClient::Get()->set_arc_available(true);
+    chromeos::ConciergeClient::InitializeFake();
 
+    // Changing the command line needs to be done here and not in
+    // ArcVmArcMetricsServiceTest below, because we need IsArcVmEnabled to
+    // return true inside the ArcMetricsService constructor in order for
+    // App kill counts to be queried.
+    if (is_arcvm_enabled) {
+      auto* command_line = base::CommandLine::ForCurrentProcess();
+      command_line->InitFromArgv({"", "--enable-arcvm"});
+    }
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
+    // ArcMetricsService makes one call to RequestLowMemoryKillCounts when it
+    // starts, so make it return 0s.
+    fake_process_instance_.set_request_low_memory_kill_counts_response(
+        mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0));
+    ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
+        &fake_process_instance_);
     context_ = std::make_unique<TestBrowserContext>();
     prefs::RegisterLocalStatePrefs(context_->pref_registry());
     prefs::RegisterProfilePrefs(context_->pref_registry());
@@ -72,9 +91,6 @@ class ArcMetricsServiceTest : public testing::Test {
     service_->set_prefs(context_->prefs());
 
     CreateFakeWindows();
-
-    ArcServiceManager::Get()->arc_bridge_service()->process()->SetInstance(
-        &fake_process_instance_);
   }
 
   ~ArcMetricsServiceTest() override {
@@ -84,7 +100,8 @@ class ArcMetricsServiceTest : public testing::Test {
     context_.reset();
     arc_service_manager_.reset();
 
-    chromeos::SessionManagerClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     StabilityMetricsManager::Shutdown();
   }
@@ -94,8 +111,7 @@ class ArcMetricsServiceTest : public testing::Test {
   void SetArcStartTimeInMs(uint64_t arc_start_time_in_ms) {
     const base::TimeTicks arc_start_time =
         base::Milliseconds(arc_start_time_in_ms) + base::TimeTicks();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_start_time(
-        arc_start_time);
+    ash::FakeSessionManagerClient::Get()->set_arc_start_time(arc_start_time);
   }
 
   std::vector<mojom::BootProgressEventPtr> GetBootProgressEvents(
@@ -130,6 +146,7 @@ class ArcMetricsServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
 
@@ -392,91 +409,226 @@ TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
   service()->RemoveUserInteractionObserver(&observer);
 }
 
-TEST_F(ArcMetricsServiceTest, AppLowMemoryKills) {
-  base::HistogramTester tester;
-  service()->RequestLowMemoryKillCountsForTesting();
-  process_instance().RunRequestLowMemoryKillCountsCallback(
-      mojom::LowMemoryKillCounts::New(1,    // oom.
-                                      2,    // lmkd_foreground.
-                                      3,    // lmkd_perceptible.
-                                      4,    // lmkd_cached.
-                                      5,    // pressure_foreground.
-                                      6,    // pressure_preceptible.
-                                      7));  // pressure_cached.
-  // The first callback doesn't log to histograms, since it's collecting the
-  // first baseline.
-  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LinuxOOMCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes", 0);
-  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes",
-                          0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes", 0);
-  service()->RequestLowMemoryKillCountsForTesting();
-  process_instance().RunRequestLowMemoryKillCountsCallback(
-      mojom::LowMemoryKillCounts::New(17,    // oom.
-                                      16,    // lmkd_foreground.
-                                      15,    // lmkd_perceptible.
-                                      14,    // lmkd_cached.
-                                      13,    // pressure_foreground.
-                                      12,    // pressure_preceptible.
-                                      11));  // pressure_cached.
-  tester.ExpectUniqueSample("Arc.App.LowMemoryKills.LinuxOOMCount10Minutes",
-                            17 - 1, 1);
-  tester.ExpectUniqueSample(
-      "Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes", 16 - 2, 1);
-  tester.ExpectUniqueSample(
-      "Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes", 15 - 3, 1);
-  tester.ExpectUniqueSample("Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes",
-                            14 - 4, 1);
-  tester.ExpectUniqueSample(
-      "Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes", 13 - 5, 1);
-  tester.ExpectUniqueSample(
-      "Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes", 12 - 6, 1);
-  tester.ExpectUniqueSample(
-      "Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes", 11 - 7, 1);
+class ArcVmArcMetricsServiceTest
+    : public ArcMetricsServiceTest,
+      public testing::WithParamInterface<
+          absl::optional<vm_tools::concierge::ListVmsResponse>> {
+ public:
+  ArcVmArcMetricsServiceTest(const ArcVmArcMetricsServiceTest&) = delete;
+  ArcVmArcMetricsServiceTest& operator=(const ArcVmArcMetricsServiceTest&) =
+      delete;
+
+ protected:
+  ArcVmArcMetricsServiceTest() : ArcMetricsServiceTest(true) {}
+
+  void RequestKillCountsAndRespond(mojom::LowMemoryKillCountsPtr counts) {
+    ash::FakeConciergeClient::Get()->set_list_vms_response(
+        std::move(GetParam()));
+    process_instance().set_request_low_memory_kill_counts_response(
+        std::move(counts));
+    service()->RequestKillCountsForTesting();
+    base::RunLoop().RunUntilIdle();
+  }
+};
+
+// Create a ListVmsResponse used to create the VM specific memory counters.
+// See LogVmSpecificLowMemoryKillCounts.
+static absl::optional<vm_tools::concierge::ListVmsResponse> VmsList(
+    std::initializer_list<vm_tools::concierge::VmInfo_VmType> types) {
+  // ArcMetricsService only uses the vm_type field and ignores everything else,
+  // so that's the only thing we need to set.
+  auto list = vm_tools::concierge::ListVmsResponse();
+  list.set_success(true);
+  for (auto type : types) {
+    auto* info = list.add_vms();
+    info->mutable_vm_info()->set_vm_type(type);
+  }
+  return list;
 }
 
-TEST_F(ArcMetricsServiceTest, AppLowMemoryKillsDecrease) {
+struct KillCounterInfo {
+  const char* name;
+  uint32_t mojom::LowMemoryKillCounts::*const member;
+};
+
+// Store a list of the different kill counter names and which field in the
+// mojo structure holds them.
+static constexpr std::array<KillCounterInfo, 7> kKillCounterInfo = {{
+    {"LinuxOOM", &mojom::LowMemoryKillCounts::guest_oom},
+    {"LMKD.Foreground", &mojom::LowMemoryKillCounts::lmkd_foreground},
+    {"LMKD.Perceptible", &mojom::LowMemoryKillCounts::lmkd_perceptible},
+    {"LMKD.Cached", &mojom::LowMemoryKillCounts::lmkd_cached},
+    {"Pressure.Foreground", &mojom::LowMemoryKillCounts::pressure_foreground},
+    {"Pressure.Perceptible", &mojom::LowMemoryKillCounts::pressure_perceptible},
+    {"Pressure.Cached", &mojom::LowMemoryKillCounts::pressure_cached},
+}};
+
+typedef vm_tools::concierge::VmInfo_VmType VmType;
+
+static constexpr VmType VmType_ARC_VM =
+    vm_tools::concierge::VmInfo_VmType_ARC_VM;
+static constexpr VmType VmType_BOREALIS =
+    vm_tools::concierge::VmInfo_VmType_BOREALIS;
+static constexpr VmType VmType_PLUGIN_VM =
+    vm_tools::concierge::VmInfo_VmType_PLUGIN_VM;
+static constexpr VmType VmType_TERMINA =
+    vm_tools::concierge::VmInfo_VmType_TERMINA;
+static constexpr VmType VmType_UNKNOWN =
+    vm_tools::concierge::VmInfo_VmType_UNKNOWN;
+
+static const char* VmKillCounterPrefix(VmType vm) {
+  switch (vm) {
+    case VmType_ARC_VM:
+      // We assume the caller has checked that no other VM is running.
+      return ".OnlyArc";
+
+    case VmType_BOREALIS:
+      return ".Steam";
+
+    case VmType_PLUGIN_VM:
+      return ".PluginVm";
+
+    case VmType_TERMINA:
+      return ".Crostini";
+
+    default:
+      return ".UnknownVm";
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MultiVm,
+    ArcVmArcMetricsServiceTest,
+    testing::Values(absl::nullopt,
+                    VmsList({}),
+                    VmsList({VmType_ARC_VM}),
+                    VmsList({VmType_ARC_VM, VmType_BOREALIS}),
+                    VmsList({VmType_ARC_VM, VmType_TERMINA}),
+                    VmsList({VmType_ARC_VM, VmType_UNKNOWN}),
+                    VmsList({VmType_ARC_VM, VmType_PLUGIN_VM}),
+                    VmsList({VmType_ARC_VM, VmType_BOREALIS, VmType_PLUGIN_VM,
+                             VmType_TERMINA, VmType_UNKNOWN})));
+
+static void ExpectNoAppKillCountsForVm(base::HistogramTester& tester,
+                                       const char* vm_prefix) {
+  for (const auto counter : kKillCounterInfo) {
+    const auto name = base::StringPrintf(
+        "Arc.App.LowMemoryKills%s.%sCount10Minutes", vm_prefix, counter.name);
+    tester.ExpectTotalCount(name, 0);
+  }
+}
+
+static void ExpectNoAppKillCounts(base::HistogramTester& tester) {
+  ExpectNoAppKillCountsForVm(tester, "");
+  ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(VmType_ARC_VM));
+  ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(VmType_BOREALIS));
+  ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(VmType_PLUGIN_VM));
+  ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(VmType_TERMINA));
+  ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(VmType_UNKNOWN));
+}
+
+static void ExpectOneSampleAppKillCountsForVm(
+    base::HistogramTester& tester,
+    const char* vm_prefix,
+    const mojom::LowMemoryKillCountsPtr& c0,
+    const mojom::LowMemoryKillCountsPtr& c1) {
+  for (const auto counter : kKillCounterInfo) {
+    const auto name = base::StringPrintf(
+        "Arc.App.LowMemoryKills%s.%sCount10Minutes", vm_prefix, counter.name);
+    base::Histogram::Count value =
+        (*c1).*(counter.member) - (*c0).*(counter.member);
+    tester.ExpectUniqueSample(name, value, 1);
+  }
+}
+
+static void ExpectOneSampleAppKillCounts(
+    base::HistogramTester& tester,
+    absl::optional<vm_tools::concierge::ListVmsResponse> vms,
+    const mojom::LowMemoryKillCountsPtr& c0,
+    const mojom::LowMemoryKillCountsPtr& c1) {
+  // No VM prefix for general counters.
+  ExpectOneSampleAppKillCountsForVm(tester, "", c0, c1);
+
+  // VM specific counters. First build a set of the running VMs.
+  std::unordered_set<VmType> running;
+  if (vms) {
+    for (int i = 0; i < vms->vms_size(); i++) {
+      const auto& vm = vms->vms(i);
+      if (!vm.has_vm_info()) {
+        continue;
+      }
+      running.insert(vm.vm_info().vm_type());
+    }
+  }
+
+  // ARCVM is special, because we only increment those counters if it's the only
+  // VM.
+  if (running.count(VmType_ARC_VM) == 1 && running.size() == 1) {
+    ExpectOneSampleAppKillCountsForVm(
+        tester, VmKillCounterPrefix(VmType_ARC_VM), c0, c1);
+  } else {
+    ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(VmType_ARC_VM));
+  }
+  // Other VM counters should only incremented if that VM is running.
+  std::initializer_list<VmType> other_vms = {VmType_BOREALIS, VmType_PLUGIN_VM,
+                                             VmType_TERMINA, VmType_UNKNOWN};
+  for (auto vm : other_vms) {
+    if (running.count(vm) == 1) {
+      ExpectOneSampleAppKillCountsForVm(tester, VmKillCounterPrefix(vm), c0,
+                                        c1);
+    } else {
+      ExpectNoAppKillCountsForVm(tester, VmKillCounterPrefix(vm));
+    }
+  }
+}
+
+TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryKills) {
   base::HistogramTester tester;
-  service()->RequestLowMemoryKillCountsForTesting();
-  process_instance().RunRequestLowMemoryKillCountsCallback(
-      mojom::LowMemoryKillCounts::New(17,    // oom.
-                                      16,    // lmkd_foreground.
-                                      15,    // lmkd_perceptible.
-                                      14,    // lmkd_cached.
-                                      13,    // pressure_foreground.
-                                      12,    // pressure_preceptible.
-                                      11));  // pressure_cached.
-  service()->RequestLowMemoryKillCountsForTesting();
-  process_instance().RunRequestLowMemoryKillCountsCallback(
-      mojom::LowMemoryKillCounts::New(1,    // oom.
-                                      2,    // lmkd_foreground.
-                                      3,    // lmkd_perceptible.
-                                      4,    // lmkd_cached.
-                                      5,    // pressure_foreground.
-                                      6,    // pressure_preceptible.
-                                      7));  // pressure_cached.
-  // All counters decreased, so we should not log anything.
-  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LinuxOOMCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.LMKD.ForegroundCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.LMKD.PerceptibleCount10Minutes", 0);
-  tester.ExpectTotalCount("Arc.App.LowMemoryKills.LMKD.CachedCount10Minutes",
-                          0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.Pressure.ForegroundCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.Pressure.PerceptibleCount10Minutes", 0);
-  tester.ExpectTotalCount(
-      "Arc.App.LowMemoryKills.Pressure.CachedCount10Minutes", 0);
+  // The test code sets the initial counts to 0.
+  auto c0 = mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0);
+  // First sample counts.
+  auto c1 = mojom::LowMemoryKillCounts::New(1,   // oom.
+                                            2,   // lmkd_foreground.
+                                            3,   // lmkd_perceptible.
+                                            4,   // lmkd_cached.
+                                            5,   // pressure_foreground.
+                                            6,   // pressure_perceptible.
+                                            7);  // pressure_cached.
+  // Second sample counts.
+  auto c2 = mojom::LowMemoryKillCounts::New(17,   // oom.
+                                            16,   // lmkd_foreground.
+                                            15,   // lmkd_perceptible.
+                                            14,   // lmkd_cached.
+                                            13,   // pressure_foreground.
+                                            12,   // pressure_perceptible.
+                                            11);  // pressure_cached.
+  // Third sample counts all decrease by 1.
+  auto c3 = mojom::LowMemoryKillCounts::New(16,   // oom.
+                                            15,   // lmkd_foreground.
+                                            14,   // lmkd_perceptible.
+                                            13,   // lmkd_cached.
+                                            12,   // pressure_foreground.
+                                            11,   // pressure_perceptible.
+                                            10);  // pressure_cached.
+
+  {
+    base::HistogramTester tester;
+    RequestKillCountsAndRespond(c1->Clone());
+    ExpectOneSampleAppKillCounts(tester, GetParam(), c0, c1);
+  }
+
+  {
+    base::HistogramTester tester;
+    RequestKillCountsAndRespond(c2->Clone());
+    ExpectOneSampleAppKillCounts(tester, GetParam(), c1, c2);
+  }
+
+  {
+    base::HistogramTester tester;
+    RequestKillCountsAndRespond(c3->Clone());
+    // Counts decreased, so expect no samples.
+    ExpectNoAppKillCounts(tester);
+  }
 }
 
 }  // namespace

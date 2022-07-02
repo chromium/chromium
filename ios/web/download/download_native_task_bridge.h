@@ -34,7 +34,7 @@ using NativeDownloadTaskCompleteCallback =
 
 // Used to set response url, content length, mimetype and http response headers
 // in CRWWkNavigationHandler so method can interact with WKWebView.
-- (void)onDownloadNativeTaskBridgeReadyForDownload:
+- (BOOL)onDownloadNativeTaskBridgeReadyForDownload:
     (DownloadNativeTaskBridge*)bridge API_AVAILABLE(ios(15));
 
 // Calls CRWWKNavigationHandlerDelegate to resume download using |webView|

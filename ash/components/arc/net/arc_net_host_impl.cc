@@ -22,11 +22,12 @@
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/client_cert_util.h"
-#include "chromeos/network/device_state.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
@@ -34,7 +35,6 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -197,7 +197,7 @@ bool IsActiveNetworkState(const chromeos::NetworkState* network) {
   const std::string& state = network->connection_state();
   return state == shill::kStateReady || state == shill::kStateOnline ||
          state == shill::kStateAssociation ||
-         state == shill::kStateConfiguration || state == shill::kStatePortal ||
+         state == shill::kStateConfiguration ||
          state == shill::kStateNoConnectivity ||
          state == shill::kStateRedirectFound ||
          state == shill::kStatePortalSuspected;

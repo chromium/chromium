@@ -37,12 +37,12 @@ bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
 }
 
 void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
-    bool in_main_frame,
+    bool is_full_page,
     const std::string& mime_type) {
   if (mime_type != kPDFMimeType)
     return;
 
-  ReportPDFLoadStatus(in_main_frame
+  ReportPDFLoadStatus(is_full_page
                           ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
                           : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
 }

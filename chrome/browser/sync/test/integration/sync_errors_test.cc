@@ -105,7 +105,7 @@ class SyncErrorTest : public SyncTest {
   SyncErrorTest(const SyncErrorTest&) = delete;
   SyncErrorTest& operator=(const SyncErrorTest&) = delete;
 
-  ~SyncErrorTest() override {}
+  ~SyncErrorTest() override = default;
 };
 
 // Helper class that waits until the sync engine has hit an actionable error.
@@ -117,7 +117,7 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
   ActionableErrorChecker(const ActionableErrorChecker&) = delete;
   ActionableErrorChecker& operator=(const ActionableErrorChecker&) = delete;
 
-  ~ActionableErrorChecker() override {}
+  ~ActionableErrorChecker() override = default;
 
   // Checks if an actionable error has been hit. Called repeatedly each time PSS
   // notifies observers of a state change.
@@ -388,7 +388,6 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // The bookmark should get committed successfully.
   EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(0), GetFakeServer(),
                   {{kBookmarkFolderTitle, GURL()}},
                   /*cryptographer=*/nullptr)
                   .Wait());

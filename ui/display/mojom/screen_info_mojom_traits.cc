@@ -13,7 +13,8 @@ bool StructTraits<display::mojom::ScreenInfoDataView, display::ScreenInfo>::
     Read(display::mojom::ScreenInfoDataView data, display::ScreenInfo* out) {
   if (!data.ReadDisplayColorSpaces(&out->display_color_spaces) ||
       !data.ReadRect(&out->rect) ||
-      !data.ReadAvailableRect(&out->available_rect)) {
+      !data.ReadAvailableRect(&out->available_rect) ||
+      !data.ReadLabel(&out->label)) {
     return false;
   }
 

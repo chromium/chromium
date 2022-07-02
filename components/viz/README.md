@@ -131,13 +131,6 @@ Code here supports presentation of the backing store drawn by the display
 compositor (typically thought of as SwapBuffers), as well as the use of
 overlays.
 
-The source code is split into two build targets,
-``components/viz/service:service`` and
-``components/viz/service:gpu_service_dependencies``. The latter is
-code that requires being run in the gpu process, thus could not work
-if the viz service is located elsewhere. This is forward-looking code
-as the viz service is moving into the gpu process always.
-
 | Can depend on:                        |
 |:--------------------------------------|
 | viz/common/*                          |
@@ -186,12 +179,6 @@ method.
 **GL**: This component implements the Mojo interfaces for allocating (and
 deallocating) gpu memory buffers, setting up a channel for the command buffer,
 etc.
-
-Similar to ``service/display_embedder`` this is split into two targets in
-the build system. Code that must run in the gpu process is compiled in
-the ``components/viz/service:gpu_service_dependencies`` build target,
-and the rest is compiled in ``components/viz/service:service``. As all
-code moves to the gpu process, these two build targets will merge.
 
 | Can depend on:        |
 |:----------------------|

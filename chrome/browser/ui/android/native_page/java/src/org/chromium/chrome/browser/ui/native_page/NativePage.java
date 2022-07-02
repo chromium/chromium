@@ -93,6 +93,11 @@ public interface NativePage {
     }
 
     /**
+     * Notify the native page that it is about to be navigated back or hidden by a back press.
+     */
+    default void notifyHidingWithBack() {}
+
+    /**
      * Called after a page has been removed from the view hierarchy and will no longer be used.
      */
     void destroy();

@@ -64,6 +64,7 @@ class TestUploadClient : public UploaderInterface {
       : last_record_digest_map_(last_record_digest_map) {}
 
   void ProcessRecord(EncryptedRecord encrypted_record,
+                     ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(
@@ -136,10 +137,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   void TearDown() override {
     ResetTestStorageQueue();
     // Make sure all memory is deallocated.
-    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
+    ASSERT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
-    ASSERT_THAT(GetDiskResource()->GetUsed(), Eq(0u));
+    ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
   }
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {

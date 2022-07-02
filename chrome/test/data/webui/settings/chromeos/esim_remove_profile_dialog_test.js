@@ -8,7 +8,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chrome
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
@@ -79,7 +79,8 @@ suite('EsimRemoveProfileDialog', function() {
     let foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
 
-    const removeBtn = esimRemoveProfileDialog.$$('#remove');
+    const removeBtn =
+        esimRemoveProfileDialog.shadowRoot.querySelector('#remove');
     assertTrue(!!removeBtn);
     removeBtn.click();
     await flushAsync();
@@ -114,7 +115,8 @@ suite('EsimRemoveProfileDialog', function() {
     const showErrorToastPromise =
         eventToPromise('show-error-toast', esimRemoveProfileDialog);
 
-    const removeBtn = esimRemoveProfileDialog.$$('#remove');
+    const removeBtn =
+        esimRemoveProfileDialog.shadowRoot.querySelector('#remove');
     assertTrue(!!removeBtn);
 
     removeBtn.click();
@@ -178,7 +180,8 @@ suite('EsimRemoveProfileDialog', function() {
   });
 
   test('Warning message visibility', function() {
-    const warningMessage = esimRemoveProfileDialog.$$('#warningMessage');
+    const warningMessage =
+        esimRemoveProfileDialog.shadowRoot.querySelector('#warningMessage');
     assertTrue(!!warningMessage);
 
     esimRemoveProfileDialog.showCellularDisconnectWarning = false;

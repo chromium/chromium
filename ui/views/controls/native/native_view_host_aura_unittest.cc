@@ -17,6 +17,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
 #include "ui/views/focus/focus_manager.h"
@@ -593,6 +594,55 @@ TEST_F(NativeViewHostAuraTest, ClippedWindowNotResizedOnDetach) {
   EXPECT_EQ(gfx::Size(200, 200), window->bounds().size());
   host->Detach();
   EXPECT_EQ(gfx::Size(200, 200), window->bounds().size());
+}
+
+class WidgetDelegateForShouldDescendIntoChildForEventHandling
+    : public WidgetDelegate {
+ public:
+  void set_window(aura::Window* window) { window_ = window; }
+
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override {
+    return child != window_;
+  }
+
+ private:
+  raw_ptr<aura::Window> window_ = nullptr;
+};
+
+TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
+  WidgetDelegateForShouldDescendIntoChildForEventHandling widget_delegate;
+  CreateTopLevel(&widget_delegate);
+  toplevel()->SetSize(gfx::Size(200, 200));
+  toplevel()->Show();
+
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  window->set_owned_by_parent(false);
+  window->SetBounds(gfx::Rect(0, 0, 200, 200));
+  window->Show();
+
+  widget_delegate.set_window(window.get());
+
+  CreateTestingHost();
+  toplevel()->GetRootView()->AddChildView(host());
+  host()->SetVisible(true);
+  host()->SetBoundsRect(gfx::Rect(0, 0, 200, 200));
+  host()->Attach(window.get());
+
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  gfx::Point press_location(100, 100);
+  aura::Window::ConvertPointToTarget(toplevel()->GetNativeView(),
+                                     window->GetRootWindow(), &press_location);
+  event_generator.MoveMouseTo(press_location);
+  event_generator.PressLeftButton();
+  // Because the delegate overrides ShouldDescendIntoChildForEventHandling()
+  // the NativeView does not get the event, but NativeViewHost will.
+  EXPECT_EQ(1, on_mouse_pressed_called_count());
+  DestroyHost();
+  DestroyTopLevel();
 }
 
 }  // namespace views

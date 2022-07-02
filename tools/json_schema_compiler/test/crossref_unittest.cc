@@ -53,24 +53,22 @@ TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
-  auto params_value = std::make_unique<base::ListValue>();
-  params_value->Append(CreateTestTypeValue());
+  base::Value::List params_value;
+  params_value.Append(CreateTestTypeValue());
   std::unique_ptr<crossref::TestTypeOptionalParam::Params> params(
-      crossref::TestTypeOptionalParam::Params::Create(
-          params_value->GetListDeprecated()));
+      crossref::TestTypeOptionalParam::Params::Create(params_value));
   EXPECT_TRUE(params.get());
   EXPECT_TRUE(params->test_type.get());
   EXPECT_EQ(CreateTestTypeValue(), *params->test_type->ToValue());
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
-  auto params_value = std::make_unique<base::ListValue>();
+  base::Value::List params_value;
   base::DictionaryValue test_type_value = CreateTestTypeValue();
   test_type_value.RemoveKey("number");
-  params_value->Append(std::move(test_type_value));
+  params_value.Append(std::move(test_type_value));
   std::unique_ptr<crossref::TestTypeOptionalParam::Params> params(
-      crossref::TestTypeOptionalParam::Params::Create(
-          params_value->GetListDeprecated()));
+      crossref::TestTypeOptionalParam::Params::Create(params_value));
   EXPECT_FALSE(params.get());
 }
 
@@ -79,7 +77,7 @@ TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
   auto test_type = std::make_unique<simple_api::TestType>();
   EXPECT_TRUE(simple_api::TestType::Populate(value, test_type.get()));
 
-  std::vector<base::Value> results =
+  base::Value::List results =
       crossref::GetTestType::Results::Create(*test_type);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(value, results[0]);
@@ -87,14 +85,13 @@ TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeInObjectParamsCreate) {
   {
-    base::Value params_value(base::Value::Type::LIST);
+    base::Value::List params_value;
     base::Value::Dict param_object_value;
     param_object_value.Set("testType", CreateTestTypeValue());
     param_object_value.Set("boolean", true);
-    params_value.GetList().Append(std::move(param_object_value));
+    params_value.Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
-        crossref::TestTypeInObject::Params::Create(
-            params_value.GetListDeprecated()));
+        crossref::TestTypeInObject::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_TRUE(params->param_object.test_type.get());
     EXPECT_TRUE(params->param_object.boolean);
@@ -102,36 +99,33 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeInObjectParamsCreate) {
               *params->param_object.test_type->ToValue());
   }
   {
-    base::Value params_value(base::Value::Type::LIST);
+    base::Value::List params_value;
     base::Value::Dict param_object_value;
     param_object_value.Set("boolean", true);
-    params_value.GetList().Append(std::move(param_object_value));
+    params_value.Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
-        crossref::TestTypeInObject::Params::Create(
-            params_value.GetListDeprecated()));
+        crossref::TestTypeInObject::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->param_object.test_type.get());
     EXPECT_TRUE(params->param_object.boolean);
   }
   {
-    base::Value params_value(base::Value::Type::LIST);
+    base::Value::List params_value;
     base::Value::Dict param_object_value;
     param_object_value.Set("testType", "invalid");
     param_object_value.Set("boolean", true);
-    params_value.GetList().Append(std::move(param_object_value));
+    params_value.Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
-        crossref::TestTypeInObject::Params::Create(
-            params_value.GetListDeprecated()));
+        crossref::TestTypeInObject::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
   {
-    base::Value params_value(base::Value::Type::LIST);
+    base::Value::List params_value;
     base::Value::Dict param_object_value;
     param_object_value.Set("testType", CreateTestTypeValue());
-    params_value.GetList().Append(std::move(param_object_value));
+    params_value.Append(std::move(param_object_value));
     std::unique_ptr<crossref::TestTypeInObject::Params> params(
-        crossref::TestTypeInObject::Params::Create(
-            params_value.GetListDeprecated()));
+        crossref::TestTypeInObject::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
 }

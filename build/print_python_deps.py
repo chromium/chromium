@@ -7,12 +7,9 @@
 
 The primary use-case for this script is to generate the list of python modules
 required for .isolate files.
-
-This script should be compatible with Python 2 and Python 3.
 """
 
 import argparse
-import fnmatch
 import os
 import pipes
 import sys
@@ -76,7 +73,6 @@ def _NormalizeCommandLine(options):
 
 def _FindPythonInDirectory(directory, allow_test):
   """Returns an iterable of all non-test python files in the given directory."""
-  files = []
   for root, _dirnames, filenames in os.walk(directory):
     for filename in filenames:
       if filename.endswith('.py') and (allow_test
@@ -84,47 +80,19 @@ def _FindPythonInDirectory(directory, allow_test):
         yield os.path.join(root, filename)
 
 
-def _GetTargetPythonVersion(module):
-  """Heuristically determines the target module's Python version."""
-  with open(module) as f:
-    shebang = f.readline().strip()
-  default_version = 2
-  if shebang.startswith('#!'):
-    # Examples:
-    # '#!/usr/bin/python'
-    # '#!/usr/bin/python2.7'
-    # '#!/usr/bin/python3'
-    # '#!/usr/bin/env python3'
-    # '#!/usr/bin/env vpython'
-    # '#!/usr/bin/env vpython3'
-    exec_name = os.path.basename(shebang[2:].split(' ')[-1])
-    for python_prefix in ['python', 'vpython']:
-      if exec_name.startswith(python_prefix):
-        version_string = exec_name[len(python_prefix):]
-        break
-    else:
-      raise ValueError('Invalid shebang: ' + shebang)
-    if version_string:
-      return int(float(version_string))
-  return default_version
-
-
 def _ImportModuleByPath(module_path):
   """Imports a module by its source file."""
   # Replace the path entry for print_python_deps.py with the one for the given
   # module.
   sys.path[0] = os.path.dirname(module_path)
-  if sys.version_info[0] == 2:
-    import imp  # Python 2 only, since it's deprecated in Python 3.
-    imp.load_source('NAME', module_path)
-  else:
-    # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
-    module_name = os.path.splitext(os.path.basename(module_path))[0]
-    import importlib.util  # Python 3 only, since it's unavailable in Python 2.
-    spec = importlib.util.spec_from_file_location(module_name, module_path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
+
+  # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+  module_name = os.path.splitext(os.path.basename(module_path))[0]
+  import importlib.util  # Python 3 only, since it's unavailable in Python 2.
+  spec = importlib.util.spec_from_file_location(module_name, module_path)
+  module = importlib.util.module_from_spec(spec)
+  sys.modules[module_name] = module
+  spec.loader.exec_module(module)
 
 
 def main():
@@ -168,29 +136,20 @@ def main():
   if not modules:
     parser.error('Input directory does not contain any python files!')
 
-  target_versions = [_GetTargetPythonVersion(m) for m in modules]
-  target_version = target_versions[0]
-  assert target_version in [2, 3]
-  assert all(v == target_version for v in target_versions)
-
-  current_version = sys.version_info[0]
-
   is_vpython = 'vpython' in sys.executable
-  if not is_vpython or target_version != current_version:
+  if not is_vpython:
     # Prevent infinite relaunch if something goes awry.
     assert not options.did_relaunch
     # Re-launch using vpython will cause us to pick up modules specified in
     # //.vpython, but does not cause it to pick up modules defined inline via
     # [VPYTHON:BEGIN] ... [VPYTHON:END] comments.
     # TODO(agrieve): Add support for this if the need ever arises.
-    vpython_to_use = {2: 'vpython', 3: 'vpython3'}[target_version]
-    os.execvp(vpython_to_use, [vpython_to_use] + sys.argv + ['--did-relaunch'])
+    os.execvp('vpython3', ['vpython3'] + sys.argv + ['--did-relaunch'])
 
-  if current_version == 3:
-    # Work-around for protobuf library not being loadable via importlib
-    # This is needed due to compile_resources.py.
-    import importlib._bootstrap_external
-    importlib._bootstrap_external._NamespacePath.sort = lambda self, **_: 0
+  # Work-around for protobuf library not being loadable via importlib
+  # This is needed due to compile_resources.py.
+  import importlib._bootstrap_external
+  importlib._bootstrap_external._NamespacePath.sort = lambda self, **_: 0
 
   paths_set = set()
   try:

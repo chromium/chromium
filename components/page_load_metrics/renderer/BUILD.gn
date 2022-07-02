@@ -34,6 +34,7 @@ source_set("unit_tests") {
     "fake_page_timing_sender.cc",
     "fake_page_timing_sender.h",
     "metrics_render_frame_observer_unittest.cc",
+    "page_timing_metadata_recorder_unittest.cc",
     "page_timing_metrics_sender_unittest.cc",
   ]
 

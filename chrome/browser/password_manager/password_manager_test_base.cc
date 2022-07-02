@@ -513,7 +513,7 @@ content::WebContents* PasswordManagerBrowserTestBase::WebContents() const {
 
 content::RenderFrameHost* PasswordManagerBrowserTestBase::RenderFrameHost()
     const {
-  return WebContents()->GetMainFrame();
+  return WebContents()->GetPrimaryMainFrame();
 }
 
 void PasswordManagerBrowserTestBase::NavigateToFile(const std::string& path) {

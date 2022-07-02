@@ -103,6 +103,8 @@ void SpeechMonitor::Shutdown() {}
 void SpeechMonitor::FinalizeVoiceOrdering(
     std::vector<content::VoiceData>& voices) {}
 
+void SpeechMonitor::RefreshVoices() {}
+
 double SpeechMonitor::CalculateUtteranceDelayMS() {
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
   std::chrono::duration<double> time_span =

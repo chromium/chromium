@@ -207,19 +207,6 @@ to previous and next items in the list:
 </iron-list>
 ```
 
-### Styling
-
-You can use the `--iron-list-items-container` mixin to style the container of
-items:
-
-```css
-iron-list {
- --iron-list-items-container: {
-    margin: auto;
-  };
-}
-```
-
 ### Resizing
 
 `iron-list` lays out the items when it receives a notification via the
@@ -267,7 +254,6 @@ Polymer({
       }
 
       #items {
-        @apply --iron-list-items-container;
         position: relative;
       }
 

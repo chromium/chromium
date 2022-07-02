@@ -25,5 +25,13 @@ const char kEnableDemoStandaloneMode[] = "enable_demo_standalone_mode";
 const char kKeyAppId[] = "app_id";
 const char kKeyAllowInsecureContent[] = "allow_insecure_content";
 
+const char kCastCoreRendererFeatures[] = "cast_core_renderer_features";
+const char kCastCoreEnforceFeaturePermissions[] =
+    "cast_core_enforce_feature_permissions";
+const char kCastCoreFeaturePermissions[] = "cast_core_feature_permissions";
+const char kCastCoreFeaturePermissionOrigins[] =
+    "cast_core_feature_permission_origins";
+const char kCastCoreIsAudioOnly[] = "cast_core_is_audio_only";
+
 }  // namespace feature
 }  // namespace chromecast

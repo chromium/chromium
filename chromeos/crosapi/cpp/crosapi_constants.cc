@@ -16,8 +16,12 @@ const char kLacrosAppIdPrefix[] = "org.chromium.lacros.";
 // user data partition.
 const char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
 
-// A file name of shared resources pack.
+// The file name of shared resource file.
 const char kSharedResourcesPackName[] = "resources_for_sharing.rspak";
+const char kSharedChrome100PercentPackName[] =
+    "chrome_100_percent_for_sharing.rspak";
+const char kSharedChrome200PercentPackName[] =
+    "chrome_200_percent_for_sharing.rspak";
 
 // Release channel key in /etc/lsb-release.
 const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";

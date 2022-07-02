@@ -26,9 +26,9 @@ const char kJsFlowActionEnabledGroup[] = "Enabled";
 
 JsFlowAction::JsFlowAction(ActionDelegate* delegate, const ActionProto& proto)
     : Action(delegate, proto),
-      js_flow_executor_(
-          std::make_unique<JsFlowExecutorImpl>(delegate->GetWebContents(),
-                                               this)) {
+      js_flow_executor_(std::make_unique<JsFlowExecutorImpl>(
+          /* delegate= */ this,
+          delegate->GetJsFlowDevtoolsWrapper())) {
   DCHECK(proto_.has_js_flow());
 }
 
@@ -90,6 +90,8 @@ void JsFlowAction::OnNativeActionFinished(
 
   current_native_action_.reset();
 
+  delegate_->MaybeSetPreviousAction(*processed_action);
+
   std::move(finished_callback)
       .Run(ClientStatus(processed_action->status(),
                         processed_action->status_details()),
@@ -109,6 +111,11 @@ void JsFlowAction::InternalProcessAction(ProcessActionCallback callback) {
 void JsFlowAction::OnFlowFinished(ProcessActionCallback callback,
                                   const ClientStatus& status,
                                   std::unique_ptr<base::Value> return_value) {
+  // Since we can not know in advance how many native actions need to be run
+  // we will create a dangling promise. By destroying the flow executor we make
+  // sure that these will not be executed.
+  js_flow_executor_.reset(nullptr);
+
   UpdateProcessedAction(status);
 
   // If the flow returned a value, we extract the status and possibly a flow

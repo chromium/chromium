@@ -28,7 +28,10 @@ bool CloseKeyboardIfActive() {
   }
 
   // Close the Android VK if it is visible by sending a back event.
-  if (Shell::Get()->system_tray_model()->virtual_keyboard()->visible()) {
+  if (Shell::Get()
+          ->system_tray_model()
+          ->virtual_keyboard()
+          ->arc_keyboard_visible()) {
     window_util::SendBackKeyEvent(Shell::GetPrimaryRootWindow());
     return true;
   }

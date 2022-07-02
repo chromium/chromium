@@ -51,6 +51,7 @@ js_library("personalization_page") {
     ":wallpaper_browser_proxy",
     "..:deep_linking_behavior",
     "..:os_route",
+    "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
     "../ambient_mode_page:ambient_mode_browser_proxy",

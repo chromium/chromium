@@ -18,7 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
@@ -100,9 +100,9 @@ bool OwnerFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   // Also write the flags to device settings so they get applied to the Chrome
   // OS login screen. The device setting is read by session_manager and passed
   // to Chrome via a command line flag on startup.
-  std::vector<base::Value> feature_flags_list;
+  base::Value::List feature_flags_list;
   for (const auto& flag : flags) {
-    feature_flags_list.push_back(base::Value(flag));
+    feature_flags_list.Append(flag);
   }
   owner_settings_service_->Set(kFeatureFlags,
                                base::Value(std::move(feature_flags_list)));

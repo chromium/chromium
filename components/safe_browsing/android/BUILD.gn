@@ -68,25 +68,19 @@ static_library("safe_browsing_api_handler_util") {
 
 source_set("safe_browsing_api_handler") {
   sources = [
-    "safe_browsing_api_handler.cc",
-    "safe_browsing_api_handler.h",
+    "safe_browsing_api_handler_bridge.cc",
+    "safe_browsing_api_handler_bridge.h",
   ]
   deps = [
+    ":jni_headers",
     ":safe_browsing_api_handler_util",
     "//base",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
     "//content/public/browser:browser",
     "//url",
   ]
-
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-    sources += [
-      "safe_browsing_api_handler_bridge.cc",
-      "safe_browsing_api_handler_bridge.h",
-    ]
-  }
 }
 
 source_set("unit_tests_mobile") {

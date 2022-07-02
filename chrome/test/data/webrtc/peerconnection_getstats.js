@@ -94,53 +94,39 @@ let kRTCReceivedRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
   packetsReceived: 'number',
   packetsLost: 'number',
   jitter: 'number',
-  packetsDiscarded: 'number',
-  packetsRepaired: 'number',
-  burstPacketsLost: 'number',
-  burstPacketsDiscarded: 'number',
-  burstLossCount: 'number',
-  burstDiscardCount: 'number',
-  burstLossRate: 'number',
-  burstDiscardRate: 'number',
-  gapLossRate: 'number',
-  gapDiscardRate: 'number',
-});
+  });
 
 /*
- * RTCInboundRTPStreamStats
+ * RTCInboundRtpStreamStats
  * https://w3c.github.io/webrtc-stats/#inboundrtpstats-dict*
  * @private
  */
 let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   trackId: 'string',
-  receiverId: 'string',
+  trackIdentifier: 'string',
+  mid: 'string',
   remoteId: 'string',
   framesDecoded: 'number',
   keyFramesDecoded: 'number',
-  frameBitDepth: 'number',
   qpSum: 'number',
   totalDecodeTime: 'number',
   totalProcessingDelay: 'number',
   totalInterFrameDelay: 'number',
   totalSquaredInterFrameDelay: 'number',
   lastPacketReceivedTimestamp: 'number',
-  averageRtcpInterval: 'number',
   fecPacketsReceived: 'number',
   fecPacketsDiscarded: 'number',
   bytesReceived: 'number',
   headerBytesReceived: 'number',
-  packetsFailedDecryption: 'number',
-  packetsDuplicated: 'number',
-  perDscpPacketsReceived: 'object',
+  packetsDiscarded: 'number',
   nackCount: 'number',
   firCount: 'number',
   pliCount: 'number',
-  sliCount: 'number',
   frameWidth: 'number',
   frameHeight: 'number',
-  frameBitDepth: 'number',
   framesPerSecond: 'number',
   jitterBufferDelay: 'number',
+  jitterBufferTargetDelay: 'number',
   jitterBufferEmittedCount: 'number',
   totalSamplesReceived: 'number',
   concealedSamples: 'number',
@@ -186,8 +172,6 @@ addRTCStatsToAllowlist(
  */
 let kRTCSentRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
   packetsSent: 'number',
-  packetsDiscardedOnSend: 'number',
-  fecPacketsSent: 'number',
   bytesSent: 'number',
   bytesDiscardedOnSend: 'number',
 });
@@ -200,29 +184,24 @@ let kRTCSentRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
 let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   trackId: 'string',
   mediaSourceId: 'string',
-  senderId: 'string',
   remoteId: 'string',
-  lastPacketSentTimestamp: 'number',
+  mid: 'string',
   retransmittedPacketsSent: 'number',
   retransmittedBytesSent: 'number',
   headerBytesSent: 'number',
   targetBitrate: 'number',
   totalEncodedBytesTarget: 'number',
-  frameBitDepth: 'number',
   framesEncoded: 'number',
   keyFramesEncoded: 'number',
   qpSum: 'number',
   totalEncodeTime: 'number',
   totalPacketSendDelay: 'number',
-  averageRtcpInterval: 'number',
   qualityLimitationReason: 'string',
   qualityLimitationDurations: 'object',
   qualityLimitationResolutionChanges: 'number',
-  perDscpPacketsSent: 'object',
   nackCount: 'number',
   firCount: 'number',
   pliCount: 'number',
-  sliCount: 'number',
   encoderImplementation: 'string',
   rid: 'string',
   frameWidth: 'number',
@@ -284,7 +263,6 @@ addRTCStatsToAllowlist(
 const kRTCVideoSourceStats = new RTCStats(kRTCMediaSourceStats, {
   width: 'number',
   height: 'number',
-  bitDepth: 'number',
   frames: 'number',
   framesPerSecond: 'number',
 });
@@ -329,147 +307,51 @@ addRTCStatsToAllowlist(Presence.MANDATORY, 'codec', kRTCCodecStats);
 let kRTCPeerConnectionStats = new RTCStats(null, {
   dataChannelsOpened: 'number',
   dataChannelsClosed: 'number',
-  dataChannelsRequested: 'number',
-  dataChannelsAccepted: 'number',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'peer-connection', kRTCPeerConnectionStats);
 
 /*
  * RTCMediaStreamStats
- * https://w3c.github.io/webrtc-stats/#msstats-dict*
+ * https://w3c.github.io/webrtc-stats/#obsolete-rtcmediastreamstats-members
  * @private
  */
 let kRTCMediaStreamStats = new RTCStats(null, {
   streamIdentifier: 'string',
   trackIds: 'sequence_string',
 });
-addRTCStatsToAllowlist(Presence.MANDATORY, 'stream', kRTCMediaStreamStats);
+// It's OPTIONAL because this dictionary has become obsolete.
+addRTCStatsToAllowlist(Presence.OPTIONAL, 'stream', kRTCMediaStreamStats);
 
 /**
- * RTCMediaHandlerStats
- * https://w3c.github.io/webrtc-stats/#mststats-dict*
+ * RTCMediaStreamTrackStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcmediastreamtrackstats
  * @private
  */
-let kRTCMediaHandlerStats = new RTCStats(null, {
+let kRTCMediaStreamTrackStats = new RTCStats('track', {
   trackIdentifier: 'string',
   remoteSource: 'boolean',
   ended: 'boolean',
   kind: 'string',
   priority: 'string',
   detached: 'boolean',  // Obsolete, detached stats should fire "onstatsended".
-});
-
-/*
- * RTCVideoHandlerStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcvideohandlerstats
- * @private
- */
-let kRTCVideoHandlerStats = new RTCStats(kRTCMediaHandlerStats, {
   frameWidth: 'number',
   frameHeight: 'number',
-  framesPerSecond: 'number',
-});
-
-/*
- * RTCVideoSenderStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcvideosenderstats
- * @private
- */
-let kRTCVideoSenderStats = new RTCStats(kRTCVideoHandlerStats, {
   mediaSourceId: 'string',
   framesCaptured: 'number',
   framesSent: 'number',
   hugeFramesSent: 'number',
-});
-// TODO(hbos): When sender is implemented, make presence MANDATORY.
-addRTCStatsToAllowlist(Presence.OPTIONAL, 'sender', kRTCVideoSenderStats);
-
-/*
- * RTCSenderVideoTrackAttachmentStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcsendervideotrackattachmentstats
- * @private
- */
-let kRTCSenderVideoTrackAttachmentStats = new RTCStats(kRTCVideoSenderStats, {
-});
-addRTCStatsToAllowlist(
-    Presence.MANDATORY, 'track', kRTCSenderVideoTrackAttachmentStats);
-
-/*
- * RTCVideoReceiverStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcvideoreceiverstats
- * @private
- */
-let kRTCVideoReceiverStats = new RTCStats(kRTCVideoHandlerStats, {
   estimatedPlayoutTimestamp: 'number',
   jitterBufferDelay: 'number',
   jitterBufferEmittedCount: 'number',
   framesReceived: 'number',
   framesDecoded: 'number',
   framesDropped: 'number',
-  partialFramesLost: 'number',
-  fullFramesLost: 'number',
-});
-// TODO(hbos): When receiver is implemented, make presence MANDATORY.
-addRTCStatsToAllowlist(
-    Presence.OPTIONAL, 'receiver', kRTCVideoReceiverStats);
-
-/*
- * RTCReceiverVideoTrackAttachmentStats
- * https://github.com/w3c/webrtc-stats/issues/424
- * @private
- */
-let kRTCReceiverVideoTrackAttachmentStats =
-    new RTCStats(kRTCVideoReceiverStats, {
-});
-addRTCStatsToAllowlist(
-    Presence.MANDATORY, 'track', kRTCReceiverVideoTrackAttachmentStats);
-
-/*
- * RTCAudioHandlerStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcaudiohandlerstats
- * @private
- */
-let kRTCAudioHandlerStats = new RTCStats(kRTCMediaHandlerStats, {
   audioLevel: 'number',
   totalAudioEnergy: 'number',
-  voiceActivityFlag: 'boolean',
   totalSamplesDuration: 'number',
-});
-
-/*
- * RTCAudioSenderStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcaudiosenderstats
- * @private
- */
-let kRTCAudioSenderStats = new RTCStats(kRTCAudioHandlerStats, {
-  mediaSourceId: 'string',
   echoReturnLoss: 'number',
   echoReturnLossEnhancement: 'number',
-  totalSamplesSent: 'number',
-});
-// TODO(hbos): When sender is implemented, make presence MANDATORY.
-addRTCStatsToAllowlist(Presence.OPTIONAL, 'sender', kRTCAudioSenderStats);
-
-/*
- * RTCSenderAudioTrackAttachmentStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcsenderaudiotrackattachmentstats
- * @private
- */
-let kRTCSenderAudioTrackAttachmentStats = new RTCStats(kRTCAudioSenderStats, {
-});
-addRTCStatsToAllowlist(
-    Presence.MANDATORY, 'track', kRTCSenderAudioTrackAttachmentStats);
-
-/*
- * RTCAudioReceiverStats
- * https://w3c.github.io/webrtc-stats/#dom-rtcaudioreceiverstats
- * @private
- */
-let kRTCAudioReceiverStats = new RTCStats(kRTCAudioHandlerStats, {
-  estimatedPlayoutTimestamp: 'number',
-  jitterBufferDelay: 'number',
-  jitterBufferEmittedCount: 'number',
   totalSamplesReceived: 'number',
   concealedSamples: 'number',
   silentConcealedSamples: 'number',
@@ -477,20 +359,8 @@ let kRTCAudioReceiverStats = new RTCStats(kRTCAudioHandlerStats, {
   insertedSamplesForDeceleration: 'number',
   removedSamplesForAcceleration: 'number',
 });
-// TODO(hbos): When receiver is implemented, make presence MANDATORY.
-addRTCStatsToAllowlist(
-    Presence.OPTIONAL, 'receiver', kRTCAudioReceiverStats);
-
-/*
- * RTCReceiverAudioTrackAttachmentStats
- * https://github.com/w3c/webrtc-stats/issues/424
- * @private
- */
-let kRTCReceiverAudioTrackAttachmentStats =
-    new RTCStats(kRTCAudioReceiverStats, {
-});
-addRTCStatsToAllowlist(
-    Presence.MANDATORY, 'track', kRTCReceiverAudioTrackAttachmentStats);
+// It's OPTIONAL because this dictionary has become obsolete.
+addRTCStatsToAllowlist(Presence.OPTIONAL, 'track', kRTCMediaStreamTrackStats);
 
 /*
  * RTCDataChannelStats
@@ -573,7 +443,6 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   priority: 'number',
   nominated: 'boolean',
   writable: 'boolean',
-  readable: 'boolean',
   packetsSent: 'number',
   packetsReceived: 'number',
   bytesSent: 'number',
@@ -586,12 +455,7 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   requestsSent: 'number',
   responsesReceived: 'number',
   responsesSent: 'number',
-  retransmissionsReceived: 'number',
-  retransmissionsSent: 'number',
-  consentRequestsReceived: 'number',
   consentRequestsSent: 'number',
-  consentResponsesReceived: 'number',
-  consentResponsesSent: 'number',
   packetsDiscardedOnSend: 'number',
   bytesDiscardedOnSend: 'number',
 });

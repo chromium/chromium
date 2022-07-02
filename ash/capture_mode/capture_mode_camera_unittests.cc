@@ -22,6 +22,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/fake_camera_device.h"
+#include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
@@ -75,8 +76,6 @@ constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
 constexpr char kDefaultCameraDisplayName[] = "Default Cam";
 constexpr char kDefaultCameraModelId[] = "0def:c000";
 
-constexpr float kOverlapOpacity = 0.1f;
-
 TestCaptureModeDelegate* GetTestDelegate() {
   return static_cast<TestCaptureModeDelegate*>(
       CaptureModeController::Get()->delegate_for_testing());
@@ -100,6 +99,14 @@ aura::Window* GetCurrentRoot() {
   }
 
   return Shell::GetPrimaryRootWindow();
+}
+
+bool IsWindowStackedRightBelow(aura::Window* window, aura::Window* sibling) {
+  DCHECK_EQ(window->parent(), sibling->parent());
+  const auto& children = window->parent()->children();
+  const int sibling_index =
+      std::find(children.begin(), children.end(), sibling) - children.begin();
+  return sibling_index > 0 && children[sibling_index - 1] == window;
 }
 
 // Defines a waiter for the camera devices change notifications.
@@ -184,11 +191,13 @@ class CaptureModeCameraTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+    FakeFolderSelectionDialogFactory::Start();
     window_ = CreateTestWindow(gfx::Rect(30, 40, 600, 500));
   }
 
   void TearDown() override {
     window_.reset();
+    FakeFolderSelectionDialogFactory::Stop();
     AshTestBase::TearDown();
   }
 
@@ -916,9 +925,9 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInFullscreen) {
   auto* parent = preview_window->parent();
   // Parent of the preview should be the MenuContainer when capture mode
   // session is active with `kFullscreen` type. And the preview window should
-  // be the top-most child of it.
+  // be the bottom-most child of it.
   EXPECT_EQ(parent, menu_container);
-  EXPECT_EQ(menu_container->children().back(), preview_window);
+  EXPECT_EQ(menu_container->children().front(), preview_window);
 
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
   // Parent of the preview should be the MenuContainer when video recording
@@ -1469,7 +1478,8 @@ TEST_F(CaptureModeCameraTest,
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Move mouse on top of capture label, verify it's updated to fully opaque
   // even it's still overlapped with camera preview.
@@ -1484,7 +1494,8 @@ TEST_F(CaptureModeCameraTest,
   // `kOverlapOpacity`.
   const gfx::Vector2d delta1(50, 50);
   event_generator->MoveMouseTo(capture_lable_bounds.bottom_right() + delta1);
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Click on the outside of the capture region to reset it, verify capture
   // label is updated to fully opaque.
@@ -1519,7 +1530,8 @@ TEST_F(CaptureModeCameraTest,
   EXPECT_EQ(capture_session->GetSelectedWindow(), window());
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Move mouse on top of capture bar. Verify capture bar is updated to fully
   // opaque.
@@ -1535,7 +1547,8 @@ TEST_F(CaptureModeCameraTest,
       capture_bar_widget->GetWindowBoundsInScreen().origin();
   event_generator->MoveMouseTo(capture_bar_origin.x() - 10,
                                capture_bar_origin.y() - 10);
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 }
 
 TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
@@ -1562,7 +1575,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
   EXPECT_EQ(capture_session->GetSelectedWindow(), window());
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Rotate the primary display by 90 degrees. Verify that capture bar no longer
   // overlaps with camera preview and it's updated to fully opaque.
@@ -1580,7 +1594,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
       display::Display::ROTATE_180, display::Display::RotationSource::USER);
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 }
 
 TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnCaptureSourceChange) {
@@ -1602,7 +1617,8 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnCaptureSourceChange) {
   SelectCaptureRegion({100, 100, min_region_length, min_region_length});
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Change the capture source from `kRegion` to `kFullscreen`, verify capture
   // label is updated to fully opaque.
@@ -2197,7 +2213,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   EXPECT_EQ(capture_session->GetSelectedWindow(), window());
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Now tab through the capture bar, verify that as long as the focus is on
   // capture bar or capture settings menu, capture bar is updated to full
@@ -2216,7 +2233,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   // `kOverlapOpacity` since the focus is removed from capture bar.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Tab three times to focus on the settings button, verify capture bar is
   // updated to fully opaque again.
@@ -2260,7 +2278,8 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   SelectCaptureRegion({100, 100, min_region_length, min_region_length});
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   auto* event_generator = GetEventGenerator();
   // Tab four times to focus on the region capture source, verify capture label
@@ -2268,13 +2287,15 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/4);
   EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Tab twice to focus on `kSelection`, verify capture label is still
   // `kOverlapOpacity`.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
   EXPECT_EQ(FocusGroup::kSelection, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Tab eleven times to focus on cpature label, verify capture label is updated
   // to fully opaque.
@@ -2287,7 +2308,8 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   // lable's opacity is updated to `kOverlapOpacity`.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 }
 
 // Tests that when switching capture source from `kRegion` to `kFullscreen`,
@@ -2412,6 +2434,50 @@ TEST_F(CaptureModeCameraTest,
     histogram_tester.ExpectBucketCount(
         GetCaptureModeHistogramName(kHistogramNameBase), 3, 1);
   }
+}
+
+// Tests that the number of connected cameras to the device is recorded whenever
+// the number changes.
+TEST_F(CaptureModeCameraTest, RecordNumberOfConnectedCamerasHistogramTest) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.NumberOfConnectedCameras";
+
+  base::HistogramTester histogram_tester;
+  // Make sure the device change alert triggered by the SystemMonitor is handled
+  // before we connect a camera device.
+  {
+    base::RunLoop loop;
+    GetCameraController()->SetOnCameraListReceivedForTesting(
+        loop.QuitClosure());
+    base::SystemMonitor::Get()->ProcessDevicesChanged(
+        base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    loop.Run();
+  }
+
+  // Verify that before we connect any camera device, there's 0 cameras and it
+  // has been recorded.
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 0, 1);
+
+  // Connect one camera, verify that the number of one camera device has been
+  // recorded once.
+  AddFakeCamera("/dev/video", "fake cam ", "model 1");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 1, 1);
+
+  // Connect the second camera, verify that the number of two camera devices has
+  // been recorded once.
+  AddFakeCamera("/dev/video1", "fake cam 2", "model 2");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 2, 1);
+
+  // Disconnect the second camera, now the number of connected cameres drops
+  // back to one, verify that the number of one camera device has been recorded
+  // twice.
+  RemoveFakeCamera("/dev/video1");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 1, 2);
+
+  // Connect the third camera, now the number of connected cameras is two again,
+  // verify that the number of two camera devices has been recorded twice.
+  AddFakeCamera("/dev/video2", "fake cam 3", "model 3");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 2, 2);
 }
 
 // Tests that the duration for disconnected camera to become available again is
@@ -2745,6 +2811,44 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnCaptureModeTurnedOn) {
             CaptureToastType::kCameraPreview);
 }
 
+TEST_F(CaptureModeCameraTest, ToastStackingOrderChangeOnCaptureModeTurnedOn) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  // Set capture region small enough to make capture toast shown.
+  const gfx::Rect capture_region = GetTooSmallToFitCameraRegion();
+  SelectCaptureRegion(capture_region);
+
+  // Close capture mode.
+  controller->Stop();
+
+  // Turn on capture mode again through the quick settings, verify that the
+  // stacking order for capture toast relative to other capture UIs is correct.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  auto* capture_session = controller->capture_mode_session();
+  auto* capture_toast_controller = capture_session->capture_toast_controller();
+  auto* capture_toast_widget = capture_toast_controller->capture_toast_widget();
+  auto* capture_toast_window = capture_toast_widget->GetNativeWindow();
+  auto* capture_label_window =
+      capture_session->capture_label_widget()->GetNativeWindow();
+  auto* capture_bar_window =
+      capture_session->capture_mode_bar_widget()->GetNativeWindow();
+  auto* camera_preview_window =
+      camera_controller->camera_preview_widget()->GetNativeWindow();
+
+  EXPECT_TRUE(
+      IsWindowStackedRightBelow(capture_label_window, capture_bar_window));
+  EXPECT_TRUE(
+      IsWindowStackedRightBelow(capture_toast_window, capture_label_window));
+  EXPECT_TRUE(
+      IsWindowStackedRightBelow(camera_preview_window, capture_toast_window));
+  EXPECT_TRUE(IsLayerStackedRightBelow(capture_session->layer(),
+                                       camera_preview_window->layer()));
+}
+
 TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnPerformingCapture) {
   UpdateDisplay("800x600");
 
@@ -2990,6 +3094,45 @@ class CaptureModeCameraPreviewTest
   }
 };
 
+TEST_P(CaptureModeCameraPreviewTest, PreviewVisibilityWhileFolderSelection) {
+  AddDefaultCamera();
+  StartCaptureSessionWithParam();
+  CaptureModeTestApi().SelectCameraAtIndex(0);
+
+  // The camera preview should be initially visible.
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  auto* preview_widget = GetCameraController()->camera_preview_widget();
+  ASSERT_TRUE(preview_widget);
+  EXPECT_TRUE(preview_widget->IsVisible());
+
+  // Click on the settings button, the settings menu should open, and the camera
+  // preview should remain visible.
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  auto* settings_button =
+      session_test_api.GetCaptureModeBarView()->settings_button();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(settings_button, event_generator);
+  ASSERT_TRUE(session_test_api.GetCaptureModeSettingsWidget());
+  EXPECT_TRUE(preview_widget->IsVisible());
+
+  // Click on the "Select folder ..." option, the folder selection dialog should
+  // open, all capture UIs should hide, including the camera preview.
+  CaptureModeSettingsTestApi settings_test_api;
+  ClickOnView(settings_test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(session_test_api.IsFolderSelectionDialogShown());
+  EXPECT_FALSE(session_test_api.IsAllUisVisible());
+  EXPECT_FALSE(preview_widget->IsVisible());
+
+  // Dismiss the folder selection dialog, all capture UIs should show again,
+  // including the camera preview.
+  FakeFolderSelectionDialogFactory::Get()->CancelDialog();
+  EXPECT_FALSE(session_test_api.IsFolderSelectionDialogShown());
+  EXPECT_TRUE(session_test_api.IsAllUisVisible());
+  EXPECT_TRUE(preview_widget->IsVisible());
+}
+
 // Tests that camera preview's bounds is updated after display rotations with
 // two use cases, when capture session is active and when there's a video
 // recording in progress.
@@ -3035,6 +3178,7 @@ TEST_P(CaptureModeCameraPreviewTest, DisplayRotation) {
 // when capture session is active and when there's a video recording in
 // progress including drag to snap by mouse and by touch.
 TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnap) {
+  UpdateDisplay("1600x800");
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
@@ -4272,5 +4416,32 @@ TEST_P(CaptureModeCameraFramesTest, CameraFatalErrors) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, CaptureModeCameraFramesTest, testing::Bool());
+
+// The test fixture for starting test without active session.
+using NoSessionCaptureModeCameraTest = NoSessionAshTestBase;
+
+// Tests that camera info is requested after the user logs in instead of on
+// Chrome startup.
+TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
+  auto* camera_controller = GetCameraController();
+  GetTestDelegate()->video_source_provider()->AddFakeCameraWithoutNotifying(
+      "/dev/video0", "Integrated Webcam", "0123:4567",
+      media::MEDIA_VIDEO_FACING_NONE);
+
+  // Verify that the camera devices info is not updated yet.
+  EXPECT_TRUE(camera_controller->available_cameras().empty());
+
+  // Simulate the user login process and wait for the camera info to be updated.
+  {
+    base::RunLoop loop;
+    GetCameraController()->SetOnCameraListReceivedForTesting(
+        loop.QuitClosure());
+    SimulateUserLogin("example@gmail.com", user_manager::USER_TYPE_REGULAR);
+    loop.Run();
+  }
+
+  // Verify that after the user logs in, the camera info is up-to-date.
+  EXPECT_EQ(camera_controller->available_cameras().size(), 1u);
+}
 
 }  // namespace ash

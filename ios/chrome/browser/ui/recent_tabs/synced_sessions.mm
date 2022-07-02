@@ -133,7 +133,7 @@ SyncedSessions::SyncedSessions(
 
 SyncedSessions::~SyncedSessions() = default;
 
-// Returns the session at index |index|.
+// Returns the session at index `index`.
 DistantSession const* SyncedSessions::GetSession(size_t index) const {
   DCHECK_LE(index, GetSessionCount());
   return sessions_[index].get();
@@ -154,7 +154,7 @@ size_t SyncedSessions::GetSessionCount() const {
   return sessions_.size();
 }
 
-// Deletes the session at index |index|.
+// Deletes the session at index `index`.
 void SyncedSessions::EraseSessionWithTag(const std::string& tag) {
   size_t index = GetSessionCount();
   for (size_t i = 0; i < GetSessionCount(); i++) {

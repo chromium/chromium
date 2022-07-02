@@ -33,7 +33,7 @@ inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
 
 // Used by the -inl.h file.
 CORE_EXPORT CascadeFilter
-AmendFilter(CascadeFilter filter, const MatchedProperties& matched_properties);
+CreateExpansionFilter(const MatchedProperties& matched_properties);
 CORE_EXPORT bool IsInAllExpansion(CSSPropertyID id);
 
 // CascadeExpansion objects which exceed these limits will emit nothing.
@@ -72,20 +72,23 @@ constexpr wtf_size_t kMaxMatchedPropertiesIndex =
 // Usage:
 //
 //   ExpandCascade(..., [](CascadePriority cascade_priority,
-//                         const CSSProperty& css_property, const CSSValue&
+//                         const CSSProperty& css_property,
+//                         const CSSPropertyName& name,
+//                         const CSSValue&
 //                         css_value, uint16_t tree_order) {
 //                           DoStuff(...)
 //                         }
 //
-// The css_property reference is not guaranteed to live past the end of the
-// callback.
+// The css_property and name references are not guaranteed to live past the end
+// of the callback. The name is guaranteed to be identical to
+// css_property.GetCSSPropertyName() (using it generally saves you the virtual
+// function call).
 //
 // The implementation is in cascade_expansion-inl.h, which you will need to
 // include if you use this function.
 template <class Callback>
 void ExpandCascade(const MatchedProperties& matched_properties,
                    const Document& document,
-                   CascadeFilter upstream_filter,
                    wtf_size_t matched_properties_index,
                    Callback&& callback);
 

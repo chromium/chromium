@@ -100,6 +100,12 @@ function emitExpectedResult(path, expected)
     case "isSecureContext":
         expected = "true";
         break;
+
+    // The Cross-Origin-Embedder-Policy default value is 'unsafe-none'.
+    case "crossOriginEmbedderPolicy":
+        expected = "'unsafe-none'";
+        break;
+
     // TODO(dcheng): Figure out why these become undefined...
     case "location.hash":
     case "location.host":

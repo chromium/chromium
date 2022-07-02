@@ -29,7 +29,7 @@ BookmarkSyncServiceFactory::BookmarkSyncServiceFactory()
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
 }
 
-BookmarkSyncServiceFactory::~BookmarkSyncServiceFactory() {}
+BookmarkSyncServiceFactory::~BookmarkSyncServiceFactory() = default;
 
 KeyedService* BookmarkSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

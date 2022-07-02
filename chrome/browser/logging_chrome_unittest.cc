@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -105,11 +106,11 @@ TEST_F(ChromeLoggingTest, SetUpSymlink) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath temp_dir_path = temp_dir.GetPath();
   base::FilePath bare_symlink_path =
-      temp_dir_path.Append(FILE_PATH_LITERAL("chrome-test-log"));
+      temp_dir_path.AppendASCII("chrome-test-log");
   base::FilePath latest_symlink_path =
-      temp_dir_path.Append(FILE_PATH_LITERAL("chrome-test-log.LATEST"));
+      temp_dir_path.AppendASCII("chrome-test-log.LATEST");
   base::FilePath previous_symlink_path =
-      temp_dir_path.Append(FILE_PATH_LITERAL("chrome-test-log.PREVIOUS"));
+      temp_dir_path.AppendASCII("chrome-test-log.PREVIOUS");
 
   // Start from a legacy situation, where "chrome-test-log" is a symlink
   // pointing to the latest log, which has a time-stamped name from a while
@@ -154,6 +155,134 @@ TEST_F(ChromeLoggingTest, SetUpSymlink) {
   ASSERT_TRUE(base::ReadSymbolicLink(latest_symlink_path, &latest_target_path));
   EXPECT_THAT(latest_target_path.value(),
               ::testing::MatchesRegex("^.*chrome-test-log_\\d+-\\d+$"));
+}
+
+// Test the case of the normal rotation.
+TEST_F(ChromeLoggingTest, RotateLogFiles) {
+  constexpr char kLog1Content[] = "log#1\n";
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath temp_dir_path = temp_dir.GetPath();
+  base::FilePath log_path_latest = temp_dir_path.AppendASCII("chrome-test-log");
+
+  // Prepare the latest log file.
+  ASSERT_TRUE(base::WriteFile(log_path_latest, kLog1Content));
+  base::File::Info file_info;
+  base::File(log_path_latest, base::File::FLAG_OPEN | base::File::FLAG_READ)
+      .GetInfo(&file_info);
+  base::Time creation_time = file_info.creation_time;
+
+  // Generate the log file path which is rotated to.
+  base::FilePath expected_rotated_path =
+      logging::GenerateTimestampedName(log_path_latest, creation_time);
+
+  // Check the condition before rotation.
+  {
+    EXPECT_TRUE(base::PathExists(log_path_latest));
+    EXPECT_FALSE(base::PathExists(expected_rotated_path));
+  }
+
+  // Simulate the rotation.
+  ASSERT_TRUE(logging::RotateLogFile(log_path_latest));
+
+  // Check the conditions after rotation: the log file and the rotated log file.
+  {
+    EXPECT_FALSE(base::PathExists(log_path_latest));
+    EXPECT_TRUE(base::PathExists(expected_rotated_path));
+
+    std::string buffer;
+    base::ReadFileToString(expected_rotated_path, &buffer);
+    EXPECT_EQ(buffer, kLog1Content);
+  }
+}
+
+// Test the case that chrome tries the rotation but there is no files.
+TEST_F(ChromeLoggingTest, RotateLogFilesNoFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath temp_dir_path = temp_dir.GetPath();
+
+  base::FilePath log_path_latest = temp_dir_path.AppendASCII("chrome-test-log");
+
+  // Check the condition before rotation.
+  {
+    EXPECT_FALSE(base::PathExists(log_path_latest));
+
+    // Ensure no file in the directory.
+    base::FileEnumerator enumerator(temp_dir_path, true,
+                                    base::FileEnumerator::FILES);
+    EXPECT_TRUE(enumerator.Next().empty());
+  }
+
+  // Simulate the rotation.
+  ASSERT_TRUE(logging::RotateLogFile(log_path_latest));
+
+  // Check the condition after rotation: nothing happens.
+  {
+    EXPECT_FALSE(base::PathExists(log_path_latest));
+
+    // Ensure still no file in the directory.
+    base::FileEnumerator enumerator(temp_dir_path, true,
+                                    base::FileEnumerator::FILES);
+    EXPECT_TRUE(enumerator.Next().empty());
+  }
+}
+
+// Test the case that chrome tries the rotation but the target path already
+// exists. The logic should use the altanate target path.
+TEST_F(ChromeLoggingTest, RotateLogFilesExisting) {
+  constexpr char kLatestLogContent[] = "log#1\n";
+  constexpr char kOldLogContent[] = "log#2\n";
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath temp_dir_path = temp_dir.GetPath();
+  base::FilePath log_path_latest = temp_dir_path.AppendASCII("chrome-test-log");
+
+  // Prepare the latest log file.
+  ASSERT_TRUE(base::WriteFile(log_path_latest, kLatestLogContent));
+  base::File::Info file_info;
+  {
+    base::File(log_path_latest, base::File::FLAG_OPEN | base::File::FLAG_READ)
+        .GetInfo(&file_info);
+  }
+  base::Time creation_time = file_info.creation_time;
+
+  base::FilePath exist_log_path =
+      logging::GenerateTimestampedName(log_path_latest, creation_time);
+  ASSERT_TRUE(base::WriteFile(exist_log_path, kOldLogContent));
+
+  base::FilePath rotated_log_path = logging::GenerateTimestampedName(
+      log_path_latest, creation_time + base::Seconds(1));
+
+  // Check the condition before rotation.
+  {
+    // The latest log file exists.
+    EXPECT_TRUE(base::PathExists(log_path_latest));
+    // First candidate does already exist.
+    EXPECT_TRUE(base::PathExists(exist_log_path));
+    // Second candidate does already exist.
+    EXPECT_FALSE(base::PathExists(rotated_log_path));
+  }
+
+  // Simulate one more session cycle.
+  ASSERT_TRUE(logging::RotateLogFile(log_path_latest));
+
+  // Check the condition after rotation: the log file is renamed to the second
+  // candidate.
+  {
+    EXPECT_FALSE(base::PathExists(log_path_latest));
+    EXPECT_TRUE(base::PathExists(exist_log_path));
+    EXPECT_TRUE(base::PathExists(rotated_log_path));
+
+    std::string buffer;
+    // The first candidate is kept.
+    base::ReadFileToString(exist_log_path, &buffer);
+    EXPECT_EQ(buffer, kOldLogContent);
+    // The second candidate is the previous latest log.
+    base::ReadFileToString(rotated_log_path, &buffer);
+    EXPECT_EQ(buffer, kLatestLogContent);
+  }
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

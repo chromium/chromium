@@ -5,6 +5,7 @@
 #include "ash/quick_pair/keyed_service/fast_pair_bluetooth_config_delegate.h"
 
 #include "ash/quick_pair/repository/fast_pair_repository.h"
+#include "base/callback_helpers.h"
 #include "chromeos/services/bluetooth_config/device_name_manager.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 
@@ -27,6 +28,12 @@ absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
 FastPairBluetoothConfigDelegate::GetDeviceImageInfo(
     const std::string& device_id) {
   return FastPairRepository::Get()->GetImagesForDevice(device_id);
+}
+
+void FastPairBluetoothConfigDelegate::ForgetDevice(
+    const std::string& mac_address) {
+  FastPairRepository::Get()->DeleteAssociatedDevice(mac_address,
+                                                    base::DoNothing());
 }
 
 void FastPairBluetoothConfigDelegate::SetAdapterStateController(

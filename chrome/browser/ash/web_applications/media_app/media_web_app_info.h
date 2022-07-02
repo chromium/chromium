@@ -5,16 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
 struct WebAppInstallInfo;
 
-class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit MediaSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldCaptureNavigations() const override;

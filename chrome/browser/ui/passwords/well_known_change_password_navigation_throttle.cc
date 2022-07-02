@@ -80,8 +80,9 @@ WellKnownChangePasswordNavigationThrottle::
     WellKnownChangePasswordNavigationThrottle(NavigationHandle* handle)
     : NavigationThrottle(handle),
       request_url_(handle->GetURL()),
-      source_id_(
-          handle->GetWebContents()->GetMainFrame()->GetPageUkmSourceId()) {
+      source_id_(handle->GetWebContents()
+                     ->GetPrimaryMainFrame()
+                     ->GetPageUkmSourceId()) {
   // If this is a prerender navigation, we're only constructing the throttle
   // so it can cancel the prerender.
   if (handle->IsInPrerenderedMainFrame())

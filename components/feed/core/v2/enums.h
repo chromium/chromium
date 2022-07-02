@@ -40,6 +40,9 @@ enum class LoadType {
   // The stored stream data and the loaded model will not be affected if the
   // network request fails.
   kManualRefresh = 3,
+  // Same as kBackgroundRefresh but specifically scheduled based on user
+  // interaction with the feed.
+  kFeedCloseBackgroundRefresh = 4,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
@@ -86,7 +89,8 @@ enum class LoadStreamStatus {
   kAccountTokenFetchFailedWrongAccount = 27,
   kAccountTokenFetchTimedOut = 28,
   kNetworkFetchTimedOut = 29,
-  kMaxValue = kNetworkFetchTimedOut,
+  kLoadNotAllowedDisabled = 30,
+  kMaxValue = kLoadNotAllowedDisabled,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind
@@ -141,22 +145,6 @@ enum class WebFeedRefreshStatus {
 };
 std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value);
 
-// Tells how the notice acknowledgement is reached. These values are also used
-// in histograms. Entries should not be renumbered and numeric values should
-// never be reused.
-enum class NoticeAcknowledgementPath {
-  // The acknowledgment is reached after the user views the notice for a
-  // required number of times (currently it is 3).
-  kViaViewing = 0,
-  // The acknowledgment is reached after the user taps the notice to perform
-  // an open action for a required number of times (currently it is 1).
-  kViaOpenAction = 1,
-  // The acknowledgement is reached after the user taps X button to close
-  // the notice.
-  kViaDismissal = 2,
-  kMaxValue = kViaDismissal,
-};
-
 // This must be kept in sync with FeedUserSettingsOnStart in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -181,7 +169,9 @@ enum class UserSettingsOnStart {
   // The Feed is enabled, but there is no recent Feed data, so user settings
   // state is unknown.
   kSignedInNoRecentData = 8,
-  kMaxValue = kSignedInNoRecentData,
+  // The Feed is disabled.
+  kFeedNotEnabled = 9,
+  kMaxValue = kFeedNotEnabled,
 };
 base::StringPiece ToString(UserSettingsOnStart v);
 std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);

@@ -78,14 +78,10 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
         kAudioMicrophone);
   }
 
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor separator_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
-
   if (features::IsCaptureModeSelfieCameraEnabled() &&
       !controller->is_recording_in_progress()) {
     separator_1_ = AddChildView(std::make_unique<views::Separator>());
-    separator_1_->SetColor(separator_color);
+    separator_1_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     auto* camera_controller = controller->camera_controller();
     const bool managed_by_policy =
         camera_controller->IsCameraDisabledByPolicy();
@@ -103,7 +99,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
 
   if (!is_in_projector_mode) {
     separator_2_ = AddChildView(std::make_unique<views::Separator>());
-    separator_2_->SetColor(separator_color);
+    separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 
     save_to_menu_group_ = AddChildView(std::make_unique<CaptureModeMenuGroup>(
         this, kCaptureModeFolderIcon,
@@ -120,8 +116,9 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
   }
 
   SetPaintToLayer();
-  SetBackground(views::CreateSolidBackground(color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80)));
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

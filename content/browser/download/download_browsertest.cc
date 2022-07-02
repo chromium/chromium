@@ -602,7 +602,7 @@ class ErrorInjectionDownloadFileFactory : public download::DownloadFileFactory {
     download_file_ = nullptr;
   }
 
-  raw_ptr<ErrorInjectionDownloadFile> download_file_;
+  raw_ptr<ErrorInjectionDownloadFile, DanglingUntriaged> download_file_;
   int64_t injected_error_offset_ = -1;
   int64_t injected_error_length_ = 0;
   base::WeakPtrFactory<ErrorInjectionDownloadFileFactory> weak_ptr_factory_{
@@ -3764,6 +3764,58 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, UpdateSiteForCookies) {
                                 site_a.GetURL("a.test", "/")));
 }
 
+// Tests that if `update_first_party_url_on_redirect` is set to false, download
+// will not behave like a top-level frame navigation and SameSite=Strict cookies
+// will not be set on a redirection.
+IN_PROC_BROWSER_TEST_F(
+    DownloadContentTest,
+    SiteForCookies_DownloadUrl_NotUpdateFirstPartyUrlOnRedirect) {
+  net::EmbeddedTestServer site_a;
+  net::EmbeddedTestServer site_b;
+
+  base::StringPairs cookie_headers;
+  cookie_headers.push_back(std::make_pair(
+      std::string("Set-Cookie"), std::string("A=strict; SameSite=Strict")));
+  cookie_headers.push_back(std::make_pair(std::string("Set-Cookie"),
+                                          std::string("B=lax; SameSite=Lax")));
+
+  // This will request a URL on b.test, which redirects to a url that sets the
+  // cookies on a.test.
+  site_a.RegisterRequestHandler(CreateBasicResponseHandler(
+      "/sets-samesite-cookies", net::HTTP_OK, cookie_headers,
+      "application/octet-stream", "abcd"));
+  ASSERT_TRUE(site_a.Start());
+  site_b.RegisterRequestHandler(
+      CreateRedirectHandler("/redirected-download",
+                            site_a.GetURL("a.test", "/sets-samesite-cookies")));
+  ASSERT_TRUE(site_b.Start());
+
+  // Download the file.
+  SetupEnsureNoPendingDownloads();
+  std::unique_ptr<download::DownloadUrlParameters> download_parameters(
+      DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          shell()->web_contents(),
+          site_b.GetURL("b.test", "/redirected-download"),
+          TRAFFIC_ANNOTATION_FOR_TESTS));
+  download_parameters->set_update_first_party_url_on_redirect(false);
+  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
+  DownloadManagerForShell(shell())->DownloadUrl(std::move(download_parameters));
+  observer->WaitForFinished();
+
+  // Get the important info from other threads and check it.
+  EXPECT_TRUE(EnsureNoPendingDownloads());
+
+  std::vector<download::DownloadItem*> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  ASSERT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
+
+  // Check that the cookies were not set on a.test.
+  EXPECT_EQ("",
+            content::GetCookies(shell()->web_contents()->GetBrowserContext(),
+                                site_a.GetURL("a.test", "/")));
+}
+
 // Verifies that isolation info set in DownloadUrlParameters can be populated.
 IN_PROC_BROWSER_TEST_F(DownloadContentTest,
                        SiteForCookies_DownloadUrl_IsolationInfoPopulated) {
@@ -4069,14 +4121,14 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   mouse_event.click_count = 1;
   shell()
       ->web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
   shell()
       ->web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
@@ -4682,8 +4734,8 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MiddleSliceDelayedError) {
 // initiates a download in an iframe and expects it to succeed.
 // See https://crbug.com/717971.
 IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadIgnoresXFO) {
-  GURL main_url(
-      embedded_test_server()->GetURL("/cross_site_iframe_factory.html?a(b)"));
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(b.test)"));
   GURL download_url(
       embedded_test_server()->GetURL("/download/download-with-xfo-deny.html"));
   WebContentsImpl* web_contents =
@@ -4894,7 +4946,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SaveImageAt) {
 
   // Ask the frame to save a data-URL image at the given coordinates.
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
-  shell()->web_contents()->GetMainFrame()->SaveImageAt(100, 100);
+  shell()->web_contents()->GetPrimaryMainFrame()->SaveImageAt(100, 100);
   observer->WaitForFinished();
   EXPECT_EQ(
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
@@ -5161,7 +5213,7 @@ IN_PROC_BROWSER_TEST_P(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
   // Create fenced frame
   EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
   RenderFrameHost* fenced_frame_host = CreateFencedFrame(
-      shell()->web_contents()->GetMainFrame(), kFencedFrameUrl);
+      shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
 
   // Do a download without navigation from the fenced frame render frame host.
   // The download will be dropped.

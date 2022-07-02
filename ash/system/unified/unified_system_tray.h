@@ -31,10 +31,12 @@ namespace ash {
 
 class AshMessagePopupCollection;
 class CameraMicTrayItemView;
+class ChannelIndicatorView;
 class CurrentLocaleView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
+class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyScreenToastController;
 class SnoopingProtectionView;
@@ -159,6 +161,10 @@ class ASH_EXPORT UnifiedSystemTray
   // is passed in.
   bool FocusQuickSettings(bool reverse);
 
+  // Called by `UnifiedSystemTrayBubble` when it is destroyed with the calendar
+  // view in the foreground.
+  void NotifyLeavingCalendarView();
+
   // Returns true if the user manually expanded the quick settings.
   bool IsQuickSettingsExplicitlyExpanded() const;
 
@@ -212,11 +218,17 @@ class ASH_EXPORT UnifiedSystemTray
 
   AshMessagePopupCollection* GetMessagePopupCollection();
 
+  NotificationGroupingController* GetNotificationGroupingController();
+
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
 
   UnifiedMessageCenterBubble* message_center_bubble() {
     return message_center_bubble_.get();
+  }
+
+  ChannelIndicatorView* channel_indicator_view() {
+    return channel_indicator_view_;
   }
 
  private:
@@ -253,7 +265,7 @@ class ASH_EXPORT UnifiedSystemTray
   // removing bubble related observers.
   void DestroyBubbles();
 
-  const std::unique_ptr<UiDelegate> ui_delegate_;
+  std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
 
@@ -281,6 +293,7 @@ class ASH_EXPORT UnifiedSystemTray
   TimeTrayItemView* const time_view_;
 
   NetworkTrayView* network_tray_view_ = nullptr;
+  ChannelIndicatorView* channel_indicator_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

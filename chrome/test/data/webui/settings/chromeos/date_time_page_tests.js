@@ -5,6 +5,7 @@
 import {TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
@@ -197,27 +198,27 @@ function initializeDateTime(prefs, hasPolicy, opt_autoDetectPolicyValue) {
 function clickDisableAutoDetect(dateTime) {
   if (dateTime.prefs.cros.flags.fine_grained_time_zone_detection_enabled
           .value) {
-    dateTime.$$('#timeZoneAutoDetectOff').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOff').click();
   } else {
-    dateTime.$$('#timeZoneAutoDetect').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetect').click();
   }
 }
 
 function clickEnableAutoDetect(dateTime) {
   if (dateTime.prefs.cros.flags.fine_grained_time_zone_detection_enabled
           .value) {
-    dateTime.$$('#timeZoneAutoDetectOn').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn').click();
   } else {
-    dateTime.$$('#timeZoneAutoDetect').click();
+    dateTime.shadowRoot.querySelector('#timeZoneAutoDetect').click();
   }
 }
 
 function getAutodetectOnButton(dateTime) {
   if (dateTime.prefs.cros.flags.fine_grained_time_zone_detection_enabled
           .value) {
-    return dateTime.$$('#timeZoneAutoDetectOn');
+    return dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn');
   }
-  return dateTime.$$('#timeZoneAutoDetect');
+  return dateTime.shadowRoot.querySelector('#timeZoneAutoDetect');
 }
 
 // CrOS sends time zones as [id, friendly name] pairs.
@@ -244,7 +245,7 @@ suite('settings-date-time-page', function() {
 
   setup(function() {
     testBrowserProxy = new TestTimeZoneBrowserProxy();
-    TimeZoneBrowserProxyImpl.setInstance(testBrowserProxy);
+    TimeZoneBrowserProxyImpl.setInstanceForTesting(testBrowserProxy);
     PolymerTest.clearBody();
     CrSettingsPrefs.resetForTesting();
   });
@@ -254,7 +255,8 @@ suite('settings-date-time-page', function() {
   });
 
   function getTimeZoneSelector(id) {
-    return dateTime.$$('timezone-selector').shadowRoot.querySelector(id);
+    return dateTime.shadowRoot.querySelector('timezone-selector')
+        .shadowRoot.querySelector(id);
   }
 
   function verifyAutoDetectSetting(autoDetect, managed) {
@@ -294,7 +296,8 @@ suite('settings-date-time-page', function() {
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, false);
     flush();
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
 
@@ -315,7 +318,8 @@ suite('settings-date-time-page', function() {
   test('auto-detect off', async function() {
     testBrowserProxy.setTimeZones(fakeTimeZones);
     dateTime = initializeDateTime(getFakePrefs(), false);
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     dateTime.set(
         'prefs.generated.resolve_timezone_by_geolocation_on_off.value', false);
@@ -347,8 +351,9 @@ suite('settings-date-time-page', function() {
 
     flush();
 
-    const deepLinkElement = dateTime.$$('#timeZoneAutoDetect')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetect')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -360,7 +365,8 @@ suite('settings-date-time-page', function() {
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, true, true);
     flush();
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     assertEquals(0, testBrowserProxy.getCallCount('getTimeZones'));
 
@@ -389,7 +395,8 @@ suite('settings-date-time-page', function() {
     testBrowserProxy.setTimeZones(fakeTimeZones);
     const prefs = getFakePrefs();
     dateTime = initializeDateTime(prefs, true, false);
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
 
     await testBrowserProxy.whenCalled('getTimeZones');
 
@@ -426,10 +433,13 @@ suite('settings-date-time-page', function() {
 
     await Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
 
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
     const timezoneSelector = getTimeZoneSelector('#userTimeZoneSelector');
-    const timeZoneAutoDetectOn = dateTime.$$('#timeZoneAutoDetectOn');
-    const timeZoneAutoDetectOff = dateTime.$$('#timeZoneAutoDetectOff');
+    const timeZoneAutoDetectOn =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn');
+    const timeZoneAutoDetectOff =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOff');
 
     // Verify elements are disabled for child account.
     assertTrue(resolveMethodDropdown.disabled);
@@ -438,7 +448,7 @@ suite('settings-date-time-page', function() {
     assertTrue(timeZoneAutoDetectOff.disabled);
 
     await testBrowserProxy.whenCalled('showParentAccessForTimeZone');
-    cr.webUIListenerCallback('access-code-validation-complete');
+    webUIListenerCallback('access-code-validation-complete');
 
     // Verify elements are enabled.
     assertFalse(resolveMethodDropdown.disabled);
@@ -466,10 +476,13 @@ suite('settings-date-time-page', function() {
 
     await Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE);
 
-    const resolveMethodDropdown = dateTime.$$('#timeZoneResolveMethodDropdown');
+    const resolveMethodDropdown =
+        dateTime.shadowRoot.querySelector('#timeZoneResolveMethodDropdown');
     const timezoneSelector = getTimeZoneSelector('#userTimeZoneSelector');
-    const timeZoneAutoDetectOn = dateTime.$$('#timeZoneAutoDetectOn');
-    const timeZoneAutoDetectOff = dateTime.$$('#timeZoneAutoDetectOff');
+    const timeZoneAutoDetectOn =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOn');
+    const timeZoneAutoDetectOff =
+        dateTime.shadowRoot.querySelector('#timeZoneAutoDetectOff');
 
     // Verify elements are disabled for child account.
     assertTrue(resolveMethodDropdown.disabled);
@@ -478,7 +491,7 @@ suite('settings-date-time-page', function() {
     assertTrue(timeZoneAutoDetectOff.disabled);
 
     await testBrowserProxy.whenCalled('showParentAccessForTimeZone');
-    cr.webUIListenerCallback('access-code-validation-complete');
+    webUIListenerCallback('access-code-validation-complete');
 
     // |resolveMethodDropdown| is disabled when auto detect off.
     assertTrue(resolveMethodDropdown.disabled);
@@ -495,11 +508,11 @@ suite('settings-date-time-page', function() {
     prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;
     dateTime = initializeDateTime(prefs, false);
 
-    const setDateTimeButton = dateTime.$$('#setDateTime');
+    const setDateTimeButton = dateTime.shadowRoot.querySelector('#setDateTime');
     assertEquals(0, setDateTimeButton.offsetHeight);
 
     // Make the date and time editable.
-    cr.webUIListenerCallback('can-set-date-time-changed', true);
+    webUIListenerCallback('can-set-date-time-changed', true);
     await flushTasks();
     assertGT(setDateTimeButton.offsetHeight, 0);
 
@@ -509,7 +522,7 @@ suite('settings-date-time-page', function() {
     assertEquals(1, testBrowserProxy.getCallCount('showSetDateTimeUI'));
 
     // Make the date and time not editable.
-    cr.webUIListenerCallback('can-set-date-time-changed', false);
+    webUIListenerCallback('can-set-date-time-changed', false);
     assertEquals(setDateTimeButton.offsetHeight, 0);
   });
 });

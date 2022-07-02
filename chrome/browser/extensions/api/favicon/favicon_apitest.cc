@@ -1,6 +1,6 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
-// // Use of this source code is governed by a BSD-style license that can be
-// // found in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -15,10 +15,7 @@ namespace extensions {
 
 class FaviconApiTest : public ExtensionApiTest {
  public:
-  FaviconApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kNewExtensionFaviconHandling);
-  }
+  FaviconApiTest() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -26,10 +23,6 @@ class FaviconApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_cnannel_{version_info::Channel::CANARY};
 };
 
 // TODO(crbug.com/1319934): Test is flaky on Mac.
@@ -51,8 +44,8 @@ IN_PROC_BROWSER_TEST_F(FaviconApiTest, MAYBE_Extension) {
       << message_;
 }
 
+// Fetch favicon when an extension doesn't have the necessary permission.
 IN_PROC_BROWSER_TEST_F(FaviconApiTest, Permission) {
-  // Fetch favicon when an extension doesn't have the necessary permission.
   ASSERT_TRUE(RunExtensionTest("favicon/permission_missing",
                                {.extension_url = "test.html"}))
       << message_;

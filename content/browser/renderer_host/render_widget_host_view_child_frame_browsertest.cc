@@ -91,7 +91,7 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
                             GURL portal_url,
                             int number_of_navigations) {
     EXPECT_GE(number_of_navigations, 1);
-    RenderFrameHostImpl* main_frame = host_contents->GetMainFrame();
+    RenderFrameHostImpl* main_frame = host_contents->GetPrimaryMainFrame();
 
     // Create portal and wait for navigation.
     PortalCreatedObserver portal_created_observer(main_frame);
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   int main_frame_screen_width =
-      ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+      ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
                                "window.screen.width")
           .GetInt();
   EXPECT_NE(main_frame_screen_width, 0);
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
         ExecuteScriptAndGetValue(frame_host, "window.screen.width").GetInt();
     EXPECT_EQ(width, main_frame_screen_width);
   };
-  shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+  shell()->web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindLambdaForTesting(check_screen_width));
 }
 
@@ -186,8 +186,8 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
 // See https://crbug.com/726743 and https://crbug.com/1050635.
-// Flaky on Android, see https://crbug.com/1315346.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1315346): Flaky on Android and Linux.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
   DISABLED_VisualPropertiesPropagation_VisibleViewportSize
 #else

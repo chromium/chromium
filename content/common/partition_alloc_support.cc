@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
+#include "base/memory/raw_ptr_asan_service.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -56,13 +57,13 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   }();
 
   if (name) {
-    base::internal::PCScan::SetProcessName(name);
+    partition_alloc::internal::PCScan::SetProcessName(name);
   }
 }
 
 bool EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  using Config = base::internal::PCScan::InitConfig;
+  using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
     base::allocator::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
@@ -76,7 +77,7 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
 
 bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  using Config = base::internal::PCScan::InitConfig;
+  using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {
@@ -98,7 +99,7 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 
 bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-  using Config = base::internal::PCScan::InitConfig;
+  using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanRendererOnly)) {
@@ -216,11 +217,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
+  [[maybe_unused]] bool enable_brp_zapping = false;
   [[maybe_unused]] bool split_main_partition = false;
   [[maybe_unused]] bool use_dedicated_aligned_partition = false;
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-  bool process_affected_by_brp_flag = false;
+  [[maybe_unused]] bool process_affected_by_brp_flag = false;
+
+#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+     BUILDFLAG(USE_BACKUP_REF_PTR)) ||           \
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
@@ -242,7 +246,26 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
+#endif
 
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  if (process_affected_by_brp_flag) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(
+            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
+        base::EnableExtractionCheck(
+            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
+        base::EnableInstantiationCheck(
+            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
+                .Get()));
+  } else {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
+        base::EnableInstantiationCheck(false));
+  }
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
   if (process_affected_by_brp_flag) {
     switch (base::features::kBackupRefPtrModeParam.Get()) {
       case base::features::BackupRefPtrMode::kDisabled:
@@ -250,6 +273,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
 
       case base::features::BackupRefPtrMode::kEnabled:
+        enable_brp_zapping = true;
+        ABSL_FALLTHROUGH_INTENDED;
+      case base::features::BackupRefPtrMode::kEnabledWithoutZapping:
         enable_brp = true;
         split_main_partition = true;
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -275,12 +301,13 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ConfigurePartitions(
       base::allocator::EnableBrp(enable_brp),
+      base::allocator::EnableBrpZapping(enable_brp_zapping),
       base::allocator::SplitMainPartition(split_main_partition),
       base::allocator::UseDedicatedAlignedPartition(
           use_dedicated_aligned_partition),
@@ -305,20 +332,20 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanStackScanning)) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        base::internal::PCScan::EnableStackScanning();
+        partition_alloc::internal::PCScan::EnableStackScanning();
         // Notify PCScan about the main thread.
-        base::internal::PCScan::NotifyThreadCreated(
-            base::internal::GetStackTop());
+        partition_alloc::internal::PCScan::NotifyThreadCreated(
+            partition_alloc::internal::GetStackTop());
 #endif
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanImmediateFreeing)) {
-        base::internal::PCScan::EnableImmediateFreeing();
+        partition_alloc::internal::PCScan::EnableImmediateFreeing();
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanEagerClearing)) {
-        base::internal::PCScan::SetClearType(
-            base::internal::PCScan::ClearType::kEager);
+        partition_alloc::internal::PCScan::SetClearType(
+            partition_alloc::internal::PCScan::ClearType::kEager);
       }
       SetProcessNameForPCScan(process_type);
     }
@@ -406,17 +433,24 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanMUAwareScheduler)) {
     // Assign PCScan a task-based scheduling backend.
-    static base::NoDestructor<base::internal::MUAwareTaskBasedBackend>
+    static base::NoDestructor<
+        partition_alloc::internal::MUAwareTaskBasedBackend>
         mu_aware_task_based_backend{
-            base::internal::PCScan::scheduler(),
-            &base::internal::PCScan::PerformDelayedScan};
-    base::internal::PCScan::scheduler().SetNewSchedulingBackend(
+            partition_alloc::internal::PCScan::scheduler(),
+            &partition_alloc::internal::PCScan::PerformDelayedScan};
+    partition_alloc::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::StartMemoryReclaimer(base::ThreadTaskRunnerHandle::Get());
 #endif
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortActiveSlotSpans)) {
+    base::PartitionRoot<
+        partition_alloc::internal::ThreadSafe>::EnableSortActiveSlotSpans();
+  }
 }
 
 void PartitionAllocSupport::OnForegrounded() {

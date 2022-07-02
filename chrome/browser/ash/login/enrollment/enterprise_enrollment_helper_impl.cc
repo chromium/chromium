@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -152,7 +152,7 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
     }
   }
   auth_data_ = policy::DMAuth::NoAuth();
-  ProfileHelper::Get()->ClearSigninProfile(
+  SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -288,8 +288,6 @@ void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
   // Though enrollment handler calls this method, it's "fine" do delete the
   // handler here as it does not do anyhting after that callback in
   // |EnrollmentHandler::ReportResult()|.
-  // TODO(crbug.com/1236167): Enrollment handler calls this method.  Deal with
-  // removing caller from callee.
   enrollment_handler_.reset();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
@@ -420,6 +418,9 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
           break;
         case policy::DM_STATUS_CANNOT_SIGN_REQUEST:
           UMA(policy::kMetricEnrollmentRegisterCannotSignRequest);
+          break;
+        case policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET:
+          NOTREACHED();
           break;
         case policy::DM_STATUS_SERVICE_ARC_DISABLED:
           NOTREACHED();

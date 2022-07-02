@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_CLIENT_H_
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 
 #include "components/metrics/structured/event.h"
@@ -60,7 +61,7 @@ class StructuredMetricsClient {
   ~StructuredMetricsClient();
 
   // Not owned. Assumes that the delegate's lifetime will exceed |this|.
-  RecordingDelegate* delegate_ = nullptr;
+  raw_ptr<RecordingDelegate> delegate_ = nullptr;
 };
 
 }  // namespace structured

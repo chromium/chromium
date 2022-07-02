@@ -8,7 +8,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -17,8 +16,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.tab.TabTestUtils;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.ByteBufferTestUtils;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -30,9 +28,6 @@ import java.util.concurrent.Semaphore;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class FilePersistedTabDataStorageTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     private static final int TAB_ID_1 = 1;
     private static final String DATA_ID_1 = "DataId1";
     private static final int TAB_ID_2 = 2;
@@ -90,7 +85,7 @@ public class FilePersistedTabDataStorageTest {
         semaphore.acquire();
         ThreadUtils.runOnUiThreadBlocking(() -> {
             persistedTabDataStorage.restore(TAB_ID_1, DATA_ID_1, (res) -> {
-                TabTestUtils.verifyByteBuffer(DATA_A, res);
+                ByteBufferTestUtils.verifyByteBuffer(DATA_A, res);
                 semaphore.release();
             });
         });

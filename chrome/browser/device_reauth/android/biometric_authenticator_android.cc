@@ -108,11 +108,11 @@ BiometricAuthenticatorAndroid::BiometricAuthenticatorAndroid(
 
 BiometricAuthenticatorAndroid::~BiometricAuthenticatorAndroid() {}
 
-BiometricsAvailability BiometricAuthenticatorAndroid::CanAuthenticate(
+bool BiometricAuthenticatorAndroid::CanAuthenticate(
     device_reauth::BiometricAuthRequester requester) {
   BiometricsAvailability availability = bridge_->CanAuthenticate();
   LogCanAuthenticate(requester, availability);
-  return availability;
+  return availability == BiometricsAvailability::kAvailable;
 }
 
 void BiometricAuthenticatorAndroid::Authenticate(

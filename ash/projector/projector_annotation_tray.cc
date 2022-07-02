@@ -179,7 +179,6 @@ void ProjectorAnnotationTray::ShowBubble() {
   init_params.preferred_width = kBubbleWidth;
   init_params.close_on_deactivate = true;
   init_params.translucent = true;
-  init_params.has_shadow = false;
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
 
@@ -254,8 +253,12 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   ResetTray();
 }
 
-void ProjectorAnnotationTray::OnCanvasInitializationFailed() {
-  // Set icon color to kIconColorPrimary with 30% opacity.
+void ProjectorAnnotationTray::SetTrayEnabled(bool enabled) {
+  SetEnabled(enabled);
+  if (enabled)
+    return;
+
+  // For disabled state, set icon color to kIconColorPrimary with 30% opacity.
   SkColor disabled_icon_color =
       SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(
                       AshColorProvider::ContentLayerType::kIconColorPrimary),

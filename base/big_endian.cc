@@ -17,7 +17,10 @@ BigEndianReader BigEndianReader::FromStringPiece(
 }
 
 BigEndianReader::BigEndianReader(const uint8_t* buf, size_t len)
-    : ptr_(buf), end_(ptr_ + len) {}
+    : ptr_(buf), end_(ptr_ + len) {
+  // Ensure `len` does not cause `end_` to wrap around.
+  CHECK_GE(end_, ptr_);
+}
 
 BigEndianReader::BigEndianReader(base::span<const uint8_t> buf)
     : ptr_(buf.data()), end_(buf.data() + buf.size()) {}
@@ -102,7 +105,10 @@ bool BigEndianReader::ReadU16LengthPrefixed(base::StringPiece* out) {
 }
 
 BigEndianWriter::BigEndianWriter(char* buf, size_t len)
-    : ptr_(buf), end_(ptr_ + len) {}
+    : ptr_(buf), end_(ptr_ + len) {
+  // Ensure `len` does not cause `end_` to wrap around.
+  CHECK_GE(end_, ptr_);
+}
 
 bool BigEndianWriter::Skip(size_t len) {
   if (len > remaining())

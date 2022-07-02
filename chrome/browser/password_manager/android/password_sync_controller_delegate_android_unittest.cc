@@ -32,8 +32,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
  protected:
   PasswordSyncControllerDelegateAndroidTest() {
     sync_controller_delegate_ =
-        std::make_unique<PasswordSyncControllerDelegateAndroid>(
-            CreateBridge(), &sync_delegate_);
+        std::make_unique<PasswordSyncControllerDelegateAndroid>(CreateBridge());
   }
 
   ~PasswordSyncControllerDelegateAndroidTest() override {
@@ -43,7 +42,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   MockPasswordSyncControllerDelegateBridge* bridge() { return bridge_; }
-  MockPasswordBackendSyncDelegate* sync_delegate() { return &sync_delegate_; }
+  syncer::SyncService* sync_service() { return &sync_service_; }
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_.get();
   }
@@ -61,36 +60,11 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockPasswordBackendSyncDelegate sync_delegate_;
+  syncer::TestSyncService sync_service_;
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
       sync_controller_delegate_;
   raw_ptr<StrictMock<MockPasswordSyncControllerDelegateBridge>> bridge_;
 };
-
-TEST_F(PasswordSyncControllerDelegateAndroidTest,
-       UpdateSyncStatusOnStartUpSyncDisabled) {
-  // We don't care about returned value, as only calls to sync_delegate() are
-  // interesting.
-  sync_controller_delegate()->CreateProxyModelControllerDelegate();
-
-  EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
-
-  RunUntilIdle();
-}
-
-TEST_F(PasswordSyncControllerDelegateAndroidTest,
-       UpdateSyncStatusOnStartUpSyncEnabled) {
-  // We don't care about returned value, as only calls to sync_delegate() are
-  // interesting.
-  sync_controller_delegate()->CreateProxyModelControllerDelegate();
-
-  EXPECT_CALL(*sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*sync_delegate(), GetSyncingAccount).Times(1);
-
-  RunUntilIdle();
-}
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToEnabledAfterStartup) {
@@ -223,6 +197,12 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
           "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
           "APIErrorCode"),
       ElementsAre(Bucket(expected_api_error_code, 1)));
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       AttachesObserverOnSyncServiceInitialized) {
+  sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
+  EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
 }
 
 }  // namespace password_manager

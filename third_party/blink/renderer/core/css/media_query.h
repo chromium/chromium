@@ -29,11 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_H_
 
-#include <memory>
-#include <utility>
-
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -45,19 +45,16 @@ class MediaQueryExpNode;
 
 using ExpressionHeapVector = Vector<MediaQueryExp>;
 
-class CORE_EXPORT MediaQuery {
-  USING_FAST_MALLOC(MediaQuery);
-
+class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  public:
   enum RestrictorType { kOnly, kNot, kNone };
 
-  static std::unique_ptr<MediaQuery> CreateNotAll();
+  static MediaQuery* CreateNotAll();
 
-  MediaQuery(RestrictorType,
-             String media_type,
-             std::unique_ptr<MediaQueryExpNode>);
+  MediaQuery(RestrictorType, String media_type, const MediaQueryExpNode*);
   MediaQuery(const MediaQuery&);
   ~MediaQuery();
+  void Trace(Visitor*) const;
 
   bool HasUnknown() const { return has_unknown_; }
   RestrictorType Restrictor() const;
@@ -66,17 +63,13 @@ class CORE_EXPORT MediaQuery {
   bool operator==(const MediaQuery& other) const;
   String CssText() const;
 
-  std::unique_ptr<MediaQuery> Copy() const {
-    return std::make_unique<MediaQuery>(*this);
-  }
-
  private:
   MediaQuery& operator=(const MediaQuery&) = delete;
   bool BehaveAsNotAll() const;
 
   RestrictorType restrictor_;
   String media_type_;
-  std::unique_ptr<MediaQueryExpNode> exp_node_;
+  Member<const MediaQueryExpNode> exp_node_;
   String serialization_cache_;
 
   // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.

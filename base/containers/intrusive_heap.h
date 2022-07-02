@@ -422,8 +422,8 @@ class IntrusiveHeap {
         [&](const auto& element) { return !predicate(element); });
 
     // Clear the heap handle of every element that will be erased.
-    for (size_t i = erase_start - impl_.heap_.begin(); i < impl_.heap_.size();
-         ++i) {
+    for (size_t i = static_cast<size_t>(erase_start - impl_.heap_.begin());
+         i < impl_.heap_.size(); ++i) {
       ClearHeapHandle(i);
     }
 
@@ -1083,8 +1083,8 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>::InsertImpl(U element) {
   // MoveHoleUpAndFill can tolerate the initial hole being in a slot that
   // doesn't yet exist. It will be created by MoveHole by copy/move, thus
   // removing the need for a default constructor.
-  size_t i = MoveHoleUpAndFill(size(), std::move_if_noexcept(element));
-  return cbegin() + i;
+  size_type i = MoveHoleUpAndFill(size(), std::move_if_noexcept(element));
+  return cbegin() + static_cast<difference_type>(i);
 }
 
 template <typename T, typename Compare, typename HeapHandleAccessor>
@@ -1101,7 +1101,7 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>::ReplaceImpl(size_type pos,
   } else {
     i = MoveHoleDownAndFill<WithElement>(pos, std::move_if_noexcept(element));
   }
-  return cbegin() + i;
+  return cbegin() + static_cast<difference_type>(i);
 }
 
 template <typename T, typename Compare, typename HeapHandleAccessor>
@@ -1111,7 +1111,7 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>::ReplaceTopImpl(U element) {
   MakeHole(0u);
   size_type i =
       MoveHoleDownAndFill<WithElement>(0u, std::move_if_noexcept(element));
-  return cbegin() + i;
+  return cbegin() + static_cast<difference_type>(i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

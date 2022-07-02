@@ -133,7 +133,7 @@ MediaRouterDialogControllerAndroid::MediaRouterDialogControllerAndroid(
 MediaRouterDialogControllerAndroid::~MediaRouterDialogControllerAndroid() {}
 
 void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   std::vector<MediaSource> sources;

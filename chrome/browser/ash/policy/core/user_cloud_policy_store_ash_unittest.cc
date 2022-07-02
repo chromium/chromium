@@ -19,11 +19,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -37,7 +37,7 @@
 namespace em = enterprise_management;
 
 using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
+    ash::SessionManagerClient::RetrievePolicyResponseType;
 
 using testing::_;
 using testing::AllOf;
@@ -59,7 +59,7 @@ base::FilePath GetUserPolicyKeyFile(
     const base::FilePath& user_policy_dir,
     const cryptohome::AccountIdentifier& cryptohome_id) {
   const std::string sanitized_username =
-      chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
+      ash::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
   return user_policy_dir.AppendASCII(sanitized_username)
       .AppendASCII("policy.pub");
 }
@@ -76,7 +76,7 @@ bool StoreUserPolicyKey(const base::FilePath& user_policy_dir,
 
 // For detailed test for UserCloudPolicyStoreAsh, this supports
 // public key file update emulation.
-class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
+class FakeSessionManagerClient : public ash::FakeSessionManagerClient {
  public:
   explicit FakeSessionManagerClient(const base::FilePath& user_policy_dir)
       : user_policy_dir_(user_policy_dir) {}
@@ -88,7 +88,7 @@ class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                           const std::string& policy_blob,
                           chromeos::VoidDBusMethodCallback callback) override {
-    chromeos::FakeSessionManagerClient::StorePolicyForUser(
+    ash::FakeSessionManagerClient::StorePolicyForUser(
         cryptohome_id, policy_blob,
         base::BindOnce(&FakeSessionManagerClient::OnStorePolicyForUser,
                        weak_ptr_factory_.GetWeakPtr(), cryptohome_id,
@@ -244,7 +244,7 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  chromeos::FakeCryptohomeMiscClient cryptohome_misc_client_;
+  ash::FakeCryptohomeMiscClient cryptohome_misc_client_;
   std::unique_ptr<FakeSessionManagerClient> session_manager_client_;
   UserPolicyBuilder policy_;
   MockCloudPolicyStoreObserver observer_;

@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::cros_healthd {

@@ -8,17 +8,19 @@
 
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
 namespace {
 
-const IpczDriver& kDriver = reference_drivers::kSingleProcessReferenceDriver;
+const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
 
 std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
                                                   Ref<Node> non_broker) {
@@ -29,17 +31,23 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
                                      nullptr, &handle0, &handle1));
 
   auto transport0 =
-      MakeRefCounted<DriverTransport>(DriverObject(broker, handle0));
+      MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle0));
   auto transport1 =
-      MakeRefCounted<DriverTransport>(DriverObject(non_broker, handle1));
+      MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle1));
+
+  NodeLinkMemory::Allocation allocation = NodeLinkMemory::Allocate(broker);
+  ABSL_ASSERT(allocation.node_link_memory);
 
   const NodeName non_broker_name = broker->GenerateRandomName();
   auto link0 =
       NodeLink::Create(broker, LinkSide::kA, broker->GetAssignedName(),
-                       non_broker_name, Node::Type::kNormal, 0, transport0);
-  auto link1 = NodeLink::Create(non_broker, LinkSide::kB, non_broker_name,
-                                broker->GetAssignedName(), Node::Type::kNormal,
-                                0, transport1);
+                       non_broker_name, Node::Type::kNormal, 0, transport0,
+                       std::move(allocation.node_link_memory));
+  auto link1 = NodeLink::Create(
+      non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
+      Node::Type::kNormal, 0, transport1,
+      NodeLinkMemory::Adopt(non_broker,
+                            std::move(allocation.primary_buffer_memory)));
 
   transport0->Activate();
   transport1->Activate();
@@ -66,6 +74,9 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   router0->CloseRoute();
   EXPECT_TRUE(router1->IsPeerClosed());
   router1->CloseRoute();
+
+  link0->Deactivate();
+  link1->Deactivate();
 }
 
 }  // namespace

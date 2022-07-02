@@ -42,6 +42,9 @@ struct AdapterInfo {
   string address;
   string name;
   string system_name;
+  // Whether the new CrOS Bluetooth stack (aka floss) is in use. See
+  // go/project-floss for more info.
+  bool floss;
   bool initialized;
   bool present;
   bool powered;

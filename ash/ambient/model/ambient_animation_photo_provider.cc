@@ -63,6 +63,7 @@
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/utility/cropping_util.h"
 #include "ash/utility/lottie_util.h"
 #include "base/bind.h"
@@ -103,6 +104,11 @@ cc::SkottieFrameData BuildSkottieFrameData(const gfx::ImageSkia& image,
       /*image=*/image_rep.paint_image(),
       /*quality=*/kFilterQuality,
   };
+}
+
+bool IsPortrait(const gfx::Size& size) {
+  DCHECK(!size.IsEmpty());
+  return size.height() > size.width();
 }
 
 // Provides images for dynamic assets based on the following UX requirements:
@@ -162,12 +168,6 @@ class DynamicImageProvider {
     // 0 when all topics from all TopicSets have been exhausted.
     size_t current_topic_idx = 0;
   };
-
-  static bool IsPortrait(const gfx::Size& size) {
-    DCHECK(!size.IsEmpty());
-    return size.height() > size.width();
-  }
-
   static const PhotoWithDetails* GetNextTopicFromTopicSet(TopicSet& topic_set) {
     if (topic_set.current_topic_idx >= topic_set.topics.size())
       return nullptr;
@@ -466,6 +466,7 @@ AmbientAnimationPhotoProvider::GenerateNextTopicForDynamicAsset(
     }
   }
   NotifyObserverOfNewTopics();
+  RecordDynamicAssetMetrics();
   topic_for_target_asset = ExtractPendingTopicForDynamicAsset(target_asset);
   DCHECK(!topic_for_target_asset.photo.isNull())
       << "GenerateNextTopicForDynamicAsset() for unknown asset "
@@ -540,6 +541,35 @@ void AmbientAnimationPhotoProvider::NotifyObserverOfNewTopics() {
   for (Observer& obs : observers_) {
     obs.OnDynamicImageAssetsRefreshed(new_topics);
   }
+}
+
+void AmbientAnimationPhotoProvider::RecordDynamicAssetMetrics() {
+  DCHECK_EQ(pending_dynamic_asset_topics_.size(), total_num_dynamic_assets_)
+      << "RecordDynamicAssetMetrics() must be called when a new topic has been "
+         "assigned to each dynamic asset in the animation";
+  int num_photo_orientation_matches = 0;
+  int total_num_assets_with_size = 0;
+  for (const auto& [asset, topic] : pending_dynamic_asset_topics_) {
+    if (!asset->size()) {
+      DVLOG(4) << "Ignoring dynamic image asset with no size specified in "
+                  "animation file";
+      continue;
+    }
+
+    ++total_num_assets_with_size;
+    if (IsPortrait(asset->size().value()) == IsPortrait(topic.photo.size()))
+      ++num_photo_orientation_matches;
+  }
+
+  if (total_num_assets_with_size == 0) {
+    LOG(WARNING) << "Found no image assets in animation with a specified size";
+    return;
+  }
+
+  float match_percentage =
+      num_photo_orientation_matches * 100.f / total_num_assets_with_size;
+  ambient::RecordAmbientModePhotoOrientationMatch(
+      match_percentage, static_resources_->GetAmbientAnimationTheme());
 }
 
 }  // namespace ash

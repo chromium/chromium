@@ -65,13 +65,13 @@ CastStreamingTestSender::CastStreamingTestSender()
 
 CastStreamingTestSender::~CastStreamingTestSender() = default;
 
-bool CastStreamingTestSender::Start(
+void CastStreamingTestSender::Start(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     net::IPAddress receiver_address,
     absl::optional<media::AudioDecoderConfig> audio_config,
     absl::optional<media::VideoDecoderConfig> video_config) {
   VLOG(1) << __func__;
-  CHECK(!is_active_);
+  CHECK(!has_startup_completed_);
   CHECK(!sender_session_);
   CHECK(audio_config || video_config);
 
@@ -79,6 +79,8 @@ bool CastStreamingTestSender::Start(
   message_port_ = std::make_unique<CastMessagePortSenderImpl>(
       std::move(message_port),
       base::BindOnce(&CastStreamingTestSender::OnCastChannelClosed,
+                     base::Unretained(this)),
+      base::BindOnce(&CastStreamingTestSender::OnSystemSenderMessageReceived,
                      base::Unretained(this)));
   sender_session_ = std::make_unique<openscreen::cast::SenderSession>(
       openscreen::cast::SenderSession::Configuration{
@@ -86,27 +88,13 @@ bool CastStreamingTestSender::Start(
           message_port_.get(), kSenderId, kReceiverId,
           true /* use_android_rtp_hack */});
 
-  std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   if (audio_config) {
-    audio_configs.push_back(ToAudioCaptureConfig(audio_config.value()));
+    audio_configs_.push_back(ToAudioCaptureConfig(audio_config.value()));
   }
 
-  std::vector<openscreen::cast::VideoCaptureConfig> video_configs;
   if (video_config) {
-    video_configs.push_back(ToVideoCaptureConfig(video_config.value()));
+    video_configs_.push_back(ToVideoCaptureConfig(video_config.value()));
   }
-
-  openscreen::Error error = sender_session_->Negotiate(
-      std::move(audio_configs), std::move(video_configs));
-
-  if (error == openscreen::Error::None()) {
-    return true;
-  }
-
-  LOG(ERROR) << "Failed to start sender session. " << error.ToString();
-  sender_session_.reset();
-  message_port_.reset();
-  return false;
 }
 
 void CastStreamingTestSender::Stop() {
@@ -118,7 +106,7 @@ void CastStreamingTestSender::Stop() {
   video_sender_ = nullptr;
   audio_decoder_config_.reset();
   video_decoder_config_.reset();
-  is_active_ = false;
+  has_startup_completed_ = false;
 
   if (sender_stopped_closure_) {
     std::move(sender_stopped_closure_).Run();
@@ -130,11 +118,14 @@ void CastStreamingTestSender::SendAudioBuffer(
   VLOG(3) << __func__;
   CHECK(audio_sender_);
 
-  if (audio_sender_->EnqueueFrame(DataBufferToEncodedFrame(
+  openscreen::cast::Sender::EnqueueFrameResult result =
+      audio_sender_->EnqueueFrame(DataBufferToEncodedFrame(
           audio_buffer, true /* is_key_frame */,
           audio_sender_->GetNextFrameId(), &last_audio_reference_frame_id_,
-          audio_sender_->rtp_timebase())) !=
-      openscreen::cast::Sender::EnqueueFrameResult::OK) {
+          audio_sender_->rtp_timebase()));
+
+  if (result != openscreen::cast::Sender::EnqueueFrameResult::OK) {
+    LOG(ERROR) << "Failed to enqueue audio buffer " << result;
     Stop();
   }
 }
@@ -145,27 +136,32 @@ void CastStreamingTestSender::SendVideoBuffer(
   VLOG(3) << __func__;
   CHECK(video_sender_);
 
-  if (video_sender_->EnqueueFrame(DataBufferToEncodedFrame(
+  openscreen::cast::Sender::EnqueueFrameResult result =
+      video_sender_->EnqueueFrame(DataBufferToEncodedFrame(
           video_buffer, is_key_frame, video_sender_->GetNextFrameId(),
-          &last_video_reference_frame_id_, video_sender_->rtp_timebase())) !=
-      openscreen::cast::Sender::EnqueueFrameResult::OK) {
+          &last_video_reference_frame_id_, video_sender_->rtp_timebase()));
+
+  if (result != openscreen::cast::Sender::EnqueueFrameResult::OK) {
+    LOG(ERROR) << "Failed to enqueue video buffer " << result;
     Stop();
   }
 }
 
-void CastStreamingTestSender::RunUntilStarted() {
+bool CastStreamingTestSender::RunUntilActive() {
   VLOG(1) << __func__;
-  while (!is_active_) {
+  while (!has_startup_completed_) {
     base::RunLoop run_loop;
     CHECK(!sender_started_closure_);
     sender_started_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
+
+  return !!sender_session_;
 }
 
 void CastStreamingTestSender::RunUntilStopped() {
   VLOG(1) << __func__;
-  while (is_active_) {
+  while (has_startup_completed_) {
     base::RunLoop run_loop;
     CHECK(!sender_stopped_closure_);
     sender_stopped_closure_ = run_loop.QuitClosure();
@@ -176,6 +172,22 @@ void CastStreamingTestSender::RunUntilStopped() {
 void CastStreamingTestSender::OnCastChannelClosed() {
   VLOG(1) << __func__;
   Stop();
+}
+
+void CastStreamingTestSender::OnSystemSenderMessageReceived() {
+  openscreen::Error error = sender_session_->Negotiate(
+      std::move(audio_configs_), std::move(video_configs_));
+
+  if (error != openscreen::Error::None()) {
+    LOG(ERROR) << "Failed to start sender session. " << error.ToString();
+    sender_session_.reset();
+    message_port_.reset();
+
+    has_startup_completed_ = true;
+    if (sender_started_closure_) {
+      std::move(sender_started_closure_).Run();
+    }
+  }
 }
 
 void CastStreamingTestSender::OnNegotiated(
@@ -197,7 +209,7 @@ void CastStreamingTestSender::OnNegotiated(
     video_decoder_config_ = ToVideoDecoderConfig(senders.video_config);
   }
 
-  is_active_ = true;
+  has_startup_completed_ = true;
   if (sender_started_closure_) {
     std::move(sender_started_closure_).Run();
   }

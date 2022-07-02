@@ -83,13 +83,11 @@ following [commandline-flags.md](./commandline-flags.md).
 We maintain a **public** archive of prebuilt WebView shell APKs. This saves you
 the effort of setting up a chromium checkout just for the sake of compiling this
 test app. You can download a prebuilt APK from this cloud storage bucket:
-https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/
+https://storage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/
 
-1. The builds are sorted from oldest to newest. You should scroll to the
-   **bottom of the page** to get the latest revision. Note that the page can
-   take some time to load all the revisions, so you may have to scroll multiple
-   times. Keep scrolling until you see a file named `LAST_CHANGE`, then pick the
-   numbered folder immediately above it.
+1. Click on the "name" column header **twice**. This will force the page to sort
+   the newest builds toward the top. Click the folder with the largest number,
+   ignoring the `LAST_CHANGE` and `refs_heads_main-*/` folders.
      * Your WebView shell version **does not** need to match your device's
        WebView version. We recommend using the latest WebView shell build
        regardless of your WebView version to make sure you have the latest
@@ -105,6 +103,14 @@ https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?p
      # Replace this path with the path to your downloaded APK
      $ adb install -d -r ~/Downloads/chrome-android/SystemWebViewShell.apk
      ```
+
+*** note
+**Note:** on the Android emulator, this may fail to install and print the
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE: Package ... signatures do not match
+previously installed version` error message. This may require switching to a
+physical device or compiling the WebView shell from source (see the
+troubleshooting steps below).
+***
 
 ## Troubleshooting
 

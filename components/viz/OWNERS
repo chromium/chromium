@@ -12,7 +12,6 @@ vmpstr@chromium.org
 rjkroege@chromium.org
 ccameron@chromium.org
 penghuang@chromium.org
-backer@chromium.org
 vasilyt@chromium.org
 
 # Skia renderer
@@ -21,19 +20,16 @@ per-file skia_*=bsalomon@google.com
 
 # display_embedder / ozone
 rjkroege@chromium.org
-sadrul@chromium.org
 
 # frame sinks / surfaces
 kylechar@chromium.org
 jonross@chromium.org
 
 # gpu
-sadrul@chromium.org
 kylechar@chromium.org
 
 # hit testing
 rjkroege@chromium.org
-sadrul@chromium.org
 
 # math / geometry
 dbaron@chromium.org
@@ -47,7 +43,6 @@ petermcneeley@chromium.org
 
 # viz debugger
 petermcneeley@chromium.org
-sadrul@chromium.org
 
 # scheduling / begin frames
 sunnyps@chromium.org

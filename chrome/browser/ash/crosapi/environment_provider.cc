@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/policy_namespace.mojom.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
@@ -129,6 +130,11 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   // Ash expects to find shared files in the share cache.
   default_paths->share_cache =
       file_manager::util::GetShareCacheFilePath(profile);
+
+  default_paths->preinstalled_web_app_config =
+      web_app::GetPreinstalledWebAppConfigDirFromCommandLine(profile);
+  default_paths->preinstalled_web_app_extra_config =
+      web_app::GetPreinstalledWebAppExtraConfigDirFromCommandLine(profile);
 
   return default_paths;
 }

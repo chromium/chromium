@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/arc/intent_helper/custom_tab.h"
@@ -40,38 +39,15 @@ CustomTabSessionImpl::CustomTabSessionImpl(
 }
 
 CustomTabSessionImpl::~CustomTabSessionImpl() {
-  // Keep in sync with ArcCustomTabsSessionEndReason in
-  // tools/metrics/histograms/enums.xml.
-  enum class SessionEndReason {
-    CLOSED = 0,
-    FORWARDED_TO_NORMAL_TAB = 1,
-    kMaxValue = FORWARDED_TO_NORMAL_TAB,
-  } session_end_reason = forwarded_to_normal_tab_
-                             ? SessionEndReason::FORWARDED_TO_NORMAL_TAB
-                             : SessionEndReason::CLOSED;
-  UMA_HISTOGRAM_ENUMERATION("Arc.CustomTabs.SessionEndReason",
-                            session_end_reason);
-  auto elapsed = lifetime_timer_.Elapsed();
-  UMA_HISTOGRAM_LONG_TIMES("Arc.CustomTabs.SessionLifetime2.All", elapsed);
-  switch (session_end_reason) {
-    case SessionEndReason::CLOSED:
-      UMA_HISTOGRAM_LONG_TIMES("Arc.CustomTabs.SessionLifetime2.Closed",
-                               elapsed);
-      break;
-    case SessionEndReason::FORWARDED_TO_NORMAL_TAB:
-      UMA_HISTOGRAM_LONG_TIMES(
-          "Arc.CustomTabs.SessionLifetime2.ForwardedToNormalTab", elapsed);
-      break;
-  }
+  if (!browser_)
+    return;
 
-  if (browser_) {
-    auto* tab_strip_model = browser_->tab_strip_model();
-    DCHECK(tab_strip_model);
-    tab_strip_model->RemoveObserver(this);
-    int index = tab_strip_model->GetIndexOfWebContents(
-        tab_strip_model->GetActiveWebContents());
-    tab_strip_model->DetachAndDeleteWebContentsAt(index);
-  }
+  auto* tab_strip_model = browser_->tab_strip_model();
+  DCHECK(tab_strip_model);
+  tab_strip_model->RemoveObserver(this);
+  int index = tab_strip_model->GetIndexOfWebContents(
+      tab_strip_model->GetActiveWebContents());
+  tab_strip_model->DetachAndDeleteWebContentsAt(index);
 }
 
 void CustomTabSessionImpl::OnOpenInChromeClicked() {

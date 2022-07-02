@@ -1401,7 +1401,7 @@ TEST_F(MediaEngagementContentsObserverPrerenderTest,
 
   // Activate the prerendered page.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      url, web_contents()->GetMainFrame());
+      url, web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(prerender_frame->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
   EXPECT_EQ(0u, GetAudioContextPlayersCount());
@@ -1442,7 +1442,8 @@ TEST_F(MediaEngagementContentsObserverFencedFrameTest,
       ->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(url, fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(url,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
   EXPECT_EQ(1u, GetAudioContextPlayersCount());

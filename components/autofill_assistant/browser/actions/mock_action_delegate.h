@@ -25,6 +25,7 @@
 #include "components/autofill_assistant/browser/web/fake_element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 class PasswordChangeSuccessTracker;
@@ -135,6 +136,10 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
                      password_manager::PasswordChangeSuccessTracker*());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
+  MOCK_METHOD(JsFlowDevtoolsWrapper*,
+              GetJsFlowDevtoolsWrapper,
+              (),
+              (const override));
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_CONST_METHOD0(GetUkmRecorder, ukm::UkmRecorder*());
@@ -215,12 +220,17 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
                callback));
   MOCK_METHOD0(SupportsExternalActions, bool());
-  MOCK_METHOD2(
+  MOCK_METHOD3(
       RequestExternalAction,
       void(const ExternalActionProto& external_action,
-           base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-               callback));
+           base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+               start_dom_checks_callback,
+           base::OnceCallback<void(const external::Result& result)>
+               end_action_callback));
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
+  MOCK_METHOD1(MaybeSetPreviousAction,
+               void(const ProcessedActionProto& processed_action));
+  MOCK_CONST_METHOD0(GetIntent, absl::optional<std::string>());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

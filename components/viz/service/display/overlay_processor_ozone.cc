@@ -15,14 +15,20 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
+
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
+#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
+#endif
 
 namespace viz {
 
@@ -71,15 +77,9 @@ uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
          (mailbox.name[2] << 8) + mailbox.name[3];
 }
 
-void ReportSharedImageExists(bool exists) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Display.OverlayProcessorOzone."
-      "SharedImageExists",
-      exists);
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool AllowColorSpaceCombination(
+    gfx::BufferFormat source_format,
     const gfx::ColorSpace& source_color_space,
     const gfx::ColorSpace& destination_color_space) {
   // Allow invalid source color spaces because the assumption is that the
@@ -87,6 +87,35 @@ bool AllowColorSpaceCombination(
   // should be consistent with the overlay path.
   if (!source_color_space.IsValid())
     return true;
+
+  // Since https://crrev.com/c/2336347, we force BT.601/narrow for the
+  // COLOR_ENCODING and COLOR_RANGE DRM/KMS properties. On the other hand, the
+  // compositor is able to handle different YUV encodings and ranges. Therefore,
+  // in theory, if we don't want to see a difference between overlays and
+  // compositing, we should not promote video frames to overlays unless they
+  // actually use BT.601/narrow.
+  //
+  // In practice, however, we expect to see lots of BT.709 video frames, and we
+  // don't want to reject all of them for overlays because the visual difference
+  // between BT.601/narrow and BT.709/narrow is not expected to be much.
+  // Therefore, in being consistent with the values we provide for
+  // EGL_YUV_COLOR_SPACE_HINT_EXT/EGL_SAMPLE_RANGE_HINT_EXT (see
+  // https://crrev.com/c/3662321), we'll only allow frames that use non-BT.2020
+  // with non-full range. In those cases, the compositor and the display
+  // controller are expected to render the frames equally (and decently - with
+  // the understanding that the final result may not be fully correct).
+  //
+  // TODO(b/233667677): Remove this when we've plumbed the YUV encoding and
+  // range to DRM/KMS. At that point, we need to ensure that
+  // EGL_YUV_COLOR_SPACE_HINT_EXT/EGL_SAMPLE_RANGE_HINT_EXT would also get the
+  // same values as DRM/KMS.
+  if ((source_format == gfx::BufferFormat::YUV_420_BIPLANAR ||
+       source_format == gfx::BufferFormat::YVU_420) &&
+      (source_color_space.GetPrimaryID() ==
+           gfx::ColorSpace::PrimaryID::BT2020 ||
+       source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
+    return false;
+  }
 
   // Allow color space mismatches as long as either a) the source color space is
   // SRGB; or b) both the source and destination color spaces have the same
@@ -127,15 +156,16 @@ OverlayProcessorOzone::OverlayProcessorOzone(
       case OverlayStrategy::kUnderlay:
         strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
         break;
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
       case OverlayStrategy::kUnderlayCast:
         strategies_.push_back(
             std::make_unique<OverlayStrategyUnderlayCast>(this));
         break;
+#endif
       default:
         NOTREACHED();
     }
   }
-  MaybeObserveHardwareCapabilities();
 }
 
 OverlayProcessorOzone::~OverlayProcessorOzone() = default;
@@ -151,6 +181,8 @@ bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
 void OverlayProcessorOzone::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* surfaces) {
+  MaybeObserveHardwareCapabilities();
+
   auto full_size = surfaces->size();
   if (primary_plane)
     full_size += 1;
@@ -203,6 +235,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       // backend when we get an API for per-plane color management.
       if (!surface_iterator->requires_overlay &&
           !AllowColorSpaceCombination(
+              /*source_format=*/surface_iterator->format,
               /*source_color_space=*/surface_iterator->color_space,
               /*destination_color_space=*/primary_plane_color_space_)) {
         *ozone_surface_iterator = ui::OverlaySurfaceCandidate();
@@ -235,6 +268,31 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         }
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Some platforms (e.g. AMD) do not provide a dedicated cursor plane, and
+    // the display hardware will need to blit the cursor to the topmost plane.
+    // If the topmost plane is scaled/translated, the cursor will then be
+    // transformed along with it. Thus, we need to reject the topmost candidate
+    // if the buffer size is transformed at all.
+    if (!has_independent_cursor_plane_) {
+      auto highest_zindex_surface =
+          std::max_element(ozone_surface_list.begin(), ozone_surface_list.end(),
+                           [](const auto& a, const auto& b) {
+                             return a.plane_z_order < b.plane_z_order;
+                           });
+      if (highest_zindex_surface != ozone_surface_list.end()) {
+        gfx::RectF display_rect = highest_zindex_surface->display_rect;
+        gfx::Size buffer_size = highest_zindex_surface->buffer_size;
+        if (!display_rect.origin().IsOrigin() ||
+            buffer_size != gfx::ToFlooredSize(display_rect.size())) {
+          int zindex = highest_zindex_surface->plane_z_order;
+          *highest_zindex_surface = ui::OverlaySurfaceCandidate();
+          highest_zindex_surface->plane_z_order = zindex;
+        }
+      }
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   overlay_candidates_->CheckOverlaySupport(&ozone_surface_list);
 
@@ -259,10 +317,11 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
 }
 
 void OverlayProcessorOzone::MaybeObserveHardwareCapabilities() {
-  // HardwareCapabilities isn't necessary unless attempting multiple overlays.
-  if (max_overlays_config_ <= 1) {
+  if (tried_observing_hardware_capabilities_) {
     return;
   }
+  tried_observing_hardware_capabilities_ = true;
+
   if (overlay_candidates_) {
     overlay_candidates_->ObserveHardwareCapabilities(
         base::BindRepeating(&OverlayProcessorOzone::ReceiveHardwareCapabilities,
@@ -272,16 +331,26 @@ void OverlayProcessorOzone::MaybeObserveHardwareCapabilities() {
 
 void OverlayProcessorOzone::ReceiveHardwareCapabilities(
     ui::HardwareCapabilities hardware_capabilities) {
-  // Subtract 1 because one of these overlay capable planes will be needed for
-  // the primary plane.
-  int max_overlays_supported =
-      hardware_capabilities.num_overlay_capable_planes - 1;
-  max_overlays_considered_ =
-      std::min(max_overlays_supported, max_overlays_config_);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.Display.OverlayProcessorOzone.HardwareCapabilitiesIsValid",
+      hardware_capabilities.is_valid);
+  if (hardware_capabilities.is_valid) {
+    // Subtract 1 because one of these overlay capable planes will be needed for
+    // the primary plane.
+    int max_overlays_supported =
+        hardware_capabilities.num_overlay_capable_planes - 1;
+    max_overlays_considered_ =
+        std::min(max_overlays_supported, max_overlays_config_);
+    has_independent_cursor_plane_ =
+        hardware_capabilities.has_independent_cursor_plane;
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "Compositing.Display.OverlayProcessorOzone.MaxOverlaysSupported",
-      max_overlays_supported);
+    UMA_HISTOGRAM_COUNTS_100(
+        "Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported",
+        hardware_capabilities.num_overlay_capable_planes);
+  } else {
+    // Default to attempting 1 overlay if we get an invalid response.
+    max_overlays_considered_ = 1;
+  }
 
   // Different hardware capabilities may mean a different result for a specific
   // combination of overlays, so clear this cache.
@@ -305,11 +374,6 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     bool is_primary) {
   DCHECK(shared_image_interface_);
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Display.OverlayProcessorOzone."
-      "IsCandidateSharedImage",
-      mailbox.IsSharedImage());
-
   if (!mailbox.IsSharedImage())
     return false;
 
@@ -323,10 +387,8 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     // candidate. We will try again next frame.
     DLOG(ERROR) << "Unable to find the NativePixmap corresponding to the "
                    "overlay candidate";
-    ReportSharedImageExists(false);
     return false;
   }
-  ReportSharedImageExists(true);
 
   if (is_primary && (candidate->buffer_size != native_pixmap->GetBufferSize() ||
                      candidate->format != native_pixmap->GetBufferFormat())) {

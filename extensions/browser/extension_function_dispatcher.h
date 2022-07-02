@@ -76,8 +76,7 @@ class ExtensionFunctionDispatcher
   // Dispatches a request and the response is sent in |callback| that is a reply
   // of mojom::LocalFrameHost::Request.
   void Dispatch(mojom::RequestParamsPtr params,
-                content::RenderFrameHost* render_frame_host,
-                int render_process_id,
+                content::RenderFrameHost& frame,
                 mojom::LocalFrameHost::RequestCallback callback);
 
   // Message handlers.

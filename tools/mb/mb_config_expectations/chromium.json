@@ -5,7 +5,6 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -17,7 +16,6 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -25,7 +23,6 @@
     "gn_args": {
       "is_official_build": true,
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -45,7 +42,6 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -66,7 +62,6 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -75,14 +70,12 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
   "linux-official": {
     "gn_args": {
       "is_official_build": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -135,7 +128,6 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -146,13 +138,13 @@
       "is_debug": false,
       "skip_archive_compression": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
   "win-official": {
     "gn_args": {
       "is_official_build": true,
+      "symbol_level": 1,
       "use_goma": true
     }
   },
@@ -162,7 +154,6 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -174,7 +165,6 @@
       "skip_archive_compression": false,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },

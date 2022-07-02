@@ -8,9 +8,9 @@
 
 #include "base/check_op.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"
@@ -27,7 +27,14 @@
 @end
 
 @implementation QRScannerLegacyCoordinator
+
 @synthesize viewController = _viewController;
+@synthesize baseViewController = _baseViewController;
+
+- (instancetype)initWithBrowser:(Browser*)browser {
+  DCHECK(browser);
+  return [super initWithBaseViewController:nil browser:browser];
+}
 
 #pragma mark - ChromeCoordinator
 
@@ -35,7 +42,7 @@
   DCHECK(self.browser);
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
-                   forSelector:@selector(showQRScanner)];
+                   forProtocol:@protocol(QRScannerCommands)];
 }
 
 - (void)stop {

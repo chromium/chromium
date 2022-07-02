@@ -30,16 +30,16 @@ TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
 
 TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->any_name.get());
   }
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     base::Value param("asdf");
-    params_value.push_back(param.Clone());
+    params_value.Append(param.Clone());
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     ASSERT_TRUE(params);
@@ -47,9 +47,9 @@ TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
     EXPECT_EQ(*params->any_name, param);
   }
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     base::Value param(true);
-    params_value.push_back(param.Clone());
+    params_value.Append(param.Clone());
     std::unique_ptr<test::api::any::OptionalAny::Params> params(
         test::api::any::OptionalAny::Params::Create(params_value));
     ASSERT_TRUE(params);

@@ -327,6 +327,8 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NAME_SUFFIX:
         case EMAIL_ADDRESS:
         case PHONE_HOME_NUMBER:
+        case PHONE_HOME_NUMBER_PREFIX:
+        case PHONE_HOME_NUMBER_SUFFIX:
         case PHONE_HOME_CITY_CODE:
         case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
         case PHONE_HOME_COUNTRY_CODE:
@@ -338,13 +340,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case PHONE_FAX_COUNTRY_CODE:
         case PHONE_FAX_CITY_AND_NUMBER:
         case PHONE_FAX_WHOLE_NUMBER:
-        case ADDRESS_BILLING_LINE1:
-        case ADDRESS_BILLING_LINE2:
-        case ADDRESS_BILLING_APT_NUM:
-        case ADDRESS_BILLING_CITY:
-        case ADDRESS_BILLING_STATE:
-        case ADDRESS_BILLING_ZIP:
-        case ADDRESS_BILLING_COUNTRY:
         case CREDIT_CARD_NAME_FULL:
         case CREDIT_CARD_NUMBER:
         case CREDIT_CARD_EXP_MONTH:
@@ -356,25 +351,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case CREDIT_CARD_VERIFICATION_CODE:
         case COMPANY_NAME:
         case FIELD_WITH_DEFAULT_VALUE:
-        case PHONE_BILLING_NUMBER:
-        case PHONE_BILLING_CITY_CODE:
-        case PHONE_BILLING_COUNTRY_CODE:
-        case PHONE_BILLING_CITY_AND_NUMBER:
-        case PHONE_BILLING_WHOLE_NUMBER:
-        case NAME_BILLING_FIRST:
-        case NAME_BILLING_MIDDLE:
-        case NAME_BILLING_LAST:
-        case NAME_BILLING_MIDDLE_INITIAL:
-        case NAME_BILLING_FULL:
-        case NAME_BILLING_SUFFIX:
         case MERCHANT_EMAIL_SIGNUP:
         case MERCHANT_PROMO_CODE:
         case PASSWORD:
         case ACCOUNT_CREATION_PASSWORD:
-        case ADDRESS_BILLING_STREET_ADDRESS:
-        case ADDRESS_BILLING_SORTING_CODE:
-        case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-        case ADDRESS_BILLING_LINE3:
         case NOT_ACCOUNT_CREATION_PASSWORD:
         case USERNAME:
         case USERNAME_AND_EMAIL_ADDRESS:
@@ -400,6 +380,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case BIRTHDATE_DAY:
         case BIRTHDATE_MONTH:
         case BIRTHDATE_YEAR_4_DIGITS:
+        case IBAN_VALUE:
         case MAX_VALID_FIELD_TYPE:
           NOTREACHED() << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;
@@ -1230,6 +1211,9 @@ void AutofillMetrics::LogOfferNotificationBubbleOfferMetric(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       histogram_name += "CardLinkedOffer";
       break;
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
       break;
@@ -1252,6 +1236,9 @@ void AutofillMetrics::LogOfferNotificationBubbleResultMetric(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       histogram_name += "CardLinkedOffer.";
       break;
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer.";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer.";
       break;
@@ -1272,6 +1259,9 @@ void AutofillMetrics::LogOfferNotificationBubblePromoCodeButtonClicked(
   // Switch to different sub-histogram depending on offer type being displayed.
   // Card-linked offers do not have a promo code button.
   switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
       break;
@@ -1290,6 +1280,9 @@ void AutofillMetrics::LogOfferNotificationBubbleSuppressed(
   // Switch to different sub-histogram depending on offer type being suppressed.
   // Card-linked offers will not be suppressed.
   switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += "GPayPromoCodeOffer";
+      break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
       break;
@@ -1372,33 +1365,11 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
     const base::TimeDelta& duration,
     AutofillClient::PaymentsRpcResult result,
     AutofillClient::PaymentsRpcCardType card_type) {
-  std::string result_suffix;
-
-  switch (result) {
-    case AutofillClient::PaymentsRpcResult::kSuccess:
-      result_suffix = "Success";
-      break;
-    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
-    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
-      result_suffix = "Failure";
-      break;
-    case AutofillClient::PaymentsRpcResult::kNetworkError:
-      result_suffix = "NetworkError";
-      break;
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      result_suffix = "VcnRetrievalFailure";
-      break;
-    case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
-      return;
-  }
-
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido",
                               duration);
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido" +
-                                  GetCreditCardTypeSuffix(card_type) + "." +
-                                  result_suffix,
+                                  GetCreditCardTypeSuffix(card_type) +
+                                  PaymentsRpcResultToMetricsSuffix(result),
                               duration);
 }
 
@@ -2252,9 +2223,9 @@ void AutofillMetrics::LogStoredOfferMetrics(
   for (const std::unique_ptr<AutofillOfferData>& offer : offers) {
     base::UmaHistogramCounts1000(
         "Autofill.Offer.StoredOfferRelatedMerchantCount",
-        offer->merchant_origins.size());
+        offer->GetMerchantOrigins().size());
     base::UmaHistogramCounts1000("Autofill.Offer.StoredOfferRelatedCardCount",
-                                 offer->eligible_instrument_id.size());
+                                 offer->GetEligibleInstrumentIds().size());
   }
 }
 
@@ -2545,13 +2516,16 @@ uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskMetric() const {
 void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     const LogCreditCardSeamlessnessParam& p) {
   auto GetSeamlessness = [&p](bool only_newly_filled_fields,
-                              bool only_after_security_policy) {
+                              bool only_after_security_policy,
+                              bool only_visible_fields) {
     ServerFieldTypeSet autofilled_types;
     for (const auto& field : p.form) {
       FieldGlobalId id = field->global_id();
       if (only_newly_filled_fields && !p.newly_filled_fields.contains(id))
         continue;
       if (only_after_security_policy && !p.safe_fields.contains(id))
+        continue;
+      if (only_visible_fields && !field->is_visible)
         continue;
       autofilled_types.insert(field->Type().GetStorableType());
     }
@@ -2565,28 +2539,52 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
                                   s.BitmaskExclusiveMax());
   };
 
-  if (auto s = GetSeamlessness(false, false)) {
+  if (auto s = GetSeamlessness(false, false, false)) {
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy", s);
     p.builder.SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
     p.builder.SetFillable_BeforeSecurity_Qualitative(
         s.QualitativeMetricAsInt());
     p.event_logger.Log(s.QualitativeFillableFormEvent(), p.form);
   }
-  if (auto s = GetSeamlessness(false, true)) {
+  if (auto s = GetSeamlessness(false, true, false)) {
     RecordUma("Fillable.AtFillTimeAfterSecurityPolicy", s);
     p.builder.SetFillable_AfterSecurity_Bitmask(s.BitmaskMetric());
     p.builder.SetFillable_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
   }
-  if (auto s = GetSeamlessness(true, false)) {
+  if (auto s = GetSeamlessness(true, false, false)) {
     RecordUma("Fills.AtFillTimeBeforeSecurityPolicy", s);
     p.builder.SetFilled_BeforeSecurity_Bitmask(s.BitmaskMetric());
     p.builder.SetFilled_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
   }
-  if (auto s = GetSeamlessness(true, true)) {
+  if (auto s = GetSeamlessness(true, true, false)) {
     RecordUma("Fills.AtFillTimeAfterSecurityPolicy", s);
     p.builder.SetFilled_AfterSecurity_Bitmask(s.BitmaskMetric());
     p.builder.SetFilled_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
     p.event_logger.Log(s.QualitativeFillFormEvent(), p.form);
+  }
+  if (auto s = GetSeamlessness(false, false, true)) {
+    RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy.Visible", s);
+    p.builder.SetFillable_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder.SetFillable_BeforeSecurity_Visible_Qualitative(
+        s.QualitativeMetricAsInt());
+  }
+  if (auto s = GetSeamlessness(false, true, true)) {
+    RecordUma("Fillable.AtFillTimeAfterSecurityPolicy.Visible", s);
+    p.builder.SetFillable_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder.SetFillable_AfterSecurity_Visible_Qualitative(
+        s.QualitativeMetricAsInt());
+  }
+  if (auto s = GetSeamlessness(true, false, true)) {
+    RecordUma("Fills.AtFillTimeBeforeSecurityPolicy.Visible", s);
+    p.builder.SetFilled_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder.SetFilled_BeforeSecurity_Visible_Qualitative(
+        s.QualitativeMetricAsInt());
+  }
+  if (auto s = GetSeamlessness(true, true, true)) {
+    RecordUma("Fills.AtFillTimeAfterSecurityPolicy.Visible", s);
+    p.builder.SetFilled_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
+    p.builder.SetFilled_AfterSecurity_Visible_Qualitative(
+        s.QualitativeMetricAsInt());
   }
 
   // In a multi-frame form, a cross-origin field is filled only if
@@ -3098,6 +3096,33 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
   builder.Record(ukm_recorder_);
 }
 
+void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
+    const DenseSet<FormType>& form_types,
+    bool data_to_fill_available,
+    bool suggestions_shown,
+    bool edited_autofilled_field,
+    bool suggestion_filled,
+    autofill_assistant::AutofillAssistantIntent intent) {
+  if (!CanLog())
+    return;
+
+  ukm::builders::Autofill_KeyMetrics builder(source_id_);
+  builder.SetFillingReadiness(data_to_fill_available)
+      .SetFillingAssistance(suggestion_filled)
+      .SetFormTypes(FormTypesToBitVector(form_types));
+
+  if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
+    builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));
+
+  if (suggestions_shown)
+    builder.SetFillingAcceptance(suggestion_filled);
+
+  if (suggestion_filled)
+    builder.SetFillingCorrectness(!edited_autofilled_field);
+
+  builder.Record(ukm_recorder_);
+}
+
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormEvent(
     FormEvent form_event,
     const DenseSet<FormType>& form_types,
@@ -3173,7 +3198,7 @@ void AutofillMetrics::
 }
 
 // static
-void AutofillMetrics::LogAddressFormImportStatustMetric(
+void AutofillMetrics::LogAddressFormImportStatusMetric(
     AutofillMetrics::AddressProfileImportStatusMetric metric) {
   base::UmaHistogramEnumeration("Autofill.AddressProfileImportStatus", metric);
 }
@@ -3404,6 +3429,28 @@ void AutofillMetrics::LogRemovedSettingInaccessibleField(
       ConvertSettingsVisibleFieldTypeForMetrics(field));
 }
 
+// static
+void AutofillMetrics::LogPhoneNumberImportParsingResult(
+    bool with_variation_country_code,
+    bool with_app_locale) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.PhoneNumberParsingResult",
+      static_cast<AutofillMetrics::PhoneNumberImportParsingResult>(
+          (with_variation_country_code << 1) | with_app_locale));
+}
+
+// static
+void AutofillMetrics::LogPhoneNumberGrammarMatched(int grammar_id,
+                                                   bool suffix_matched) {
+  // There are 18 phone number grammars.
+  DCHECK(0 <= grammar_id && grammar_id < 18);
+  // Add 1, because UmaHistogramExactLinear is 1-based. Thus, the maximum logged
+  // value becomes 2*17+1 + 1 = 36.
+  base::UmaHistogramExactLinear("Autofill.FieldPrediction.PhoneNumberGrammar",
+                                2 * grammar_id + suffix_matched + 1,
+                                /*exclusive_max=*/37);
+}
+
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
     const AutofillProfile& profile) {
   constexpr base::StringPiece base_histogram_name =
@@ -3544,6 +3591,32 @@ void AutofillMetrics::
   base::UmaHistogramBoolean(
       "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
       is_same);
+}
+
+const std::string PaymentsRpcResultToMetricsSuffix(
+    AutofillClient::PaymentsRpcResult result) {
+  std::string result_suffix;
+
+  switch (result) {
+    case AutofillClient::PaymentsRpcResult::kSuccess:
+      result_suffix = ".Success";
+      break;
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+      result_suffix = ".Failure";
+      break;
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
+      result_suffix = ".NetworkError";
+      break;
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      result_suffix = ".VcnRetrievalFailure";
+      break;
+    case AutofillClient::PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  return result_suffix;
 }
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -304,7 +305,7 @@ void MultiDeviceNotificationPresenter::ShowNotification(
           GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierMultiDevice),
+              kNotifierMultiDevice, NotificationCatalogName::kMultiDevice),
           optional_fields, nullptr /* delegate */,
           kNotificationMultiDeviceSetupIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);

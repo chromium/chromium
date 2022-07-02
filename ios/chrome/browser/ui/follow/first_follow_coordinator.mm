@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -13,6 +15,7 @@
 #import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -36,6 +39,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 // The view controller is owned by the view hierarchy.
 @property(nonatomic, weak) FirstFollowViewController* firstFollowViewController;
 
+// Feed metrics recorder.
+@property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
+
 @end
 
 @implementation FirstFollowCoordinator
@@ -46,6 +52,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   FirstFollowViewController* firstFollowViewController =
       [[FirstFollowViewController alloc] init];
   firstFollowViewController.followedWebChannel = self.followedWebChannel;
+  self.feedMetricsRecorder = DiscoverFeedServiceFactory::GetForBrowserState(
+                                 self.browser->GetBrowserState())
+                                 ->GetFeedMetricsRecorder();
   // Ownership is passed to VC so this object is not retained after VC closes.
   self.followedWebChannel = nil;
   self.firstFollowViewController = firstFollowViewController;
@@ -73,9 +82,13 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
         UIModalPresentationFormSheet;
   }
 
-  [self.baseViewController presentViewController:firstFollowViewController
-                                        animated:YES
-                                      completion:nil];
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController
+      presentViewController:firstFollowViewController
+                   animated:YES
+                 completion:^() {
+                   [weakSelf.feedMetricsRecorder recordFirstFollowShown];
+                 }];
 }
 
 - (void)stop {
@@ -87,16 +100,23 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  if (self.firstFollowViewController.followedWebChannel.available) {
-    [self.newTabPageCommandsHandler
-        openNTPScrolledIntoFeedType:FeedTypeFollowing];
-  }
+  [self.feedMetricsRecorder recordFirstFollowTappedGoToFeed];
   if (self.baseViewController.presentedViewController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.baseViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             if (self.firstFollowViewController
+                                     .followedWebChannel.available) {
+                               [self.newTabPageCommandsHandler
+                                   openNTPScrolledIntoFeedType:
+                                       FeedTypeFollowing];
+                             }
+                           }];
   }
 }
 
 - (void)confirmationAlertSecondaryAction {
+  [self.feedMetricsRecorder recordFirstFollowTappedGotIt];
   if (self.baseViewController.presentedViewController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   }

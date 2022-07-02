@@ -5,7 +5,7 @@
 #include "chromeos/services/libassistant/conversation_controller.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/assistant/test_support/expect_utils.h"
+#include "chromeos/ash/components/assistant/test_support/expect_utils.h"
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

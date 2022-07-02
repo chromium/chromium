@@ -210,6 +210,9 @@ private static void logNewTabPageAction(@NewTabPageAction int action) {
 }
 ```
 
+Finally, regardless of the programming language you are using, add the
+definition of the enumerator to [enums.xml](./enums.xml).
+
 #### Legacy Enums
 
 **Note: this method of defining histogram enums is deprecated. Do not use this
@@ -718,6 +721,11 @@ This is useful for token substitutions that are shared among multiple families
 of histograms. See
 [histograms.xml](https://source.chromium.org/search?q=file:histograms.xml%20%3Cvariants)
 for examples.
+
+*** promo
+Warning: The `name` attribute of the `<variants>` tag is globally scoped, so
+use detailed names to avoid collisions.
+***
 
 By default, a `<variant>` inherits the owners declared for the patterned
 histogram. Each variant can optionally override the inherited list with custom

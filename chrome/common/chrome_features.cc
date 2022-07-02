@@ -53,7 +53,7 @@ const base::Feature kAnonymousUpdateChecks{"AnonymousUpdateChecks",
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAppDiscoveryForOobe{"AppDiscoveryForOobe",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -65,14 +65,6 @@ const base::Feature kAppManagementAppDetails{"AppManagementAppDetails",
 const base::Feature kAppProvisioningStatic{"AppProvisioningStatic",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID)
-// App Service related flags. See components/services/app_service/README.md.
-const base::Feature kAppServiceLoadIconWithoutMojom{
-    "AppServiceLoadIconWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kAppServiceExtension{"AppServiceExtension",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 // Can be used to disable RemoteCocoa (hosting NSWindows for apps in the app
@@ -147,11 +139,6 @@ const base::Feature kClientStorageAccessContextAuditing{
 const base::Feature kConsolidatedSiteStorageControls{
     "ConsolidatedSiteStorageControls", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature kContinuousSearch{"ContinuousSearch",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables "usm" service in the list of user services returned by
 // userInfo Gaia message.
@@ -212,6 +199,10 @@ const base::Feature kCryptohomeUserDataAuthKillswitch{
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Enables Privacy Hub for ChromeOS.
+const base::Feature kCrosPrivacyHub{"CrosPrivacyHub",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables parsing and enforcing Data Leak Prevention policy rules that
 // restricts usage of some system features, e.g.clipboard, screenshot, etc.
 // for confidential content.
@@ -284,6 +275,10 @@ const base::Feature kDesktopPWAsElidedExtensionsMenu {
 const base::Feature kDesktopPWAsEnforceWebAppSettingsPolicy{
     "DesktopPWAsEnforceWebAppSettingsPolicy", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables showing a detailed install dialog for user installs.
+const base::Feature kDesktopPWAsDetailedInstallDialog{
+    "DesktopPWAsDetailedInstallDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Desktop PWAs to be auto-started on OS login.
 const base::Feature kDesktopPWAsRunOnOsLogin {
   "DesktopPWAsRunOnOsLogin",
@@ -304,9 +299,6 @@ const base::Feature kDesktopPWAsWebBundles{"DesktopPWAsWebBundles",
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-// Serves web app settings at chrome://app-settings/<app-id>.
-const base::Feature kDesktopPWAsWebAppSettingsPage{
-    "DesktopPWAsWebAppSettingsPage", base::FEATURE_ENABLED_BY_DEFAULT};
 // Controls whether Chrome Apps are supported. See https://crbug.com/1221251.
 // If the feature is disabled, Chrome Apps continue to work. If enabled, Chrome
 // Apps will not launch and will be marked in the UI as deprecated.
@@ -317,11 +309,6 @@ const base::Feature kChromeAppsDeprecation{"ChromeAppsDeprecation",
 const base::Feature kKeepForceInstalledPreinstalledApps{
     "KeepForceInstalledPreinstalledApps", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-
-// Causes the DMToken to be deleted (rather than invalidated) when a browser is
-// deleted from CBCM.
-const base::Feature kDmTokenDeletion{"DmTokenDeletion",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
@@ -378,13 +365,6 @@ const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks = {
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Under this flag tab preloading at startup will be elided (i.e., not
-// performed).
-const base::Feature kElideTabPreloadAtStartup = {
-    "ElideTabPreloadAtStartup", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
@@ -397,6 +377,12 @@ const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",
 // Enable web app uninstallation from Windows settings or control panel.
 const base::Feature kEnableWebAppUninstallFromOsSettings{
     "EnableWebAppUninstallFromOsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+
+#if !BUILDFLAG(IS_ANDROID)
+// Enable WebHID on extension service workers.
+const base::Feature kEnableWebHidOnExtensionServiceWorker{
+    "EnableWebHidOnExtensionServiceWorker", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy
@@ -431,15 +417,6 @@ const base::Feature kFlashDeprecationWarning{"FlashDeprecationWarning",
 // of languages.
 const base::Feature kGeoLanguage{"GeoLanguage",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
-#if BUILDFLAG(IS_ANDROID)
-// Gives Java tasks that are posted with the UiThreadTaskTraits.DEFAULT traits
-// user-blocking priority rather than their default user-visible priority.
-// See crbug.com/1259560.
-const base::Feature kGiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority{
-    "GiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
@@ -620,9 +597,11 @@ const base::Feature kIncognitoBrandConsistencyForAndroid{
     "IncognitoBrandConsistencyForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 // When enabled, users will see a warning when downloading from Incognito.
 const base::Feature kIncognitoDownloadsWarning{
     "IncognitoDownloadsWarning", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // When enabled, users will see updated UI in Incognito NTP
 const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
@@ -631,13 +610,6 @@ const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
 // When enabled, removes any entry points to the history UI from Incognito mode.
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kIncognitoParamFilterEnabled{
-    "IncognitoParamFilterEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, shows a demo of in-product help in a WebUI context.
-const base::Feature kIPHInWebUIDemo{"IPHInWebUIDemo",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -777,13 +749,13 @@ const base::FeatureParam<double> kPermissionPredictionsHoldbackChance(
 
 // Enables using the prediction service for geolocation permission prompts.
 const base::Feature kPermissionGeolocationPredictions{
-    "PermissionGeolocationPredictions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PermissionGeolocationPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<double>
     kPermissionGeolocationPredictionsHoldbackChance(
         &kPermissionGeolocationPredictions,
         "holdback_chance",
-        0.0);
+        0.3);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
@@ -802,11 +774,11 @@ const base::Feature kPrefixWebAppWindowsWithAppName{
 const base::Feature kPrerenderFallbackToPreconnect{
     "PrerenderFallbackToPreconnect", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPrivacyGuide{"PrivacyGuide",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPrivacyGuide2{"PrivacyGuide2",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPrivacyGuideAndroid{"PrivacyGuideAndroid",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
@@ -819,7 +791,7 @@ const base::Feature kPwaUpdateDialogForIcon{"PwaUpdateDialogForIcon",
 
 // Shows a confirmation dialog when updates to a PWAs name has been detected.
 const base::Feature kPwaUpdateDialogForName{"PwaUpdateDialogForName",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables using quiet prompts for notification permission requests.
 const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
@@ -878,7 +850,7 @@ constexpr base::FeatureParam<double> kSCTAuditingSamplingRate{
 // about an SCT seen in the wild. If it hasn't been seen, then it is considered
 // a security incident and uploaded to Google.
 const base::Feature kSCTAuditingHashdance{"SCTAuditingHashdance",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // An estimated high bound for the time it takes Google to ingest updates to an
 // SCT log. Chrome will wait for at least this time plus the Log's Maximum Merge
@@ -932,11 +904,6 @@ const base::Feature kSmartDim{"SmartDim", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSoundContentSetting{"SoundContentSetting",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the demo version of the Support Tool. The tool will be available in
-// chrome://support-tool. See go/support-tool-v1-design for more details.
-const base::Feature kSupportTool{"SupportTool",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables chrome://sys-internals.
 const base::Feature kSysInternals{"SysInternals",
@@ -951,6 +918,11 @@ const base::Feature kTPMFirmwareUpdate{"TPMFirmwareUpdate",
 // Enables logging UKMs for background tab activity by TabActivityWatcher.
 const base::Feature kTabMetricsLogging{"TabMetricsLogging",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables the demo version of the Support Tool. The tool will be available in
+// chrome://support-tool. See go/support-tool-v1-design for more details.
+const base::Feature kSupportTool{"SupportTool",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -1218,5 +1190,8 @@ const base::Feature kOmniboxTriggerForNoStatePrefetch{
 const base::Feature kSupportsRtcWakeOver24Hours{
     "SupportsRtcWakeOver24Hours", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+const base::Feature kUseWebAppDBInsteadOfExternalPrefs{
+    "UseWebAppDBInsteadOfExternalPrefs", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -196,8 +197,14 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
         ->SyncConfirmationUIClosed(result);
   }
 
-  void SimulateProfileCustomizationUIClosing() {
-    dialog()->OnProfileCustomizationDoneButtonClicked();
+  void SimulateProfileCustomizationDoneButtonClicked() {
+    dialog()->ProfileCustomizationCloseOnCompletion(
+        ProfileCustomizationHandler::CustomizationResult::kDone);
+  }
+
+  void SimulateProfileCustomizationSkipButtonClicked() {
+    dialog()->ProfileCustomizationCloseOnCompletion(
+        ProfileCustomizationHandler::CustomizationResult::kSkip);
   }
 
   void ExpectRecordedEvents(DialogEventSet events) {
@@ -325,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
 
-  SimulateProfileCustomizationUIClosing();
+  SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
   ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
@@ -333,6 +340,55 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
                         DialogEvent::kShowProfileCustomization,
                         DialogEvent::kProfileCustomizationClickDone});
   ExpectSigninHistogramsRecorded();
+}
+
+// Goes through all steps of the fre dialog and skips profile customization.
+// The user enables sync.
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       AcceptSync_SkipCustomization) {
+  SignIn(kConsumerEmail);
+  content::TestNavigationObserver sync_confirmation_observer(
+      kSyncConfirmationUrl);
+  content::TestNavigationObserver profile_customization_observer(
+      kProfileCustomizationUrl);
+  sync_confirmation_observer.StartWatchingNewWebContents();
+  profile_customization_observer.StartWatchingNewWebContents();
+
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+  sync_confirmation_observer.Wait();
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kSyncConfirmationUrl);
+
+  SimulateSyncConfirmationUIClosing(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
+  // The dialog still shows the sync confirmation while waiting for the synced
+  // theme to be applied.
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kSyncConfirmationUrl);
+
+  theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
+      ThemeSyncableService::ThemeSyncState::kApplied);
+
+  profile_customization_observer.Wait();
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kProfileCustomizationUrl);
+
+  SimulateProfileCustomizationSkipButtonClicked();
+  EXPECT_FALSE(controller()->ShowsModalDialog());
+  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
+                        DialogEvent::kSyncConfirmationClickConfirm,
+                        DialogEvent::kShowProfileCustomization,
+                        DialogEvent::kProfileCustomizationClickSkip});
+  ExpectSigninHistogramsRecorded();
+  // TODO(https://crbug.com/1282157): test that the Skip button undoes the
+  // changes in the theme color and the profile name.
 }
 
 // The user enables sync and has a synced extension theme. Tests that the dialog
@@ -383,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
 
-  SimulateProfileCustomizationUIClosing();
+  SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
 }
@@ -446,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
 
-  SimulateProfileCustomizationUIClosing();
+  SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
   ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
@@ -582,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   // Sync consent is granted even though Sync cannot be enabled.
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
 
-  SimulateProfileCustomizationUIClosing();
+  SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
   ExpectRecordedEvents({DialogEvent::kStart,
@@ -609,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
 
-  SimulateProfileCustomizationUIClosing();
+  SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
   ExpectRecordedEvents({DialogEvent::kStart,

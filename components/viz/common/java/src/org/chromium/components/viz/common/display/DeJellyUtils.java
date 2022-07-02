@@ -130,9 +130,8 @@ public class DeJellyUtils implements DisplayManager.DisplayListener, ComponentCa
      *         configurations, not whether it is actively being used.
      */
     public static boolean externallyEnableDeJelly() {
-        return Global.getInt(ContextUtils.getApplicationContext().getContentResolver(),
-                       "enable_de_jelly_for_chrome", 0)
-                != 0;
+        // Support will be removed.
+        return false;
     }
 
     /**

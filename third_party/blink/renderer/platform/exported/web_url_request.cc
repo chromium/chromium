@@ -194,6 +194,14 @@ void WebURLRequest::SetHttpMethod(const WebString& http_method) {
   resource_request_->SetHttpMethod(http_method);
 }
 
+WebString WebURLRequest::HttpContentType() const {
+  return resource_request_->HttpContentType();
+}
+
+bool WebURLRequest::IsFormSubmission() const {
+  return resource_request_->IsFormSubmission();
+}
+
 WebString WebURLRequest::HttpHeaderField(const WebString& name) const {
   return resource_request_->HttpHeaderField(name);
 }

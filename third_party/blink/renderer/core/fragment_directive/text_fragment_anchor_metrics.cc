@@ -27,10 +27,6 @@ void TextFragmentAnchorMetrics::DidFindMatch() {
   ++matches_count_;
 }
 
-void TextFragmentAnchorMetrics::ResetMatchCount() {
-  matches_count_ = 0;
-}
-
 void TextFragmentAnchorMetrics::DidFindAmbiguousMatch() {
   ambiguous_match_ = true;
 }
@@ -60,7 +56,7 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
 
   shared_highlighting::LogLinkOpenedUkmEvent(
       document_->UkmRecorder(), document_->UkmSourceID(),
-      KURL(document_->referrer()),
+      GURL(document_->referrer().Utf8()),
       /*success=*/matches_count_ == selector_count_);
 
   std::string uma_prefix = GetPrefixForHistograms();

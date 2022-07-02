@@ -104,8 +104,9 @@ enum class IndexResult {
   kEmptyOriginUrl = 3,
   kPathMismatch = 4,
   kPathFileInfoFailed = 5,
+  kInvalidStorageKey = 6,
   // Add new enums above
-  kMaxValue = kPathFileInfoFailed,
+  kMaxValue = kInvalidStorageKey,
 };
 
 IndexResult ValidateIndex(proto::CacheStorageIndex index) {
@@ -116,6 +117,10 @@ IndexResult ValidateIndex(proto::CacheStorageIndex index) {
   if (url.is_empty())
     return IndexResult::kEmptyOriginUrl;
 
+  // TODO(https://crbug.com/1199077): Consider adding a
+  // 'index.has_storage_key()' check here once we've ensured that a
+  // sufficient number of CacheStorage instances have been migrated (or
+  // verified that `ValidateIndex` won't be passed an unmigrated `index`).
   return IndexResult::kOk;
 }
 
@@ -157,8 +162,25 @@ GetStorageKeysAndLastModifiedOnTaskRunner(
       continue;
     }
 
-    auto storage_key =
-        blink::StorageKey(url::Origin::Create(GURL(index.origin())));
+    blink::StorageKey storage_key;
+    if (index.has_storage_key()) {
+      absl::optional<blink::StorageKey> result =
+          blink::StorageKey::Deserialize(index.storage_key());
+      if (!result) {
+        RecordIndexValidationResult(IndexResult::kInvalidStorageKey);
+        continue;
+      }
+      storage_key = result.value();
+    } else {
+      // TODO(https://crbug.com/1199077): Since index file migrations happen
+      // lazily, it's plausible that the index file we are reading doesn't have
+      // a storage key yet. For now, fall back to creating the storage key
+      // from the origin. This should be removed after either enough time has
+      // passed for most caches to have been migrated naturally or after we
+      // implement follow-on code that can force a migration.
+      storage_key =
+          blink::StorageKey(url::Origin::Create(GURL(index.origin())));
+    }
     DCHECK(!storage_key.origin().GetURL().is_empty());
 
     auto origin_path = CacheStorageManager::ConstructStorageKeyPath(

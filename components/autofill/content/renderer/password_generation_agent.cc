@@ -23,7 +23,6 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
@@ -233,8 +232,8 @@ void PasswordGenerationAgent::BindPendingReceiver(
 
 void PasswordGenerationAgent::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  // Update stats for main frame navigation.
-  if (!render_frame()->GetWebFrame()->Parent()) {
+  // Update stats for primary main frame navigation.
+  if (render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
     if (current_generation_item_) {
       if (current_generation_item_->password_edited_) {
         password_generation::LogPasswordGenerationEvent(
@@ -308,7 +307,6 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // frame.
     if (!render_frame())
       return;
-    password_element.SetAutofillState(WebAutofillState::kAutofilled);
     password_agent_->TrackAutofilledElement(password_element);
     // Advance focus to the next input field. We assume password fields in
     // an account creation form are always adjacent.

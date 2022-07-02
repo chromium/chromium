@@ -4,6 +4,8 @@
 
 #include "ui/views/widget/native_widget_mac.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/mac_util.h"
@@ -68,7 +70,7 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
   }
 
  private:
-  NativeWidgetMacInteractiveUITest* parent_;
+  raw_ptr<NativeWidgetMacInteractiveUITest> parent_;
 };
 
 // Test that showing a window causes it to attain global keyWindow status.

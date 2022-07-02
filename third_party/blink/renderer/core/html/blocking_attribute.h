@@ -20,9 +20,8 @@ class BlockingAttribute final : public DOMTokenList {
   explicit BlockingAttribute(Element* element)
       : DOMTokenList(*element, html_names::kBlockingAttr) {}
 
-  // https://html.spec.whatwg.org/C/#explicitly-render-blocking
-  static bool IsExplicitlyRenderBlocking(const String& attribute_value);
-  bool IsExplicitlyRenderBlocking() const { return contains(kRenderToken); }
+  static bool HasRenderToken(const String& attribute_value);
+  bool HasRenderToken() const { return contains(kRenderToken); }
 
   void CountTokenUsage();
 

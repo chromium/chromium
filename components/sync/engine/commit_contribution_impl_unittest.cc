@@ -12,7 +12,9 @@
 #include "base/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/nigori/cryptographer.h"
@@ -377,6 +379,89 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
       /*only_commit_specifics=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
+}
+
+TEST(CommitContributionImplTest, ShouldPopulatePasswordNotesBackup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReadWritePasswordNotesBackupField);
+
+  const std::string kNoteValue = "Note Value";
+  auto data = std::make_unique<syncer::EntityData>();
+  data->client_tag_hash = kTag;
+  sync_pb::PasswordSpecificsData* password_data =
+      data->specifics.mutable_password()->mutable_client_only_encrypted_data();
+  sync_pb::PasswordSpecificsData_Notes_Note* note =
+      password_data->mutable_notes()->add_note();
+  note->set_value(kNoteValue);
+
+  auto request_data = std::make_unique<CommitRequestData>();
+  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
+                     &request_data->specifics_hash);
+  request_data->entity = std::move(data);
+
+  CommitRequestDataList requests_data;
+  requests_data.push_back(std::move(request_data));
+
+  std::unique_ptr<FakeCryptographer> cryptographer =
+      FakeCryptographer::FromSingleDefaultKey("dummy");
+  CommitContributionImpl contribution(
+      PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
+      /*on_commit_response_callback=*/base::NullCallback(),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      cryptographer.get(), PassphraseType::kImplicitPassphrase,
+      /*only_commit_specifics=*/false);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  ASSERT_EQ(1, msg.commit().entries().size());
+  SyncEntity entity = msg.commit().entries(0);
+  ASSERT_TRUE(entity.specifics().has_password());
+
+  // Verify the contents of the encrypted notes backup blob.
+  sync_pb::PasswordSpecificsData_Notes decrypted_notes;
+  cryptographer->Decrypt(entity.specifics().password().encrypted_notes_backup(),
+                         &decrypted_notes);
+  ASSERT_EQ(1, decrypted_notes.note_size());
+  EXPECT_EQ(kNoteValue, decrypted_notes.note(0).value());
+}
+
+TEST(CommitContributionImplTest,
+     ShouldPopulatePasswordNotesBackupWhenNoLocalNotes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReadWritePasswordNotesBackupField);
+
+  auto data = std::make_unique<syncer::EntityData>();
+  data->client_tag_hash = kTag;
+  sync_pb::PasswordSpecificsData* password_data =
+      data->specifics.mutable_password()->mutable_client_only_encrypted_data();
+  password_data->set_signon_realm("signon_realm");
+
+  auto request_data = std::make_unique<CommitRequestData>();
+  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
+                     &request_data->specifics_hash);
+  request_data->entity = std::move(data);
+
+  CommitRequestDataList requests_data;
+  requests_data.push_back(std::move(request_data));
+
+  std::unique_ptr<FakeCryptographer> cryptographer =
+      FakeCryptographer::FromSingleDefaultKey("dummy");
+  CommitContributionImpl contribution(
+      PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
+      /*on_commit_response_callback=*/base::NullCallback(),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      cryptographer.get(), PassphraseType::kImplicitPassphrase,
+      /*only_commit_specifics=*/false);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  ASSERT_EQ(1, msg.commit().entries().size());
+  SyncEntity entity = msg.commit().entries(0);
+  ASSERT_TRUE(entity.specifics().has_password());
+  EXPECT_FALSE(
+      entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
 }  // namespace

@@ -7,7 +7,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
@@ -35,15 +37,23 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
       const std::string& application_locale) override {
     application_locale_ = application_locale;
   }
+  void OnPreferredLanguagesChanged(
+      const std::string& preferred_languages) override {
+    preferred_languages_ = preferred_languages;
+  }
   void OnEligibilityChanged(bool eligible) override { is_eligible_ = eligible; }
 
   bool settings_enabled() const { return settings_enabled_; }
   const std::string& application_locale() const { return application_locale_; }
+  const std::string& preferred_languages() const {
+    return preferred_languages_;
+  }
   bool is_eligible() const { return is_eligible_; }
 
  private:
   bool settings_enabled_ = false;
   std::string application_locale_;
+  std::string preferred_languages_;
   bool is_eligible_ = false;
 };
 
@@ -174,12 +184,18 @@ TEST_F(QuickAnswersStateAshTest, NotifyApplicationLocaleReady) {
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdatePreferredLanguages) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
   EXPECT_TRUE(QuickAnswersState::Get()->preferred_languages().empty());
+  EXPECT_TRUE(observer()->preferred_languages().empty());
 
   const std::string preferred_languages = "en-US,zh";
   prefs()->SetString(language::prefs::kPreferredLanguages, preferred_languages);
   EXPECT_EQ(QuickAnswersState::Get()->preferred_languages(),
             preferred_languages);
+  EXPECT_EQ(observer()->preferred_languages(), preferred_languages);
+
+  QuickAnswersState::Get()->RemoveObserver(observer());
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateSpokenFeedbackEnabled) {
@@ -204,6 +220,29 @@ TEST_F(QuickAnswersStateAshTest, LocaleEligible) {
   EXPECT_TRUE(observer()->is_eligible());
 }
 
+TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersForMoreLocales);
+
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "pt");
+  SimulateUserLogin(kTestUser);
+  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(observer()->is_eligible());
+
+  ClearLogin();
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "en");
+  SimulateUserLogin(kTestUser);
+  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(observer()->is_eligible());
+}
+
 TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
   QuickAnswersState::Get()->AddObserver(observer());
 
@@ -214,6 +253,29 @@ TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
   icu::Locale::setDefault(icu::Locale(ULOC_CHINESE), error_code);
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
 
+  SimulateUserLogin(kTestUser);
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+}
+
+TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersForMoreLocales);
+
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "zh");
+  SimulateUserLogin(kTestUser);
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(observer()->is_eligible());
+
+  ClearLogin();
+
+  prefs()->SetString(language::prefs::kApplicationLocale, "ja");
   SimulateUserLogin(kTestUser);
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());

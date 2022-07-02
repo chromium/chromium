@@ -74,6 +74,12 @@ class SyncUserSettings {
   virtual UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, apps sync in the primary profile is controlled by the OS Sync
+  // settings.
+  virtual void SetAppsSyncEnabledByOs(bool apps_sync_enabled) = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Encryption state.
   // Note that all of this state may only be queried or modified if the Sync
   // engine is initialized.

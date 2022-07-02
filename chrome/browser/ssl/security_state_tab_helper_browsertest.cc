@@ -146,7 +146,7 @@ void InjectScript(content::WebContents* contents) {
   // Any frame in the active page might have a password field, so inject scripts
   // into all of them to ensure that notifications from all of them have been
   // sent.
-  contents->GetMainFrame()->ForEachRenderFrameHost(
+  contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating([](content::RenderFrameHost* frame) {
         bool js_result = false;
         EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -1777,7 +1777,7 @@ IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
       https_server_.GetURL("/ssl/page_displays_insecure_content.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
 
   if (IsAutoupgradeEnabled()) {
@@ -1814,7 +1814,7 @@ IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
 
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   // Check that nothing has been loaded in the fenced frame.
   EXPECT_EQ(

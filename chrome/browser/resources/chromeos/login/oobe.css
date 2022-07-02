@@ -7,15 +7,15 @@
  */
 
 :root {
-  --google-grey-700: rgb(95, 99, 104);
   --shelf-area-height-base: 57px;
   --oobe-oobe-dialog-height-base: 504px;
   --oobe-oobe-dialog-width-base: 461px;
+  --oobe-bg-color: var(--cros-bg-color);
 }
 
 html,
 body {
-  background-color: var(--cros-bg-color);
+  background-color: var(--oobe-bg-color);
   height: 100%;
   transition: background-color 250ms linear;
   width: 100%;
@@ -32,7 +32,6 @@ html[screen=gaia-signin] {
 }
 
 body {
-  background-color: transparent;
   cursor: default;
   font-size: 14px;
   margin: 0;
@@ -77,6 +76,7 @@ html[dir=rtl] {
 html[screen=gaia-signin] {
   /* has to be with px suffix to be used in calc */
   --oobe-dialog-side-margin: 0px;
+  --oobe-bg-color: var(--cros-bg-color-elevation-3);
 }
 
 /* Adapt for horizontal screen */
@@ -97,21 +97,6 @@ html[screen=gaia-signin] {
 button {
   font-family: inherit;
   outline: none;
-}
-
-.label,
-.flexible-label {
-  display: block;
-  margin: 5px 5px 5px 0;
-  padding: 5px 5px 5px 0;
-}
-
-.label {
-  width: 170px;
-}
-
-.flexible-label {
-  max-width: 250px;
 }
 
 [hidden] {
@@ -221,7 +206,12 @@ Styles related to the `md-screen-container`
 /* Styles related to the `top_header_bar` */
 
 #top-header-bar {
+  display: none;
   z-index: 1;
+}
+
+.oobe-display #top-header-bar {
+  display: block;
 }
 
 .top-header-bar-strip {

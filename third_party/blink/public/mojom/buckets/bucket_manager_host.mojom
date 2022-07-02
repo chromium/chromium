@@ -10,10 +10,11 @@ import "mojo/public/mojom/base/time.mojom";
 //
 // Proposal: https://github.com/WICG/storage-buckets
 
-// The durability policy to apply to a single StorageBucket.
+// The durability policy to apply to a single StorageBucket. The values are
+// persisted to the quota DB and must not be changed.
 enum BucketDurability {
-  kRelaxed,
-  kStrict,
+  kRelaxed = 0,
+  kStrict = 1,
 };
 
 // The policies applied to a StorageBucket upon its creation.

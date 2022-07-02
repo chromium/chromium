@@ -347,6 +347,7 @@ struct Intent {
   [MinVersion=5] array<IntentFile>? files@5;
   // The activity for the app to launch.
   [MinVersion=13] string? activity_name@6;
+  [MinVersion=14] string? data@7;
 };
 
 // The result from launching an app.
@@ -425,6 +426,8 @@ struct LaunchParams {
   [MinVersion=14]LaunchContainer container@3;
   // How the tab opened in a window if app is opened in tab.
   [MinVersion=14]WindowOpenDisposition disposition@4;
+  // An id that indicates which display the app should be launched in.
+  [MinVersion=15]int64 display_id@5;
 };
 
 [Stable]
@@ -445,6 +448,7 @@ enum PermissionType {
   kNotifications                  = 4,
   [MinVersion=9] kContacts        = 5,
   [MinVersion=9] kStorage         = 6,
+  [MinVersion=10] kFileHandling   = 7,
 };
 
 [Stable]

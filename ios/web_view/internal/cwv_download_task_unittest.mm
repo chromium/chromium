@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"

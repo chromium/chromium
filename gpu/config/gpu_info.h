@@ -246,6 +246,8 @@ struct GPU_EXPORT GPUInfo {
     GPUDevice& operator=(const GPUDevice& other);
     GPUDevice& operator=(GPUDevice&& other) noexcept;
 
+    bool IsSoftwareRenderer() const;
+
     // The DWORD (uint32_t) representing the graphics card vendor id.
     uint32_t vendor_id = 0u;
 
@@ -315,14 +317,6 @@ struct GPU_EXPORT GPUInfo {
 
   unsigned int GpuCount() const;
 
-  // Return true if it's a multi-gpu system and there is a single integrated
-  // GPU identified.
-  bool GetIntegratedGpu(GPUDevice* output_integrated_gpu) const;
-  // Return true if it's a multi-gpu system and there is a discrete GPU.
-  // |output_discrete_gpu| is the first non-Intel GPU.
-  bool GetDiscreteGpu(GPUDevice* output_discrete_gpu) const;
-
-  // TODO(crbug.com/1315820): Remove GetIntegratedGpu() and GetDiscreteGpu().
   GPUDevice* GetGpuByPreference(gl::GpuPreference preference);
 
 #if BUILDFLAG(IS_WIN)

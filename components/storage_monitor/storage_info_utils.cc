@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -51,19 +52,45 @@ std::string GetDeviceLocationFromStorageName(const std::string& storage_name) {
 // Returns a unique device id from the given |storage_info|.
 std::string GetDeviceIdFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info) {
+  // We'll add a storage_id suffix to our return value. The function name says
+  // "device" but storage_monitor ultimately wants to identify a unit of
+  // logical storage, not necessarily identify a physical device.
+  //
+  // MTP devices (e.g. phones) can have multiple physical storages (e.g. disks)
+  // and each physical storage can have multiple logical storages.
+  //
+  // The storage_id returned by GetStorageIdFromStorageName often looks like
+  // "65537", the string form of 0x0001_0001 that encodes a pair of uint16_t
+  // identifiers for physical and logical storage. Zero values are reserved.
+  // See the MTP spec (MTPforUSB-IFv1.1.pdf) section 5.2.1 Storage IDs.
   const std::string storage_id =
       GetStorageIdFromStorageName(storage_info.storage_name);
-  if (storage_id.empty())
+  if (storage_id.empty()) {
     return std::string();
+  }
 
-  // Some devices have multiple data stores. Therefore, include storage id as
-  // part of unique id along with vendor, model and volume information.
+  // The serial number (and the storage_id) should form a unique id.
+  if (!storage_info.serial_number.empty()) {
+    return StorageInfo::MakeDeviceId(
+        StorageInfo::MTP_OR_PTP,
+        base::StrCat({storage_info.serial_number, ":", storage_id}));
+  }
+
+  // If no serial number is available, fall back to a combination of vendor,
+  // model and volume (and the storage_id). This isn't always unique: attaching
+  // two "Google Pixel" phones to a Chromebook at the same time can produce the
+  // same (vendor, model, volume, storage) 4-tuple. The collision can cause
+  // problems with other code that assumes "device ids" are unique. See
+  // https://crbug.com/1184941
+  //
+  // Nonetheless, it's better than nothing. It also matches how Chrome OS
+  // behaved (not using the serial number) for some years up until 2022.
   const std::string vendor_id = base::NumberToString(storage_info.vendor_id);
   const std::string model_id = base::NumberToString(storage_info.product_id);
   return StorageInfo::MakeDeviceId(
       StorageInfo::MTP_OR_PTP,
-      kVendorModelVolumeStoragePrefix + vendor_id + ":" + model_id + ":" +
-          storage_info.volume_identifier + ":" + storage_id);
+      base::StrCat({kVendorModelVolumeStoragePrefix, vendor_id, ":", model_id,
+                    ":", storage_info.volume_identifier, ":", storage_id}));
 }
 
 // Helper function to get device label from storage information.

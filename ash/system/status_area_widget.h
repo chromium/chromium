@@ -101,6 +101,12 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Called by shelf layout manager when a locale change has been detected.
   void HandleLocaleChange();
 
+  // It is called when the visibility of any tray bubbles changes.
+  // Bubbles report their visibility change here and other tray items get
+  // notified about when their `OnAnyBubbleVisibilityChanged` is called.
+  void NotifyAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                        bool visible);
+
   // Sets system tray visibility. Shows or hides widget if needed.
   void SetSystemTrayVisibility(bool visible);
 
@@ -213,8 +219,14 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
 
-  // Adds a new tray button to the status area.
-  void AddTrayButton(std::unique_ptr<TrayBackgroundView> tray_button);
+  // Adds a new tray button to the status area. Implementation is in source
+  // file to avoid recursive includes, and function is not used outside of the
+  // compilation unit. Template required for a type safe subclass to be
+  // returned.
+  // Any references to the method outside of this compilation unit will fail
+  // linking unless a specialization is declared in status_area_widget.cc.
+  template <typename TrayButtonT>
+  TrayButtonT* AddTrayButton(std::unique_ptr<TrayButtonT> tray_button);
 
   // Called when in the collapsed state to calculate and update the visibility
   // of each tray button.
@@ -227,6 +239,11 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Calculates and returns the appropriate collapse state depending on
   // current conditions.
   CollapseState CalculateCollapseState() const;
+
+  // Gets the collapse available width based on if the date tray is shown.
+  // If `force_collapsible`, returns a fixed width which is not based on the
+  // shelf width.
+  int GetCollapseAvailableWidth(bool force_collapsible) const;
 
   StatusAreaWidgetDelegate* const status_area_widget_delegate_;
 

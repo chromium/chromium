@@ -4,9 +4,7 @@
 
 #include "net/ntlm/ntlm_constants.h"
 
-namespace net {
-
-namespace ntlm {
+namespace net::ntlm {
 
 AvPair::AvPair() = default;
 
@@ -28,5 +26,4 @@ AvPair& AvPair::operator=(const AvPair& other) = default;
 
 AvPair& AvPair::operator=(AvPair&& other) = default;
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

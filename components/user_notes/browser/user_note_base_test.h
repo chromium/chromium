@@ -30,7 +30,13 @@ class UserNoteBaseTest : public content::RenderViewHostTestHarness {
 
   void TearDown() override;
 
+  // Called by SetUp. Creates a basic service with a null delegate and storage.
+  // Can be overridden to create a service with a delegate and / or storage.
+  virtual void CreateService();
+
   void AddNewNotesToService(size_t count);
+
+  void AddPartialNotesToService(size_t count);
 
   UserNoteManager* ConfigureNewManager();
 
@@ -41,10 +47,14 @@ class UserNoteBaseTest : public content::RenderViewHostTestHarness {
 
   bool DoesModelExist(const base::UnguessableToken& note_id);
 
+  bool DoesPartialModelExist(const base::UnguessableToken& note_id);
+
   bool DoesManagerExistForId(const base::UnguessableToken& note_id,
                              UserNoteManager* manager);
 
   size_t ModelMapSize();
+
+  size_t CreationMapSize();
 
   size_t InstanceMapSize(UserNoteManager* manager);
 

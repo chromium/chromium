@@ -42,7 +42,7 @@ void PermissionsBrowserTest::TearDownOnMainThread() {
 bool PermissionsBrowserTest::RunScriptReturnBool(const std::string& script) {
   bool result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents()->GetMainFrame(), script, &result));
+      GetWebContents()->GetPrimaryMainFrame(), script, &result));
   return result;
 }
 

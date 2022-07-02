@@ -8,17 +8,16 @@
 #include <algorithm>
 #include <atomic>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/yield_processor.h"
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/win/windows_types.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -27,33 +26,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-
 #include <os/lock.h>
-
-// os_unfair_lock is available starting with OS X 10.12, and Chromium targets
-// 10.11 at the minimum, so the symbols are not always available *at runtime*.
-// But we build with a 11.x SDK, so it's always in the headers.
-//
-// However, since the majority of clients have at least 10.12 (released late
-// 2016), we declare the symbols here, marking them weak. They will be nullptr
-// on 10.11, and defined on more recent versions.
-
-// Silence the compiler warning, here and below.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-
-#define PA_WEAK __attribute__((weak))
-
-extern "C" {
-
-PA_WEAK void os_unfair_lock_lock(os_unfair_lock_t lock);
-PA_WEAK bool os_unfair_lock_trylock(os_unfair_lock_t lock);
-PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
-
-}  // extern "C"
-
-#pragma clang diagnostic pop
-
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -78,31 +51,29 @@ namespace partition_alloc::internal {
 // We don't rely on base::Lock which we could make spin (by calling Try() in a
 // loop), as performance is below a custom spinlock as seen on high-level
 // benchmarks. Instead this implements a simple non-recursive mutex on top of
-// the futex() syscall on Linux, and SRWLock on Windows. The main difference
-// between this and a libc implementation is that it only supports the simplest
-// path: private (to a process), non-recursive mutexes with no priority
-// inheritance, no timed waits.
+// the futex() syscall on Linux, SRWLock on Windows, os_unfair_lock on macOS,
+// and pthread_mutex on POSIX. The main difference between this and a libc
+// implementation is that it only supports the simplest path: private (to a
+// process), non-recursive mutexes with no priority inheritance, no timed waits.
 //
 // As an interesting side-effect to be used in the allocator, this code does not
 // make any allocations, locks are small with a constexpr constructor and no
 // destructor.
 //
 // 2. Otherwise: This is a simple SpinLock, in the sense that it does not have
-// any awareness of other threads' behavior. One exception: x86 macOS uses
-// os_unfair_lock() if available, which is the case for macOS >= 10.12, that is
-// most clients.
-class LOCKABLE BASE_EXPORT SpinningMutex {
+// any awareness of other threads' behavior.
+class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
  public:
   inline constexpr SpinningMutex();
-  ALWAYS_INLINE void Acquire() EXCLUSIVE_LOCK_FUNCTION();
-  ALWAYS_INLINE void Release() UNLOCK_FUNCTION();
-  ALWAYS_INLINE bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
+  PA_ALWAYS_INLINE void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION();
+  PA_ALWAYS_INLINE void Release() PA_UNLOCK_FUNCTION();
+  PA_ALWAYS_INLINE bool Try() PA_EXCLUSIVE_TRYLOCK_FUNCTION(true);
   void AssertAcquired() const {}  // Not supported.
-  void Reinit() UNLOCK_FUNCTION();
+  void Reinit() PA_UNLOCK_FUNCTION();
 
  private:
-  NOINLINE void AcquireSpinThenBlock() EXCLUSIVE_LOCK_FUNCTION();
-  void LockSlow() EXCLUSIVE_LOCK_FUNCTION();
+  PA_NOINLINE void AcquireSpinThenBlock() PA_EXCLUSIVE_LOCK_FUNCTION();
+  void LockSlow() PA_EXCLUSIVE_LOCK_FUNCTION();
 
   // See below, the latency of PA_YIELD_PROCESSOR can be as high as ~150
   // cycles. Meanwhile, sleeping costs a few us. Spinning 64 times at 3GHz would
@@ -124,7 +95,9 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
 
   std::atomic<int32_t> state_{kUnlocked};
 #elif BUILDFLAG(IS_WIN)
-  CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
+  PA_CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
+#elif BUILDFLAG(IS_APPLE)
+  os_unfair_lock unfair_lock_ = OS_UNFAIR_LOCK_INIT;
 #elif BUILDFLAG(IS_POSIX)
   pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -134,28 +107,18 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
 #else  // defined(PA_HAS_FAST_MUTEX)
   std::atomic<bool> lock_{false};
 
-#if BUILDFLAG(IS_APPLE)
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-  os_unfair_lock unfair_lock_ = OS_UNFAIR_LOCK_INIT;
-#pragma clang diagnostic pop
-
-#endif  // BUILDFLAG(IS_APPLE)
-
   // Spinlock-like, fallback.
-  ALWAYS_INLINE bool TrySpinLock();
-  ALWAYS_INLINE void ReleaseSpinLock();
+  PA_ALWAYS_INLINE bool TrySpinLock();
+  PA_ALWAYS_INLINE void ReleaseSpinLock();
   void LockSlowSpinLock();
-
-#endif
+#endif  // defined(PA_HAS_FAST_MUTEX)
 };
 
-ALWAYS_INLINE void SpinningMutex::Acquire() {
-  // Not marked LIKELY(), as:
+PA_ALWAYS_INLINE void SpinningMutex::Acquire() {
+  // Not marked PA_LIKELY(), as:
   // 1. We don't know how much contention the lock would experience
   // 2. This may lead to weird-looking code layout when inlined into a caller
-  // with (UN)LIKELY() annotations.
+  // with (UN)PA_LIKELY() annotations.
   if (Try())
     return;
 
@@ -168,7 +131,7 @@ inline constexpr SpinningMutex::SpinningMutex() = default;
 
 #if defined(PA_HAS_LINUX_KERNEL)
 
-ALWAYS_INLINE bool SpinningMutex::Try() {
+PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   // Using the weak variant of compare_exchange(), which may fail spuriously. On
   // some architectures such as ARM, CAS is typically performed as a LDREX/STREX
   // pair, where the store may fail. In the strong version, there is a loop
@@ -183,9 +146,9 @@ ALWAYS_INLINE bool SpinningMutex::Try() {
                                       std::memory_order_relaxed);
 }
 
-ALWAYS_INLINE void SpinningMutex::Release() {
-  if (UNLIKELY(state_.exchange(kUnlocked, std::memory_order_release) ==
-               kLockedContended)) {
+PA_ALWAYS_INLINE void SpinningMutex::Release() {
+  if (PA_UNLIKELY(state_.exchange(kUnlocked, std::memory_order_release) ==
+                  kLockedContended)) {
     // |kLockedContended|: there is a waiter to wake up.
     //
     // Here there is a window where the lock is unlocked, since we just set it
@@ -205,34 +168,44 @@ ALWAYS_INLINE void SpinningMutex::Release() {
 
 #elif BUILDFLAG(IS_WIN)
 
-ALWAYS_INLINE bool SpinningMutex::Try() {
+PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   return !!::TryAcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
 }
 
-ALWAYS_INLINE void SpinningMutex::Release() {
+PA_ALWAYS_INLINE void SpinningMutex::Release() {
   ::ReleaseSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+#elif BUILDFLAG(IS_APPLE)
+
+PA_ALWAYS_INLINE bool SpinningMutex::Try() {
+  return os_unfair_lock_trylock(&unfair_lock_);
+}
+
+PA_ALWAYS_INLINE void SpinningMutex::Release() {
+  return os_unfair_lock_unlock(&unfair_lock_);
 }
 
 #elif BUILDFLAG(IS_POSIX)
 
-ALWAYS_INLINE bool SpinningMutex::Try() {
+PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   int retval = pthread_mutex_trylock(&lock_);
   PA_DCHECK(retval == 0 || retval == EBUSY);
   return retval == 0;
 }
 
-ALWAYS_INLINE void SpinningMutex::Release() {
+PA_ALWAYS_INLINE void SpinningMutex::Release() {
   int retval = pthread_mutex_unlock(&lock_);
   PA_DCHECK(retval == 0);
 }
 
 #elif BUILDFLAG(IS_FUCHSIA)
 
-ALWAYS_INLINE bool SpinningMutex::Try() {
+PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   return sync_mutex_trylock(&lock_) == ZX_OK;
 }
 
-ALWAYS_INLINE void SpinningMutex::Release() {
+PA_ALWAYS_INLINE void SpinningMutex::Release() {
   sync_mutex_unlock(&lock_);
 }
 
@@ -240,73 +213,20 @@ ALWAYS_INLINE void SpinningMutex::Release() {
 
 #else  // defined(PA_HAS_FAST_MUTEX)
 
-ALWAYS_INLINE bool SpinningMutex::TrySpinLock() {
+PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   // Possibly faster than CAS. The theory is that if the cacheline is shared,
   // then it can stay shared, for the contended case.
   return !lock_.load(std::memory_order_relaxed) &&
          !lock_.exchange(true, std::memory_order_acquire);
 }
 
-ALWAYS_INLINE void SpinningMutex::ReleaseSpinLock() {
+PA_ALWAYS_INLINE void SpinningMutex::Release() {
   lock_.store(false, std::memory_order_release);
 }
 
-#if BUILDFLAG(IS_APPLE)
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-
-ALWAYS_INLINE bool SpinningMutex::Try() {
-  // ARM64 macOS is macOS 11.x at least, guaranteed to have os_unfair_lock().
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-  return os_unfair_lock_trylock(&unfair_lock_);
-#else
-  if (LIKELY(os_unfair_lock_trylock))
-    return os_unfair_lock_trylock(&unfair_lock_);
-
-  return TrySpinLock();
-#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-}
-
-ALWAYS_INLINE void SpinningMutex::Release() {
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-  return os_unfair_lock_unlock(&unfair_lock_);
-#else
-  // Always testing trylock(), since the definitions are all or nothing.
-  if (LIKELY(os_unfair_lock_trylock))
-    return os_unfair_lock_unlock(&unfair_lock_);
-
-  return ReleaseSpinLock();
-#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-}
-
-ALWAYS_INLINE void SpinningMutex::LockSlow() {
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-  return os_unfair_lock_lock(&unfair_lock_);
-#else
-  if (LIKELY(os_unfair_lock_trylock))
-    return os_unfair_lock_lock(&unfair_lock_);
-
-  return LockSlowSpinLock();
-#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-}
-
-#pragma clang diagnostic pop
-
-#else
-ALWAYS_INLINE bool SpinningMutex::Try() {
-  return TrySpinLock();
-}
-
-ALWAYS_INLINE void SpinningMutex::Release() {
-  return ReleaseSpinLock();
-}
-
-ALWAYS_INLINE void SpinningMutex::LockSlow() {
+PA_ALWAYS_INLINE void SpinningMutex::LockSlow() {
   return LockSlowSpinLock();
 }
-
-#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 

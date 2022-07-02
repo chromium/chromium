@@ -30,7 +30,7 @@
   cvauto.getBoundingClientRect();
 
   console.log('calling isVisible should NOT make a console warning.');
-  cvhidden.isVisible({});
+  cvhidden.checkVisibility({});
 
   console.log('forcing layout via range APIs on c-v:hidden should make a console warning.');
   const range = new Range();

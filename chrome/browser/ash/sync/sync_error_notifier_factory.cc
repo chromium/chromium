@@ -38,8 +38,9 @@ KeyedService* SyncErrorNotifierFactory::BuildServiceInstanceFor(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
-  if (!sync_service)
+  if (!sync_service) {
     return nullptr;
+  }
 
   return new SyncErrorNotifier(sync_service, profile);
 }

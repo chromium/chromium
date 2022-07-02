@@ -204,6 +204,9 @@
     restamp>
   <settings-multidevice-permissions-setup-dialog
       is-password-dialog-showing="{{isPasswordDialogShowing_}}"
+      on-pin-number-selected="onPinNumberSelected_"
+      is-chromeos-screen-lock-enabled="[[isChromeosScreenLockEnabled_]]"
+      is-phone-screen-lock-enabled="[[isPhoneScreenLockEnabled_]]"
       show-camera-roll="[[isPhoneHubCameraRollSetupRequired(
                                         pageContentData)]]"
       show-notifications="[[isPhoneHubNotificationsSetupRequired(

@@ -72,6 +72,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3838931309141338733">Skann strekkoden</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Laster ned funksjonen for dokumentskanning</translation>
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
 <translation id="4121305183798804752">Et dokument er oppdaget</translation>
 <translation id="414641094616694804">Dette kameraet kan ikke endre oppløsning</translation>
@@ -82,6 +83,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="4445542136948522167">Slutt å ta bilde</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Fremre kamera</translation>
+<translation id="4620818268515773682">Slå av/på mikrofonlyden. Lyden er på</translation>
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4649291346448517080">Kan ikke lagre filen</translation>
 <translation id="4695379108709712600">Beveger seg oppover</translation>
@@ -145,6 +147,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670511624014457267">60 bilder per sekund</translation>
 <translation id="7671804233658741790">Dokumentets nedre høyre hjørne</translation>
+<translation id="7692090236657809299">Slå på panorering, vipping og zooming</translation>
 <translation id="7726641833034062494">Ta opp normal video</translation>
 <translation id="7748344063862150053">Dokumentets øvre høyre hjørne</translation>
 <translation id="7933675232020478311">Beveger seg nedover mot høyre</translation>
@@ -158,6 +161,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8425673304802773841">Vipp ned</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Slå av/på mikrofonlyden. Lyden er kuttet</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8732462232047530626">Forhåndsvis metadata</translation>

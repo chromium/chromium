@@ -376,7 +376,7 @@ bool IsExtensionAllowlisted(const std::string& extension_id) {
 void LogApiActivity(content::BrowserContext* browser_context,
                     const std::string& extension_id,
                     const std::string& activity_name,
-                    std::unique_ptr<base::ListValue> args,
+                    const base::Value::List& args,
                     Action::ActionType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (IsExtensionAllowlisted(extension_id))
@@ -388,7 +388,8 @@ void LogApiActivity(content::BrowserContext* browser_context,
 
   auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
                                              type, activity_name);
-  action->set_args(std::move(args));
+  action->set_args(
+      base::ListValue::From(std::make_unique<base::Value>(args.Clone())));
   activity_log->LogAction(action);
 }
 
@@ -400,19 +401,17 @@ void LogApiEvent(content::BrowserContext* browser_context,
   auto list_value = std::make_unique<base::ListValue>();
   for (const auto& value : args)
     list_value->Append(value.Clone());
-  LogApiActivity(browser_context, extension_id, event_name,
-                 std::move(list_value), Action::ACTION_API_EVENT);
+  LogApiActivity(browser_context, extension_id, event_name, args,
+                 Action::ACTION_API_EVENT);
 }
 
 // Handler for API function calls.
 void LogApiFunction(content::BrowserContext* browser_context,
                     const std::string& extension_id,
                     const std::string& event_name,
-                    const base::ListValue& args) {
-  LogApiActivity(
-      browser_context, extension_id, event_name,
-      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())),
-      Action::ACTION_API_CALL);
+                    const base::Value::List& args) {
+  LogApiActivity(browser_context, extension_id, event_name, args,
+                 Action::ACTION_API_CALL);
 }
 
 // Handler for webRequest use.
@@ -444,7 +443,7 @@ void SetActivityHandlers() {
   // Set up event handlers. We don't have to worry about unsetting these,
   // because we check whether or not the activity log is active for the context
   // in the monitor methods.
-  activity_monitor::MonitorListValue current_function_monitor =
+  activity_monitor::Monitor current_function_monitor =
       activity_monitor::GetApiFunctionMonitor();
   DCHECK(!current_function_monitor ||
          current_function_monitor == &LogApiFunction);

@@ -57,7 +57,7 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
   // Next go through PID->exit status.
   const base::Process self = base::Process::Current();
-  const base::Time launch_time = base::Time::Now();
+  const base::TimeTicks launch_time = base::TimeTicks::Now();
   process_node->SetProcess(self.Duplicate(), launch_time);
   EXPECT_TRUE(process_node->process().IsValid());
   EXPECT_EQ(self.Pid(), process_node->process_id());
@@ -84,7 +84,7 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
-  const base::Time launch2_time = launch_time + base::Seconds(1);
+  const base::TimeTicks launch2_time = launch_time + base::Seconds(1);
   process_node->SetProcess(self.Duplicate(), launch2_time);
 
   EXPECT_EQ(launch2_time, process_node->launch_time());
@@ -165,7 +165,8 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
 
   // Test process creation and exit events.
   EXPECT_CALL(obs, OnProcessLifetimeChange(_));
-  process_node->SetProcess(base::Process::Current(), base::Time::Now());
+  process_node->SetProcess(base::Process::Current(),
+                           /* launch_time=*/base::TimeTicks::Now());
   EXPECT_CALL(obs, OnProcessLifetimeChange(_));
   process_node->SetProcessExitStatus(10);
 
@@ -230,8 +231,8 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
             public_process_node->GetProcessType());
 
   const base::Process self = base::Process::Current();
-  const base::Time launch_time = base::Time::Now();
-  process_node->SetProcess(self.Duplicate(), launch_time);
+  process_node->SetProcess(self.Duplicate(),
+                           /* launch_time=*/base::TimeTicks::Now());
   EXPECT_EQ(process_node->process_id(), public_process_node->GetProcessId());
   EXPECT_EQ(&process_node->process(), &public_process_node->GetProcess());
   EXPECT_EQ(process_node->launch_time(), public_process_node->GetLaunchTime());
@@ -239,6 +240,12 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   constexpr int32_t kExitStatus = 0xF00;
   process_node->SetProcessExitStatus(kExitStatus);
   EXPECT_EQ(process_node->exit_status(), public_process_node->GetExitStatus());
+
+  const std::string kMetricsName("TestUtilityProcess");
+  process_node->SetProcessMetricsName(kMetricsName);
+  EXPECT_EQ(process_node->metrics_name(), kMetricsName);
+  EXPECT_EQ(process_node->metrics_name(),
+            public_process_node->GetMetricsName());
 
   const auto& frame_nodes = process_node->frame_nodes();
   auto public_frame_nodes = public_process_node->GetFrameNodes();
@@ -341,7 +348,7 @@ TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
   // it that function returns false.
   EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(false));
   ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              &manager);
+                                                              manager);
   testing::Mock::VerifyAndClear(&manager);
 
   // If HasActiveScenario returns true, expect a new trigger to be registered
@@ -350,7 +357,7 @@ TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
   EXPECT_CALL(manager, RegisterTriggerType(_)).WillOnce(Return(kHandle1));
   EXPECT_CALL(manager, TriggerNamedEvent(_, _));
   ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              &manager);
+                                                              manager);
   testing::Mock::VerifyAndClear(&manager);
 
   // Now that a trigger is registered, expect the trigger to be validated, and
@@ -358,7 +365,7 @@ TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
   EXPECT_CALL(manager, HasActiveScenario()).WillOnce(Return(true));
   EXPECT_CALL(manager, TriggerNamedEvent(_, _));
   ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1,
-                                                              &manager);
+                                                              manager);
   testing::Mock::VerifyAndClear(&manager);
 }
 

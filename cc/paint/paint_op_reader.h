@@ -68,6 +68,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkRect* rect);
   void Read(SkIRect* rect);
   void Read(SkRRect* rect);
+  void Read(SkColor4f* color);
 
   void Read(SkPath* path);
   void Read(PaintFlags* flags);
@@ -195,8 +196,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSharedImageProviderNoAccess = 50,
     kSharedImageProviderSkImageCreationFailed = 51,
     kZeroSkColorFilterBytes = 52,
+    kInsufficientPixelData = 53,
 
-    kMaxValue = kZeroSkColorFilterBytes,
+    kMaxValue = kInsufficientPixelData
   };
 
   template <typename T>

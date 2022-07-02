@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_writer.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -90,18 +91,19 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
     call_java_script_function_callback_.Run();
   }
 
-  std::string javascript_call = std::string("__gCrWeb." + name + "(");
+  std::u16string javascript_call =
+      std::u16string(u"__gCrWeb." + base::UTF8ToUTF16(name) + u"(");
   bool first = true;
   for (auto& param : parameters) {
     if (!first) {
-      javascript_call += ", ";
+      javascript_call += u", ";
     }
     first = false;
     std::string paramString;
     base::JSONWriter::Write(param, &paramString);
-    javascript_call += paramString;
+    javascript_call += base::UTF8ToUTF16(paramString);
   }
-  javascript_call += ");";
+  javascript_call += u");";
   java_script_calls_.push_back(javascript_call);
   return can_call_function_;
 }
@@ -144,20 +146,40 @@ bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
   return CallJavaScriptFunction(name, parameters, std::move(callback), timeout);
 }
 
-bool FakeWebFrameImpl::ExecuteJavaScript(const std::string& script) {
+bool FakeWebFrameImpl::ExecuteJavaScript(const std::u16string& script) {
+  java_script_calls_.push_back(script);
   return false;
 }
 
 bool FakeWebFrameImpl::ExecuteJavaScript(
-    const std::string& script,
+    const std::u16string& script,
     base::OnceCallback<void(const base::Value*)> callback) {
-  return false;
+  java_script_calls_.push_back(script);
+
+  const base::Value* result = executed_js_result_map_[script];
+
+  if (!callback.is_null()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
+  }
+
+  return result != nullptr;
 }
 
 bool FakeWebFrameImpl::ExecuteJavaScript(
-    const std::string& script,
+    const std::u16string& script,
     base::OnceCallback<void(const base::Value*, bool)> callback) {
-  return false;
+  java_script_calls_.push_back(script);
+
+  const base::Value* result = executed_js_result_map_[script];
+  bool success = result != nullptr;
+
+  if (!callback.is_null()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result, success));
+  }
+
+  return success;
 }
 
 void FakeWebFrameImpl::AddJsResultForFunctionCall(
@@ -166,16 +188,27 @@ void FakeWebFrameImpl::AddJsResultForFunctionCall(
   result_map_[function_name] = js_result;
 }
 
+void FakeWebFrameImpl::AddResultForExecutedJs(
+    base::Value* js_result,
+    const std::u16string& executed_js) {
+  executed_js_result_map_[executed_js] = js_result;
+}
+
 JavaScriptContentWorld* FakeWebFrameImpl::last_received_content_world() {
   return last_received_content_world_;
 }
 
-std::string FakeWebFrameImpl::GetLastJavaScriptCall() const {
-  return java_script_calls_.size() == 0 ? "" : java_script_calls_.back();
+std::u16string FakeWebFrameImpl::GetLastJavaScriptCall() const {
+  return java_script_calls_.size() == 0 ? u"" : java_script_calls_.back();
 }
 
-const std::vector<std::string>& FakeWebFrameImpl::GetJavaScriptCallHistory() {
+const std::vector<std::u16string>&
+FakeWebFrameImpl::GetJavaScriptCallHistory() {
   return java_script_calls_;
+}
+
+void FakeWebFrameImpl::ClearJavaScriptCallHistory() {
+  java_script_calls_.clear();
 }
 
 void FakeWebFrameImpl::set_browser_state(BrowserState* browser_state) {

@@ -55,7 +55,7 @@ export class FocusRingManager {
               'a valid CSS color string.'));
       return;
     }
-    manager.rings_.forEach((ring) => ring.color = color);
+    manager.rings_.forEach(ring => ring.color = color);
   }
 
   /**
@@ -124,7 +124,7 @@ export class FocusRingManager {
   /** Clears all focus rings. */
   static clearAll() {
     const manager = FocusRingManager.instance;
-    manager.rings_.forEach((ring) => {
+    manager.rings_.forEach(ring => {
       ring.rects = [];
     });
     manager.updateFocusRings_(null, null);
@@ -185,7 +185,7 @@ export class FocusRingManager {
     }
 
     const focusRings = [];
-    this.rings_.forEach((ring) => focusRings.push(ring));
+    this.rings_.forEach(ring => focusRings.push(ring));
     chrome.accessibilityPrivate.setFocusRings(focusRings);
 
     // Keep track of the nodes associated with each focus ring for testing

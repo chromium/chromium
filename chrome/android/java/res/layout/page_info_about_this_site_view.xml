@@ -23,13 +23,4 @@
         android:layout_height="wrap_content"
         style="@style/TextAppearance.TextMedium.Secondary"/>
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/more_about"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/page_info_popup_padding_vertical"
-        android:text="@string/page_info_more_about_this_page"
-        android:layout_gravity="end"
-        style="@style/TextButton"/>
-
 </org.chromium.chrome.browser.page_info.AboutThisSiteView>

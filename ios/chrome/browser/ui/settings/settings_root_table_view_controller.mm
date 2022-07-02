@@ -27,7 +27,7 @@
 
 namespace {
 // Height of the space used by header/footer when none is set. Default is
-// |estimatedSection{Header|Footer}Height|.
+// `estimatedSection{Header|Footer}Height`.
 const CGFloat kDefaultHeaderFooterHeight = 10;
 // Estimated height of the header/footer, used to speed the constraints.
 const CGFloat kEstimatedHeaderFooterHeight = 50;
@@ -357,7 +357,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   DCHECK(!self.savedBarButtonItem);
   DCHECK_EQ(kUndefinedBarButtonItemPosition, self.savedBarButtonItemPosition);
 
-  // Create |waitButton|.
+  // Create `waitButton`.
   BOOL displayActivityIndicatorOnTheRight =
       self.navigationItem.rightBarButtonItem != nil;
   CGFloat activityIndicatorDimension =
@@ -399,7 +399,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)allowUserInteraction {
   DCHECK(self.navigationController)
-      << "|allowUserInteraction| should always be called before this settings"
+      << "|allowUserInteraction` should always be called before this settings"
          " controller is popped or dismissed.";
   [self.navigationController.view setUserInteractionEnabled:YES];
 

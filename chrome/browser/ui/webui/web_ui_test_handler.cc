@@ -50,7 +50,7 @@ bool WebUITestHandler::RunJavaScriptTestWithResult(
 }
 
 content::RenderFrameHost* WebUITestHandler::GetRenderFrameHostForTest() {
-  return GetWebUI()->GetWebContents()->GetMainFrame();
+  return GetWebUI()->GetWebContents()->GetPrimaryMainFrame();
 }
 
 void WebUITestHandler::TestComplete(

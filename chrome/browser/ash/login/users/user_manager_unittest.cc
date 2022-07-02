@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
@@ -69,6 +70,43 @@ class UnittestRemoveUserDelegate : public user_manager::RemoveUserDelegate {
   const AccountId expected_account_id_;
   bool has_before_user_removed_;
   bool has_user_removed_;
+};
+
+class UserManagerObserverTest : public user_manager::UserManager::Observer {
+ public:
+  UserManagerObserverTest() = default;
+
+  UserManagerObserverTest(const UserManagerObserverTest&) = delete;
+  UserManagerObserverTest& operator=(const UserManagerObserverTest&) = delete;
+
+  ~UserManagerObserverTest() override = default;
+
+  // user_manager::UserManager::Observer:
+  void OnUserToBeRemoved(const AccountId& account_id) override {
+    ++on_user_to_be_removed_call_count_;
+    expected_account_id_ = account_id;
+  }
+
+  // user_manager::UserManager::Observer:
+  void OnUserRemoved(const AccountId& account_id,
+                     user_manager::UserRemovalReason reason) override {
+    ++on_user_removed_call_count_;
+    EXPECT_EQ(expected_account_id_, account_id);
+  }
+
+  int OnUserToBeRemovedCallCount() { return on_user_to_be_removed_call_count_; }
+
+  int OnUserRemovedCallCount() { return on_user_removed_call_count_; }
+
+  void ResetCallCounts() {
+    on_user_to_be_removed_call_count_ = 0;
+    on_user_removed_call_count_ = 0;
+  }
+
+ private:
+  AccountId expected_account_id_;
+  int on_user_to_be_removed_call_count_ = 0;
+  int on_user_removed_call_count_ = 0;
 };
 
 class MockRemoveUserManager : public ChromeUserManagerImpl {
@@ -245,22 +283,41 @@ TEST_F(UserManagerTest, RemoveUser) {
 
   // Recreate the user manager to log out all accounts.
   user_manager = CreateMockRemoveUserManager();
+  UserManagerObserverTest observer_test;
+  user_manager->AddObserver(&observer_test);
   ASSERT_EQ(2U, user_manager->GetUsers().size());
   ASSERT_EQ(0U, user_manager->GetLoggedInUsers().size());
 
   // Removing non-owner account is acceptable.
   EXPECT_CALL(*user_manager, AsyncRemoveCryptohome(testing::_)).Times(1);
+  // Get a pointer to the user that will be removed.
+  user_manager::User* user_to_remove = nullptr;
+  for (user_manager::User* user : user_manager->GetUsers()) {
+    if (user->GetAccountId() == account_id0_at_invalid_domain_) {
+      user_to_remove = user;
+      break;
+    }
+  }
+  ASSERT_TRUE(user_to_remove);
+  ASSERT_EQ(account_id0_at_invalid_domain_, user_to_remove->GetAccountId());
   UnittestRemoveUserDelegate delegate(account_id0_at_invalid_domain_);
-  user_manager->RemoveUser(account_id0_at_invalid_domain_,
+  // Pass the account id of the user to be removed from the user list to verify
+  // that a reference to the account id will not be used after user removal.
+  user_manager->RemoveUser(user_to_remove->GetAccountId(),
                            user_manager::UserRemovalReason::UNKNOWN, &delegate);
   EXPECT_TRUE(delegate.HasBeforeUserRemoved());
   EXPECT_TRUE(delegate.HasUserRemoved());
+  EXPECT_EQ(1, observer_test.OnUserToBeRemovedCallCount());
+  EXPECT_EQ(1, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 
   // Removing owner account is unacceptable.
+  observer_test.ResetCallCounts();
   user_manager->RemoveUser(owner_account_id_at_invalid_domain_,
                            user_manager::UserRemovalReason::UNKNOWN,
                            /*delegate=*/nullptr);
+  EXPECT_EQ(0, observer_test.OnUserToBeRemovedCallCount());
+  EXPECT_EQ(0, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 }
 
@@ -335,8 +392,9 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       false /* browser_restart */, false /* is_child */);
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* const profile =
-      ProfileHelper::GetProfileByUserIdHashForTest(user->username_hash());
+  Profile* const profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
 
   // Verify that the user is allowed to lock the screen.
   EXPECT_TRUE(user_manager::UserManager::Get()->CanCurrentUserLock());

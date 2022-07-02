@@ -87,12 +87,13 @@ class TrustedVaultRequestTest : public testing::Test {
       TrustedVaultRequest::HttpMethod http_method,
       const absl::optional<std::string>& request_body,
       TrustedVaultRequest::CompletionCallback completion_callback) {
-    const CoreAccountId account_id = CoreAccountId::FromEmail("user@gmail.com");
+    const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
     FakeTrustedVaultAccessTokenFetcher access_token_fetcher(access_token);
 
     auto request = std::make_unique<TrustedVaultRequest>(
         http_method, GURL(kRequestUrl), request_body,
-        shared_url_loader_factory_);
+        shared_url_loader_factory_,
+        TrustedVaultURLFetchReasonForUMA::kUnspecified);
     request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
                                             std::move(completion_callback));
     return request;

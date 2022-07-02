@@ -27,7 +27,6 @@ function assertVisibilityOfPageElements(
    '#passwordInput',
    '#showPasswordButton',
    '#copyPasswordButton',
-   'settings-textarea',
    '#editButton',
    '#deleteButton',
   ]
@@ -49,7 +48,6 @@ function assertVisibilityOfFederatedCredentialElements(
 
   ['#showPasswordButton',
    '#copyPasswordButton',
-   'settings-textarea',
    '#editButton',
   ]
       .forEach(
@@ -60,13 +58,16 @@ function assertVisibilityOfFederatedCredentialElements(
 suite('PasswordViewTest', function() {
   const SITE = 'site1.com';
   const USERNAME = 'user1';
+  const USERNAME2 = 'user2';
   const PASSWORD = 'p455w0rd';
+  const NOTE = 'some note';
   const ID = 0;
 
   let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
+    loadTimeData.overrideValues(
+        {enablePasswordViewPage: true, enablePasswordNotes: false});
     Router.resetInstanceForTesting(buildRouter());
     routes.PASSWORD_VIEW =
         (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
@@ -75,12 +76,120 @@ suite('PasswordViewTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
   });
 
-  test('Valid site and username displays an entry', async function() {
+  [{url: SITE, username: USERNAME, notesEnabled: false},
+   {url: SITE, username: '', notesEnabled: false},
+   {url: SITE, username: USERNAME, notesEnabled: true},
+   {url: SITE, username: '', notesEnabled: true}]
+      .forEach(
+          item => test(
+              `Valid site and username displays an entry ${item.notesEnabled}`,
+              async function() {
+                loadTimeData.overrideValues(
+                    {enablePasswordNotes: item.notesEnabled});
+
+                const passwordList = [
+                  createPasswordEntry({
+                    url: item.url,
+                    username: item.username,
+                    id: ID,
+                    note: NOTE,
+                  }),
+                ];
+
+                passwordManager.data.passwords = passwordList;
+                const page = document.createElement('password-view');
+                document.body.appendChild(page);
+                const params = new URLSearchParams({
+                  username: item.username,
+                  site: item.url,
+                });
+                Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+                await flushTasks();
+                assertVisibilityOfPageElements(page, /*visibility=*/ true);
+                if (item.notesEnabled) {
+                  assertEquals(
+                      NOTE,
+                      page.shadowRoot!.querySelector(
+                                          'settings-textarea')!.value);
+                } else {
+                  assertFalse(isVisible(
+                      page.shadowRoot!.querySelector('settings-textarea')));
+                }
+              }));
+
+  [{inAccount: false, onDevice: true, username: USERNAME},
+   {inAccount: true, onDevice: false, username: USERNAME},
+   {inAccount: true, onDevice: true, username: USERNAME2},
+  ]
+      .forEach(
+          item => test(
+              'inAccount and onDevice parameters are used for finding credentials',
+              async function() {
+                const passwordList = [
+                  // entry in the account store
+                  createPasswordEntry({
+                    url: SITE,
+                    username: USERNAME,
+                    frontendId: 1,
+                    id: 1,
+                    fromAccountStore: true
+                  }),
+                  // entry in the device store
+                  createPasswordEntry({
+                    url: SITE,
+                    username: USERNAME,
+                    frontendId: 2,
+                    id: 2,
+                    fromAccountStore: false
+                  }),
+                  // entry in both stores are the next two items
+                  createPasswordEntry({
+                    url: SITE,
+                    username: USERNAME2,
+                    frontendId: 3,
+                    id: 3,
+                    fromAccountStore: false
+                  }),
+                  createPasswordEntry({
+                    url: SITE,
+                    username: USERNAME2,
+                    frontendId: 3,
+                    id: 4,
+                    fromAccountStore: true
+                  }),
+                ];
+
+                passwordManager.data.passwords = passwordList;
+                const page = document.createElement('password-view');
+                document.body.appendChild(page);
+                const params = new URLSearchParams({
+                  username: item.username,
+                  site: SITE,
+                });
+                if (item.inAccount) {
+                  params.set('inAccount', 'true');
+                  if (item.onDevice) {
+                    params.set('onDevice', 'true');
+                  }
+                }
+                Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+                await flushTasks();
+                assertVisibilityOfPageElements(page, /*visibility=*/ true);
+                assertEquals(
+                    item.inAccount, page.credential!.isPresentInAccount());
+                assertEquals(
+                    item.onDevice, page.credential!.isPresentOnDevice());
+                assertEquals(item.username, page.credential!.username);
+              }));
+
+  test('Empty note shows placeholder text', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
     const passwordList = [
       createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
     ];
 
-    passwordManager.setPlaintextPassword(PASSWORD);
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
@@ -91,7 +200,9 @@ suite('PasswordViewTest', function() {
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
     await flushTasks();
-    assertVisibilityOfPageElements(page, /*visibility=*/ true);
+    assertEquals(
+        'No note added',
+        page.shadowRoot!.querySelector('settings-textarea')!.value);
   });
 
   test(
@@ -360,6 +471,8 @@ suite('PasswordViewTest', function() {
         const params = new URLSearchParams({
           username: USERNAME,
           site: SITE,
+          inAccount: 'true',
+          onDevice: 'true',
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
         await flushTasks();
@@ -386,4 +499,29 @@ suite('PasswordViewTest', function() {
         assertEquals('true', pageParams.get('removedFromAccount'));
         assertEquals('true', pageParams.get('removedFromDevice'));
       });
+
+  test('Copy password button shows the copy toast', async function() {
+    const passwordList = [
+      createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
+    ];
+
+    passwordManager.setPlaintextPassword(PASSWORD);
+    passwordManager.data.passwords = passwordList;
+    const page = document.createElement('password-view');
+    document.body.appendChild(page);
+    const params = new URLSearchParams({
+      username: USERNAME,
+      site: SITE,
+    });
+    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+    await flushTasks();
+
+    const copyButton = page.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#copyPasswordButton')!;
+    assertFalse(page.$.toast.open);
+    copyButton.click();
+    await passwordManager.whenCalled('requestPlaintextPassword');
+    await flushTasks();
+    assertTrue(page.$.toast.open);
+  });
 });

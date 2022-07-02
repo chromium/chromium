@@ -129,8 +129,7 @@ void NGBoxFragmentBuilder::AddResult(
 
   if (UNLIKELY(has_block_fragmentation_))
     PropagateBreakInfo(*result_for_propagation, offset);
-  if (UNLIKELY(ConstraintSpace() &&
-               ConstraintSpace()->ShouldPropagateChildBreakValues()))
+  if (UNLIKELY(ConstraintSpace().ShouldPropagateChildBreakValues()))
     PropagateChildBreakValues(*result_for_propagation, flex_column_break_after);
 }
 
@@ -387,7 +386,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   block_size_for_fragmentation_ =
       std::max(block_size_for_fragmentation_, block_end_in_container);
 
-  if (ConstraintSpace()->RequiresContentBeforeBreaking()) {
+  if (ConstraintSpace().RequiresContentBeforeBreaking()) {
     if (child_layout_result.IsBlockSizeForFragmentationClamped())
       is_block_size_for_fragmentation_clamped_ = true;
   }
@@ -397,12 +396,12 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   if (!child_box_fragment)
     return;
 
-  if (const auto* token = child_box_fragment->BreakToken()) {
+  const NGBlockBreakToken* token = child_box_fragment->BreakToken();
+  if (token && !token->IsRepeated()) {
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
-    if (!token->IsBlockType() ||
-        !To<NGBlockBreakToken>(token)->IsAtBlockEnd()) {
+    if (!token->IsAtBlockEnd()) {
       if (child_box_fragment->IsFloating())
         has_float_break_inside_ = true;
       else if (!child_box_fragment->IsOutOfFlowPositioned())
@@ -415,7 +414,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     // Downgrade the appeal of breaking inside this container, if the break
     // inside the child is less appealing than what we've found so far.
     NGBreakAppeal appeal_inside =
-        CalculateBreakAppealInside(*ConstraintSpace(), child_layout_result);
+        CalculateBreakAppealInside(ConstraintSpace(), child_layout_result);
     ClampBreakAppeal(appeal_inside);
   }
 
@@ -431,7 +430,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
 
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.
-  if (UNLIKELY(ConstraintSpace()->IsInColumnBfc())) {
+  if (UNLIKELY(ConstraintSpace().IsInColumnBfc())) {
     if (const NGColumnSpannerPath* child_spanner_path =
             child_layout_result.ColumnSpannerPath()) {
       DCHECK(HasInflowChildBreakInside() ||
@@ -443,6 +442,12 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
     }
   } else {
     DCHECK(!child_layout_result.ColumnSpannerPath());
+  }
+
+  if (!child_box_fragment->IsFragmentainerBox() &&
+      !HasOutOfFlowInFragmentainerSubtree()) {
+    SetHasOutOfFlowInFragmentainerSubtree(
+        child_box_fragment->HasOutOfFlowInFragmentainerSubtree());
   }
 }
 
@@ -574,7 +579,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
 }
 
 void NGBoxFragmentBuilder::SetLastBaselineToBlockEndMarginEdgeIfNeeded() {
-  if (ConstraintSpace()->BaselineAlgorithmType() !=
+  if (ConstraintSpace().BaselineAlgorithmType() !=
       NGBaselineAlgorithmType::kInlineBlock)
     return;
 
@@ -583,7 +588,7 @@ void NGBoxFragmentBuilder::SetLastBaselineToBlockEndMarginEdgeIfNeeded() {
 
   // When overflow is present (within an atomic-inline baseline context) we
   // should always use the block-end margin edge as the baseline.
-  NGBoxStrut margins = ComputeMarginsForSelf(*ConstraintSpace(), Style());
+  NGBoxStrut margins = ComputeMarginsForSelf(ConstraintSpace(), Style());
   SetLastBaseline(FragmentBlockSize() + margins.block_end);
 }
 
@@ -667,10 +672,9 @@ void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);
-  DCHECK(!HasBreakTokenData());
+  DCHECK(ConstraintSpace().IsRepeatable() || !HasBreakTokenData());
   DCHECK_EQ(minimal_space_shortage_, kIndefiniteSize);
-  if (ConstraintSpace() &&
-      !ConstraintSpace()->ShouldPropagateChildBreakValues()) {
+  if (!ConstraintSpace().ShouldPropagateChildBreakValues()) {
     DCHECK(!initial_break_before_);
     DCHECK_EQ(previous_break_after_, EBreakBetween::kAuto);
   }

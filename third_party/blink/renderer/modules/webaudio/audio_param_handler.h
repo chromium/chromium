@@ -98,9 +98,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // Return a nice name for the AudioParam.
   String GetParamName() const;
 
-  static const double kDefaultSmoothingConstant;
-  static const double kSnapThreshold;
-
   static scoped_refptr<AudioParamHandler> Create(BaseAudioContext& context,
                                                  AudioParamType param_type,
                                                  double default_value,
@@ -200,7 +197,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   AudioParamType param_type_;
   // Name of the AudioParam. This is only used for printing out more informative
   // warnings, and only used for AudioWorklets.  All others have a name derived
-  // from the |param_type_|.  Worklets need custom names because they're defined
+  // from the `param_type_`.  Worklets need custom names because they're defined
   // by the user.
   String custom_param_name_;
 
@@ -212,7 +209,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // The automation rate of the AudioParam (k-rate or a-rate)
   AutomationRate automation_rate_;
-  // |rate_mode_| determines if the user can change the automation rate to a
+  // `rate_mode_` determines if the user can change the automation rate to a
   // different value.
   const AutomationRateMode rate_mode_;
 
@@ -222,7 +219,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   AudioParamTimeline timeline_;
 
-  // The destination node used to get necessary information like the smaple rate
+  // The destination node used to get necessary information like the sample rate
   // and context time.
   scoped_refptr<AudioDestinationHandler> destination_handler_;
 

@@ -7,7 +7,7 @@
  * the personalization hub.
  */
 
-import './cros_button_style.js';
+import '../css/cros_button_style.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -42,8 +42,8 @@ export class PersonalizationMain extends WithPersonalizationStore {
     return isAmbientModeAllowed();
   }
 
-  private isRgbKeyboardEnabled_(): boolean {
-    return loadTimeData.getBoolean('isRgbKeyboardEnabled');
+  private isRgbKeyboardSupported_(): boolean {
+    return loadTimeData.getBoolean('isRgbKeyboardSupported');
   }
 
   private onClickAmbientSubpageLink_() {

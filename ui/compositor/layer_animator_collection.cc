@@ -14,6 +14,10 @@ namespace ui {
 
 LayerAnimatorCollection::LayerAnimatorCollection(Compositor* compositor)
     : compositor_(compositor), last_tick_time_(base::TimeTicks::Now()) {
+  // Do not check the active duration for the LayerAnimationCollection because
+  // new animation can be added while running existing animation, which
+  // extends the duration.
+  set_check_active_duration(false);
 }
 
 LayerAnimatorCollection::~LayerAnimatorCollection() {

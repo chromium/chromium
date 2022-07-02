@@ -108,6 +108,18 @@ void InputControllerEvdev::GetAutoRepeatRate(base::TimeDelta* delay,
   keyboard_->GetAutoRepeatRate(delay, interval);
 }
 
+void InputControllerEvdev::SetKeyboardKeyBitsMapping(
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
+  keyboard_key_bits_mapping_ = std::move(key_bits_mapping);
+}
+
+std::vector<uint64_t> InputControllerEvdev::GetKeyboardKeyBits(int id) {
+  auto key_bits_mapping_iter = keyboard_key_bits_mapping_.find(id);
+  return key_bits_mapping_iter == keyboard_key_bits_mapping_.end()
+             ? std::vector<uint64_t>()
+             : key_bits_mapping_iter->second;
+}
+
 void InputControllerEvdev::SetCurrentLayoutByName(
     const std::string& layout_name) {
   keyboard_->SetCurrentLayoutByName(layout_name);
@@ -203,6 +215,18 @@ void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
   }
   input_device_settings_.pointing_stick_acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetGamepadKeyBitsMapping(
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
+  gamepad_key_bits_mapping_ = std::move(key_bits_mapping);
+}
+
+std::vector<uint64_t> InputControllerEvdev::GetGamepadKeyBits(int id) {
+  auto gamepad_key_bits_iter = gamepad_key_bits_mapping_.find(id);
+  return gamepad_key_bits_iter == gamepad_key_bits_mapping_.end()
+             ? std::vector<uint64_t>()
+             : gamepad_key_bits_iter->second;
 }
 
 void InputControllerEvdev::SetPrimaryButtonRight(bool right) {

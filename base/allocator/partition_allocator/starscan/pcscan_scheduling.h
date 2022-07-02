@@ -8,10 +8,11 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/time/time.h"
 
 namespace partition_alloc::internal {
 
@@ -32,7 +33,7 @@ struct QuarantineData final {
   std::atomic<size_t> epoch{0u};
 };
 
-class BASE_EXPORT PCScanSchedulingBackend {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScanSchedulingBackend {
  public:
   explicit inline constexpr PCScanSchedulingBackend(PCScanScheduler&);
   // No virtual destructor to allow constant initialization of PCScan as
@@ -76,7 +77,8 @@ class BASE_EXPORT PCScanSchedulingBackend {
 };
 
 // Scheduling backend that just considers a single hard limit.
-class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LimitBackend final
+    : public PCScanSchedulingBackend {
  public:
   static constexpr double kQuarantineSizeFraction = 0.1;
 
@@ -96,7 +98,7 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
 // workload.
 //
 // See constants below for trigger mechanisms.
-class BASE_EXPORT MUAwareTaskBasedBackend final
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MUAwareTaskBasedBackend final
     : public PCScanSchedulingBackend {
  public:
   using ScheduleDelayedScanFunc = void (*)(int64_t delay_in_microseconds);
@@ -128,8 +130,8 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   const ScheduleDelayedScanFunc schedule_delayed_scan_;
 
   Lock scheduler_lock_;
-  size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
-  base::TimeTicks earliest_next_scan_time_ GUARDED_BY(scheduler_lock_);
+  size_t hard_limit_ PA_GUARDED_BY(scheduler_lock_){0};
+  base::TimeTicks earliest_next_scan_time_ PA_GUARDED_BY(scheduler_lock_);
 
   friend class PartitionAllocPCScanMUAwareTaskBasedBackendTest;
 };
@@ -138,7 +140,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
 // path for freeing objects. The scheduler holds data needed to invoke a
 // `PCScanSchedulingBackend` upon hitting a limit. The backend implements
 // the actual scheduling strategy and is in charge of maintaining limits.
-class BASE_EXPORT PCScanScheduler final {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScanScheduler final {
  public:
   inline constexpr PCScanScheduler();
 
@@ -147,7 +149,7 @@ class BASE_EXPORT PCScanScheduler final {
 
   // Account freed `bytes`. Returns true if scan should be triggered
   // immediately, and false otherwise.
-  ALWAYS_INLINE bool AccountFreed(size_t bytes);
+  PA_ALWAYS_INLINE bool AccountFreed(size_t bytes);
 
   size_t epoch() const {
     return quarantine_data_.epoch.load(std::memory_order_relaxed);
@@ -195,15 +197,5 @@ bool PCScanScheduler::AccountFreed(size_t size) {
 }
 
 }  // namespace partition_alloc::internal
-
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::LimitBackend;
-using ::partition_alloc::internal::MUAwareTaskBasedBackend;
-using ::partition_alloc::internal::PCScanScheduler;
-using ::partition_alloc::internal::QuarantineData;
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_SCHEDULING_H_

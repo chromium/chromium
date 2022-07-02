@@ -71,8 +71,8 @@ class NodeLayoutUpgrade : public LayoutUpgrade {
   using Reasons = unsigned;
 
   enum Reason {
-    // The current ComputedStyle of this node depends on container queries.
-    kDependsOnContainerQueries = 1 << 0,
+    // The current ComputedStyle of this node depends on size container queries.
+    kDependsOnSizeContainerQueries = 1 << 0,
     // The node is an interleaving root. This means that we *may* enter
     // interleaved style recalc (via layout) on this node.
     kInterleavingRoot = 1 << 1,

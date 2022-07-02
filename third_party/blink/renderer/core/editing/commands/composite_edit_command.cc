@@ -298,7 +298,7 @@ void CompositeEditCommand::InsertNodeBefore(
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  ABORT_EDITING_COMMAND_IF(!HasEditableStyle(*ref_child->parentNode()) &&
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*ref_child->parentNode()) &&
                            ref_child->parentNode()->InActiveDocument());
   ApplyCommandToComposite(
       MakeGarbageCollected<InsertNodeBeforeCommand>(
@@ -375,8 +375,7 @@ void CompositeEditCommand::AppendNode(Node* node,
   ABORT_EDITING_COMMAND_IF(!CanHaveChildrenForEditing(parent) &&
                            !(parent_element && parent_element->TagQName() ==
                                                    html_names::kObjectTag));
-  ABORT_EDITING_COMMAND_IF(!HasEditableStyle(*parent) &&
-                           parent->InActiveDocument());
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*parent) && parent->InActiveDocument());
   ApplyCommandToComposite(MakeGarbageCollected<AppendNodeCommand>(parent, node),
                           editing_state);
 }
@@ -692,8 +691,9 @@ bool CompositeEditCommand::CanRebalance(const Position& position) const {
 
   auto* text_node = DynamicTo<Text>(position.ComputeContainerNode());
   if (!position.IsOffsetInAnchor() || !text_node ||
-      !HasRichlyEditableStyle(*text_node))
+      !IsRichlyEditable(*text_node)) {
     return false;
+  }
 
   if (text_node->length() == 0)
     return false;
@@ -1694,7 +1694,7 @@ bool CompositeEditCommand::BreakOutOfEmptyListItem(
   if (!list_node ||
       (!IsA<HTMLUListElement>(*list_node) &&
        !IsA<HTMLOListElement>(*list_node)) ||
-      !HasEditableStyle(*list_node) ||
+      !IsEditable(*list_node) ||
       list_node == RootEditableElement(*empty_list_item))
     return false;
 

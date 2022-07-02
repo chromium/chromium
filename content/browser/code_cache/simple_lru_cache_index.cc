@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/numerics/clamped_math.h"
 #include "net/base/url_util.h"
 
 namespace content {
@@ -29,12 +30,15 @@ bool SimpleLruCacheIndex::Get(const std::string& key) {
 void SimpleLruCacheIndex::Put(const std::string& key, uint32_t payload_size) {
   Delete(key);
 
-  const Age age = GetNextAge();
-  const uint32_t size =
-      std::min(payload_size,
-               std::numeric_limits<uint32_t>::max() - kEmptyEntrySize) +
-      kEmptyEntrySize;
+  const uint64_t size = base::ClampedNumeric<uint64_t>(key.size()) +
+                        payload_size + kEmptyEntrySize;
 
+  if (size > capacity_) {
+    // Ignore a too big entry.
+    return;
+  }
+
+  const Age age = GetNextAge();
   entries_.emplace(key, Value(age, size));
   access_list_.emplace(age, std::move(key));
   size_ += size;

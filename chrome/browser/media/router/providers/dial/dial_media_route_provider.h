@@ -168,7 +168,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
   void HandleStopAppResult(const MediaRoute::Id& route_id,
                            TerminateRouteCallback callback,
                            const absl::optional<std::string>& message,
-                           RouteRequestResult::ResultCode result_code);
+                           mojom::RouteRequestResultCode result_code);
   void NotifyAllOnRoutesUpdated();
   void NotifyOnRoutesUpdated(const std::vector<MediaRoute>& routes);
 

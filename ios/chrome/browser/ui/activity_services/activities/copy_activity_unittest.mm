@@ -43,7 +43,7 @@ class CopyActivityTest : public PlatformTest {
     ClearPasteboard();
   }
 
-  // Creates a ShareToData instance with the given |additional_text|.
+  // Creates a ShareToData instance with the given `additional_text`.
   ShareToData* CreateData(NSString* additional_text) {
     return CreateData(kTestShareURL, kTestVisibleURL, additional_text);
   }

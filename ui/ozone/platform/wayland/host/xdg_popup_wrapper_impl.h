@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
 namespace ui {
@@ -34,9 +35,11 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   bool SetBounds(const gfx::Rect& new_bounds) override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
   void Grab(uint32_t serial) override;
+  bool SupportsDecoration() override;
+  void Decorate() override;
 
  private:
-  wl::Object<xdg_positioner> CreatePositioner(WaylandWindow* parent_window);
+  wl::Object<xdg_positioner> CreatePositioner();
 
   // xdg_popup_listener
   static void Configure(void* data,
@@ -53,8 +56,8 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
   // Non-owned WaylandWindow that uses this popup.
-  WaylandWindow* const wayland_window_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandWindow> wayland_window_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Ground surface for this popup.
   std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;

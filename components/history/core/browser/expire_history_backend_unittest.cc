@@ -168,9 +168,9 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     TopSitesImpl::RegisterPrefs(pref_service_->registry());
 
     expirer_.SetDatabases(main_db_.get(), thumb_db_.get());
-    top_sites_ =
-        new TopSitesImpl(pref_service_.get(), nullptr, PrepopulatedPageList(),
-                         base::BindRepeating(MockCanAddURLToHistory));
+    top_sites_ = new TopSitesImpl(pref_service_.get(), nullptr, nullptr,
+                                  PrepopulatedPageList(),
+                                  base::BindRepeating(MockCanAddURLToHistory));
     WaitTopSitesLoadedObserver wait_top_sites_observer(top_sites_);
     top_sites_->Init(path().Append(kTopSitesFilename));
     wait_top_sites_observer.Run();
@@ -201,7 +201,6 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
                              const GURL& icon_url) override {}
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) override {}
   void NotifyURLsModified(const URLRows& rows,
                           bool is_from_expiration) override {

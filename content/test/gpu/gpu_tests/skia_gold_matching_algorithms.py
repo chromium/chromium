@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Classes related to the possible matching algorithms for Skia Gold."""
 
+import typing
 
 
 class Parameters():
@@ -35,7 +36,7 @@ class SkiaGoldMatchingAlgorithm():
   ALGORITHM_KEY = 'image_matching_algorithm'
   """Abstract base class for all algorithms."""
 
-  def GetCmdline(self):
+  def GetCmdline(self) -> typing.List[str]:
     """Gets command line parameters for the algorithm.
 
     Returns:
@@ -47,7 +48,7 @@ class SkiaGoldMatchingAlgorithm():
     return _GenerateOptionalKey(SkiaGoldMatchingAlgorithm.ALGORITHM_KEY,
                                 self.Name())
 
-  def Name(self):
+  def Name(self) -> str:
     """Returns a string representation of the algorithm."""
     raise NotImplementedError()
 
@@ -55,10 +56,10 @@ class SkiaGoldMatchingAlgorithm():
 class ExactMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
   """Class for the default exact matching algorithm in Gold."""
 
-  def GetCmdline(self):
+  def GetCmdline(self) -> typing.List[str]:
     return []
 
-  def Name(self):
+  def Name(self) -> str:
     return 'exact'
 
 
@@ -66,9 +67,9 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
   """Class for the fuzzy matching algorithm in Gold."""
 
   def __init__(self,
-               max_different_pixels,
-               pixel_delta_threshold,
-               ignored_border_thickness=0):
+               max_different_pixels: int,
+               pixel_delta_threshold: int,
+               ignored_border_thickness: int = 0):
     super().__init__()
     assert int(max_different_pixels) >= 0
     assert int(pixel_delta_threshold) >= 0
@@ -77,7 +78,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._pixel_delta_threshold = pixel_delta_threshold
     self._ignored_border_thickness = ignored_border_thickness
 
-  def GetCmdline(self):
+  def GetCmdline(self) -> typing.List[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.MAX_DIFFERENT_PIXELS,
@@ -90,7 +91,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
                              self._ignored_border_thickness))
     return retval
 
-  def Name(self):
+  def Name(self) -> str:
     return 'fuzzy'
 
 
@@ -101,10 +102,10 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
   """
 
   def __init__(self,
-               max_different_pixels,
-               pixel_delta_threshold,
-               edge_threshold,
-               ignored_border_thickness=0):
+               max_different_pixels: int,
+               pixel_delta_threshold: int,
+               edge_threshold: int,
+               ignored_border_thickness: int = 0):
     super().__init__(max_different_pixels, pixel_delta_threshold,
                      ignored_border_thickness)
     assert int(edge_threshold) >= 0
@@ -115,15 +116,16 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
           'matching.')
     self._edge_threshold = edge_threshold
 
-  def GetCmdline(self):
+  def GetCmdline(self) -> typing.List[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.EDGE_THRESHOLD, self._edge_threshold))
     return retval
 
-  def Name(self):
+  def Name(self) -> str:
     return 'sobel'
 
 
-def _GenerateOptionalKey(key, value):
+def _GenerateOptionalKey(key: str,
+                         value: typing.Union[int, str]) -> typing.List[str]:
   return ['--add-test-optional-key', '%s:%s' % (key, value)]

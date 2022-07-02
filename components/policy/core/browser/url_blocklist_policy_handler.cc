@@ -101,27 +101,26 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* disabled_schemes_policy =
       policies.GetValue(key::kDisabledSchemes, base::Value::Type::LIST);
 
-  absl::optional<std::vector<base::Value>> merged_url_blocklist;
+  absl::optional<base::Value::List> merged_url_blocklist;
 
   // We start with the DisabledSchemes because we have size limit when
   // handling URLBlocklists.
   if (disabled_schemes_policy) {
-    merged_url_blocklist = std::vector<base::Value>();
-    for (const auto& entry : disabled_schemes_policy->GetListDeprecated()) {
+    merged_url_blocklist.emplace();
+    for (const auto& entry : disabled_schemes_policy->GetList()) {
       if (entry.is_string()) {
-        merged_url_blocklist->emplace_back(
-            base::StrCat({entry.GetString(), "://*"}));
+        merged_url_blocklist->Append(base::StrCat({entry.GetString(), "://*"}));
       }
     }
   }
 
   if (url_blocklist_policy) {
     if (!merged_url_blocklist)
-      merged_url_blocklist = std::vector<base::Value>();
+      merged_url_blocklist.emplace();
 
-    for (const auto& entry : url_blocklist_policy->GetListDeprecated()) {
+    for (const auto& entry : url_blocklist_policy->GetList()) {
       if (entry.is_string())
-        merged_url_blocklist->push_back(entry.Clone());
+        merged_url_blocklist->Append(entry.Clone());
     }
   }
 

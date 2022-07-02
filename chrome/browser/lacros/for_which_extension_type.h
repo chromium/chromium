@@ -37,6 +37,16 @@ class ForWhichExtensionType {
     return for_chrome_apps_ ? val_for_chrome_apps : val_for_extensions;
   }
 
+  template <class T>
+  const T& ChooseIntentFilter(bool is_quick_office,
+                              const T& val_for_chrome_apps,
+                              const T& val_for_extensions) const {
+    if (is_quick_office || for_chrome_apps_)
+      return val_for_chrome_apps;
+    else
+      return val_for_extensions;
+  }
+
  private:
   friend ForWhichExtensionType InitForChromeApps();
   friend ForWhichExtensionType InitForExtensions();

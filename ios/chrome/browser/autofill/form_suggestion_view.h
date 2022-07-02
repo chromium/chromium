@@ -10,6 +10,7 @@
 @class FormSuggestion;
 @protocol FormSuggestionClient;
 @class FormSuggestionView;
+@class LayoutGuideCenter;
 
 @protocol FormSuggestionViewDelegate <NSObject>
 
@@ -37,7 +38,10 @@
 // A view added at the end of the current suggestions.
 @property(nonatomic, strong) UIView* trailingView;
 
-// Updates with |suggestions|.
+// The layout guide center to use to refer to the first suggestion label.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// Updates with `suggestions`.
 - (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
 // Reset content insets back to zero and sets the delegate to nil. Used to stop

@@ -38,12 +38,6 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
 @implementation CRUUpdateClientOnDemandImpl
 
-- (instancetype)init {
-  return [self initWithScope:ShouldUseSystemLevelUpdater()
-                                 ? updater::UpdaterScope::kSystem
-                                 : updater::UpdaterScope::kUser];
-}
-
 - (instancetype)initWithScope:(updater::UpdaterScope)scope {
   // If the system-level updater exists, and the browser is registered to the
   // system-level updater, then connect using NSXPCConnectionPrivileged.
@@ -179,10 +173,10 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
 @end
 
-BrowserUpdaterClientMac::BrowserUpdaterClientMac()
+BrowserUpdaterClientMac::BrowserUpdaterClientMac(updater::UpdaterScope scope)
     : BrowserUpdaterClientMac(
           base::scoped_nsobject<CRUUpdateClientOnDemandImpl>(
-              [[CRUUpdateClientOnDemandImpl alloc] init])) {}
+              [[CRUUpdateClientOnDemandImpl alloc] initWithScope:scope])) {}
 
 BrowserUpdaterClientMac::BrowserUpdaterClientMac(
     base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client)
@@ -193,7 +187,11 @@ BrowserUpdaterClientMac::~BrowserUpdaterClientMac() = default;
 void BrowserUpdaterClientMac::GetUpdaterVersion(
     base::OnceCallback<void(const std::string&)> callback) {
   __block base::OnceCallback<void(const std::string&)> block_callback =
-      std::move(callback);
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::string&)> callback,
+             scoped_refptr<BrowserUpdaterClientMac> keep_alive,
+             const std::string& version) { std::move(callback).Run(version); },
+          std::move(callback), base::WrapRefCounted(this));
 
   auto reply = ^(NSString* version) {
     std::string result = base::SysNSStringToUTF8(version);
@@ -202,10 +200,6 @@ void BrowserUpdaterClientMac::GetUpdaterVersion(
   };
 
   [client_ getVersionWithReply:reply];
-}
-
-void BrowserUpdaterClientMac::ResetConnection(updater::UpdaterScope scope) {
-  client_.reset([[CRUUpdateClientOnDemandImpl alloc] initWithScope:scope]);
 }
 
 void BrowserUpdaterClientMac::BeginRegister(
@@ -264,6 +258,7 @@ void BrowserUpdaterClientMac::BeginUpdateCheck(
 }
 
 // static
-scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create() {
-  return base::MakeRefCounted<BrowserUpdaterClientMac>();
+scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
+    updater::UpdaterScope scope) {
+  return base::MakeRefCounted<BrowserUpdaterClientMac>(scope);
 }

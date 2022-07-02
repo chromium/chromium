@@ -5,6 +5,7 @@
 #include "ash/style/style_util.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
@@ -98,8 +99,7 @@ views::FocusRing* StyleUtil::SetUpFocusRingForView(
   DCHECK(view);
   views::FocusRing::Install(view);
   views::FocusRing* focus_ring = views::FocusRing::Get(view);
-  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
   if (halo_inset)
     focus_ring->SetHaloInset(*halo_inset);
   return focus_ring;

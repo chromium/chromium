@@ -5,14 +5,9 @@
 #ifndef CONTENT_COMMON_FONT_LIST_H_
 #define CONTENT_COMMON_FONT_LIST_H_
 
-#include <memory>
-
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 
@@ -30,7 +25,7 @@ CONTENT_EXPORT scoped_refptr<base::SequencedTaskRunner> GetFontListTaskRunner();
 // GetFontListTaskRunner(). Most callers will want to use the GetFontListAsync
 // function in content/browser/font_list_async.h which does an asynchronous
 // call.
-CONTENT_EXPORT std::unique_ptr<base::ListValue> GetFontList_SlowBlocking();
+CONTENT_EXPORT base::Value::List GetFontList_SlowBlocking();
 
 }  // namespace content
 

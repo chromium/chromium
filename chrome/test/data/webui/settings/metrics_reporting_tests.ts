@@ -32,84 +32,80 @@ suite('metrics reporting', function() {
     page.remove();
   });
 
-  test('changes to whether metrics reporting is enabled/managed', function() {
-    let toggled: boolean;
-    return testBrowserProxy.whenCalled('getMetricsReporting')
-        .then(function() {
-          return flushTasks();
-        })
-        .then(function() {
-          const control = page.$.metricsReportingControl;
-          assertEquals(
-              testBrowserProxy.metricsReporting.enabled, control.checked);
-          assertEquals(
-              testBrowserProxy.metricsReporting.managed,
-              !!control.pref!.controlledBy);
+  test(
+      'changes to whether metrics reporting is enabled/managed',
+      async function() {
+        await testBrowserProxy.whenCalled('getMetricsReporting');
+        await flushTasks();
 
-          const changedMetrics = {
-            enabled: !testBrowserProxy.metricsReporting.enabled,
-            managed: !testBrowserProxy.metricsReporting.managed,
-          };
-          webUIListenerCallback('metrics-reporting-change', changedMetrics);
-          flush();
+        const control = page.$.metricsReportingControl;
+        assertEquals(
+            testBrowserProxy.metricsReporting.enabled, control.checked);
+        assertEquals(
+            testBrowserProxy.metricsReporting.managed,
+            !!control.pref!.controlledBy);
 
-          assertEquals(changedMetrics.enabled, control.checked);
-          assertEquals(changedMetrics.managed, !!control.pref!.controlledBy);
+        const changedMetrics = {
+          enabled: !testBrowserProxy.metricsReporting.enabled,
+          managed: !testBrowserProxy.metricsReporting.managed,
+        };
+        webUIListenerCallback('metrics-reporting-change', changedMetrics);
+        flush();
 
-          toggled = !changedMetrics.enabled;
-          control.checked = toggled;
-          control.notifyChangedByUserInteraction();
+        assertEquals(changedMetrics.enabled, control.checked);
+        assertEquals(changedMetrics.managed, !!control.pref!.controlledBy);
 
-          return testBrowserProxy.whenCalled('setMetricsReportingEnabled');
-        })
-        .then(function(enabled) {
-          assertEquals(toggled, enabled);
-        });
-  });
+        const toggled: boolean = !changedMetrics.enabled;
+        control.checked = toggled;
+        control.notifyChangedByUserInteraction();
 
-  test('metrics reporting restart button', function() {
-    return testBrowserProxy.whenCalled('getMetricsReporting').then(function() {
-      flush();
-
-      // Restart button should be hidden by default (in any state).
-      assertFalse(!!page.shadowRoot!.querySelector('#restart'));
-
-      // Simulate toggling via policy.
-      webUIListenerCallback('metrics-reporting-change', {
-        enabled: false,
-        managed: true,
+        const enabled =
+            await testBrowserProxy.whenCalled('setMetricsReportingEnabled');
+        assertEquals(toggled, enabled);
       });
 
-      // No restart button should show because the value is managed.
-      assertFalse(!!page.shadowRoot!.querySelector('#restart'));
+  test('metrics reporting restart button', async function() {
+    await testBrowserProxy.whenCalled('getMetricsReporting');
+    flush();
 
-      webUIListenerCallback('metrics-reporting-change', {
-        enabled: true,
-        managed: true,
-      });
-      flush();
+    // Restart button should be hidden by default (in any state).
+    assertFalse(!!page.shadowRoot!.querySelector('#restart'));
 
-      // Changes in policy should not show the restart button because the value
-      // is still managed.
-      assertFalse(!!page.shadowRoot!.querySelector('#restart'));
-
-      // Remove the policy and toggle the value.
-      webUIListenerCallback('metrics-reporting-change', {
-        enabled: false,
-        managed: false,
-      });
-      flush();
-
-      // Now the restart button should be showing.
-      assertTrue(!!page.shadowRoot!.querySelector('#restart'));
-
-      // Receiving the same values should have no effect.
-      webUIListenerCallback('metrics-reporting-change', {
-        enabled: false,
-        managed: false,
-      });
-      flush();
-      assertTrue(!!page.shadowRoot!.querySelector('#restart'));
+    // Simulate toggling via policy.
+    webUIListenerCallback('metrics-reporting-change', {
+      enabled: false,
+      managed: true,
     });
+
+    // No restart button should show because the value is managed.
+    assertFalse(!!page.shadowRoot!.querySelector('#restart'));
+
+    webUIListenerCallback('metrics-reporting-change', {
+      enabled: true,
+      managed: true,
+    });
+    flush();
+
+    // Changes in policy should not show the restart button because the value
+    // is still managed.
+    assertFalse(!!page.shadowRoot!.querySelector('#restart'));
+
+    // Remove the policy and toggle the value.
+    webUIListenerCallback('metrics-reporting-change', {
+      enabled: false,
+      managed: false,
+    });
+    flush();
+
+    // Now the restart button should be showing.
+    assertTrue(!!page.shadowRoot!.querySelector('#restart'));
+
+    // Receiving the same values should have no effect.
+    webUIListenerCallback('metrics-reporting-change', {
+      enabled: false,
+      managed: false,
+    });
+    flush();
+    assertTrue(!!page.shadowRoot!.querySelector('#restart'));
   });
 });

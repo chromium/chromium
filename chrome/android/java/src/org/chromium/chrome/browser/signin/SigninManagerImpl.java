@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -79,14 +80,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
     private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
     private boolean mSigninAllowedByPolicy;
-
-    /**
-     * Tracks whether the First Run check has been completed.
-     *
-     * A new sign-in can not be started while this is pending, to prevent the
-     * pending check from eventually starting a 2nd sign-in.
-     */
-    private boolean mFirstRunCheckIsPending = true;
 
     /**
      * Will be set during the sign in process, and nulled out when there is not a pending sign in.
@@ -170,25 +163,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
-     * Notifies the SigninManager that the First Run check has completed.
-     *
-     * The user will be allowed to sign-in once this is signaled.
-     */
-    @Override
-    public void onFirstRunCheckDone() {
-        mFirstRunCheckIsPending = false;
-
-        if (isSyncOptInAllowed()) {
-            notifySignInAllowedChanged();
-        }
-    }
-
-    /**
      * Returns true if sign in can be started now.
      */
     @Override
     public boolean isSigninAllowed() {
-        return !mFirstRunCheckIsPending && mSignInState == null && mSigninAllowedByPolicy
+        return mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
                 && isSigninSupported();
     }
@@ -198,7 +177,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     @Override
     public boolean isSyncOptInAllowed() {
-        return !mFirstRunCheckIsPending && mSignInState == null && mSigninAllowedByPolicy
+        return mSignInState == null && mSigninAllowedByPolicy
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null
                 && isSigninSupported();
     }
@@ -293,11 +272,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private void signinInternal(SignInState signInState) {
         assert isSyncOptInAllowed()
             : String.format("Sign-in isn't allowed!\n"
-                            + "  mFirstRunCheckIsPending: %s\n"
                             + "  mSignInState: %s\n"
                             + "  mSigninAllowedByPolicy: %s\n"
                             + "  Primary sync account: %s",
-                    mFirstRunCheckIsPending, mSignInState, mSigninAllowedByPolicy,
+                    mSignInState, mSigninAllowedByPolicy,
                     mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         assert signInState != null : "SigninState shouldn't be null!";
         assert signInState.mCoreAccountInfo == null : "mCoreAccountInfo shouldn't be set!";
@@ -356,14 +334,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(
                     mSignInState.mCoreAccountInfo.getEmail());
 
-            boolean atLeastOneDataTypeSynced = !SyncService.get().getChosenDataTypes().isEmpty();
-            if (atLeastOneDataTypeSynced) {
-                // Turn on sync only when user has at least one data type to sync, this is
-                // consistent with {@link ManageSyncSettings#updataSyncStateFromSelectedModelTypes},
-                // in which we turn off sync we stop sync service when the user toggles off all the
-                // sync types.
-                SyncService.get().setSyncRequested(true);
-            }
+            SyncService.get().setSyncRequested(true);
 
             RecordUserAction.record("Signin_Signin_Succeed");
             RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",
@@ -501,6 +472,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
+     * Returns true if sign out can be started now.
+     */
+    @Override
+    public boolean isSignOutAllowed() {
+        return !Profile.getLastUsedRegularProfile().isChild();
+    }
+
+    /**
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
      *
@@ -588,6 +567,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
     @Override
     public void onAccountsCookieDeletedByUserAction() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_CBD_SIGN_OUT)) {
+            return;
+        }
+
         // Clearing account cookies should trigger sign-out only when user is
         // signed in without sync. If the user consented for sync, then the user
         // should not be signed out, since account cookies will be rebuilt by

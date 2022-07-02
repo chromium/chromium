@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
@@ -152,6 +153,42 @@ class BLINK_COMMON_EXPORT Manifest {
     absl::optional<std::string> name;
     absl::optional<std::string> short_name;
     absl::optional<std::string> description;
+  };
+
+  // Parameters for the home tab customisation to the tab strip.
+  struct BLINK_COMMON_EXPORT HomeTabParams {
+    HomeTabParams();
+    ~HomeTabParams();
+
+    bool operator==(const HomeTabParams& other) const;
+
+    std::vector<ImageResource> icons;
+  };
+
+  // Parameters for the new tab button customisation to the tab strip.
+  struct BLINK_COMMON_EXPORT NewTabButtonParams {
+    NewTabButtonParams();
+    ~NewTabButtonParams();
+
+    bool operator==(const NewTabButtonParams& other) const;
+
+    absl::optional<GURL> url;
+  };
+
+  // Structure containing customisations for the tab strip.
+  struct BLINK_COMMON_EXPORT TabStrip {
+    TabStrip();
+    ~TabStrip();
+
+    bool operator==(const TabStrip& other) const;
+
+    using Visibility = blink::mojom::TabStripMemberVisibility;
+    using HomeTab = absl::variant<Visibility, blink::Manifest::HomeTabParams>;
+    using NewTabButton =
+        absl::variant<Visibility, blink::Manifest::NewTabButtonParams>;
+
+    HomeTab home_tab;
+    NewTabButton new_tab_button;
   };
 };
 

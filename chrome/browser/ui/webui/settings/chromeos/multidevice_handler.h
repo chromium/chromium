@@ -111,6 +111,12 @@ class MultideviceHandler
   // Called when the Nearby Share enabled pref changes.
   void OnNearbySharingEnabledChanged();
 
+  // Chromeos screen lock enabled pref change observer.
+  void OnEnableScreenLockChanged();
+
+  // Phone screen lock status pref change observer.
+  void OnScreenLockStatusChanged();
+
   // Sends the most recent PageContentData dictionary to the WebUI page as an
   // update (e.g., not due to a getPageContent() request).
   void UpdatePageContent();
