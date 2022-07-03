@@ -88,7 +88,10 @@ void SetRootLocation(LocatedEvent* event) {
 constexpr int kGestureScrollFingerCount = 2;
 
 // Maximum size of the stored recent pointer frame information.
-constexpr int kRecentPointerFrameMaxSize = 20;
+constexpr int kRecentPointerFrameMaxSize = 3;
+
+// Maximum time delta between last scroll event and lifting of fingers
+constexpr int kFlingStartTimeoutMs = 200;
 
 }  // namespace
 
@@ -722,29 +725,64 @@ bool WaylandEventSource::ShouldUnsetTouchFocus(WaylandWindow* win,
 }
 
 gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
-  // Return average velocity in the last 200ms.
-  // TODO(fukino): Make the formula similar to libgestures's
-  // RegressScrollVelocity(). crbug.com/1129263.
-  base::TimeDelta dt;
-  float dx = 0.0f;
-  float dy = 0.0f;
-  for (auto& frame : recent_pointer_frames_) {
-    if (frame.axis_source &&
-        *frame.axis_source != WL_POINTER_AXIS_SOURCE_FINGER) {
-      break;
-    }
-    if (frame.dx == 0 && frame.dy == 0)
-      break;
-    if (dt + frame.dt > base::Milliseconds(200))
-      break;
+  struct RegressionSums {
+    float tt_;  // Cumulative sum of t^2.
+    float t_;   // Cumulative sum of t.
+    float tx_;  // Cumulative sum of t * x.
+    float ty_;  // Cumulative sum of t * y.
+    float x_;   // Cumulative sum of x.
+    float y_;   // Cumulative sum of y.
+  };
 
-    dx += frame.dx;
-    dy += frame.dy;
-    dt += frame.dt;
+  const size_t count = recent_pointer_frames_.size();
+
+  if (count == 0) {
+    return gfx::Vector2dF();
   }
-  float dt_inv = 1.0f / dt.InSecondsF();
-  return dt.is_zero() ? gfx::Vector2dF()
-                      : gfx::Vector2dF(dx * dt_inv, dy * dt_inv);
+
+  // Prevents small jumps if someone scrolls fast, immediately stops scrolling
+  // and then waits a little before lifting fingers from touchpad
+  if (current_pointer_frame_.dt > base::Milliseconds(kFlingStartTimeoutMs)) {
+    return gfx::Vector2dF();
+  }
+
+  if (count == 1) {
+    const auto& pointer_frame = recent_pointer_frames_.front();
+    const float dt =
+        pointer_frame.dt.InSecondsF() + current_pointer_frame_.dt.InSecondsF();
+    return gfx::Vector2dF(pointer_frame.dx * dt, pointer_frame.dy * dt);
+  }
+
+  RegressionSums sums = {0, 0, 0, 0, 0, 0};
+
+  float time = current_pointer_frame_.dt.InSecondsF();
+  float x_coord = 0;
+  float y_coord = 0;
+
+  // Formula matches libgestures's RegressScrollVelocity()
+  for (const auto& frame : recent_pointer_frames_) {
+    time += frame.dt.InSecondsF();
+    x_coord += frame.dx;
+    y_coord += frame.dy;
+
+    sums.tt_ += time * time;
+    sums.t_ += time;
+    sums.tx_ += time * x_coord;
+    sums.ty_ += time * y_coord;
+    sums.x_ += x_coord;
+    sums.y_ += y_coord;
+  }
+
+  // Note the regression determinant only depends on the values of t, and should
+  // never be zero so long as (1) count > 1, and (2) dt values are all non-zero
+  const float det = count * sums.tt_ - sums.t_ * sums.t_;
+  if (!det) {
+    return gfx::Vector2dF();
+  }
+
+  const float det_inv = 1.0 / det;
+  return gfx::Vector2dF((count * sums.tx_ - sums.t_ * sums.x_) * det_inv,
+                        (count * sums.ty_ - sums.t_ * sums.y_) * det_inv);
 }
 
 bool WaylandEventSource::SurfaceSubmissionInPixelCoordinates() const {
