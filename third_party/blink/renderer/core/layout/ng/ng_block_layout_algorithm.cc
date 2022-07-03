@@ -484,22 +484,16 @@ NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
     const NGLayoutInputNode& first_child) {
   NGInlineChildLayoutContext context;
-  return LayoutWithItemsBuilder(To<NGInlineNode>(first_child), &context);
-}
-
-NOINLINE const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutWithItemsBuilder(
-    const NGInlineNode& first_child,
-    NGInlineChildLayoutContext* context) {
   NGFragmentItemsBuilder items_builder(
-      first_child, container_builder_.GetWritingDirection());
+      To<NGInlineNode>(first_child), container_builder_.GetWritingDirection());
   container_builder_.SetItemsBuilder(&items_builder);
-  context->SetItemsBuilder(&items_builder);
-  const NGLayoutResult* result = Layout(context);
+  context.SetItemsBuilder(&items_builder);
+  const NGLayoutResult* result = Layout(&context);
   // Ensure stack-allocated |NGFragmentItemsBuilder| is not used anymore.
   // TODO(kojii): Revisit when the storage of |NGFragmentItemsBuilder| is
   // finalized.
   container_builder_.SetItemsBuilder(nullptr);
-  context->SetItemsBuilder(nullptr);
+  context.SetItemsBuilder(nullptr);
   return result;
 }
 
