@@ -16,6 +16,16 @@
 // Coordinator for the popup menu, handling the commands.
 @interface PopupMenuCoordinator : ChromeCoordinator<PopupMenuLongPressDelegate>
 
+// Initializes this Coordinator with its `browser` and a nil base view
+// controller.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+// The base view controller for this coordinator
+@property(weak, nonatomic, readwrite) UIViewController* baseViewController;
+
 // UI updater.
 @property(nonatomic, weak) id<PopupMenuUIUpdating> UIUpdater;
 // Bubble view presenter for the incognito tip.

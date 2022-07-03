@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
@@ -265,6 +266,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) QRScannerLegacyCoordinator* qrScannerCoordinator;
+
+// Coordinator for the QR scanner.
+@property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
 
 // Coordinator that manages Lens features.
 @property(nonatomic, strong) LensCoordinator* lensCoordinator;
@@ -572,20 +576,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _sideSwipeController.secondaryToolbarSnapshotProvider =
       _secondaryToolbarCoordinator;
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-      _tabStripCoordinator =
-          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
-    } else {
-      _legacyTabStripCoordinator =
-          [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
-      _legacyTabStripCoordinator.animationWaitDuration =
-          kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
-
-      [_sideSwipeController setTabStripDelegate:_legacyTabStripCoordinator];
-    }
-  }
-
   _bookmarkInteractionController =
       [[BookmarkInteractionController alloc] initWithBrowser:self.browser];
 
@@ -603,11 +593,37 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.qrScannerCoordinator =
       [[QRScannerLegacyCoordinator alloc] initWithBrowser:self.browser];
 
+  self.popupMenuCoordinator =
+      [[PopupMenuCoordinator alloc] initWithBrowser:self.browser];
+  self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
+  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
+  // Coordinator `start` is executed before setting it's `baseViewController`.
+  // It is done intentionally, since this does not affecting the coordinator's
+  // behavior but helps command hanlders setup below.
+  [self.popupMenuCoordinator start];
+
+  _primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
+  _secondaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      _tabStripCoordinator =
+          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
+    } else {
+      _legacyTabStripCoordinator =
+          [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
+      _legacyTabStripCoordinator.longPressDelegate = self.popupMenuCoordinator;
+      _legacyTabStripCoordinator.animationWaitDuration =
+          kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
+
+      [_sideSwipeController setTabStripDelegate:_legacyTabStripCoordinator];
+    }
+  }
+
   _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
   _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
-  // TODO(crbug.com/1340231) Replace static_cast with HandlerForProtocol
-  // after PopupMenuCoordinator is moved out of BVC.
-  _popupMenuCommandsHandler = static_cast<id<PopupMenuCommands>>(_dispatcher);
+  _popupMenuCommandsHandler =
+      HandlerForProtocol(_dispatcher, PopupMenuCommands);
 
   // SnackbarCoordinator is not created yet and therefore not dispatching
   // SnackbarCommands.
@@ -615,10 +631,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   _viewControllerDependencies.prerenderService = _prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
+  _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.downloadManagerCoordinator =
       self.downloadManagerCoordinator;
   _viewControllerDependencies.toolbarInterface = _toolbarCoordinatorAdaptor;
-  _viewControllerDependencies.UIUpdater = _toolbarCoordinatorAdaptor;
   _viewControllerDependencies.primaryToolbarCoordinator =
       _primaryToolbarCoordinator;
   _viewControllerDependencies.secondaryToolbarCoordinator =
@@ -646,6 +662,12 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.qrScannerCoordinator.baseViewController = self.viewController;
   [self.qrScannerCoordinator start];
 
+  self.popupMenuCoordinator.baseViewController = self.viewController;
+
+  _primaryToolbarCoordinator.delegate = self.viewController;
+  _primaryToolbarCoordinator.popupPresenterDelegate = self.viewController;
+  [_primaryToolbarCoordinator start];
+
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];
   [_dispatcher startDispatchingToTarget:self.viewController
@@ -656,9 +678,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 - (void)destroyViewControllerDependencies {
   _viewControllerDependencies.prerenderService = nil;
   _viewControllerDependencies.bubblePresenter = nil;
+  _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.downloadManagerCoordinator = nil;
   _viewControllerDependencies.toolbarInterface = nil;
-  _viewControllerDependencies.UIUpdater = nil;
   _viewControllerDependencies.primaryToolbarCoordinator = nil;
   _viewControllerDependencies.secondaryToolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
@@ -685,6 +707,12 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _bubblePresenter = nil;
 
   _prerenderService = nil;
+
+  [self.popupMenuCoordinator stop];
+  self.popupMenuCoordinator = nil;
+
+  [self.qrScannerCoordinator stop];
+  self.qrScannerCoordinator = nil;
 
   [self.downloadManagerCoordinator stop];
   self.downloadManagerCoordinator = nil;
@@ -849,9 +877,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.passwordSuggestionCoordinator = nil;
 
   self.printController = nil;
-
-  [self.qrScannerCoordinator stop];
-  self.qrScannerCoordinator = nil;
 
   [self.lensCoordinator stop];
   self.lensCoordinator = nil;

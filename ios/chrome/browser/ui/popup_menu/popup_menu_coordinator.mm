@@ -113,6 +113,12 @@ enum class IOSOverflowMenuActionType {
 @synthesize UIUpdater = _UIUpdater;
 @synthesize bubblePresenter = _bubblePresenter;
 @synthesize viewController = _viewController;
+@synthesize baseViewController = _baseViewController;
+
+- (instancetype)initWithBrowser:(Browser*)browser {
+  DCHECK(browser);
+  return [super initWithBaseViewController:nil browser:browser];
+}
 
 #pragma mark - ChromeCoordinator
 

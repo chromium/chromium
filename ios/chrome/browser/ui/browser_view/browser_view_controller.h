@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
@@ -39,6 +40,7 @@ class Browser;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
 @protocol PopupMenuCommands;
+@class PopupMenuCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 @protocol PopupMenuUIUpdating;
 class PrerenderService;
@@ -59,9 +61,9 @@ class PrerenderService;
 typedef struct {
   PrerenderService* prerenderService;
   BubblePresenter* bubblePresenter;
+  PopupMenuCoordinator* popupMenuCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
   id<ToolbarCoordinating> toolbarInterface;
-  id<PopupMenuUIUpdating> UIUpdater;
   PrimaryToolbarCoordinator* primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
@@ -80,6 +82,7 @@ typedef struct {
     : UIViewController <FindBarPresentationDelegate,
                         IncognitoReauthConsumer,
                         LogoAnimationControllerOwnerOwner,
+                        OmniboxPopupPresenterDelegate,
                         PageInfoPresentation,
                         PrintControllerDelegate,
                         SigninPresenter,

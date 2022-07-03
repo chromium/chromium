@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
@@ -201,11 +202,16 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         initWithBaseViewController:[[UIViewController alloc] init]
                            browser:browser_.get()];
 
+    popup_menu_coordinator_ =
+        [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
+    [popup_menu_coordinator_ start];
+
     toolbar_coordinator_adaptor_ =
         [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:dispatcher];
 
     primary_toolbar_coordinator_ =
         [[PrimaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+    [primary_toolbar_coordinator_ start];
 
     secondary_toolbar_coordinator_ =
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
@@ -230,6 +236,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
+    dependencies.popupMenuCoordinator = popup_menu_coordinator_;
     dependencies.downloadManagerCoordinator = download_manager_coordinator_;
     dependencies.toolbarInterface = toolbar_coordinator_adaptor_;
     dependencies.primaryToolbarCoordinator = primary_toolbar_coordinator_;
@@ -283,6 +290,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   BrowserViewController* bvc_;
   UIWindow* window_;
   SceneState* scene_state_;
+  PopupMenuCoordinator* popup_menu_coordinator_;
   DownloadManagerCoordinator* download_manager_coordinator_;
   ToolbarCoordinatorAdaptor* toolbar_coordinator_adaptor_;
   PrimaryToolbarCoordinator* primary_toolbar_coordinator_;

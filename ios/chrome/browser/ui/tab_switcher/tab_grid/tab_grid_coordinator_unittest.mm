@@ -159,13 +159,15 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     UIWindow* window = GetAnyKeyWindow();
 
-    regular_popup_menu_coordinator_ = [[PopupMenuCoordinator alloc]
-        initWithBaseViewController:window.rootViewController
-                           browser:browser_.get()];
+    regular_popup_menu_coordinator_ =
+        [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
+    regular_popup_menu_coordinator_.baseViewController =
+        window.rootViewController;
     [regular_popup_menu_coordinator_ start];
-    incognito_popup_menu_coordinator_ = [[PopupMenuCoordinator alloc]
-        initWithBaseViewController:window.rootViewController
-                           browser:incognito_browser_.get()];
+    incognito_popup_menu_coordinator_ =
+        [[PopupMenuCoordinator alloc] initWithBrowser:incognito_browser_.get()];
+    incognito_popup_menu_coordinator_.baseViewController =
+        window.rootViewController;
     [incognito_popup_menu_coordinator_ start];
 
     coordinator_ = [[TabGridCoordinator alloc]
