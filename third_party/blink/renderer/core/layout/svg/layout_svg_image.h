@@ -98,7 +98,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   gfx::SizeF CalculateObjectSize() const;
   bool HasOverriddenIntrinsicSize() const;

@@ -31,7 +31,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
+#include "third_party/blink/renderer/core/layout/hit_test_phase.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -159,7 +159,7 @@ class CORE_EXPORT LineBoxList : public InlineBoxList<InlineFlowBox> {
                HitTestResult&,
                const HitTestLocation&,
                const PhysicalOffset& accumulated_offset,
-               HitTestAction) const;
+               HitTestPhase) const;
   bool AnyLineIntersectsRect(LineLayoutBoxModel,
                              const CullRect&,
                              const PhysicalOffset&) const;

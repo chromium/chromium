@@ -4000,13 +4000,13 @@ Node* LayoutBlockFlow::NodeForHitTest() const {
 bool LayoutBlockFlow::HitTestChildren(HitTestResult& result,
                                       const HitTestLocation& hit_test_location,
                                       const PhysicalOffset& accumulated_offset,
-                                      HitTestAction hit_test_action) {
+                                      HitTestPhase phase) {
   NOT_DESTROYED();
   PhysicalOffset scrolled_offset = accumulated_offset;
   if (IsScrollContainer())
     scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
 
-  if (hit_test_action == kHitTestFloat && !IsLayoutNGObject()) {
+  if (phase == HitTestPhase::kFloat && !IsLayoutNGObject()) {
     // Hit-test the floats using the FloatingObjects list if we're in legacy
     // layout. LayoutNG, on the other hand, just hit-tests floats in regular
     // tree order.
@@ -4016,14 +4016,13 @@ bool LayoutBlockFlow::HitTestChildren(HitTestResult& result,
 
   if (ChildrenInline()) {
     if (line_boxes_.HitTest(LineLayoutBoxModel(this), result, hit_test_location,
-                            scrolled_offset, hit_test_action)) {
+                            scrolled_offset, phase)) {
       UpdateHitTestResult(result,
                           hit_test_location.Point() - accumulated_offset);
       return true;
     }
   } else if (LayoutBlock::HitTestChildren(result, hit_test_location,
-                                          accumulated_offset,
-                                          hit_test_action)) {
+                                          accumulated_offset, phase)) {
     return true;
   }
 

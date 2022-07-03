@@ -287,17 +287,16 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() ? layout_object_->NonPseudoNode() : nullptr;
   }
 
-  bool IsInSelfHitTestingPhase(HitTestAction action) const {
+  bool IsInSelfHitTestingPhase(HitTestPhase phase) const {
     if (IsFragmentainerBox())
       return false;
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
-      return box->IsInSelfHitTestingPhase(action);
+      return box->IsInSelfHitTestingPhase(phase);
     if (IsInlineBox())
-      return action == kHitTestForeground;
+      return phase == HitTestPhase::kForeground;
     // Assuming this is some sort of container, e.g. a fragmentainer (they don't
     // have a LayoutObject associated).
-    return action == kHitTestBlockBackground ||
-           action == kHitTestChildBlockBackground;
+    return phase == HitTestPhase::kSelfBlockBackground;
   }
 
   // Whether there is a PaintLayer associated with the fragment.

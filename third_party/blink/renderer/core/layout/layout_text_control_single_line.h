@@ -57,7 +57,7 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   int TextBlockWidth() const;
 

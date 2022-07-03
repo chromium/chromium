@@ -390,7 +390,7 @@ class CORE_EXPORT LayoutTableSection final
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {

@@ -65,7 +65,7 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 };
 }  // namespace blink
 

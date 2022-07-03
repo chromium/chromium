@@ -47,7 +47,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   // LayoutEmbeddedContent::ChildFrameView returns the LocalFrameView associated
   // with the current Node, if Node is HTMLFrameOwnerElement. This is different
@@ -111,7 +111,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
       HitTestResult&,
       const HitTestLocation&,
       const PhysicalOffset& accumulated_offset,
-      HitTestAction);
+      HitTestPhase);
 };
 
 template <>

@@ -156,11 +156,11 @@ bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction action) {
+    HitTestPhase phase) {
   NOT_DESTROYED();
   bool had_result = result.InnerNode();
   bool inside = LayoutReplaced::NodeAtPoint(result, hit_test_location,
-                                            accumulated_offset, action);
+                                            accumulated_offset, phase);
 
   // Check to see if we are really over the EmbeddedContentView itself (and not
   // just in the border/padding area or the resizer area).
@@ -184,14 +184,14 @@ bool LayoutEmbeddedContent::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction action) {
+    HitTestPhase phase) {
   NOT_DESTROYED();
   auto* local_frame_view = DynamicTo<LocalFrameView>(ChildFrameView());
   bool skip_contents = (result.GetHitTestRequest().GetStopNode() == this ||
                         !result.GetHitTestRequest().AllowsChildFrameContent());
   if (!local_frame_view || skip_contents) {
     return NodeAtPointOverEmbeddedContentView(result, hit_test_location,
-                                              accumulated_offset, action);
+                                              accumulated_offset, phase);
   }
 
   // A hit test can never hit an off-screen element; only off-screen iframes are
@@ -204,13 +204,13 @@ bool LayoutEmbeddedContent::NodeAtPoint(
       local_frame_view->GetFrame().GetDocument()->Lifecycle().GetState() <
           DocumentLifecycle::kPrePaintClean) {
     return NodeAtPointOverEmbeddedContentView(result, hit_test_location,
-                                              accumulated_offset, action);
+                                              accumulated_offset, phase);
   }
 
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
-  if (action == kHitTestForeground) {
+  if (phase == HitTestPhase::kForeground) {
     auto* child_layout_view = local_frame_view->GetLayoutView();
 
     if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
@@ -253,7 +253,7 @@ bool LayoutEmbeddedContent::NodeAtPoint(
         bool point_over_embedded_content_view =
             NodeAtPointOverEmbeddedContentView(
                 point_over_embedded_content_view_result, hit_test_location,
-                accumulated_offset, action);
+                accumulated_offset, phase);
         if (point_over_embedded_content_view)
           return true;
         result = point_over_embedded_content_view_result;
@@ -263,7 +263,7 @@ bool LayoutEmbeddedContent::NodeAtPoint(
   }
 
   return NodeAtPointOverEmbeddedContentView(result, hit_test_location,
-                                            accumulated_offset, action);
+                                            accumulated_offset, phase);
 }
 
 void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,

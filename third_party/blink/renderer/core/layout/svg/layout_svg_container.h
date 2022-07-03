@@ -114,7 +114,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   // Called during layout to update the local transform.
   virtual SVGTransformChange CalculateLocalTransform(bool bounds_changed);

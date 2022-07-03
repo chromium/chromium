@@ -83,7 +83,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {

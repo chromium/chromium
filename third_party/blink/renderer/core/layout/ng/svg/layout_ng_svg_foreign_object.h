@@ -30,7 +30,7 @@ class LayoutNGSVGForeignObject final
   bool NodeAtPointFromSVG(HitTestResult& result,
                           const HitTestLocation& hit_test_location,
                           const PhysicalOffset& accumulated_offset,
-                          HitTestAction action);
+                          HitTestPhase phase);
 
  private:
   // LayoutObject override:

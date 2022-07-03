@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_CONTENT_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_CONTENT_CONTAINER_H_
 
-#include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
+#include "third_party/blink/renderer/core/layout/hit_test_phase.h"
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -29,7 +29,7 @@ class SVGContentContainer {
 
  public:
   void Layout(const SVGContainerLayoutInfo&);
-  bool HitTest(HitTestResult&, const HitTestLocation&, HitTestAction) const;
+  bool HitTest(HitTestResult&, const HitTestLocation&, HitTestPhase) const;
 
   bool UpdateBoundingBoxes(bool& object_bounding_box_valid);
   const gfx::RectF& ObjectBoundingBox() const { return object_bounding_box_; }

@@ -41,10 +41,10 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
+#include "third_party/blink/renderer/core/layout/hit_test_phase.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
@@ -104,8 +104,6 @@ enum VisualRectFlags {
 };
 
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
-
-enum HitTestFilter { kHitTestAll, kHitTestSelf, kHitTestDescendants };
 
 enum MarkingBehavior {
   kMarkOnlyThis,
@@ -2324,8 +2322,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // |hit_test_location.Point() - accumulated_offset|.
   virtual bool HitTestAllPhases(HitTestResult&,
                                 const HitTestLocation& hit_test_location,
-                                const PhysicalOffset& accumulated_offset,
-                                HitTestFilter = kHitTestAll);
+                                const PhysicalOffset& accumulated_offset);
   // Returns the node that is ultimately added to the hit test result. Some
   // objects report a hit testing node that is not their own (such as
   // continuations and some psuedo elements) and it is important that the
@@ -2337,7 +2334,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual bool NodeAtPoint(HitTestResult&,
                            const HitTestLocation& hit_test_location,
                            const PhysicalOffset& accumulated_offset,
-                           HitTestAction);
+                           HitTestPhase);
 
   virtual PositionWithAffinity PositionForPoint(const PhysicalOffset&) const;
   PositionWithAffinity CreatePositionWithAffinity(int offset,

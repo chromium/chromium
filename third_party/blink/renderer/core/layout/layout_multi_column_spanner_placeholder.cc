@@ -181,11 +181,11 @@ bool LayoutMultiColumnSpannerPlaceholder::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction action) {
+    HitTestPhase phase) {
   NOT_DESTROYED();
   return !layout_object_in_flow_thread_->HasSelfPaintingLayer() &&
          layout_object_in_flow_thread_->NodeAtPoint(result, hit_test_location,
-                                                    accumulated_offset, action);
+                                                    accumulated_offset, phase);
 }
 
 }  // namespace blink

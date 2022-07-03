@@ -84,7 +84,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset&,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   // A method to call when recursively hit testing from an SVG parent.
   // Since LayoutSVGRoot has a PaintLayer always, this will cause a
@@ -93,7 +93,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   bool NodeAtPointFromSVG(HitTestResult&,
                           const HitTestLocation&,
                           const PhysicalOffset&,
-                          HitTestAction);
+                          HitTestPhase);
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

@@ -335,11 +335,11 @@ RootInlineBox* LayoutSVGText::CreateRootInlineBox() {
 bool LayoutSVGText::NodeAtPoint(HitTestResult& result,
                                 const HitTestLocation& hit_test_location,
                                 const PhysicalOffset& accumulated_offset,
-                                HitTestAction hit_test_action) {
+                                HitTestPhase phase) {
   NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   // We only draw in the foreground phase, so we only hit-test then.
-  if (hit_test_action != kHitTestForeground)
+  if (phase != HitTestPhase::kForeground)
     return false;
 
   TransformedHitTestLocation local_location(hit_test_location,
@@ -351,7 +351,7 @@ bool LayoutSVGText::NodeAtPoint(HitTestResult& result,
     return false;
 
   if (LayoutBlock::NodeAtPoint(result, *local_location, accumulated_offset,
-                               hit_test_action))
+                               phase))
     return true;
 
   // Consider the bounding box if requested.

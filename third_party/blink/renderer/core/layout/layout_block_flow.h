@@ -611,7 +611,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,
                        const PhysicalOffset& accumulated_offset,
-                       HitTestAction) override;
+                       HitTestPhase) override;
 
   PhysicalOffset AccumulateRelativePositionOffsets() const override;
 

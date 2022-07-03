@@ -512,7 +512,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset&,
-                   HitTestAction) final {
+                   HitTestPhase) final {
     NOT_DESTROYED();
     NOTREACHED();
     return false;

@@ -302,11 +302,11 @@ HTMLMapElement* LayoutImage::ImageMap() const {
 bool LayoutImage::NodeAtPoint(HitTestResult& result,
                               const HitTestLocation& hit_test_location,
                               const PhysicalOffset& accumulated_offset,
-                              HitTestAction hit_test_action) {
+                              HitTestPhase phase) {
   NOT_DESTROYED();
   HitTestResult temp_result(result);
-  bool inside = LayoutReplaced::NodeAtPoint(
-      temp_result, hit_test_location, accumulated_offset, hit_test_action);
+  bool inside = LayoutReplaced::NodeAtPoint(temp_result, hit_test_location,
+                                            accumulated_offset, phase);
 
   if (!inside && result.GetHitTestRequest().ListBased())
     result.Append(temp_result);

@@ -211,8 +211,8 @@ bool LineBoxList::HitTest(LineLayoutBoxModel layout_object,
                           HitTestResult& result,
                           const HitTestLocation& hit_test_location,
                           const PhysicalOffset& accumulated_offset,
-                          HitTestAction hit_test_action) const {
-  if (hit_test_action != kHitTestForeground)
+                          HitTestPhase phase) const {
+  if (phase != HitTestPhase::kForeground)
     return false;
 
   // The only way an inline could hit test like this is if it has a layer.

@@ -993,19 +993,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void UpdateLayout() override;
   void Paint(const PaintInfo&) const override;
 
-  virtual bool IsInSelfHitTestingPhase(HitTestAction hit_test_action) const {
+  virtual bool IsInSelfHitTestingPhase(HitTestPhase phase) const {
     NOT_DESTROYED();
-    return hit_test_action == kHitTestForeground;
+    return phase == HitTestPhase::kForeground;
   }
 
   bool HitTestAllPhases(HitTestResult&,
                         const HitTestLocation&,
-                        const PhysicalOffset& accumulated_offset,
-                        HitTestFilter = kHitTestAll) final;
+                        const PhysicalOffset& accumulated_offset) final;
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
   // Fast check if |NodeAtPoint| may find a hit.
   bool MayIntersect(const HitTestResult& result,
                     const HitTestLocation& hit_test_location,
@@ -2177,7 +2176,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool HitTestChildren(HitTestResult&,
                                const HitTestLocation&,
                                const PhysicalOffset& accumulated_offset,
-                               HitTestAction);
+                               HitTestPhase);
 
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 

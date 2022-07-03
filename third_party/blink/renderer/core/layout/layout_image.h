@@ -155,7 +155,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
   void UpdateIntrinsicSizeIfNeeded(const LayoutSize&);

@@ -319,18 +319,18 @@ bool HitTestAllPhasesInFragment(const NGPhysicalBoxFragment& fragment,
 bool NodeAtPointInFragment(const NGPhysicalBoxFragment& fragment,
                            const HitTestLocation& hit_test_location,
                            PhysicalOffset accumulated_offset,
-                           HitTestAction action,
+                           HitTestPhase phase,
                            HitTestResult* result) {
   if (!fragment.CanTraverse()) {
     return fragment.GetMutableLayoutObject()->NodeAtPoint(
-        *result, hit_test_location, accumulated_offset, action);
+        *result, hit_test_location, accumulated_offset, phase);
   }
 
   if (!fragment.MayIntersect(*result, hit_test_location, accumulated_offset))
     return false;
 
   return NGBoxFragmentPainter(fragment).NodeAtPoint(*result, hit_test_location,
-                                                    accumulated_offset, action);
+                                                    accumulated_offset, phase);
 }
 
 // Return an ID for this fragmentainer, which is unique within the fragmentation
@@ -1883,8 +1883,8 @@ bool NGBoxFragmentPainter::HitTestContext::AddNodeToResultWithContentOffset(
 bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
                                        const HitTestLocation& hit_test_location,
                                        const PhysicalOffset& physical_offset,
-                                       HitTestAction action) {
-  HitTestContext hit_test(action, hit_test_location, physical_offset, &result);
+                                       HitTestPhase phase) {
+  HitTestContext hit_test{phase, hit_test_location, physical_offset, &result};
   return NodeAtPoint(hit_test, physical_offset);
 }
 
@@ -1892,9 +1892,9 @@ bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
                                        const HitTestLocation& hit_test_location,
                                        const PhysicalOffset& physical_offset,
                                        const PhysicalOffset& inline_root_offset,
-                                       HitTestAction action) {
-  HitTestContext hit_test(action, hit_test_location, inline_root_offset,
-                          &result);
+                                       HitTestPhase phase) {
+  HitTestContext hit_test{phase, hit_test_location, inline_root_offset,
+                          &result};
   return NodeAtPoint(hit_test, physical_offset);
 }
 
@@ -1908,7 +1908,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     return false;
 
   bool pointer_events_bounding_box = false;
-  bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
+  bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.phase);
   if (hit_test_self) {
     // Table row and table section are never a hit target.
     // SVG <text> is not a hit target except if 'pointer-events: bounding-box'.
@@ -1934,7 +1934,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       (layout_object == hit_test.result->GetHitTestRequest().GetStopNode() ||
        layout_object->ChildPaintBlockedByDisplayLock());
   if (!skip_children && box_fragment_.ShouldClipOverflowAlongEitherAxis()) {
-    // PaintLayer::HitTestContentsForFragments checked the fragments'
+    // PaintLayer::HitTestFragmentsWithPhase() checked the fragments'
     // foreground rect for intersection if a layer is self painting,
     // so only do the overflow clip check here for non-self-painting layers.
     if (!box_fragment_.HasSelfPaintingLayer() &&
@@ -1959,8 +1959,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
           physical_offset -
           PhysicalOffset(
               PhysicalFragment().PixelSnappedScrolledContentOffset());
-      HitTestContext adjusted_hit_test(hit_test.action, hit_test.location,
-                                       scrolled_offset, hit_test.result);
+      HitTestContext adjusted_hit_test{hit_test.phase, hit_test.location,
+                                       scrolled_offset, hit_test.result};
       if (HitTestChildren(adjusted_hit_test, scrolled_offset))
         return true;
     }
@@ -2032,40 +2032,28 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
 bool NGBoxFragmentPainter::HitTestAllPhases(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
-    const PhysicalOffset& accumulated_offset,
-    HitTestFilter hit_test_filter) {
+    const PhysicalOffset& accumulated_offset) {
   // TODO(mstensho): Make sure that we never create an NGBoxFragmentPainter for
   // a fragment that doesn't intersect, and DCHECK for that here.
 
   // Logic taken from LayoutObject::HitTestAllPhases().
-  HitTestContext hit_test(kHitTestForeground, hit_test_location,
-                          accumulated_offset, &result);
-  bool inside = false;
-  if (hit_test_filter != kHitTestSelf) {
-    // First test the foreground layer (lines and inlines).
-    inside = NodeAtPoint(hit_test, accumulated_offset);
-
-    // Test floats next.
-    if (!inside) {
-      hit_test.action = kHitTestFloat;
-      inside = NodeAtPoint(hit_test, accumulated_offset);
-    }
-
-    // Finally test to see if the mouse is in the background (within a child
-    // block's background).
-    if (!inside) {
-      hit_test.action = kHitTestChildBlockBackgrounds;
-      inside = NodeAtPoint(hit_test, accumulated_offset);
-    }
+  if (NodeAtPoint(result, hit_test_location, accumulated_offset,
+                  HitTestPhase::kForeground)) {
+    return true;
   }
-
-  // See if the pointer is inside us but not any of our descendants.
-  if (hit_test_filter != kHitTestDescendants && !inside) {
-    hit_test.action = kHitTestChildBlockBackground;
-    inside = NodeAtPoint(hit_test, accumulated_offset);
+  if (NodeAtPoint(result, hit_test_location, accumulated_offset,
+                  HitTestPhase::kFloat)) {
+    return true;
   }
-
-  return inside;
+  if (NodeAtPoint(result, hit_test_location, accumulated_offset,
+                  HitTestPhase::kDescendantBlockBackgrounds)) {
+    return true;
+  }
+  if (NodeAtPoint(result, hit_test_location, accumulated_offset,
+                  HitTestPhase::kSelfBlockBackground)) {
+    return true;
+  }
+  return false;
 }
 
 bool NGBoxFragmentPainter::HitTestTextItem(
@@ -2074,7 +2062,7 @@ bool NGBoxFragmentPainter::HitTestTextItem(
     const NGInlineBackwardCursor& cursor) {
   DCHECK(text_item.IsText());
 
-  if (hit_test.action != kHitTestForeground)
+  if (hit_test.phase != HitTestPhase::kForeground)
     return false;
   if (!IsVisibleToHitTest(text_item, hit_test.result->GetHitTestRequest()))
     return false;
@@ -2124,7 +2112,7 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
                       cursor.CursorForDescendants(), physical_offset))
     return true;
 
-  if (hit_test.action != kHitTestForeground)
+  if (hit_test.phase != HitTestPhase::kForeground)
     return false;
 
   if (!IsVisibleToHitTest(box_fragment_, hit_test.result->GetHitTestRequest()))
@@ -2157,9 +2145,10 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
   // restructuring. Changing the caller logic isn't easy because currently
   // floats are in the bounds of line boxes only in NG.
   if (fragment.HasFloatingDescendantsForPaint()) {
-    DCHECK_NE(hit_test.action, kHitTestFloat);
-    HitTestContext hit_test_float = hit_test;
-    hit_test_float.action = kHitTestFloat;
+    DCHECK_NE(hit_test.phase, HitTestPhase::kFloat);
+    HitTestResult result;
+    HitTestContext hit_test_float{HitTestPhase::kFloat, hit_test.location,
+                                  hit_test.inline_root_offset, &result};
     if (HitTestChildren(hit_test_float, PhysicalFragment(),
                         cursor.CursorForDescendants(), physical_offset))
       return false;
@@ -2185,17 +2174,17 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     const PhysicalOffset& physical_offset) {
   bool is_in_atomic_painting_pass;
 
-  // Note: Floats should only be hit tested in the |kHitTestFloat| phase, so we
-  // shouldn't enter a float when |action| doesn't match. However, as floats may
+  // Note: Floats should only be hit tested in the |kFloat| phase, so we
+  // shouldn't enter a float when |phase| doesn't match. However, as floats may
   // scatter around in the entire inline formatting context, we should always
   // enter non-floating inline child boxes to search for floats in the
   // |kHitTestFloat| phase, unless the child box forms another context.
   if (fragment.IsFloating()) {
-    if (hit_test.action != kHitTestFloat)
+    if (hit_test.phase != HitTestPhase::kFloat)
       return false;
     is_in_atomic_painting_pass = true;
   } else {
-    is_in_atomic_painting_pass = hit_test.action == kHitTestForeground;
+    is_in_atomic_painting_pass = hit_test.phase == HitTestPhase::kForeground;
   }
 
   if (!FragmentRequiresLegacyFallback(fragment)) {
@@ -2227,10 +2216,10 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     // |inline_root_offset| needs to be updated.
     return NGBoxFragmentPainter(cursor, *item, fragment, inline_context_)
         .NodeAtPoint(*hit_test.result, hit_test.location, physical_offset,
-                     hit_test.action);
+                     hit_test.phase);
   }
 
-  if (fragment.IsInline() && hit_test.action != kHitTestForeground)
+  if (fragment.IsInline() && hit_test.phase != HitTestPhase::kForeground)
     return false;
 
   if (fragment.IsPaintedAtomically()) {
@@ -2241,7 +2230,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
   }
 
   return fragment.GetMutableLayoutObject()->NodeAtPoint(
-      *hit_test.result, hit_test.location, physical_offset, hit_test.action);
+      *hit_test.result, hit_test.location, physical_offset, hit_test.phase);
 }
 
 bool NGBoxFragmentPainter::HitTestChildBoxItem(
@@ -2273,7 +2262,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     if (item.Style().UsedPointerEvents() != EPointerEvents::kBoundingBox)
       return false;
     // Now hit test ourselves.
-    if (hit_test.action != kHitTestForeground ||
+    if (hit_test.phase != HitTestPhase::kForeground ||
         !IsVisibleToHitTest(item, hit_test.result->GetHitTestRequest()))
       return false;
     // In SVG <text>, we should not refer to the geometry of kBox
@@ -2287,7 +2276,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
   }
 
   // Now hit test ourselves.
-  if (hit_test.action == kHitTestForeground &&
+  if (hit_test.phase == HitTestPhase::kForeground &&
       IsVisibleToHitTest(item, hit_test.result->GetHitTestRequest())) {
     const PhysicalOffset child_offset =
         hit_test.inline_root_offset + item.OffsetInContainerFragment();
@@ -2329,12 +2318,12 @@ bool NGBoxFragmentPainter::HitTestChildren(
   }
   // Check descendants of this fragment because floats may be in the
   // |NGFragmentItems| of the descendants.
-  if (hit_test.action == kHitTestFloat) {
+  if (hit_test.phase == HitTestPhase::kFloat) {
     return box_fragment_.HasFloatingDescendantsForPaint() &&
            HitTestFloatingChildren(hit_test, box_fragment_, accumulated_offset);
   }
   return HitTestBlockChildren(*hit_test.result, hit_test.location,
-                              accumulated_offset, hit_test.action);
+                              accumulated_offset, hit_test.phase);
 }
 
 bool NGBoxFragmentPainter::HitTestChildren(
@@ -2352,9 +2341,9 @@ bool NGBoxFragmentPainter::HitTestBlockChildren(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     PhysicalOffset accumulated_offset,
-    HitTestAction action) {
-  if (action == kHitTestChildBlockBackgrounds)
-    action = kHitTestChildBlockBackground;
+    HitTestPhase phase) {
+  if (phase == HitTestPhase::kDescendantBlockBackgrounds)
+    phase = HitTestPhase::kSelfBlockBackground;
   auto children = box_fragment_.Children();
   for (const NGLink& child : base::Reversed(children)) {
     const auto& block_child = To<NGPhysicalBoxFragment>(*child);
@@ -2366,14 +2355,14 @@ bool NGBoxFragmentPainter::HitTestBlockChildren(
     const PhysicalOffset child_offset = accumulated_offset + child.offset;
 
     if (block_child.IsPaintedAtomically()) {
-      if (action != kHitTestForeground)
+      if (phase != HitTestPhase::kForeground)
         continue;
       if (!HitTestAllPhasesInFragment(block_child, hit_test_location,
                                       child_offset, &result))
         continue;
     } else {
       if (!NodeAtPointInFragment(block_child, hit_test_location, child_offset,
-                                 action, &result))
+                                 phase, &result))
         continue;
     }
 
@@ -2411,7 +2400,7 @@ bool NGBoxFragmentPainter::HitTestBlockChildren(
 bool NGBoxFragmentPainter::ShouldHitTestCulledInlineAncestors(
     const HitTestContext& hit_test,
     const NGFragmentItem& item) {
-  if (hit_test.action != kHitTestForeground)
+  if (hit_test.phase != HitTestPhase::kForeground)
     return false;
   if (item.Type() == NGFragmentItem::kLine)
     return false;
@@ -2491,7 +2480,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
     const HitTestContext& hit_test,
     const NGPhysicalFragment& container,
     const PhysicalOffset& accumulated_offset) {
-  DCHECK_EQ(hit_test.action, kHitTestFloat);
+  DCHECK_EQ(hit_test.phase, HitTestPhase::kFloat);
   DCHECK(container.HasFloatingDescendantsForPaint());
 
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(&container)) {
@@ -2533,7 +2522,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
     if (child_fragment.IsLegacyLayoutRoot()) {
       if (child_fragment.GetMutableLayoutObject()->NodeAtPoint(
               *hit_test.result, hit_test.location, child_offset,
-              hit_test.action))
+              hit_test.phase))
         return true;
       continue;
     }
@@ -2545,8 +2534,8 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
       // jumping directly to its children (which is what we normally do when
       // looking for floats), in order to set up the clip rectangle.
       if (NodeAtPointInFragment(To<NGPhysicalBoxFragment>(child_fragment),
-                                hit_test.location, child_offset, kHitTestFloat,
-                                hit_test.result))
+                                hit_test.location, child_offset,
+                                HitTestPhase::kFloat, hit_test.result))
         return true;
       continue;
     }

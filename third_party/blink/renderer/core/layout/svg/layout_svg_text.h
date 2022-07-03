@@ -92,7 +92,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   void UpdateLayout() override;

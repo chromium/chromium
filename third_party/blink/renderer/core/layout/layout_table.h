@@ -501,7 +501,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   LayoutUnit BaselinePosition(
       FontBaseline,

@@ -1864,7 +1864,7 @@ void LayoutTableSection::SplitEffectiveColumn(unsigned pos, unsigned first) {
 bool LayoutTableSection::NodeAtPoint(HitTestResult& result,
                                      const HitTestLocation& hit_test_location,
                                      const PhysicalOffset& accumulated_offset,
-                                     HitTestAction action) {
+                                     HitTestPhase phase) {
   NOT_DESTROYED();
   // If we have no children then we have nothing to do.
   if (!FirstRow())
@@ -1881,7 +1881,7 @@ bool LayoutTableSection::NodeAtPoint(HitTestResult& result,
       PhysicalOffset row_accumulated_offset =
           accumulated_offset + row->PhysicalLocation(this);
       if (row->NodeAtPoint(result, hit_test_location, row_accumulated_offset,
-                           action)) {
+                           phase)) {
         UpdateHitTestResult(result,
                             hit_test_location.Point() - accumulated_offset);
         return true;
@@ -1918,7 +1918,7 @@ bool LayoutTableSection::NodeAtPoint(HitTestResult& result,
         PhysicalOffset cell_accumulated_offset =
             accumulated_offset + cell->PhysicalLocation(this);
         if (static_cast<LayoutObject*>(cell)->NodeAtPoint(
-                result, hit_test_location, cell_accumulated_offset, action)) {
+                result, hit_test_location, cell_accumulated_offset, phase)) {
           UpdateHitTestResult(result,
                               hit_test_location.Point() - accumulated_offset);
           return true;

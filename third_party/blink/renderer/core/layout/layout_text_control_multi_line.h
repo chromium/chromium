@@ -42,7 +42,7 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   // We override the two baseline functions because we want our baseline to be
   // the bottom of our margin box.

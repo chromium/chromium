@@ -98,22 +98,21 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
 
 bool SVGContentContainer::HitTest(HitTestResult& result,
                                   const HitTestLocation& location,
-                                  HitTestAction hit_test_action) const {
+                                  HitTestPhase phase) const {
   PhysicalOffset accumulated_offset;
   for (LayoutObject* child = children_.LastChild(); child;
        child = child->PreviousSibling()) {
     if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
-      if (foreign_object->NodeAtPointFromSVG(
-              result, location, accumulated_offset, hit_test_action))
+      if (foreign_object->NodeAtPointFromSVG(result, location,
+                                             accumulated_offset, phase))
         return true;
     } else if (auto* ng_foreign_object =
                    DynamicTo<LayoutNGSVGForeignObject>(child)) {
-      if (ng_foreign_object->NodeAtPointFromSVG(
-              result, location, accumulated_offset, hit_test_action))
+      if (ng_foreign_object->NodeAtPointFromSVG(result, location,
+                                                accumulated_offset, phase))
         return true;
     } else {
-      if (child->NodeAtPoint(result, location, accumulated_offset,
-                             hit_test_action))
+      if (child->NodeAtPoint(result, location, accumulated_offset, phase))
         return true;
     }
   }

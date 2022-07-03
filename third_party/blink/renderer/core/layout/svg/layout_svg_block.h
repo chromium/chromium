@@ -95,7 +95,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 };
 
 }  // namespace blink

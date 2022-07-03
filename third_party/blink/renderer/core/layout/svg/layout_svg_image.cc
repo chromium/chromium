@@ -207,11 +207,11 @@ void LayoutSVGImage::Paint(const PaintInfo& paint_info) const {
 bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
-                                 HitTestAction hit_test_action) {
+                                 HitTestPhase phase) {
   NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
-  // We only draw in the forground phase, so we only hit-test then.
-  if (hit_test_action != kHitTestForeground)
+  // We only draw in the foreground phase, so we only hit-test then.
+  if (phase != HitTestPhase::kForeground)
     return false;
 
   const ComputedStyle& style = StyleRef();

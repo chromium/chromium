@@ -715,16 +715,20 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const HitTestRecursionData& recursion_data,
       const HitTestingTransformState* root_transform_state) const;
 
-  bool HitTestContents(HitTestResult&,
-                       const NGPhysicalBoxFragment*,
-                       const PhysicalOffset& fragment_offset,
-                       const HitTestLocation&,
-                       HitTestFilter) const;
-  bool HitTestContentsForFragments(const PaintLayerFragments&,
-                                   HitTestResult&,
-                                   const HitTestLocation&,
-                                   HitTestFilter,
-                                   bool& inside_clip_rect) const;
+  bool HitTestFragmentWithPhase(HitTestResult&,
+                                const NGPhysicalBoxFragment*,
+                                const PhysicalOffset& fragment_offset,
+                                const HitTestLocation&,
+                                HitTestPhase phase) const;
+  bool HitTestFragmentsWithPhase(const PaintLayerFragments&,
+                                 HitTestResult&,
+                                 const HitTestLocation&,
+                                 HitTestPhase,
+                                 bool& inside_clip_rect) const;
+  bool HitTestForegroundForFragments(const PaintLayerFragments&,
+                                     HitTestResult&,
+                                     const HitTestLocation&,
+                                     bool& inside_clip_rect) const;
   PaintLayer* HitTestTransformedLayerInFragments(
       const PaintLayer& transform_container,
       const PaintLayerFragment* container_fragment,

@@ -1708,7 +1708,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
 bool LayoutTable::NodeAtPoint(HitTestResult& result,
                               const HitTestLocation& hit_test_location,
                               const PhysicalOffset& accumulated_offset,
-                              HitTestAction action) {
+                              HitTestPhase phase) {
   NOT_DESTROYED();
   // Check kids first.
   bool skip_children = (result.GetHitTestRequest().GetStopNode() == this);
@@ -1722,7 +1722,7 @@ bool LayoutTable::NodeAtPoint(HitTestResult& result,
         PhysicalOffset child_accumulated_offset =
             accumulated_offset + To<LayoutBox>(child)->PhysicalLocation(this);
         if (child->NodeAtPoint(result, hit_test_location,
-                               child_accumulated_offset, action)) {
+                               child_accumulated_offset, phase)) {
           UpdateHitTestResult(result,
                               hit_test_location.Point() - accumulated_offset);
           return true;
@@ -1734,8 +1734,7 @@ bool LayoutTable::NodeAtPoint(HitTestResult& result,
   // Check our bounds next.
   PhysicalRect bounds_rect(accumulated_offset, Size());
   if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
-      (action == kHitTestBlockBackground ||
-       action == kHitTestChildBlockBackground) &&
+      (phase == HitTestPhase::kSelfBlockBackground) &&
       hit_test_location.Intersects(bounds_rect)) {
     UpdateHitTestResult(result, hit_test_location.Point() - accumulated_offset);
     if (result.AddNodeToListBasedTestResult(GetNode(), hit_test_location,

@@ -1306,7 +1306,7 @@ LayoutUnit LayoutBlock::TextIndentOffset() const {
 bool LayoutBlock::HitTestChildren(HitTestResult& result,
                                   const HitTestLocation& hit_test_location,
                                   const PhysicalOffset& accumulated_offset,
-                                  HitTestAction hit_test_action) {
+                                  HitTestPhase phase) {
   NOT_DESTROYED();
   DCHECK(!ChildrenInline());
 
@@ -1317,15 +1317,15 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
     DCHECK(fragment);
     DCHECK(!fragment->HasItems());
     return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-        result, hit_test_location, accumulated_offset, hit_test_action);
+        result, hit_test_location, accumulated_offset, phase);
   }
 
   PhysicalOffset scrolled_offset = accumulated_offset;
   if (IsScrollContainer())
     scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
-  HitTestAction child_hit_test = hit_test_action;
-  if (hit_test_action == kHitTestChildBlockBackgrounds)
-    child_hit_test = kHitTestChildBlockBackground;
+  HitTestPhase child_hit_test = phase;
+  if (phase == HitTestPhase::kDescendantBlockBackgrounds)
+    child_hit_test = HitTestPhase::kSelfBlockBackground;
   for (LayoutBox* child = LastChildBox(); child;
        child = child->PreviousSiblingBox()) {
     if (child->HasSelfPaintingLayer() || child->IsColumnSpanAll())
@@ -1335,7 +1335,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
         scrolled_offset + child->PhysicalLocation(this);
     bool did_hit;
     if (child->IsFloating()) {
-      if (hit_test_action != kHitTestFloat || !IsLayoutNGObject())
+      if (phase != HitTestPhase::kFloat || !IsLayoutNGObject())
         continue;
       // Hit-test the floats in regular tree order if this is LayoutNG. Only
       // legacy layout uses the FloatingObjects list.

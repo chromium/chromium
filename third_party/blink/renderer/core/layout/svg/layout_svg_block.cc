@@ -187,7 +187,7 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
 bool LayoutSVGBlock::NodeAtPoint(HitTestResult&,
                                  const HitTestLocation&,
                                  const PhysicalOffset&,
-                                 HitTestAction) {
+                                 HitTestPhase) {
   NOT_DESTROYED();
   NOTREACHED();
   return false;

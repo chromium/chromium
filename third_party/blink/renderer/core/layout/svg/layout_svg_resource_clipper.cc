@@ -267,7 +267,7 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
            !To<LayoutBoxModelObject>(layout_object)->HasSelfPaintingLayer());
 
     if (layout_object->NodeAtPoint(result, *local_location, PhysicalOffset(),
-                                   kHitTestForeground))
+                                   HitTestPhase::kForeground))
       return true;
   }
   return false;

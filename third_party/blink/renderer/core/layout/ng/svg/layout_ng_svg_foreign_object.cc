@@ -161,7 +161,7 @@ bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction) {
+    HitTestPhase) {
   NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,

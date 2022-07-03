@@ -270,7 +270,7 @@ void LayoutTableRow::UpdateLayout() {
 bool LayoutTableRow::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
-                                 HitTestAction action) {
+                                 HitTestPhase phase) {
   NOT_DESTROYED();
   // The row and the cells are all located in the section.
   const auto* section = Section();
@@ -285,7 +285,7 @@ bool LayoutTableRow::NodeAtPoint(HitTestResult& result,
     PhysicalOffset cell_accumulated_offset =
         section_accumulated_offset + cell->PhysicalLocation(section);
     if (cell->NodeAtPoint(result, hit_test_location, cell_accumulated_offset,
-                          action)) {
+                          phase)) {
       UpdateHitTestResult(
           result, hit_test_location.Point() - section_accumulated_offset);
       return true;

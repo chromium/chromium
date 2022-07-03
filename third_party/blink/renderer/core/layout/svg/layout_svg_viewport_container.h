@@ -70,7 +70,7 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 

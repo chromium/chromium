@@ -544,7 +544,7 @@ void LayoutSVGRoot::UpdateCachedBoundaries() {
 bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
                                 const HitTestLocation& hit_test_location,
                                 const PhysicalOffset& accumulated_offset,
-                                HitTestAction hit_test_action) {
+                                HitTestPhase phase) {
   NOT_DESTROYED();
   HitTestLocation local_border_box_location(hit_test_location,
                                             -accumulated_offset);
@@ -561,15 +561,14 @@ bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
     TransformedHitTestLocation local_location(local_border_box_location,
                                               LocalToBorderBoxTransform());
     if (local_location) {
-      if (content_.HitTest(result, *local_location, hit_test_action))
+      if (content_.HitTest(result, *local_location, phase))
         return true;
     }
   }
 
   // If we didn't early exit above, we've just hit the container <svg> element.
   // Unlike SVG 1.1, 2nd Edition allows container elements to be hit.
-  if ((hit_test_action == kHitTestBlockBackground ||
-       hit_test_action == kHitTestChildBlockBackground) &&
+  if (phase == HitTestPhase::kSelfBlockBackground &&
       VisibleToHitTestRequest(result.GetHitTestRequest())) {
     // Only return true here, if the last hit testing phase 'BlockBackground'
     // (or 'ChildBlockBackground' - depending on context) is executed.

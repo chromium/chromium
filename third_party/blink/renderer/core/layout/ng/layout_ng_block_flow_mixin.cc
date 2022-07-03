@@ -196,7 +196,7 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction action) {
+    HitTestPhase phase) {
   Base::CheckIsNotDestroyed();
 
   // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
@@ -215,15 +215,15 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     if (fragment->HasItems() ||
         // Check descendants of this fragment because floats may be in the
         // |NGFragmentItems| of the descendants.
-        (action == kHitTestFloat &&
+        (phase == HitTestPhase::kFloat &&
          fragment->HasFloatingDescendantsForPaint())) {
       return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-          result, hit_test_location, accumulated_offset, action);
+          result, hit_test_location, accumulated_offset, phase);
     }
   }
 
   return LayoutBlockFlow::NodeAtPoint(result, hit_test_location,
-                                      accumulated_offset, action);
+                                      accumulated_offset, phase);
 }
 
 template <typename Base>

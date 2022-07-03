@@ -2451,13 +2451,12 @@ LayoutUnit LayoutBox::AdjustContentBoxLogicalHeightForBoxSizing(
 
 bool LayoutBox::HitTestAllPhases(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
-                                 const PhysicalOffset& accumulated_offset,
-                                 HitTestFilter hit_test_filter) {
+                                 const PhysicalOffset& accumulated_offset) {
   NOT_DESTROYED();
   if (!MayIntersect(result, hit_test_location, accumulated_offset))
     return false;
   return LayoutObject::HitTestAllPhases(result, hit_test_location,
-                                        accumulated_offset, hit_test_filter);
+                                        accumulated_offset);
 }
 
 bool LayoutBox::HitTestOverflowControl(
@@ -2486,12 +2485,12 @@ bool LayoutBox::HitTestOverflowControl(
 bool LayoutBox::NodeAtPoint(HitTestResult& result,
                             const HitTestLocation& hit_test_location,
                             const PhysicalOffset& accumulated_offset,
-                            HitTestAction action) {
+                            HitTestPhase phase) {
   NOT_DESTROYED();
   if (!MayIntersect(result, hit_test_location, accumulated_offset))
     return false;
 
-  bool should_hit_test_self = IsInSelfHitTestingPhase(action);
+  bool should_hit_test_self = IsInSelfHitTestingPhase(phase);
 
   if (should_hit_test_self &&
       HitTestOverflowControl(result, hit_test_location, accumulated_offset))
@@ -2500,7 +2499,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
   bool skip_children = (result.GetHitTestRequest().GetStopNode() == this) ||
                        ChildPaintBlockedByDisplayLock();
   if (!skip_children && ShouldClipOverflowAlongEitherAxis()) {
-    // PaintLayer::HitTestContentsForFragments checked the fragments'
+    // PaintLayer::HitTestFragmentsWithPhase() checked the fragments'
     // foreground rect for intersection if a layer is self painting,
     // so only do the overflow clip check here for non-self-painting layers.
     if (!HasSelfPaintingLayer() &&
@@ -2517,7 +2516,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
   }
 
   if (!skip_children &&
-      HitTestChildren(result, hit_test_location, accumulated_offset, action)) {
+      HitTestChildren(result, hit_test_location, accumulated_offset, phase)) {
     return true;
   }
 
@@ -2551,7 +2550,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
 bool LayoutBox::HitTestChildren(HitTestResult& result,
                                 const HitTestLocation& hit_test_location,
                                 const PhysicalOffset& accumulated_offset,
-                                HitTestAction action) {
+                                HitTestPhase phase) {
   NOT_DESTROYED();
   for (LayoutObject* child = SlowLastChild(); child;
        child = child->PreviousSibling()) {
@@ -2564,7 +2563,7 @@ bool LayoutBox::HitTestChildren(HitTestResult& result,
       child_accumulated_offset += box->PhysicalLocation(this);
 
     if (child->NodeAtPoint(result, hit_test_location, child_accumulated_offset,
-                           action))
+                           phase))
       return true;
   }
 

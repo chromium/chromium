@@ -35,7 +35,7 @@ class LayoutNGMixin : public Base {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
   RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
   RecalcLayoutOverflowResult RecalcChildLayoutOverflow() override;
   void RecalcVisualOverflow() override;

@@ -81,7 +81,7 @@ template <typename Base>
 bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
                                       const HitTestLocation& hit_test_location,
                                       const PhysicalOffset& accumulated_offset,
-                                      HitTestAction action) {
+                                      HitTestPhase phase) {
   Base::CheckIsNotDestroyed();
 
   // See |Paint()|.
@@ -95,7 +95,7 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
     const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
     DCHECK(fragment);
     return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-        result, hit_test_location, accumulated_offset, action);
+        result, hit_test_location, accumulated_offset, phase);
   }
 
   return false;

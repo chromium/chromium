@@ -388,7 +388,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   PaintLayerType LayerTypeRequired() const override;
 

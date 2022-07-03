@@ -150,7 +150,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   virtual void AddColumnSetToThread(LayoutMultiColumnSet*) = 0;
   virtual void RemoveColumnSetFromThread(LayoutMultiColumnSet*);

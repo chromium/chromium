@@ -33,9 +33,9 @@ bool LayoutNGTextControlMultiLine::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction hit_test_action) {
+    HitTestPhase phase) {
   bool stop_hit_testing = LayoutNGBlockFlow::NodeAtPoint(
-      result, hit_test_location, accumulated_offset, hit_test_action);
+      result, hit_test_location, accumulated_offset, phase);
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
   if (stop_node && stop_node->NodeForHitTest() == result.InnerNode())

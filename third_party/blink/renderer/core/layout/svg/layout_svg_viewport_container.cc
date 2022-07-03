@@ -86,7 +86,7 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction action) {
+    HitTestPhase phase) {
   NOT_DESTROYED();
   // Respect the viewport clip which is in parent coordinates.
   if (SVGLayoutSupport::IsOverflowHidden(*this)) {
@@ -94,7 +94,7 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
       return false;
   }
   return LayoutSVGContainer::NodeAtPoint(result, hit_test_location,
-                                         accumulated_offset, action);
+                                         accumulated_offset, phase);
 }
 
 void LayoutSVGViewportContainer::StyleDidChange(

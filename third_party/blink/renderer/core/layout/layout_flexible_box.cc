@@ -351,9 +351,9 @@ bool LayoutFlexibleBox::HitTestChildren(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
-    HitTestAction hit_test_action) {
+    HitTestPhase phase) {
   NOT_DESTROYED();
-  if (hit_test_action != kHitTestForeground)
+  if (phase != HitTestPhase::kForeground)
     return false;
 
   PhysicalOffset scrolled_offset = accumulated_offset;
