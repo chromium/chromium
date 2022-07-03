@@ -77062,6 +77062,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="QuickDimRevertedByUser"/>
 </enum>
 
+<enum name="PowerLockEvent">
+  <summary>
+    The type of lock events in powerd, as reported by the kernel.
+  </summary>
+  <int value="0" label="StandardLock"/>
+  <int value="1" label="QuickLock"/>
+</enum>
+
 <enum name="PowerMLDimImminentAction">
   <int value="0" label="ModelIgnored">
     Dim occurred naturally following a screen dim imminent.

@@ -1070,7 +1070,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.DimEventOn{PowerSource}" enum="PowerDimEvent"
+<histogram name="Power.DimEvent{PowerSource}" enum="PowerDimEvent"
     expires_after="2023-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -1080,8 +1080,8 @@ chromium-metrics-reviews@google.com.
     the metrics is recorded.
   </summary>
   <token key="PowerSource">
-    <variant name="AC" summary="charging"/>
-    <variant name="Battery" summary="battery"/>
+    <variant name="OnAC" summary="charging"/>
+    <variant name="OnBattery" summary="battery"/>
   </token>
 </histogram>
 
@@ -1662,6 +1662,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.LockEvent{PowerSource}" enum="PowerLockEvent"
+    expires_after="2023-03-01">
+  <owner>mqg@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The lock events inside power_manager.metrics.LockEvent, recorded when a
+    quick-lock/standard-lock starts. The device is on {PowerSource} when the
+    metrics is recorded.
+  </summary>
+  <token key="PowerSource">
+    <variant name="OnAC" summary="charging"/>
+    <variant name="OnBattery" summary="battery"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Power.Mac" units="mW" expires_after="2022-11-13">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
@@ -1976,16 +1991,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.{DimEvent}.DurationSeconds" units="seconds"
+<histogram name="Power.{HpsEvent}.DurationSeconds" units="seconds"
     expires_after="2023-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
-  <summary>The duration of a {DimEvent}, recorded on undimming.</summary>
-  <token key="DimEvent">
+  <summary>
+    The duration of a {HpsEvent}, recorded on undimming/deferring.
+  </summary>
+  <token key="HpsEvent">
     <variant name="QuickDimRevertedByHps"
         summary="quick dimming undimmed by hps"/>
     <variant name="QuickDimRevertedByUser"
         summary="quick dimming undimmed by user"/>
+    <variant name="StandardDimDeferredByHps"
+        summary="standard dimming deferred by hps"/>
     <variant name="StandardDimRevertedByUser"
         summary="standard dimming undimmed by user"/>
   </token>
