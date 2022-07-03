@@ -991,10 +991,10 @@ const base::Feature kTouchpadAsyncPinchEvents{"TouchpadAsyncPinchEvents",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows swipe left/right from touchpad change browser navigation. Currently
-// only enabled by default on CrOS, LaCrOS and Windows.
+// only enabled by default on CrOS, LaCrOS, Windows and Linux.
 const base::Feature kTouchpadOverscrollHistoryNavigation {
   "TouchpadOverscrollHistoryNavigation",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
