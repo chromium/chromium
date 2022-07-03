@@ -330,12 +330,6 @@ void WaylandEventSource::OnPointerFrameEvent() {
 
   int flags = pointer_flags_ | keyboard_modifiers_;
 
-  static constexpr bool supports_trackpad_kinetic_scrolling =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      true;
-#else
-      false;
-#endif
   auto* target = current_pointer_frame_.target;
   if (!window_manager_->IsWindowValid(target))
     return;
@@ -343,15 +337,24 @@ void WaylandEventSource::OnPointerFrameEvent() {
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
   if (current_pointer_frame_.dx == 0 && current_pointer_frame_.dy == 0 &&
-      current_pointer_frame_.is_axis_stop &&
-      supports_trackpad_kinetic_scrolling) {
+      current_pointer_frame_.is_axis_stop) {
     gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
     float vx = initial_velocity.x();
     float vy = initial_velocity.y();
+#if !BUILDFLAG(IS_LINUX)
     ScrollEvent event(
         vx == 0 && vy == 0 ? ET_SCROLL_FLING_CANCEL : ET_SCROLL_FLING_START,
         pointer_location_, pointer_location_, now, flags, vx, vy, vx, vy,
         kGestureScrollFingerCount);
+#else
+    // ET_SCROLL_FLING_CANCEL is not triggered according to the Wayland
+    // protocol in the exo implementation. Therefore, it is not emitted on
+    // Linux
+    ScrollEvent event(ET_SCROLL_FLING_START, pointer_location_,
+                      pointer_location_, now, flags, vx, vy, vx, vy,
+                      kGestureScrollFingerCount);
+    is_fling_active_ = true;
+#endif
     SetTargetAndDispatchEvent(&event, target);
     recent_pointer_frames_.clear();
   } else if (current_pointer_frame_.axis_source) {
@@ -366,6 +369,17 @@ void WaylandEventSource::OnPointerFrameEvent() {
                    WL_POINTER_AXIS_SOURCE_FINGER ||
                *current_pointer_frame_.axis_source ==
                    WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
+#if BUILDFLAG(IS_LINUX)
+      // Fling will be stopped if a new scroll event is received.
+      // This matches the behaviour of GTK and Firefox
+      if (is_fling_active_) {
+        is_fling_active_ = false;
+        ScrollEvent event(ET_SCROLL_FLING_CANCEL, pointer_location_,
+                          pointer_location_, now, flags, 0, 0, 0, 0,
+                          kGestureScrollFingerCount);
+        DispatchEvent(&event);
+      }
+#endif
       ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
                         EventTimeForNow(), flags, current_pointer_frame_.dx,
                         current_pointer_frame_.dy, current_pointer_frame_.dx,
