@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MOUNT_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 
@@ -15,7 +16,8 @@ class GuestOsFileWatcher;
 
 namespace crostini {
 
-class CrostiniMountProvider : public guest_os::GuestOsMountProvider {
+class CrostiniMountProvider : public guest_os::GuestOsMountProvider,
+                              public ContainerShutdownObserver {
  public:
   explicit CrostiniMountProvider(Profile* profile,
                                  guest_os::GuestId container_id);
@@ -35,16 +37,24 @@ class CrostiniMountProvider : public guest_os::GuestOsMountProvider {
       base::FilePath mount_path,
       base::FilePath relative_path) override;
 
+  // ContainerShutdownObserver override
+  void OnContainerShutdown(const guest_os::GuestId& container_id) override;
+
  protected:
   // GuestOsMountProvider override. Make sure Crostini's running, then get
   // address info e.g. cid and vsock port.
   void Prepare(PrepareCallback callback) override;
 
  private:
+  void OnRestarted(PrepareCallback callback, CrostiniResult result);
+
   Profile* profile_;
   guest_os::GuestId container_id_;
-
-  void OnRestarted(PrepareCallback callback, CrostiniResult result);
+  base::ScopedObservation<CrostiniManager,
+                          ContainerShutdownObserver,
+                          &CrostiniManager::AddContainerShutdownObserver,
+                          &CrostiniManager::RemoveContainerShutdownObserver>
+      container_shutdown_observer_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

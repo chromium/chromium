@@ -68,7 +68,7 @@ testcase.listUpdatedWhenGuestsChanged = async () => {
     ids.push(await sendTestMessage(
         {name: 'registerMountableGuest', displayName: name, vmType: 'arcvm'}));
 
-    // ...and it should show up
+    // ...and it should show up.
     await remoteCall.waitForElement(
         appId, `#directory-tree [entry-label="${name}"]`);
   }
@@ -100,7 +100,7 @@ testcase.listUpdatedWhenGuestsChanged = async () => {
 testcase.mountGuestSuccess = async () => {
   const guestName = 'JennyAnyDots';
   // Start off with one guest.
-  const id = await sendTestMessage({
+  const guestId = await sendTestMessage({
     name: 'registerMountableGuest',
     displayName: guestName,
     canMount: true,
@@ -111,28 +111,40 @@ testcase.mountGuestSuccess = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Wait for our guest to appear and click it.
-  const query = '#directory-tree [root-type-icon=bruschetta]';
-  await remoteCall.waitAndClickElement(appId, query);
+  const placeholderQuery = '#directory-tree [root-type-icon=bruschetta]';
+  const volumeQuery =
+      `.tree-item[volume-type-for-testing="guest_os"][entry-label="${
+          guestName}"]`;
+  await remoteCall.waitAndClickElement(appId, placeholderQuery);
 
   // Wait until it's loaded.
   await remoteCall.waitForElement(
       appId, `#breadcrumbs[path="My files/${guestName}"]`);
 
-  // We should have a volume in the sidebar
-  await remoteCall.waitForElement(
-      appId,
-      `.tree-item[volume-type-for-testing="guest_os"][entry-label="${
-          guestName}"]`);
+  // We should have a volume in the sidebar.
+  await remoteCall.waitForElement(appId, volumeQuery);
   await remoteCall.waitForElement(
       appId, '#directory-tree [volume-type-icon=bruschetta]');
 
-  // We should no longer have a fake
-  await remoteCall.waitForElementsCount(appId, [query], 0);
+  // We should no longer have a fake.
+  await remoteCall.waitForElementsCount(appId, [placeholderQuery], 0);
 
-  // And the volume should be focused in the main window
+  // And the volume should be focused in the main window.
   await remoteCall.waitForElement(
       appId, `#list-container[scan-completed="${guestName}"]`);
 
-  // It should not be read-only
+  // It should not be read-only.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
+
+  // Unmount the volume.
+  await sendTestMessage({
+    name: 'unmountGuest',
+    guestId: guestId,
+  });
+
+  // We should have our fake back.
+  await remoteCall.waitForElementsCount(appId, [placeholderQuery], 1);
+
+  // And no more volume.
+  await remoteCall.waitForElementsCount(appId, [volumeQuery], 0);
 };

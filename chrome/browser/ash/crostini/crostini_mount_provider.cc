@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crostini/crostini_mount_provider.h"
+
+#include <memory>
+
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -50,6 +53,9 @@ void CrostiniMountProvider::OnRestarted(PrepareCallback callback,
   auto* manager = CrostiniManager::GetForProfile(profile_);
   auto vm_info = manager->GetVmInfo(container_id_.vm_name);
   auto container_info = manager->GetContainerInfo(container_id_);
+  if (!container_shutdown_observer_.IsObserving()) {
+    container_shutdown_observer_.Observe(manager);
+  }
 
   std::move(callback).Run(
       true, vm_info->info.cid(),
@@ -65,6 +71,16 @@ CrostiniMountProvider::CreateFileWatcher(base::FilePath mount_path,
   return std::make_unique<guest_os::GuestOsFileWatcher>(
       ash::ProfileHelper::GetUserIdHashFromProfile(profile_), container_id_,
       std::move(mount_path), std::move(relative_path));
+}
+
+void CrostiniMountProvider::OnContainerShutdown(
+    const guest_os::GuestId& container_id) {
+  if (container_id != container_id_) {
+    return;
+  }
+  // No-op if we're not mounted.
+  Unmount();
+  container_shutdown_observer_.Reset();
 }
 
 }  // namespace crostini

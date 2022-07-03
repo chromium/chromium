@@ -3240,6 +3240,16 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     registry->Unregister(id);
     return true;
   }
+  if (name == "unmountGuest") {
+    int id;
+    auto* str = value.GetDict().FindString("guestId");
+    CHECK(str != nullptr);
+    CHECK(base::StringToInt(*str, &id));
+    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+                         ->MountProviderRegistry();
+    registry->Get(id)->Unmount();
+    return true;
+  }
   return false;
 }
 

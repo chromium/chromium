@@ -696,6 +696,19 @@ export class NavigationListModel extends EventTarget {
           myFilesEntry.addEntry(new VolumeEntry(volume.volumeInfo));
         }
       }
+      // For each entry in the list, remove any for volumes that no longer
+      // exist.
+      for (const volume of myFilesEntry.getUIChildren()) {
+        if (!volume.volumeInfo ||
+            volume.volumeInfo.volumeType !=
+                VolumeManagerCommon.VolumeType.GUEST_OS) {
+          continue;
+        }
+        if (!getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS)
+                 .find(v => v.label === volume.name)) {
+          myFilesEntry.removeChildEntry(volume);
+        }
+      }
       // Now we add any guests we know about which don't already have a
       // matching volume.
       for (const item of this.guestOsPlaceholders_) {
