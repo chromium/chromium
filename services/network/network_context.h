@@ -46,6 +46,7 @@
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
 #include "services/network/network_qualities_pref_delegate.h"
+#include "services/network/network_service_memory_cache.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/transferable_directory.h"
@@ -572,6 +573,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   WebBundleManager& GetWebBundleManager() { return web_bundle_manager_; }
 
+  // May return null if the in-memory cache is disabled.
+  NetworkServiceMemoryCache* GetMemoryCache();
+
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
   // network::mojom::NetworkContext::SetCorsOriginAccessListsForOrigin.
@@ -880,6 +884,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Each network context holds its own WebBundleManager, which
   // manages the lifetiem of a WebBundleURLLoaderFactory object.
   WebBundleManager web_bundle_manager_;
+
+  NetworkServiceMemoryCache memory_cache_;
 
   // Whether all external consumers are expected to provide a non-empty
   // NetworkIsolationKey with all requests. When set, enabled a variety of

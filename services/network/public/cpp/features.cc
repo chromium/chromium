@@ -266,6 +266,9 @@ const base::Feature kFasterSetCookie{"FasterSetCookie",
 const base::Feature kBatchSimpleURLLoader{"BatchSimpleURLLoader",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNetworkServiceMemoryCache{
+    "NetworkServiceMemoryCache", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Do not send TLS client certificates in CORS preflight. Omit all client certs
 // and continue the handshake without sending one if requested.
 const base::Feature kOmitCorsClientCert{"OmitCorsClientCert",

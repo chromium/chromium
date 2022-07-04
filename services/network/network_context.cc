@@ -2178,6 +2178,13 @@ const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
   return &http_auth_merged_preferences_;
 }
 
+NetworkServiceMemoryCache* NetworkContext::GetMemoryCache() {
+  if (!base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache)) {
+    return nullptr;
+  }
+  return &memory_cache_;
+}
+
 size_t NetworkContext::NumOpenWebTransports() const {
   return std::count_if(web_transports_.begin(), web_transports_.end(),
                        [](const std::unique_ptr<WebTransport>& transport) {

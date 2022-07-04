@@ -63,6 +63,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
+#include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
@@ -1119,6 +1120,8 @@ void URLLoader::FollowRedirect(
   // requests by the same client.
   private_network_access_checker_.ResetForRedirect();
 
+  memory_cache_writer_.reset();
+
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
   if (!AreRequestHeadersSafe(modified_headers) ||
@@ -1545,6 +1548,11 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
+  if (memory_cache_) {
+    memory_cache_writer_ = memory_cache_->MaybeCreateWriter(
+        url_request_.get(), request_destination_, response_);
+  }
+
   ContinueOnResponseStarted();
 }
 
@@ -1743,6 +1751,11 @@ void URLLoader::ReadMore() {
 void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
   DCHECK(read_in_progress_);
   read_in_progress_ = false;
+
+  if (memory_cache_writer_ && pending_write_) {
+    memory_cache_writer_->OnDataRead(
+        pending_write_->buffer() + pending_write_buffer_offset_, num_bytes);
+  }
 
   size_t new_data_offset = pending_write_buffer_offset_;
   if (num_bytes > 0) {
@@ -2087,6 +2100,9 @@ void URLLoader::NotifyCompleted(int error_code) {
 
     status.pervasive_payload_requested = pervasive_payload_requested_;
 
+    if (memory_cache_writer_)
+      memory_cache_writer_->OnCompleted(status);
+
     url_loader_client_.Get()->OnComplete(status);
   }
 
@@ -2378,11 +2394,15 @@ void URLLoader::CompleteBlockedResponse(
   status.decoded_body_length = 0;
   status.should_report_corb_blocking = should_report_corb_blocking;
   status.blocked_by_response_reason = reason;
+
+  if (memory_cache_writer_)
+    memory_cache_writer_->OnCompleted(status);
   url_loader_client_.Get()->OnComplete(status);
 
   // Reset the connection to the URLLoaderClient.  This helps ensure that we
   // won't accidentally leak any data to the renderer from this point on.
   url_loader_client_.Reset();
+  memory_cache_writer_.reset();
 }
 
 URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(

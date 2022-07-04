@@ -29,6 +29,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/network_service_memory_cache.h"
 #include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
@@ -183,6 +184,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   URLLoader& operator=(const URLLoader&) = delete;
 
   ~URLLoader() override;
+
+  void SetMemoryCache(base::WeakPtr<NetworkServiceMemoryCache> memory_cache) {
+    memory_cache_ = std::move(memory_cache);
+  }
 
   // mojom::URLLoader implementation:
   void FollowRedirect(
@@ -561,6 +566,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder_;
+
+  base::WeakPtr<NetworkServiceMemoryCache> memory_cache_;
+  std::unique_ptr<NetworkServiceMemoryCacheWriter> memory_cache_writer_;
 
   bool first_auth_attempt_ = true;
 

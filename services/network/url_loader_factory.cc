@@ -348,6 +348,9 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(devtools_observer), std::move(accept_ch_frame_observer),
       third_party_cookies_enabled);
 
+  if (context_->GetMemoryCache())
+    loader->SetMemoryCache(context_->GetMemoryCache()->GetWeakPtr());
+
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
 
