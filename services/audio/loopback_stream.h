@@ -188,7 +188,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     // This is set once Start() is called, and lives until this FlowNetwork is
     // destroyed. It is used to schedule cancelable tasks run by the
     // |flow_task_runner_|.
-    absl::optional<base::OneShotTimer> timer_;
+    absl::optional<base::DeadlineTimer> timer_;
 
     // These are used to compute when the |timer_| fires and calls
     // GenerateMoreAudio(). They ensure that each timer task is scheduled to

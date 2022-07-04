@@ -276,7 +276,7 @@ void LoopbackStream::FlowNetwork::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
   DCHECK(!is_started());
 
-  timer_.emplace(clock_);
+  timer_.emplace();
   // Note: GenerateMoreAudio() will schedule the timer.
 
   first_generate_time_ = clock_->NowTicks();
@@ -401,8 +401,8 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   // due to integer truncation behaviors in the math above. The timer task
   // started below will just run immediately and there will be no harmful
   // effects in the next GenerateMoreAudio() call. http://crbug.com/847487
-  timer_->Start(FROM_HERE, next_generate_time_ - now, this,
-                &FlowNetwork::GenerateMoreAudio);
+  timer_->Start(FROM_HERE, next_generate_time_, this,
+                &FlowNetwork::GenerateMoreAudio, base::ExactDeadline(true));
 }
 
 }  // namespace audio
