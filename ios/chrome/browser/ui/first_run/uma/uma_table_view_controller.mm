@@ -135,6 +135,8 @@ NSMutableAttributedString* AddIndentAttributes(NSString* string,
   switchItem.on = self.UMAReportingUserChoice;
   switchItem.text =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX);
+  switchItem.accessibilityIdentifier =
+      kImproveChromeItemAccessibilityIdentifier;
   [model addItem:switchItem toSectionWithIdentifier:UMAMainSectionIdentifier];
 
   // Adds the footer.
