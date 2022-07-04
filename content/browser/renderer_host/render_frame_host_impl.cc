@@ -6667,10 +6667,10 @@ void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
   RenderFrameProxyHost* proxy = nullptr;
 
   if (IsFencedFrameRoot()) {
-    // TODO(bokan): This is overy trusting of the renderer. We'll need some way
+    // TODO(bokan): This is overly trusting of the renderer. We'll need some way
     // to verify that the browser is the one that initiated this
     // ScrollFocusedEditable process.
-    // https://crbug.com/1123606. I&S tracker row 484.
+    // https://crbug.com/1123606. I&S tracker row 191.
     if (!params->for_focused_editable) {
       local_frame_host_receiver_.ReportBadMessage(
           "ScrollRectToVisibleInParentFrame can only be used for "
@@ -6698,7 +6698,14 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
           DisallowActivationReasonId::kDispatchLoad))
     return;
 
-  RenderFrameProxyHost* proxy = GetProxyToParent();
+  // TODO(bokan): This is overly trusting of the renderer. Ideally we'd check
+  // that a keyboard event was recently sent. https://crbug.com/1123606. I&S
+  // tracker row 191.
+  RenderFrameProxyHost* proxy =
+      (IsFencedFrameRoot() && frame_tree_->IsFencedFramesMPArchBased())
+          ? GetProxyToOuterDelegate()
+          : GetProxyToParent();
+
   if (!proxy) {
     // Only frames with an out-of-process parent frame should be sending this
     // message.

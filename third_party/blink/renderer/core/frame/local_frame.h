@@ -215,10 +215,6 @@ class CORE_EXPORT LocalFrame final
   // subtree, updating the inert bit on all descendant frames.
   void SetIsInert(bool) override;
   void SetInheritedEffectiveTouchAction(TouchAction) override;
-  bool BubbleLogicalScrollFromChildFrame(
-      mojom::blink::ScrollDirection direction,
-      ui::ScrollGranularity granularity,
-      Frame* child) override;
   void DidFocus() override;
   bool IsAdSubframe() const override;
 
@@ -313,6 +309,22 @@ class CORE_EXPORT LocalFrame final
   // Notify |virtual_keyboard_overlay_changed_observers_| that keyboard overlay
   // rect has changed.
   void NotifyVirtualKeyboardOverlayRectObservers(const gfx::Rect&) const;
+
+  // Bubbles a logical scroll to the parent frame, if one exists. For a local
+  // frame, this will continue the scroll synchronously. For remote frames and
+  // frame tree boundaries, this will IPC the scroll via the browser process.
+  // Returns true if the scroll is locally consumed, false otherwise.
+  bool BubbleLogicalScrollInParentFrame(mojom::blink::ScrollDirection direction,
+                                        ui::ScrollGranularity granularity);
+
+  // Receives and continues a bubbled logical scroll from the child frame (sent
+  // via the method above). This can either be called synchronously by the
+  // method above or from the RemoteFrame child after being sent via IPC.
+  // Returns true if the scroll is locally consumed, false otherwise.
+  bool BubbleLogicalScrollFromChildFrame(
+      mojom::blink::ScrollDirection direction,
+      ui::ScrollGranularity granularity,
+      Frame* child);
 
   // =========================================================================
   // All public functions below this point are candidates to move out of

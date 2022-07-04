@@ -402,17 +402,6 @@ void RemoteFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
   inherited_effective_touch_action_ = touch_action;
 }
 
-bool RemoteFrame::BubbleLogicalScrollFromChildFrame(
-    mojom::blink::ScrollDirection direction,
-    ui::ScrollGranularity granularity,
-    Frame* child) {
-  DCHECK(child->Client());
-  To<LocalFrame>(child)
-      ->GetLocalFrameHostRemote()
-      .BubbleLogicalScrollInParentFrame(direction, granularity);
-  return false;
-}
-
 void RemoteFrame::RenderFallbackContent() {
   Frame::RenderFallbackContent();
 }
@@ -648,10 +637,19 @@ void RemoteFrame::SetNeedsOcclusionTracking(bool needs_tracking) {
 
 void RemoteFrame::BubbleLogicalScroll(mojom::blink::ScrollDirection direction,
                                       ui::ScrollGranularity granularity) {
-  Frame* parent_frame = Parent();
-  DCHECK(parent_frame);
-  DCHECK(parent_frame->IsLocalFrame());
+  LocalFrame* parent_frame = nullptr;
+  if (auto* parent = DynamicTo<LocalFrame>(Parent())) {
+    parent_frame = parent;
+  } else {
+    // This message can be received by an embedded frame tree's placeholder
+    // RemoteFrame in which case Parent() is not connected to the outer frame
+    // tree.
+    auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(Owner());
+    DCHECK(owner_element);
+    parent_frame = owner_element->GetDocument().GetFrame();
+  }
 
+  DCHECK(parent_frame);
   parent_frame->BubbleLogicalScrollFromChildFrame(direction, granularity, this);
 }
 

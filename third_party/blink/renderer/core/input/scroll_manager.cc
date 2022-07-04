@@ -415,8 +415,6 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
   return false;
 }
 
-// TODO(bokan): This should be merged with logicalScroll assuming
-// defaultSpaceEventHandler's chaining scroll can be done crossing frames.
 bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
                                    ui::ScrollGranularity granularity,
                                    Node* starting_node,
@@ -425,16 +423,10 @@ bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
   // here because of an onLoad event, in which case the final layout hasn't been
   // performed yet.
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
-  // FIXME: enable scroll customization in this case. See crbug.com/410974.
   if (LogicalScroll(direction, granularity, starting_node, mouse_press_node))
     return true;
 
-  Frame* parent_frame = frame_->Tree().Parent();
-  if (!parent_frame)
-    return false;
-
-  return parent_frame->BubbleLogicalScrollFromChildFrame(direction, granularity,
-                                                         frame_);
+  return frame_->BubbleLogicalScrollInParentFrame(direction, granularity);
 }
 
 void ScrollManager::CustomizedScroll(ScrollState& scroll_state) {
