@@ -155,6 +155,10 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
 
  protected:
   // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override {
+    return SharedImageBackingType::kAngleVulkan;
+  }
+
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override {
     NOTREACHED() << "Not supported.";
     return false;

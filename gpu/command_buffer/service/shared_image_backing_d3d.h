@@ -104,20 +104,17 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
 
   ~SharedImageBackingD3D() override;
 
+  // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
-
   bool CopyToGpuMemoryBuffer() override;
-
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
-
   bool PresentSwapChain() override;
-
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type) override;
-
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDump* dump,
                     base::trace_event::ProcessMemoryDump* pmd,

@@ -55,6 +55,7 @@ class GPU_GLES2_EXPORT SharedImageVideo : public SharedImageBackingAndroid {
   SharedImageVideo& operator=(const SharedImageVideo&) = delete;
 
   // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;

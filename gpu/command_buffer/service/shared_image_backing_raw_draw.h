@@ -33,6 +33,7 @@ class SharedImageBackingRawDraw : public ClearTrackingSharedImageBacking {
   ~SharedImageBackingRawDraw() override;
 
   // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   void OnMemoryDump(const std::string& dump_name,

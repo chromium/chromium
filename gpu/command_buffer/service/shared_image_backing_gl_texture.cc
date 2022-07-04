@@ -138,6 +138,10 @@ void SharedImageBackingGLTexture::OnMemoryDump(
   }
 }
 
+SharedImageBackingType SharedImageBackingGLTexture::GetType() const {
+  return SharedImageBackingType::kGLTexture;
+}
+
 gfx::Rect SharedImageBackingGLTexture::ClearedRect() const {
   if (!IsPassthrough())
     return texture_->GetLevelClearedRect(texture_->target(), 0);

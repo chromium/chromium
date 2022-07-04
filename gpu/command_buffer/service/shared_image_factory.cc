@@ -31,6 +31,8 @@
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
@@ -107,6 +109,21 @@ bool ShouldUseOzoneFactory() {
 #else
   return false;
 #endif
+}
+
+const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
+  switch (type) {
+    case gfx::EMPTY_BUFFER:
+      return "empty";
+    case gfx::SHARED_MEMORY_BUFFER:
+      return "shared_memory";
+    case gfx::IO_SURFACE_BUFFER:
+    case gfx::NATIVE_PIXMAP:
+    case gfx::DXGI_SHARED_HANDLE:
+    case gfx::ANDROID_HARDWARE_BUFFER:
+      return "platform";
+  }
+  NOTREACHED();
 }
 
 enum DmaBufSupportedType {
@@ -445,9 +462,14 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                     /*is_pixel_used=*/false);
   if (!factory)
     return false;
+
   auto backing = factory->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, IsSharedBetweenThreads(usage));
+  DVLOG(1) << "CreateSharedImage[" << backing->GetName()
+           << "] size=" << size.ToString()
+           << " usage=" << CreateLabelForSharedImageUsage(usage)
+           << " resource_format=" << viz::ResourceFormatToString(format);
   return RegisterBacking(std::move(backing), allow_legacy_mailbox);
 }
 
@@ -480,11 +502,18 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   }
   if (!factory)
     return false;
+
   auto backing =
       factory->CreateSharedImage(mailbox, format, size, color_space,
                                  surface_origin, alpha_type, usage, data);
-  if (backing)
+  if (backing) {
+    DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
+             << "] with pixels size=" << size.ToString()
+             << " usage=" << CreateLabelForSharedImageUsage(usage)
+             << " resource_format=" << viz::ResourceFormatToString(format);
+
     backing->OnWriteSucceeded();
+  }
   return RegisterBacking(std::move(backing), allow_legacy_mailbox);
 }
 
@@ -508,11 +537,20 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                         /*is_pixel_used=*/false, handle.type);
   if (!factory)
     return false;
+
+  gfx::GpuMemoryBufferType gmb_type = handle.type;
   auto backing = factory->CreateSharedImage(
       mailbox, client_id, std::move(handle), format, plane, surface_handle,
       size, color_space, surface_origin, alpha_type, usage);
-  if (backing)
+  if (backing) {
+    DVLOG(1) << "CreateSharedImage[" << backing->GetName()
+             << "] from handle size=" << size.ToString()
+             << " usage=" << CreateLabelForSharedImageUsage(usage)
+             << " buffer_format=" << gfx::BufferFormatToString(format)
+             << " gmb_type=" << GmbTypeToString(gmb_type);
+
     backing->OnWriteSucceeded();
+  }
   return RegisterBacking(std::move(backing), allow_legacy_mailbox);
 }
 
@@ -727,9 +765,9 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   }
 
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
-             << usage << ", format: " << format
+             << CreateLabelForSharedImageUsage(usage) << ", format: " << format
              << ", share_between_threads: " << share_between_threads
-             << ", gmb_type: " << gmb_type;
+             << ", gmb_type: " << GmbTypeToString(gmb_type);
   return nullptr;
 }
 

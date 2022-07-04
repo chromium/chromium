@@ -441,6 +441,10 @@ ID3D11Texture2D* SharedImageBackingD3D::GetOrCreateStagingTexture() {
   return staging_texture_.Get();
 }
 
+SharedImageBackingType SharedImageBackingD3D::GetType() const {
+  return SharedImageBackingType::kD3D;
+}
+
 void SharedImageBackingD3D::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
   if (!shared_memory_handle_.is_null())

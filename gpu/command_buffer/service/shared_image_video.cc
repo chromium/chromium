@@ -108,6 +108,10 @@ std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
   return texture;
 }
 
+SharedImageBackingType SharedImageVideo::GetType() const {
+  return SharedImageBackingType::kVideo;
+}
+
 gfx::Rect SharedImageVideo::ClearedRect() const {
   // SharedImageVideo objects are always created from pre-initialized textures
   // provided by the media decoder. Always treat these as cleared (return the

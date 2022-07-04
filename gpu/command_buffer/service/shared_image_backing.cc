@@ -12,6 +12,41 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 
 namespace gpu {
+namespace {
+
+const char* BackingTypeToString(SharedImageBackingType type) {
+  switch (type) {
+    case SharedImageBackingType::kTest:
+      return "TestBacking";
+    case SharedImageBackingType::kExternalVkImage:
+      return "ExternalVkImageBacking";
+    case SharedImageBackingType::kD3D:
+      return "SharedImageBackingD3D";
+    case SharedImageBackingType::kEglImage:
+      return "SharedImageBackingEglImage";
+    case SharedImageBackingType::kAHB:
+      return "SharedImageBackingAHB";
+    case SharedImageBackingType::kAngleVulkan:
+      return "AngleVulkanBacking";
+    case SharedImageBackingType::kGLImage:
+      return "SharedImageBackingGLImage";
+    case SharedImageBackingType::kGLTexture:
+      return "SharedImageBackingGLTexture";
+    case SharedImageBackingType::kOzone:
+      return "SharedImageBackingOzone";
+    case SharedImageBackingType::kRawDraw:
+      return "SharedImageBackingRawDraw";
+    case SharedImageBackingType::kSharedMemory:
+      return "SharedImageBackingSharedMemory";
+    case SharedImageBackingType::kVideo:
+      return "SharedImageVideo";
+    case SharedImageBackingType::kWrappedSkImage:
+      return "WrappedSkImage";
+  }
+  NOTREACHED();
+};
+
+}  // namespace
 
 SharedImageBacking::SharedImageBacking(const Mailbox& mailbox,
                                        viz::ResourceFormat format,
@@ -171,6 +206,10 @@ void SharedImageBacking::UnregisterImageFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
 
   factory_ = nullptr;
+}
+
+const char* SharedImageBacking::GetName() const {
+  return BackingTypeToString(GetType());
 }
 
 bool SharedImageBacking::HasAnyRefs() const {

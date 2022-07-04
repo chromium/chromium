@@ -46,6 +46,7 @@ class SharedImageBackingGLTexture : public ClearTrackingSharedImageBacking {
                     base::trace_event::MemoryAllocatorDump* dump,
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
+  SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) final;

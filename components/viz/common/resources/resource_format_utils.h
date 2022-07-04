@@ -29,6 +29,8 @@ VIZ_RESOURCE_FORMAT_EXPORT bool HasAlpha(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
 SkColorTypeToResourceFormat(SkColorType color_type);
 
+VIZ_RESOURCE_FORMAT_EXPORT const char* ResourceFormatToString(ResourceFormat);
+
 // The following functions use unsigned int instead of GLenum, since including
 // third_party/khronos/GLES2/gl2.h causes redefinition errors as
 // macros/functions defined in it conflict with macros/functions defined in

@@ -92,6 +92,10 @@ bool SharedImageBackingSharedMemory::ProduceLegacyMailbox(
   return false;
 }
 
+SharedImageBackingType SharedImageBackingSharedMemory::GetType() const {
+  return SharedImageBackingType::kSharedMemory;
+}
+
 gfx::Rect SharedImageBackingSharedMemory::ClearedRect() const {
   NOTREACHED();
   return gfx::Rect();

@@ -150,6 +150,10 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   }
 
   // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override {
+    return SharedImageBackingType::kWrappedSkImage;
+  }
+
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override {
     return false;
   }

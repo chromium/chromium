@@ -224,6 +224,10 @@ SharedImageBackingEglImage::~SharedImageBackingEglImage() {
   DCHECK(!source_texture_holder_);
 }
 
+SharedImageBackingType SharedImageBackingEglImage::GetType() const {
+  return SharedImageBackingType::kEglImage;
+}
+
 void SharedImageBackingEglImage::Update(
     std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTREACHED();

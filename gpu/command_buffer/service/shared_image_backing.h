@@ -55,6 +55,22 @@ class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
 
+enum class SharedImageBackingType {
+  kTest = 0,
+  kExternalVkImage = 1,
+  kD3D = 2,
+  kEglImage = 3,
+  kAHB = 4,
+  kAngleVulkan = 5,
+  kGLImage = 6,
+  kGLTexture = 7,
+  kOzone = 8,
+  kRawDraw = 9,
+  kSharedMemory = 10,
+  kVideo = 11,
+  kWrappedSkImage = 12
+};
+
 // Represents the actual storage (GL texture, VkImage, GMB) for a SharedImage.
 // Should not be accessed directly, instead is accessed through a
 // SharedImageRepresentation.
@@ -101,6 +117,11 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // SharedImageRepresentationFactoryRef.
   void RegisterImageFactory(SharedImageFactory* factory);
   void UnregisterImageFactory();
+
+  // Returns string corresponding to GetType() for logging purposes.
+  const char* GetName() const;
+
+  virtual SharedImageBackingType GetType() const = 0;
 
   // Returns the initialized / cleared region of the SharedImage.
   virtual gfx::Rect ClearedRect() const = 0;

@@ -507,6 +507,10 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
   }
 }
 
+SharedImageBackingType ExternalVkImageBacking::GetType() const {
+  return SharedImageBackingType::kExternalVkImage;
+}
+
 void ExternalVkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
   latest_content_ = kInSharedMemory;

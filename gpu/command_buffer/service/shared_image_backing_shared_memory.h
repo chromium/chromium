@@ -36,6 +36,7 @@ class SharedImageBackingSharedMemory : public SharedImageBacking {
   // gpu::SharedImageBacking:
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
+  SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
 

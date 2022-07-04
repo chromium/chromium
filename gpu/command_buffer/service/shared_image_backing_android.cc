@@ -32,7 +32,7 @@ SharedImageBackingAndroid::SharedImageBackingAndroid(
                                       is_thread_safe),
       write_sync_fd_(std::move(initial_upload_fd)) {}
 
-SharedImageBackingAndroid::~SharedImageBackingAndroid() {}
+SharedImageBackingAndroid::~SharedImageBackingAndroid() = default;
 
 bool SharedImageBackingAndroid::BeginWrite(base::ScopedFD* fd_to_wait_on) {
   AutoLock auto_lock(this);

@@ -130,6 +130,10 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
 
 SharedImageBackingOzone::~SharedImageBackingOzone() = default;
 
+SharedImageBackingType SharedImageBackingOzone::GetType() const {
+  return SharedImageBackingType::kOzone;
+}
+
 void SharedImageBackingOzone::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (shared_memory_wrapper_.IsValid()) {
     DCHECK(!in_fence);

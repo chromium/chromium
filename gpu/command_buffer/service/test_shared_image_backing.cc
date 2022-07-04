@@ -208,6 +208,10 @@ TestSharedImageBacking::~TestSharedImageBacking() {
     glDeleteTextures(1, &service_id_);
 }
 
+SharedImageBackingType TestSharedImageBacking::GetType() const {
+  return SharedImageBackingType::kTest;
+}
+
 gfx::Rect TestSharedImageBacking::ClearedRect() const {
   return texture_->GetLevelClearedRect(texture_->target(), 0);
 }

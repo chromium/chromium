@@ -35,6 +35,8 @@ class TestSharedImageBacking : public SharedImageBacking {
                          GLuint texture_id);
   ~TestSharedImageBacking() override;
 
+  // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}

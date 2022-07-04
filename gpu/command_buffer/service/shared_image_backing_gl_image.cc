@@ -487,6 +487,10 @@ void SharedImageBackingGLImage::OnMemoryDump(
   image_->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
+SharedImageBackingType SharedImageBackingGLImage::GetType() const {
+  return SharedImageBackingType::kGLImage;
+}
+
 gfx::Rect SharedImageBackingGLImage::ClearedRect() const {
   if (texture_)
     return texture_->GetLevelClearedRect(texture_->target(), 0);

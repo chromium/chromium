@@ -58,6 +58,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   ~SharedImageBackingOzone() override;
 
   // gpu::SharedImageBacking:
+  SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;

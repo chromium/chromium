@@ -128,6 +128,10 @@ SharedImageBackingRawDraw::~SharedImageBackingRawDraw() {
   DestroyBackendTexture();
 }
 
+SharedImageBackingType SharedImageBackingRawDraw::GetType() const {
+  return SharedImageBackingType::kRawDraw;
+}
+
 bool SharedImageBackingRawDraw::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   NOTIMPLEMENTED();

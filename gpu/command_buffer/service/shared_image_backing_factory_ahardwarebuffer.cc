@@ -138,6 +138,8 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
 
   ~SharedImageBackingAHB() override;
 
+  // SharedImageBacking implementation.
+  SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   // We never generate LegacyMailboxes in threadsafe mode, so exclude this
   // function from thread safety analysis.
@@ -275,6 +277,10 @@ SharedImageBackingAHB::~SharedImageBackingAHB() {
     legacy_texture_->RemoveLightweightRef(have_context());
     legacy_texture_ = nullptr;
   }
+}
+
+SharedImageBackingType SharedImageBackingAHB::GetType() const {
+  return SharedImageBackingType::kAHB;
 }
 
 gfx::Rect SharedImageBackingAHB::ClearedRect() const {
