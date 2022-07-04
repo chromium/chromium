@@ -252,9 +252,10 @@ class ContextMenuObserver {
   base::RunLoop run_loop_;
 };
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_LINUX)
 // Disabled because it fails for mac specific context menu:
-// TODO(crbug.com/1275253): Flakily crashes under Windows and Mac.
+// TODO(crbug.com/1275253): Flakily crashes under Windows and Mac & Linux.
 // TODO(crbug.com/1276463): Flakily crashes under lacros.
 #define MAYBE_LinkGenerationTest DISABLED_LinkGenerationTest
 #else
