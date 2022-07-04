@@ -350,7 +350,10 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override {}
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool, cc::PaintHoldingReason) override {}
+  void OnDeferCommitsChanged(
+      bool,
+      cc::PaintHoldingReason,
+      absl::optional<cc::PaintHoldingCommitTrigger>) override {}
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override;
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;

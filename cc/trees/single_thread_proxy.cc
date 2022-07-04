@@ -366,7 +366,7 @@ bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(true, reason);
+  layer_tree_host_->OnDeferCommitsChanged(true, reason, absl::nullopt);
   return true;
 }
 
@@ -383,7 +383,7 @@ void SingleThreadProxy::StopDeferringCommits(
                                   TRACE_ID_LOCAL(this));
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(false, reason);
+  layer_tree_host_->OnDeferCommitsChanged(false, reason, trigger);
 }
 
 bool SingleThreadProxy::IsDeferringCommits() const {

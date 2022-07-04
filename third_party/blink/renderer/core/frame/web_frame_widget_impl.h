@@ -407,6 +407,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
+  void OnDeferCommitsChanged(
+      bool defer_status,
+      cc::PaintHoldingReason reason,
+      absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
 
   // mojom::blink::FrameWidget overrides:
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,

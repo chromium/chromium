@@ -1366,6 +1366,14 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   }
 }
 
+void WebFrameWidgetImpl::OnDeferCommitsChanged(
+    bool defer_status,
+    cc::PaintHoldingReason reason,
+    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
+  GetPage()->GetChromeClient().OnDeferCommitsChanged(defer_status, reason,
+                                                     trigger);
+}
+
 void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
   // Page scale animations only happen on the main frame.
   DCHECK(ForMainFrame());

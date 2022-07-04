@@ -200,11 +200,13 @@ void LayerTreeView::OnDeferMainFrameUpdatesChanged(bool status) {
   delegate_->OnDeferMainFrameUpdatesChanged(status);
 }
 
-void LayerTreeView::OnDeferCommitsChanged(bool status,
-                                          cc::PaintHoldingReason reason) {
+void LayerTreeView::OnDeferCommitsChanged(
+    bool status,
+    cc::PaintHoldingReason reason,
+    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
   if (!delegate_)
     return;
-  delegate_->OnDeferCommitsChanged(status, reason);
+  delegate_->OnDeferCommitsChanged(status, reason, trigger);
 }
 
 void LayerTreeView::BeginMainFrameNotExpectedSoon() {

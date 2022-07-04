@@ -27,7 +27,10 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void DidUpdateLayers() override {}
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {}
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool, PaintHoldingReason) override {}
+  void OnDeferCommitsChanged(
+      bool,
+      PaintHoldingReason,
+      absl::optional<PaintHoldingCommitTrigger>) override {}
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,
                                ActiveFrameSequenceTrackers) override {}

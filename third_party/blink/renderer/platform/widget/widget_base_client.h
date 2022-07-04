@@ -64,6 +64,12 @@ class WidgetBaseClient {
       base::TimeTicks frame_begin_time,
       cc::ActiveFrameSequenceTrackers trackers) {}
 
+  // Called when the commit is deferred or restarted
+  virtual void OnDeferCommitsChanged(
+      bool defer_status,
+      cc::PaintHoldingReason reason,
+      absl::optional<cc::PaintHoldingCommitTrigger> trigger) {}
+
   // Return metrics information for the stages of BeginMainFrame. This is
   // ultimately implemented by Blink's LocalFrameUKMAggregator. It must be a
   // distinct call from the FrameMetrics above because the BeginMainFrameMetrics

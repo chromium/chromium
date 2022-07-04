@@ -650,10 +650,12 @@ bool LayerTreeHost::IsDeferringCommits() const {
   return proxy_->IsDeferringCommits();
 }
 
-void LayerTreeHost::OnDeferCommitsChanged(bool defer_status,
-                                          PaintHoldingReason reason) {
+void LayerTreeHost::OnDeferCommitsChanged(
+    bool defer_status,
+    PaintHoldingReason reason,
+    absl::optional<PaintHoldingCommitTrigger> trigger) {
   DCHECK(IsMainThread());
-  client_->OnDeferCommitsChanged(defer_status, reason);
+  client_->OnDeferCommitsChanged(defer_status, reason, trigger);
 }
 
 DISABLE_CFI_PERF

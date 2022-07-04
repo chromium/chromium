@@ -192,6 +192,24 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   //
   // Returns false if commits were already deferred, indicating that the call
   // was a no-op.
+  struct DeferredCommitObserver : public GarbageCollectedMixin {
+    virtual void WillStartDeferringCommits(cc::PaintHoldingReason) {}
+    virtual void WillStopDeferringCommits(cc::PaintHoldingCommitTrigger) {}
+
+   protected:
+    virtual ~DeferredCommitObserver() = default;
+  };
+
+  virtual void RegisterForDeferredCommitObservation(
+      DeferredCommitObserver*) = 0;
+  virtual void UnregisterFromDeferredCommitObservation(
+      DeferredCommitObserver*) = 0;
+
+  virtual void OnDeferCommitsChanged(
+      bool defer_status,
+      cc::PaintHoldingReason reason,
+      absl::optional<cc::PaintHoldingCommitTrigger> trigger) = 0;
+
   virtual bool StartDeferringCommits(LocalFrame& main_frame,
                                      base::TimeDelta timeout,
                                      cc::PaintHoldingReason reason) = 0;

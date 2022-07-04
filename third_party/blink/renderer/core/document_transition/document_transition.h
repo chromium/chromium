@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
@@ -40,7 +41,8 @@ class CORE_EXPORT DocumentTransition
     : public ScriptWrappable,
       public ActiveScriptWrappable<DocumentTransition>,
       public ExecutionContextLifecycleObserver,
-      public LocalFrameView::LifecycleNotificationObserver {
+      public LocalFrameView::LifecycleNotificationObserver,
+      public ChromeClient::DeferredCommitObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -147,6 +149,7 @@ class CORE_EXPORT DocumentTransition
   // asynchronously.
   void StartDeferringCommits();
   void StopDeferringCommits();
+  void WillStopDeferringCommits(cc::PaintHoldingCommitTrigger) final;
 
   // Allow canceling a transition until it reaches start().
   void CancelPendingTransition(const char* abort_message);

@@ -41,8 +41,10 @@ class LayerTreeViewDelegate {
   virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
 
   virtual void OnDeferMainFrameUpdatesChanged(bool) = 0;
-  virtual void OnDeferCommitsChanged(bool defer_status,
-                                     cc::PaintHoldingReason reason) = 0;
+  virtual void OnDeferCommitsChanged(
+      bool defer_status,
+      cc::PaintHoldingReason reason,
+      absl::optional<cc::PaintHoldingCommitTrigger> trigger) = 0;
 
   // Notifies that the layer tree host has completed a call to
   // RequestMainFrameUpdate in response to a BeginMainFrame.

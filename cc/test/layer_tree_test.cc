@@ -417,7 +417,10 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   }
 
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool, PaintHoldingReason) override {}
+  void OnDeferCommitsChanged(
+      bool,
+      PaintHoldingReason,
+      absl::optional<PaintHoldingCommitTrigger>) override {}
 
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,

@@ -515,11 +515,14 @@ void WidgetBase::OnDeferMainFrameUpdatesChanged(bool defer) {
   widget_input_handler_manager_->OnDeferMainFrameUpdatesChanged(defer);
 }
 
-void WidgetBase::OnDeferCommitsChanged(bool defer,
-                                       cc::PaintHoldingReason reason) {
+void WidgetBase::OnDeferCommitsChanged(
+    bool defer,
+    cc::PaintHoldingReason reason,
+    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
   // The input handler wants to know about the commit status for metric purposes
   // and to enable/disable input.
   widget_input_handler_manager_->OnDeferCommitsChanged(defer, reason);
+  client_->OnDeferCommitsChanged(defer, reason, trigger);
 }
 
 void WidgetBase::DidBeginMainFrame() {

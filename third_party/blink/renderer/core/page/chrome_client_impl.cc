@@ -184,6 +184,7 @@ ChromeClientImpl::~ChromeClientImpl() {
 void ChromeClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(popup_opening_observers_);
   visitor->Trace(external_date_time_chooser_);
+  visitor->Trace(deferred_commit_observers_);
   ChromeClient::Trace(visitor);
 }
 
@@ -1048,6 +1049,31 @@ void ChromeClientImpl::BeginLifecycleUpdates(LocalFrame& main_frame) {
   DCHECK(main_frame.IsMainFrame());
   DCHECK(web_view_);
   web_view_->StopDeferringMainFrameUpdate();
+}
+
+void ChromeClientImpl::RegisterForDeferredCommitObservation(
+    DeferredCommitObserver* observer) {
+  deferred_commit_observers_.insert(observer);
+}
+
+void ChromeClientImpl::UnregisterFromDeferredCommitObservation(
+    DeferredCommitObserver* observer) {
+  deferred_commit_observers_.erase(observer);
+}
+
+void ChromeClientImpl::OnDeferCommitsChanged(
+    bool defer_status,
+    cc::PaintHoldingReason reason,
+    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
+  DCHECK(defer_status || trigger);
+  // Make a copy since callbacks may modify the set as we're iterating it.
+  auto observers = deferred_commit_observers_;
+  for (auto& observer : observers) {
+    if (defer_status)
+      observer->WillStartDeferringCommits(reason);
+    else
+      observer->WillStopDeferringCommits(*trigger);
+  }
 }
 
 bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,

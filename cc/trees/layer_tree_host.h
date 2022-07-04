@@ -317,7 +317,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool IsDeferringCommits() const;
 
   // Notification that the proxy started or stopped deferring commits.
-  void OnDeferCommitsChanged(bool defer_status, PaintHoldingReason reason);
+  void OnDeferCommitsChanged(bool defer_status,
+                             PaintHoldingReason reason,
+                             absl::optional<PaintHoldingCommitTrigger> trigger);
 
   // Returns whether there are any outstanding ScopedDeferMainFrameUpdate,
   // though commits may be deferred also when the local_surface_id_from_parent()

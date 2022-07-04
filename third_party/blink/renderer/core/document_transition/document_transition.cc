@@ -42,6 +42,8 @@ const char kAbortedFromStart[] = "Aborted due to start() call";
 const char kAbortedFromScript[] = "Aborted due to abort() call";
 const char kAbortedFromCallback[] =
     "Aborted due to failure in DocumentTransitionCallback";
+const char kAbortedFromCallbackTimeout[] =
+    "Aborted due to timeout in DocumentTransitionCallback";
 const char kAbortedFromInvalidConfigAtStart[] =
     "Start failed: invalid element configuration";
 
@@ -449,10 +451,25 @@ void DocumentTransition::StartDeferringCommits() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "blink", "DocumentTransition::DeferringCommits", this);
   constexpr base::TimeDelta kTimeout = base::Seconds(4);
+  auto& client = document_->GetPage()->GetChromeClient();
   deferring_commits_ =
-      document_->GetPage()->GetChromeClient().StartDeferringCommits(
-          *document_->GetFrame(), kTimeout,
-          cc::PaintHoldingReason::kDocumentTransition);
+      client.StartDeferringCommits(*document_->GetFrame(), kTimeout,
+                                   cc::PaintHoldingReason::kDocumentTransition);
+  DCHECK(deferring_commits_);
+  client.RegisterForDeferredCommitObservation(this);
+}
+
+void DocumentTransition::WillStopDeferringCommits(
+    cc::PaintHoldingCommitTrigger trigger) {
+  // We don't expect to have any other triggers here, since we only register for
+  // the time we start deferring commits.
+  DCHECK(trigger == cc::PaintHoldingCommitTrigger::kDocumentTransition ||
+         trigger == cc::PaintHoldingCommitTrigger::kTimeoutDocumentTransition);
+  if (trigger == cc::PaintHoldingCommitTrigger::kTimeoutDocumentTransition)
+    CancelPendingTransition(kAbortedFromCallbackTimeout);
+  document_->GetPage()
+      ->GetChromeClient()
+      .UnregisterFromDeferredCommitObservation(this);
 }
 
 void DocumentTransition::StopDeferringCommits() {
