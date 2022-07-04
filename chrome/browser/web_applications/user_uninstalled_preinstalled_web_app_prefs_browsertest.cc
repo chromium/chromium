@@ -103,8 +103,9 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
   EXPECT_EQ(absl::nullopt, preinstalled_prefs.LookUpAppIdByInstallUrl(url2));
 }
 
+// TODO(crbug.com/1341391): Flakily crashes on Mac, Windows, Chrome OS, Linux.
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
-                       PrefsPropagateProperlyOnDefaultUninstall) {
+                       DISABLED_PrefsPropagateProperlyOnDefaultUninstall) {
   auto app_info1 = std::make_unique<WebAppInstallInfo>();
   app_info1->start_url = GURL("https://example_url1.com/");
   app_info1->title = u"Example App1";
