@@ -614,7 +614,7 @@ bool BothOnTopmostPaintLayerInStackingContext(
   if (focused_layer != candidate_layer)
     return false;
 
-  return !candidate_layer->HasVisibleDescendant();
+  return !candidate_layer->HasVisibleSelfPaintingDescendant();
 }
 
 double ComputeDistanceDataForNode(SpatialNavigationDirection direction,

@@ -437,14 +437,14 @@ LayoutUnit GridTrackSizingAlgorithmStrategy::MinSizeForChild(
   const Length& child_min_size = is_row_axis
                                      ? child.StyleRef().LogicalMinWidth()
                                      : child.StyleRef().LogicalMinHeight();
-  bool overflow_is_visible =
-      is_row_axis
-          ? child.StyleRef().OverflowInlineDirection() == EOverflow::kVisible
-          : child.StyleRef().OverflowBlockDirection() == EOverflow::kVisible;
+  auto overflow = is_row_axis ? child.StyleRef().OverflowInlineDirection()
+                              : child.StyleRef().OverflowBlockDirection();
+  bool overflow_allows_auto =
+      overflow == EOverflow::kVisible || overflow == EOverflow::kClip;
   LayoutUnit baseline_shim = algorithm_->BaselineOffsetForChild(
       child, GridAxisForDirection(Direction()));
 
-  if (child_min_size.IsAuto() && overflow_is_visible) {
+  if (child_min_size.IsAuto() && overflow_allows_auto) {
     LayoutUnit min_size = MinContentForChild(child);
     const GridSpan& span =
         algorithm_->GetGrid().GridItemSpan(child, Direction());

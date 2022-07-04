@@ -202,7 +202,7 @@ TEST_P(PaintLayerTest, HasNonIsolatedDescendantWithBlendMode) {
   EXPECT_TRUE(parent->HasNonIsolatedDescendantWithBlendMode());
   EXPECT_TRUE(stacking_parent->HasNonIsolatedDescendantWithBlendMode());
   EXPECT_FALSE(stacking_grandparent->HasNonIsolatedDescendantWithBlendMode());
-  EXPECT_TRUE(parent->HasVisibleDescendant());
+  EXPECT_TRUE(parent->HasVisibleSelfPaintingDescendant());
 }
 
 TEST_P(PaintLayerTest, HasStickyPositionDescendant) {
@@ -1046,7 +1046,7 @@ TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
       PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 }
 
-TEST_P(PaintLayerTest, HasVisibleDescendant) {
+TEST_P(PaintLayerTest, HasVisibleSelfPaintingDescendant) {
   SetBodyInnerHTML(R"HTML(
     <div id='invisible' style='position:relative'>
       <div id='visible' style='visibility: visible; position: relative'>
@@ -1056,8 +1056,8 @@ TEST_P(PaintLayerTest, HasVisibleDescendant) {
   PaintLayer* invisible = GetPaintLayerByElementId("invisible");
   PaintLayer* visible = GetPaintLayerByElementId("visible");
 
-  EXPECT_TRUE(invisible->HasVisibleDescendant());
-  EXPECT_FALSE(visible->HasVisibleDescendant());
+  EXPECT_TRUE(invisible->HasVisibleSelfPaintingDescendant());
+  EXPECT_FALSE(visible->HasVisibleSelfPaintingDescendant());
   EXPECT_FALSE(invisible->HasNonIsolatedDescendantWithBlendMode());
 }
 

@@ -173,7 +173,7 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       has_visible_content_(false),
       needs_descendant_dependent_flags_update_(true),
       needs_visual_overflow_recalc_(true),
-      has_visible_descendant_(false),
+      has_visible_self_painting_descendant_(false),
 #if DCHECK_IS_ON()
       // The root layer (LayoutView) does not need position update at start
       // because its Location() is always 0.
@@ -469,7 +469,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
   if (needs_descendant_dependent_flags_update_) {
     bool old_has_non_isolated_descendant_with_blend_mode =
         has_non_isolated_descendant_with_blend_mode_;
-    has_visible_descendant_ = false;
+    has_visible_self_painting_descendant_ = false;
     has_non_isolated_descendant_with_blend_mode_ = false;
     has_fixed_position_descendant_ = false;
     has_sticky_position_descendant_ = false;
@@ -495,8 +495,9 @@ void PaintLayer::UpdateDescendantDependentFlags() {
 
       child->UpdateDescendantDependentFlags();
 
-      if (child->has_visible_content_ || child->has_visible_descendant_)
-        has_visible_descendant_ = true;
+      if ((child->has_visible_content_ && child->IsSelfPaintingLayer()) ||
+          child->has_visible_self_painting_descendant_)
+        has_visible_self_painting_descendant_ = true;
 
       has_non_isolated_descendant_with_blend_mode_ |=
           (!child->GetLayoutObject().IsStackingContext() &&
@@ -892,7 +893,8 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
         old_child->AncestorScrollContainerLayer());
   }
 
-  if (old_child->has_visible_content_ || old_child->has_visible_descendant_)
+  if (old_child->has_visible_content_ ||
+      old_child->has_visible_self_painting_descendant_)
     MarkAncestorChainForFlagsUpdate();
 
   if (old_child->EnclosingPaginationLayer())

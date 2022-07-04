@@ -291,9 +291,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return has_visible_content_;
   }
 
-  bool HasVisibleDescendant() const {
+  bool HasVisibleSelfPaintingDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
-    return has_visible_descendant_;
+    return has_visible_self_painting_descendant_;
   }
 
   void DirtyVisibleContentStatus();
@@ -810,7 +810,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned needs_descendant_dependent_flags_update_ : 1;
   unsigned needs_visual_overflow_recalc_ : 1;
 
-  unsigned has_visible_descendant_ : 1;
+  unsigned has_visible_self_painting_descendant_ : 1;
 
 #if DCHECK_IS_ON()
   unsigned needs_position_update_ : 1;

@@ -2306,6 +2306,15 @@ class ComputedStyle : public ComputedStyleBase,
            OverflowY() == EOverflow::kVisible;
   }
 
+  // Returns true if 'overflow' is 'visible' or 'clip' along both axes.
+  bool IsOverflowVisibleOrClip() const {
+    bool overflow_x =
+        OverflowX() == EOverflow::kVisible || OverflowX() == EOverflow::kClip;
+    DCHECK(!overflow_x || OverflowY() == EOverflow::kVisible ||
+           OverflowY() == EOverflow::kClip);
+    return overflow_x;
+  }
+
   // An overflow value of visible or clip is not a scroll container, all other
   // values result in a scroll container. Also note that if visible or clip is
   // set on one axis, then the other axis must also be visible or clip. For
