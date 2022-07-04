@@ -15,11 +15,11 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -48,7 +48,7 @@ class CrostiniUtilTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -60,7 +60,7 @@ class CrostiniUtilTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -38,6 +38,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/fake_anomaly_detector_client.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
@@ -47,7 +48,6 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/account_id/account_id.h"
@@ -194,7 +194,7 @@ class CrostiniManagerTest : public testing::Test {
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
     ash::AnomalyDetectorClient::InitializeFake();
-    chromeos::ChunneldClient::InitializeFake();
+    ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -213,7 +213,7 @@ class CrostiniManagerTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

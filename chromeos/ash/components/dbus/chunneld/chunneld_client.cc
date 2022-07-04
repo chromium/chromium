@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 
 #include <memory>
 
@@ -12,12 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/chunneld/fake_chunneld_client.h"
+#include "chromeos/ash/components/dbus/chunneld/fake_chunneld_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/chunneld/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 ChunneldClient* g_instance = nullptr;
@@ -129,4 +129,4 @@ ChunneldClient::~ChunneldClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

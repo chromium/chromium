@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CHUNNELD_CHUNNELD_CLIENT_H_
-#define CHROMEOS_DBUS_CHUNNELD_CHUNNELD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CHUNNELD_CHUNNELD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CHUNNELD_CHUNNELD_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "chromeos/dbus/chunneld/chunneld_service.pb.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 // ChunneldClient is used to communicate with chunneld and monitor chunneld.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) ChunneldClient
-    : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_CHUNNELD) ChunneldClient : public DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -62,6 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) ChunneldClient
   ~ChunneldClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CHUNNELD_CHUNNELD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CHUNNELD_CHUNNELD_CLIENT_H_

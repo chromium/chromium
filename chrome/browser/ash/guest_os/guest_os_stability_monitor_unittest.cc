@@ -14,14 +14,14 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/chunneld/fake_chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
-#include "chromeos/dbus/chunneld/fake_chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +32,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
  public:
   GuestOsStabilityMonitorTest() : task_env_() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -60,7 +60,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -129,8 +129,8 @@ TEST_F(GuestOsStabilityMonitorTest, SeneschalFailure) {
 }
 
 TEST_F(GuestOsStabilityMonitorTest, ChunneldFailure) {
-  auto* chunneld_client = static_cast<chromeos::FakeChunneldClient*>(
-      chromeos::ChunneldClient::Get());
+  auto* chunneld_client =
+      static_cast<ash::FakeChunneldClient*>(ash::ChunneldClient::Get());
 
   chunneld_client->NotifyChunneldStopped();
   histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,

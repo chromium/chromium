@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/chunneld/fake_chunneld_client.h"
+#include "chromeos/ash/components/dbus/chunneld/fake_chunneld_client.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeChunneldClient::FakeChunneldClient() {}
 
@@ -40,4 +40,4 @@ void FakeChunneldClient::WaitForServiceToBeAvailable(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-}  // namespace chromeos
+}  // namespace ash

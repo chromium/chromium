@@ -21,13 +21,13 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -117,7 +117,7 @@ class CrostiniInstallerTest : public testing::Test {
 
     chromeos::DlcserviceClient::InitializeFake();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     SetOSRelease();
     waiting_fake_concierge_client_ =
@@ -155,7 +155,7 @@ class CrostiniInstallerTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
 

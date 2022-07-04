@@ -19,13 +19,13 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -170,7 +170,7 @@ class CrostiniPackageServiceTest : public testing::Test {
 
   void SetUp() override {
     DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -232,7 +232,7 @@ class CrostiniPackageServiceTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

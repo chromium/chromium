@@ -24,11 +24,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
@@ -74,7 +74,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
@@ -122,7 +122,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

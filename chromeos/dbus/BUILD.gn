@@ -29,8 +29,6 @@ component("dbus") {
     ":vm_sk_forwarding_proto",
     "//base",
     "//chromeos/dbus/cec_service",
-    "//chromeos/dbus/chunneld",
-    "//chromeos/dbus/chunneld:proto",
     "//chromeos/dbus/cros_disks",
     "//chromeos/dbus/easy_unlock",
     "//chromeos/dbus/fwupd",

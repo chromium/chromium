@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CHUNNELD_FAKE_CHUNNELD_CLIENT_H_
-#define CHROMEOS_DBUS_CHUNNELD_FAKE_CHUNNELD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CHUNNELD_FAKE_CHUNNELD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CHUNNELD_FAKE_CHUNNELD_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // FakeChunneldClient is a stub implementation of ChunneldClient used for
 // testing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) FakeChunneldClient
+class COMPONENT_EXPORT(ASH_DBUS_CHUNNELD) FakeChunneldClient
     : public ChunneldClient {
  public:
   FakeChunneldClient();
@@ -37,6 +37,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) FakeChunneldClient
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CHUNNELD_FAKE_CHUNNELD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CHUNNELD_FAKE_CHUNNELD_CLIENT_H_

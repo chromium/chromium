@@ -34,13 +34,13 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
@@ -137,7 +137,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   CrosUsbDetectorTest() {
     // Needed for ChunneldClient via GuestOsStabilityMonitor.
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
@@ -162,7 +162,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

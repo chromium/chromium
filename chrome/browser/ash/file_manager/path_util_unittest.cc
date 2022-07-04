@@ -43,10 +43,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
@@ -331,7 +331,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
 
   // Initialize DBUS and running container.
   chromeos::DBusThreadManager::Initialize();
-  chromeos::ChunneldClient::InitializeFake();
+  ash::ChunneldClient::InitializeFake();
   ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
@@ -508,7 +508,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   profile_.reset();
   ash::SeneschalClient::Shutdown();
   ash::ConciergeClient::Shutdown();
-  chromeos::ChunneldClient::Shutdown();
+  ash::ChunneldClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
 

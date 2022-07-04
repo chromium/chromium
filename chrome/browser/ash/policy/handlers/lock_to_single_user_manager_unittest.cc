@@ -23,13 +23,13 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -52,7 +52,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // This is required before Concierge tests start calling
     // DBusThreadManager::Get() for GuestOsStabilityMonitor.
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ChunneldClient::InitializeFake();
+    ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -110,7 +110,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::ChunneldClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

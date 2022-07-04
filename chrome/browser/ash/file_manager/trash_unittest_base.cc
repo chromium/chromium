@@ -13,8 +13,8 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -62,7 +62,7 @@ void TrashBaseTest::SetUp() {
   ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
 
   chromeos::DBusThreadManager::Initialize();
-  chromeos::ChunneldClient::InitializeFake();
+  ash::ChunneldClient::InitializeFake();
   ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
@@ -100,7 +100,7 @@ void TrashBaseTest::TearDown() {
   ash::SeneschalClient::Shutdown();
   ash::ConciergeClient::Shutdown();
   ash::CiceroneClient::Shutdown();
-  chromeos::ChunneldClient::Shutdown();
+  ash::ChunneldClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
 
