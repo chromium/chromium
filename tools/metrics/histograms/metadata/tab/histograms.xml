@@ -134,63 +134,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Discarding.HighPMFPolicy.DiscardAttemptsCount" units="tabs"
-    expires_after="2021-12-06">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of tab discard attempts during a high-PMF session. Recorded at
-    the end of each high PMF session, or when the number of discard attempts
-    within the same high-PMF session reaches 100 (at which point the counter
-    will reset, e.g. 102 discards attempts would be recorded in two pieces as
-    &quot;100&quot; and &quot;2&quot;).
-  </summary>
-</histogram>
-
-<histogram name="Discarding.HighPMFPolicy.DiscardSuccess" enum="BooleanSuccess"
-    expires_after="2021-12-06">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Indicates if a tab has been successfully discarded during a high-PMF
-    session.
-  </summary>
-</histogram>
-
-<histogram name="Discarding.HighPMFPolicy.MemoryPressureLevel"
-    enum="MemoryPressureLevel" expires_after="2022-02-06">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The memory pressure level when the High-PMF policy decides to discard a tab.
-    Windows and Mac only.
-  </summary>
-</histogram>
-
-<histogram name="Discarding.HighPMFPolicy.MemoryReclaimedKbAfterDiscardingATab"
-    units="KB" expires_after="2021-12-06">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The amount of memory that has been reclaimed after discarding a tab during a
-    high-PMF session. In the case of a memory increase the value will be
-    reported as 0 and will go in the underflow bucket.
-  </summary>
-</histogram>
-
-<histogram name="Discarding.HighPMFPolicy.SuccessfulDiscardsCount" units="tabs"
-    expires_after="2021-12-06">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of successful tab discards during a high-PMF session. Recorded at
-    the end of each high PMF session, or when the number of successful discards
-    within the same high-PMF session reaches 100 (at which point the counter
-    will reset, e.g. 102 successful discards would be recorded in two pieces as
-    &quot;100&quot; and &quot;2&quot;).
-  </summary>
-</histogram>
-
 <histogram name="Discarding.LargestTabFootprint" units="MiB"
     expires_after="2021-02-28">
   <owner>chrisha@chromium.org</owner>

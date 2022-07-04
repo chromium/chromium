@@ -53,10 +53,6 @@ class UrgentDiscardingParams {
   DiscardStrategy discard_strategy_;
 };
 
-// Feature that controls whether or not tabs should be automatically discarded
-// when the total PMF is too high.
-extern const base::Feature kHighPMFDiscardPolicy;
-
 // Enable background tab loading of pages (restored via session restore)
 // directly from Performance Manager rather than via TabLoader.
 extern const base::Feature kBackgroundTabLoadingFromPerformanceManager;

@@ -47,9 +47,6 @@ const base::Feature kBackgroundTabLoadingFromPerformanceManager{
     "BackgroundTabLoadingFromPerformanceManager",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kHighPMFDiscardPolicy{"HighPMFDiscardPolicy",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kHighEfficiencyModeAvailable{
     "HighEfficiencyModeAvailable", base::FEATURE_DISABLED_BY_DEFAULT};
 

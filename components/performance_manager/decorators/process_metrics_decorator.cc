@@ -114,8 +114,7 @@ void ProcessMetricsDecorator::StartTimer() {
   // fresh data.
   // TODO(sebmarchand): Measure the performance impact of this.
   if (base::FeatureList::IsEnabled(
-          features::kUrgentDiscardingFromPerformanceManager) ||
-      base::FeatureList::IsEnabled(features::kHighPMFDiscardPolicy)) {
+          features::kUrgentDiscardingFromPerformanceManager)) {
     refresh_period = kFastRefreshTimerPeriod;
   }
 #endif

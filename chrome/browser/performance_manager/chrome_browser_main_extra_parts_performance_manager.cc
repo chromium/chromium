@@ -19,7 +19,6 @@
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
-#include "chrome/browser/performance_manager/policies/high_pmf_discard_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -111,12 +110,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 #if !BUILDFLAG(IS_ANDROID)
   graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
 
-  // The PageDiscardingHelper instance is required by the HighPMFDiscardPolicy
-  // and by UrgentDiscardingFromPerformanceManager.
+  // The PageDiscardingHelper instance is required by
+  // UrgentDiscardingFromPerformanceManager.
 
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHighPMFDiscardPolicy) ||
-      base::FeatureList::IsEnabled(
           performance_manager::features::
               kUrgentDiscardingFromPerformanceManager)) {
     graph->PassToGraph(std::make_unique<
@@ -137,12 +134,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<
             performance_manager::policies::BackgroundTabLoadingPolicy>());
-  }
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kHighPMFDiscardPolicy)) {
-    graph->PassToGraph(std::make_unique<
-                       performance_manager::policies::HighPMFDiscardPolicy>());
   }
 
   // The freezing policy isn't enabled on Android yet as it doesn't play well
