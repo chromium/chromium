@@ -44,12 +44,14 @@ void SyncStartupTracker::OnStartupTimeout() {
 }
 
 void SyncStartupTracker::CheckServiceState() {
-  ServiceStartupState state = is_timed_out_
-                                  ? ServiceStartupState::kTimeout
-                                  : GetServiceStartupState(sync_service_);
+  ServiceStartupState state = GetServiceStartupState(sync_service_);
   if (state == ServiceStartupState::kPending) {
-    // Do nothing - still waiting for sync to finish starting up.
-    return;
+    if (is_timed_out_) {
+      state = ServiceStartupState::kTimeout;
+    } else {
+      // Do nothing - still waiting for sync to finish starting up.
+      return;
+    }
   }
 
   timeout_waiter_.Stop();

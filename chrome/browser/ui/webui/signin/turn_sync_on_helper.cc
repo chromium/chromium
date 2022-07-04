@@ -517,7 +517,7 @@ void TurnSyncOnHelper::OnSyncStartupStateChanged(
       NOTREACHED();
       break;
     case SyncStartupTracker::ServiceStartupState::kTimeout:
-      LOG(WARNING) << "Waiting for Sync Service to start timed out.";
+      DVLOG(1) << "Waiting for Sync Service to start timed out.";
       [[fallthrough]];
     case SyncStartupTracker::ServiceStartupState::kError:
     case SyncStartupTracker::ServiceStartupState::kComplete:
