@@ -197,30 +197,11 @@ public class JourneyLogger {
     }
 
     /**
-     * Records amount of completed/triggered transactions separated by currency.
-     *
-     * @param curreny A string indicating the curreny of the transaction.
-     * @param value A string indicating the value of the transaction.
-     * @param completed A boolean indicating whether the transaction has completed or not.
-     */
-    public void recordTransactionAmount(String currency, String value, boolean completed) {
-        JourneyLoggerJni.get().recordTransactionAmount(
-                mJourneyLoggerAndroid, JourneyLogger.this, currency, value, completed);
-    }
-
-    /**
      * Records that the payment request has entered the given checkout step.
      * @param step An int indicating the step to be recorded.
      */
     public void recordCheckoutStep(int step) {
         JourneyLoggerJni.get().recordCheckoutStep(mJourneyLoggerAndroid, JourneyLogger.this, step);
-    }
-
-    /**
-     * Records the time when request.show() is called.
-     */
-    public void setTriggerTime() {
-        JourneyLoggerJni.get().setTriggerTime(mJourneyLoggerAndroid, JourneyLogger.this);
     }
 
     /**
@@ -259,10 +240,7 @@ public class JourneyLogger {
         void setCompleted(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setAborted(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
         void setNotShown(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
-        void recordTransactionAmount(long nativeJourneyLoggerAndroid, JourneyLogger caller,
-                String currency, String value, boolean completed);
         void recordCheckoutStep(long nativeJourneyLoggerAndroid, JourneyLogger caller, int step);
-        void setTriggerTime(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setPaymentAppUkmSourceId(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, long sourceId);
     }

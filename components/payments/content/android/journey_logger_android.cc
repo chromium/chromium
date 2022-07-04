@@ -156,29 +156,12 @@ void JourneyLoggerAndroid::SetNotShown(
       static_cast<JourneyLogger::NotShownReason>(jreason));
 }
 
-void JourneyLoggerAndroid::RecordTransactionAmount(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jstring>& jcurrency,
-    const base::android::JavaParamRef<jstring>& jvalue,
-    jboolean jcompleted) {
-  journey_logger_.RecordTransactionAmount(
-      ConvertJavaStringToUTF8(env, jcurrency),
-      ConvertJavaStringToUTF8(env, jvalue), jcompleted);
-}
-
 void JourneyLoggerAndroid::RecordCheckoutStep(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jint jstep) {
   journey_logger_.RecordCheckoutStep(
       static_cast<JourneyLogger::CheckoutFunnelStep>(jstep));
-}
-
-void JourneyLoggerAndroid::SetTriggerTime(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  journey_logger_.SetTriggerTime();
 }
 
 void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(

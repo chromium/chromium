@@ -78,15 +78,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
                 R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
         mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
                 ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.TimeToCheckout.Completed"));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.TimeToCheckout.Completed.Shown"));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.TimeToCheckout.Completed.Shown.BasicCard"));
 
         // Make sure the right number of suggestions were logged.
         Assert.assertEquals(1,
@@ -112,13 +103,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
 
         // Wait for the histograms to be logged.
         Thread.sleep(200);
-
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.TimeToCheckout.UserAborted"));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "PaymentRequest.TimeToCheckout.UserAborted.Shown"));
 
         // Make sure the right number of suggestions were logged.
         Assert.assertEquals(1,

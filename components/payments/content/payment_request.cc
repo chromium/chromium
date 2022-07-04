@@ -291,7 +291,6 @@ void PaymentRequest::Show(bool wait_for_updated_details) {
   journey_logger_.RecordCheckoutStep(
       JourneyLogger::CheckoutFunnelStep::kShowCalled);
   is_show_called_ = true;
-  journey_logger_.SetTriggerTime();
 
   // A tab can display only one PaymentRequest UI at a time.
   if (display_manager_)
@@ -328,9 +327,6 @@ void PaymentRequest::Show(bool wait_for_updated_details) {
     spec_->AddInitializationObserver(this);
   } else {
     DCHECK(spec_->details().total);
-    journey_logger_.RecordTransactionAmount(
-        spec_->details().total->amount->currency,
-        spec_->details().total->amount->value, false /*completed*/);
   }
 
   // If an app store billing payment method is one of the payment methods being
@@ -424,9 +420,6 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
 
   if (is_resolving_promise_passed_into_show_method) {
     DCHECK(spec_->details().total);
-    journey_logger_.RecordTransactionAmount(
-        spec_->details().total->amount->currency,
-        spec_->details().total->amount->value, false /*completed*/);
     if (is_requested_methods_supported_invoked_) {
       if (SatisfiesSkipUIConstraints()) {
         Pay();
@@ -525,9 +518,6 @@ void PaymentRequest::Complete(mojom::PaymentComplete result) {
     journey_logger_.SetCompleted();
     has_recorded_completion_ = true;
     DCHECK(spec_->details().total);
-    journey_logger_.RecordTransactionAmount(
-        spec_->details().total->amount->currency,
-        spec_->details().total->amount->value, true /*completed*/);
 
     delegate_->GetPrefService()->SetBoolean(kPaymentsFirstTransactionCompleted,
                                             true);

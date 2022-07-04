@@ -254,11 +254,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
     }
 
-    private void verifyJourneyLoggerRecordedTransactionAmount() {
-        Mockito.verify(mJourneyLogger, Mockito.times(1))
-                .recordTransactionAmount(Mockito.eq("CNY"), Mockito.eq("123"), Mockito.eq(false));
-    }
-
     private void verifyContinuedShowWithUpdatedDetails(int times) {
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(times))
                 .continueShowWithUpdatedDetails(Mockito.any(), Mockito.anyBoolean());
@@ -623,8 +618,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .onShowCalledAndAppsQueriedAndDetailsFinalized();
-
-        verifyJourneyLoggerRecordedTransactionAmount();
     }
 
     @Test
@@ -640,8 +633,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .onShowCalledAndAppsQueriedAndDetailsFinalized();
-
-        verifyJourneyLoggerRecordedTransactionAmount();
     }
 
     @Test
@@ -657,8 +648,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .onShowCalledAndAppsQueriedAndDetailsFinalized();
-
-        verifyJourneyLoggerRecordedTransactionAmount();
     }
 
     @Test

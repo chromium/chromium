@@ -240,16 +240,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, SkipUI) {
   WaitForObservedEvent();
 
   ExpectBodyContains({R"({"currency":"USD","value":"1.00"})"});
-
-  // The initial total in digital_goods.js is 99.99 while the final total is
-  // 1.00. Verify that transaction amount metrics are recorded only once and
-  // with final total rather than the initial one. The final total falls into
-  // micro transaction category.
-  constexpr uint32_t kMicroTransaction = 1;
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kMicroTransaction, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Completed", kMicroTransaction, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, Reject) {

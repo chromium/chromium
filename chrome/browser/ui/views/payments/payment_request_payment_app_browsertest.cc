@@ -409,13 +409,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     WaitForObservedEvent();
 
     ExpectBodyContains({"bobpay.com"});
-
-    histogram_tester.ExpectTotalCount("PaymentRequest.TimeToCheckout.Completed",
-                                      1);
-    histogram_tester.ExpectTotalCount(
-        "PaymentRequest.TimeToCheckout.Completed.SkippedShow", 1);
-    histogram_tester.ExpectTotalCount(
-        "PaymentRequest.TimeToCheckout.Completed.SkippedShow.Other", 1);
   }
 }
 

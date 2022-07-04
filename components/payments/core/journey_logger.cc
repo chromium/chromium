@@ -71,15 +71,6 @@ bool ValidateExclusiveBitVector(const std::vector<bool>& bit_vector) {
   return seen_true_bit;
 }
 
-// Records time to checkout for payment requests. The 5-minute max is chosen
-// since the payment handler window times out after 5 minutes.
-void RecordTimeToCheckoutUmaHistograms(const std::string name,
-                                       const base::TimeDelta time_to_checkout) {
-  UmaHistogramCustomTimes(name, time_to_checkout,
-                          base::Milliseconds(1) /* min */,
-                          base::Minutes(5) /* max */, 100 /*bucket count*/);
-}
-
 }  // namespace
 
 JourneyLogger::JourneyLogger(bool is_incognito,
@@ -291,56 +282,6 @@ void JourneyLogger::SetNotShown(NotShownReason reason) {
                                 NOT_SHOWN_REASON_MAX);
 }
 
-void JourneyLogger::RecordTransactionAmount(std::string currency,
-                                            const std::string& value,
-                                            bool completed) {
-  DCHECK(!has_recorded_transaction_amount_[completed]);
-  has_recorded_transaction_amount_[completed] = true;
-  double amount = -1;
-  if (!base::StringToDouble(value, &amount) || amount < 0)
-    return;
-
-  std::string completion_suffix = completed ? ".Completed" : ".Triggered";
-  // The currency should be three upper-case characters between A and Z.
-  DCHECK(re2::RE2::FullMatch(currency, "^[A-Z]{3}$"));
-  // A dictionary of 3-letter recorded currency codes and their approximated USD
-  // conversion rates. Transaction currencies in currency_conversion_rates are
-  // recorded after conversion.
-  // Conversion rates last updated on April 9, 2021
-  const std::unordered_map<std::string, float> currency_conversion_rates = {
-      {"USD", 1.0},   {"EUR", 1.19},  {"GBP", 1.37}, {"JPY", 0.0091},
-      {"INR", 0.013}, {"CNY", 0.15},  {"CAD", 0.80}, {"RUB", 0.013},
-      {"PLN", 0.26},  {"AUD", 0.76},  {"BRL", 0.18}, {"UAH", 0.036},
-      {"TWD", 0.035}, {"CZK", 0.046}, {"MXN", 0.050}, {"SGD", 0.75}};
-  std::unordered_map<std::string, float>::const_iterator it =
-      currency_conversion_rates.find(currency);
-  // transactions with currencies not included in the conversion dictionary are
-  // not recorded at this point.
-  if (it == currency_conversion_rates.end())
-    return;
-
-  // Approximately convert the transaction amount to USD and map it to one of
-  // the following categories: 1-zero transactions 2- micro transactions (<= $1)
-  // 3- regular transactions.
-  double converted_amount = amount * it->second;
-  TransactionSize transaction_size = TransactionSize::kRegularTransaction;
-  if (converted_amount == 0)
-    transaction_size = TransactionSize::kZeroTransaction;
-  else if (converted_amount <= 1)
-    transaction_size = TransactionSize::kMicroTransaction;
-  base::UmaHistogramEnumeration(
-      "PaymentRequest.TransactionAmount" + completion_suffix, transaction_size);
-
-  if (payment_request_source_id_ == ukm::kInvalidSourceId)
-    return;
-
-  // Record the transaction amount in UKM.
-  ukm::builders::PaymentRequest_TransactionAmount(payment_request_source_id_)
-      .SetCompletionStatus(completed)
-      .SetCategory(static_cast<int64_t>(transaction_size))
-      .Record(ukm::UkmRecorder::Get());
-}
-
 void JourneyLogger::RecordCheckoutStep(CheckoutFunnelStep step) {
   base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel", step);
 }
@@ -354,7 +295,6 @@ void JourneyLogger::RecordJourneyStatsHistograms(
   has_recorded_ = true;
 
   RecordEventsMetric(completion_status);
-  RecordTimeToCheckout(completion_status);
 
   // Depending on the completion status record kPaymentRequestTriggered and/or
   // kCompleted checkout steps.
@@ -471,76 +411,6 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
   payment_app_source_id_ = ukm::kInvalidSourceId;
 }
 
-void JourneyLogger::RecordTimeToCheckout(
-    CompletionStatus completion_status) const {
-  const base::TimeDelta time_to_checkout =
-      base::TimeTicks::Now() - trigger_time_;
-  const std::string histogram_name = "PaymentRequest.TimeToCheckout";
-
-  // Whether or not the payment sheet was shown shown.
-  std::string ui_show_suffix;
-  if (events_ & EVENT_SHOWN)
-    ui_show_suffix = ".Shown";
-  else if (events_ & EVENT_SKIPPED_SHOW)
-    ui_show_suffix = ".SkippedShow";
-  else  // User aborted before request.show()
-    ui_show_suffix = ".BeforeShow";
-
-  std::string completion_suffix;
-  switch (completion_status) {
-    case COMPLETION_STATUS_COMPLETED: {
-      completion_suffix = ".Completed";
-      // Record time to checkout for completed requests separated by payment
-      // sheet shown status. Requests can complete only after request.show()
-      // call.
-      DCHECK_NE(".BeforeShow", ui_show_suffix);
-      RecordTimeToCheckoutUmaHistograms(
-          histogram_name + ".Completed" + ui_show_suffix, time_to_checkout);
-
-      // Record time to checkout for completed requests separated by payment
-      // sheet shown status and selected method.
-      std::string selected_method_suffix;
-      if (WasOccurred(Event2::kSelectedCreditCard)) {
-        selected_method_suffix = ".BasicCard";
-      } else if (WasOccurred(Event2::kSelectedGoogle)) {
-        selected_method_suffix = ".Google";
-      } else if (WasOccurred(Event2::kSelectedPlayBilling)) {
-        selected_method_suffix = ".PlayBilling";
-      } else if (WasOccurred(Event2::kSelectedSecurePaymentConfirmation)) {
-        selected_method_suffix = ".SecurePaymentConfirmation";
-      } else {
-        DCHECK(WasOccurred(Event2::kSelectedOther));
-        selected_method_suffix = ".Other";
-      }
-      RecordTimeToCheckoutUmaHistograms(histogram_name + ".Completed" +
-                                            ui_show_suffix +
-                                            selected_method_suffix,
-                                        time_to_checkout);
-      break;
-    }
-    case COMPLETION_STATUS_USER_ABORTED: {
-      completion_suffix = ".UserAborted";
-      // Record time to checkout for requests aborted by user separated by
-      // payment sheet shown status.
-      RecordTimeToCheckoutUmaHistograms(
-          histogram_name + ".UserAborted" + ui_show_suffix, time_to_checkout);
-      break;
-    }
-    case COMPLETION_STATUS_OTHER_ABORTED:
-      completion_suffix = ".OtherAborted";
-      break;
-    case COMPLETION_STATUS_COULD_NOT_SHOW:
-      // Do not record checkout duration when payment sheet could not shown.
-      return;
-    default:
-      NOTREACHED();
-  }
-  // Record time to checkout for payment reuqests separated by completion
-  // status.
-  RecordTimeToCheckoutUmaHistograms(histogram_name + completion_suffix,
-                                    time_to_checkout);
-}
-
 bool JourneyLogger::WasOccurred(Event2 event) const {
   return events2_ & static_cast<int>(event);
 }
@@ -638,10 +508,6 @@ void JourneyLogger::AssertOccurredTogether(Event event, Event2 event2) const {
 
 bool JourneyLogger::WasPaymentRequestTriggered() {
   return (events_ & EVENT_SHOWN) > 0 || (events_ & EVENT_SKIPPED_SHOW) > 0;
-}
-
-void JourneyLogger::SetTriggerTime() {
-  trigger_time_ = base::TimeTicks::Now();
 }
 
 void JourneyLogger::SetPaymentAppUkmSourceId(

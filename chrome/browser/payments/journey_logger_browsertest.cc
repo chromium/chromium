@@ -167,30 +167,6 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, GooglePaymentApp) {
 }
 
 // Make sure the UKM was logged correctly.
-IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, UKMTransactionAmountRecorded) {
-  SetUpForGpay();
-  EXPECT_EQ("{\"apiVersion\":1}",
-            content::EvalJs(GetActiveWebContents(), "testGPay()"));
-
-  auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PaymentRequest_TransactionAmount::kEntryName);
-  size_t num_entries = entries.size();
-  EXPECT_EQ(2u, num_entries);
-  for (size_t i = 0; i < num_entries; i++) {
-    test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[i], main_frame_url());
-    EXPECT_EQ(2U, entries[i]->metrics.size());
-    test_ukm_recorder()->ExpectEntryMetric(
-        entries[i],
-        ukm::builders::PaymentRequest_TransactionAmount::kCompletionStatusName,
-        i != 0 /* completed */);
-    test_ukm_recorder()->ExpectEntryMetric(
-        entries[i],
-        ukm::builders::PaymentRequest_TransactionAmount::kCategoryName,
-        static_cast<int64_t>(
-            JourneyLogger::TransactionSize::kRegularTransaction));
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
                        UKMCheckoutEventsRecordedForAppOrigin) {
   GURL merchant_url = https_server()->GetURL("/payment_handler.html");

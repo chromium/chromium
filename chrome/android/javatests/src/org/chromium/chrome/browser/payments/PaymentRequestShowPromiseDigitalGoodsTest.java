@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -37,11 +36,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     @Override
     public void onMainActivityStarted() {}
 
-    // The initial total in digital_goods.js is 99.99 while the final total is 1.00. Transaction
-    // amount metrics must record the final total rather than the initial one. The final total falls
-    // into the micro transaction category.
-    private static final int sMicroTransaction = 1;
-
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -57,12 +51,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
         mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Triggered", sMicroTransaction));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Completed", sMicroTransaction));
     }
 
     @Test
@@ -77,12 +65,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
         mRule.triggerUIAndWait(mRule.getResultReady());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Triggered", sMicroTransaction));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Completed", sMicroTransaction));
     }
 
     @Test
@@ -101,12 +83,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
         mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Triggered", sMicroTransaction));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Completed", sMicroTransaction));
     }
 
     @Test
@@ -121,12 +97,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
         mRule.triggerUIAndWait(mRule.getResultReady());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Triggered", sMicroTransaction));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.TransactionAmount.Completed", sMicroTransaction));
     }
 
     @Test

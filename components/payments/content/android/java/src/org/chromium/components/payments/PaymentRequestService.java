@@ -900,8 +900,6 @@ public class PaymentRequestService
     @Nullable
     private String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         assert mSpec.getRawTotal() != null;
-        mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
-                mSpec.getRawTotal().amount.value, false /*completed*/);
         if (isSecurePaymentConfirmationApplicable()) {
             assert mBrowserPaymentRequest.getSelectedPaymentApp() != null;
             assert mSpcAuthnUiController == null;
@@ -1197,8 +1195,6 @@ public class PaymentRequestService
         mIsShowCalled = true;
         mIsShowWaitingForUpdatedDetails = waitForUpdatedDetails;
 
-        mJourneyLogger.setTriggerTime();
-
         if (mIsFinishedQueryingPaymentApps) {
             PaymentNotShownError notShownError = onShowCalledAndAppsQueried();
             if (notShownError != null) {
@@ -1406,8 +1402,6 @@ public class PaymentRequestService
         if (result != PaymentComplete.FAIL) {
             mJourneyLogger.setCompleted();
             assert mSpec.getRawTotal() != null;
-            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
-                    mSpec.getRawTotal().amount.value, true /*completed*/);
         }
 
         mBrowserPaymentRequest.complete(result, this::onCompleteHandled);

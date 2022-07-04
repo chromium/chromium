@@ -205,18 +205,6 @@ class JourneyLogger {
     NOT_SHOWN_REASON_MAX = 4,
   };
 
-  // Transactions fall in one of the following categories after converting to
-  // USD.
-  enum class TransactionSize {
-    // 0$ transactions.
-    kZeroTransaction = 0,
-    // Transaction value <= 1$.
-    kMicroTransaction = 1,
-    // Transaction value > 1$.
-    kRegularTransaction = 2,
-    kMaxValue = kRegularTransaction,
-  };
-
   // The categories of the payment methods.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: PaymentMethodCategory
@@ -318,17 +306,8 @@ class JourneyLogger {
   // reason.
   void SetNotShown(NotShownReason reason);
 
-  // Records the transaction amount after converting to USD separated by
-  // completion status (complete vs triggered).
-  void RecordTransactionAmount(std::string currency,
-                               const std::string& value,
-                               bool completed);
-
   // Increments the bucket count for the given checkout step.
   void RecordCheckoutStep(CheckoutFunnelStep step);
-
-  // Records when Payment Request .show is called.
-  void SetTriggerTime();
 
   // Sets the UKM source id of the selected app when it gets invoked.
   void SetPaymentAppUkmSourceId(ukm::SourceId payment_app_source_id);
@@ -381,9 +360,6 @@ class JourneyLogger {
   // Payment Request.
   void RecordEventsMetric(CompletionStatus completion_status);
 
-  // Records the time between request.show() and request completion/abort.
-  void RecordTimeToCheckout(CompletionStatus completion_status) const;
-
   // Validates the recorded event sequence during the Payment Request.
   void ValidateEventBits() const;
 
@@ -405,14 +381,6 @@ class JourneyLogger {
 
   // The 2.0 version of event_.
   int events2_;
-
-  // Keeps track of whether transaction amounts are recorded or not to catch
-  // multiple recording. Triggered is the first index and Completed the second.
-  bool has_recorded_transaction_amount_[2] = {false};
-
-  // Stores the time that request.show() is called. This is used to record
-  // checkout duration.
-  base::TimeTicks trigger_time_;
 
   ukm::SourceId payment_request_source_id_;
   ukm::SourceId payment_app_source_id_ = ukm::kInvalidSourceId;
