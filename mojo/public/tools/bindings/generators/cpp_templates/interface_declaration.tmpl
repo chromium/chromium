@@ -15,8 +15,10 @@ class {{interface.name}}ResponseValidator;
 class {{export_attribute}} {{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
+  using IPCStableHashFunction = uint32_t(*)();
+
   static const char Name_[];
-  static std::pair<uint32_t, const void*> MessageToMethodInfo_(mojo::Message& message);
+  static IPCStableHashFunction MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
 
 
@@ -61,7 +63,7 @@ class {{export_attribute}} {{interface.name}}
 {#--- Per method symbols #}
 {%- for method in interface.methods %}
   struct {{method.name}}_Sym {
-    NOINLINE static void IPCSymbol();
+    NOINLINE static uint32_t IPCStableHash();
   };
 {%- endfor %}
 #endif // !BUILDFLAG(IS_FUCHSIA)

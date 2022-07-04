@@ -6,17 +6,20 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_MESSAGE_METADATA_HELPERS_H_
 
 #include <cstdint>
-#include <utility>
 
 namespace mojo {
 
 class Message;
 
-// Alias for a function taking mojo::Message and returning an IPC hash (stable
-// across Chrome versions) + an address of the symbol representing the
-// mojo method name.
-using MessageToMethodInfoCallback =
-    std::pair<uint32_t, const void*> (*)(Message&);
+using IPCStableHashFunction = uint32_t (*)();
+// Alias for a function taking mojo::Message and returning a pointer to a
+// function that computes an IPC hash (stable across Chrome versions).
+// An address of the returned function is used for identifying mojo
+// method after symbolization.
+// The callback could have returned a pair (function address, IPC hash value)
+// instead, but returning only the function address results in ~20k binary size
+// savings.
+using MessageToMethodInfoCallback = IPCStableHashFunction (*)(Message&);
 
 // Alias for a function taking mojo::Message and returning method name.
 using MessageToMethodNameCallback = const char* (*)(Message&);

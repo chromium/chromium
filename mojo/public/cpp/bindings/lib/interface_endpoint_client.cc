@@ -849,15 +849,16 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
                 info->set_mojo_interface_tag(interface_name_);
                 const auto method_info = method_info_callback_(*message);
-                info->set_ipc_hash(method_info.first);
-
-                const auto method_address =
-                    reinterpret_cast<uintptr_t>(method_info.second);
-                const absl::optional<size_t> location_iid =
-                    base::trace_event::InternedUnsymbolizedSourceLocation::Get(
-                        &ctx, method_address);
-                if (location_iid) {
-                  info->set_mojo_interface_method_iid(*location_iid);
+                if (method_info) {
+                  info->set_ipc_hash((*method_info)());
+                  const auto method_address =
+                      reinterpret_cast<uintptr_t>(method_info);
+                  const absl::optional<size_t> location_iid =
+                      base::trace_event::InternedUnsymbolizedSourceLocation::
+                          Get(&ctx, method_address);
+                  if (location_iid) {
+                    info->set_mojo_interface_method_iid(*location_iid);
+                  }
                 }
 
                 static const uint8_t* flow_enabled =

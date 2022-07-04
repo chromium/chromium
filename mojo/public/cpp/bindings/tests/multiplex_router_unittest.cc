@@ -25,8 +25,8 @@ namespace {
 
 const char kTestInterfaceName[] = "TestInterface";
 
-std::pair<uint32_t, const void*> MessageToMethodInfo(Message& message) {
-  return {-1, nullptr};
+IPCStableHashFunction MessageToMethodInfo(Message& message) {
+  return nullptr;
 }
 
 const char* MessageToMethodName(Message& message) {

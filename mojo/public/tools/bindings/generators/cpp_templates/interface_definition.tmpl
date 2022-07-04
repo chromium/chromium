@@ -45,23 +45,19 @@ constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {%-   endif %}
 {%- endfor %}
 
-std::pair<uint32_t, const void*> {{interface.name}}::MessageToMethodInfo_(mojo::Message& message) {
+{{interface.name}}::IPCStableHashFunction {{interface.name}}::MessageToMethodInfo_(mojo::Message& message) {
+#if !BUILDFLAG(IS_FUCHSIA)
 {%- if interface.methods %}
   switch (message.name()) {
 {%-   for method in interface.methods %}
     case internal::k{{interface.name}}_{{method.name}}_Name: {
-      constexpr uint32_t value = base::MD5Hash32Constexpr(
-              "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
-#if BUILDFLAG(IS_FUCHSIA)
-        return std::make_pair(value, nullptr);
-#else
-        return std::make_pair(value, reinterpret_cast<const void*>(&{{interface.name}}::{{method.name}}_Sym::IPCSymbol));
-#endif // BUILDFLAG(IS_FUCHSIA)
+      return &{{interface.name}}::{{method.name}}_Sym::IPCStableHash;
     }
 {%-   endfor %}
   }
 {%- endif %}
-  return std::make_pair(0, nullptr);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+  return nullptr;
 }
 
 
@@ -98,10 +94,18 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 {%-   for method in interface.methods %}
-void {{interface.name}}::{{method.name}}_Sym::IPCSymbol() {
+uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
   // This method's address is used for indetifiying the mojo method name after
-  // symblozation. So each IPCSymbol should have a unique address.
-  NO_CODE_FOLDING();
+  // symbolization. So each IPCStableHash should have a unique address.
+  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
+  // __LINE__ value, which is not unique accross different mojo modules.
+  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
+  // hash instead of __LINE__.
+  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
+          "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
+  const uint32_t hash = kHash;
+  base::debug::Alias(&hash);
+  return hash;
 }
 {%-   endfor %}
 # endif // !BUILDFLAG(IS_FUCHSIA)
