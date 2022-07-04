@@ -51,11 +51,11 @@ TEST(SyncNigoriTest, Permute) {
   ASSERT_THAT(nigori, NotNull());
 
   std::string permuted;
-  EXPECT_TRUE(nigori->Permute(Nigori::Password, "test name", &permuted));
+  EXPECT_TRUE(nigori->Permute(Nigori::Password, kNigoriKeyName, &permuted));
 
   std::string expected =
-      "evpwwPT726JS/mhxv1UwPVLDz5ha/GrMA8HfA3sQGJr5"
-      "5zFtrFep7DXu9FIyGbBEdlHNWtwVlPVE5FEgyoV++w==";
+      "ibGL7ymU0Si+eYCXGS6SBHPFT+JCYiB6GDOYqj6vIwEi"
+      "WJ7RENSHxmIQ8Q3rXd/UnZUmFHYB+jSIbthQADXvrQ==";
   EXPECT_EQ(expected, permuted);
 }
 
@@ -65,14 +65,14 @@ TEST(SyncNigoriTest, PermuteIsConstant) {
   ASSERT_THAT(nigori1, NotNull());
 
   std::string permuted1;
-  EXPECT_TRUE(nigori1->Permute(Nigori::Password, "name", &permuted1));
+  EXPECT_TRUE(nigori1->Permute(Nigori::Password, kNigoriKeyName, &permuted1));
 
   std::unique_ptr<Nigori> nigori2 = Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "password");
   ASSERT_THAT(nigori2, NotNull());
 
   std::string permuted2;
-  EXPECT_TRUE(nigori2->Permute(Nigori::Password, "name", &permuted2));
+  EXPECT_TRUE(nigori2->Permute(Nigori::Password, kNigoriKeyName, &permuted2));
 
   EXPECT_LT(0U, permuted1.size());
   EXPECT_EQ(permuted1, permuted2);
@@ -208,8 +208,8 @@ TEST(SyncNigoriTest, ExportImport) {
   EXPECT_EQ(original, plaintext);
 
   std::string permuted1, permuted2;
-  EXPECT_TRUE(nigori1->Permute(Nigori::Password, original, &permuted1));
-  EXPECT_TRUE(nigori2->Permute(Nigori::Password, original, &permuted2));
+  EXPECT_TRUE(nigori1->Permute(Nigori::Password, kNigoriKeyName, &permuted1));
+  EXPECT_TRUE(nigori2->Permute(Nigori::Password, kNigoriKeyName, &permuted2));
   EXPECT_EQ(permuted1, permuted2);
 }
 
