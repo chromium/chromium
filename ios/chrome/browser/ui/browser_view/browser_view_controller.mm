@@ -1038,12 +1038,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       notifier->RemoveObserver(_URLLoadingObserverBridge.get());
   }
 
-  // Uninstall delegates so that any delegate callbacks triggered by subsequent
-  // WebStateDestroyed() signals are not handled.
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  for (int index = 0; index < webStateList->count(); ++index)
-    [self uninstallDelegatesForWebState:webStateList->GetWebStateAt(index)];
-
   // Disconnect child coordinators.
   if (base::FeatureList::IsEnabled(kModernTabStrip)) {
     [self.tabStripCoordinator stop];
@@ -1608,10 +1602,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _URLLoadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
   UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_URLLoadingObserverBridge.get());
-
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  for (int index = 0; index < webStateList->count(); ++index)
-    [self installDelegatesForWebState:webStateList->GetWebStateAt(index)];
 
   // Set the TTS playback controller's WebStateList.
   // TODO(crbug.com/1272528): Move this somewhere else -- BrowserCoordinator at
@@ -2335,40 +2325,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Private Methods: Tab creation and selection
-
-// DEPRECATED -- Do not add further logic to this method.
-// Add all delegates to the provided `webState`.
-// Unregistration happens when the WebState is removed from the WebStateList.
-// TODO(crbug.com/1290819): Remove this method.
-- (void)installDelegatesForWebState:(web::WebState*)webState {
-  // If the WebState is unrealized, don't install the delegate. Instead they
-  // will be installed when -webStateRealized: method is called.
-  if (!webState->IsRealized())
-    return;
-
-  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-  // There should be no pre-rendered Tabs for this BrowserState.
-  DCHECK(!_prerenderService ||
-         !_prerenderService->IsWebStatePrerendered(webState));
-
-  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
-}
-
-// DEPRECATED -- Do not add further logic to this method.
-// Remove delegates from the provided `webState`.
-// TODO(crbug.com/1290819): Remove this method.
-- (void)uninstallDelegatesForWebState:(web::WebState*)webState {
-  // If the WebState is unrealized, then the delegate had not been installed
-  // and thus don't need to be uninstalled.
-  if (!webState->IsRealized())
-    return;
-
-  // TODO(crbug.com/1300911): Have BrowserCoordinator manage the NTP.
-  // No need to stop _ntpCoordinator with Single NTP enabled since shutdown will
-  // do that. In addition, uninstallDelegatesForWebState: is called for
-  // individual WebState removals, which should not trigger a stop.
-  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
-}
 
 // Called when a `webState` is selected in the WebStateList. Make any required
 // view changes. The notification will not be sent when the `webState` is
@@ -3105,14 +3061,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// TODO(crbug.com/1290819): When -installDelegatesForWebState is removed, this
-// method can be removed as well.
-- (void)webStateRealized:(web::WebState*)webState {
-  // The delegate were not installed because the WebState was not realized.
-  // Do it now so that the WebState behaves correctly.
-  [self installDelegatesForWebState:webState];
-}
-
 #pragma mark - OmniboxPopupPresenterDelegate methods.
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
@@ -3756,7 +3704,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   [self stopNTPIfNeeded];
-  [self uninstallDelegatesForWebState:webState];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -3772,9 +3719,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     didReplaceWebState:(web::WebState*)oldWebState
           withWebState:(web::WebState*)newWebState
                atIndex:(int)atIndex {
-  [self uninstallDelegatesForWebState:oldWebState];
-  [self installDelegatesForWebState:newWebState];
-
   // Add `newTab`'s view to the hierarchy if it's the current Tab.
   if (self.active && self.currentWebState == newWebState)
     [self displayWebState:newWebState];
@@ -3786,7 +3730,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
               atIndex:(int)index
            activating:(BOOL)activating {
   DCHECK(webState);
-  [self installDelegatesForWebState:webState];
 
   DCHECK_EQ(self.browser->GetWebStateList(), webStateList);
 
