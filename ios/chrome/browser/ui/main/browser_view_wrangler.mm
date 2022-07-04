@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -59,6 +60,10 @@
 
 - (BrowserViewController*)bvc {
   return self.coordinator.viewController;
+}
+
+- (id<SyncPresenter>)syncPresenter {
+  return self.coordinator;
 }
 
 - (Browser*)browser {

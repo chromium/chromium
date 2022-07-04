@@ -286,6 +286,7 @@ source_set("main") {
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/recent_tabs",
     "//ios/chrome/browser/ui/settings/sync",
+    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/tabs:constants",
     "//ios/chrome/browser/ui/thumb_strip",

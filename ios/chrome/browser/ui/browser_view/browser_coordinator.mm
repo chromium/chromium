@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
@@ -1510,7 +1511,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   DCHECK(self.viewController);
 
   SyncErrorBrowserAgent::FromBrowser(self.browser)
-      ->SetUIProviders(self.viewController, self.viewController);
+      ->SetUIProviders(self.viewController, self);
 
   WebStateDelegateBrowserAgent::FromBrowser(self.browser)
       ->SetUIProviders(self.contextMenuProvider,
@@ -1773,6 +1774,49 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 - (UIView*)webViewContainer {
   return self.browserContainerCoordinator.viewController.view;
+}
+
+#pragma mark - SyncPresenter (Public)
+
+- (void)showReauthenticateSignin {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+              showSignin:
+                  [[ShowSigninCommand alloc]
+                      initWithOperation:AuthenticationOperationReauthenticate
+                            accessPoint:signin_metrics::AccessPoint::
+                                            ACCESS_POINT_UNKNOWN]
+      baseViewController:self.viewController];
+}
+
+- (void)showSyncPassphraseSettings {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showSyncPassphraseSettingsFromViewController:self.viewController];
+}
+
+- (void)showGoogleServicesSettings {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showGoogleServicesSettingsFromViewController:self.viewController];
+}
+
+- (void)showAccountSettings {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showAccountsSettingsFromViewController:self.viewController];
+}
+
+- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
+                                                   trigger:trigger];
+}
+
+- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+          self.viewController
+                                                                trigger:
+                                                                    trigger];
 }
 
 @end

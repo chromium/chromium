@@ -84,7 +84,6 @@ typedef struct {
                         OmniboxPopupPresenterDelegate,
                         PageInfoPresentation,
                         SigninPresenter,
-                        SyncPresenter,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
                         WebNavigationNTPDelegate,

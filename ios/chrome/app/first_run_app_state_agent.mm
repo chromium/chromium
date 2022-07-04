@@ -248,7 +248,7 @@
       [[WelcomeToChromeViewController alloc]
           initWithBrowser:self.presentingInterface.browser
               mainBrowser:self.mainBrowser
-                presenter:self.presentingInterface.bvc
+                presenter:self.presentingInterface.syncPresenter
                dispatcher:welcomeHandler];
   self.welcomeToChromeController = welcomeToChrome;
   UINavigationController* navController =

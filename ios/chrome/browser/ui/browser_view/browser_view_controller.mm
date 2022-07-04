@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -90,7 +89,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -4191,45 +4189,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)showSignin:(ShowSigninCommand*)command {
   [self.dispatcher showSignin:command baseViewController:self];
-}
-
-#pragma mark - SyncPresenter (Public)
-
-- (void)showReauthenticateSignin {
-  [self.dispatcher
-              showSignin:
-                  [[ShowSigninCommand alloc]
-                      initWithOperation:AuthenticationOperationReauthenticate
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_UNKNOWN]
-      baseViewController:self];
-}
-
-- (void)showSyncPassphraseSettings {
-  [self.dispatcher showSyncPassphraseSettingsFromViewController:self];
-}
-
-- (void)showGoogleServicesSettings {
-  [self.dispatcher showGoogleServicesSettingsFromViewController:self];
-}
-
-- (void)showAccountSettings {
-  [self.dispatcher showAccountsSettingsFromViewController:self];
-}
-
-- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.dispatcher
-      showTrustedVaultReauthForFetchKeysFromViewController:self
-                                                   trigger:trigger];
-}
-
-- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.dispatcher
-      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
-                                                                trigger:
-                                                                    trigger];
 }
 
 #pragma mark - NewTabPageTabHelperDelegate
