@@ -950,8 +950,8 @@ void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
     // initializing before getting deleted.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&URLLoader::NotifyCompleted, base::Unretained(this),
-                       net::ERR_ACCESS_DENIED));
+        base::BindOnce(&URLLoader::NotifyCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), net::ERR_ACCESS_DENIED));
     return;
   }
   url_request_->LogBlockedBy("Opening Files");
@@ -970,7 +970,7 @@ void URLLoader::SetUpUpload(const ResourceRequest& request,
     // initializing before getting deleted.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
-                                  base::Unretained(this), error_code));
+                                  weak_ptr_factory_.GetWeakPtr(), error_code));
     return;
   }
   scoped_refptr<base::SequencedTaskRunner> task_runner =
