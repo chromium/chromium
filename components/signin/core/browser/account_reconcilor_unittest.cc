@@ -413,8 +413,6 @@ struct AccountReconcilorTestTableParam {
   const char* gaia_api_calls;
   const char* tokens_after_reconcile;
   const char* cookies_after_reconcile;
-  // Int represents AccountReconcilorDelegate::InconsistencyReason.
-  const int inconsistency_reason;
 };
 
 std::vector<AccountReconcilorTestTableParam> GenerateTestCasesFromParams(
@@ -716,162 +714,162 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     //   x: The next cookie is marked "invalid".
     // - First Run: true if this is the first reconcile (i.e. Chrome startup).
     // -------------------------------------------------------------------------
-    // Tokens|Cookies|First Run|Gaia calls|Tokens aft.|Cookies aft.|AccountReconcilorDelegate::InconsistencyReason |
+    // Tokens|Cookies| First Run            |Gaia calls|Tokens aft.|Cookies aft.
     // -------------------------------------------------------------------------
 
     // First reconcile (Chrome restart): Rebuild the Gaia cookie to match the
     // tokens. Make the Sync account the default account in the Gaia cookie.
     // Sync enabled.
-    {  "",      "A",   IsFirstReconcile::kBoth,    "U",    "",     "",      3},
-    {  "*AB",   "AB",  IsFirstReconcile::kBoth,    "",     "*AB",  "AB",    0},
-    {  "*A",    "A",   IsFirstReconcile::kBoth,    "",     "*A" ,  "A",     0},
-    {  "*A",    "",    IsFirstReconcile::kBoth,    "PA",   "*A" ,  "A",     1},
-    {  "*A",    "B",   IsFirstReconcile::kBoth,    "UA",   "*A" ,  "A",     1},
-    {  "*A",    "AB",  IsFirstReconcile::kBoth,    "UA",   "*A" ,  "A",     5},
-    {  "*AB",   "BA",  IsFirstReconcile::kFirst,   "UAB",  "*AB",  "AB",    7},
-    {  "*AB",   "BA",  IsFirstReconcile::kNotFirst,"",     "*AB",  "BA",    0},
+    {  "",      "A",   IsFirstReconcile::kBoth,     "U",    "",     ""        },
+    {  "*AB",   "AB",  IsFirstReconcile::kBoth,     "",     "*AB",  "AB"      },
+    {  "*A",    "A",   IsFirstReconcile::kBoth,     "",     "*A" ,  "A"       },
+    {  "*A",    "",    IsFirstReconcile::kBoth,     "PA",   "*A" ,  "A"       },
+    {  "*A",    "B",   IsFirstReconcile::kBoth,     "UA",   "*A" ,  "A"       },
+    {  "*A",    "AB",  IsFirstReconcile::kBoth,     "UA",   "*A" ,  "A"       },
+    {  "*AB",   "BA",  IsFirstReconcile::kFirst,    "UAB",  "*AB",  "AB"      },
+    {  "*AB",   "BA",  IsFirstReconcile::kNotFirst, "",     "*AB",  "BA"      },
 
-    {  "*AB",   "A",   IsFirstReconcile::kBoth,    "PAB",  "*AB",  "AB",    4},
+    {  "*AB",   "A",   IsFirstReconcile::kBoth,     "PAB",  "*AB",  "AB"      },
 
-    {  "*AB",   "B",   IsFirstReconcile::kFirst,   "UAB",  "*AB",  "AB",    1},
-    {  "*AB",   "B",   IsFirstReconcile::kNotFirst,"PBA",  "*AB",  "BA",    1},
+    {  "*AB",   "B",   IsFirstReconcile::kFirst,    "UAB",  "*AB",  "AB"      },
+    {  "*AB",   "B",   IsFirstReconcile::kNotFirst, "PBA",  "*AB",  "BA"      },
 
-    {  "*AB",   "",    IsFirstReconcile::kBoth,    "PAB",  "*AB",  "AB",    1},
+    {  "*AB",   "",    IsFirstReconcile::kBoth,     "PAB",  "*AB",  "AB"      },
     // Sync enabled, token error on primary.
 
-    {  "*xAB",  "AB",  IsFirstReconcile::kBoth,    "U",    "*xA",  "",      2},
-    {  "*xAB",  "BA",  IsFirstReconcile::kBoth,    "UB",   "*xAB", "B",     2},
-    {  "*xAB",  "A",   IsFirstReconcile::kBoth,    "U",    "*xA",  "",      2},
-    {  "*xAB",  "B",   IsFirstReconcile::kBoth,    "",     "*xAB", "B",     0},
-    {  "*xAB",  "",    IsFirstReconcile::kBoth,    "PB",   "*xAB", "B",     0},
+    {  "*xAB",  "AB",  IsFirstReconcile::kBoth,     "U",    "*xA",  ""        },
+    {  "*xAB",  "BA",  IsFirstReconcile::kBoth,     "UB",   "*xAB", "B"       },
+    {  "*xAB",  "A",   IsFirstReconcile::kBoth,     "U",    "*xA",  ""        },
+    {  "*xAB",  "B",   IsFirstReconcile::kBoth,     "",     "*xAB", "B"       },
+    {  "*xAB",  "",    IsFirstReconcile::kBoth,     "PB",   "*xAB", "B"       },
     // Sync enabled, token error on secondary.
-    {  "*AxB",  "AB",  IsFirstReconcile::kBoth,    "UA",   "*A",   "A",     5},
-    {  "*AxB",  "A",   IsFirstReconcile::kBoth,    "",     "*A",   "A",     0},
-    {  "*AxB",  "",    IsFirstReconcile::kBoth,    "PA",   "*A",   "A",     1},
+    {  "*AxB",  "AB",  IsFirstReconcile::kBoth,     "UA",   "*A",   "A"       },
+    {  "*AxB",  "A",   IsFirstReconcile::kBoth,     "",     "*A",   "A"       },
+    {  "*AxB",  "",    IsFirstReconcile::kBoth,     "PA",   "*A",   "A"       },
     // The first account in cookies is swapped even when Chrome is running.
     // The swap would happen at next startup anyway and doing it earlier avoids signing the user out.
-    {  "*AxB",  "BA",  IsFirstReconcile::kBoth,     "UA",   "*A",   "A",     5},
-    {  "*AxB",  "B",   IsFirstReconcile::kBoth,     "UA",   "*A",   "A",     1},
+    {  "*AxB",  "BA",  IsFirstReconcile::kBoth,     "UA",   "*A",   "A"       },
+    {  "*AxB",  "B",   IsFirstReconcile::kBoth,     "UA",   "*A",   "A"       },
     // Sync enabled, token error on both accounts.
-    {  "*xAxB", "AB",  IsFirstReconcile::kBoth,     "U",    "*xA",  "",      2},
-    {  "*xAxB", "BA",  IsFirstReconcile::kBoth,     "U",    "*xA",  "",      2},
-    {  "*xAxB", "A",   IsFirstReconcile::kBoth,     "U",    "*xA",  "",      2},
-    {  "*xAxB", "B",   IsFirstReconcile::kBoth,     "U",    "*xA",  "",      5},
-    {  "*xAxB", "",    IsFirstReconcile::kBoth,     "",     "*xA",  "",      0},
+    {  "*xAxB", "AB",  IsFirstReconcile::kBoth,     "U",    "*xA",  ""        },
+    {  "*xAxB", "BA",  IsFirstReconcile::kBoth,     "U",    "*xA",  ""        },
+    {  "*xAxB", "A",   IsFirstReconcile::kBoth,     "U",    "*xA",  ""        },
+    {  "*xAxB", "B",   IsFirstReconcile::kBoth,     "U",    "*xA",  ""        },
+    {  "*xAxB", "",    IsFirstReconcile::kBoth,     "",     "*xA",  ""        },
     // Sync disabled.
-    {  "AB",    "AB",  IsFirstReconcile::kBoth,     "",     "AB",   "AB",    0},
-    {  "AB",    "BA",  IsFirstReconcile::kBoth,     "",     "AB",   "BA",    0},
-    {  "AB",    "A",   IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB",    4},
-    {  "AB",    "B",   IsFirstReconcile::kBoth,     "PBA",  "AB",   "BA",    4},
-    {  "AB",    "",    IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB",    0},
+    {  "AB",    "AB",  IsFirstReconcile::kBoth,     "",     "AB",   "AB"      },
+    {  "AB",    "BA",  IsFirstReconcile::kBoth,     "",     "AB",   "BA"      },
+    {  "AB",    "A",   IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB"      },
+    {  "AB",    "B",   IsFirstReconcile::kBoth,     "PBA",  "AB",   "BA"      },
+    {  "AB",    "",    IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB"      },
     // Sync disabled, token error on first account.
-    {  "xAB",   "AB",  IsFirstReconcile::kFirst,    "UB",   "B",    "B",     3},
-    {  "xAB",   "AB",  IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
+    {  "xAB",   "AB",  IsFirstReconcile::kFirst,    "UB",   "B",    "B"       },
+    {  "xAB",   "AB",  IsFirstReconcile::kNotFirst, "U",    "",     ""        },
 
-    {  "xAB",   "BA",  IsFirstReconcile::kBoth,     "UB",   "B",    "B",     5},
+    {  "xAB",   "BA",  IsFirstReconcile::kBoth,     "UB",   "B",    "B"       },
 
-    {  "xAB",   "A",   IsFirstReconcile::kFirst,    "UB",   "B",    "B",     3},
-    {  "xAB",   "A",   IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
+    {  "xAB",   "A",   IsFirstReconcile::kFirst,    "UB",   "B",    "B"       },
+    {  "xAB",   "A",   IsFirstReconcile::kNotFirst, "U",    "",     ""        },
 
-    {  "xAB",   "B",   IsFirstReconcile::kBoth,     "",     "B",    "B",     0},
+    {  "xAB",   "B",   IsFirstReconcile::kBoth,     "",     "B",    "B"       },
 
-    {  "xAB",   "",    IsFirstReconcile::kBoth,     "PB",   "B",    "B",     0},
+    {  "xAB",   "",    IsFirstReconcile::kBoth,     "PB",   "B",    "B"       },
     // Sync disabled, token error on second account
-    {  "AxB",   "AB",  IsFirstReconcile::kBoth,     "UA",   "A",    "A",     5},
+    {  "AxB",   "AB",  IsFirstReconcile::kBoth,     "UA",   "A",    "A"       },
 
-    {  "AxB",   "BA",  IsFirstReconcile::kFirst,    "UA",   "A",    "A",     3},
-    {  "AxB",   "BA",  IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
+    {  "AxB",   "BA",  IsFirstReconcile::kFirst,    "UA",   "A",    "A"       },
+    {  "AxB",   "BA",  IsFirstReconcile::kNotFirst, "U",    "",     ""        },
 
-    {  "AxB",   "A",   IsFirstReconcile::kBoth,     "",     "A",    "A",     0},
+    {  "AxB",   "A",   IsFirstReconcile::kBoth,     "",     "A",    "A"       },
 
-    {  "AxB",   "B",   IsFirstReconcile::kFirst,    "UA",   "A",    "A",     3},
-    {  "AxB",   "B",   IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
+    {  "AxB",   "B",   IsFirstReconcile::kFirst,    "UA",   "A",    "A"       },
+    {  "AxB",   "B",   IsFirstReconcile::kNotFirst, "U",    "",     ""        },
 
-    {  "AxB",   "",    IsFirstReconcile::kBoth,     "PA",   "A",    "A",     0},
+    {  "AxB",   "",    IsFirstReconcile::kBoth,     "PA",   "A",    "A"       },
     // Sync disabled, token error on both accounts.
-    {  "xAxB",  "AB",  IsFirstReconcile::kBoth,     "U",    "",     "",      3},
-    {  "xAxB",  "BA",  IsFirstReconcile::kBoth,     "U",    "",     "",      3},
-    {  "xAxB",  "A",   IsFirstReconcile::kBoth,     "U",    "",     "",      3},
-    {  "xAxB",  "B",   IsFirstReconcile::kBoth,     "U",    "",     "",      3},
-    {  "xAxB",  "",    IsFirstReconcile::kBoth,     "",     "",     "",      0},
+    {  "xAxB",  "AB",  IsFirstReconcile::kBoth,     "U",    "",     ""        },
+    {  "xAxB",  "BA",  IsFirstReconcile::kBoth,     "U",    "",     ""        },
+    {  "xAxB",  "A",   IsFirstReconcile::kBoth,     "U",    "",     ""        },
+    {  "xAxB",  "B",   IsFirstReconcile::kBoth,     "U",    "",     ""        },
+    {  "xAxB",  "",    IsFirstReconcile::kBoth,     "",     "",     ""        },
     // Account marked as invalid in cookies.
     // No difference between cookies and tokens, do not do do anything.
     // Do not logout. Regression tests for http://crbug.com/854799
-    {  "",     "xA",   IsFirstReconcile::kBoth,     "",     "",     "xA",    0},
-    {  "",     "xAxB", IsFirstReconcile::kBoth,     "",     "",     "xAxB",  0},
-    {  "xA",   "xA",   IsFirstReconcile::kBoth,     "",     "",     "xA",    0},
-    {  "xAB",  "xAB",  IsFirstReconcile::kBoth,     "",     "B",    "xAB",   0},
-    {  "AxB",  "AxC",  IsFirstReconcile::kBoth,     "",     "A",    "AxC",   0},
-    {  "B",    "xAB",  IsFirstReconcile::kBoth,     "",     "B",    "xAB",   0},
-    {  "*xA",  "xA",   IsFirstReconcile::kBoth,     "",     "*xA",  "xA",    0},
-    {  "*xA",  "xB",   IsFirstReconcile::kBoth,     "",     "*xA",  "xB",    0},
-    {  "*xAB", "xAB",  IsFirstReconcile::kBoth,     "",     "*xAB", "xAB",   0},
-    {  "*AxB", "xBA",  IsFirstReconcile::kNotFirst, "",     "*A",   "xBA",   0},
+    {  "",     "xA",   IsFirstReconcile::kBoth,     "",     "",     "xA"      },
+    {  "",     "xAxB", IsFirstReconcile::kBoth,     "",     "",     "xAxB"    },
+    {  "xA",   "xA",   IsFirstReconcile::kBoth,     "",     "",     "xA"      },
+    {  "xAB",  "xAB",  IsFirstReconcile::kBoth,     "",     "B",    "xAB"     },
+    {  "AxB",  "AxC",  IsFirstReconcile::kBoth,     "",     "A",    "AxC"     },
+    {  "B",    "xAB",  IsFirstReconcile::kBoth,     "",     "B",    "xAB"     },
+    {  "*xA",  "xA",   IsFirstReconcile::kBoth,     "",     "*xA",  "xA"      },
+    {  "*xA",  "xB",   IsFirstReconcile::kBoth,     "",     "*xA",  "xB"      },
+    {  "*xAB", "xAB",  IsFirstReconcile::kBoth,     "",     "*xAB", "xAB"     },
+    {  "*AxB", "xBA",  IsFirstReconcile::kNotFirst, "",     "*A",   "xBA"     },
     // Appending a new cookie after the invalid one.
-    {  "B",    "xA",   IsFirstReconcile::kBoth,     "PB",   "B",    "xAB",   4},
-    {  "xAB",  "xA",   IsFirstReconcile::kBoth,     "PB",   "B",    "xAB",   4},
+    {  "B",    "xA",   IsFirstReconcile::kBoth,     "PB",   "B",    "xAB"     },
+    {  "xAB",  "xA",   IsFirstReconcile::kBoth,     "PB",   "B",    "xAB"     },
     // Refresh existing cookies.
-    {  "AB",   "xAB",  IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB",    4},
-    {  "*AB",  "xBxA", IsFirstReconcile::kNotFirst, "PBA",  "*AB",  "BA",    1},
+    {  "AB",   "xAB",  IsFirstReconcile::kBoth,     "PAB",  "AB",   "AB"      },
+    {  "*AB",  "xBxA", IsFirstReconcile::kNotFirst, "PBA",  "*AB",  "BA"      },
     // Appending and invalidating cookies at the same time.
-    {  "xAB",  "xAC",  IsFirstReconcile::kFirst,    "UB",   "B",    "B",     6},
-    {  "xAB",  "xAC",  IsFirstReconcile::kNotFirst, "U",    "",     "",      6},
+    {  "xAB",  "xAC",  IsFirstReconcile::kFirst,    "UB",   "B",    "B"       },
+    {  "xAB",  "xAC",  IsFirstReconcile::kNotFirst, "U",    "",     ""        },
 
-    {  "xAB",  "AxC",  IsFirstReconcile::kFirst,    "UB",   "B",    "B",     3},
-    {  "xAB",  "AxC",  IsFirstReconcile::kNotFirst, "U",    "",     "",      3},
+    {  "xAB",  "AxC",  IsFirstReconcile::kFirst,    "UB",   "B",    "B"       },
+    {  "xAB",  "AxC",  IsFirstReconcile::kNotFirst, "U",    "",     ""        },
 
-    {  "*xAB", "xABC", IsFirstReconcile::kFirst,    "UB",   "*xAB", "B",     5},
-    {  "*xAB", "xABC", IsFirstReconcile::kNotFirst, "U",    "*xA",  "",      5},
+    {  "*xAB", "xABC", IsFirstReconcile::kFirst,    "UB",   "*xAB", "B"       },
+    {  "*xAB", "xABC", IsFirstReconcile::kNotFirst, "U",    "*xA",  ""        },
 
-    {  "xAB",  "xABC", IsFirstReconcile::kFirst,    "UB",   "B",    "B",     5},
-    {  "xAB",  "xABC", IsFirstReconcile::kNotFirst, "U",    "",     "",      5},
+    {  "xAB",  "xABC", IsFirstReconcile::kFirst,    "UB",   "B",    "B"       },
+    {  "xAB",  "xABC", IsFirstReconcile::kNotFirst, "U",    "",     ""        },
     // Miscellaneous cases.
     // Check that unknown Gaia accounts are signed o.
-    {  "*A",   "AB",   IsFirstReconcile::kBoth,     "UA",   "*A",   "A",     5},
+    {  "*A",   "AB",   IsFirstReconcile::kBoth,     "UA",   "*A",   "A"       },
     // Check that Gaia default account is kept in first position.
-    {  "AB",   "BC",   IsFirstReconcile::kBoth,     "UBA",  "AB",   "BA",    6},
+    {  "AB",   "BC",   IsFirstReconcile::kBoth,     "UBA",  "AB",   "BA"      },
     // Check that Gaia cookie order is preserved for B.
-    {  "*ABC", "CB",   IsFirstReconcile::kFirst,    "UABC", "*ABC", "ABC",   1},
+    {  "*ABC", "CB",   IsFirstReconcile::kFirst,    "UABC", "*ABC", "ABC"     },
     // TODO(https://crbug.com/1129931): Merge session should do XCB instead.
-    {  "xABC", "ABC",  IsFirstReconcile::kFirst,    "UCB",  "BC",   "CB",    1},
+    {  "xABC", "ABC",  IsFirstReconcile::kFirst,    "UCB",  "BC",   "CB"      },
     // Check that order in the chrome_accounts is not important.
-    {  "A*B",  "",     IsFirstReconcile::kBoth,     "PBA",  "A*B",  "BA",    7},
-    {  "*xBA", "BA",   IsFirstReconcile::kFirst,    "U",    "*xB",  "",      2},
+    {  "A*B",  "",     IsFirstReconcile::kBoth,     "PBA",  "A*B",  "BA"      },
+    {  "*xBA", "BA",   IsFirstReconcile::kFirst,    "U",    "*xB",  ""        },
     // Required for idempotency check.
-    {  "",     "",     IsFirstReconcile::kNotFirst, "",     "",     "",      0},
-    {  "",     "xA",   IsFirstReconcile::kNotFirst, "",     "",     "xA",    0},
-    {  "",     "xB",   IsFirstReconcile::kNotFirst, "",     "",     "xB",    0},
-    {  "",     "xAxB", IsFirstReconcile::kNotFirst, "",     "",     "xAxB",  0},
-    {  "",     "xBxA", IsFirstReconcile::kNotFirst, "",     "",     "xBxA",  0},
-    {  "*A",   "A",    IsFirstReconcile::kNotFirst, "",     "*A",   "A",     0},
-    {  "*A",   "xBA",  IsFirstReconcile::kNotFirst, "",     "*A",   "xBA",   0},
-    {  "*A",   "AxB",  IsFirstReconcile::kNotFirst, "",     "*A",   "AxB",   0},
-    {  "A",    "A",    IsFirstReconcile::kNotFirst, "",     "A",    "A",     0},
-    {  "A",    "xBA",  IsFirstReconcile::kNotFirst, "",     "A",    "xBA",   0},
-    {  "A",    "AxB",  IsFirstReconcile::kNotFirst, "",     "A",    "AxB",   0},
-    {  "B",    "B",    IsFirstReconcile::kNotFirst, "",     "B",    "B",     0},
-    {  "B",    "xAB",  IsFirstReconcile::kNotFirst, "",     "B",    "xAB",   0},
-    {  "B",    "BxA",  IsFirstReconcile::kNotFirst, "",     "B",    "BxA",   0},
-    {  "*xA",  "",     IsFirstReconcile::kNotFirst, "",     "*xA",  "",      0},
-    {  "*xA",  "xAxB", IsFirstReconcile::kNotFirst, "",     "*xA",  "xAxB",  0},
-    {  "*xA",  "xBxA", IsFirstReconcile::kNotFirst, "",     "*xA",  "xBxA",  0},
-    {  "*xA",  "xA",   IsFirstReconcile::kNotFirst, "",     "*xA",  "xA",    0},
-    {  "*xA",  "xB",   IsFirstReconcile::kNotFirst, "",     "*xA",  "xB",    0},
-    {  "*xAB", "B",    IsFirstReconcile::kNotFirst, "",     "*xAB", "B",     0},
-    {  "*xAB", "BxA",  IsFirstReconcile::kNotFirst, "",     "*xAB", "BxA",   0},
-    {  "*xAB", "xAB",  IsFirstReconcile::kNotFirst, "",     "*xAB", "xAB",   0},
-    {  "*xAB", "xABxC",IsFirstReconcile::kNotFirst, "",     "*xAB", "xABxC", 0},
-    {  "*xB",  "",     IsFirstReconcile::kNotFirst, "",     "*xB",  "",      0},
-    {  "A*B",  "BA",   IsFirstReconcile::kNotFirst, "",     "A*B",  "BA",    0},
-    {  "A*B",  "AB",   IsFirstReconcile::kNotFirst, "",     "A*B",  "AB",    0},
-    {  "A",    "AxC",  IsFirstReconcile::kNotFirst, "",     "A",    "AxC",   0},
-    {  "AB",   "BxCA", IsFirstReconcile::kNotFirst, "",     "AB",   "BxCA",  0},
-    {  "B",    "xABxC",IsFirstReconcile::kNotFirst, "",     "B",    "xABxC", 0},
-    {  "B",    "xAxCB",IsFirstReconcile::kNotFirst, "",     "B",    "xAxCB", 0},
-    {  "*ABC", "ACB",  IsFirstReconcile::kNotFirst, "",     "*ABC", "ACB",   0},
-    {  "*ABC", "ABC",  IsFirstReconcile::kNotFirst, "",     "*ABC", "ABC",   0},
-    {  "BC",   "BC",   IsFirstReconcile::kNotFirst, "",     "BC",   "BC",    0},
-    {  "BC",   "CB",   IsFirstReconcile::kNotFirst, "",     "BC",   "CB",    0},
+    {  "",     "",     IsFirstReconcile::kNotFirst, "",     "",     ""        },
+    {  "",     "xA",   IsFirstReconcile::kNotFirst, "",     "",     "xA"      },
+    {  "",     "xB",   IsFirstReconcile::kNotFirst, "",     "",     "xB"      },
+    {  "",     "xAxB", IsFirstReconcile::kNotFirst, "",     "",     "xAxB"    },
+    {  "",     "xBxA", IsFirstReconcile::kNotFirst, "",     "",     "xBxA"    },
+    {  "*A",   "A",    IsFirstReconcile::kNotFirst, "",     "*A",   "A"       },
+    {  "*A",   "xBA",  IsFirstReconcile::kNotFirst, "",     "*A",   "xBA"     },
+    {  "*A",   "AxB",  IsFirstReconcile::kNotFirst, "",     "*A",   "AxB"     },
+    {  "A",    "A",    IsFirstReconcile::kNotFirst, "",     "A",    "A"       },
+    {  "A",    "xBA",  IsFirstReconcile::kNotFirst, "",     "A",    "xBA"     },
+    {  "A",    "AxB",  IsFirstReconcile::kNotFirst, "",     "A",    "AxB"     },
+    {  "B",    "B",    IsFirstReconcile::kNotFirst, "",     "B",    "B"       },
+    {  "B",    "xAB",  IsFirstReconcile::kNotFirst, "",     "B",    "xAB"     },
+    {  "B",    "BxA",  IsFirstReconcile::kNotFirst, "",     "B",    "BxA"     },
+    {  "*xA",  "",     IsFirstReconcile::kNotFirst, "",     "*xA",  ""        },
+    {  "*xA",  "xAxB", IsFirstReconcile::kNotFirst, "",     "*xA",  "xAxB"    },
+    {  "*xA",  "xBxA", IsFirstReconcile::kNotFirst, "",     "*xA",  "xBxA"    },
+    {  "*xA",  "xA",   IsFirstReconcile::kNotFirst, "",     "*xA",  "xA"      },
+    {  "*xA",  "xB",   IsFirstReconcile::kNotFirst, "",     "*xA",  "xB"      },
+    {  "*xAB", "B",    IsFirstReconcile::kNotFirst, "",     "*xAB", "B"       },
+    {  "*xAB", "BxA",  IsFirstReconcile::kNotFirst, "",     "*xAB", "BxA"     },
+    {  "*xAB", "xAB",  IsFirstReconcile::kNotFirst, "",     "*xAB", "xAB"     },
+    {  "*xAB", "xABxC",IsFirstReconcile::kNotFirst, "",     "*xAB", "xABxC"   },
+    {  "*xB",  "",     IsFirstReconcile::kNotFirst, "",     "*xB",  ""        },
+    {  "A*B",  "BA",   IsFirstReconcile::kNotFirst, "",     "A*B",  "BA"      },
+    {  "A*B",  "AB",   IsFirstReconcile::kNotFirst, "",     "A*B",  "AB"      },
+    {  "A",    "AxC",  IsFirstReconcile::kNotFirst, "",     "A",    "AxC"     },
+    {  "AB",   "BxCA", IsFirstReconcile::kNotFirst, "",     "AB",   "BxCA"    },
+    {  "B",    "xABxC",IsFirstReconcile::kNotFirst, "",     "B",    "xABxC"   },
+    {  "B",    "xAxCB",IsFirstReconcile::kNotFirst, "",     "B",    "xAxCB"   },
+    {  "*ABC", "ACB",  IsFirstReconcile::kNotFirst, "",     "*ABC", "ACB"     },
+    {  "*ABC", "ABC",  IsFirstReconcile::kNotFirst, "",     "*ABC", "ABC"     },
+    {  "BC",   "BC",   IsFirstReconcile::kNotFirst, "",     "BC",   "BC"      },
+    {  "BC",   "CB",   IsFirstReconcile::kNotFirst, "",     "BC",   "CB"      },
 };
 // clang-format on
 
