@@ -255,7 +255,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // User selected an Autocomplete or Merchant Promo Code field, so we fill
     // directly.
     driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
-    AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
+
+    if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+      AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
+
     manager_->OnSingleFieldSuggestionSelected(value, frontend_id);
   } else if (frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
     manager_->client()->ScanCreditCard(base::BindOnce(
@@ -279,9 +282,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, absl::get<std::string>(payload),
         query_id_, query_form_, query_field_);
-  } else if (frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
-    // User selected a merchant promo code, so we fill directly.
-    driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
   } else if (frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS) {
     DCHECK(absl::holds_alternative<GURL>(payload));
     manager_->client()->OnPromoCodeSuggestionsFooterSelected(
