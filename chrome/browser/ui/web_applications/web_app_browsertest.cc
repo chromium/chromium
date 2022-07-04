@@ -333,69 +333,78 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithColor) {
   EXPECT_EQ(provider->registrar().GetAppThemeColor(app_id), SK_ColorGREEN);
 }
 
-// Enumeration of test modes for `BackgroundColorChangeWebAppBrowserTest`s.
-enum class BackgroundColorChangeTestMode {
-  kSWA,
-  kNonSWA,
-};
+// Also see BackgroundColorChangeSystemWebAppBrowserTest.BackgroundColorChange
+// below.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
+  const GURL app_url = GetSecureAppURL();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->theme_color = SK_ColorWHITE;
+  web_app_info->dark_mode_theme_color = SK_ColorBLACK;
+  web_app_info->background_color = SK_ColorWHITE;
+  web_app_info->dark_mode_background_color = SK_ColorBLACK;
 
-// Base class for `BackgroundColorChange` tests, parameterized by test mode and
-// whether to prefer manifest background color.
-class BackgroundColorChangeWebAppBrowserTest
+  const AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* const web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Wait for original background color to load.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    waiter.Wait();
+    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+              SK_ColorWHITE);
+  }
+  content::AwaitDocumentOnLoadCompleted(web_contents);
+
+  // Changing background color should update the toolbar color.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    EXPECT_TRUE(content::ExecuteScript(
+        web_contents, "document.body.style.backgroundColor = 'cyan';"));
+    waiter.Wait();
+    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+              SK_ColorCYAN);
+    SkColor download_shelf_color;
+    app_browser->app_controller()->GetThemeSupplier()->GetColor(
+        ThemeProperties::COLOR_TOOLBAR, &download_shelf_color);
+    EXPECT_EQ(download_shelf_color, SK_ColorCYAN);
+  }
+}
+
+// TODO(crbug.com/1321984): Make is Ash only using BUILDFLAG(IS_CHROMEOS_ASH).
+class BackgroundColorChangeSystemWebAppBrowserTest
     : public WebAppBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<BackgroundColorChangeTestMode,
-                     /*prefer_manifest_background_color=*/bool>> {
+          /*prefer_manifest_background_color=*/bool> {
  public:
-  BackgroundColorChangeWebAppBrowserTest() {
+  BackgroundColorChangeSystemWebAppBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     web_app::EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    switch (GetBackgroundColorChangeTestMode()) {
-      case BackgroundColorChangeTestMode::kSWA:
-        system_web_app_installation_ =
-            ash::TestSystemWebAppInstallation::SetUpAppWithColors(
-                /*theme_color=*/SK_ColorWHITE,
-                /*dark_mode_theme_color=*/SK_ColorBLACK,
-                /*background_color=*/SK_ColorWHITE,
-                /*dark_mode_background_color=*/SK_ColorBLACK);
-        static_cast<ash::UnittestingSystemAppDelegate*>(
-            system_web_app_installation_->GetDelegate())
-            ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
-        break;
-      case BackgroundColorChangeTestMode::kNonSWA:
-        break;
-    }
-  }
-
-  // Returns test mode given test parameterization.
-  BackgroundColorChangeTestMode GetBackgroundColorChangeTestMode() const {
-    return std::get<0>(GetParam());
+    system_web_app_installation_ =
+        ash::TestSystemWebAppInstallation::SetUpAppWithColors(
+            /*theme_color=*/SK_ColorWHITE,
+            /*dark_mode_theme_color=*/SK_ColorBLACK,
+            /*background_color=*/SK_ColorWHITE,
+            /*dark_mode_background_color=*/SK_ColorBLACK);
+    static_cast<ash::UnittestingSystemAppDelegate*>(
+        system_web_app_installation_->GetDelegate())
+        ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
   }
 
   // Returns whether the web app under test prefers manifest background colors
   // over web contents background colors.
-  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
+  bool PreferManifestBackgroundColor() const { return GetParam(); }
 
   // Installs the web app under test, blocking until installation is complete,
   // and returning the `AppId` for the installed web app.
-  AppId WaitForAppInstall() {
-    switch (GetBackgroundColorChangeTestMode()) {
-      case BackgroundColorChangeTestMode::kSWA:
-        system_web_app_installation_->WaitForAppInstall();
-        return system_web_app_installation_->GetAppId();
-      case BackgroundColorChangeTestMode::kNonSWA: {
-        const GURL app_url = GetSecureAppURL();
-        auto web_app_info = std::make_unique<WebAppInstallInfo>();
-        web_app_info->start_url = app_url;
-        web_app_info->scope = app_url.GetWithoutFilename();
-        web_app_info->theme_color = SK_ColorWHITE;
-        web_app_info->dark_mode_theme_color = SK_ColorBLACK;
-        web_app_info->background_color = SK_ColorWHITE;
-        web_app_info->dark_mode_background_color = SK_ColorBLACK;
-        return InstallWebApp(std::move(web_app_info));
-      }
-    }
+  AppId WaitForSwaInstall() {
+    system_web_app_installation_->WaitForAppInstall();
+    return system_web_app_installation_->GetAppId();
   }
 
  private:
@@ -403,43 +412,19 @@ class BackgroundColorChangeWebAppBrowserTest
       system_web_app_installation_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    Mode,
-    BackgroundColorChangeWebAppBrowserTest,
-    testing::Combine(testing::Values(BackgroundColorChangeTestMode::kSWA,
-                                     BackgroundColorChangeTestMode::kNonSWA),
-                     /*prefer_manifest_background_color=*/testing::Bool()),
-    [](const testing::TestParamInfo<
-        std::tuple<BackgroundColorChangeTestMode,
-                   /*prefer_manifest_background_color=*/bool>>& info) {
-      BackgroundColorChangeTestMode test_mode = std::get<0>(info.param);
-      bool prefer_manifest_background_color = std::get<1>(info.param);
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackgroundColorChangeSystemWebAppBrowserTest,
+                         /*prefer_manifest_background_color=*/testing::Bool(),
+                         [](const testing::TestParamInfo<
+                             /*prefer_manifest_background_color=*/bool>& info) {
+                           return info.param ? "PreferManifestBackgroundColor"
+                                             : "WebContentsBackgroundColor";
+                         });
 
-      std::stringstream name;
-      switch (test_mode) {
-        case BackgroundColorChangeTestMode::kSWA:
-          name << "kSWA";
-          break;
-        case BackgroundColorChangeTestMode::kNonSWA:
-          name << "kNonSWA";
-          break;
-      }
-
-      if (prefer_manifest_background_color)
-        name << "_PreferManifestBackgroundColor";
-
-      return name.str();
-    });
-
-IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
+// Also see WebAppBrowserTest.BackgroundColorChange above.
+IN_PROC_BROWSER_TEST_P(BackgroundColorChangeSystemWebAppBrowserTest,
                        BackgroundColorChange) {
-  const bool is_non_swa = GetBackgroundColorChangeTestMode() ==
-                          BackgroundColorChangeTestMode::kNonSWA;
-  // Skip test parameterizations for non-system web apps that don't make sense.
-  if (is_non_swa && PreferManifestBackgroundColor())
-    GTEST_SKIP();
-
-  const AppId app_id = WaitForAppInstall();
+  const AppId app_id = WaitForSwaInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -450,9 +435,8 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(
-        app_browser->app_controller()->GetBackgroundColor().value(),
-        !is_non_swa && is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE);
+    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+              is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE);
   }
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
