@@ -141,6 +141,7 @@ ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
+  composite = true
 
   extra_deps = [
     ":copy_ts",
@@ -281,6 +282,24 @@ html_to_wrapper("html_wrapper_files") {
   in_files = ts_templates
 }
 
+ts_library("test_build_ts") {
+  testonly = true
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc_test"
+  tsconfig_base = "tsconfig_base.json"
+
+  in_files = [ "file_manager/widgets/xf_breadcrumbs_unittest.ts" ]
+
+  path_mappings = [
+    # for chai_assert.js.
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+
+  deps = [ ":build_ts" ]
+}
+
 # GRD for test files.
 generate_grd("build_tests_grdp") {
   testonly = true
@@ -298,7 +317,11 @@ generate_grd("build_tests_gen_grdp") {
   out_grd = "$target_gen_dir/tests_gen_resources.grdp"
 
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ]) +
+      filter_include(get_target_outputs(":test_build_ts"), [ "*.manifest" ])
 
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_ts",
+    ":test_build_ts",
+  ]
 }

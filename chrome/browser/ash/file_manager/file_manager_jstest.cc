@@ -298,3 +298,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTypesTest) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, RecentDateBucketTest) {
   RunTestURL("common/js/recent_date_bucket_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfBreadcrumbs) {
+  RunTestURL("widgets/xf_breadcrumbs_unittest.js");
+}
