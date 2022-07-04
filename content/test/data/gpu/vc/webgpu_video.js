@@ -127,7 +127,7 @@ function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
 }
 
 function createVertexBufferForAnimation(
-            device, videos, videoRows, videoColumns) {
+    device, videos, videoRows, videoColumns) {
   const rectVerts = getArrayForAnimationVertexBuffer(videos, videoRows,
     videoColumns);
   const verticesBuffer = device.createBuffer({
@@ -156,8 +156,9 @@ function createVertexBufferForFPS(device) {
   return verticesBuffer;
 }
 
-function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
-                               addUI, addFPS, useImportTextureApi) {
+function webGpuDrawVideoFrames(
+    gpuSetting, videos, videoRows, videoColumns, addUI, addFPS,
+    useImportTextureApi, capUIFPS, enableBackPressureWorkaround) {
   initializeFPSPanels();
 
   const {adapter, device, context, canvas} = gpuSetting;
@@ -316,8 +317,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
   // For rendering the voice bar animation
   const vertexBufferForAnimation =
-          createVertexBufferForAnimation(
-            device, videos, videoRows, videoColumns);
+      createVertexBufferForAnimation(device, videos, videoRows, videoColumns);
 
   renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
     code: wgslShaders.fragment_output_white,
@@ -429,25 +429,25 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     passEncoder.draw(/*vertexCount=*/ 8, 1, /*firstVertex=*/ 60);
   }
 
- function addFPSCommands(device, passEncoder) {
+  function addFPSCommands(device, passEncoder) {
     // FPS Panels
-   passEncoder.setPipeline(pipelineForFPS);
-   passEncoder.setVertexBuffer(0, vertexBufferForFPS);
-   for (let i = 0; i < fpsPanels.length; ++i) {
-     device.queue.copyExternalImageToTexture(
-       { source: fpsPanels[i].dom, origin: { x: 0, y: 0 }},
-       { texture: fpsTextures[i] },
-       {
-         width: fpsPanels[i].dom.width,
-         height: fpsPanels[i].dom.height,
-         depthOrArrayLayers: 1
-       },
-     );
-     const firstVertex = i * 6;
-     passEncoder.setBindGroup(0, fpsBindGroups[i]);
-     passEncoder.draw(6, 1, firstVertex, 0);
-   }
- }
+    passEncoder.setPipeline(pipelineForFPS);
+    passEncoder.setVertexBuffer(0, vertexBufferForFPS);
+    for (let i = 0; i < fpsPanels.length; ++i) {
+      device.queue.copyExternalImageToTexture(
+          {source: fpsPanels[i].dom, origin: {x: 0, y: 0}},
+          {texture: fpsTextures[i]},
+          {
+            width: fpsPanels[i].dom.width,
+            height: fpsPanels[i].dom.height,
+            depthOrArrayLayers: 1
+          },
+      );
+      const firstVertex = i * 6;
+      passEncoder.setBindGroup(0, fpsBindGroups[i]);
+      passEncoder.draw(6, 1, firstVertex, 0);
+    }
+  }
 
   // videos #0-#3 : 30 fps.
   // videos #3-#15: 15 fps.
@@ -472,13 +472,15 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   let lastTimestamp = performance.now();
 
   const oneFrame = () => {
-    const timestamp = performance.now();
-    const elapsed = timestamp - lastTimestamp;
-    if (elapsed < kFrameTime30Fps) {
-      window.requestAnimationFrame(oneFrame);
-      return;
+    if (capUIFPS) {
+      const timestamp = performance.now();
+      const elapsed = timestamp - lastTimestamp;
+      if (elapsed < kFrameTime30Fps) {
+        window.requestAnimationFrame(oneFrame);
+        return;
+      }
+      lastTimestamp = timestamp;
     }
-    lastTimestamp = timestamp;
 
     uiFrames++;
 
@@ -532,21 +534,27 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
         // TODO(crbug.com/1289482): Workaround for backpressure mechanism
         // not working properly.
-        device.queue.onSubmittedWorkDone().then(() => {
+        if (enableBackPressureWorkaround) {
+          device.queue.onSubmittedWorkDone().then(() => {
+            window.requestAnimationFrame(oneFrame);
+          });
+        } else {
           window.requestAnimationFrame(oneFrame);
-        });
+        }
       });
   };
 
   const oneFrameWithImportTextureApi = () => {
-    // Target frame rate: 30 fps. rAF might run at 60 fps.
+    // Target frame rate: 30 fps when capUIFPS is true. rAF might run at 60 fps.
     const timestamp = performance.now();
-    const elapsed = timestamp - lastTimestamp;
-    if (elapsed < kFrameTime30Fps) {
-      window.requestAnimationFrame(oneFrameWithImportTextureApi);
-      return;
+    if (capUIFPS) {
+      const elapsed = timestamp - lastTimestamp;
+      if (elapsed < kFrameTime30Fps) {
+        window.requestAnimationFrame(oneFrameWithImportTextureApi);
+        return;
+      }
+      lastTimestamp = timestamp;
     }
-    lastTimestamp = timestamp;
 
     uiFrames++;
 
@@ -609,9 +617,13 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
     // TODO(crbug.com/1289482): Workaround for backpressure mechanism
     // not working properly.
-    device.queue.onSubmittedWorkDone().then(() => {
+    if (enableBackPressureWorkaround) {
+      device.queue.onSubmittedWorkDone().then(() => {
+        window.requestAnimationFrame(oneFrameWithImportTextureApi);
+      });
+    } else {
       window.requestAnimationFrame(oneFrameWithImportTextureApi);
-    });
+    }
   };
 
   if (useImportTextureApi) {

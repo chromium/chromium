@@ -14,10 +14,10 @@ const parsedString = (function (names) {
   return pairs;
 })(window.location.search.substr(1).split('&'));
 
-function GetVideoSource(videoCount, index, codec) {
+function GetVideoSource(videoCount, index, codec, useLargeSizeVideo = false) {
   switch (codec) {
     case 'vp8':
-      if (videoCount <= 4) {
+      if (videoCount <= 4 || useLargeSizeVideo) {
         return './teddy1_vp8_640x360_30fps.webm';
       } else {
         if (index < 4)
@@ -31,7 +31,7 @@ function GetVideoSource(videoCount, index, codec) {
 
     case 'vp9':
     default:
-      if (videoCount <= 4) {
+      if (videoCount <= 4 || useLargeSizeVideo) {
         return './teddy1_vp9_640x360_30fps.webm';
       } else {
         if (index < 4)
@@ -185,7 +185,7 @@ function getArrayForAnimationVertexBuffer(videos, videoRows, videoColumns) {
   const bar_count = 10;
   for (let i = 0; i < bar_count; ++i) {
     const array_index = i * 12;
-    const hBar = (i+1) * delta;
+    const hBar = (i + 1) * delta;
     const yBar = y - hIcon * 2 + hBar;
 
     rectVerts.set([

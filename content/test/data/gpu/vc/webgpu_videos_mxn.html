@@ -4,6 +4,7 @@ Use of this source code is governed by a BSD - style license that can be
 found in the LICENSE file.
 -->
 <html>
+
 <head>
   <title>WebGpu MxN Video playbacks</title>
   <style>
@@ -26,6 +27,9 @@ found in the LICENSE file.
     var hasUIOnTop = true;
     var hasFPSOnTop = true;
     var useImportTextureApi = true;
+    var capUIFPS = true;
+    var useLargeSizeVideo = false;
+    var enableBackPressureWorkaround = true;
     var codec = 'vp9';
 
     async function startMxNVideos() {
@@ -63,6 +67,24 @@ found in the LICENSE file.
       else if (codecString != 'vp9' && codecString != undefined)
         console.warn('Unsupported video codec format! Switch to default VP9.');
 
+      const capFPSOption = parsedString['cap_ui_fps']
+      if (capFPSOption == '0')
+        capUIFPS = false;
+      else if (capFPSOption == '1')
+        capUIFPS = true;
+
+      const useLargeSizeVideoOption = parsedString['use_large_size_video']
+      if (useLargeSizeVideoOption == '0')
+        useLargeSizeVideo = false;
+      else if (useLargeSizeVideoOption == '1')
+        useLargeSizeVideo = true;
+
+      const backPressureWorkaroundOption = parsedString['back_pressure_workaround']
+      if (backPressureWorkaroundOption == '0')
+        enableBackPressureWorkaround = false;
+      else if (backPressureWorkaroundOption == '1')
+        enableBackPressureWorkaround = true;
+
       // Get the number of video rows and columns from the string.
       var videoRows = parsedString['rows'];
       var videoColumns = parsedString['columns'];
@@ -96,7 +118,7 @@ found in the LICENSE file.
         video.autoplay = true;
         video.muted = true;
         video.display = "none";
-        video.src = GetVideoSource(videoCount, i, codec);
+        video.src = GetVideoSource(videoCount, i, codec, useLargeSizeVideo);
         video.width = videoWidth;
         video.height = videoHeight;
         video.crossorigin = "anonymous";
@@ -113,14 +135,16 @@ found in the LICENSE file.
 
       // Simulate video playback by WebGpu rendering.
       webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
-        hasUIOnTop , hasFPSOnTop, useImportTextureApi);
+        hasUIOnTop, hasFPSOnTop, useImportTextureApi, capUIFPS, enableBackPressureWorkaround);
     }
 
   </script>
 </head>
+
 <body onload="startMxNVideos()">
   <div id="container" style="position:absolute; top:0px; left:0px">
     <p id="message"></p>
   </div>
 </body>
+
 </html>

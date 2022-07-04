@@ -67,12 +67,30 @@ To remove the FPS panels. Use `fps=none`.
 webgpu_videos_mxn.html?fps=none
 ```
 
+To use largest video only. Use `use_large_size_video=1`
+```
+webgpu_videos_mxn.html?use_large_size_video=1
+```
+
+To disable the 30fps cap in the sample. Use `cap_ui_fps=0`
+```
+
+webgpu_videos_mxn.html?cap_ui_fps=0
+```
+
 For webgpu_videos_mxn.html only:
 To disable Import Texture API and force the video texture copy through
 createImageBitmap() and then copyExternalImageToTexture(),
 use `import_texture_api=0`.
 ```
 webgpu_videos_mxn.html?import_texture_api=0
+```
+
+To disable using onSubmittedWorkDone to workaround webgpu
+backpressure issue(may hurt performance). Use `back_pressure_workaround=0`
+```
+
+webgpu_videos_mxn.html?back_pressure_workaround=0
 ```
 
 

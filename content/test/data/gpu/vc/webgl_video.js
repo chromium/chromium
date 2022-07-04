@@ -158,8 +158,7 @@ function bindVertexBufferForIcons(gl) {
   gl.enableVertexAttribArray(pos);
 }
 
-function createVertexBufferForAnimation(
-            gl, videos, videoRows, videoColumns) {
+function createVertexBufferForAnimation(gl, videos, videoRows, videoColumns) {
   const rectVerts = getArrayForAnimationVertexBuffer(videos, videoRows,
     videoColumns);
   const verticesBuffer = gl.createBuffer();
@@ -248,8 +247,8 @@ function initializeFPSTextures(gl, count) {
   }
 }
 
-function webglDrawVideoFrames(gl, videos, videoRows, videoColumns,
-                               addUI, addFPS) {
+function webglDrawVideoFrames(
+    gl, videos, videoRows, videoColumns, addUI, addFPS, capUIFPS) {
   initializePrograms(gl);
   initializeVideoTextures(gl, videos.length);
   if (addFPS) {
@@ -283,12 +282,14 @@ function webglDrawVideoFrames(gl, videos, videoRows, videoColumns,
 
   const oneFrame = () => {
     const timestamp = performance.now();
-    const elapsed = timestamp - lastTimestamp;
-    if (elapsed < kFrameTime30Fps) {
-      window.requestAnimationFrame(oneFrame);
-      return;
+    if (capUIFPS) {
+      const elapsed = timestamp - lastTimestamp;
+      if (elapsed < kFrameTime30Fps) {
+        window.requestAnimationFrame(oneFrame);
+        return;
+      }
+      lastTimestamp = timestamp;
     }
-    lastTimestamp = timestamp;
 
     uiFrames++;
 
