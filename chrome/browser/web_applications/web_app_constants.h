@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -164,7 +165,7 @@ DisplayMode ResolveEffectiveDisplayMode(
     UserDisplayMode user_display_mode,
     bool is_isolated);
 
-apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
+apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode);
 
 // The operation mode for Run on OS Login.

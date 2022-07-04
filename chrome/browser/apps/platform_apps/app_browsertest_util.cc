@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test_utils.h"
@@ -161,7 +162,7 @@ void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 }

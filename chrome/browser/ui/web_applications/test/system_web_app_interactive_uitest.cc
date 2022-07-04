@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/test_utils.h"
 #include "ui/wm/public/activation_change_observer.h"  // nogncheck
 #include "ui/wm/public/activation_client.h"           // nogncheck
@@ -558,7 +559,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     AppId app_id = GetAppId(profile);
 
     auto launch_params = apps::AppLaunchParams(
-        app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
 
@@ -674,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
   {
     auto launch_params = apps::AppLaunchParams(
-        app_id2, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id2, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
@@ -686,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
   {
     auto launch_params = apps::AppLaunchParams(
-        app_id1, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id1, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =

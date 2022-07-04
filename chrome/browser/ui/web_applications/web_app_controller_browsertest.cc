@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -165,7 +166,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenApplication(
       content::NotificationService::AllSources());
 
   apps::AppLaunchParams params(
-      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile())

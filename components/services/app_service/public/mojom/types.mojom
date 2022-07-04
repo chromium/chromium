@@ -487,6 +487,9 @@ struct FilePaths {
 
 // Don't remove items or change the order of this enum.  It's used in
 // histograms and preferences.
+//
+// This is DEPRECATED. When adding new fields, please use the App
+// struct in components/services/app_service/public/cpp/app_launch_util.h.
 enum LaunchContainer {
   kLaunchContainerWindow = 0,
   kLaunchContainerPanelDeprecated = 1,

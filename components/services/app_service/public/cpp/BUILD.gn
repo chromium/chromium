@@ -47,6 +47,8 @@ source_set("app_share_target") {
 component("app_types") {
   output_name = "APP_TYPES"
   sources = [
+    "app_launch_util.cc",
+    "app_launch_util.h",
     "app_types.cc",
     "app_types.h",
     "features.cc",

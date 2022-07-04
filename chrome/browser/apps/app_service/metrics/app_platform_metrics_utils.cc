@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/sync/base/model_type.h"
@@ -97,10 +98,9 @@ apps::AppTypeName GetAppTypeNameForChromeApp(
       break;
   }
 
-  apps::mojom::LaunchContainer launch_container =
-      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
-                                     extension);
-  if (launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
+  apps::LaunchContainer launch_container = extensions::GetLaunchContainer(
+      extensions::ExtensionPrefs::Get(profile), extension);
+  if (launch_container == apps::LaunchContainer::kLaunchContainerTab) {
     return apps::AppTypeName::kChromeBrowser;
   }
 

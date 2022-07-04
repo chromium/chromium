@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,13 +23,13 @@ namespace apps {
 
 struct AppLaunchParams {
   AppLaunchParams(const std::string& app_id,
-                  apps::mojom::LaunchContainer container,
+                  LaunchContainer container,
                   WindowOpenDisposition disposition,
                   apps::mojom::LaunchSource launch_source,
                   int64_t display_id = display::kInvalidDisplayId);
 
   AppLaunchParams(const std::string& app_id,
-                  apps::mojom::LaunchContainer container,
+                  LaunchContainer container,
                   WindowOpenDisposition disposition,
                   apps::mojom::LaunchSource launch_source,
                   int64_t display_id,
@@ -50,7 +51,7 @@ struct AppLaunchParams {
   std::string launch_id;
 
   // The container type to launch the application in.
-  apps::mojom::LaunchContainer container;
+  LaunchContainer container;
 
   // If container is TAB, this field controls how the tab is opened.
   WindowOpenDisposition disposition;

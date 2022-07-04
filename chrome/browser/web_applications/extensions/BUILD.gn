@@ -36,6 +36,7 @@ source_set("extensions") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/pref_registry",
+    "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/mojom",
     "//components/sync/model",
     "//components/webapps/browser:browser",

@@ -61,20 +61,20 @@ bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url) {
 
 LaunchContainerAndType GetLaunchContainerAndTypeFromDisplayMode(
     web_app::DisplayMode display_mode) {
-  apps::mojom::LaunchContainer apps_launch_container =
+  apps::LaunchContainer apps_launch_container =
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode);
   switch (apps_launch_container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
-      return {apps::mojom::LaunchContainer::kLaunchContainerNone,
+    case apps::LaunchContainer::kLaunchContainerNone:
+      return {apps::LaunchContainer::kLaunchContainerNone,
               extensions::LaunchType::LAUNCH_TYPE_DEFAULT};
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-      return {apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
+      return {apps::LaunchContainer::kLaunchContainerPanelDeprecated,
               extensions::LaunchType::LAUNCH_TYPE_REGULAR};
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      return {apps::mojom::LaunchContainer::kLaunchContainerTab,
+    case apps::LaunchContainer::kLaunchContainerTab:
+      return {apps::LaunchContainer::kLaunchContainerTab,
               extensions::LaunchType::LAUNCH_TYPE_REGULAR};
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return {apps::mojom::LaunchContainer::kLaunchContainerTab,
+    case apps::LaunchContainer::kLaunchContainerWindow:
+      return {apps::LaunchContainer::kLaunchContainerTab,
               display_mode == web_app::DisplayMode::kFullscreen
                   ? extensions::LaunchType::LAUNCH_TYPE_FULLSCREEN
                   : extensions::LaunchType::LAUNCH_TYPE_WINDOW};

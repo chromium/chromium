@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 typedef ChromeManifestTest ValidAppManifestTest;
@@ -20,7 +19,7 @@ TEST_F(ValidAppManifestTest, ValidApp) {
   AddPattern(&expected_patterns, "http://www.google.com/mail/*");
   AddPattern(&expected_patterns, "http://www.google.com/foobar/*");
   EXPECT_EQ(expected_patterns, extension->web_extent());
-  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerTab,
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
             extensions::AppLaunchInfo::GetLaunchContainer(extension.get()));
   EXPECT_EQ(GURL("http://www.google.com/mail/"),
             extensions::AppLaunchInfo::GetLaunchWebURL(extension.get()));

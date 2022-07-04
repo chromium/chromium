@@ -9,7 +9,7 @@
 namespace apps {
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
-                                 apps::mojom::LaunchContainer container,
+                                 LaunchContainer container,
                                  WindowOpenDisposition disposition,
                                  apps::mojom::LaunchSource launch_source,
                                  int64_t display_id)
@@ -21,7 +21,7 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
       display_id(display_id) {}
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
-                                 apps::mojom::LaunchContainer container,
+                                 LaunchContainer container,
                                  WindowOpenDisposition disposition,
                                  apps::mojom::LaunchSource launch_source,
                                  int64_t display_id,

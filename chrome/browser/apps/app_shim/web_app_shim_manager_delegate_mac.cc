@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 
@@ -219,7 +220,7 @@ void WebAppShimManagerDelegate::LaunchApp(
                                            ->registrar()
                                            .GetAppEffectiveDisplayMode(app_id);
 
-  apps::mojom::LaunchContainer launch_container =
+  apps::LaunchContainer launch_container =
       web_app::ConvertDisplayModeToAppLaunchContainer(effective_display_mode);
   apps::mojom::LaunchSource launch_source =
       apps::mojom::LaunchSource::kFromCommandLine;

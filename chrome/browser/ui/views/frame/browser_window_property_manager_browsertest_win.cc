@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          extension->id(), apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
           apps::mojom::LaunchSource::kFromTest));
 

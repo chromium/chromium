@@ -111,6 +111,7 @@
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -1694,7 +1695,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_TRUE(extension);
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       apps::AppLaunchParams(extension->id(),
-                            apps::mojom::LaunchContainer::kLaunchContainerTab,
+                            apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_WINDOW,
                             apps::mojom::LaunchSource::kFromTest));
 

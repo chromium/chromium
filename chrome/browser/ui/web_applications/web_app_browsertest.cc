@@ -71,6 +71,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -1869,7 +1870,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
   apps::AppLaunchParams params(
-      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
 
   BrowserHandler handler(nullptr, std::string());

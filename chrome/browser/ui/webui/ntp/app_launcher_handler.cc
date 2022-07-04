@@ -81,6 +81,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -830,7 +831,7 @@ void AppLauncherHandler::LaunchApp(
 
   extensions::Manifest::Type type;
   GURL full_launch_url;
-  apps::mojom::LaunchContainer launch_container;
+  apps::LaunchContainer launch_container;
 
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar();
   if (registrar.IsInstalled(extension_id) &&
@@ -874,8 +875,8 @@ void AppLauncherHandler::LaunchApp(
     apps::AppLaunchParams params(
         extension_id,
         disposition == WindowOpenDisposition::NEW_WINDOW
-            ? apps::mojom::LaunchContainer::kLaunchContainerWindow
-            : apps::mojom::LaunchContainer::kLaunchContainerTab,
+            ? apps::LaunchContainer::kLaunchContainerWindow
+            : apps::LaunchContainer::kLaunchContainerTab,
         disposition, apps::mojom::LaunchSource::kFromNewTabPage);
     params.override_url = override_url;
     apps::AppServiceProxyFactory::GetForProfile(profile)

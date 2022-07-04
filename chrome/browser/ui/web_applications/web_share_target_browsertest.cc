@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
@@ -95,9 +96,8 @@ content::WebContents* LaunchWebAppWithIntent(Profile* profile,
   apps::AppLaunchParams params = apps::CreateAppLaunchParamsForIntent(
       app_id,
       /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
-      display::kDefaultDisplayId,
-      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
-      profile);
+      display::kDefaultDisplayId, apps::LaunchContainer::kLaunchContainerWindow,
+      std::move(intent), profile);
 
   content::WebContents* const web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)

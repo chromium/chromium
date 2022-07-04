@@ -115,6 +115,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -687,13 +688,12 @@ void NewWindow(Browser* browser) {
   if (browser->app_controller()) {
     const web_app::AppId app_id = browser->app_controller()->app_id();
 
-    auto launch_container =
-        apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
 
     auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
     if (provider && provider->registrar().GetAppEffectiveDisplayMode(app_id) ==
                         blink::mojom::DisplayMode::kBrowser) {
-      launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+      launch_container = apps::LaunchContainer::kLaunchContainerTab;
     }
     apps::AppLaunchParams params = apps::AppLaunchParams(
         app_id, launch_container, WindowOpenDisposition::NEW_WINDOW,

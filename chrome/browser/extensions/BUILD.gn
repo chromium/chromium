@@ -862,7 +862,7 @@ static_library("extensions") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/search_engines",
-    "//components/services/app_service/public/mojom",
+    "//components/services/app_service/public/cpp:app_types",
     "//components/services/patch/content",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",

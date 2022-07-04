@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -76,8 +77,8 @@ void LaunchAppWithCallback(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    base::OnceCallback<void(Browser* browser,
-                            apps::mojom::LaunchContainer container)> callback);
+    base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
+        callback);
 
 // Shows the browser for |profile| if existent, otherwise attempts to open it.
 // Returns true if browser window already exists or if it was successfully

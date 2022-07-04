@@ -15,6 +15,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenPolicyTest, FullscreenAllowedApp) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
   extensions::AppWindow* window = add_window_observer.WaitForAppWindow();

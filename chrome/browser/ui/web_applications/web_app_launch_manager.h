@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
@@ -56,8 +56,7 @@ class WebAppLaunchManager {
       const absl::optional<GURL>& file_launch_url,
       const std::vector<base::FilePath>& launch_files,
       base::OnceCallback<void(Browser* browser,
-                              apps::mojom::LaunchContainer container)>
-          callback);
+                              apps::LaunchContainer container)> callback);
 
   static void SetOpenApplicationCallbackForTesting(
       OpenApplicationCallback callback);
@@ -66,8 +65,7 @@ class WebAppLaunchManager {
   virtual void LaunchWebApplication(
       apps::AppLaunchParams&& params,
       base::OnceCallback<void(Browser* browser,
-                              apps::mojom::LaunchContainer container)>
-          callback);
+                              apps::LaunchContainer container)> callback);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<WebAppProvider> provider_;

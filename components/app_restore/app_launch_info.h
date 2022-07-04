@@ -10,8 +10,8 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "components/app_restore/tab_group_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -23,7 +23,7 @@ namespace app_restore {
 struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
                 int32_t window_id,
-                apps::mojom::LaunchContainer container,
+                apps::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
@@ -32,7 +32,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id, int32_t window_id);
 
   AppLaunchInfo(const std::string& app_id,
-                apps::mojom::LaunchContainer container,
+                apps::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,

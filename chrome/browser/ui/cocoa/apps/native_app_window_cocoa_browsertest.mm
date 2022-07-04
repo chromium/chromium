@@ -73,7 +73,7 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->BrowserAppLauncher()
           ->LaunchAppWithParams(apps::AppLaunchParams(
-              app_->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+              app_->id(), apps::LaunchContainer::kLaunchContainerNone,
               WindowOpenDisposition::NEW_WINDOW,
               apps::mojom::LaunchSource::kFromTest));
       app_loaded_observer.Wait();

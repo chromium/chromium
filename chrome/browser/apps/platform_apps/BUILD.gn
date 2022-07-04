@@ -65,6 +65,7 @@ source_set("platform_apps") {
     "//components/navigation_interception",
     "//components/no_state_prefetch/browser",
     "//components/pref_registry",
+    "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/mojom",
     "//content/public/browser",
     "//content/public/common",

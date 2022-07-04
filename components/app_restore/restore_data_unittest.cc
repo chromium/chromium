@@ -15,6 +15,7 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -161,8 +162,7 @@ class RestoreDataTest : public testing::Test {
   void AddAppLaunchInfos() {
     std::unique_ptr<AppLaunchInfo> app_launch_info1 =
         std::make_unique<AppLaunchInfo>(
-            kAppId1, kWindowId1,
-            apps::mojom::LaunchContainer::kLaunchContainerWindow,
+            kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
             WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
             std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                         base::FilePath(kFilePath2)},
@@ -170,8 +170,7 @@ class RestoreDataTest : public testing::Test {
 
     std::unique_ptr<AppLaunchInfo> app_launch_info2 =
         std::make_unique<AppLaunchInfo>(
-            kAppId1, kWindowId2,
-            apps::mojom::LaunchContainer::kLaunchContainerTab,
+            kAppId1, kWindowId2, apps::LaunchContainer::kLaunchContainerTab,
             WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
             std::vector<base::FilePath>{base::FilePath(kFilePath2)},
             MakeIntent(kIntentActionView, kMimeType, kShareText2));
@@ -182,8 +181,7 @@ class RestoreDataTest : public testing::Test {
 
     std::unique_ptr<AppLaunchInfo> app_launch_info3 =
         std::make_unique<AppLaunchInfo>(
-            kAppId2, kWindowId3,
-            apps::mojom::LaunchContainer::kLaunchContainerNone,
+            kAppId2, kWindowId3, apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_POPUP, kDisplayId2,
             std::vector<base::FilePath>{base::FilePath(kFilePath1)},
             MakeIntent(kIntentActionView, kMimeType, kShareText1));

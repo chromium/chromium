@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -176,7 +177,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   }
 
   auto launch_url = contents->GetLastCommittedURL();
-  RecordMetrics(app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+  RecordMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
                 extensions::AppLaunchSource::kSourceReparenting, launch_url,
                 contents);
 
@@ -365,18 +366,17 @@ void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {
 }
 
 void RecordMetrics(const AppId& app_id,
-                   apps::mojom::LaunchContainer container,
+                   apps::LaunchContainer container,
                    extensions::AppLaunchSource launch_source,
                    const GURL& launch_url,
                    content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
-  if (container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
+  if (container == apps::LaunchContainer::kLaunchContainerTab) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType",
                               extensions::LAUNCH_TYPE_REGULAR, 100);
-  } else if (container ==
-             apps::mojom::LaunchContainer::kLaunchContainerWindow) {
+  } else if (container == apps::LaunchContainer::kLaunchContainerWindow) {
     RecordAppWindowLaunch(profile, app_id);
   }
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",

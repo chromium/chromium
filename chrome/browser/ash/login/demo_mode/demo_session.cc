@@ -47,6 +47,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
@@ -646,10 +647,10 @@ void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      apps::AppLaunchParams(
-          update.AppId(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::LaunchSource::kFromChromeInternal));
+      apps::AppLaunchParams(update.AppId(),
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            WindowOpenDisposition::NEW_WINDOW,
+                            apps::mojom::LaunchSource::kFromChromeInternal));
 }
 
 void DemoSession::OnAppRegistryCacheWillBeDestroyed(

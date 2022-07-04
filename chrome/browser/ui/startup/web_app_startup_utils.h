@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 
 #include "chrome/browser/ui/startup/startup_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class LaunchMode;
@@ -34,7 +34,7 @@ void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
                           const base::CommandLine& command_line,
                           chrome::startup::IsFirstRun is_first_run,
                           Browser* browser,
-                          apps::mojom::LaunchContainer container);
+                          apps::LaunchContainer container);
 
 // `callback` will be run after the next `MaybeHandleWebAppLaunch()` invocation
 // finishes executing.

@@ -23,9 +23,9 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -1059,7 +1059,7 @@ TEST_F(FullRestoreReadAndSaveTest,
   // Add a Chrome app launch info.
   SaveAppLaunchInfo(
       GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
-                     kAppId, apps::mojom::LaunchContainer::kLaunchContainerNone,
+                     kAppId, apps::LaunchContainer::kLaunchContainerNone,
                      WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
                      std::vector<base::FilePath>{}, nullptr));
   const LacrosSaveHandler* lacros_save_handler = test_api.GetLacrosSaveHander();
@@ -1121,7 +1121,7 @@ TEST_F(FullRestoreReadAndSaveTest,
   SaveAppLaunchInfo(
       GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
-          kAppId, apps::mojom::LaunchContainer::kLaunchContainerNone,
+          kAppId, apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::CURRENT_TAB, display::kInvalidDisplayId,
           std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                       base::FilePath(kFilePath2)},

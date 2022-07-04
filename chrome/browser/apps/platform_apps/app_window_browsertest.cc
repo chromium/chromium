@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 

@@ -121,11 +121,11 @@ UserDisplayMode GetExtensionUserDisplayMode(
 
   switch (extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension)) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::LaunchContainer::kLaunchContainerWindow:
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       return UserDisplayMode::kStandalone;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+    case apps::LaunchContainer::kLaunchContainerTab:
+    case apps::LaunchContainer::kLaunchContainerNone:
       return UserDisplayMode::kBrowser;
   }
 }

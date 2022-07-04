@@ -15,7 +15,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -76,18 +75,18 @@ void SetLaunchType(content::BrowserContext* context,
     ExtensionSyncService::Get(context)->SyncExtensionChangeIfNeeded(*extension);
 }
 
-apps::mojom::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
-                                                const Extension* extension) {
-  apps::mojom::LaunchContainer manifest_launch_container =
+apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
+                                         const Extension* extension) {
+  apps::LaunchContainer manifest_launch_container =
       AppLaunchInfo::GetLaunchContainer(extension);
 
-  absl::optional<apps::mojom::LaunchContainer> result;
+  absl::optional<apps::LaunchContainer> result;
 
   if (manifest_launch_container ==
-      apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated) {
+      apps::LaunchContainer::kLaunchContainerPanelDeprecated) {
     result = manifest_launch_container;
   } else if (manifest_launch_container ==
-             apps::mojom::LaunchContainer::kLaunchContainerTab) {
+             apps::LaunchContainer::kLaunchContainerTab) {
     // Look for prefs that indicate the user's choice of launch container. The
     // app's menu on the NTP provides a UI to set this preference.
     LaunchType prefs_launch_type = GetLaunchType(prefs, extension);
@@ -95,31 +94,31 @@ apps::mojom::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
     if (prefs_launch_type == LAUNCH_TYPE_WINDOW) {
       // If the pref is set to launch a window (or no pref is set, and
       // window opening is the default), make the container a window.
-      result = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      result = apps::LaunchContainer::kLaunchContainerWindow;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     } else if (prefs_launch_type == LAUNCH_TYPE_FULLSCREEN) {
       // LAUNCH_TYPE_FULLSCREEN launches in a maximized app window in ash.
       // For desktop chrome AURA on all platforms we should open the
       // application in full screen mode in the current tab, on the same
       // lines as non AURA chrome.
-      result = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      result = apps::LaunchContainer::kLaunchContainerWindow;
 #endif
     } else {
       // All other launch types (tab, pinned, fullscreen) are
       // implemented as tabs in a window.
-      result = apps::mojom::LaunchContainer::kLaunchContainerTab;
+      result = apps::LaunchContainer::kLaunchContainerTab;
     }
   } else {
     // If a new value for app.launch.container is added, logic for it should be
-    // added here. apps::mojom::LaunchContainer::kLaunchContainerWindow is not
+    // added here. apps::LaunchContainer::kLaunchContainerWindow is not
     // present because there is no way to set it in a manifest.
-    NOTREACHED() << manifest_launch_container;
+    NOTREACHED() << static_cast<int>(manifest_launch_container);
   }
 
   // All paths should set |result|.
   if (!result) {
     DLOG(FATAL) << "Failed to set a launch container.";
-    result = apps::mojom::LaunchContainer::kLaunchContainerTab;
+    result = apps::LaunchContainer::kLaunchContainerTab;
   }
 
   return *result;
@@ -128,10 +127,10 @@ apps::mojom::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
 bool HasPreferredLaunchContainer(const ExtensionPrefs* prefs,
                                  const Extension* extension) {
   int value = -1;
-  apps::mojom::LaunchContainer manifest_launch_container =
+  apps::LaunchContainer manifest_launch_container =
       AppLaunchInfo::GetLaunchContainer(extension);
   return manifest_launch_container ==
-             apps::mojom::LaunchContainer::kLaunchContainerTab &&
+             apps::LaunchContainer::kLaunchContainerTab &&
          prefs->ReadPrefAsInteger(extension->id(), kPrefLaunchType, &value);
 }
 

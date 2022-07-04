@@ -53,30 +53,30 @@ namespace {
 // we cannot use mojom traits for crosapi::mojom::LaunchParams yet. Move to auto
 // mapping when the AppService Intent struct is converted to use FilePaths.
 crosapi::mojom::LaunchContainer ConvertAppServiceToCrosapiLaunchContainer(
-    apps::mojom::LaunchContainer input) {
+    apps::LaunchContainer input) {
   switch (input) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+    case apps::LaunchContainer::kLaunchContainerWindow:
       return crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+    case apps::LaunchContainer::kLaunchContainerTab:
       return crosapi::mojom::LaunchContainer::kLaunchContainerTab;
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+    case apps::LaunchContainer::kLaunchContainerNone:
       return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       NOTREACHED();
       return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
   }
   NOTREACHED();
 }
 
-apps::mojom::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
+apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
     crosapi::mojom::LaunchContainer input) {
   switch (input) {
     case crosapi::mojom::LaunchContainer::kLaunchContainerWindow:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      return apps::LaunchContainer::kLaunchContainerWindow;
     case crosapi::mojom::LaunchContainer::kLaunchContainerTab:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+      return apps::LaunchContainer::kLaunchContainerTab;
     case crosapi::mojom::LaunchContainer::kLaunchContainerNone:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
+      return apps::LaunchContainer::kLaunchContainerNone;
   }
   NOTREACHED();
 }
@@ -126,16 +126,16 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
   NOTREACHED();
 }
 
-apps::mojom::LaunchContainer ConvertWindowModeToAppLaunchContainer(
+apps::LaunchContainer ConvertWindowModeToAppLaunchContainer(
     apps::WindowMode window_mode) {
   switch (window_mode) {
     case apps::WindowMode::kBrowser:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+      return apps::LaunchContainer::kLaunchContainerTab;
     case apps::WindowMode::kWindow:
     case apps::WindowMode::kTabbedWindow:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      return apps::LaunchContainer::kLaunchContainerWindow;
     case apps::WindowMode::kUnknown:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
+      return apps::LaunchContainer::kLaunchContainerNone;
   }
 }
 
@@ -190,18 +190,18 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     int event_flags,
     apps::mojom::LaunchSource launch_source,
     int64_t display_id,
-    apps::mojom::LaunchContainer fallback_container) {
+    apps::LaunchContainer fallback_container) {
   WindowOpenDisposition raw_disposition =
       ui::DispositionFromEventFlags(event_flags);
 
-  apps::mojom::LaunchContainer container;
+  apps::LaunchContainer container;
   WindowOpenDisposition disposition;
   if (raw_disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       raw_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+    container = apps::LaunchContainer::kLaunchContainerTab;
     disposition = raw_disposition;
   } else if (raw_disposition == WindowOpenDisposition::NEW_WINDOW) {
-    container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    container = apps::LaunchContainer::kLaunchContainerWindow;
     disposition = raw_disposition;
   } else {
     // Look at preference to find the right launch container.  If no preference
@@ -218,7 +218,7 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     int64_t display_id,
-    apps::mojom::LaunchContainer fallback_container,
+    apps::LaunchContainer fallback_container,
     apps::mojom::IntentPtr&& intent,
     Profile* profile) {
   auto params = CreateAppIdLaunchParamsWithEventFlags(

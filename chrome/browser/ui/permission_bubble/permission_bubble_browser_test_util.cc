@@ -17,6 +17,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -78,8 +79,7 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   CHECK(extension);
 
   apps::AppLaunchParams params(
-      extension->id(),
-      apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
+      extension->id(), apps::LaunchContainer::kLaunchContainerPanelDeprecated,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
 
   content::WebContents* app_contents =

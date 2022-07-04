@@ -41,6 +41,7 @@
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -2149,8 +2150,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   // TODO(crbug.com/1253250): Register non-mojom apps and use
   // AppServiceProxy::LaunchAppWithParams to test launching.
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
-      apps::AppLaunchParams("w2",
-                            apps::mojom::LaunchContainer::kLaunchContainerTab,
+      apps::AppLaunchParams("w2", apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             apps::mojom::LaunchSource::kFromTest));
   if (IsLacrosPrimary()) {
@@ -2169,8 +2169,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
                            : AppTypeNameV2::kWebTab);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
-      apps::AppLaunchParams("s",
-                            apps::mojom::LaunchContainer::kLaunchContainerTab,
+      apps::AppLaunchParams("s", apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             apps::mojom::LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,

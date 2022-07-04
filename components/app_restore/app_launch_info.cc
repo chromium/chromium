@@ -10,7 +10,7 @@ namespace app_restore {
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              int32_t window_id,
-                             apps::mojom::LaunchContainer container,
+                             apps::LaunchContainer container,
                              WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
@@ -27,7 +27,7 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id, int32_t session_id)
     : app_id(app_id), window_id(session_id) {}
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
-                             apps::mojom::LaunchContainer container,
+                             apps::LaunchContainer container,
                              WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,

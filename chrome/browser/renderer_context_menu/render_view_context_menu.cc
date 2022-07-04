@@ -136,6 +136,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
@@ -3331,7 +3332,7 @@ void RenderViewContextMenu::ExecOpenWebApp() {
     return;
 
   apps::AppLaunchParams launch_params(
-      *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      *app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::CURRENT_TAB, apps::mojom::LaunchSource::kFromMenu);
   launch_params.override_url = params_.link_url;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())

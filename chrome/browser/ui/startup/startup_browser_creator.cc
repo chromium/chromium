@@ -80,7 +80,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -522,7 +522,7 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
         web_app::startup::FinalizeWebAppLaunch(
             LaunchMode::kAsWebAppInWindowByUrl, command_line, is_first_run,
             chrome::FindBrowserWithWebContents(web_contents),
-            apps::mojom::LaunchContainer::kLaunchContainerWindow);
+            apps::LaunchContainer::kLaunchContainerWindow);
         return true;
       }
     }

@@ -14,7 +14,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/app_constants/constants.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
@@ -62,10 +61,7 @@ const AppLaunchInfo& GetAppLaunchInfo(const Extension* extension) {
 
 }  // namespace
 
-AppLaunchInfo::AppLaunchInfo()
-    : launch_container_(apps::mojom::LaunchContainer::kLaunchContainerTab),
-      launch_width_(0),
-      launch_height_(0) {}
+AppLaunchInfo::AppLaunchInfo() = default;
 
 AppLaunchInfo::~AppLaunchInfo() {
 }
@@ -82,7 +78,7 @@ const GURL& AppLaunchInfo::GetLaunchWebURL(const Extension* extension) {
 }
 
 // static
-apps::mojom::LaunchContainer AppLaunchInfo::GetLaunchContainer(
+apps::LaunchContainer AppLaunchInfo::GetLaunchContainer(
     const Extension* extension) {
   return GetAppLaunchInfo(extension).launch_container_;
 }
@@ -232,10 +228,9 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
       tmp_launcher_container->GetString();
 
   if (launch_container_string == values::kLaunchContainerPanelDeprecated) {
-    launch_container_ =
-        apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
+    launch_container_ = apps::LaunchContainer::kLaunchContainerPanelDeprecated;
   } else if (launch_container_string == values::kLaunchContainerTab) {
-    launch_container_ = apps::mojom::LaunchContainer::kLaunchContainerTab;
+    launch_container_ = apps::LaunchContainer::kLaunchContainerTab;
   } else {
     *error = errors::kInvalidLaunchContainer;
     return false;
@@ -245,7 +240,7 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
   // deprecated.
   bool can_specify_initial_size =
       launch_container_ ==
-      apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
+      apps::LaunchContainer::kLaunchContainerPanelDeprecated;
 
   // Validate the container width if present.
   if (!ReadLaunchDimension(extension->manifest(),

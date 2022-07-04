@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_read_handler.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
@@ -248,7 +249,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
 
     apps::AppLaunchParams params(
         app_id,
-        static_cast<apps::mojom::LaunchContainer>(it.second->container.value()),
+        static_cast<apps::LaunchContainer>(it.second->container.value()),
         static_cast<WindowOpenDisposition>(it.second->disposition.value()),
         apps::mojom::LaunchSource::kFromFullRestore,
         it.second->display_id.value(),

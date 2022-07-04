@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
 namespace content {
@@ -39,8 +39,8 @@ void SetLaunchType(content::BrowserContext* context,
 // Finds the right launch container based on the launch type.
 // If |extension|'s prefs do not have a launch type set, then the default
 // value from GetLaunchType() is used to choose the launch container.
-apps::mojom::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
-                                                const Extension* extension);
+apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
+                                         const Extension* extension);
 
 // Returns true if a launch container preference has been specified for
 // |extension|. GetLaunchContainer() will still return a default value even if

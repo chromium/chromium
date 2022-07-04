@@ -164,12 +164,10 @@ GURL UrlForExtension(const extensions::Extension* extension,
   return url;
 }
 
-ui::WindowShowState DetermineWindowShowState(
-    Profile* profile,
-    apps::mojom::LaunchContainer container,
-    const Extension* extension) {
-  if (!extension ||
-      container != apps::mojom::LaunchContainer::kLaunchContainerWindow)
+ui::WindowShowState DetermineWindowShowState(Profile* profile,
+                                             apps::LaunchContainer container,
+                                             const Extension* extension) {
+  if (!extension || container != apps::LaunchContainer::kLaunchContainerWindow)
     return ui::SHOW_STATE_DEFAULT;
 
   if (chrome::IsRunningInForcedAppMode())
@@ -332,16 +330,16 @@ WebContents* OpenEnabledApplication(Profile* profile,
   prefs->SetLastLaunchTime(extension->id(), base::Time::Now());
 
   switch (params.container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerNone: {
+    case apps::LaunchContainer::kLaunchContainerNone: {
       NOTREACHED();
       break;
     }
     // Panels are deprecated. Launch a normal window instead.
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::LaunchContainer::kLaunchContainerWindow:
       tab = OpenApplicationWindow(profile, params, url);
       break;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab: {
+    case apps::LaunchContainer::kLaunchContainerTab: {
       tab = OpenApplicationTab(profile, params, url);
       break;
     }
@@ -473,7 +471,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
 WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url) {
   apps::AppLaunchParams launch_params(
       std::string(),  // this is a URL app. No app id.
-      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW,
       apps::mojom::LaunchSource::kFromCommandLine);
   launch_params.override_url = url;
@@ -497,18 +495,18 @@ void LaunchAppWithCallback(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    base::OnceCallback<void(Browser* browser,
-                            apps::mojom::LaunchContainer container)> callback) {
-  apps::mojom::LaunchContainer container;
+    base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
+        callback) {
+  apps::LaunchContainer container;
   if (apps::OpenExtensionApplicationWindow(profile, app_id, command_line,
                                            current_directory)) {
-    container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    container = apps::LaunchContainer::kLaunchContainerWindow;
   } else if (apps::OpenExtensionApplicationTab(profile, app_id)) {
-    container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+    container = apps::LaunchContainer::kLaunchContainerTab;
   } else {
     // Open an empty browser window as the app_id is invalid.
     apps::CreateBrowserWithNewTabPage(profile);
-    container = apps::mojom::LaunchContainer::kLaunchContainerNone;
+    container = apps::LaunchContainer::kLaunchContainerNone;
   }
   std::move(callback).Run(BrowserList::GetInstance()->GetLastActive(),
                           container);

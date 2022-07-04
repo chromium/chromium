@@ -48,6 +48,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
@@ -181,12 +182,11 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
  public:
   WebAppFileHandlingBrowserTest() : redirect_handle_(*https_server()) {}
 
-  void LaunchWithFiles(
-      const std::string& app_id,
-      const GURL& expected_launch_url,
-      const std::vector<base::FilePath>& files,
-      const apps::mojom::LaunchContainer launch_container =
-          apps::mojom::LaunchContainer::kLaunchContainerWindow) {
+  void LaunchWithFiles(const std::string& app_id,
+                       const GURL& expected_launch_url,
+                       const std::vector<base::FilePath>& files,
+                       const apps::LaunchContainer launch_container =
+                           apps::LaunchContainer::kLaunchContainerWindow) {
     web_contents_ = LaunchApplication(
         profile(), app_id, expected_launch_url, launch_container,
         apps::mojom::LaunchSource::kFromFileManager, files);
@@ -253,8 +253,8 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
       Profile* profile,
       const std::string& app_id,
       const GURL& expected_launch_url,
-      const apps::mojom::LaunchContainer launch_container =
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      const apps::LaunchContainer launch_container =
+          apps::LaunchContainer::kLaunchContainerWindow,
       const apps::mojom::LaunchSource launch_source =
           apps::mojom::LaunchSource::kFromTest,
       const std::vector<base::FilePath>& files =
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   base::FilePath test_file_path = NewTestFilePath("txt");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
-                  apps::mojom::LaunchContainer::kLaunchContainerTab);
+                  apps::LaunchContainer::kLaunchContainerTab);
 
   VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
 }
@@ -334,16 +334,16 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   // Test as above in a tab.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {},
-                  apps::mojom::LaunchContainer::kLaunchContainerTab);
+                  apps::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
                   {NewTestFilePath("txt")},
-                  apps::mojom::LaunchContainer::kLaunchContainerTab);
+                  apps::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
                   {NewTestFilePath("html")},
-                  apps::mojom::LaunchContainer::kLaunchContainerTab);
+                  apps::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
                   {NewTestFilePath("csv")},
-                  apps::mojom::LaunchContainer::kLaunchContainerTab);
+                  apps::LaunchContainer::kLaunchContainerTab);
 }
 
 // Regression test for crbug.com/1126091

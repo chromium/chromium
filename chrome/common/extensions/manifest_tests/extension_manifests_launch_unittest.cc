@@ -6,7 +6,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -22,15 +22,15 @@ class AppLaunchManifestTest : public ChromeManifestTest {
 
 TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess("launch_tab.json");
-  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerTab,
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_panel.json");
-  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerPanelDeprecated,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_default.json");
-  EXPECT_EQ(apps::mojom::LaunchContainer::kLaunchContainerTab,
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_width.json");

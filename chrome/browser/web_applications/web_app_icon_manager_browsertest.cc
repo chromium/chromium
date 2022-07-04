@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -115,10 +116,10 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
   WebAppBrowserController* controller;
   {
-    apps::AppLaunchParams params(
-        app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(app_id,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 apps::mojom::LaunchSource::kFromTest);
     content::WebContents* contents =
         apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
             ->BrowserAppLauncher()

@@ -32,6 +32,7 @@
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/web_contents.h"
@@ -278,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
 
   extensions::ResultCatcher catcher;
   apps::AppLaunchParams params(
-      extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+      extension->id(), apps::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())

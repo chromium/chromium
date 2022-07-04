@@ -38,6 +38,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -175,10 +176,9 @@ bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
   if (!extension)
     return false;
 
-  apps::mojom::LaunchContainer launch_container =
-      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
-                                     extension);
-  return launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab;
+  apps::LaunchContainer launch_container = extensions::GetLaunchContainer(
+      extensions::ExtensionPrefs::Get(profile), extension);
+  return launch_container == apps::LaunchContainer::kLaunchContainerTab;
 }
 
 }  // namespace

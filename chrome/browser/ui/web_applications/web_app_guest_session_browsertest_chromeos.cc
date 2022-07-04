@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
@@ -45,11 +46,10 @@ IN_PROC_BROWSER_TEST_P(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
       ->InstallSystemAppsForTesting();
 
   Profile* profile = browser()->profile();
-  apps::AppLaunchParams params(
-      web_app::kOsSettingsAppId,
-      apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::LaunchSource::kFromTest);
+  apps::AppLaunchParams params(web_app::kOsSettingsAppId,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               apps::mojom::LaunchSource::kFromTest);
 
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, CannotLaunchAfterUninstall) {
   const AppId app_id = InstallPWA(app_url);
 
   apps::AppLaunchParams params(
-      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
 
   UninstallWebApp(app_id);

@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -248,7 +249,7 @@ WebAppLaunchProcess::EnsureBrowser() {
 }
 
 Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
-  if (params_.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
+  if (params_.container == apps::LaunchContainer::kLaunchContainerTab) {
     return chrome::FindTabbedBrowser(
         &profile_, /*match_original_profiles=*/false,
         display::Screen::GetScreen()->GetDisplayForNewWindows().id());
@@ -270,7 +271,7 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
 }
 
 Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
-  if (params_.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
+  if (params_.container == apps::LaunchContainer::kLaunchContainerTab) {
     return Browser::Create(Browser::CreateParams(Browser::TYPE_NORMAL,
                                                  &profile_,
                                                  /*user_gesture=*/true));

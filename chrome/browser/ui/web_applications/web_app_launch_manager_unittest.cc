@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,13 +32,13 @@ class MockWebAppLaunchManager : public WebAppLaunchManager {
   MockWebAppLaunchManager& operator=(const MockWebAppLaunchManager&) = delete;
   ~MockWebAppLaunchManager() override = default;
 
-  MOCK_METHOD(void,
-              LaunchWebApplication,
-              (apps::AppLaunchParams && params,
-               base::OnceCallback<void(Browser* browser,
-                                       apps::mojom::LaunchContainer container)>
-                   callback),
-              (override));
+  MOCK_METHOD(
+      void,
+      LaunchWebApplication,
+      (apps::AppLaunchParams && params,
+       base::OnceCallback<void(Browser* browser,
+                               apps::LaunchContainer container)> callback),
+      (override));
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -72,10 +73,10 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
       const std::vector<base::FilePath>& launch_files,
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url) {
-    apps::AppLaunchParams params(
-        kTestAppId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromCommandLine);
+    apps::AppLaunchParams params(kTestAppId,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 apps::mojom::LaunchSource::kFromCommandLine);
 
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = command_line;
@@ -135,7 +136,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication) {
       .WillOnce(testing::Invoke(
           [&](apps::AppLaunchParams&& params,
               base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
+                                      apps::LaunchContainer container)>
                   callback) {
             ValidateLaunchParams(params, expected_results);
             run_loop.Quit();
@@ -167,7 +168,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
       .WillOnce(testing::Invoke(
           [&](apps::AppLaunchParams&& params,
               base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
+                                      apps::LaunchContainer container)>
                   callback) {
             ValidateLaunchParams(params, expected_results);
             run_loop.Quit();
@@ -200,7 +201,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
       .WillOnce(testing::Invoke(
           [&](apps::AppLaunchParams&& params,
               base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
+                                      apps::LaunchContainer container)>
                   callback) {
             ValidateLaunchParams(params, expected_results);
             run_loop.Quit();
@@ -229,7 +230,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
       .WillOnce(testing::Invoke(
           [&](apps::AppLaunchParams&& params,
               base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
+                                      apps::LaunchContainer container)>
                   callback) {
             ValidateLaunchParams(params, expected_results);
             run_loop.Quit();

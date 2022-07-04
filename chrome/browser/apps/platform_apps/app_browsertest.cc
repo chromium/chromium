@@ -46,6 +46,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -267,10 +268,10 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
       return false;
     }
 
-    apps::AppLaunchParams params(
-        extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(extension->id(),
+                                 apps::LaunchContainer::kLaunchContainerNone,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 apps::mojom::LaunchSource::kFromTest);
     params.command_line = command_line;
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -949,7 +950,7 @@ void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
     app_loaded_observer.Wait();
@@ -1100,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
@@ -1125,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
@@ -1166,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
@@ -1194,7 +1195,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());

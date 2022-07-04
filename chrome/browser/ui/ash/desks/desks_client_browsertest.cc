@@ -78,6 +78,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/policy_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -234,7 +235,7 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
          app_type == ash::SystemWebAppType::HELP);
   web_app::AppId app_id = *web_app::GetAppIdForSystemWebApp(profile, app_type);
   apps::AppLaunchParams params(
-      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   params.restore_id = app_type == ash::SystemWebAppType::SETTINGS
                           ? kSettingsWindowId
@@ -831,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
-          extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          extension_id, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -1887,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
-          extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          extension_id, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 

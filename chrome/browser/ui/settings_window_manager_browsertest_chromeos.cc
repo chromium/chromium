@@ -25,6 +25,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -107,8 +108,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-              settings_app_id,
-              apps::mojom::LaunchContainer::kLaunchContainerWindow,
+              settings_app_id, apps::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
               apps::mojom::LaunchSource::kFromCommandLine));
   web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());

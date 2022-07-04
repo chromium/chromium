@@ -25,6 +25,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -187,7 +188,7 @@ void StandaloneBrowserExtensionApps::Launch(
 
   if (ShouldSaveToFullRestore(proxy(), app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-        app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
+        app_id, apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
         std::vector<base::FilePath>{}, nullptr);
     full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
@@ -220,7 +221,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
 
   if (ShouldSaveToFullRestore(proxy(), app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-        app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
+        app_id, apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
         std::vector<base::FilePath>{},
         apps::ConvertMojomIntentToIntent(intent));
@@ -249,7 +250,7 @@ void StandaloneBrowserExtensionApps::LaunchAppWithFiles(
 
   if (ShouldSaveToFullRestore(proxy(), app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-        app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
+        app_id, apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
         std::move(file_paths->file_paths), nullptr);
     full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -60,7 +61,7 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
                   ->BrowserAppLauncher()
                   ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
                       extension_app->id(),
-                      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                      apps::LaunchContainer::kLaunchContainerWindow,
                       WindowOpenDisposition::CURRENT_TAB,
                       apps::mojom::LaunchSource::kFromTest)));
 

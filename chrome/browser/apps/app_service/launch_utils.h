@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
@@ -56,14 +57,14 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     int event_flags,
     apps::mojom::LaunchSource source,
     int64_t display_id,
-    apps::mojom::LaunchContainer fallback_container);
+    apps::LaunchContainer fallback_container);
 
 apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
     apps::mojom::LaunchSource source,
     int64_t display_id,
-    apps::mojom::LaunchContainer fallback_container,
+    apps::LaunchContainer fallback_container,
     apps::mojom::IntentPtr&& intent,
     Profile* profile);
 

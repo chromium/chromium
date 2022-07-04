@@ -300,7 +300,7 @@ class StartupWebAppCreator
     }
   }
 
-  void OnAppLaunched(Browser* browser, apps::mojom::LaunchContainer container) {
+  void OnAppLaunched(Browser* browser, apps::LaunchContainer container) {
     // The finalization step should only occur for the first app launch.
     if (app_window_has_been_launched_)
       return;
@@ -353,24 +353,24 @@ void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
                           const base::CommandLine& command_line,
                           chrome::startup::IsFirstRun is_first_run,
                           Browser* browser,
-                          apps::mojom::LaunchContainer container) {
+                          apps::LaunchContainer container) {
   if (!browser)
     return;
 
   LaunchMode mode;
   switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+    case apps::LaunchContainer::kLaunchContainerWindow:
       DCHECK(browser->is_type_app());
       mode = app_launch_mode.value_or(LaunchMode::kAsWebAppInWindowOther);
       break;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+    case apps::LaunchContainer::kLaunchContainerTab:
       DCHECK(!browser->is_type_app());
       mode = LaunchMode::kAsWebAppInTab;
       break;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       NOTREACHED();
       [[fallthrough]];
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+    case apps::LaunchContainer::kLaunchContainerNone:
       DCHECK(!browser->is_type_app());
       mode = LaunchMode::kUnknownWebApp;
       break;

@@ -141,10 +141,10 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url,
       const GURL& override_url) {
-    apps::AppLaunchParams params(
-        app_id_, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromCommandLine);
+    apps::AppLaunchParams params(app_id_,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 apps::mojom::LaunchSource::kFromCommandLine);
 
     params.launch_files = launch_files;
     params.url_handler_launch_url = url_handler_launch_url;

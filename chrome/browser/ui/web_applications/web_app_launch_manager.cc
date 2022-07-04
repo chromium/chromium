@@ -67,8 +67,8 @@ void WebAppLaunchManager::LaunchApplication(
     const absl::optional<GURL>& protocol_handler_launch_url,
     const absl::optional<GURL>& file_launch_url,
     const std::vector<base::FilePath>& launch_files,
-    base::OnceCallback<void(Browser* browser,
-                            apps::mojom::LaunchContainer container)> callback) {
+    base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
+        callback) {
   if (!provider_)
     return;
 
@@ -95,7 +95,7 @@ void WebAppLaunchManager::LaunchApplication(
   }
 
   apps::AppLaunchParams params(
-      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
@@ -126,14 +126,14 @@ void WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
 
 void WebAppLaunchManager::LaunchWebApplication(
     apps::AppLaunchParams&& params,
-    base::OnceCallback<void(Browser* browser,
-                            apps::mojom::LaunchContainer container)> callback) {
-  apps::mojom::LaunchContainer container;
+    base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
+        callback) {
+  apps::LaunchContainer container;
   Browser* browser = nullptr;
   if (provider_->registrar().IsInstalled(params.app_id)) {
     if (provider_->registrar().GetAppEffectiveDisplayMode(params.app_id) ==
         blink::mojom::DisplayMode::kBrowser) {
-      params.container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+      params.container = apps::LaunchContainer::kLaunchContainerTab;
       params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     }
 
@@ -144,7 +144,7 @@ void WebAppLaunchManager::LaunchWebApplication(
       browser = chrome::FindBrowserWithWebContents(web_contents);
   } else {
     // Open an empty browser window as the app_id is invalid.
-    container = apps::mojom::LaunchContainer::kLaunchContainerNone;
+    container = apps::LaunchContainer::kLaunchContainerNone;
     browser = apps::CreateBrowserWithNewTabPage(profile_);
   }
   std::move(callback).Run(browser, container);

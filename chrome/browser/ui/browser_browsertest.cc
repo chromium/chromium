@@ -89,6 +89,7 @@
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -1265,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               extension_app->id(),
-              apps::mojom::LaunchContainer::kLaunchContainerWindow,
+              apps::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
               apps::mojom::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
@@ -1449,7 +1450,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               extension_app->id(),
-              apps::mojom::LaunchContainer::kLaunchContainerWindow,
+              apps::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
               apps::mojom::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);

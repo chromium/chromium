@@ -9,7 +9,7 @@
 #include "base/compiler_specific.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/common/chrome_features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -137,19 +137,19 @@ DisplayMode ResolveEffectiveDisplayMode(
   return resolved_display_mode;
 }
 
-apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
+apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode) {
   switch (display_mode) {
     case DisplayMode::kBrowser:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+      return apps::LaunchContainer::kLaunchContainerTab;
     case DisplayMode::kMinimalUi:
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
     case DisplayMode::kTabbed:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      return apps::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kUndefined:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
+      return apps::LaunchContainer::kLaunchContainerNone;
   }
 }
 

@@ -51,6 +51,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
@@ -507,7 +508,7 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
   apps::AppLaunchParams params(
-      app->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+      app->id(), apps::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(profile())

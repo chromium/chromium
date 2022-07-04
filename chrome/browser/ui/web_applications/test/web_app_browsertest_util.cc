@@ -47,6 +47,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -196,7 +197,7 @@ Browser* LaunchWebAppBrowser(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-              app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+              app_id, apps::LaunchContainer::kLaunchContainerWindow,
               disposition, apps::mojom::LaunchSource::kFromTest));
   EXPECT_TRUE(web_contents);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -222,7 +223,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-              app_id, apps::mojom::LaunchContainer::kLaunchContainerTab,
+              app_id, apps::LaunchContainer::kLaunchContainerTab,
               WindowOpenDisposition::NEW_FOREGROUND_TAB,
               apps::mojom::LaunchSource::kFromTest));
   DCHECK(web_contents);

@@ -27,6 +27,7 @@
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -166,7 +167,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
-            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
   }

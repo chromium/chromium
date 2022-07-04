@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,10 +66,10 @@ apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
       GetManager().GetAppIdForSystemApp(system_app_type);
 
   CHECK(app_id.has_value());
-  return apps::AppLaunchParams(
-      *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::CURRENT_TAB,
-      apps::mojom::LaunchSource::kFromAppListGrid);
+  return apps::AppLaunchParams(*app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               apps::mojom::LaunchSource::kFromAppListGrid);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(

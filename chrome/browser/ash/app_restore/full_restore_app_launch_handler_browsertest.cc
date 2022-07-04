@@ -61,6 +61,7 @@
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -282,7 +283,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
     ::full_restore::SaveAppLaunchInfo(
         profile()->GetPath(),
         std::make_unique<::app_restore::AppLaunchInfo>(
-            app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+            app_id, apps::LaunchContainer::kLaunchContainerWindow,
             WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
             std::vector<base::FilePath>{}, nullptr));
   }
@@ -362,8 +363,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -391,8 +391,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
   CreateAndSaveWindowInfo(
@@ -429,8 +428,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -477,8 +475,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -512,8 +509,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -730,8 +726,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -799,8 +794,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
@@ -832,8 +826,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
       std::make_unique<::app_restore::AppLaunchInfo>(
-          kAppId, kWindowId2,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
 
