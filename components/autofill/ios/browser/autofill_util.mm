@@ -118,20 +118,24 @@ bool ExtractFormData(const base::Value& form_value,
                      autofill::FormData* form_data) {
   DCHECK(form_data);
   // Each form should be a JSON dictionary.
-  const base::DictionaryValue* form_dictionary = nullptr;
-  if (!form_value.GetAsDictionary(&form_dictionary))
+  if (!form_value.is_dict())
     return false;
 
+  const base::Value::Dict& form_dictionary = form_value.GetDict();
+
   // Form data is copied into a FormData object field-by-field.
-  if (!form_dictionary->GetString("name", &form_data->name))
+  const std::string* name = form_dictionary.FindString("name");
+  if (!name)
     return false;
+  form_data->name = base::UTF8ToUTF16(*name);
   if (filtered && form_name != form_data->name)
     return false;
 
   // Origin is mandatory.
-  std::u16string origin;
-  if (!form_dictionary->GetString("origin", &origin))
+  const std::string* origin_ptr = form_dictionary.FindString("origin");
+  if (!origin_ptr)
     return false;
+  std::u16string origin = base::UTF8ToUTF16(*origin_ptr);
 
   // Use GURL object to verify origin of host frame URL.
   form_data->url = GURL(origin);
@@ -141,35 +145,44 @@ bool ExtractFormData(const base::Value& form_value,
   // main_frame_origin is used for logging UKM.
   form_data->main_frame_origin = url::Origin::Create(main_frame_url);
 
-  std::string unique_renderer_id;
-  form_dictionary->GetString("unique_renderer_id", &unique_renderer_id);
-  if (!unique_renderer_id.empty()) {
-    StringToUint(unique_renderer_id, &form_data->unique_renderer_id.value());
+  const std::string* unique_renderer_id =
+      form_dictionary.FindString("unique_renderer_id");
+  if (unique_renderer_id && !unique_renderer_id->empty()) {
+    StringToUint(*unique_renderer_id, &form_data->unique_renderer_id.value());
   } else {
     form_data->unique_renderer_id = FormRendererId();
   }
 
   // Action is optional.
   std::u16string action;
-  form_dictionary->GetString("action", &action);
+  if (const std::string* action_ptr = form_dictionary.FindString("action")) {
+    action = base::UTF8ToUTF16(*action_ptr);
+  }
   form_data->action = GURL(action);
 
   // Optional fields.
-  form_dictionary->GetString("name_attribute", &form_data->name_attribute);
-  form_dictionary->GetString("id_attribute", &form_data->id_attribute);
-  form_data->is_form_tag = form_dictionary->FindBoolKey("is_form_tag")
-                               .value_or(form_data->is_form_tag);
-  form_dictionary->GetString("frame_id", &form_data->frame_id);
+  if (const std::string* name_attribute =
+          form_dictionary.FindString("name_attribute")) {
+    form_data->name_attribute = base::UTF8ToUTF16(*name_attribute);
+  }
+  if (const std::string* id_attribute =
+          form_dictionary.FindString("id_attribute")) {
+    form_data->id_attribute = base::UTF8ToUTF16(*id_attribute);
+  }
+  form_data->is_form_tag =
+      form_dictionary.FindBool("is_form_tag").value_or(form_data->is_form_tag);
+  if (const std::string* frame_id = form_dictionary.FindString("frame_id")) {
+    form_data->frame_id = *frame_id;
+  }
 
   // Field list (mandatory) is extracted.
-  const base::ListValue* fields_list = nullptr;
-  if (!form_dictionary->GetList("fields", &fields_list))
+  const base::Value::List* fields_list = form_dictionary.FindList("fields");
+  if (!fields_list)
     return false;
-  for (const auto& field_dict : fields_list->GetListDeprecated()) {
-    const base::DictionaryValue* field;
+  for (const auto& field_dict : *fields_list) {
     autofill::FormFieldData field_data;
-    if (field_dict.GetAsDictionary(&field) &&
-        ExtractFormFieldData(*field, &field_data)) {
+    if (field_dict.is_dict() &&
+        ExtractFormFieldData(field_dict.GetDict(), &field_data)) {
       form_data->fields.push_back(std::move(field_data));
     } else {
       return false;
@@ -178,68 +191,81 @@ bool ExtractFormData(const base::Value& form_value,
   return true;
 }
 
-bool ExtractFormFieldData(const base::DictionaryValue& field,
+bool ExtractFormFieldData(const base::Value::Dict& field,
                           autofill::FormFieldData* field_data) {
-  if (!field.GetString("name", &field_data->name) ||
-      !field.GetString("identifier", &field_data->unique_id) ||
-      !field.GetString("form_control_type", &field_data->form_control_type)) {
+  const std::string *name, *identifier, *form_control_type;
+  if (!(name = field.FindString("name")) ||
+      !(identifier = field.FindString("identifier")) ||
+      !(form_control_type = field.FindString("form_control_type"))) {
     return false;
   }
 
-  std::string unique_renderer_id;
-  field.GetString("unique_renderer_id", &unique_renderer_id);
-  if (!unique_renderer_id.empty()) {
-    StringToUint(unique_renderer_id, &field_data->unique_renderer_id.value());
+  field_data->name = base::UTF8ToUTF16(*name);
+  field_data->unique_id = base::UTF8ToUTF16(*identifier);
+  field_data->form_control_type = *form_control_type;
+
+  const std::string* unique_renderer_id =
+      field.FindString("unique_renderer_id");
+  if (unique_renderer_id && !unique_renderer_id->empty()) {
+    StringToUint(*unique_renderer_id, &field_data->unique_renderer_id.value());
   } else {
     field_data->unique_renderer_id = FieldRendererId();
   }
 
   // Optional fields.
-  field.GetString("name_attribute", &field_data->name_attribute);
-  field.GetString("id_attribute", &field_data->id_attribute);
-  field.GetString("label", &field_data->label);
-  field.GetString("value", &field_data->value);
-  field.GetString("autocomplete_attribute",
-                  &field_data->autocomplete_attribute);
+  if (const std::string* name_attribute = field.FindString("name_attribute")) {
+    field_data->name_attribute = base::UTF8ToUTF16(*name_attribute);
+  }
+  if (const std::string* id_attribute = field.FindString("id_attribute")) {
+    field_data->id_attribute = base::UTF8ToUTF16(*id_attribute);
+  }
+  if (const std::string* label = field.FindString("label")) {
+    field_data->label = base::UTF8ToUTF16(*label);
+  }
+  if (const std::string* value = field.FindString("value")) {
+    field_data->value = base::UTF8ToUTF16(*value);
+  }
+  if (const std::string* autocomplete_attribute =
+          field.FindString("autocomplete_attribute")) {
+    field_data->autocomplete_attribute = *autocomplete_attribute;
+  }
   field_data->is_autofilled =
-      field.FindBoolKey("is_autofilled").value_or(field_data->is_autofilled);
+      field.FindBool("is_autofilled").value_or(field_data->is_autofilled);
 
-  int max_length = 0;
-  if (field.GetInteger("max_length", &max_length))
-    field_data->max_length = max_length;
+  if (absl::optional<int> max_length = field.FindInt("max_length")) {
+    field_data->max_length = *max_length;
+  }
 
   // TODO(crbug.com/427614): Extract |is_checked|.
-  bool is_checkable = field.FindBoolKey("is_checkable").value_or(false);
+  bool is_checkable = field.FindBool("is_checkable").value_or(false);
   autofill::SetCheckStatus(field_data, is_checkable, false);
 
   field_data->is_focusable =
-      field.FindBoolKey("is_focusable").value_or(field_data->is_focusable);
+      field.FindBool("is_focusable").value_or(field_data->is_focusable);
   field_data->should_autocomplete =
-      field.FindBoolKey("should_autocomplete")
+      field.FindBool("should_autocomplete")
           .value_or(field_data->should_autocomplete);
 
   // RoleAttribute::kOther is the default value. The only other value as of this
   // writing is RoleAttribute::kPresentation.
-  int role = 0;
-  if (field.GetInteger("role", &role) &&
-      role == static_cast<int>(FormFieldData::RoleAttribute::kPresentation)) {
+  absl::optional<int> role = field.FindInt("role");
+  if (role &&
+      *role == static_cast<int>(FormFieldData::RoleAttribute::kPresentation)) {
     field_data->role = FormFieldData::RoleAttribute::kPresentation;
   }
 
   // TODO(crbug.com/427614): Extract |text_direction|.
 
   // Load option values where present.
-  const base::ListValue* option_values;
-  const base::ListValue* option_contents;
-  if (field.GetList("option_values", &option_values) &&
-      field.GetList("option_contents", &option_contents)) {
-    auto value_list = option_values->GetListDeprecated();
-    auto content_list = option_contents->GetListDeprecated();
-    if (value_list.size() != content_list.size())
+  const base::Value::List* option_values = field.FindList("option_values");
+  const base::Value::List* option_contents = field.FindList("option_contents");
+  if (option_values && option_contents) {
+    if (option_values->size() != option_contents->size())
       return false;
-    auto value_it = value_list.begin();
-    auto content_it = content_list.begin();
-    while (value_it != value_list.end() && content_it != content_list.end()) {
+    auto value_it = option_values->begin();
+    auto content_it = option_contents->begin();
+    while (value_it != option_values->end() &&
+           content_it != option_contents->end()) {
       if (value_it->is_string() && content_it->is_string()) {
         field_data->options.push_back(
             {.value = base::UTF8ToUTF16(value_it->GetString()),

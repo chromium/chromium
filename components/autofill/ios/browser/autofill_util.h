@@ -7,13 +7,12 @@
 
 #include <vector>
 
+#include "base/values.h"
+
 #import "ios/web/public/js_messaging/web_frame.h"
 
 class GURL;
 
-namespace base {
-class DictionaryValue;
-}
 namespace web {
 class WebState;
 }
@@ -59,7 +58,7 @@ bool ExtractFormData(const base::Value& form,
 // Extracts a single form field from the JSON dictionary into a FormFieldData
 // object.
 // Returns false if the field could not be extracted.
-bool ExtractFormFieldData(const base::DictionaryValue& field,
+bool ExtractFormFieldData(const base::Value::Dict& field,
                           FormFieldData* field_data);
 
 typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
