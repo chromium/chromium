@@ -375,7 +375,6 @@ crbug.com/1050754 external/wpt/IndexedDB/key-generators/reading-autoincrement-st
 crbug.com/1050754 external/wpt/IndexedDB/transaction-abort-generator-revert.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/WebCryptoAPI/historical.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/WebIDL/ecmascript-binding/global-immutable-prototype.any.sharedworker.html [ Failure ]
-crbug.com/1050754 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value.any.html [ Failure ]
 crbug.com/1050754 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value.any.serviceworker.html [ Failure ]
 crbug.com/1050754 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value.any.worker.html [ Failure ]

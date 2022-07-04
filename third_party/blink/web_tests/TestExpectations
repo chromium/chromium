@@ -7146,3 +7146,8 @@ crbug.com/1340716 [ Linux ] accessibility/notification-listeners.html [ Skip ]
 # Sheriff 2022-06-30
 crbug.com/1340781 virtual/android/fullscreen/full-screen-table-section.html [ Skip ]
 crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ Failure Pass ]
+
+# Temporarily disable the tests during the rollout of V8 that fixes the
+# behaviors that the test cases excersise.
+crbug.com/1305302 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value-cross-realm.html [ Skip ]
+crbug.com/1305302 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value.any.html [ Skip ]
