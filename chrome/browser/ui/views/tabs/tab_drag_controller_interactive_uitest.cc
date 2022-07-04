@@ -2117,8 +2117,15 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragInSameWindow) {
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
 }
 
+// TODO(crbug.com/1341444) Flaky on lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TabDragContextOwnsDraggedTabs \
+  DISABLED_TabDragContextOwnsDraggedTabs
+#else
+#define MAYBE_TabDragContextOwnsDraggedTabs TabDragContextOwnsDraggedTabs
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       TabDragContextOwnsDraggedTabs) {
+                       MAYBE_TabDragContextOwnsDraggedTabs) {
   AddTabsAndResetBrowser(browser(), 1);
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
