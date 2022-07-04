@@ -282,6 +282,10 @@ extern const char kEnableShortenedPasswordAutoFillInstructionDescription[];
 extern const char kEnableSuggestionsScrollingOnIPadName[];
 extern const char kEnableSuggestionsScrollingOnIPadDescription[];
 
+// Title and description for the flag to enable user policies.
+extern const char kEnableUserPolicyName[];
+extern const char kEnableUserPolicyDescription[];
+
 // Title and description for the flag to introduce following web channels on
 // Chrome iOS.
 extern const char kEnableWebChannelsName[];

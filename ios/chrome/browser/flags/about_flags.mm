@@ -64,7 +64,7 @@
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/features.h"
-#include "ios/chrome/browser/policy/cloud/user_policy_switch.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/session_features.h"
@@ -1006,6 +1006,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kOmniboxPasteButton,
                                     kOmniboxPasteButtonVariations,
                                     "OmniboxPasteButton")},
+    {"enable-user-policy", flag_descriptions::kEnableUserPolicyName,
+     flag_descriptions::kEnableUserPolicyDescription, flags_ui::kOsIos,
+     SINGLE_VALUE_TYPE(policy::kEnableUserPolicy)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

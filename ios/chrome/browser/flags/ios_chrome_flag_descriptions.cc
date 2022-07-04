@@ -316,6 +316,11 @@ const char kEnableSuggestionsScrollingOnIPadDescription[] =
     "Enable omnibox suggestions scrolling on iPad and disable suggestions "
     "hiding on keyboard dismissal.";
 
+const char kEnableUserPolicyName[] = "Enable user policies";
+const char kEnableUserPolicyDescription[] =
+    "Enable the fetch and application of user policies when synced with a "
+    "managed account";
+
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
