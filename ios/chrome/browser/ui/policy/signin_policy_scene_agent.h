@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_MAIN_SIGNIN_POLICY_SCENE_AGENT_H_
-#define IOS_CHROME_BROWSER_UI_MAIN_SIGNIN_POLICY_SCENE_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_UI_POLICY_SIGNIN_POLICY_SCENE_AGENT_H_
+#define IOS_CHROME_BROWSER_UI_POLICY_SIGNIN_POLICY_SCENE_AGENT_H_
 
 #import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
 
@@ -38,4 +38,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_MAIN_SIGNIN_POLICY_SCENE_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_UI_POLICY_SIGNIN_POLICY_SCENE_AGENT_H_

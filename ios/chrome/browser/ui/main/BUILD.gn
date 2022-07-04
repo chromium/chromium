@@ -111,8 +111,6 @@ source_set("scene") {
     "scene_delegate.h",
     "scene_delegate.mm",
     "scene_state.mm",
-    "signin_policy_scene_agent.h",
-    "signin_policy_scene_agent.mm",
     "ui_blocker_scene_agent.h",
     "ui_blocker_scene_agent.mm",
   ]
