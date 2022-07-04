@@ -85,42 +85,64 @@ void RecordBeaconConsistency(
 // Increments kVariationsCrashStreak if |did_previous_session_exit_cleanly| is
 // false. Also, emits the crash streak to a histogram.
 //
-// Either |beacon_file_contents| or |local_state| is used to retrieve the crash
-// streak depending on the client's Extended Variations Safe Mode experiment
-// group in the last session.
+// If |beacon_file_contents| are given, then the beacon file is used to retrieve
+// the crash streak. Otherwise, |local_state| is used.
 void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
                                base::Value* beacon_file_contents,
                                PrefService* local_state) {
-  int num_crashes =
-      beacon_file_contents
-          ? beacon_file_contents->FindKey(kVariationsCrashStreak)->GetInt()
-          : local_state->GetInteger(kVariationsCrashStreak);
+  int num_crashes;
+  if (beacon_file_contents) {
+    absl::optional<int> crash_streak =
+        beacon_file_contents->GetDict().FindInt(kVariationsCrashStreak);
+    // Any contents without the key should have been rejected by
+    // MaybeGetFileContents().
+    DCHECK(crash_streak);
+    num_crashes = crash_streak.value();
+  } else {
+    // TODO(crbug/1341087): Consider not falling back to Local State for clients
+    // on platforms that support the beacon file.
+    num_crashes = local_state->GetInteger(kVariationsCrashStreak);
+  }
 
-  // Increment the crash streak if the previous session crashed. Note that the
-  // streak is not cleared if the previous run didn’t crash. Instead, it’s
-  // incremented on each crash until Chrome is able to successfully fetch a new
-  // seed. This way, a seed update that mostly destabilizes Chrome still results
-  // in a fallback to safe mode.
-  //
-  // The crash streak is incremented here rather than in a variations-related
-  // class for two reasons. First, the crash streak depends on the value of
-  // kStabilityExitedCleanly. Second, if kVariationsCrashStreak were updated in
-  // another function, any crash between CleanExitBeacon() and that function
-  // would cause the crash streak to not be to incremented. A consequence of
-  // failing to increment the crash streak is that Variations Safe Mode might
-  // undercount or be completely unaware of repeated crashes early on in
-  // startup.
   if (!did_previous_session_exit_cleanly) {
+    // Increment the crash streak if the previous session crashed. Note that the
+    // streak is not cleared if the previous run didn’t crash. Instead, it’s
+    // incremented on each crash until Chrome is able to successfully fetch a
+    // new seed. This way, a seed update that mostly destabilizes Chrome still
+    // results in a fallback to Variations Safe Mode.
+    //
+    // The crash streak is incremented here rather than in a variations-related
+    // class for two reasons. First, the crash streak depends on whether Chrome
+    // exited cleanly in the last session, which is first checked via
+    // CleanExitBeacon::Initialize(). Second, if the crash streak were updated
+    // in another function, any crash between beacon initialization and the
+    // other function might cause the crash streak to not be to incremented.
+    // "Might" because the updated crash streak also needs to be persisted to
+    // disk. A consequence of failing to increment the crash streak is that
+    // Chrome might undercount or be completely unaware of repeated crashes
+    // early on in startup.
     ++num_crashes;
+    // For platforms that use the beacon file, the crash streak is written
+    // synchronously to disk later on in startup via
+    // MaybeExtendVariationsSafeMode() and WriteBeaconFile(). The crash streak
+    // is intentionally not written to the beacon file here. If the beacon file
+    // indicates that Chrome failed to exit cleanly, then Chrome got at
+    // least as far as MaybeExtendVariationsSafeMode(), which is during the
+    // PostEarlyInitialization stage when native code is being synchronously
+    // executed. Chrome should also be able to reach that point in this session.
+    //
+    // For platforms that do not use the beacon file, the crash streak is
+    // scheduled to be written to disk later on in startup. At the latest, this
+    // is done when a Local State write is scheduled via WriteBeaconFile(). A
+    // write is not scheduled here for three reasons.
+    //
+    // 1. It is an expensive operation.
+    // 2. Android WebLayer (one of the two platforms that does not use the
+    //    beacon file) did not appear to benefit from scheduling the write. See
+    //    crbug/1341850 for details.
+    // 3. Android WebView (the other beacon-file-less platform) has its own
+    //    Variations Safe Mode mechanism and does not need the crash streak.
     local_state->SetInteger(kVariationsCrashStreak, num_crashes);
-#if BUILDFLAG(IS_ANDROID)
-    // Schedule a Local State write on Android Chrome, WebLayer, and WebView
-    // only as this write is expensive, and other platforms use the beacon file
-    // as the source of truth. For other platforms, the crask streak is written
-    // synchronously to disk later on in startup. See
-    // MaybeExtendVariationsSafeMode() and WriteBeaconValue().
-    local_state->CommitPendingWrite();
-#endif
   }
   base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
                            base::clamp(num_crashes, 0, 100));
