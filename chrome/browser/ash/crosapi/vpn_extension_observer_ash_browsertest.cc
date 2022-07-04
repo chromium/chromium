@@ -87,7 +87,9 @@ class ExtensionEventWaiter
   mojo::Remote<cros_network::mojom::CrosNetworkConfig> cros_network_config_;
 };
 
-IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest, LoadVpnExtension) {
+// TODO(1339457): This test is flaky.
+IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest,
+                       DISABLED_LoadVpnExtension) {
   if (!ash_starter_.HasLacrosArgument()) {
     return;
   }
