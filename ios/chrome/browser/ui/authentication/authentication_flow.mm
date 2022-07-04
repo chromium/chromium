@@ -259,7 +259,7 @@ enum AuthenticationState {
         return REGISTER_FOR_USER_POLICY;
       return COMPLETE_WITH_SUCCESS;
     case REGISTER_FOR_USER_POLICY:
-      if ([_dmToken length] == 0) {
+      if (!_dmToken.length || !_clientID.length) {
         // Skip fetching user policies when registration failed.
         return COMPLETE_WITH_SUCCESS;
       }
@@ -537,7 +537,6 @@ enum AuthenticationState {
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
                                    clientID:(NSString*)clientID {
   DCHECK_EQ(REGISTER_FOR_USER_POLICY, _state);
-  DCHECK(clientID.length);
 
   _dmToken = dmToken;
   _clientID = clientID;
