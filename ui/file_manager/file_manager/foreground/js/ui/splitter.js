@@ -148,7 +148,9 @@ Splitter.prototype = {
     e = /** @type {!TouchEvent} */ (e);
     if (e.touches.length === 1) {
       this.startDrag(e.touches[0].clientX, true);
-      e.preventDefault();
+      if (e.cancelable) {
+        e.preventDefault();
+      }
     }
   },
 
