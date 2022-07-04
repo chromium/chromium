@@ -24,12 +24,17 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 using ::testing::_;
 
@@ -202,7 +207,7 @@ class PictureInPictureTestWebFrameClient
   std::unique_ptr<WebMediaPlayer> web_media_player_;
 };
 
-class PictureInPictureControllerTest : public testing::Test {
+class PictureInPictureControllerTest : public RenderingTest {
  public:
   void SetUp() override {
     client_ = std::make_unique<PictureInPictureTestWebFrameClient>(
@@ -456,7 +461,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
 }
 
 TEST_F(PictureInPictureControllerTest,
-       EnterPictureInPictureProvideSourceBounds) {
+       EnterPictureInPictureProvideSourceBoundsSetToBoundsInViewport) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -475,6 +480,60 @@ TEST_F(PictureInPictureControllerTest,
   // really test anything.
   ASSERT_NE(Video()->BoundsInViewport(), gfx::Rect());
   EXPECT_EQ(Service().source_bounds(), Video()->BoundsInViewport());
+}
+
+TEST_F(PictureInPictureControllerTest,
+       EnterPictureInPictureProvideSourceBoundsSetToReplacedContentRect) {
+  // Create one image with a size of 10x10px
+  SkImageInfo raster_image_info =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
+  sk_sp<SkSurface> surface(SkSurface::MakeRaster(raster_image_info));
+  ImageResourceContent* image_content = ImageResourceContent::CreateLoaded(
+      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot())
+          .get());
+
+  Element* div = GetDocument().CreateRawElement(html_names::kDivTag);
+  div->setAttribute(html_names::kStyleAttr,
+                    "padding: 100px;"
+                    "width: 150px;"
+                    "height: 150px;"
+                    "padding: 100px;"
+                    "transform: scale(2)");
+  GetDocument().body()->AppendChild(div);
+  div->AppendChild(Video());
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Set poster image to video
+  auto* layout_image = To<LayoutImage>(Video()->GetLayoutObject());
+  const char kPosterUrl[] = "http://example.com/foo.jpg";
+  url_test_helpers::RegisterMockedErrorURLLoad(
+      url_test_helpers::ToKURL(kPosterUrl));
+  Video()->setAttribute(html_names::kPosterAttr, kPosterUrl);
+  Video()->setAttribute(html_names::kStyleAttr,
+                        "object-fit: none;"
+                        "height: 150px;"
+                        "width: 150px;");
+  layout_image->ImageResource()->SetImageResource(image_content);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .PictureInPictureElement());
+
+  WebMediaPlayer* player = Video()->GetWebMediaPlayer();
+  EXPECT_CALL(Service(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
+                           player->NaturalSize(), true, _, _, _));
+
+  PictureInPictureControllerImpl::From(GetDocument())
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
+
+  MakeGarbageCollected<WaitForEvent>(Video(),
+                                     event_type_names::kEnterpictureinpicture);
+
+  // Source bounds are expected to match the poster image size, not the bounds
+  // of the video element.
+  EXPECT_EQ(Video()->BoundsInViewport(), gfx::Rect(33, 33, 300, 300));
+  EXPECT_EQ(Service().source_bounds(), gfx::Rect(173, 173, 20, 20));
 }
 
 TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
