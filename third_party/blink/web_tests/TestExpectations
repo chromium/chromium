@@ -7154,3 +7154,4 @@ crbug.com/1305302 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-
 
 # Sheriff 2022-07-04
 crbug.com/1340981 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html [ Timeout ]
+crbug.com/1341693 [ Linux ] external/wpt/dom/nodes/MutationObserver-document.html [ Skip ]
