@@ -263,6 +263,7 @@ chromium-metrics-reviews@google.com.
     Number of ARC Apps killed by {ArcAppKillType} in each interval of 10
     minutes.
   </summary>
+  <token key="ArcAppKillType" variants="ArcAppKillType"/>
 </histogram>
 
 <histogram
@@ -274,6 +275,8 @@ chromium-metrics-reviews@google.com.
     Number of ARC Apps killed by {ArcAppKillType} in each interval of 10 minutes
     when {ArcBackgroundVms}.
   </summary>
+  <token key="ArcAppKillType" variants="ArcAppKillType"/>
+  <token key="ArcBackgroundVms" variants="ArcBackgroundVms"/>
 </histogram>
 
 <histogram name="Arc.App.PrimaryAbi" enum="AppPrimaryAbi"
