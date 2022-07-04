@@ -582,6 +582,36 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     return accounts_[account_key].gaia_id;
   }
 
+  // Simulates the effect of a Multilogin call on the cookies.
+  std::vector<Cookie> FakeSetAccountsInCookie(
+      const signin::MultiloginParameters& parameters,
+      const std::vector<Cookie>& cookies_before_reconcile) {
+    std::vector<Cookie> cookies_after_reconcile;
+    if (parameters.mode ==
+        gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER) {
+      for (const CoreAccountId& account : parameters.accounts_to_send) {
+        cookies_after_reconcile.push_back({account.ToString(), true});
+      }
+    } else {
+      std::vector<CoreAccountId> accounts(parameters.accounts_to_send.begin(),
+                                          parameters.accounts_to_send.end());
+      cookies_after_reconcile = cookies_before_reconcile;
+      for (Cookie& param : cookies_after_reconcile) {
+        CoreAccountId account = CoreAccountId(param.gaia_id);
+        if (base::Contains(accounts, account)) {
+          param.is_valid = true;
+          accounts.erase(std::find(accounts.begin(), accounts.end(), account));
+        } else {
+          DCHECK(!param.is_valid);
+        }
+      }
+      for (const CoreAccountId& account : accounts) {
+        cookies_after_reconcile.push_back({account.ToString(), true});
+      }
+    }
+    return cookies_after_reconcile;
+  }
+
   std::map<char, Account> accounts_;
 };
 
@@ -662,37 +692,6 @@ TEST_F(AccountReconcilorMirrorTest, ProfileAlreadyConnected) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-namespace {
-std::vector<Cookie> FakeSetAccountsInCookie(
-    const signin::MultiloginParameters& parameters,
-    const std::vector<Cookie>& cookies_before_reconcile) {
-  std::vector<Cookie> cookies_after_reconcile;
-  if (parameters.mode ==
-      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER) {
-    for (const CoreAccountId& account : parameters.accounts_to_send) {
-      cookies_after_reconcile.push_back({account.ToString(), true});
-    }
-  } else {
-    std::vector<CoreAccountId> accounts(parameters.accounts_to_send.begin(),
-                                        parameters.accounts_to_send.end());
-    cookies_after_reconcile = cookies_before_reconcile;
-    for (Cookie& param : cookies_after_reconcile) {
-      CoreAccountId account = CoreAccountId(param.gaia_id);
-      if (base::Contains(accounts, account)) {
-        param.is_valid = true;
-        accounts.erase(std::find(accounts.begin(), accounts.end(), account));
-      } else {
-        DCHECK(!param.is_valid);
-      }
-    }
-    for (const CoreAccountId& account : accounts) {
-      cookies_after_reconcile.push_back({account.ToString(), true});
-    }
-  }
-  return cookies_after_reconcile;
-}
-}  // namespace
 
 // clang-format off
 const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
