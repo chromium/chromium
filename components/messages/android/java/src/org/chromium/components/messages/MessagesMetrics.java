@@ -141,6 +141,8 @@ public class MessagesMetrics {
                 return "Translate";
             case MessageIdentifier.OFFER_NOTIFICATION:
                 return "OfferNotification";
+            case MessageIdentifier.EXTERNAL_NAVIGATION:
+                return "ExternalNavigation";
             default:
                 return "Unknown";
         }
