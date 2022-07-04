@@ -140,17 +140,15 @@ void RecordBeaconFileState(BeaconFileState file_state) {
 // 3. The file is successfully read.
 // 4. The file contents are in the expected format with the expected info.
 //
-// The file is not expected to exist for clients that have never been in the
-// Extended Variations Safe Mode experiment's enabled group. Also, the file may
-// not exist for all enabled-group clients because there are some edge cases.
-// First, MaybeGetFileContents() is called before clients are assigned to an
-// Extended Variations Safe Mode experiment group, so a client that is later
-// assigned to the enabled group will not have the file in the first session
-// after updating to or installing a Chrome version with the experiment. Second,
-// Android Chrome enabled-group clients with repeated background sessions may
-// never write a beacon file. Third, it is possible for a user to delete the
-// file or to switch groups by resetting their variations state. Finally,
-// clients also switch groups when the FieldTrial name is updated.
+// The file may not exist for the below reasons:
+//
+// 1. The file is unsupported on the platform.
+// 2. This is the first session after a client updates to or installs a Chrome
+//    version that uses the beacon file. The beacon file launched on desktop
+//    and iOS in M102 and on Android Chrome in M103.
+// 3. Android Chrome clients with only background sessions may never write a
+//    beacon file.
+// 4. A user may delete the file.
 std::unique_ptr<base::Value> MaybeGetFileContents(
     const base::FilePath& beacon_file_path) {
   if (beacon_file_path.empty())
@@ -271,9 +269,8 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
                       : local_state_beacon_value.value_or(true);
 
 #if BUILDFLAG(IS_IOS)
-  // For the time being, this is a no-op to avoid interference with the Extended
-  // Variations Safe Mode experiment; i.e., ShouldUseUserDefaultsBeacon() always
-  // returns false.
+  // TODO(crbug/1231106): For the time being, this is a no-op; i.e.,
+  // ShouldUseUserDefaultsBeacon() always returns false.
   if (ShouldUseUserDefaultsBeacon())
     return backup_beacon_value.value_or(true);
 #endif  // BUILDFLAG(IS_IOS)
