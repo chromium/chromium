@@ -70,6 +70,7 @@ class TabInteractionRecorderAndroid
       content::RenderFrameHost::LifecycleState new_state) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   // JNI methods
   jboolean HadInteraction(JNIEnv* env) const;

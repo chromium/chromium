@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
+#include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -104,6 +105,12 @@ void TabInteractionRecorderAndroid::DidFinishNavigation(
       navigation_handle->HasCommitted() &&
       navigation_handle->GetRenderFrameHost()->IsActive())
     StartObservingFrame(navigation_handle->GetRenderFrameHost());
+}
+
+void TabInteractionRecorderAndroid::DidGetUserInteraction(
+    const blink::WebInputEvent& event) {
+  chrome::android::CustomTabSessionStateTracker::GetInstance()
+      .OnUserInteraction();
 }
 
 void TabInteractionRecorderAndroid::SetHasFormInteractions() {
