@@ -1964,9 +1964,11 @@ void LocalDOMWindow::DispatchLoadEvent() {
     if (FrameOwner* owner = frame->Owner())
       owner->DispatchLoad();
 
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-        "MarkLoad", inspector_mark_load_event::Data, frame);
-    probe::LoadEventFired(frame);
+    if (frame->IsAttached()) {
+      DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+          "MarkLoad", inspector_mark_load_event::Data, frame);
+      probe::LoadEventFired(frame);
+    }
   }
 }
 
