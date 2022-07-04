@@ -372,10 +372,6 @@ void Node::setNodeValue(const String&, ExceptionState&) {
   // By default, setting nodeValue has no effect.
 }
 
-ContainerNode* Node::parentNode() const {
-  return IsShadowRoot() ? nullptr : ParentOrShadowHostNode();
-}
-
 NodeList* Node::childNodes() {
   auto* this_node = DynamicTo<ContainerNode>(this);
   if (this_node)

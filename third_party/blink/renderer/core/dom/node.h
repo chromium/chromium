@@ -216,7 +216,10 @@ class CORE_EXPORT Node : public EventTarget {
   virtual void setNodeValue(const String&,
                             ExceptionState& = ASSERT_NO_EXCEPTION);
   virtual NodeType getNodeType() const = 0;
-  ContainerNode* parentNode() const;
+  ContainerNode* parentNode() const {
+    return IsShadowRoot() ? nullptr : ParentOrShadowHostNode();
+  }
+
   Element* parentElement() const;
   ContainerNode* ParentElementOrShadowRoot() const;
   ContainerNode* ParentElementOrDocumentFragment() const;
