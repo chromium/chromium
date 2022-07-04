@@ -27,15 +27,27 @@ async_test(t => {
   document.createDocumentTransition().start(() => {
     assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
     assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
-    // We changed this in the style block above.
-    assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "fixed");
+    // We changed this in the style block above but it will not apply until the animation phase.
+    assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "absolute");
 
     assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute");
 
     assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute");
     assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute");
     assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute");
-    t.done();
+
+    requestAnimationFrame(() => {
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "fixed");
+
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(target)").position, "absolute");
+
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(root)").position, "absolute");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(root)").position, "absolute");
+      assert_equals(getComputedStyle(document.documentElement, ":page-transition-outgoing-image(root)").position, "absolute");
+      t.done();
+    });
   });
 }, "position property of pseudo elements");
 </script>

@@ -9,16 +9,24 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 
 namespace blink {
+class DocumentTransitionStyleTracker;
 
 class CORE_EXPORT DocumentTransitionPseudoElementBase : public PseudoElement {
  public:
   DocumentTransitionPseudoElementBase(
       Element* parent,
       PseudoId,
-      const AtomicString& document_transition_tag);
+      const AtomicString& document_transition_tag,
+      const DocumentTransitionStyleTracker* style_tracker);
   ~DocumentTransitionPseudoElementBase() override = default;
 
   bool CanGeneratePseudoElement(PseudoId) const override;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
+  void Trace(Visitor* visitor) const override;
+
+ protected:
+  Member<const DocumentTransitionStyleTracker> style_tracker_;
 };
 
 }  // namespace blink

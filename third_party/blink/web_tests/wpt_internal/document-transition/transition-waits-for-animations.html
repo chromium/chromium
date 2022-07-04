@@ -39,12 +39,9 @@ async function startTransition() {
   t.start(() => {
     e1.classList.remove("left");
     e1.classList.add("right");
+    setTimeout(takeScreenshot, 500);
   });
 }
 
-function runTest() {
-  startTransition();
-  setTimeout(takeScreenshot, 500);
-}
-onload = runTest;
+onload = startTransition;
 </script>

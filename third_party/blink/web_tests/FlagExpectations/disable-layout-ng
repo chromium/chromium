@@ -1802,6 +1802,11 @@ crbug.com/1321217 virtual/document-transition/wpt_internal/document-transition/o
 crbug.com/1321217 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow.html [ Skip ]
 crbug.com/1303102 virtual/document-transition/wpt_internal/document-transition/no-root-capture.html [ Skip ]
 
+# The following failures are due to a bug in object-view-box implementation specific to layoutng being disabled.
+crbug.com/1310798 virtual/document-transition/wpt_internal/document-transition/old-content-object-view-box-clip-path.html [ Failure ]
+crbug.com/1310798 virtual/document-transition/wpt_internal/document-transition/old-content-object-view-box-clip-path-reference.html [ Failure ]
+crbug.com/1310798 virtual/document-transition/wpt_internal/document-transition/old-content-object-view-box-overflow.html [ Failure ]
+
 # only NGHighlightPainter has the ability to paint decorations added by ::target-text
 crbug.com/1223918 wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
 crbug.com/1223918 virtual/css-highlight-inheritance/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]

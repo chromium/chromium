@@ -26,7 +26,8 @@ class CORE_EXPORT DocumentTransitionContentElement
       PseudoId,
       const AtomicString& document_transition_tag,
       viz::SharedElementResourceId,
-      bool is_live_content_element);
+      bool is_live_content_element,
+      const DocumentTransitionStyleTracker* style_tracker);
   ~DocumentTransitionContentElement() override;
 
   void SetIntrinsicSize(const LayoutSize& intrinsic_size);
