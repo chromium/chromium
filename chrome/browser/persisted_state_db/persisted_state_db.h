@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
+#include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 

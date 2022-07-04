@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
+#include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 
 ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
 GetPersistedStateProfileProtoDBFactory() {

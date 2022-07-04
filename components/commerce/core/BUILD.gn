@@ -96,6 +96,11 @@ if (is_android) {
   }
 }
 
+proto_library("persisted_state_db_content_proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/persisted_state_db_content.proto" ]
+}
+
 source_set("commerce_heuristics_data") {
   sources = [
     "commerce_heuristics_data.cc",

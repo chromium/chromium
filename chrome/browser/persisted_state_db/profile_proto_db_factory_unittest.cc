@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

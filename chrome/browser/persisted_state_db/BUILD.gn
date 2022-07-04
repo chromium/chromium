@@ -20,8 +20,8 @@ source_set("persisted_state_db") {
   }
 
   deps = [
-    ":persisted_state_db_content_proto",
     "//base:base",
+    "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
     "//content/public/browser:browser",
@@ -39,8 +39,4 @@ source_set("persisted_state_db") {
       "//components/commerce/core:coupon_db_content_proto",
     ]
   }
-}
-
-proto_library("persisted_state_db_content_proto") {
-  sources = [ "persisted_state_db_content.proto" ]
 }
