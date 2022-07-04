@@ -116,15 +116,17 @@ bool ShouldContinueFetchingFavicon() {
 void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
                              const GURL& site_url,
                              NSString* filename,
+                             bool sync_enabled,
                              bool continue_fetching) {
   FaviconLoader* favicon_loader = weak_favicon_loader.get();
   if (!continue_fetching || !favicon_loader) {
     // Reached max number of stored favicons or favicon loader is null.
     return;
   }
+  // Fallback to Google server for synced user only.
   favicon_loader->FaviconForPageUrl(
-      site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+      site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt, sync_enabled,
+      ^(FaviconAttributes* attributes) {
         SaveFaviconToSharedAppContainer(attributes, filename);
       });
 }
@@ -132,18 +134,20 @@ void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
 void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                               const GURL& site_url,
                               NSString* filename,
-                              bool skip_max_verification) {
+                              bool skip_max_verification,
+                              bool sync_enabled) {
   DCHECK(favicon_loader);
   DCHECK(filename);
   if (skip_max_verification) {
     ContinueFetchingFavicon(favicon_loader->AsWeakPtr(), site_url, filename,
+                            sync_enabled,
                             /* continue_fetching */ YES);
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&ShouldContinueFetchingFavicon),
         base::BindOnce(&ContinueFetchingFavicon, favicon_loader->AsWeakPtr(),
-                       site_url, filename));
+                       site_url, filename, sync_enabled));
   }
 }
 
@@ -226,7 +230,7 @@ void CleanUpFavicons(NSSet* excess_favicons_filenames) {
   SetFaviconsLastSyncDate(base::Time::Now());
 }
 
-void UpdateFaviconsStorage(FaviconLoader* favicon_loader) {
+void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnableFaviconForPasswords)) {
     // Call clean up to remove the repo when the flag is off.
@@ -298,7 +302,8 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader) {
 
     // Fetch the favicon and save it to the app group storage.
     if (filename) {
-      FetchFaviconForURLToPath(favicon_loader, url, filename, YES);
+      FetchFaviconForURLToPath(favicon_loader, url, filename,
+                               /*skip_max_verification=*/YES, sync_enabled);
 
       // Remove file name duplicate because it is part of the top
       // `kMaxNumberOfFavicons` credentials used by the user.

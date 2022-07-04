@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
 
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
@@ -35,15 +36,20 @@
 // favicon images.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 
+// Service to know whether passwords are synced.
+@property(nonatomic, assign) syncer::SyncService* syncService;
+
 @end
 
 @implementation PasswordIssuesMediator
 
 - (instancetype)initWithPasswordCheckManager:
                     (IOSChromePasswordCheckManager*)manager
-                               faviconLoader:(FaviconLoader*)faviconLoader {
+                               faviconLoader:(FaviconLoader*)faviconLoader
+                                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
+    _syncService = syncService;
     _faviconLoader = faviconLoader;
     _manager = manager;
     _passwordCheckObserver.reset(
@@ -124,7 +130,8 @@
            completion:(void (^)(FaviconAttributes*))completion {
   self.faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+      self.syncService->IsSyncFeatureEnabled(),
+      ^(FaviconAttributes* attributes) {
         completion(attributes);
       });
 }

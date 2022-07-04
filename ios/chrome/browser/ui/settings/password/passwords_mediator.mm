@@ -376,7 +376,8 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
            completion:(void (^)(FaviconAttributes*))completion {
   self.faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+      self.syncService->IsSyncFeatureEnabled(),
+      ^(FaviconAttributes* attributes) {
         completion(attributes);
       });
 }

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
@@ -67,13 +68,16 @@
   // To start, a password check manager should be ready.
   DCHECK(_manager);
 
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
 
-  self.mediator = [[PasswordIssuesMediator alloc]
-      initWithPasswordCheckManager:_manager
-                     faviconLoader:faviconLoader];
+  self.mediator =
+      [[PasswordIssuesMediator alloc] initWithPasswordCheckManager:_manager
+                                                     faviconLoader:faviconLoader
+                                                       syncService:syncService];
 
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]
