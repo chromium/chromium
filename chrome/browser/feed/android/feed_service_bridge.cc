@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -162,10 +161,7 @@ DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {
 }
 
 bool FeedServiceBridge::IsAutoplayEnabled() {
-  // For now, disable autoplay if metrics are disabled until we can ensure that
-  // the autoplay feature does not report metrics.
-  return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay) &&
-         ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+  return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay);
 }
 
 void FeedServiceBridge::ClearAll() {

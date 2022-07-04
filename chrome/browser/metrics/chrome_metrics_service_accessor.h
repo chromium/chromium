@@ -86,7 +86,6 @@ class FieldTrialRegisterImpl;
 }
 
 namespace feed {
-class FeedServiceBridge;
 class FeedServiceDelegateImpl;
 class WebFeedSubscriptionCoordinator;
 }  // namespace feed
@@ -160,7 +159,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;
   friend class browser_sync::DeviceInfoSyncClientImpl;
-  friend class feed::FeedServiceBridge;
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class webauthn::authenticator::IsMetricsAndCrashReportingEnabled;
