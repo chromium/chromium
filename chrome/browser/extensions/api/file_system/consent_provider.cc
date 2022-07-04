@@ -23,7 +23,6 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/api/file_system.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
-#include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions {
 
@@ -90,21 +89,11 @@ void ConsentProvider::RequestConsent(
     const base::WeakPtr<file_manager::Volume>& volume,
     bool writable,
     ConsentCallback callback) {
-  DCHECK(IsGrantableForVolume(extension, volume));
+  DCHECK(IsGrantable(extension));
 
   // If a allowlisted component, then no need to ask or inform the user.
   if (extension.location() == mojom::ManifestLocation::kComponent &&
       delegate_->IsAllowlistedComponent(extension)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
-    return;
-  }
-
-  // If a allowlisted app or extensions to access Downloads folder, then no
-  // need to ask or inform the user.
-  if (volume.get() &&
-      volume->type() == file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY &&
-      delegate_->HasRequestDownloadsPermission(extension)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
@@ -132,8 +121,7 @@ void ConsentProvider::RequestConsent(
   NOTREACHED() << "Cannot request consent for non-grantable extensions.";
 }
 
-FileSystemDelegate::GrantVolumesMode ConsentProvider::GetGrantVolumesMode(
-    const Extension& extension) {
+bool ConsentProvider::IsGrantable(const Extension& extension) {
   const bool is_allowlisted_component =
       delegate_->IsAllowlistedComponent(extension);
 
@@ -141,27 +129,7 @@ FileSystemDelegate::GrantVolumesMode ConsentProvider::GetGrantVolumesMode(
       KioskModeInfo::IsKioskOnly(&extension) &&
       user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
 
-  if (is_allowlisted_component || is_running_in_kiosk_session) {
-    return FileSystemDelegate::kGrantAll;
-  }
-
-  const bool is_allowlisted_non_component =
-      delegate_->HasRequestDownloadsPermission(extension);
-
-  return is_allowlisted_non_component ? FileSystemDelegate::kGrantPerVolume
-                                      : FileSystemDelegate::kGrantNone;
-}
-
-bool ConsentProvider::IsGrantableForVolume(
-    const Extension& extension,
-    const base::WeakPtr<file_manager::Volume>& volume) {
-  if (volume.get() &&
-      volume->type() == file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY &&
-      delegate_->HasRequestDownloadsPermission(extension)) {
-    return true;
-  }
-
-  return GetGrantVolumesMode(extension) == FileSystemDelegate::kGrantAll;
+  return is_allowlisted_component || is_running_in_kiosk_session;
 }
 
 ConsentProviderDelegate::ConsentProviderDelegate(Profile* profile)
@@ -251,12 +219,6 @@ bool ConsentProviderDelegate::IsAllowlistedComponent(
       return true;
   }
   return false;
-}
-
-bool ConsentProviderDelegate::HasRequestDownloadsPermission(
-    const Extension& extension) {
-  return extension.permissions_data()->HasAPIPermission(
-      mojom::APIPermissionID::kFileSystemRequestDownloads);
 }
 
 }  // namespace file_system_api

@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "ui/base/ui_base_types.h"
 
 class Profile;
@@ -62,9 +61,6 @@ class ConsentProvider {
 
     // Checks if the extension is a allowlisted component extension or app.
     virtual bool IsAllowlistedComponent(const Extension& extension) = 0;
-
-    // Checks if the extension has the permission to access Downloads.
-    virtual bool HasRequestDownloadsPermission(const Extension& extension) = 0;
   };
 
   explicit ConsentProvider(DelegateInterface* delegate);
@@ -76,21 +72,15 @@ class ConsentProvider {
 
   // Requests consent for granting |writable| permissions to the |volume|
   // volume by the |extension|. Must be called only if the extension is
-  // grantable, which can be checked with GetGrantVolumesMode() and
-  // IsGrantableForVolume().
+  // grantable, which can be checked with IsGrantable().
   void RequestConsent(const Extension& extension,
                       content::RenderFrameHost* host,
                       const base::WeakPtr<file_manager::Volume>& volume,
                       bool writable,
                       ConsentCallback callback);
 
-  // Returns granted access mode for the |extension|.
-  FileSystemDelegate::GrantVolumesMode GetGrantVolumesMode(
-      const Extension& extension);
-
-  // Checks whether the |extension| can be granted |volume| access.
-  bool IsGrantableForVolume(const Extension& extension,
-                            const base::WeakPtr<file_manager::Volume>& volume);
+  // Checks whether the |extension| can be granted access.
+  bool IsGrantable(const Extension& extension);
 
  private:
   DelegateInterface* const delegate_;
@@ -126,7 +116,6 @@ class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
                         bool writable) override;
   bool IsAutoLaunched(const Extension& extension) override;
   bool IsAllowlistedComponent(const Extension& extension) override;
-  bool HasRequestDownloadsPermission(const Extension& extension) override;
 
   Profile* const profile_;
 };

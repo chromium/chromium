@@ -863,7 +863,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kHid);
   skip.insert(APIPermissionID::kFileSystem);
   skip.insert(APIPermissionID::kFileSystemProvider);
-  skip.insert(APIPermissionID::kFileSystemRequestDownloads);
   skip.insert(APIPermissionID::kFileSystemRequestFileSystem);
   skip.insert(APIPermissionID::kFileSystemRetainEntries);
   skip.insert(APIPermissionID::kFileSystemWrite);

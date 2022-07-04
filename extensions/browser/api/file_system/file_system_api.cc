@@ -1079,9 +1079,7 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
   // Additionally it is enabled for allowlisted component extensions and apps.
-  if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
-                                    *extension()) ==
-      FileSystemDelegate::kGrantNone) {
+  if (!delegate->IsGrantable(browser_context(), *extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
@@ -1118,14 +1116,12 @@ ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
   // Additionally it is enabled for allowlisted component extensions and apps.
-  if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
-                                    *extension()) ==
-      FileSystemDelegate::kGrantNone) {
+  if (!delegate->IsGrantable(browser_context(), *extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
   delegate->GetVolumeList(
-      browser_context(), *extension(),
+      browser_context(),
       base::BindOnce(&FileSystemGetVolumeListFunction::OnGotVolumeList, this),
       base::BindOnce(&FileSystemGetVolumeListFunction::OnError, this));
 

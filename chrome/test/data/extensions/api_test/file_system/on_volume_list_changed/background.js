@@ -7,16 +7,16 @@ function runTests() {
     function onVolumeListChanged() {
       chrome.fileSystem.getVolumeList(
          chrome.test.callbackPass(function(volumeList) {
-           chrome.test.assertEq(6, volumeList.length);
+           chrome.test.assertEq(5, volumeList.length);
 
            // Confirm that adding a newly mounted volume emits an event, and
            // that the volume list is updated.
            chrome.fileSystem.onVolumeListChanged.addListener(
                chrome.test.callbackPass(function(event) {
-                 chrome.test.assertEq(7, event.volumes.length);
+                 chrome.test.assertEq(6, event.volumes.length);
                  chrome.fileSystem.getVolumeList(
                      chrome.test.callbackPass(function(volumeList) {
-                       chrome.test.assertEq(7, volumeList.length);
+                       chrome.test.assertEq(6, volumeList.length);
                      }));
                }));
       }));

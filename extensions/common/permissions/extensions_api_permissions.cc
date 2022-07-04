@@ -87,8 +87,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      "fileSystem.requestFileSystem"},
     {APIPermissionID::kFileSystemRetainEntries, "fileSystem.retainEntries",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kFileSystemRequestDownloads,
-     "fileSystem.requestDownloads"},
     {APIPermissionID::kFileSystemWrite, "fileSystem.write",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kHid, "hid"},

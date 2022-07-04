@@ -35492,7 +35492,7 @@ Called by update_extension_permission.py.-->
   <int value="210" label="kEnterpriseReportingPrivate"/>
   <int value="211" label="kCecPrivate"/>
   <int value="212" label="kSafeBrowsingPrivate"/>
-  <int value="213" label="kFileSystemRequestDownloads"/>
+  <int value="213" label="kDeleted_FileSystemRequestDownloads"/>
   <int value="214" label="kDeleted_SystemPowerSource"/>
   <int value="215" label="kArcAppsPrivate"/>
   <int value="216" label="kEnterpriseHardwarePlatform"/>

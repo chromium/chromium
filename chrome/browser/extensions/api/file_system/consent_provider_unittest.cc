@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -20,11 +19,9 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::file_system_api::ConsentProvider;
@@ -91,11 +88,6 @@ class TestingConsentProviderDelegate
     return allowlisted_component_id_.compare(extension.id()) == 0;
   }
 
-  bool HasRequestDownloadsPermission(const Extension& extension) override {
-    return extension.permissions_data()->HasAPIPermission(
-        mojom::APIPermissionID::kFileSystemRequestDownloads);
-  }
-
   int show_dialog_counter_;
   int show_notification_counter_;
   ui::DialogButton dialog_button_;
@@ -123,8 +115,6 @@ class FileSystemApiConsentProviderTest : public testing::Test {
     scoped_user_manager_enabler_ =
         std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(user_manager_));
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    download_volume_ = Volume::CreateForDownloads(temp_dir_.GetPath());
   }
 
   void TearDown() override {
@@ -140,8 +130,6 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   ash::FakeChromeUserManager* user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<Volume> download_volume_;
 };
 
 TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
@@ -153,8 +141,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
             .Build());
     TestingConsentProviderDelegate delegate;
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*component_extension),
-              FileSystemDelegate::kGrantNone);
+    EXPECT_FALSE(provider.IsGrantable(*component_extension));
   }
 
   // Allowlisted component apps are instantly granted access without asking
@@ -167,8 +154,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
     TestingConsentProviderDelegate delegate;
     delegate.SetComponentAllowlist(allowlisted_component_extension->id());
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*allowlisted_component_extension),
-              FileSystemDelegate::kGrantAll);
+    EXPECT_TRUE(provider.IsGrantable(*allowlisted_component_extension));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(*allowlisted_component_extension.get(), nullptr,
@@ -188,8 +174,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
         ExtensionBuilder("Test").Build());
     TestingConsentProviderDelegate delegate;
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*non_component_extension),
-              FileSystemDelegate::kGrantNone);
+    EXPECT_FALSE(provider.IsGrantable(*non_component_extension));
   }
 }
 
@@ -210,8 +195,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     TestingConsentProviderDelegate delegate;
     delegate.SetIsAutoLaunched(true);
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*auto_launch_kiosk_app),
-              FileSystemDelegate::kGrantAll);
+    EXPECT_TRUE(provider.IsGrantable(*auto_launch_kiosk_app));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(*auto_launch_kiosk_app.get(), nullptr, volume_,
@@ -239,8 +223,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     TestingConsentProviderDelegate delegate;
     delegate.SetDialogButton(ui::DIALOG_BUTTON_OK);
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*manual_launch_kiosk_app),
-              FileSystemDelegate::kGrantAll);
+    EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(*manual_launch_kiosk_app.get(), nullptr, volume_,
@@ -259,8 +242,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     TestingConsentProviderDelegate delegate;
     ConsentProvider provider(&delegate);
     delegate.SetDialogButton(ui::DIALOG_BUTTON_CANCEL);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*manual_launch_kiosk_app),
-              FileSystemDelegate::kGrantAll);
+    EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(*manual_launch_kiosk_app.get(), nullptr, volume_,

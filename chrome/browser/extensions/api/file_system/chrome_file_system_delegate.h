@@ -52,10 +52,8 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                                        base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  FileSystemDelegate::GrantVolumesMode GetGrantVolumesMode(
-      content::BrowserContext* browser_context,
-      content::RenderFrameHost* render_frame_host,
-      const Extension& extension) override;
+  bool IsGrantable(content::BrowserContext* browser_context,
+                   const Extension& extension) override;
   void RequestFileSystem(content::BrowserContext* browser_context,
                          scoped_refptr<ExtensionFunction> requester,
                          const Extension& extension,
@@ -64,7 +62,6 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                          FileSystemCallback success_callback,
                          ErrorCallback error_callback) override;
   void GetVolumeList(content::BrowserContext* browser_context,
-                     const Extension& extension,
                      VolumeListCallback success_callback,
                      ErrorCallback error_callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
