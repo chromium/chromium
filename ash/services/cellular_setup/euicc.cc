@@ -20,7 +20,7 @@
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"

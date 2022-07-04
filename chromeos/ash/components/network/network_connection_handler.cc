@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -16,10 +16,10 @@
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler_impl.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_connection_handler_impl.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"

@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
-#include "chromeos/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

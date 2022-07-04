@@ -6,7 +6,7 @@
 
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
-#include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 

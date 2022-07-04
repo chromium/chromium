@@ -13,7 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/network/device_state.h"
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

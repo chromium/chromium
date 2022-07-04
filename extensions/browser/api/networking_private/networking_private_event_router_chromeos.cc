@@ -6,9 +6,9 @@
 
 #include "base/json/json_writer.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_certificate_handler.h"
 #include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/components/onc/onc_signature.h"
-#include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

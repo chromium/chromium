@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_
-#define CHROMEOS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/network/network_activation_handler.h"
+#include "chromeos/ash/components/network/network_activation_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
 namespace chromeos {
@@ -43,4 +43,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_

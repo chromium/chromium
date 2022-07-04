@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_
-#define CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_H_
 
 #include <map>
 #include <set>
@@ -18,8 +18,8 @@
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_connection_observer.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
@@ -263,4 +263,4 @@ using ::chromeos::ConnectCallbackMode;
 using ::chromeos::NetworkConnectionHandler;
 }
 
-#endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_H_

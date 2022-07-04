@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_cert_migrator.h"
+#include "chromeos/ash/components/network/network_cert_migrator.h"
 
 #include <cert.h>
 #include <pk11pub.h>
@@ -11,10 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "crypto/scoped_nss_types.h"

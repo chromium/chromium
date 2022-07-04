@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_CERT_MIGRATOR_H_
-#define CHROMEOS_NETWORK_NETWORK_CERT_MIGRATOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERT_MIGRATOR_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERT_MIGRATOR_H_
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
@@ -52,4 +52,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertMigrator
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_NETWORK_CERT_MIGRATOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERT_MIGRATOR_H_

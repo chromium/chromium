@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
-#define CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
 
 #include "base/component_export.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
@@ -197,4 +197,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_

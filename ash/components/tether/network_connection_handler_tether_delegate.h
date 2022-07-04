@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 
 namespace ash {
 

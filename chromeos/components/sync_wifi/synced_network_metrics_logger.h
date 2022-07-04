@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
-#include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

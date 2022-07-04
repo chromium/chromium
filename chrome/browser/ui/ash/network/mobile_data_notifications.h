@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_connection_observer.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"

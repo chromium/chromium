@@ -38,7 +38,7 @@
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"

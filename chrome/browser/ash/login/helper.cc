@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"

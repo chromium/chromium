@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {

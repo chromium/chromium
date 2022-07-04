@@ -13,7 +13,7 @@
 #include "ash/components/tether/tether_session_completion_logger.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

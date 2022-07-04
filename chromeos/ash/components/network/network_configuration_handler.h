@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_
-#define CHROMEOS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_
 
 #include <map>
 #include <memory>
@@ -17,8 +17,8 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler.h"
@@ -255,4 +255,4 @@ namespace ash {
 using ::chromeos::NetworkConfigurationHandler;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_

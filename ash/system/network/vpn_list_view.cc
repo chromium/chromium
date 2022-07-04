@@ -30,7 +30,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"

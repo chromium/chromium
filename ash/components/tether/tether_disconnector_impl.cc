@@ -13,7 +13,7 @@
 #include "ash/components/tether/wifi_hotspot_disconnector.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 

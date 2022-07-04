@@ -20,7 +20,7 @@
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

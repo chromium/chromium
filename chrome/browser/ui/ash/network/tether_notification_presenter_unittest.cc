@@ -15,7 +15,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 
 namespace {
 const int kTestNetworkSignalStrength = 50;

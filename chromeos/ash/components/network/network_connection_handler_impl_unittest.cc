@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_connection_handler_impl.h"
+#include "chromeos/ash/components/network/network_connection_handler_impl.h"
 
 #include <map>
 #include <memory>
@@ -18,13 +18,13 @@
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
-#include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_connection_handler.h"
-#include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"

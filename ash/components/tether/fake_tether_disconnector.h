@@ -8,7 +8,7 @@
 #include "ash/components/tether/tether_disconnector.h"
 #include "ash/components/tether/tether_session_completion_logger.h"
 #include "base/callback_forward.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 
 namespace ash {
 

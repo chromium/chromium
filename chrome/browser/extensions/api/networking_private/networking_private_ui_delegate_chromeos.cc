@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 

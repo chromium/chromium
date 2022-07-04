@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 
 namespace chromeos {

@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
-#include "chromeos/network/network_certificate_handler.h"
+#include "chromeos/ash/components/network/network_certificate_handler.h"
 #include "chromeos/network/network_policy_observer.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"

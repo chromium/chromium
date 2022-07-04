@@ -11,11 +11,11 @@
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/network/network_state_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 
 class PrefService;
 

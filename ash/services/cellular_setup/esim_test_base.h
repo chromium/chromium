@@ -21,7 +21,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/network/network_device_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

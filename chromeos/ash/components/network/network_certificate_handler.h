@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_
-#define CHROMEOS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
 
 namespace chromeos {
 
@@ -107,4 +107,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_

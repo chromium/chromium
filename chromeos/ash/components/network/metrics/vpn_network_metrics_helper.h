@@ -9,8 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/scoped_observation.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_configuration_observer.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_configuration_observer.h"
 
 namespace chromeos {
 

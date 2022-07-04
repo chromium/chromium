@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

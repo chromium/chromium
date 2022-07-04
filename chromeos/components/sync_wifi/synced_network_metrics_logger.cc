@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"

@@ -12,7 +12,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/network/network_state_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

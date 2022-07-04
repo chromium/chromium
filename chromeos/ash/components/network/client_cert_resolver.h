@@ -18,7 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
-#include "chromeos/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/network/network_policy_observer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"

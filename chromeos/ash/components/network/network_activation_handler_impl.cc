@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_activation_handler_impl.h"
+#include "chromeos/ash/components/network/network_activation_handler_impl.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

@@ -14,7 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/network/network_connection_observer.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

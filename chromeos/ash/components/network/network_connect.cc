@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 
 #include <memory>
 #include <utility>
@@ -12,10 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_activation_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/network_activation_handler.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_profile.h"

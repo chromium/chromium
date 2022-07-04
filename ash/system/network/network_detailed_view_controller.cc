@@ -16,7 +16,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
