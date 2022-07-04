@@ -7151,3 +7151,6 @@ crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ 
 # behaviors that the test cases excersise.
 crbug.com/1305302 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value-cross-realm.html [ Skip ]
 crbug.com/1305302 external/wpt/WebIDL/ecmascript-binding/global-object-implicit-this-value.any.html [ Skip ]
+
+# Sheriff 2022-07-04
+crbug.com/1340981 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html [ Timeout ]
