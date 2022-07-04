@@ -1158,8 +1158,7 @@ def _LogRerunStatement(failed_tests, wrapper_arg_str):
 
   test_filter_file = os.path.join(os.path.relpath(constants.GetOutDirectory()),
                                   _RERUN_FAILED_TESTS_FILE)
-  arg_list = shlex.split(
-      wrapper_arg_str.strip('\'')) if wrapper_arg_str else sys.argv
+  arg_list = shlex.split(wrapper_arg_str) if wrapper_arg_str else sys.argv
   index = 0
   while index < len(arg_list):
     arg = arg_list[index]
