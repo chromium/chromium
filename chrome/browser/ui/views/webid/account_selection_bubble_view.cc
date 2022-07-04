@@ -372,10 +372,20 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
           vector_icons::kArrowBackIcon));
   views::InstallCircleHighlightPathGenerator(back_button_.get());
   back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_button_->SetProperty(views::kMarginsKey,
-                            gfx::Insets().set_right(kLeftRightPadding));
-
   back_button_->SetVisible(false);
+
+  int back_button_right_margin = kLeftRightPadding;
+  if (header_icon_view_) {
+    // Set the right margin of the back button so that the back button and
+    // the IDP brand icon have the same width. This ensures that the header
+    // title does not shift when the user navigates to the consent screen.
+    back_button_right_margin =
+        std::max(0, back_button_right_margin +
+                        header_icon_view_->GetPreferredSize().width() -
+                        back_button_->GetPreferredSize().width());
+  }
+  back_button_->SetProperty(views::kMarginsKey,
+                            gfx::Insets().set_right(back_button_right_margin));
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
