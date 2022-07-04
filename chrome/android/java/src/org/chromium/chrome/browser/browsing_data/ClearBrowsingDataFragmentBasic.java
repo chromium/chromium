@@ -13,9 +13,7 @@ import android.text.SpannableString;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
@@ -23,27 +21,19 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.settings.ClearDataProgressDialog;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ActionType;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.ModelType;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -57,10 +47,7 @@ import java.util.List;
  * A simpler version of {@link ClearBrowsingDataFragment} with fewer dialog options and more
  * explanatory text.
  */
-public class ClearBrowsingDataFragmentBasic
-        extends ClearBrowsingDataFragment implements SignOutDialogCoordinator.Listener {
-    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
-
+public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     /**
      * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using
      * {@link org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
@@ -165,17 +152,6 @@ public class ClearBrowsingDataFragmentBasic
             nonGoogleSearchHistoryTextPref.setSummary(
                     R.string.clear_search_history_non_google_dse_unknown);
         }
-
-        // Text for sign-out option.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_CBD_SIGN_OUT)
-                && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                && !Profile.getLastUsedRegularProfile().isChild()) {
-            ClickableSpansTextMessagePreference signOutOfChromeTextPref =
-                    findPreference(ClearBrowsingDataFragment.PREF_SIGN_OUT_OF_CHROME_TEXT);
-            signOutOfChromeTextPref.setSummary(buildSignOutOfChromeText());
-        } else {
-            deleteSignOutOfChromeTextIfExists();
-        }
     }
 
     public void setCustomTabIntentHelper(CustomTabIntentHelper tabHelper) {
@@ -198,14 +174,6 @@ public class ClearBrowsingDataFragmentBasic
         }
     }
 
-    private void deleteSignOutOfChromeTextIfExists() {
-        Preference signOutOfChromeTextPref =
-                findPreference(ClearBrowsingDataFragment.PREF_SIGN_OUT_OF_CHROME_TEXT);
-        if (signOutOfChromeTextPref != null) {
-            getPreferenceScreen().removePreference(signOutOfChromeTextPref);
-        }
-    }
-
     private SpannableString buildGoogleSearchHistoryText() {
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
@@ -222,14 +190,6 @@ public class ClearBrowsingDataFragmentBasic
                 new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory = */ false))));
-    }
-
-    @VisibleForTesting
-    SpannableString buildSignOutOfChromeText() {
-        return SpanApplier.applySpans(getContext().getString(R.string.sign_out_of_chrome_link),
-                new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(
-                                requireContext(), createSignOutOfChromeCallback())));
     }
 
     /** If openSearchHistory is true, opens the search history page; otherwise: top level. */
@@ -263,13 +223,6 @@ public class ClearBrowsingDataFragmentBasic
         };
     }
 
-    private Callback<View> createSignOutOfChromeCallback() {
-        return view
-                -> SignOutDialogCoordinator.show(requireContext(),
-                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
-                        ActionType.CLEAR_PRIMARY_ACCOUNT, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-    }
-
     private boolean isHistorySyncEnabled() {
         SyncService syncService = SyncService.get();
         return syncService != null && syncService.isSyncRequested()
@@ -293,44 +246,5 @@ public class ClearBrowsingDataFragmentBasic
         RecordHistogram.recordEnumeratedHistogram("History.ClearBrowsingData.UserDeletedFromTab",
                 ClearBrowsingDataTab.BASIC, ClearBrowsingDataTab.NUM_TYPES);
         RecordUserAction.record("ClearBrowsingData_BasicTab");
-    }
-
-    /** {@link SignOutDialogCoordinator.Listener} implementation */
-    @Override
-    public void onSignOutClicked(boolean forceWipeUserData) {
-        // In case the user is not signed in, we guard the sign out so we do not hit a native crash.
-        if (!IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return;
-        }
-        final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
-        signinManager.runAfterOperationInProgress(() -> {
-            // In case supervised users reach this flow, remove the preference and guard against
-            // signing out.
-            if (!signinManager.isSignOutAllowed()) {
-                deleteSignOutOfChromeTextIfExists();
-                return;
-            }
-            final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
-            signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
-                    new SigninManager.SignOutCallback() {
-                        @Override
-                        public void preWipeData() {
-                            clearDataProgressDialog.show(
-                                    getChildFragmentManager(), CLEAR_DATA_PROGRESS_DIALOG_TAG);
-                        }
-
-                        @Override
-                        public void signOutComplete() {
-                            clearDataProgressDialog.dismissAllowingStateLoss();
-                        }
-                    },
-                    forceWipeUserData);
-            // TODO(https://crbug.com/1334918): Observe SignInStateObserver and move this inside
-            // onSignOutAllowedChanged().
-            deleteSignOutOfChromeTextIfExists();
-        });
     }
 }

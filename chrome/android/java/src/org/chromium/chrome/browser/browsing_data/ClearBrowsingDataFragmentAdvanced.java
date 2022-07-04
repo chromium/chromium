@@ -37,9 +37,6 @@ public class ClearBrowsingDataFragmentAdvanced extends ClearBrowsingDataFragment
         // TODO(https://crbug.com/1334920): Change after follow up discussion with privacy team.
         Preference signOutOfChromeTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_SIGN_OUT_OF_CHROME_TEXT);
-        if (signOutOfChromeTextPref != null) {
-            getPreferenceScreen().removePreference(signOutOfChromeTextPref);
-        }
     }
 
     @Override
