@@ -375,6 +375,19 @@ const FeatureEntry::FeatureVariation kBubbleRichIPHVariations[] = {
      std::size(kBubbleRichIPHRichWithSnooze), nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxPasteButtonBlueIconCapsule[] = {
+    {kOmniboxPasteButtonParameterName,
+     kOmniboxPasteButtonParameterBlueIconCapsule}};
+const FeatureEntry::FeatureParam kOmniboxPasteButtonBlueFullCapsule[] = {
+    {kOmniboxPasteButtonParameterName,
+     kOmniboxPasteButtonParameterBlueFullCapsule}};
+const FeatureEntry::FeatureVariation kOmniboxPasteButtonVariations[] = {
+    {"Icon only", kOmniboxPasteButtonBlueIconCapsule,
+     std::size(kOmniboxPasteButtonBlueIconCapsule), nullptr},
+    {"Icon and text", kOmniboxPasteButtonBlueFullCapsule,
+     std::size(kOmniboxPasteButtonBlueFullCapsule), nullptr},
+};
+
 const FeatureEntry::FeatureParam kPopupMenuBookmarkStringAddABookmark[] = {
     {kPopupMenuBookmarkStringParamName,
      kPopupMenuBookmarkStringParamAddABookmark}};
@@ -988,6 +1001,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableNewCardUnmaskPromptViewDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillEnableNewCardUnmaskPromptView)},
+    {"omnibox-paste-button", flag_descriptions::kOmniboxPasteButtonName,
+     flag_descriptions::kOmniboxPasteButtonDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kOmniboxPasteButton,
+                                    kOmniboxPasteButtonVariations,
+                                    "OmniboxPasteButton")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

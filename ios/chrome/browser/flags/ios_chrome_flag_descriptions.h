@@ -455,6 +455,11 @@ extern const char kOmniboxOnFocusSuggestionsDescription[];
 extern const char kOmniboxNewImplementationName[];
 extern const char kOmniboxNewImplementationDescription[];
 
+// Title and description for the flag to enable paste button on clipboard
+// suggestion.
+extern const char kOmniboxPasteButtonName[];
+extern const char kOmniboxPasteButtonDescription[];
+
 // Title and description for the flag to enable the SwiftUI omnibox popup
 // implementation.
 extern const char kIOSOmniboxUpdatedPopupUIName[];

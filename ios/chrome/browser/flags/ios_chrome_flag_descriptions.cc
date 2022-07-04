@@ -499,6 +499,11 @@ const char kOmniboxNewImplementationName[] =
 const char kOmniboxNewImplementationDescription[] =
     "Uses a textfield implementation that doesn't use UILabels internally";
 
+const char kOmniboxPasteButtonName[] = "Omnibox paste to search button";
+const char kOmniboxPasteButtonDescription[] =
+    "Add a paste button when showing clipboard suggestions in the omnibox. iOS "
+    "16 and above.";
+
 const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
 const char kIOSOmniboxUpdatedPopupUIDescription[] =
     "Enable the new SwiftUI Popup implementation";

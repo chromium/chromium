@@ -6,3 +6,10 @@
 
 const base::Feature kEnableSuggestionsScrollingOnIPad{
     "EnableSuggestionsScrollingOnIPad", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOmniboxPasteButton{"OmniboxPasteButton",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kOmniboxPasteButtonParameterName[] = "PasteButtonVariant";
+const char kOmniboxPasteButtonParameterBlueIconCapsule[] = "SuggestionIcon";
+const char kOmniboxPasteButtonParameterBlueFullCapsule[] = "SuggestionTextIcon";
