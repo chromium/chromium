@@ -1345,17 +1345,17 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   ContentSetting setting;
   CHECK(content_settings::ContentSettingFromString(value, &setting));
 
-  Profile* profile = nullptr;
+  Profile* target_profile = nullptr;
   if (incognito) {
     if (!profile_->HasPrimaryOTRProfile())
       return;
-    profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    target_profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
-    profile = profile_;
+    target_profile = profile_;
   }
 
   HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
+      HostContentSettingsMapFactory::GetForProfile(target_profile);
 
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString(primary_pattern_string);
@@ -1368,14 +1368,14 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   if (setting != CONTENT_SETTING_BLOCK) {
     GURL url(primary_pattern.ToString());
     if (url.is_valid()) {
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
+      PermissionDecisionAutoBlockerFactory::GetForProfile(target_profile)
           ->RemoveEmbargoAndResetCounts(url, content_type);
     }
   }
 
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
-          profile, primary_pattern, secondary_pattern, content_type,
+          target_profile, primary_pattern, secondary_pattern, content_type,
           permissions::PermissionSourceUI::SITE_SETTINGS);
 
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
