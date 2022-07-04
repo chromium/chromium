@@ -2236,13 +2236,24 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
   SkBitmap expected_bitmap;
   expected_bitmap.allocN32Pixels(options.resource_size.width(),
                                  options.resource_size.height());
+
+  for (auto& backend : backend_textures) {
+    GrGLTextureInfo info;
+    if (backend.getGLTextureInfo(&info)) {
+      gl->BeginSharedImageAccessDirectCHROMIUM(
+          info.fID, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    }
+  }
+
   expected_image->readPixels(expected_bitmap.pixmap(), 0, 0);
   ExpectEquals(actual_bitmap, expected_bitmap);
 
   for (auto& backend : backend_textures) {
     GrGLTextureInfo info;
-    if (backend.getGLTextureInfo(&info))
+    if (backend.getGLTextureInfo(&info)) {
+      gl->EndSharedImageAccessDirectCHROMIUM(info.fID);
       gl->DeleteTextures(1, &info.fID);
+    }
   }
 
   gpu::SyncToken sync_token;
@@ -2356,13 +2367,24 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   SkBitmap expected_bitmap;
   expected_bitmap.allocN32Pixels(options.resource_size.width(),
                                  options.resource_size.height());
+
+  for (auto& backend : backend_textures) {
+    GrGLTextureInfo info;
+    if (backend.getGLTextureInfo(&info)) {
+      gl->BeginSharedImageAccessDirectCHROMIUM(
+          info.fID, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    }
+  }
+
   expected_image->readPixels(expected_bitmap.pixmap(), 0, 0);
   ExpectEquals(actual_bitmap, expected_bitmap);
 
   for (auto& backend : backend_textures) {
     GrGLTextureInfo info;
-    if (backend.getGLTextureInfo(&info))
+    if (backend.getGLTextureInfo(&info)) {
+      gl->EndSharedImageAccessDirectCHROMIUM(info.fID);
       gl->DeleteTextures(1, &info.fID);
+    }
   }
 
   gpu::SyncToken sync_token;
