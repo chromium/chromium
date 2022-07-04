@@ -132,6 +132,57 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [SigninEarlGrey verifySignedOut];
 }
 
+// Tests FRE with UMA off, reopen UMA dialog and close the FRE without sign-in.
+- (void)testUMAUncheckedWhenOpenedSecondTime {
+  [self verifyWelcomeScreenIsDisplayed];
+  // Scroll to and open the UMA dialog.
+  id<GREYMatcher> manageUMALinkMatcher =
+      grey_allOf(ManageUMALinkMatcher(), grey_sufficientlyVisible(), nil);
+  [[self elementInteractionWithGreyMatcher:manageUMALinkMatcher
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Turn off UMA.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kImproveChromeItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  // Close UMA dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  // Open UMA dialog again.
+  [[self elementInteractionWithGreyMatcher:manageUMALinkMatcher
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Check UMA off.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kImproveChromeItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/NO,
+                                   /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Wait for the toggle to be turned off.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Close UMA dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  // Skip sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStyleSecondaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Check that UMA is OFF.
+  [self checkUMACheckboxValue:NO];
+  // Check signed out.
+  [SigninEarlGrey verifySignedOut];
+}
+
 #pragma mark Helper
 
 // Checks that the sign-in screen is displayed.
