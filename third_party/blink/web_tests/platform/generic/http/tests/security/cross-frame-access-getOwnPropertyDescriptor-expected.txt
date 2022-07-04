@@ -208,20 +208,6 @@ PASS: canGetDescriptor(targetWindow, 'parent') should be 'true' and is.
 PASS: canGetDescriptor(targetWindow, 'self') should be 'true' and is.
 PASS: canGetDescriptor(targetWindow, 'top') should be 'true' and is.
 PASS: canGetDescriptor(targetWindow, 'window') should be 'true' and is.
------ tests access to cross domain location object -----
-PASS: canGetDescriptor(targetLocation, 'protocol') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'host') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'hostname') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'port') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'pathname') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'search') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'hash') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'toString') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'valueOf') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'customProperty') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'assign') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'reload') should be 'false' and is.
-PASS: canGetDescriptor(targetLocation, 'replace') should be 'true' and is.
 ----- tests access to cross domain history object -----
 PASS: targetWindow.history should have thrown an exception, and did: SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame.
 
