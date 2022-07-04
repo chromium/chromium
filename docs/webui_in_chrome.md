@@ -161,7 +161,8 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/$tsconfig.manifest" ]
+  # build_ts below must match the target name for the TS build stage.
+  manifest_files = [ "$target_gen_dir/build_ts.manifest" ]
 }
 
 grit("resources") {
