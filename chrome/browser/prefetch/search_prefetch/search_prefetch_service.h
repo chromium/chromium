@@ -40,12 +40,6 @@ namespace network {
 struct ResourceRequest;
 }
 
-namespace {
-struct SearchPrefetchServingReasonRecorder;
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // Any updates to this class need to be propagated to enums.xml.
 enum class SearchPrefetchEligibilityReason {
   // The prefetch was started.
@@ -70,8 +64,6 @@ enum class SearchPrefetchEligibilityReason {
   kMaxValue = kThrottled,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // Any updates to this class need to be propagated to enums.xml.
 enum class SearchPrefetchServingReason {
   // The prefetch was started.
@@ -94,9 +86,7 @@ enum class SearchPrefetchServingReason {
   kNotServedOtherReason = 8,
   // The navigation was a POST request, reload or link navigation.
   kPostReloadOrLink = 9,
-  // A prerender navigation request has taken this response away.
-  kPrerendered = 10,
-  kMaxValue = kPrerendered,
+  kMaxValue = kPostReloadOrLink,
 };
 
 class SearchPrefetchService : public KeyedService,
@@ -148,24 +138,11 @@ class SearchPrefetchService : public KeyedService,
   // key  : The URL displayed on the location bar, The prerendered
   // page changes the `prerendering_url` by updating some parameters, so it
   // differs from `prerendering_url`.
-  // value: The URL sent by the corresponding prefetch request.
+  // value: The URL sent by a prerendering URL request.
   // TODO(https://crbug.com/1295170): This is a workaround. Remove this method
   // after the unification work is done.
   void AddCacheEntryForPrerender(const GURL& updated_prerendered_url,
                                  const GURL& prerendering_url);
-
-  // Called by `SearchPrerenderTask` upon prerender activation.
-  void OnPrerenderedRequestUsed(const std::u16string& search_terms,
-                                const GURL& navigation_url);
-
-  // A prefetch hint can be upgraded to prerender hint. Once the upgrade
-  // happens, prerendering navigation requests reuse the prefetched response.
-  // Differing from TakePrefetchResponseFromMemoryCache, this shares a copy of
-  // the prefetched response without removing the response from MemoryCache, to
-  // stop this from starting another prefetch attempt after prerender takes the
-  // response away.
-  std::unique_ptr<SearchPrefetchURLLoader> TakePrerenderFromMemoryCache(
-      const network::ResourceRequest& tentative_resource_request);
 
   // Reports the status of a prefetch for a given search term.
   absl::optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
@@ -213,12 +190,6 @@ class SearchPrefetchService : public KeyedService,
   // should be saved.
   bool LoadFromPrefs();
   void SaveToPrefs() const;
-
-  // Retrieved the started prefetches by search_terms.
-  std::map<std::u16string, std::unique_ptr<BaseSearchPrefetchRequest>>::iterator
-  RetrieveSearchTermsInMemoryCache(
-      const network::ResourceRequest& tentative_resource_request,
-      SearchPrefetchServingReasonRecorder& recorder);
 
   // Called when this receives preloadable hints, and iff the
   // SearchPrefetchUpgradeToPrerender feature is enabled. The feature is running
