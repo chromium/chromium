@@ -133,10 +133,6 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
 void Sequence::ReleaseTaskRunner() {
   if (!task_runner())
     return;
-  if (execution_mode() == TaskSourceExecutionMode::kParallel) {
-    static_cast<PooledParallelTaskRunner*>(task_runner())
-        ->UnregisterSequence(this);
-  }
   // No member access after this point, releasing |task_runner()| might delete
   // |this|.
   task_runner()->Release();
