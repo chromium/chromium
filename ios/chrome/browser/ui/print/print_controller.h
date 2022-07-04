@@ -9,13 +9,6 @@
 
 #import "ios/chrome/browser/web/print/web_state_printer.h"
 
-// The delegate for PrintController. Provide information needed to display the
-// UIPrintInteractionController.
-@protocol PrintControllerDelegate
-// The view controller the system print dialog should be presented from.
-- (UIViewController*)baseViewControllerForPrintPreview;
-@end
-
 // Interface for printing.
 @interface PrintController : NSObject <WebStatePrinter>
 

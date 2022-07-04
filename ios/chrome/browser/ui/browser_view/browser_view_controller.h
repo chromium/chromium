@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
-#import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
@@ -84,7 +83,6 @@ typedef struct {
                         LogoAnimationControllerOwnerOwner,
                         OmniboxPopupPresenterDelegate,
                         PageInfoPresentation,
-                        PrintControllerDelegate,
                         SigninPresenter,
                         SyncPresenter,
                         ThumbStripSupporting,
