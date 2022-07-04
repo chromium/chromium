@@ -582,6 +582,16 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     return accounts_[account_key].gaia_id;
   }
 
+  Account GetAccount(const CoreAccountId& account_id) {
+    for (const auto& pair : accounts_) {
+      const Account& account = pair.second;
+      if (PickAccountIdForAccount(account.gaia_id, account.email) == account_id)
+        return account;
+    }
+    NOTREACHED();
+    return Account();
+  }
+
   // Simulates the effect of a Multilogin call on the cookies.
   std::vector<Cookie> FakeSetAccountsInCookie(
       const signin::MultiloginParameters& parameters,
@@ -589,25 +599,26 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     std::vector<Cookie> cookies_after_reconcile;
     if (parameters.mode ==
         gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER) {
-      for (const CoreAccountId& account : parameters.accounts_to_send) {
-        cookies_after_reconcile.push_back({account.ToString(), true});
+      for (const CoreAccountId& account_id : parameters.accounts_to_send) {
+        cookies_after_reconcile.push_back(
+            {GetAccount(account_id).gaia_id, true});
       }
     } else {
-      std::vector<CoreAccountId> accounts(parameters.accounts_to_send.begin(),
-                                          parameters.accounts_to_send.end());
+      std::vector<std::string> gaia_ids;
+      for (const auto& account_id : parameters.accounts_to_send)
+        gaia_ids.push_back(GetAccount(account_id).gaia_id);
       cookies_after_reconcile = cookies_before_reconcile;
-      for (Cookie& param : cookies_after_reconcile) {
-        CoreAccountId account = CoreAccountId(param.gaia_id);
-        if (base::Contains(accounts, account)) {
-          param.is_valid = true;
-          accounts.erase(std::find(accounts.begin(), accounts.end(), account));
+      for (Cookie& cookie : cookies_after_reconcile) {
+        if (base::Contains(gaia_ids, cookie.gaia_id)) {
+          cookie.is_valid = true;
+          gaia_ids.erase(
+              std::find(gaia_ids.begin(), gaia_ids.end(), cookie.gaia_id));
         } else {
-          DCHECK(!param.is_valid);
+          DCHECK(!cookie.is_valid);
         }
       }
-      for (const CoreAccountId& account : accounts) {
-        cookies_after_reconcile.push_back({account.ToString(), true});
-      }
+      for (const std::string& gaia_id : gaia_ids)
+        cookies_after_reconcile.push_back({gaia_id, true});
     }
     return cookies_after_reconcile;
   }
