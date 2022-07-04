@@ -28,18 +28,18 @@ public class MergedWebappInfo extends WebappInfo {
     // Whether to override the icon information returned to callers.
     private boolean mUseOldIcons;
 
-    public static MergedWebappInfo create(
-            WebappInfo oldWebappInfo, @Nullable BrowserServicesIntentDataProvider provider) {
-        return new MergedWebappInfo(oldWebappInfo, provider);
+    public static MergedWebappInfo create(@NonNull WebappInfo oldWebappInfo,
+            @Nullable BrowserServicesIntentDataProvider provider) {
+        return (provider == null) ? null : new MergedWebappInfo(oldWebappInfo, provider);
     }
 
     public static MergedWebappInfo createForTesting(
-            WebappInfo oldWebappInfo, WebappInfo newWebappInfo) {
+            @NonNull WebappInfo oldWebappInfo, @NonNull WebappInfo newWebappInfo) {
         return new MergedWebappInfo(oldWebappInfo, newWebappInfo.getProvider());
     }
 
-    private MergedWebappInfo(
-            WebappInfo oldWebappInfo, @Nullable BrowserServicesIntentDataProvider provider) {
+    private MergedWebappInfo(@NonNull WebappInfo oldWebappInfo,
+            @NonNull BrowserServicesIntentDataProvider provider) {
         super(provider);
         mOldWebappInfo = oldWebappInfo;
     }
