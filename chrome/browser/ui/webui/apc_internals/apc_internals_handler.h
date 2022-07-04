@@ -8,10 +8,14 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/apc_internals/apc_internals_logins_request.h"
-#include "components/password_manager/core/browser/password_scripts_fetcher.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "content/public/browser/web_ui_message_handler.h"
+
+class APCInternalsLoginsRequest;
+
+namespace password_manager {
+class PasswordScriptsFetcher;
+class PasswordStoreInterface;
+}  // namespace password_manager
 
 // Provides the WebUI message handling for chrome://apc-internals, the
 // diagnostics page for Automated Password Change (APC) flows.
@@ -82,6 +86,9 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
 
   // Represents all Gaia-account-scoped password stores.
   raw_ptr<password_manager::PasswordStoreInterface> account_password_store_;
+
+  // A factory for weak pointers to the handler.
+  base::WeakPtrFactory<APCInternalsHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APC_INTERNALS_APC_INTERNALS_HANDLER_H_

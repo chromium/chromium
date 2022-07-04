@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/apc_internals/apc_internals_logins_request.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
@@ -92,6 +93,7 @@ void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
   FireWebUIListener("on-script-fetching-information-received",
                     base::Value(GetPasswordScriptFetcherInformation()));
   UpdateAutofillAssistantInformation();
+  OnRefreshScriptCacheRequested(base::Value::List());
 }
 
 void APCInternalsHandler::UpdateAutofillAssistantInformation() {
@@ -109,7 +111,9 @@ void APCInternalsHandler::OnRefreshScriptCacheRequested(
     const base::Value::List& args) {
   if (PasswordScriptsFetcher* scripts_fetcher = GetPasswordScriptsFetcher();
       scripts_fetcher) {
-    scripts_fetcher->PrewarmCache();
+    scripts_fetcher->RefreshScriptsIfNecessary(
+        base::BindOnce(&APCInternalsHandler::OnScriptCacheRequested,
+                       weak_ptr_factory_.GetWeakPtr(), base::Value::List()));
   }
 }
 
