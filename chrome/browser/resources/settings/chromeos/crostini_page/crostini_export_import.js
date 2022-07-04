@@ -20,7 +20,8 @@ import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CONTAINER_ID, GuestId} from './crostini_browser_proxy.js';
+import {equalContainerId} from './crostini_container_select.js';
 
 /**
  * @constructor
@@ -60,7 +61,16 @@ class SettingsCrostiniExportImportElement extends
       enableButtons_: {
         type: Boolean,
         computed:
-            'setEnableButtons_(installerShowing_, exportImportInProgress_)',
+            'isEnabledButtons_(installerShowing_, exportImportInProgress_)',
+      },
+
+      /**
+       * Whether the container select element is displayed.
+       * @private {boolean}
+       */
+      showContainerSelect_: {
+        type: Boolean,
+        computed: 'isMultiContainer_(allContainers_)',
       },
 
       /** @private */
@@ -73,6 +83,41 @@ class SettingsCrostiniExportImportElement extends
       exportImportInProgress_: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * The known containers for display in the UI.
+       * @private {!Array<!ContainerInfo>}
+       */
+      allContainers_: {
+        type: Array,
+        notify: true,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * The GuestId of the container to be exported.
+       * @private {!GuestId}
+       */
+      exportContainerId_: {
+        type: Object,
+        value() {
+          return DEFAULT_CONTAINER_ID;
+        },
+      },
+
+      /**
+       * The GuestId of the container to be overwritten by an imported
+       * container file.
+       * @private {!GuestId}
+       */
+      importContainerId_: {
+        type: Object,
+        value() {
+          return DEFAULT_CONTAINER_ID;
+        },
       },
 
       /**
@@ -96,9 +141,9 @@ class SettingsCrostiniExportImportElement extends
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
-
     this.addWebUIListener(
         'crostini-export-import-operation-status-changed', inProgress => {
           this.exportImportInProgress_ = inProgress;
@@ -107,9 +152,12 @@ class SettingsCrostiniExportImportElement extends
         'crostini-installer-status-changed', installerShowing => {
           this.installerShowing_ = installerShowing;
         });
+    this.addWebUIListener(
+        'crostini-container-info', (infos) => this.onContainerInfo_(infos));
 
     this.browserProxy_.requestCrostiniExportImportOperationStatus();
     this.browserProxy_.requestCrostiniInstallerStatus();
+    this.browserProxy_.requestContainerInfo();
   }
 
   /**
@@ -125,12 +173,21 @@ class SettingsCrostiniExportImportElement extends
     this.attemptDeepLink();
   }
 
+  /**
+   * @param {!Array<!ContainerInfo>} containerInfos
+   * @private
+   */
+  onContainerInfo_(containerInfos) {
+    this.allContainers_ = containerInfos;
+    if (!this.isMultiContainer_(containerInfos)) {
+      this.exportContainerId_ = DEFAULT_CONTAINER_ID;
+      this.importContainerId_ = DEFAULT_CONTAINER_ID;
+    }
+  }
+
   /** @private */
   onExportClick_() {
-    this.browserProxy_.exportCrostiniContainer({
-      vm_name: DEFAULT_CROSTINI_VM,
-      container_name: DEFAULT_CROSTINI_CONTAINER
-    });
+    this.browserProxy_.exportCrostiniContainer(this.exportContainerId_);
   }
 
   /** @private */
@@ -144,12 +201,28 @@ class SettingsCrostiniExportImportElement extends
   }
 
   /**
-   * @param {boolean} installerShowing
-   * @param {boolean} exportImportInProgress
+   * @param {!Boolean} installerShowing
+   * @param {!Boolean} exportImportInProgress
    * @private
    */
-  setEnableButtons_(installerShowing, exportImportInProgress) {
+  isEnabledButtons_(installerShowing, exportImportInProgress) {
     return !(installerShowing || exportImportInProgress);
+  }
+
+
+  /**
+   * @param {!Array<!ContainerInfo>} allContainers
+   * @return boolean
+   * @private
+   */
+  isMultiContainer_(allContainers) {
+    return !(
+        allContainers.length === 1 &&
+        equalContainerId(allContainers[0].id, DEFAULT_CONTAINER_ID));
+  }
+
+  getSettingsBoxClass_(allContainers) {
+    return this.isMultiContainer_(allContainers) ? 'two-line-settings-box' : '';
   }
 }
 

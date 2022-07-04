@@ -38,6 +38,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'requestContainerInfo',
       'setContainerBadgeColor',
       'stopContainer',
+      'requestCrostiniExportImportOperationStatus',
     ]);
     this.crostiniMicSharingEnabled = false;
     this.crostiniIsRunning = true;
@@ -100,6 +101,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   requestCrostiniExportImportOperationStatus() {
+    this.methodCalled('requestCrostiniExportImportOperationStatus');
     webUIListenerCallback(
         'crostini-export-import-operation-status-changed', false);
   }

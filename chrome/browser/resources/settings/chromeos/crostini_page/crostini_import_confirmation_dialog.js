@@ -13,7 +13,7 @@ import '../../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, GuestId} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
@@ -23,6 +23,15 @@ class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {!GuestId} */
+      importContainerId: {
+        type: Object,
+      },
+    };
   }
 
   constructor() {
@@ -46,10 +55,7 @@ class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
 
   /** @private */
   onContinueTap_() {
-    this.browserProxy_.importCrostiniContainer({
-      vm_name: DEFAULT_CROSTINI_VM,
-      container_name: DEFAULT_CROSTINI_CONTAINER
-    });
+    this.browserProxy_.importCrostiniContainer(this.importContainerId);
     this.$.dialog.close();
   }
 }

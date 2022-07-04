@@ -26,6 +26,36 @@ let crostiniBrowserProxy = null;
 
 const MIC_ALLOWED_PATH = 'prefs.crostini.mic_allowed.value';
 
+const singleContainer = /** @type {!Array<!ContainerInfo>}*/
+    ([
+      {
+        id: {
+          vm_name: 'termina',
+          container_name: 'penguin',
+        },
+        ipv4: '1.2.3.4',
+      },
+    ]);
+
+const multipleContainers = /** @type {!Array<!ContainerInfo>}*/
+    ([
+      {
+        id: {
+          vm_name: 'termina',
+          container_name: 'penguin',
+        },
+        ipv4: '1.2.3.4',
+      },
+      {
+        id: {
+          vm_name: 'not-termina',
+          container_name: 'not-penguin',
+
+        },
+        ipv4: '1.2.3.5',
+      }
+    ]);
+
 function setCrostiniPrefs(enabled, optional = {}) {
   const {
     sharedPaths = {},
@@ -308,126 +338,6 @@ suite('CrostiniPageTests', function() {
                 'requestCrostiniInstallerStatus') >= 1);
       });
 
-      test('Export', async function() {
-        assertTrue(
-            !!subpage.shadowRoot.querySelector('#crostini-export-import'));
-        subpage.shadowRoot.querySelector('#crostini-export-import').click();
-
-        await flushTasks();
-        subpage = crostiniPage.shadowRoot.querySelector(
-            'settings-crostini-export-import');
-        assertTrue(!!subpage.shadowRoot.querySelector('#export cr-button'));
-        subpage.shadowRoot.querySelector('#export cr-button').click();
-        assertEquals(
-            1, crostiniBrowserProxy.getCallCount('exportCrostiniContainer'));
-      });
-
-      test('Deep link to backup linux', async () => {
-        const params = new URLSearchParams();
-        params.append('settingId', '802');
-        Router.getInstance().navigateTo(
-            routes.CROSTINI_EXPORT_IMPORT, params);
-
-        flush();
-        subpage = crostiniPage.shadowRoot.querySelector(
-            'settings-crostini-export-import');
-
-        const deepLinkElement =
-            subpage.shadowRoot.querySelector('#export cr-button');
-        await waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, getDeepActiveElement(),
-            'Export button should be focused for settingId=802.');
-      });
-
-      test('Import', async function() {
-        assertTrue(
-            !!subpage.shadowRoot.querySelector('#crostini-export-import'));
-        subpage.shadowRoot.querySelector('#crostini-export-import').click();
-
-        await flushTasks();
-        subpage = crostiniPage.shadowRoot.querySelector(
-            'settings-crostini-export-import');
-        subpage.shadowRoot.querySelector('#import cr-button').click();
-
-        await flushTasks();
-        subpage = subpage.shadowRoot.querySelector(
-            'settings-crostini-import-confirmation-dialog');
-        subpage.shadowRoot.querySelector('cr-dialog cr-button[id="continue"]')
-            .click();
-        assertEquals(
-            1, crostiniBrowserProxy.getCallCount('importCrostiniContainer'));
-      });
-
-      test('ExportImportButtonsGetDisabledOnOperationStatus', async function() {
-        assertTrue(
-            !!subpage.shadowRoot.querySelector('#crostini-export-import'));
-        subpage.shadowRoot.querySelector('#crostini-export-import').click();
-
-        await flushTasks();
-        subpage = crostiniPage.shadowRoot.querySelector(
-            'settings-crostini-export-import');
-        assertFalse(
-            subpage.shadowRoot.querySelector('#export cr-button').disabled);
-        assertFalse(
-            subpage.shadowRoot.querySelector('#import cr-button').disabled);
-        webUIListenerCallback(
-            'crostini-export-import-operation-status-changed', true);
-
-        await flushTasks();
-        subpage = crostiniPage.shadowRoot.querySelector(
-            'settings-crostini-export-import');
-        assertTrue(
-            subpage.shadowRoot.querySelector('#export cr-button').disabled);
-        assertTrue(
-            subpage.shadowRoot.querySelector('#import cr-button').disabled);
-        webUIListenerCallback(
-            'crostini-export-import-operation-status-changed', false);
-
-        await flushTasks();
-        subpage = crostiniPage.shadowRoot.querySelector(
-            'settings-crostini-export-import');
-        assertFalse(
-            subpage.shadowRoot.querySelector('#export cr-button').disabled);
-        assertFalse(
-            subpage.shadowRoot.querySelector('#import cr-button').disabled);
-      });
-
-      test(
-          'ExportImportButtonsDisabledOnWhenInstallingCrostini',
-          async function() {
-            assertTrue(
-                !!subpage.shadowRoot.querySelector('#crostini-export-import'));
-            subpage.shadowRoot.querySelector('#crostini-export-import').click();
-
-            await flushTasks();
-            subpage = crostiniPage.shadowRoot.querySelector(
-                'settings-crostini-export-import');
-            assertFalse(
-                subpage.shadowRoot.querySelector('#export cr-button').disabled);
-            assertFalse(
-                subpage.shadowRoot.querySelector('#import cr-button').disabled);
-            webUIListenerCallback('crostini-installer-status-changed', true);
-
-            await flushTasks();
-            subpage = crostiniPage.shadowRoot.querySelector(
-                'settings-crostini-export-import');
-            assertTrue(
-                subpage.shadowRoot.querySelector('#export cr-button').disabled);
-            assertTrue(
-                subpage.shadowRoot.querySelector('#import cr-button').disabled);
-            webUIListenerCallback(
-                'crostini-installer-status-changed', false);
-
-            await flushTasks();
-            subpage = crostiniPage.shadowRoot.querySelector(
-                'settings-crostini-export-import');
-            assertFalse(
-                subpage.shadowRoot.querySelector('#export cr-button').disabled);
-            assertFalse(
-                subpage.shadowRoot.querySelector('#import cr-button').disabled);
-          });
-
       test('ToggleCrostiniMicPermissionCancel', async function() {
         // Crostini is assumed to be running when the page is loaded.
         assertTrue(!!subpage.shadowRoot.querySelector(
@@ -578,6 +488,184 @@ suite('CrostiniPageTests', function() {
             deepLinkElement, getDeepActiveElement(),
             'Resize disk button should be focused for settingId=805.');
       });
+    });
+
+    suite('subPageBackupRestore', function() {
+      /** @type {?SettingsCrostiniExportImportElement} */
+      let subpage;
+
+      setup(async function() {
+        const requestInstallerStatusCallCount =
+            crostiniBrowserProxy.getCallCount('requestCrostiniInstallerStatus');
+
+        loadTimeData.overrideValues({
+          showCrostiniExportImport: true,
+          showCrostiniContainerUpgrade: true,
+          showCrostiniPortForwarding: true,
+          showCrostiniDiskResize: true,
+          arcAdbSideloadingSupported: true,
+          showCrostiniExtraContainers: true,
+        });
+        crostiniBrowserProxy.containerInfo = singleContainer;
+        await flushTasks();
+
+        Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
+
+        await flushTasks();
+        subpage = crostiniPage.shadowRoot.querySelector(
+            'settings-crostini-export-import');
+
+        assertTrue(!!subpage);
+        assertEquals(
+            1,
+            crostiniBrowserProxy.getCallCount(
+                'requestCrostiniExportImportOperationStatus'));
+        assertEquals(
+            requestInstallerStatusCallCount + 1,
+            crostiniBrowserProxy.getCallCount(
+                'requestCrostiniInstallerStatus'));
+        assertEquals(
+            1, crostiniBrowserProxy.getCallCount('requestContainerInfo'));
+      });
+
+      test('Deep link to backup linux', async () => {
+        const params = new URLSearchParams();
+        params.append('settingId', '802');
+        Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT, params);
+
+        flush();
+        subpage = crostiniPage.shadowRoot.querySelector(
+            'settings-crostini-export-import');
+
+        const deepLinkElement =
+            subpage.shadowRoot.querySelector('#export cr-button');
+        await waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            'Export button should be focused for settingId=802.');
+      });
+
+      test('ExportSingleContainer', async function() {
+        assertFalse(!!subpage.shadowRoot.querySelector(
+            '#exportCrostiniLabel .secondary'));
+        assertTrue(!!subpage.shadowRoot.querySelector('#export cr-button'));
+        subpage.shadowRoot.querySelector('#export cr-button').click();
+        assertEquals(
+            1, crostiniBrowserProxy.getCallCount('exportCrostiniContainer'));
+      });
+
+      test('ExportMultiContainer', async function() {
+        crostiniBrowserProxy.containerInfo = multipleContainers;
+        webUIListenerCallback('crostini-container-info', multipleContainers);
+        await flushTasks();
+
+        assertTrue(!!subpage.shadowRoot.querySelector(
+            '#exportCrostiniLabel .secondary'));
+        const select = subpage.root.querySelector('#exportContainerSelect');
+        selectContainerByIndex(select, 1);
+
+        assertTrue(!!subpage.shadowRoot.querySelector('#export cr-button'));
+        subpage.shadowRoot.querySelector('#export cr-button').click();
+        assertEquals(
+            1, crostiniBrowserProxy.getCallCount('exportCrostiniContainer'));
+        const args = crostiniBrowserProxy.getArgs('exportCrostiniContainer');
+        assertEquals(1, args.length);
+        assertEquals(args[0].vm_name, 'not-termina');
+        assertEquals(args[0].container_name, 'not-penguin');
+      });
+
+      test('ImportSingleContainer', async function() {
+        assertFalse(!!subpage.shadowRoot.querySelector(
+            '#importCrostiniLabel .secondary'));
+        subpage.shadowRoot.querySelector('#import cr-button').click();
+
+        await flushTasks();
+        subpage = subpage.shadowRoot.querySelector(
+            'settings-crostini-import-confirmation-dialog');
+        subpage.shadowRoot.querySelector('cr-dialog cr-button[id="continue"]')
+            .click();
+        assertEquals(
+            1, crostiniBrowserProxy.getCallCount('importCrostiniContainer'));
+      });
+
+      test('ImportMultiContainer', async function() {
+        crostiniBrowserProxy.containerInfo = multipleContainers;
+        webUIListenerCallback('crostini-container-info', multipleContainers);
+        await flushTasks();
+
+        assertTrue(!!subpage.shadowRoot.querySelector(
+            '#importCrostiniLabel .secondary'));
+        const select = subpage.root.querySelector('#importContainerSelect');
+        selectContainerByIndex(select, 1);
+
+        assertTrue(!!subpage.shadowRoot.querySelector('#import cr-button'));
+        subpage.shadowRoot.querySelector('#import cr-button').click();
+        await flushTasks();
+        subpage = subpage.shadowRoot.querySelector(
+            'settings-crostini-import-confirmation-dialog');
+        subpage.shadowRoot.querySelector('cr-dialog cr-button[id="continue"]')
+            .click();
+        assertEquals(
+            1, crostiniBrowserProxy.getCallCount('importCrostiniContainer'));
+        const args = crostiniBrowserProxy.getArgs('importCrostiniContainer');
+        assertEquals(1, args.length);
+        assertEquals(args[0].vm_name, 'not-termina');
+        assertEquals(args[0].container_name, 'not-penguin');
+      });
+
+      test('ExportImportButtonsGetDisabledOnOperationStatus', async function() {
+        assertFalse(
+            subpage.shadowRoot.querySelector('#export cr-button').disabled);
+        assertFalse(
+            subpage.shadowRoot.querySelector('#import cr-button').disabled);
+        webUIListenerCallback(
+            'crostini-export-import-operation-status-changed', true);
+
+        await flushTasks();
+        subpage = crostiniPage.shadowRoot.querySelector(
+            'settings-crostini-export-import');
+        assertTrue(
+            subpage.shadowRoot.querySelector('#export cr-button').disabled);
+        assertTrue(
+            subpage.shadowRoot.querySelector('#import cr-button').disabled);
+        webUIListenerCallback(
+            'crostini-export-import-operation-status-changed', false);
+
+        await flushTasks();
+        subpage = crostiniPage.shadowRoot.querySelector(
+            'settings-crostini-export-import');
+        assertFalse(
+            subpage.shadowRoot.querySelector('#export cr-button').disabled);
+        assertFalse(
+            subpage.shadowRoot.querySelector('#import cr-button').disabled);
+      });
+
+      test(
+          'ExportImportButtonsDisabledOnWhenInstallingCrostini',
+          async function() {
+            assertFalse(
+                subpage.shadowRoot.querySelector('#export cr-button').disabled);
+            assertFalse(
+                subpage.shadowRoot.querySelector('#import cr-button').disabled);
+            webUIListenerCallback('crostini-installer-status-changed', true);
+
+            await flushTasks();
+            subpage = crostiniPage.shadowRoot.querySelector(
+                'settings-crostini-export-import');
+            assertTrue(
+                subpage.shadowRoot.querySelector('#export cr-button').disabled);
+            assertTrue(
+                subpage.shadowRoot.querySelector('#import cr-button').disabled);
+            webUIListenerCallback('crostini-installer-status-changed', false);
+
+            await flushTasks();
+            subpage = crostiniPage.shadowRoot.querySelector(
+                'settings-crostini-export-import');
+            assertFalse(
+                subpage.shadowRoot.querySelector('#export cr-button').disabled);
+            assertFalse(
+                subpage.shadowRoot.querySelector('#import cr-button').disabled);
+          });
     });
 
     suite('SubPagePortForwarding', function() {
