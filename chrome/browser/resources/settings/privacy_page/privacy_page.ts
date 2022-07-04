@@ -353,7 +353,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private onPrivacyGuideDialogClosed_() {
-    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE.parent!);
+    Router.getInstance().navigateToPreviousRoute();
     const toFocus = this.shadowRoot!.querySelector('#privacyGuideLinkRow');
     assert(toFocus);
     focusWithoutInk(toFocus);
