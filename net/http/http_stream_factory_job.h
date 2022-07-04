@@ -186,7 +186,7 @@ class HttpStreamFactory::Job
   virtual void Resume();
 
   // Called when |this| is orphaned by Delegate. This is valid for
-  // ALTERNATIVE job only.
+  // ALTERNATIVE job and DNS_ALPN_H3 job.
   void Orphan();
 
   void SetPriority(RequestPriority priority);
@@ -194,6 +194,10 @@ class HttpStreamFactory::Job
   // Returns true if the current request can be immediately sent on a existing
   // spdy session.
   bool HasAvailableSpdySession() const;
+
+  // Returns true if the current request can be immediately sent on a existing
+  // QUIC session.
+  bool HasAvailableQuicSession() const;
 
   const GURL& origin_url() const { return origin_url_; }
   RequestPriority priority() const { return priority_; }
@@ -475,7 +479,7 @@ class HttpStreamFactory::JobFactory {
 
   virtual ~JobFactory();
 
-  virtual std::unique_ptr<HttpStreamFactory::Job> CreateMainJob(
+  virtual std::unique_ptr<HttpStreamFactory::Job> CreateJob(
       HttpStreamFactory::Job::Delegate* delegate,
       HttpStreamFactory::JobType job_type,
       HttpNetworkSession* session,
@@ -488,24 +492,10 @@ class HttpStreamFactory::JobFactory {
       GURL origin_url,
       bool is_websocket,
       bool enable_ip_based_pooling,
-      NetLog* net_log);
-
-  virtual std::unique_ptr<HttpStreamFactory::Job> CreateAltSvcJob(
-      HttpStreamFactory::Job::Delegate* delegate,
-      HttpStreamFactory::JobType job_type,
-      HttpNetworkSession* session,
-      const HttpRequestInfo& request_info,
-      RequestPriority priority,
-      const ProxyInfo& proxy_info,
-      const SSLConfig& server_ssl_config,
-      const SSLConfig& proxy_ssl_config,
-      url::SchemeHostPort destination,
-      GURL origin_url,
-      NextProto alternative_protocol,
-      quic::ParsedQuicVersion quic_version,
-      bool is_websocket,
-      bool enable_ip_based_pooling,
-      NetLog* net_log);
+      NetLog* net_log,
+      NextProto alternative_protocol = kProtoUnknown,
+      quic::ParsedQuicVersion quic_version =
+          quic::ParsedQuicVersion::Unsupported());
 };
 
 }  // namespace net

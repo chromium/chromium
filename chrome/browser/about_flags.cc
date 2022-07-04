@@ -6501,6 +6501,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEncryptedClientHelloDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kEncryptedClientHello)},
 
+    {"use-dns-https-svcb-alpn", flag_descriptions::kUseDnsHttpsSvcbAlpnName,
+     flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
+     FEATURE_VALUE_TYPE(net::features::kUseDnsHttpsSvcbAlpn)},
+
     {"web-bundles", flag_descriptions::kWebBundlesName,
      flag_descriptions::kWebBundlesDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebBundles)},

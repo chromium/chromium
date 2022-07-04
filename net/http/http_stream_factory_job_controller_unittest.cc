@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -30,6 +31,7 @@
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session_peer.h"
 #include "net/http/http_response_headers.h"
@@ -46,9 +48,11 @@
 #include "net/proxy_resolution/mock_proxy_resolver.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/mock_quic_data.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_stream_factory.h"
 #include "net/quic/quic_stream_factory_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -78,6 +82,10 @@ namespace net::test {
 namespace {
 
 const char kServerHostname[] = "www.example.com";
+
+// The default delay for main job defined in QuicStreamFactory::
+// GetTimeDelayForWaitingJob().
+const int kDefaultDelayMilliSecsForWaitingJob = 300;
 
 class FailingProxyResolverFactory : public ProxyResolverFactory {
  public:
@@ -173,13 +181,23 @@ class JobControllerPeer {
     HttpStreamFactoryJobPeer::SetQuicConnectionFailedOnDefaultNetwork(
         job_controller->alternative_job_.get());
   }
+  static void SetDnsAlpnH3JobFailedOnDefaultNetwork(
+      HttpStreamFactory::JobController* job_controller) {
+    DCHECK(job_controller->dns_alpn_h3_job() != nullptr);
+    HttpStreamFactoryJobPeer::SetQuicConnectionFailedOnDefaultNetwork(
+        job_controller->dns_alpn_h3_job_.get());
+  }
 };
 
-class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
+class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
  public:
-  HttpStreamFactoryJobControllerTest()
+  explicit HttpStreamFactoryJobControllerTestBase(bool dns_https_alpn_enabled)
       : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        dns_https_alpn_enabled_(dns_https_alpn_enabled) {
+    if (dns_https_alpn_enabled_) {
+      feature_list_.InitWithFeatures({features::kUseDnsHttpsSvcbAlpn}, {});
+    }
     FLAGS_quic_enable_http3_grease_randomness = false;
     CreateSessionDeps();
   }
@@ -228,6 +246,8 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
 
     if (quic_data_)
       quic_data_->AddSocketDataToFactory(session_deps_.socket_factory.get());
+    if (quic_data2_)
+      quic_data2_->AddSocketDataToFactory(session_deps_.socket_factory.get());
     if (tcp_data_)
       session_deps_.socket_factory->AddSocketDataProvider(tcp_data_.get());
 
@@ -260,15 +280,19 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
     return test_proxy_delegate_.get();
   }
 
-  HttpStreamFactoryJobControllerTest(
-      const HttpStreamFactoryJobControllerTest&) = delete;
-  HttpStreamFactoryJobControllerTest& operator=(
-      const HttpStreamFactoryJobControllerTest&) = delete;
+  HttpStreamFactoryJobControllerTestBase(
+      const HttpStreamFactoryJobControllerTestBase&) = delete;
+  HttpStreamFactoryJobControllerTestBase& operator=(
+      const HttpStreamFactoryJobControllerTestBase&) = delete;
 
-  ~HttpStreamFactoryJobControllerTest() override {
+  ~HttpStreamFactoryJobControllerTestBase() override {
     if (quic_data_) {
       EXPECT_TRUE(quic_data_->AllReadDataConsumed());
       EXPECT_TRUE(quic_data_->AllWriteDataConsumed());
+    }
+    if (quic_data2_) {
+      EXPECT_TRUE(quic_data2_->AllReadDataConsumed());
+      EXPECT_TRUE(quic_data2_->AllWriteDataConsumed());
     }
     if (tcp_data_) {
       EXPECT_TRUE(tcp_data_->AllReadDataConsumed());
@@ -325,6 +349,8 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
       const quic::ParsedQuicVersion& expected_version,
       const quic::ParsedQuicVersionVector& supported_versions);
 
+  bool dns_https_alpn_enabled() const { return dns_https_alpn_enabled_; }
+
   quic::ParsedQuicVersion version_ = DefaultSupportedQuicVersions().front();
   RecordingNetLogObserver net_log_observer_;
   NetLogWithSource net_log_with_source_{
@@ -339,6 +365,7 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
   std::unique_ptr<HttpStreamRequest> request_;
   std::unique_ptr<SequencedSocketData> tcp_data_;
   std::unique_ptr<MockQuicData> quic_data_;
+  std::unique_ptr<MockQuicData> quic_data2_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   QuicTestPacketMaker client_maker_{version_,
                                     quic::QuicUtils::CreateRandomConnectionId(
@@ -355,11 +382,26 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
   bool delay_main_job_with_available_spdy_session_ = true;
 
  private:
+  bool dns_https_alpn_enabled_;
   std::unique_ptr<TestProxyDelegate> test_proxy_delegate_;
   bool create_job_controller_ = true;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
+class HttpStreamFactoryJobControllerTest
+    : public HttpStreamFactoryJobControllerTestBase,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  HttpStreamFactoryJobControllerTest()
+      : HttpStreamFactoryJobControllerTestBase(GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpStreamFactoryJobControllerTest,
+                         testing::Bool());
+
+TEST_P(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
   ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
   proxy_config.set_pac_mandatory(true);
@@ -396,7 +438,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
+TEST_P(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
   ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
   proxy_config.set_pac_mandatory(true);
@@ -437,7 +479,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
+TEST_P(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
           "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -464,8 +506,10 @@ TEST_F(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
 }
 
 class JobControllerReconsiderProxyAfterErrorTest
-    : public HttpStreamFactoryJobControllerTest {
+    : public HttpStreamFactoryJobControllerTestBase {
  public:
+  JobControllerReconsiderProxyAfterErrorTest()
+      : HttpStreamFactoryJobControllerTestBase(false) {}
   void Initialize(
       std::unique_ptr<ProxyResolutionService> proxy_resolution_service) {
     session_deps_.proxy_resolution_service =
@@ -1131,7 +1175,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, OnStreamFailedWithNoAlternativeJob) {
+TEST_P(HttpStreamFactoryJobControllerTest, OnStreamFailedWithNoAlternativeJob) {
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_FAILED));
 
@@ -1155,7 +1199,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, OnStreamFailedWithNoAlternativeJob) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, OnStreamReadyWithNoAlternativeJob) {
+TEST_P(HttpStreamFactoryJobControllerTest, OnStreamReadyWithNoAlternativeJob) {
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
 
@@ -1179,7 +1223,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, OnStreamReadyWithNoAlternativeJob) {
 
 // Test we cancel Jobs correctly when the Request is explicitly canceled
 // before any Job is bound to Request.
-TEST_F(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
+TEST_P(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
   // Use COLD_START to make the alt job pending.
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
@@ -1214,7 +1258,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
 // Test that the controller does not create alternative job when the advertised
 // versions in AlternativeServiceInfo do not contain any version that is
 // supported.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        DoNotCreateAltJobIfQuicVersionsUnsupported) {
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -1241,7 +1285,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        DoNotDelayMainJobIfQuicWasRecentlyBroken) {
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
@@ -1299,7 +1343,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        DelayMainJobAfterRecentlyBrokenQuicWasConfirmed) {
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
@@ -1363,7 +1407,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-void HttpStreamFactoryJobControllerTest::TestOnStreamFailedForBothJobs(
+void HttpStreamFactoryJobControllerTestBase::TestOnStreamFailedForBothJobs(
     bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddConnect(ASYNC, ERR_FAILED);
@@ -1402,20 +1446,21 @@ void HttpStreamFactoryJobControllerTest::TestOnStreamFailedForBothJobs(
 
 // This test verifies that the alternative service is not marked broken if both
 // jobs fail, and the alternative job is not retried on the alternate network.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        OnStreamFailedForBothJobsWithoutQuicRetry) {
   TestOnStreamFailedForBothJobs(false);
 }
 
 // This test verifies that the alternative service is not marked broken if both
 // jobs fail, and the alternative job is retried on the alternate network.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        OnStreamFailedForBothJobsWithQuicRetriedOnAlternateNetwork) {
   TestOnStreamFailedForBothJobs(true);
 }
 
-void HttpStreamFactoryJobControllerTest::TestAltJobFailsAfterMainJobSucceeded(
-    bool alt_job_retried_on_non_default_network) {
+void HttpStreamFactoryJobControllerTestBase::
+    TestAltJobFailsAfterMainJobSucceeded(
+        bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(ASYNC, ERR_FAILED);
   crypto_client_stream_factory_.set_handshake_mode(
@@ -1470,7 +1515,7 @@ void HttpStreamFactoryJobControllerTest::TestAltJobFailsAfterMainJobSucceeded(
 // This test verifies that the alternatvie service is marked broken when the
 // alternative job fails on default after the main job succeeded.  The
 // brokenness should not be cleared when the default network changes.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobFailsOnDefaultNetworkAfterMainJobSucceeded) {
   TestAltJobFailsAfterMainJobSucceeded(false);
 }
@@ -1478,13 +1523,13 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // This test verifies that the alternatvie service is marked broken when the
 // alternative job fails on both networks after the main job succeeded.  The
 // brokenness should not be cleared when the default network changes.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobFailsOnBothNetworksAfterMainJobSucceeded) {
   TestAltJobFailsAfterMainJobSucceeded(true);
 }
 
 // Tests that when alt job succeeds, main job is destroyed.
-TEST_F(HttpStreamFactoryJobControllerTest, AltJobSucceedsMainJobDestroyed) {
+TEST_P(HttpStreamFactoryJobControllerTest, AltJobSucceedsMainJobDestroyed) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -1531,7 +1576,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, AltJobSucceedsMainJobDestroyed) {
 // Tests that if alt job succeeds and main job is blocked, main job should be
 // cancelled immediately. |request_| completion will clean up the JobController.
 // Regression test for crbug.com/678768.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobSucceedsMainJobBlockedControllerDestroyed) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   if (version_.UsesHttp3()) {
@@ -1572,7 +1617,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        SpdySessionKeyHasOriginHostPortPair) {
   session_deps_.enable_http2_alternative_service = true;
 
@@ -1612,7 +1657,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 
 // Tests that if an orphaned job completes after |request_| is gone,
 // JobController will be cleaned up.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        OrphanedJobCompletesControllerDestroyed) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -1666,8 +1711,9 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-void HttpStreamFactoryJobControllerTest::TestAltJobSucceedsAfterMainJobFailed(
-    bool alt_job_retried_on_non_default_network) {
+void HttpStreamFactoryJobControllerTestBase::
+    TestAltJobSucceedsAfterMainJobFailed(
+        bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -1721,19 +1767,19 @@ void HttpStreamFactoryJobControllerTest::TestAltJobSucceedsAfterMainJobFailed(
 
 // This test verifies that the alternative service is not mark broken if the
 // alternative job succeeds on the default network after the main job failed.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobSucceedsOnDefaultNetworkAfterMainJobFailed) {
   TestAltJobSucceedsAfterMainJobFailed(false);
 }
 
 // This test verifies that the alternative service is not mark broken if the
 // alternative job succeeds on the alternate network after the main job failed.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobSucceedsOnAlternateNetwrokAfterMainJobFailed) {
   TestAltJobSucceedsAfterMainJobFailed(true);
 }
 
-void HttpStreamFactoryJobControllerTest::
+void HttpStreamFactoryJobControllerTestBase::
     TestAltJobSucceedsAfterMainJobSucceeded(
         bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
@@ -1801,7 +1847,7 @@ void HttpStreamFactoryJobControllerTest::
 
 // This test verifies that the alternative service is not marked broken if the
 // alternative job succeeds on the default network after the main job succeeded.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobSucceedsOnDefaultNetworkAfterMainJobSucceeded) {
   TestAltJobSucceedsAfterMainJobSucceeded(false);
 }
@@ -1811,12 +1857,12 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // network, which failed on the default network previously, after the main job
 // succeeded.  The brokenness should be cleared when the default network
 // changes.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltJobSucceedsOnAlternateNetworkAfterMainJobSucceeded) {
   TestAltJobSucceedsAfterMainJobSucceeded(true);
 }
 
-void HttpStreamFactoryJobControllerTest::
+void HttpStreamFactoryJobControllerTestBase::
     TestMainJobSucceedsAfterAltJobSucceeded(
         bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
@@ -1878,7 +1924,7 @@ void HttpStreamFactoryJobControllerTest::
 
 // This test verifies that the alternative service is not marked broken if the
 // main job succeeds after the alternative job succeeded on the default network.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterAltJobSucceededOnDefaultNetwork) {
   TestMainJobSucceedsAfterAltJobSucceeded(false);
 }
@@ -1888,13 +1934,14 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // succeeded on the non-default network, i.e., failed on the default network
 // previously.  The brokenness should be cleared when the default network
 // changes.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterAltJobSucceededOnAlternateNetwork) {
   TestMainJobSucceedsAfterAltJobSucceeded(true);
 }
 
-void HttpStreamFactoryJobControllerTest::TestMainJobFailsAfterAltJobSucceeded(
-    bool alt_job_retried_on_non_default_network) {
+void HttpStreamFactoryJobControllerTestBase::
+    TestMainJobFailsAfterAltJobSucceeded(
+        bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   // Use cold start and complete alt job manually.
@@ -1943,7 +1990,7 @@ void HttpStreamFactoryJobControllerTest::TestMainJobFailsAfterAltJobSucceeded(
 
 // This test verifies that the alternative service is not marked broken if the
 // main job fails after the alternative job succeeded on the default network.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobFailsAfterAltJobSucceededOnDefaultNetwork) {
   TestMainJobFailsAfterAltJobSucceeded(false);
 }
@@ -1951,13 +1998,14 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // This test verifies that the alternative service is not marked broken if the
 // main job fails after the alternative job succeeded on the non-default
 // network, i.e., failed on the default network previously.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobFailsAfterAltJobSucceededOnAlternateNetwork) {
   TestMainJobFailsAfterAltJobSucceeded(true);
 }
 
-void HttpStreamFactoryJobControllerTest::TestMainJobSucceedsAfterAltJobFailed(
-    bool alt_job_retried_on_non_default_network) {
+void HttpStreamFactoryJobControllerTestBase::
+    TestMainJobSucceedsAfterAltJobFailed(
+        bool alt_job_retried_on_non_default_network) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddConnect(SYNCHRONOUS, ERR_FAILED);
 
@@ -2009,7 +2057,7 @@ void HttpStreamFactoryJobControllerTest::TestMainJobSucceedsAfterAltJobFailed(
 
 // This test verifies that the alternative service will be marked broken when
 // the alternative job fails on the default network and main job succeeds later.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterAltJobFailedOnDefaultNetwork) {
   TestMainJobSucceedsAfterAltJobFailed(false);
 }
@@ -2017,15 +2065,15 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // This test verifies that the alternative service will be marked broken when
 // the alternative job fails on both default and alternate networks and main job
 // succeeds later.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterAltJobFailedOnBothNetworks) {
   TestMainJobSucceedsAfterAltJobFailed(true);
 }
 
-void HttpStreamFactoryJobControllerTest::TestMainJobSucceedsAfterIgnoredError(
-    int net_error,
-    bool expect_broken,
-    std::string alternate_host) {
+void HttpStreamFactoryJobControllerTestBase::
+    TestMainJobSucceedsAfterIgnoredError(int net_error,
+                                         bool expect_broken,
+                                         std::string alternate_host) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddConnect(SYNCHRONOUS, net_error);
   tcp_data_ = std::make_unique<SequencedSocketData>();
@@ -2071,27 +2119,27 @@ void HttpStreamFactoryJobControllerTest::TestMainJobSucceedsAfterIgnoredError(
 
 // Verifies that if the alternative job fails due to a connection change event,
 // then the alternative service is not marked as broken.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterConnectionChanged) {
   TestMainJobSucceedsAfterIgnoredError(ERR_NETWORK_CHANGED);
 }
 
 // Verifies that if the alternative job fails due to a disconnected network,
 // then the alternative service is not marked as broken.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterInternetDisconnected) {
   TestMainJobSucceedsAfterIgnoredError(ERR_INTERNET_DISCONNECTED);
 }
 
 // Verifies that if the alternative job fails due to a DNS failure,
 // then the alternative service is not marked as broken.
-TEST_F(HttpStreamFactoryJobControllerTest, MainJobSucceedsAfterDnsFailure) {
+TEST_P(HttpStreamFactoryJobControllerTest, MainJobSucceedsAfterDnsFailure) {
   TestMainJobSucceedsAfterIgnoredError(ERR_NAME_NOT_RESOLVED);
 }
 
 // Verifies that if the alternative job fails due to a DNS failure on a
 // different name, then the alternative service is marked as broken.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterDnsFailureWithAlternateName) {
   TestMainJobSucceedsAfterIgnoredError(ERR_NAME_NOT_RESOLVED, true,
                                        "alternate.google.com");
@@ -2099,7 +2147,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 
 // Regression test for crbug/621069.
 // Get load state after main job fails and before alternative job succeeds.
-TEST_F(HttpStreamFactoryJobControllerTest, GetLoadStateAfterMainJobFailed) {
+TEST_P(HttpStreamFactoryJobControllerTest, GetLoadStateAfterMainJobFailed) {
   // Use COLD_START to complete alt job manually.
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -2146,7 +2194,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, GetLoadStateAfterMainJobFailed) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobWhenAltJobStalls) {
+TEST_P(HttpStreamFactoryJobControllerTest, ResumeMainJobWhenAltJobStalls) {
   // Use COLD_START to stall alt job.
   quic_data_ = std::make_unique<MockQuicData>(version_);
   quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -2179,7 +2227,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobWhenAltJobStalls) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
+TEST_P(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
@@ -2205,7 +2253,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
 
 // Verifies that the main job is not resumed until after the alt job completes
 // host resolution.
-TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
+TEST_P(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   auto hanging_resolver = std::make_unique<MockHostResolver>();
   hanging_resolver->set_ondemand_mode(true);
   hanging_resolver->rules()->AddRule("www.google.com", "1.2.3.4");
@@ -2277,13 +2325,13 @@ TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   // OnStreamFailed will post a task to resume the main job immediately but
   // won't call Resume() on the main job since it's been resumed already.
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
-  quic_data.GetSequencedSocketData()->Resume();
+  quic_data.Resume();
   FastForwardUntilNoTasksRemain();
   // Alt job should be cleaned up
   EXPECT_FALSE(job_controller_->alternative_job());
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCP) {
+TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCP) {
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
@@ -2338,13 +2386,13 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCP) {
 
   // Unpause mock quic data and run all remaining tasks. Alt-job should fail
   // and be cleaned up.
-  quic_data.GetSequencedSocketData()->Resume();
+  quic_data.Resume();
   FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(job_controller_->alternative_job());
 }
 
 // Regression test for crbug.com/789560.
-TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
+TEST_P(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateDirect();
   ConfiguredProxyResolutionService* proxy_resolution_service_raw =
@@ -2422,7 +2470,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
 // http_server_properties cached an inappropriate large srtt for the server,
 // which would potentially delay the main job for a extremely long time in
 // delayed tcp case.
-TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
+TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   // The max delay time should be in sync with .cc file.
   base::TimeDelta kMaxDelayTimeForMainJob = base::Seconds(3);
 
@@ -2479,14 +2527,14 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
 
   // Unpause mock quic data and run all remaining tasks. Alt-job  should fail
   // and be cleaned up.
-  quic_data.GetSequencedSocketData()->Resume();
+  quic_data.Resume();
   FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(job_controller_->alternative_job());
 }
 
 // TODO(https://crbug.com/1007502): Disabled because the pending task count does
 //                                  not match expectations.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        DISABLED_ResumeMainJobImmediatelyOnStreamFailed) {
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -2538,7 +2586,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   // Now unpause the mock quic data to fail the alt job. This should immediately
   // resume the main job.
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1);
-  quic_data.GetSequencedSocketData()->Resume();
+  quic_data.Resume();
   FastForwardBy(base::TimeDelta());
 
   EXPECT_TRUE(job_controller_->main_job());
@@ -2554,7 +2602,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   FastForwardUntilNoTasksRemain();
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
+TEST_P(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
   if (version_.UsesHttp3()) {
     quic_data_->AddWrite(SYNCHRONOUS,
@@ -2584,7 +2632,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
 }
 
 // When preconnect to a H2 supported server, only 1 connection is opened.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        PreconnectMultipleStreamsToH2Server) {
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -2616,7 +2664,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 
 // Check that the logic to only preconnect a single socket to servers with H2
 // support respects NetworkIsolationKeys.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        PreconnectMultipleStreamsToH2ServerWithNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
   // It's not strictly necessary to enable
@@ -2704,7 +2752,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   }
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        DonotDelayMainJobIfHasAvailableSpdySession) {
   SetNotDelayMainJobWithAvailableSpdySession();
   HttpRequestInfo request_info;
@@ -2758,7 +2806,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 
 // Check the case that while a preconnect is waiting in the H2 request queue,
 // and a SPDY session appears, the job completes successfully.
-TEST_F(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
+TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   // Make sure there is only one socket connect.
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
@@ -2832,7 +2880,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
 //       OnConnectComplete() is called in the end of the test.
 //   [3] Normal non-preconnect request to other.example.org. This request must
 //       succeed even while the preconnect request [2] is paused.
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        PreconnectJobDoesntBlockIpBasedPooling) {
   // Make sure that both "www.example.org" and "other.example.org" are pointing
   // to the same IP address.
@@ -2879,6 +2927,11 @@ TEST_F(HttpStreamFactoryJobControllerTest,
         &request_delegate_,
         /*websocket_handshake_stream_create_helper=*/nullptr,
         NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+    if (dns_https_alpn_enabled()) {
+      EXPECT_CALL(*job_factory_.main_job(), Resume())
+          .Times(1)
+          .WillOnce([this]() { job_factory_.main_job()->DoResume(); });
+    }
     base::RunLoop run_loop;
     EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
         .WillOnce([&run_loop]() { run_loop.Quit(); });
@@ -2953,6 +3006,11 @@ TEST_F(HttpStreamFactoryJobControllerTest,
             NetLogWithSource(), HttpStreamRequest::HTTP_STREAM,
             DEFAULT_PRIORITY);
 
+    if (dns_https_alpn_enabled()) {
+      EXPECT_CALL(*job_factory_.main_job(), Resume())
+          .Times(1)
+          .WillOnce([this]() { job_factory_.main_job()->DoResume(); });
+    }
     base::RunLoop run_loop;
     EXPECT_CALL(request_delegate, OnStreamReadyImpl(_, _, _))
         .WillOnce([&run_loop]() { run_loop.Quit(); });
@@ -2970,8 +3028,10 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 }
 
 class JobControllerLimitMultipleH2Requests
-    : public HttpStreamFactoryJobControllerTest {
+    : public HttpStreamFactoryJobControllerTestBase {
  protected:
+  JobControllerLimitMultipleH2Requests()
+      : HttpStreamFactoryJobControllerTestBase(false) {}
   const int kNumRequests = 5;
   void SetUp() override { SkipCreatingJobController(); }
 };
@@ -3432,8 +3492,12 @@ TEST_F(JobControllerLimitMultipleH2Requests, QuicJobNotThrottled) {
 }
 
 class HttpStreamFactoryJobControllerMisdirectedRequestRetry
-    : public HttpStreamFactoryJobControllerTest,
-      public ::testing::WithParamInterface<::testing::tuple<bool, bool>> {};
+    : public HttpStreamFactoryJobControllerTestBase,
+      public ::testing::WithParamInterface<::testing::tuple<bool, bool>> {
+ public:
+  HttpStreamFactoryJobControllerMisdirectedRequestRetry()
+      : HttpStreamFactoryJobControllerTestBase(false) {}
+};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -3489,9 +3553,12 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
 }
 
 class HttpStreamFactoryJobControllerPreconnectTest
-    : public HttpStreamFactoryJobControllerTest,
+    : public HttpStreamFactoryJobControllerTestBase,
       public ::testing::WithParamInterface<bool> {
  protected:
+  HttpStreamFactoryJobControllerPreconnectTest()
+      : HttpStreamFactoryJobControllerTestBase(false) {}
+
   void SetUp() override {
     if (!GetParam()) {
       scoped_feature_list_.InitFromCommandLine(std::string(),
@@ -3562,7 +3629,7 @@ TEST_P(HttpStreamFactoryJobControllerPreconnectTest, LimitEarlyPreconnects) {
 // Test that GetAlternativeServiceInfoFor will include a list of advertised
 // versions, which contains a version that is supported. Returns an empty list
 // if advertised versions are missing in HttpServerProperties.
-TEST_F(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
+TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
@@ -3656,7 +3723,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   EXPECT_EQ(0u, alt_svc_info.advertised_versions().size());
 }
 
-void HttpStreamFactoryJobControllerTest::TestAltSvcVersionSelection(
+void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
     const std::string& alt_svc_header,
     const quic::ParsedQuicVersion& expected_version,
     const quic::ParsedQuicVersionVector& supported_versions) {
@@ -3689,7 +3756,7 @@ void HttpStreamFactoryJobControllerTest::TestAltSvcVersionSelection(
       << quic::ParsedQuicVersionVectorToString(advertised_versions);
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltSvcVersionSelectionFindsFirstMatch) {
   TestAltSvcVersionSelection(
       "h3-Q050=\":443\"; ma=2592000,"
@@ -3700,7 +3767,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
       quic::ParsedQuicVersion::Q050(), quic::AllSupportedVersions());
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltSvcVersionSelectionFindsFirstMatchInverse) {
   TestAltSvcVersionSelection(
       "h3-Q043=\":443\"; ma=2592000,"
@@ -3710,7 +3777,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
       quic::ParsedQuicVersion::Q043(), quic::AllSupportedVersions());
 }
 
-TEST_F(HttpStreamFactoryJobControllerTest,
+TEST_P(HttpStreamFactoryJobControllerTest,
        AltSvcVersionSelectionWithInverseOrderingNewFormat) {
   // Server prefers Q043 but client prefers Q046.
   TestAltSvcVersionSelection(
@@ -3724,7 +3791,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // Tests that if HttpNetworkSession has a non-empty QUIC host allowlist,
 // then GetAlternativeServiceFor() will not return any QUIC alternative service
 // that's not on the allowlist.
-TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
+TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
@@ -3777,6 +3844,1019 @@ TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
 
   EXPECT_EQ(kProtoUnknown, alt_svc_info.alternative_service().protocol);
   EXPECT_EQ(0u, alt_svc_info.advertised_versions().size());
+}
+
+// Tests specific to UseDnsHttpsAlpn feature.
+class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
+    : public HttpStreamFactoryJobControllerTestBase {
+ protected:
+  HttpStreamFactoryJobControllerDnsHttpsAlpnTest()
+      : HttpStreamFactoryJobControllerTestBase(true) {}
+
+  void SetUp() override { SkipCreatingJobController(); }
+
+  void EnableOndemandHostResolver() {
+    session_deps_.host_resolver->set_synchronous_mode(false);
+    session_deps_.host_resolver->set_ondemand_mode(true);
+  }
+
+  HttpRequestInfo CreateTestHttpRequestInfo() {
+    HttpRequestInfo request_info;
+    request_info.method = "GET";
+    request_info.url = GURL("https://www.example.org");
+    return request_info;
+  }
+
+  void RegisterMockHttpsRecord() {
+    HostResolverEndpointResult endpoint_result1;
+    endpoint_result1.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+    endpoint_result1.metadata.supported_protocol_alpns = {
+        quic::QuicVersionLabelToString(quic::CreateQuicVersionLabel(version_))};
+
+    HostResolverEndpointResult endpoint_result2;
+    endpoint_result2.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+
+    std::vector<HostResolverEndpointResult> endpoints;
+    endpoints.push_back(endpoint_result1);
+    endpoints.push_back(endpoint_result2);
+    session_deps_.host_resolver->rules()->AddRule("www.example.org",
+                                                  std::move(endpoints));
+  }
+
+  std::unique_ptr<HttpStreamRequest> CreateJobControllerAndStart(
+      const HttpRequestInfo& request_info) {
+    job_controller_ = new HttpStreamFactory::JobController(
+        factory_, &request_delegate_, session_.get(), &default_job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    HttpStreamFactoryPeer::AddJobController(factory_, job_controller_);
+    return job_controller_->Start(
+        &request_delegate_, nullptr, net_log_with_source_,
+        HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  }
+
+  void PrepareForMainJob() {
+    tcp_data_ = std::make_unique<SequencedSocketData>();
+    tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING)); /* pause */
+    ssl_data_ = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+    session_deps_.socket_factory->AddSSLSocketDataProvider(ssl_data_.get());
+  }
+
+  void PrepareForFirstQuicJob() {
+    crypto_client_stream_factory_.set_handshake_mode(
+        MockCryptoClientStream::COLD_START);
+    quic_data_ = std::make_unique<MockQuicData>(version_);
+    quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    if (version_.UsesHttp3()) {
+      quic_data_->AddWrite(
+          SYNCHRONOUS,
+          CreateQuicTestPacketMakerForClient().MakeInitialSettingsPacket(1));
+    }
+  }
+  void PrepareForFirstQuicJobFailure() {
+    crypto_client_stream_factory_.set_handshake_mode(
+        MockCryptoClientStream::COLD_START);
+    quic_data_ = std::make_unique<MockQuicData>(version_);
+    quic_data_->AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+    quic_data_->AddRead(ASYNC, ERR_FAILED);
+  }
+
+  void PrepareForSecondQuicJob() {
+    quic_data2_ = std::make_unique<MockQuicData>(version_);
+    quic_data2_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    if (version_.UsesHttp3()) {
+      quic_data2_->AddWrite(
+          SYNCHRONOUS,
+          CreateQuicTestPacketMakerForClient().MakeInitialSettingsPacket(1));
+    }
+  }
+
+  void MakeMainJobSucceed(bool expect_stream_ready) {
+    if (expect_stream_ready) {
+      base::RunLoop run_loop;
+      EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+          .Times(1)
+          .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+      tcp_data_->socket()->OnConnectComplete(MockConnect());
+      run_loop.Run();
+    } else {
+      EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _)).Times(0);
+      tcp_data_->socket()->OnConnectComplete(MockConnect());
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
+  void MakeQuicJobScceed(size_t index, bool expect_stream_ready) {
+    ASSERT_GT(crypto_client_stream_factory_.streams().size(), index);
+    MockCryptoClientStream* stream =
+        crypto_client_stream_factory_.streams()[index].get();
+    ASSERT_TRUE(stream);
+
+    if (expect_stream_ready) {
+      base::RunLoop run_loop;
+      EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+          .Times(1)
+          .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+      stream->NotifySessionOneRttKeyAvailable();
+      run_loop.Run();
+    } else {
+      EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _)).Times(0);
+      stream->NotifySessionOneRttKeyAvailable();
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
+  void CheckJobsStatus(bool main_job_exists,
+                       bool alternative_job_exists,
+                       bool dns_alpn_h3_job_exists,
+                       const std::string& scoped_trace_message = "") {
+    SCOPED_TRACE(scoped_trace_message);
+    EXPECT_EQ(main_job_exists, !!job_controller_->main_job());
+    EXPECT_EQ(alternative_job_exists, !!job_controller_->alternative_job());
+    EXPECT_EQ(dns_alpn_h3_job_exists, !!job_controller_->dns_alpn_h3_job());
+  }
+
+  std::unique_ptr<QuicHttpStream> ConnectQuicHttpStream(
+      bool alt_destination,
+      bool require_dns_https_alpn) {
+    NetErrorDetails net_error_details;
+    QuicStreamRequest quic_request(session_->quic_stream_factory());
+    url::SchemeHostPort scheme_host_port(
+        url::kHttpsScheme,
+        alt_destination ? "alt.example.org" : "www.example.org", 443);
+    absl::optional<int> quic_request_result;
+
+    CHECK_EQ(ERR_IO_PENDING,
+             quic_request.Request(
+                 scheme_host_port,
+                 require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
+                                        : version_,
+                 PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
+                 NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                 /*use_dns_aliases=*/true, require_dns_https_alpn,
+                 /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
+                 net_log_with_source_, &net_error_details,
+                 base::BindLambdaForTesting([&](int result) {}),
+                 base::BindLambdaForTesting([&quic_request_result](int result) {
+                   quic_request_result = result;
+                 })));
+    CHECK_EQ(1u, crypto_client_stream_factory_.streams().size());
+    CHECK(crypto_client_stream_factory_.streams()[0]);
+    crypto_client_stream_factory_.streams()[0]
+        ->NotifySessionOneRttKeyAvailable();
+    base::RunLoop().RunUntilIdle();
+    CHECK(quic_request_result);
+    CHECK_EQ(OK, *quic_request_result);
+
+    std::unique_ptr<QuicChromiumClientSession::Handle> session =
+        quic_request.ReleaseSessionHandle();
+    std::set<std::string> dns_aliases =
+        session->GetDnsAliasesForSessionKey(quic_request.session_key());
+    auto stream = std::make_unique<QuicHttpStream>(std::move(session),
+                                                   std::move(dns_aliases));
+    return stream;
+  }
+
+  bool IsAlternativeServiceBroken(GURL& url) {
+    return session_->http_server_properties()->IsAlternativeServiceBroken(
+        AlternativeService(kProtoQUIC, HostPortPair::FromURL(url)),
+        NetworkIsolationKey());
+  }
+
+ private:
+  QuicTestPacketMaker CreateQuicTestPacketMakerForClient() {
+    return QuicTestPacketMaker(version_,
+                               quic::QuicUtils::CreateRandomConnectionId(
+                                   quic_context_.random_generator()),
+                               quic_context_.clock(), "www.example.org",
+                               quic::Perspective::IS_CLIENT, false);
+  }
+
+  // Use real Jobs so that Job::Resume() is not mocked out. When main job is
+  // resumed it will use mock socket data.
+  HttpStreamFactory::JobFactory default_job_factory_;
+
+  // Used for man job connection.
+  std::unique_ptr<SSLSocketDataProvider> ssl_data_;
+};
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       NoHttpsRecordSyncHostResolve) {
+  PrepareForMainJob();
+  Initialize(HttpRequestInfo());
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  // The main job should be synchronously resumed, as host is resolved
+  // synchronously.
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  base::RunLoop().RunUntilIdle();
+
+  // |dns_alpn_h3_job| must fail when there is no valid supported alpn. And
+  // must be deleted.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS ALPN job must be deleted.");
+
+  base::HistogramTester histogram_tester;
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  // Net.AlternateProtocolUsage must not record anything, when HTTPS record with
+  // alpn is not available.
+  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       NoHttpsRecordAsyncHostResolveResumeMainWithoutDelay) {
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  Initialize(HttpRequestInfo());
+
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  // The main job should be resumed quickly after resolving the host.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  // Resolve the host resolve request from |dns_alpn_h3_job|.
+  session_deps_.host_resolver->ResolveAllPending();
+  base::RunLoop().RunUntilIdle();
+
+  // |dns_alpn_h3_job| must fail when there is no valid supported alpn. And
+  // must be deleted.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS ALPN job must be deleted.");
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  // The host resolve request from the main job must be resolved using the
+  // cached result.
+  EXPECT_TRUE(tcp_data_->socket());
+
+  base::HistogramTester histogram_tester;
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  // Net.AlternateProtocolUsage must not record anything, when HTTPS record with
+  // alpn is not available.
+  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       NoHttpsRecordAsyncHostResolveResumeMainWithoutDelayQuicWorkedNetwork) {
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  Initialize(HttpRequestInfo());
+
+  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
+  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+  // Main job must be waiting.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  // Resolve the host resolve request from |dns_alpn_h3_job|.
+  session_deps_.host_resolver->ResolveAllPending();
+  base::RunLoop().RunUntilIdle();
+
+  // |dns_alpn_h3_job| must fail when there is no valid supported alpn. And
+  // must be deleted.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS ALPN job must be deleted.");
+  // The main job should be resumed quickly after resolving the host.
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  // The host resolve request from the main job must be resolved using the
+  // cached result.
+  EXPECT_TRUE(tcp_data_->socket());
+
+  base::HistogramTester histogram_tester;
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  // Net.AlternateProtocolUsage must not record anything, when HTTPS record with
+  // alpn is not available.
+  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       MainJobNoDelayOnQuicNotWorkedNetworkSyncHostResolve) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+  // |main_job| is not blocked, because the hostname is resolved synchronously
+  // and |is_quic_known_to_work_on_current_network| is false for this test.
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, 1);
+
+  // The success of |dns_alpn_h3_job| deletes |main_job|.
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Main job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       MainJobNoDelayOnQuicNotWorkedNetworkAsyncHostResolve) {
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  // |main_job| is blocked until host resolves.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  // Resolve the host resolve request from |dns_alpn_h3_job|.
+  session_deps_.host_resolver->ResolveAllPending();
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  base::RunLoop().RunUntilIdle();
+
+  // |main_job| should have been resumed quickly because
+  // |is_quic_known_to_work_on_current_network| is false for this test.
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+  // |dns_alpn_h3_job| must not fail when there is a valid supported alpn.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Both main job and DNS ALPN job must be alive");
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, 1);
+
+  // The success of |dns_alpn_h3_job| deletes |main_job|.
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Main job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       MainJobDelayOnQuicWorkedNetwork) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
+  quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
+
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+  base::RunLoop().RunUntilIdle();
+  // |dns_alpn_h3_job| must not fail when there is a valid supported alpn.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Both main job and DNS ALPN job must be alive");
+
+  // The main job should be waiting until kDefaultDelayMilliSecsForWaitingJob
+  // amount of time has passed.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  FastForwardBy(base::Milliseconds(kDefaultDelayMilliSecsForWaitingJob - 1));
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, 1);
+
+  // The success of |dns_alpn_h3_job| deletes |main_job|.
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Main job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       MainJobSucceedsDnsAlpnH3JobSucceeds) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+  base::RunLoop().RunUntilIdle();
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+  // |main_job| is not blocked, because the hostname is resolved synchronously
+  // and |is_quic_known_to_work_on_current_network| is false for this test.
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  base::HistogramTester histogram_tester;
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE,
+      1);
+
+  // The success of |main_job| doesn't delete |dns_alpn_h3_job|.
+  EXPECT_TRUE(job_controller_->dns_alpn_h3_job());
+
+  // Make |dns_alpn_h3_job| complete.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       ActiveSessionAvailableForMainJob) {
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+  PrepareForFirstQuicJob();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  // Put a SpdySession in the pool.
+  SpdySessionKey key(HostPortPair::FromURL(request_info.url),
+                     ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
+
+  request_ = CreateJobControllerAndStart(request_info);
+  // |dns_alpn_h3_job| must be created even when an active session is
+  // available for |main_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  base::HistogramTester histogram_tester;
+  // Run the message loop to make |main_job| succeed and status will be
+  // reported to Request.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+        .Times(1)
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE,
+      1);
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "DNS ALPN job must be alive");
+
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS ALPN job must be deleted");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       ActiveSessionAvailableForAltSvcJob) {
+  PrepareForMainJob();
+  RegisterMockHttpsRecord();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  PrepareForFirstQuicJob();
+
+  Initialize(HttpRequestInfo());
+
+  auto stream = ConnectQuicHttpStream(/*alt_destination=*/true,
+                                      /*require_dns_https_alpn=*/false);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+
+  // |dns_alpn_h3_job| must not be created when an active session is
+  // available for |alternative_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "Main job and alternative job must be created.");
+
+  base::HistogramTester histogram_tester;
+  // Run the message loop to make |alternative_job| succeed and status will be
+  // reported to Request.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+        .Times(1)
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+  histogram_tester.ExpectUniqueSample("Net.AlternateProtocolUsage",
+                                      ALTERNATE_PROTOCOL_USAGE_NO_RACE, 1);
+
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "Main job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       ActiveSessionAvailableForDnsAlpnH3Job) {
+  PrepareForFirstQuicJob();
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  auto stream = ConnectQuicHttpStream(/*alt_destination=*/false,
+                                      /*require_dns_https_alpn=*/true);
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and alternative job must not be available.");
+
+  base::HistogramTester histogram_tester;
+  // Run the message loop to make |dns_alpn_h3_job| succeed and status will be
+  // reported to Request.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+        .Times(1)
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE, 1);
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "DNS alpn H3 job must exist.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       ActiveSessionAvailableForMainJobAndDnsAlpnH3Job) {
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+  PrepareForFirstQuicJob();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  // Put a SpdySession in the pool.
+  SpdySessionKey key(HostPortPair::FromURL(request_info.url),
+                     ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
+
+  auto stream = ConnectQuicHttpStream(/*alt_destination=*/false,
+                                      /*require_dns_https_alpn=*/true);
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job must not be available.");
+
+  base::HistogramTester histogram_tester;
+  // Run the message loop to make |dns_alpn_h3_job| succeed and status will be
+  // reported to Request.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+        .Times(1)
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE, 1);
+
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "DNS alpn H3 job must exist.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DonotStartDnsAlpnH3JobWhenSameHostDefaultPortAltJobCreated) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+  // |dns_alpn_h3_job| must be deleted when a same origin alt service
+  // was registered.
+  CheckJobsStatus(
+      true, true, false,
+      "All types of jobs are created, but DNS alpn job must be deleted");
+
+  base::HistogramTester histogram_tester;
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE,
+      1);
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "Alternate job must not be deleted");
+
+  // Make |alternative_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       AllJobsCreatedMainJobSucceedAltJobSucceedDnsJobSucceed) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  PrepareForSecondQuicJob();
+
+  // Use cold start and complete `alternative_job` and `dns_alpn_h3_job`
+  // manually.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+  // |dns_alpn_h3_job| must be created when a different origin alt service
+  // was registered.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "All types of jobs are created");
+
+  base::HistogramTester histogram_tester;
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE,
+      1);
+
+  // The success of |main_job| doesn't delete |alternative_job| and
+  // |dns_alpn_h3_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true, "Jobs must not be deleted.");
+
+  // Make |alternative_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Alternate job must be deleted.");
+
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(1, /*expect_stream_ready=*/false);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS alpn job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       AllJobsCreatedAltJobSucceedDnsJobSucceedMainJobSucceed) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  PrepareForSecondQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+  // |dns_alpn_h3_job| must be created when a different origin alt service
+  // was registered.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "All types of jobs are created");
+
+  base::HistogramTester histogram_tester;
+  // Make |alternative_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample("Net.AlternateProtocolUsage",
+                                      ALTERNATE_PROTOCOL_USAGE_WON_RACE, 1);
+
+  // The success of |alternative_job| doesn't delete |main_job| and
+  // |dns_alpn_h3_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true, "Jobs must not be deleted.");
+
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(1, /*expect_stream_ready=*/false);
+
+  // The success of |dns_alpn_h3_job| doesn't delete |main_job| and
+  // |alternative_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS alpn job must be deleted.");
+
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/false);
+
+  // |main_job| should be cleared.
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "Alternate job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       AllJobsCreatedDnsJobSucceedAltJobSucceedMainJobSucceed) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+  PrepareForSecondQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+  // |dns_alpn_h3_job| must be created when a different origin alt service
+  // was registered.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "All types of jobs are created");
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(1, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, 1);
+
+  // The success of |dns_alpn_h3_job| doesn't delete |main_job| and
+  // |alternative_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true, "Jobs must not be deleted.");
+
+  // Make |alternative_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+
+  // The success of |alternative_job| doesn't delete |main_job| and
+  // |dns_alpn_h3_job|.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Alternate job must be deleted.");
+
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/false);
+
+  // |main_job| should be cleared.
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Main job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsJobFailOnDefaultNetworkDnsJobFailMainJobSucceed) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJobFailure();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  request_ = CreateJobControllerAndStart(request_info);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  JobControllerPeer::SetDnsAlpnH3JobFailedOnDefaultNetwork(job_controller_);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Jobs must not be deleted.");
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| fail.
+  quic_data_->Resume();
+  base::RunLoop().RunUntilIdle();
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false, "DNS alpn job be deleted.");
+
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  // Net.AlternateProtocolUsage must not record anything, when DNS alpn job
+  // failed.
+  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS alpn job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(IsAlternativeServiceBroken(request_info.url));
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  histogram_tester.ExpectUniqueSample("Net.AlternateServiceForDnsAlpnH3Failed",
+                                      -ERR_QUIC_PROTOCOL_ERROR, 1);
+
+  // Verify the brokenness is not cleared when the default network changes.
+  session_->http_server_properties()->OnDefaultNetworkChanged();
+  EXPECT_TRUE(IsAlternativeServiceBroken(request_info.url));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsJobFailOnDefaultNetworkMainJobSucceedDnsJobSucceed) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  base::HistogramTester histogram_tester;
+  request_ = CreateJobControllerAndStart(request_info);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  JobControllerPeer::SetDnsAlpnH3JobFailedOnDefaultNetwork(job_controller_);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Jobs must not be deleted.");
+
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE,
+      1);
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "DNS alpn job must not be deleted.");
+
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+
+  request_.reset();
+  histogram_tester.ExpectTotalCount("Net.AlternateServiceForDnsAlpnH3Failed",
+                                    0);
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  EXPECT_TRUE(IsAlternativeServiceBroken(request_info.url));
+
+  // Verify the brokenness is cleared when the default network changes.
+  session_->http_server_properties()->OnDefaultNetworkChanged();
+  EXPECT_FALSE(IsAlternativeServiceBroken(request_info.url));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsJobSucceedMainJobCanceled) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  request_ = CreateJobControllerAndStart(request_info);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, 1);
+
+  // Main job is canceled.
+  CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Main job must be deleted");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsJobFailOnDefaultNetworkDnsJobSucceedMainJobSucceed) {
+  PrepareForMainJob();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  request_ = CreateJobControllerAndStart(request_info);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  JobControllerPeer::SetDnsAlpnH3JobFailedOnDefaultNetwork(job_controller_);
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true, "Jobs must not be deleted.");
+
+  base::HistogramTester histogram_tester;
+  // Make |dns_alpn_h3_job| succeed.
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage",
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, 1);
+
+  // Main job is not canceled, because |dns_alpn_h3_job| has failed on the
+  // default network.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job must not be deleted.");
+
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/false);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
 }  // namespace net::test

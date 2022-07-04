@@ -6169,6 +6169,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-dns-https-svcb-alpn",
+    "owners": [ "horo" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "use-fake-device-for-media-stream",
     "owners": [ "mcasas", "chromeos-gfx@google.com" ],
     // This flag is used for ChromeOS media testing to mock a source device.

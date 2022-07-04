@@ -71,12 +71,27 @@ const base::Feature kLimitEarlyPreconnectsExperiment{
 
 }  // namespace
 
+const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
+  switch (job_type) {
+    case HttpStreamFactory::MAIN:
+      return "main";
+    case HttpStreamFactory::ALTERNATIVE:
+      return "alternative";
+    case HttpStreamFactory::DNS_ALPN_H3:
+      return "dns_alpn_h3";
+    case HttpStreamFactory::PRECONNECT:
+      return "preconnect";
+  }
+  return "";
+}
+
 // Returns parameters associated with the start of a HTTP stream job.
 base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
                                       const GURL& original_url,
                                       const GURL& url,
                                       bool expect_spdy,
                                       bool using_quic,
+                                      HttpStreamFactory::JobType job_type,
                                       RequestPriority priority) {
   base::Value::Dict dict;
   if (source.IsValid())
@@ -86,6 +101,7 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
   dict.Set("expect_spdy", expect_spdy);
   dict.Set("using_quic", using_quic);
   dict.Set("priority", RequestPriorityToString(priority));
+  dict.Set("type", NetLogHttpStreamJobType(job_type));
   return base::Value(std::move(dict));
 }
 
@@ -142,7 +158,8 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
                  origin_url_.SchemeIs(url::kWssScheme)),
       using_quic_(
           alternative_protocol == kProtoQUIC ||
-          (ShouldForceQuic(session, destination_, proxy_info, using_ssl_))),
+          (ShouldForceQuic(session, destination_, proxy_info, using_ssl_)) ||
+          job_type == DNS_ALPN_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       quic_request_(session_->quic_stream_factory()),
@@ -179,8 +196,10 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
         session->context().quic_context->params()->supported_versions[0];
   }
 
-  if (using_quic_)
-    DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
+  if (using_quic_) {
+    DCHECK((quic_version_ != quic::ParsedQuicVersion::Unsupported()) ||
+           (job_type_ == DNS_ALPN_H3));
+  }
 
   DCHECK(session);
   if (alternative_protocol != kProtoUnknown) {
@@ -274,7 +293,7 @@ void HttpStreamFactory::Job::Resume() {
 }
 
 void HttpStreamFactory::Job::Orphan() {
-  DCHECK_EQ(job_type_, ALTERNATIVE);
+  DCHECK(job_type_ == ALTERNATIVE || job_type_ == DNS_ALPN_H3);
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_JOB_ORPHANED);
 
   // Watching for SPDY sessions isn't supported on orphaned jobs.
@@ -302,6 +321,16 @@ bool HttpStreamFactory::Job::HasAvailableSpdySession() const {
   return !using_quic_ && CanUseExistingSpdySession() &&
          session_->spdy_session_pool()->HasAvailableSession(spdy_session_key_,
                                                             is_websocket_);
+}
+
+bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
+  if (!using_quic_)
+    return false;
+  bool require_dns_https_alpn = (job_type_ == DNS_ALPN_H3);
+  return quic_request_.CanUseExistingSession(
+      origin_url_, request_info_.privacy_mode, request_info_.socket_tag,
+      request_info_.network_isolation_key, request_info_.secure_dns_policy,
+      require_dns_https_alpn, destination_);
 }
 
 bool HttpStreamFactory::Job::was_alpn_negotiated() const {
@@ -627,7 +656,7 @@ int HttpStreamFactory::Job::DoStart() {
     net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
       return NetLogHttpStreamJobParams(net_log->source(), request_info_.url,
                                        origin_url_, expect_spdy_, using_quic_,
-                                       priority_);
+                                       job_type_, priority_);
     });
     net_log->AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());
@@ -879,13 +908,14 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
     ssl_config = &server_ssl_config_;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
+  bool require_dns_https_alpn = (job_type_ == DNS_ALPN_H3);
 
   int rv = quic_request_.Request(
       std::move(destination), quic_version_, request_info_.privacy_mode,
       priority_, request_info_.socket_tag, request_info_.network_isolation_key,
       request_info_.secure_dns_policy, proxy_info_.is_direct(),
-      /*require_dns_https_alpn=*/false, ssl_config->GetCertVerifyFlags(), url,
-      net_log_, &net_error_details_,
+      require_dns_https_alpn, ssl_config->GetCertVerifyFlags(), url, net_log_,
+      &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -908,7 +938,7 @@ void HttpStreamFactory::Job::OnQuicHostResolution(int result) {
 }
 
 void HttpStreamFactory::Job::OnFailedOnDefaultNetwork(int result) {
-  DCHECK_EQ(job_type_, ALTERNATIVE);
+  DCHECK(job_type_ == ALTERNATIVE || job_type_ == DNS_ALPN_H3);
   DCHECK(using_quic_);
   delegate_->OnFailedOnDefaultNetwork(this);
 }
@@ -1257,7 +1287,7 @@ HttpStreamFactory::JobFactory::JobFactory() = default;
 HttpStreamFactory::JobFactory::~JobFactory() = default;
 
 std::unique_ptr<HttpStreamFactory::Job>
-HttpStreamFactory::JobFactory::CreateMainJob(
+HttpStreamFactory::JobFactory::CreateJob(
     HttpStreamFactory::Job::Delegate* delegate,
     HttpStreamFactory::JobType job_type,
     HttpNetworkSession* session,
@@ -1270,31 +1300,9 @@ HttpStreamFactory::JobFactory::CreateMainJob(
     GURL origin_url,
     bool is_websocket,
     bool enable_ip_based_pooling,
-    NetLog* net_log) {
-  return std::make_unique<HttpStreamFactory::Job>(
-      delegate, job_type, session, request_info, priority, proxy_info,
-      server_ssl_config, proxy_ssl_config, std::move(destination), origin_url,
-      kProtoUnknown, quic::ParsedQuicVersion::Unsupported(), is_websocket,
-      enable_ip_based_pooling, net_log);
-}
-
-std::unique_ptr<HttpStreamFactory::Job>
-HttpStreamFactory::JobFactory::CreateAltSvcJob(
-    HttpStreamFactory::Job::Delegate* delegate,
-    HttpStreamFactory::JobType job_type,
-    HttpNetworkSession* session,
-    const HttpRequestInfo& request_info,
-    RequestPriority priority,
-    const ProxyInfo& proxy_info,
-    const SSLConfig& server_ssl_config,
-    const SSLConfig& proxy_ssl_config,
-    url::SchemeHostPort destination,
-    GURL origin_url,
+    NetLog* net_log,
     NextProto alternative_protocol,
-    quic::ParsedQuicVersion quic_version,
-    bool is_websocket,
-    bool enable_ip_based_pooling,
-    NetLog* net_log) {
+    quic::ParsedQuicVersion quic_version) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
       server_ssl_config, proxy_ssl_config, std::move(destination), origin_url,

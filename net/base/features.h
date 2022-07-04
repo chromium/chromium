@@ -169,6 +169,9 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<int>
     kUseDnsHttpsSvcbExtraTimePercent;
 
+// Update protocol using ALPN information in HTTPS DNS records.
+NET_EXPORT extern const base::Feature kUseDnsHttpsSvcbAlpn;
+
 // Enables TLS 1.3 early data.
 NET_EXPORT extern const base::Feature kEnableTLS13EarlyData;
 

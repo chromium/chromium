@@ -258,6 +258,11 @@ const char kDnsHttpsSvcbDescription[] =
     "ClientHello, depending on server support and whether those features are "
     "enabled.";
 
+const char kUseDnsHttpsSvcbAlpnName[] = "Use DNS https alpn";
+const char kUseDnsHttpsSvcbAlpnDescription[] =
+    "When enabled, Chrome may try QUIC on the first connection using the ALPN"
+    " information in the DNS HTTPS record.";
+
 const char kEnableFirstPartySetsName[] = "Enable First-Party Sets";
 const char kEnableFirstPartySetsDescription[] =
     "When enabled, Chrome will apply First-Party Sets to features such as the "

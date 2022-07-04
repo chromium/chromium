@@ -1688,9 +1688,14 @@ Unknown properties are collapsed to zero. -->
 <enum name="AlternateProtocolUsage">
   <int value="0" label="ALTERNATE_PROTOCOL_USAGE_NO_RACE"/>
   <int value="1" label="ALTERNATE_PROTOCOL_USAGE_WON_RACE"/>
-  <int value="2" label="ALTERNATE_PROTOCOL_USAGE_LOST_RACE"/>
+  <int value="2" label="ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE"/>
   <int value="3" label="ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING"/>
-  <int value="4" label="ALTERNATE_PROTOCOL_USAGE_BROKEN"/>
+  <int value="4"
+      label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE"/>
+  <int value="5" label="ALTERNATE_PROTOCOL_USAGE_BROKEN"/>
+  <int value="6"
+      label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE"/>
+  <int value="7" label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE"/>
 </enum>
 
 <enum name="AlternativeServiceType">
@@ -55507,6 +55512,7 @@ from previous Chrome versions.
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
   <int value="-1860477300" label="DefaultStyleSheetsEarlyInit:disabled"/>
+  <int value="-1860342103" label="UseDnsHttpsSvcbAlpn:disabled"/>
   <int value="-1859437916"
       label="enable-experimental-accessibility-dictation-offline"/>
   <int value="-1859421131" label="BackForwardCache:disabled"/>
@@ -60253,6 +60259,7 @@ from previous Chrome versions.
   <int value="1205849612" label="enable-sync-synced-notifications"/>
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
   <int value="1206140820" label="RelatedSearchesInBar:disabled"/>
+  <int value="1206486242" label="UseDnsHttpsSvcbAlpn:enabled"/>
   <int value="1210298193" label="FontAccessPersistent:enabled"/>
   <int value="1210343926" label="enable-drop-sync-credential"/>
   <int value="1211284676" label="V8NoTurbo:enabled"/>

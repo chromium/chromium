@@ -46,8 +46,17 @@ class NET_EXPORT HttpStreamFactory {
   class NET_EXPORT_PRIVATE JobFactory;
 
   enum JobType {
+    // Job that will connect via HTTP/1 or HTTP/2. This may be paused for a
+    // while when ALTERNATIVE or DNS_ALPN_H3 job was created.
     MAIN,
+    // Job that will connect via HTTP/3 iff Chrome has received an Alt-Svc
+    // header from the origin.
     ALTERNATIVE,
+    // Job that will connect via HTTP/3 iff an "h3" value was found in the ALPN
+    // list of an HTTPS DNS record.
+    DNS_ALPN_H3,
+    // Job that will preconnect. This uses HTTP/3 iff Chrome has received an
+    // Alt-Svc header from the origin. Otherwise, it use HTTP/1 or HTTP/2.
     PRECONNECT,
   };
 

@@ -32,10 +32,16 @@ MockCryptoClientStreamFactory::CreateQuicCryptoClientStream(
     proof_verify_details = proof_verify_details_queue_.front();
     proof_verify_details_queue_.pop();
   }
-  last_stream_ = new MockCryptoClientStream(
+  raw_ptr<MockCryptoClientStream> stream = new MockCryptoClientStream(
       server_id, session, nullptr, *(config_.get()), crypto_config,
       handshake_mode_, proof_verify_details, use_mock_crypter_);
-  return last_stream_;
+  streams_.push_back(stream->GetWeakPtr());
+  return stream;
+}
+
+MockCryptoClientStream* MockCryptoClientStreamFactory::last_stream() const {
+  CHECK(!streams_.empty());
+  return streams_.back().get();
 }
 
 }  // namespace net

@@ -16,8 +16,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -94,6 +96,12 @@ void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
   }
 }
 
+// Generate a AlternativeService for DNS alt job. Note: Chrome does not yet
+// support different port DNS alpn.
+AlternativeService GetAlternativeServiceForDnsJob(const GURL& url) {
+  return AlternativeService(kProtoQUIC, HostPortPair::FromURL(url));
+}
+
 }  // namespace
 
 // The maximum time to wait for the alternate job to complete before resuming
@@ -165,6 +173,7 @@ HttpStreamFactory::JobController::JobController(
 HttpStreamFactory::JobController::~JobController() {
   main_job_.reset();
   alternative_job_.reset();
+  dns_alpn_h3_job_.reset();
   bound_job_ = nullptr;
   if (proxy_resolve_request_) {
     DCHECK_EQ(STATE_RESOLVE_PROXY_COMPLETE, next_state_);
@@ -224,6 +233,9 @@ LoadState HttpStreamFactory::JobController::GetLoadState() const {
     return main_job_->GetLoadState();
   if (alternative_job_)
     return alternative_job_->GetLoadState();
+  if (dns_alpn_h3_job_)
+    return dns_alpn_h3_job_->GetLoadState();
+
   // When proxy resolution fails, there is no job created and
   // NotifyRequestFailed() is executed one message loop iteration later.
   return LOAD_STATE_IDLE;
@@ -231,15 +243,20 @@ LoadState HttpStreamFactory::JobController::GetLoadState() const {
 
 void HttpStreamFactory::JobController::OnRequestComplete() {
   DCHECK(request_);
-
-  CancelJobs();
   request_ = nullptr;
-  if (bound_job_) {
+
+  if (!job_bound_) {
+    alternative_job_.reset();
+    main_job_.reset();
+    dns_alpn_h3_job_.reset();
+  } else {
     if (bound_job_->job_type() == MAIN) {
       main_job_.reset();
-    } else {
-      DCHECK(bound_job_->job_type() == ALTERNATIVE);
+    } else if (bound_job_->job_type() == ALTERNATIVE) {
       alternative_job_.reset();
+    } else {
+      DCHECK(bound_job_->job_type() == DNS_ALPN_H3);
+      dns_alpn_h3_job_.reset();
     }
     bound_job_ = nullptr;
   }
@@ -257,6 +274,9 @@ void HttpStreamFactory::JobController::SetPriority(RequestPriority priority) {
   }
   if (alternative_job_) {
     alternative_job_->SetPriority(priority);
+  }
+  if (dns_alpn_h3_job_) {
+    dns_alpn_h3_job_->SetPriority(priority);
   }
 }
 
@@ -348,12 +368,18 @@ void HttpStreamFactory::JobController::OnStreamFailed(
     Job* job,
     int status,
     const SSLConfig& used_ssl_config) {
-  if (job->job_type() == ALTERNATIVE) {
-    DCHECK_EQ(alternative_job_.get(), job);
-    OnAlternativeServiceJobFailed(status);
-  } else {
+  DCHECK_NE(OK, status);
+  if (job->job_type() == MAIN) {
     DCHECK_EQ(main_job_.get(), job);
     main_job_net_error_ = status;
+  } else if (job->job_type() == ALTERNATIVE) {
+    DCHECK_EQ(alternative_job_.get(), job);
+    DCHECK_NE(kProtoUnknown, alternative_service_info_.protocol());
+    alternative_job_net_error_ = status;
+  } else {
+    DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
+    DCHECK_EQ(dns_alpn_h3_job_.get(), job);
+    dns_alpn_h3_job_net_error_ = status;
   }
 
   MaybeResumeMainJob(job, base::TimeDelta());
@@ -371,14 +397,19 @@ void HttpStreamFactory::JobController::OnStreamFailed(
   DCHECK(job);
 
   if (!bound_job_) {
-    if (main_job_ && alternative_job_) {
+    if (GetJobCount() >= 2) {
       // Hey, we've got other jobs! Maybe one of them will succeed, let's just
       // ignore this failure.
       if (job->job_type() == MAIN) {
+        DCHECK_EQ(main_job_.get(), job);
         main_job_.reset();
-      } else {
-        DCHECK(job->job_type() == ALTERNATIVE);
+      } else if (job->job_type() == ALTERNATIVE) {
+        DCHECK_EQ(alternative_job_.get(), job);
         alternative_job_.reset();
+      } else {
+        DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
+        DCHECK_EQ(dns_alpn_h3_job_.get(), job);
+        dns_alpn_h3_job_.reset();
       }
       return;
     } else {
@@ -401,8 +432,14 @@ void HttpStreamFactory::JobController::OnStreamFailed(
 }
 
 void HttpStreamFactory::JobController::OnFailedOnDefaultNetwork(Job* job) {
-  DCHECK_EQ(job->job_type(), ALTERNATIVE);
-  alternative_job_failed_on_default_network_ = true;
+  if (job->job_type() == ALTERNATIVE) {
+    DCHECK_EQ(alternative_job_.get(), job);
+    alternative_job_failed_on_default_network_ = true;
+  } else {
+    DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
+    DCHECK_EQ(dns_alpn_h3_job_.get(), job);
+    dns_alpn_h3_job_failed_on_default_network_ = true;
+  }
 }
 
 void HttpStreamFactory::JobController::OnCertificateError(
@@ -483,9 +520,13 @@ void HttpStreamFactory::JobController::OnOrphanedJobComplete(const Job* job) {
   if (job->job_type() == MAIN) {
     DCHECK_EQ(main_job_.get(), job);
     main_job_.reset();
-  } else {
+  } else if (job->job_type() == ALTERNATIVE) {
     DCHECK_EQ(alternative_job_.get(), job);
     alternative_job_.reset();
+  } else {
+    DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
+    DCHECK_EQ(dns_alpn_h3_job_.get(), job);
+    dns_alpn_h3_job_.reset();
   }
 
   MaybeNotifyFactoryOfCompletion();
@@ -530,15 +571,23 @@ void HttpStreamFactory::JobController::ResetErrorStatusForJobs() {
   main_job_net_error_ = OK;
   alternative_job_net_error_ = OK;
   alternative_job_failed_on_default_network_ = false;
+  dns_alpn_h3_job_net_error_ = OK;
+  dns_alpn_h3_job_failed_on_default_network_ = false;
 }
 
 void HttpStreamFactory::JobController::MaybeResumeMainJob(
     Job* job,
     const base::TimeDelta& delay) {
   DCHECK(delay == base::TimeDelta() || delay == main_job_wait_time_);
-  DCHECK(job == main_job_.get() || job == alternative_job_.get());
+  DCHECK(job == main_job_.get() || job == alternative_job_.get() ||
+         job == dns_alpn_h3_job_.get());
 
-  if (job != alternative_job_.get() || !main_job_)
+  if (job == main_job_.get())
+    return;
+  if (job == dns_alpn_h3_job_.get() && alternative_job_) {
+    return;
+  }
+  if (!main_job_)
     return;
 
   main_job_is_blocked_ = false;
@@ -568,9 +617,9 @@ void HttpStreamFactory::JobController::OnConnectionInitialized(Job* job,
 
 bool HttpStreamFactory::JobController::ShouldWait(Job* job) {
   // The alternative job never waits.
-  if (job == alternative_job_.get())
+  if (job == alternative_job_.get() || job == dns_alpn_h3_job_.get())
     return false;
-
+  DCHECK_EQ(main_job_.get(), job);
   if (main_job_is_blocked_)
     return true;
 
@@ -636,6 +685,7 @@ void HttpStreamFactory::JobController::RunLoop(int result) {
     // iteration later to avoid re-entrancy.
     DCHECK(!main_job_);
     DCHECK(!alternative_job_);
+    DCHECK(!dns_alpn_h3_job_);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&HttpStreamFactory::JobController::NotifyRequestFailed,
@@ -762,30 +812,33 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
           url::SchemeHostPort(alternative_url);
       ConvertWsToHttp(alternative_destination);
 
-      main_job_ = job_factory_->CreateAltSvcJob(
+      main_job_ = job_factory_->CreateJob(
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
           server_ssl_config_, proxy_ssl_config_,
-          std::move(alternative_destination), origin_url,
-          alternative_service_info_.protocol(), quic_version, is_websocket_,
-          enable_ip_based_pooling_, session_->net_log());
+          std::move(alternative_destination), origin_url, is_websocket_,
+          enable_ip_based_pooling_, session_->net_log(),
+          alternative_service_info_.protocol(), quic_version);
     } else {
-      main_job_ = job_factory_->CreateMainJob(
+      main_job_ = job_factory_->CreateJob(
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
           server_ssl_config_, proxy_ssl_config_, std::move(destination),
           origin_url, is_websocket_, enable_ip_based_pooling_,
           session_->net_log());
     }
     main_job_->Preconnect(num_streams_);
+    // TODO(crbug.com/1317943): Consider using DNS_ALPN_H3 job for preconnect.
     return OK;
   }
-  main_job_ = job_factory_->CreateMainJob(
+  main_job_ = job_factory_->CreateJob(
       this, MAIN, session_, request_info_, priority_, proxy_info_,
       server_ssl_config_, proxy_ssl_config_, std::move(destination), origin_url,
       is_websocket_, enable_ip_based_pooling_, net_log_.net_log());
+
   // Alternative Service can only be set for HTTPS requests while Alternative
   // Proxy is set for HTTP requests.
   if (alternative_service_info_.protocol() != kProtoUnknown) {
     DCHECK(request_info_.url.SchemeIs(url::kHttpsScheme));
+    DCHECK(!is_websocket_);
     DVLOG(1) << "Selected alternative service (host: "
              << alternative_service_info_.host_port_pair().host()
              << " port: " << alternative_service_info_.host_port_pair().port()
@@ -799,28 +852,86 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         url::SchemeHostPort(alternative_url);
     ConvertWsToHttp(alternative_destination);
 
-    alternative_job_ = job_factory_->CreateAltSvcJob(
+    alternative_job_ = job_factory_->CreateJob(
         this, ALTERNATIVE, session_, request_info_, priority_, proxy_info_,
         server_ssl_config_, proxy_ssl_config_,
-        std::move(alternative_destination), origin_url,
-        alternative_service_info_.protocol(), quic_version, is_websocket_,
-        enable_ip_based_pooling_, net_log_.net_log());
+        std::move(alternative_destination), origin_url, is_websocket_,
+        enable_ip_based_pooling_, net_log_.net_log(),
+        alternative_service_info_.protocol(), quic_version);
+  }
 
+  if (base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcbAlpn) &&
+      base::EqualsCaseInsensitiveASCII(origin_url.scheme(),
+                                       url::kHttpsScheme) &&
+      session_->IsQuicEnabled() && proxy_info_.is_direct() &&
+      !session_->http_server_properties()->IsAlternativeServiceBroken(
+          GetAlternativeServiceForDnsJob(origin_url),
+          request_info_.network_isolation_key)) {
+    DCHECK(!is_websocket_);
+    url::SchemeHostPort dns_alpn_h3_destination =
+        url::SchemeHostPort(origin_url);
+    dns_alpn_h3_job_ = job_factory_->CreateJob(
+        this, DNS_ALPN_H3, session_, request_info_, priority_, proxy_info_,
+        server_ssl_config_, proxy_ssl_config_,
+        std::move(dns_alpn_h3_destination), origin_url, is_websocket_,
+        enable_ip_based_pooling_, net_log_.net_log());
+  }
+
+  ClearInappropriateJobs();
+
+  if (alternative_job_ || dns_alpn_h3_job_) {
+    // TODO(crbug.com/1317943): Consider not to block the main job when an
+    // active session is available for the main job and |alternative_job_|
+    // doesn't exists and |dns_alpn_h3_job_| exists. This may make the fallback
+    // logic faster when QUIC connection is unstable on the network. But we need
+    // to support DNS alpn job for preconnect before doing so. Currently
+    // preconnect job is triggered for all navigations by
+    // features::kNavigationRequestPreconnect. And the preconnect job doesn't
+    // support DNS HTTPS alpn and establishes non-HTTP/3 connection for the
+    // first connection. So when this method is called after the preconnect
+    // request, an active session may be available for the main job, and the
+    // DNS alpn job may be unintentionally disturbed.
     main_job_is_blocked_ = true;
+  }
+
+  if (alternative_job_) {
     alternative_job_->Start(request_->stream_type());
   }
 
-  // Even if |alternative_job| has already finished, it will not have notified
-  // the request yet, since we defer that to the next iteration of the
-  // MessageLoop, so starting |main_job_| is always safe.
-  main_job_->Start(request_->stream_type());
+  if (dns_alpn_h3_job_) {
+    dns_alpn_h3_job_->Start(request_->stream_type());
+  }
+
+  if (main_job_) {
+    main_job_->Start(request_->stream_type());
+  }
   return OK;
+}
+
+void HttpStreamFactory::JobController::ClearInappropriateJobs() {
+  if (dns_alpn_h3_job_ && dns_alpn_h3_job_->HasAvailableQuicSession()) {
+    // Clear |main_job_| and |alternative_job_| here not to start them when
+    // there is an active session available for |dns_alpn_h3_job_|.
+    main_job_.reset();
+    alternative_job_.reset();
+  }
+
+  if (alternative_job_ && dns_alpn_h3_job_ &&
+      (alternative_job_->HasAvailableQuicSession() ||
+       (alternative_service_info_.alternative_service() ==
+        GetAlternativeServiceForDnsJob(request_info_.url)))) {
+    // Clear |dns_alpn_h3_job_|, when there is an active session available for
+    // |alternative_job_| or |alternative_job_| was created for the same
+    // destination.
+    dns_alpn_h3_job_.reset();
+  }
 }
 
 void HttpStreamFactory::JobController::BindJob(Job* job) {
   DCHECK(request_);
   DCHECK(job);
-  DCHECK(job == alternative_job_.get() || job == main_job_.get());
+  DCHECK(job == alternative_job_.get() || job == main_job_.get() ||
+         job == dns_alpn_h3_job_.get());
   DCHECK(!job_bound_);
   DCHECK(!bound_job_);
 
@@ -837,54 +948,73 @@ void HttpStreamFactory::JobController::BindJob(Job* job) {
   OrphanUnboundJob();
 }
 
-void HttpStreamFactory::JobController::CancelJobs() {
-  DCHECK(request_);
-  if (job_bound_)
-    return;
-  if (alternative_job_)
-    alternative_job_.reset();
-  if (main_job_)
-    main_job_.reset();
-}
-
 void HttpStreamFactory::JobController::OrphanUnboundJob() {
   DCHECK(request_);
   DCHECK(bound_job_);
 
-  if (bound_job_->job_type() == MAIN && alternative_job_) {
-    DCHECK(!is_websocket_);
-    // Allow |alternative_job_| to run to completion, rather than resetting it
-    // to check if there is any broken alternative service to report.
-    // OnOrphanedJobComplete() will clean up |this| when the job completes.
-    alternative_job_->Orphan();
+  if (bound_job_->job_type() == MAIN) {
+    // Allow |alternative_job_| and |dns_alpn_h3_job_| to run to completion,
+    // rather than resetting them to check if there is any broken alternative
+    // service to report. OnOrphanedJobComplete() will clean up |this| when the
+    // jobs complete.
+    if (alternative_job_) {
+      DCHECK(!is_websocket_);
+      alternative_job_->Orphan();
+    }
+    if (dns_alpn_h3_job_) {
+      DCHECK(!is_websocket_);
+      dns_alpn_h3_job_->Orphan();
+    }
     return;
   }
 
-  if (bound_job_->job_type() == ALTERNATIVE && main_job_ &&
-      !alternative_job_failed_on_default_network_) {
-    // |request_| is bound to the alternative job and the alternative job
-    // succeeds on the default network. This means that the main job
-    // is no longer needed, so cancel it now. Pending ConnectJobs will return
-    // established sockets to socket pools if applicable.
-    // https://crbug.com/757548.
-    // The main job still needs to run if the alternative job succeeds on the
-    // alternate network in order to figure out whether QUIC should be marked as
-    // broken until the default network changes.
-    DCHECK_EQ(OK, alternative_job_net_error_);
-    main_job_.reset();
+  if (bound_job_->job_type() == ALTERNATIVE) {
+    if (!alternative_job_failed_on_default_network_ && !dns_alpn_h3_job_) {
+      // |request_| is bound to the alternative job and the alternative job
+      // succeeds on the default network, and there is no DNS alt job. This
+      // means that the main job is no longer needed, so cancel it now. Pending
+      // ConnectJobs will return established sockets to socket pools if
+      // applicable.
+      // https://crbug.com/757548.
+      // The main job still needs to run if the alternative job succeeds on the
+      // alternate network in order to figure out whether QUIC should be marked
+      // as broken until the default network changes. And also the main job
+      // still needs to run if the DNS alt job exists to figure out whether
+      // the DNS alpn service is broken.
+      DCHECK(!main_job_ || (alternative_job_net_error_ == OK));
+      main_job_.reset();
+    }
+    // Allow |dns_alpn_h3_job_| to run to completion, rather than resetting
+    // it to check if there is any broken alternative service to report.
+    // OnOrphanedJobComplete() will clean up |this| when the job completes.
+    if (dns_alpn_h3_job_) {
+      DCHECK(!is_websocket_);
+      dns_alpn_h3_job_->Orphan();
+    }
+  }
+  if (bound_job_->job_type() == DNS_ALPN_H3) {
+    if (!dns_alpn_h3_job_failed_on_default_network_ && !alternative_job_) {
+      DCHECK(!main_job_ || (dns_alpn_h3_job_net_error_ == OK));
+      main_job_.reset();
+    }
+    // Allow |alternative_job_| to run to completion, rather than resetting
+    // it to check if there is any broken alternative service to report.
+    // OnOrphanedJobComplete() will clean up |this| when the job completes.
+    if (alternative_job_) {
+      DCHECK(!is_websocket_);
+      alternative_job_->Orphan();
+    }
   }
 }
 
 void HttpStreamFactory::JobController::OnJobSucceeded(Job* job) {
   DCHECK(job);
-
   if (!bound_job_) {
-    if (main_job_ && alternative_job_)
+    if ((main_job_ && alternative_job_) || dns_alpn_h3_job_)
       ReportAlternateProtocolUsage(job);
     BindJob(job);
     return;
   }
-  DCHECK(bound_job_);
 }
 
 void HttpStreamFactory::JobController::MarkRequestComplete(
@@ -895,77 +1025,75 @@ void HttpStreamFactory::JobController::MarkRequestComplete(
     request_->Complete(was_alpn_negotiated, negotiated_protocol, using_spdy);
 }
 
-void HttpStreamFactory::JobController::OnAlternativeServiceJobFailed(
-    int net_error) {
-  DCHECK_EQ(alternative_job_->job_type(), ALTERNATIVE);
-  DCHECK_NE(OK, net_error);
-  DCHECK_NE(kProtoUnknown, alternative_service_info_.protocol());
-
-  alternative_job_net_error_ = net_error;
-}
-
-void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService() {
+void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
+    const AlternativeService& alt_service,
+    int alt_job_net_error,
+    bool alt_job_failed_on_default_network,
+    const std::string& histogram_name_for_failure) {
   // If alternative job succeeds on the default network, no brokenness to
   // report.
-  if (alternative_job_net_error_ == OK &&
-      !alternative_job_failed_on_default_network_)
+  if (alt_job_net_error == OK && !alt_job_failed_on_default_network)
     return;
 
   // No brokenness to report if the main job fails.
   if (main_job_net_error_ != OK)
     return;
 
-  DCHECK(alternative_service_info_.protocol() != kProtoUnknown);
+  // No need to record DNS_NO_MACHING_SUPPORTED_ALPN error.
+  if (alt_job_net_error == ERR_DNS_NO_MACHING_SUPPORTED_ALPN)
+    return;
 
-  if (alternative_job_failed_on_default_network_ &&
-      alternative_job_net_error_ == OK) {
+  if (alt_job_failed_on_default_network && alt_job_net_error == OK) {
     // Alternative job failed on the default network but succeeds on the
     // non-default network, mark alternative service broken until the default
     // network changes.
     session_->http_server_properties()
         ->MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-            alternative_service_info_.alternative_service(),
-            request_info_.network_isolation_key);
-    // Reset error status for Jobs after reporting brokenness.
-    ResetErrorStatusForJobs();
+            alt_service, request_info_.network_isolation_key);
     return;
   }
 
-  if (alternative_job_net_error_ == ERR_NETWORK_CHANGED ||
-      alternative_job_net_error_ == ERR_INTERNET_DISCONNECTED ||
-      (alternative_job_net_error_ == ERR_NAME_NOT_RESOLVED &&
-       request_info_.url.host() ==
-           alternative_service_info_.alternative_service().host)) {
+  if (alt_job_net_error == ERR_NETWORK_CHANGED ||
+      alt_job_net_error == ERR_INTERNET_DISCONNECTED ||
+      (alt_job_net_error == ERR_NAME_NOT_RESOLVED &&
+       request_info_.url.host() == alt_service.host)) {
     // No need to mark alternative service as broken.
-    // Reset error status for Jobs.
-    ResetErrorStatusForJobs();
     return;
   }
 
   // Report brokenness if alternative job failed.
-  base::UmaHistogramSparse("Net.AlternateServiceFailed",
-                           -alternative_job_net_error_);
+  base::UmaHistogramSparse(histogram_name_for_failure, -alt_job_net_error);
 
   HistogramBrokenAlternateProtocolLocation(
       BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT);
   session_->http_server_properties()->MarkAlternativeServiceBroken(
-      alternative_service_info_.alternative_service(),
-      request_info_.network_isolation_key);
-  // Reset error status for Jobs after reporting brokenness.
-  ResetErrorStatusForJobs();
+      alt_service, request_info_.network_isolation_key);
 }
 
 void HttpStreamFactory::JobController::MaybeNotifyFactoryOfCompletion() {
-  if (!main_job_ && !alternative_job_) {
-    // Both jobs are gone, report brokenness if apply. Error status for Jobs
-    // will be reset after reporting to avoid redundant reporting.
-    MaybeReportBrokenAlternativeService();
-  }
+  if (main_job_ || alternative_job_ || dns_alpn_h3_job_)
+    return;
 
-  if (!request_ && !main_job_ && !alternative_job_) {
-    DCHECK(!bound_job_);
-    factory_->OnJobControllerComplete(this);
-  }
+  // All jobs are gone.
+  // Report brokenness for the alternate jobs if apply.
+  MaybeReportBrokenAlternativeService(
+      alternative_service_info_.alternative_service(),
+      alternative_job_net_error_, alternative_job_failed_on_default_network_,
+      "Net.AlternateServiceFailed");
+  // Report for the DNS alt job if apply.
+  MaybeReportBrokenAlternativeService(
+      GetAlternativeServiceForDnsJob(request_info_.url),
+      dns_alpn_h3_job_net_error_, dns_alpn_h3_job_failed_on_default_network_,
+      "Net.AlternateServiceForDnsAlpnH3Failed");
+
+  // Reset error status for Jobs after reporting brokenness to avoid redundant
+  // reporting.
+  ResetErrorStatusForJobs();
+
+  if (request_)
+    return;
+  DCHECK(!bound_job_);
+  factory_->OnJobControllerComplete(this);
 }
 
 void HttpStreamFactory::JobController::NotifyRequestFailed(int rv) {
@@ -1161,25 +1289,35 @@ quic::ParsedQuicVersion HttpStreamFactory::JobController::SelectQuicVersion(
 
 void HttpStreamFactory::JobController::ReportAlternateProtocolUsage(
     Job* job) const {
-  DCHECK(main_job_ && alternative_job_);
+  DCHECK((main_job_ && alternative_job_) || dns_alpn_h3_job_);
 
   bool is_google_host = HasGoogleHost(job->origin_url());
 
   if (job == main_job_.get()) {
-    HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_LOST_RACE,
+    HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE,
                                     is_google_host);
     return;
   }
+  if (job == alternative_job_.get()) {
+    if (job->using_existing_quic_session()) {
+      HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_NO_RACE,
+                                      is_google_host);
+      return;
+    }
 
-  DCHECK_EQ(alternative_job_.get(), job);
-  if (job->using_existing_quic_session()) {
-    HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_NO_RACE,
+    HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_WON_RACE,
                                     is_google_host);
-    return;
   }
-
-  HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_WON_RACE,
-                                  is_google_host);
+  if (job == dns_alpn_h3_job_.get()) {
+    if (job->using_existing_quic_session()) {
+      HistogramAlternateProtocolUsage(
+          ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE,
+          is_google_host);
+      return;
+    }
+    HistogramAlternateProtocolUsage(
+        ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE, is_google_host);
+  }
 }
 
 bool HttpStreamFactory::JobController::IsJobOrphaned(Job* job) const {
@@ -1189,7 +1327,7 @@ bool HttpStreamFactory::JobController::IsJobOrphaned(Job* job) const {
 int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
                                                                 int error) {
   // ReconsiderProxyAfterError() should only be called when the last job fails.
-  DCHECK(!(alternative_job_ && main_job_));
+  DCHECK_EQ(1, GetJobCount());
   DCHECK(!proxy_resolve_request_);
   DCHECK(session_);
 
@@ -1213,6 +1351,7 @@ int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
   // Abandon all Jobs and start over.
   job_bound_ = false;
   bound_job_ = nullptr;
+  dns_alpn_h3_job_.reset();
   alternative_job_.reset();
   main_job_.reset();
   ResetErrorStatusForJobs();

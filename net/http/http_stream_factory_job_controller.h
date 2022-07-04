@@ -52,6 +52,7 @@ class HttpStreamFactory::JobController
   // Used in tests only for verification purpose.
   const Job* main_job() const { return main_job_.get(); }
   const Job* alternative_job() const { return alternative_job_.get(); }
+  const Job* dns_alpn_h3_job() const { return dns_alpn_h3_job_.get(); }
 
   void RewriteUrlWithHostMappingRules(GURL& url);
 
@@ -185,10 +186,6 @@ class HttpStreamFactory::JobController
   // still associated with |request_|.
   void BindJob(Job* job);
 
-  // Called when |request_| is destructed.
-  // Job(s) associated with but not bound to |request_| will be deleted.
-  void CancelJobs();
-
   // Called after BindJob() to notify the unbound job that its result should be
   // ignored by JobController. The unbound job can be canceled or continue until
   // completion.
@@ -200,14 +197,13 @@ class HttpStreamFactory::JobController
   // Called when a Job succeeds.
   void OnJobSucceeded(Job* job);
 
+  // Clears inappropriate jobs before starting them.
+  void ClearInappropriateJobs();
+
   // Marks completion of the |request_|.
   void MarkRequestComplete(bool was_alpn_negotiated,
                            NextProto negotiated_protocol,
                            bool using_spdy);
-
-  // Must be called when the alternative service job fails. |net_error| is the
-  // net error of the failed alternative service job.
-  void OnAlternativeServiceJobFailed(int net_error);
 
   // Called when all Jobs complete. Reports alternative service brokenness to
   // HttpServerProperties if apply and resets net errors afterwards:
@@ -216,7 +212,11 @@ class HttpStreamFactory::JobController
   // - report broken until default network change if the main job has no error,
   //   the alternative job has no error, but the alternative job failed on the
   //   default network.
-  void MaybeReportBrokenAlternativeService();
+  void MaybeReportBrokenAlternativeService(
+      const AlternativeService& alt_service,
+      int alt_job_net_error,
+      bool alt_job_failed_on_default_network,
+      const std::string& histogram_name_for_failure);
 
   void MaybeNotifyFactoryOfCompletion();
 
@@ -233,8 +233,10 @@ class HttpStreamFactory::JobController
   void ResumeMainJob();
 
   // Reset error status to default value for Jobs:
-  // - reset |main_job_net_error_| and |alternative_job_net_error_| to OK;
-  // - reset |alternative_job_failed_on_default_network_| to false.
+  // - reset |main_job_net_error_| and |alternative_job_net_error_| and
+  //   |dns_alpn_h3_job_net_error_| to OK;
+  // - reset |alternative_job_failed_on_default_network_| and
+  //   |dns_alpn_h3_job_failed_on_default_network_| to false.
   void ResetErrorStatusForJobs();
 
   AlternativeServiceInfo GetAlternativeServiceInfoFor(
@@ -272,6 +274,11 @@ class HttpStreamFactory::JobController
   // Returns true if QUIC is allowed for |host|.
   bool IsQuicAllowedForHost(const std::string& host);
 
+  int GetJobCount() const {
+    return (main_job_ ? 1 : 0) + (alternative_job_ ? 1 : 0) +
+           (dns_alpn_h3_job_ ? 1 : 0);
+  }
+
   raw_ptr<HttpStreamFactory> factory_;
   raw_ptr<HttpNetworkSession> session_;
   raw_ptr<JobFactory> job_factory_;
@@ -302,6 +309,7 @@ class HttpStreamFactory::JobController
   // |main_job_| to proceed and then race the two jobs.
   std::unique_ptr<Job> main_job_;
   std::unique_ptr<Job> alternative_job_;
+  std::unique_ptr<Job> dns_alpn_h3_job_;
   // The alternative service used by |alternative_job_|
   // (or by |main_job_| if |is_preconnect_|.)
   AlternativeServiceInfo alternative_service_info_;
@@ -313,6 +321,10 @@ class HttpStreamFactory::JobController
   int alternative_job_net_error_ = OK;
   // Set to true if the alternative job failed on the default network.
   bool alternative_job_failed_on_default_network_ = false;
+  // Net error code of the DNS HTTPS ALPN job. Set to OK by default.
+  int dns_alpn_h3_job_net_error_ = OK;
+  // Set to true if the DNS HTTPS ALPN job failed on the default network.
+  bool dns_alpn_h3_job_failed_on_default_network_ = false;
 
   // True if a Job has ever been bound to the |request_|.
   bool job_bound_ = false;

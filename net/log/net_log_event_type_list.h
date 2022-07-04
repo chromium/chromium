@@ -1118,8 +1118,11 @@ EVENT_TYPE(HTTP_STREAM_REQUEST)
 //      "original_url": <The URL to create a stream for>,
 //      "url": <The URL actually being used, possibly different from
 //              original_url if using an alternate service>,
-//      "alternate_service": <The alternate service being used>,
+//      "expect_spdy": <Boolean indicating whether the Job will use SPDY>,
+//      "using_quic": <Boolean indicating whether the Job will use QUIC>,
 //      "priority": <The priority of the Job>,
+//      "type": <The type of this Job ("main", "alternative", "dns_alpn_h3",
+//               "preconnect")>,
 //   }
 EVENT_TYPE(HTTP_STREAM_JOB)
 

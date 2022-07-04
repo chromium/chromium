@@ -1136,6 +1136,21 @@ void QuicStreamRequest::SetSession(
   session_ = std::move(session);
 }
 
+bool QuicStreamRequest::CanUseExistingSession(
+    const GURL& url,
+    PrivacyMode privacy_mode,
+    const SocketTag& socket_tag,
+    const NetworkIsolationKey& network_isolation_key,
+    SecureDnsPolicy secure_dns_policy,
+    bool require_dns_https_alpn,
+    const url::SchemeHostPort& destination) const {
+  return factory_->CanUseExistingSession(
+      QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
+                     network_isolation_key, secure_dns_policy,
+                     require_dns_https_alpn),
+      destination);
+}
+
 QuicStreamFactory::QuicSessionAliasKey::QuicSessionAliasKey(
     url::SchemeHostPort destination,
     QuicSessionKey session_key)
@@ -1234,13 +1249,15 @@ QuicStreamFactory::~QuicStreamFactory() {
 
 bool QuicStreamFactory::CanUseExistingSession(
     const QuicSessionKey& session_key,
-    const url::SchemeHostPort& destination) {
+    const url::SchemeHostPort& destination) const {
   if (base::Contains(active_sessions_, session_key))
     return true;
 
   for (const auto& key_value : active_sessions_) {
     QuicChromiumClientSession* session = key_value.second;
-    if (destination == all_sessions_[session].destination() &&
+    const auto& it = all_sessions_.find(session);
+    if ((it != all_sessions_.end()) &&
+        (destination == it->second.destination()) &&
         session->CanPool(session_key.host(), session_key)) {
       return true;
     }

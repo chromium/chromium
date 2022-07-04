@@ -6,6 +6,7 @@
 #define NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_FACTORY_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
@@ -50,7 +51,10 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
     proof_verify_details_queue_.push(proof_verify_details);
   }
 
-  MockCryptoClientStream* last_stream() const { return last_stream_; }
+  MockCryptoClientStream* last_stream() const;
+  const std::vector<base::WeakPtr<MockCryptoClientStream>>& streams() const {
+    return streams_;
+  }
 
   // Sets initial config for new sessions.
   void SetConfig(const quic::QuicConfig& config);
@@ -58,7 +62,7 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
  private:
   MockCryptoClientStream::HandshakeMode handshake_mode_ =
       MockCryptoClientStream::CONFIRM_HANDSHAKE;
-  raw_ptr<MockCryptoClientStream> last_stream_ = nullptr;
+  std::vector<base::WeakPtr<MockCryptoClientStream>> streams_;
   base::queue<const ProofVerifyDetailsChromium*> proof_verify_details_queue_;
   std::unique_ptr<quic::QuicConfig> config_;
   bool use_mock_crypter_ = false;

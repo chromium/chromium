@@ -183,6 +183,14 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
+  bool CanUseExistingSession(const GURL& url,
+                             PrivacyMode privacy_mode,
+                             const SocketTag& socket_tag,
+                             const NetworkIsolationKey& network_isolation_key,
+                             SecureDnsPolicy secure_dns_policy,
+                             bool require_dns_https_alpn,
+                             const url::SchemeHostPort& destination) const;
+
  private:
   raw_ptr<QuicStreamFactory> factory_;
   QuicSessionKey session_key_;
@@ -258,7 +266,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // request can be pooled to an existing session to the IP address of
   // |destination|.
   bool CanUseExistingSession(const QuicSessionKey& session_key,
-                             const url::SchemeHostPort& destination);
+                             const url::SchemeHostPort& destination) const;
 
   // Fetches a QuicChromiumClientSession to |host_port_pair| which will be
   // owned by |request|.

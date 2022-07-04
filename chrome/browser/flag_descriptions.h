@@ -401,6 +401,9 @@ extern const char kDoubleBufferCompositingDescription[];
 extern const char kDnsHttpsSvcbName[];
 extern const char kDnsHttpsSvcbDescription[];
 
+extern const char kUseDnsHttpsSvcbAlpnName[];
+extern const char kUseDnsHttpsSvcbAlpnDescription[];
+
 extern const char kEditContextName[];
 extern const char kEditContextDescription[];
 

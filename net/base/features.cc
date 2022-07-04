@@ -108,6 +108,9 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbExtraTimeAbsolute{
 const base::FeatureParam<int> kUseDnsHttpsSvcbExtraTimePercent{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbExtraTimePercent", 0};
 
+const base::Feature kUseDnsHttpsSvcbAlpn{"UseDnsHttpsSvcbAlpn",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableTLS13EarlyData{"EnableTLS13EarlyData",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
