@@ -180,10 +180,13 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   }
 
  private:
-  // views::NonClientFrameView:
 #if BUILDFLAG(IS_WIN)
+  // ui::EventHandler:
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
+  // views::NonClientFrameView:
   int GetSystemMenuY() const override;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   // The frame that hosts this view.
   const raw_ptr<BrowserFrame> frame_;
