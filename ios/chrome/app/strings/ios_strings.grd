@@ -1312,6 +1312,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANAGED_SWITCH_TITLE" desc="The title of the Switch from a managed account dialog. [40em]">
         Sign out of managed account
       </message>
+      <message name="IDS_IOS_MANAGED_SYNC_TITLE" desc="The title of the Sync with a managed account dialog (alternative to IDS_IOS_MANAGED_SIGNIN_TITLE). Is only used when the User Policy feature is enabled using the --enable-user-policy-for-ios flag. [40em][iOS only]">
+        Sync With Managed Account
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_ADD_PAYMENT_METHOD" desc="The title for the button in the manual fallback UI that takes the user to the add new credit card screen through settings. In this screen, the user can input their card details and save them.">
         Add Payment Method...
       </message>

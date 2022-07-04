@@ -270,9 +270,15 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser {
   DCHECK(!_alertCoordinator);
-  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
+  BOOL userPolicyEnabled = policy::IsUserPolicyEnabled();
+  int titleID = userPolicyEnabled ? IDS_IOS_MANAGED_SYNC_TITLE
+                                  : IDS_IOS_MANAGED_SIGNIN_TITLE;
+  NSString* title = l10n_util::GetNSString(titleID);
+  int subtitleID = userPolicyEnabled
+                       ? IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE
+                       : IDS_IOS_MANAGED_SIGNIN_SUBTITLE;
   NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_IOS_MANAGED_SIGNIN_SUBTITLE, base::SysNSStringToUTF16(hostedDomain));
+      subtitleID, base::SysNSStringToUTF16(hostedDomain));
   NSString* acceptLabel =
       l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON);
   NSString* cancelLabel = l10n_util::GetNSString(IDS_CANCEL);
