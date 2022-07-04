@@ -9,12 +9,6 @@ namespace base {
 
 class LapTimer;
 
-template <typename Type, typename Traits>
-class LazyInstance;
-
-template <typename Type>
-struct LazyInstanceTraitsBase;
-
 }  // namespace base
 
 namespace partition_alloc::internal::base {
@@ -22,8 +16,6 @@ namespace partition_alloc::internal::base {
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
 using ::base::LapTimer;
-using ::base::LazyInstance;
-using ::base::LazyInstanceTraitsBase;
 
 }  // namespace partition_alloc::internal::base
 

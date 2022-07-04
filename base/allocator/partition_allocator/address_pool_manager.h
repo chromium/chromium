@@ -21,13 +21,6 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
 
-namespace base {
-
-template <typename Type>
-struct LazyInstanceTraitsBase;
-
-}  // namespace base
-
 namespace partition_alloc {
 
 class AddressSpaceStatsDumper;
@@ -166,8 +159,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   static AddressPoolManager singleton_;
-
-  friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
 };
 
 PA_ALWAYS_INLINE pool_handle GetRegularPool() {
