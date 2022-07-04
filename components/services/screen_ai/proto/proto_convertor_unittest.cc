@@ -4,6 +4,7 @@
 
 #include "components/services/screen_ai/proto/proto_convertor.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -19,6 +20,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/test_ax_tree_update_json_reader.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace {
 
@@ -93,25 +95,132 @@ std::string GetStringAttribute(const screenai::UiElement& ui_element,
   return std::string();
 }
 
-void CompareViewHierarchyProtos(screenai::ViewHierarchy& generated,
-                                screenai::ViewHierarchy& expected) {
+template <class T>
+void ExpectBoundingBoxes(const T& box1,
+                         const T& box2,
+                         const gfx::PointF& max_diff) {
+  EXPECT_NEAR(box1.top(), box2.top(), max_diff.y());
+  EXPECT_NEAR(box1.left(), box2.left(), max_diff.x());
+  EXPECT_NEAR(box1.bottom(), box2.bottom(), max_diff.y());
+  EXPECT_NEAR(box1.right(), box2.right(), max_diff.x());
+}
+
+// TODO(https://crbug.com/1278249): Consider making the comparison not sensitive
+// to order.
+template <class T>
+void ExpectLists(const T& list1, const T& list2) {
+  EXPECT_EQ(list1.value_size(), list2.value_size());
+  int min_length = std::min(list1.value_size(), list2.value_size());
+  for (int i = 0; i < min_length; i++)
+    EXPECT_EQ(list1.value(i), list2.value(i));
+}
+
+void ExpectAttributes(const ::screenai::UiElementAttribute& attrib1,
+                      const ::screenai::UiElementAttribute& attrib2) {
+  SCOPED_TRACE(
+      base::StringPrintf("Comparing attribute: %s", attrib1.name().c_str()));
+  EXPECT_EQ(attrib1.value_case(), attrib2.value_case());
+
+  switch (attrib1.value_case()) {
+    case screenai::UiElementAttribute::ValueCase::kBoolValue:
+      EXPECT_EQ(attrib1.bool_value(), attrib2.bool_value());
+      break;
+    case screenai::UiElementAttribute::kIntValue:
+      EXPECT_EQ(attrib1.int_value(), attrib2.int_value());
+      break;
+    case screenai::UiElementAttribute::kStringValue:
+      EXPECT_EQ(attrib1.string_value(), attrib2.string_value());
+      break;
+    case screenai::UiElementAttribute::kFloatValue:
+      EXPECT_EQ(attrib1.float_value(), attrib2.float_value());
+      break;
+    case screenai::UiElementAttribute::kIntListValue: {
+      ExpectLists(attrib1.int_list_value(), attrib2.int_list_value());
+      break;
+    }
+    case screenai::UiElementAttribute::kStringListValue: {
+      ExpectLists(attrib1.int_list_value(), attrib2.int_list_value());
+      break;
+    }
+    case screenai::UiElementAttribute::kFloatListValue: {
+      NOTREACHED() << "Chrome has no float list.";
+      break;
+    }
+    case screenai::UiElementAttribute::VALUE_NOT_SET:
+      break;
+  }
+}
+
+void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
+                               screenai::ViewHierarchy& expected) {
   EXPECT_EQ(generated.ui_elements_size(), expected.ui_elements_size());
+
+  // Bounding boxes can have a one pixel difference threshold as there might be
+  // different approaches in rounding floats to integers.
+  // To compare |bounding_box_pixels| values which represent bounding boxes in
+  // pixels, we use |kPixelDifferenceThreshold|.
+  const gfx::PointF kPixelDifferenceThreshold(1, 1);
+
+  // |bounding_box| values represent the relative position of a bounding box to
+  // the tree, and as each of them (the element and the tree) can have a one
+  // pixel error, the total error can be up to two pixels. To get the tree size
+  // to compute |kRelativeDifferenceThreshold|, we use the 0th element which
+  // should be the root and cover the entire tree.
+  const auto& root = expected.ui_elements(0);
+  const gfx::PointF kRelativeDifferenceThreshold(
+      2.0 / root.bounding_box_pixels().right(),
+      2.0 / root.bounding_box_pixels().bottom());
+  EXPECT_EQ(root.bounding_box_pixels().top(), 0);
+  EXPECT_EQ(root.bounding_box_pixels().left(), 0);
 
   for (int i = 0; i < generated.ui_elements_size(); i++) {
     SCOPED_TRACE(base::StringPrintf("Comparing ui_elements at index: %i", i));
-    const screenai::UiElement& gen_uie = generated.ui_elements(i);
-    const screenai::UiElement& exp_uie = expected.ui_elements(i);
+    const screenai::UiElement& generated_uie = generated.ui_elements(i);
+    const screenai::UiElement& expected_uie = expected.ui_elements(i);
 
-    // TODO(https://crbug.com/1278249): Consider adding a comparison approach
-    // that iterates all values for lite protos.
-    EXPECT_EQ(gen_uie.id(), exp_uie.id());
-    EXPECT_EQ(gen_uie.type(), exp_uie.type());
-    EXPECT_EQ(gen_uie.parent_id(), exp_uie.parent_id());
-    EXPECT_EQ(GetStringAttribute(gen_uie, "text"),
-              GetStringAttribute(exp_uie, "text"));
+    EXPECT_EQ(generated_uie.id(), expected_uie.id());
+    EXPECT_EQ(generated_uie.type(), expected_uie.type());
+    EXPECT_EQ(generated_uie.parent_id(), expected_uie.parent_id());
+    EXPECT_EQ(GetStringAttribute(generated_uie, "text"),
+              GetStringAttribute(expected_uie, "text"));
 
-    // TODO(https://crbug.com/1278249): Compare child_ids, attributes,
-    // bounding_box, and bounding_box_pixels.
+    EXPECT_EQ(generated_uie.child_ids_size(), expected_uie.child_ids_size());
+    int min_length =
+        std::min(generated_uie.child_ids_size(), expected_uie.child_ids_size());
+    for (int child_index = 0; child_index < min_length; child_index++)
+      EXPECT_EQ(generated_uie.child_ids(child_index),
+                expected_uie.child_ids(child_index));
+
+    ExpectBoundingBoxes(generated_uie.bounding_box(),
+                        expected_uie.bounding_box(),
+                        kRelativeDifferenceThreshold);
+    ExpectBoundingBoxes(generated_uie.bounding_box_pixels(),
+                        expected_uie.bounding_box_pixels(),
+                        kPixelDifferenceThreshold);
+
+    // Attributes may have different orders in the two protos.
+    std::map<std::string, int> attribute_index;
+    for (int j = 0; j < expected_uie.attributes_size(); j++)
+      attribute_index[expected_uie.attributes(j).name()] = j;
+
+    for (int j = 0; j < generated_uie.attributes_size(); j++) {
+      const ::screenai::UiElementAttribute& generated_attrib =
+          generated_uie.attributes(j);
+
+      const auto& expected_attrib_index =
+          attribute_index.find(generated_attrib.name());
+      EXPECT_NE(expected_attrib_index, attribute_index.end())
+          << "Could not find attribute: " << generated_attrib.name();
+      if (expected_attrib_index != attribute_index.end()) {
+        ExpectAttributes(generated_attrib, expected_uie.attributes(
+                                               expected_attrib_index->second));
+      }
+    }
+
+    // TODO(https://crbug.com/1278249): Ensure all expected attributes are
+    // generated.
+    // EXPECT_EQ(generated_uie.attributes().size(),
+    //           expected_uie.attributes().size());
   }
 }
 
@@ -218,7 +327,8 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
 
     const std::string expected_update(
         "id=4 dialog (0, 0)-(800, 900) child_ids=5,6\n"
-        "  id=5 button offset_container_id=4 (0, 1)-(2, 3) transform=[ +0.0000 "
+        "  id=5 button offset_container_id=4 (0, 1)-(2, 3) transform=[ "
+        "+0.0000 "
         "-1.0000 +0.0000 +0.0000  \n"
         "  +1.0000 +0.0000 +0.0000 +0.0000  \n"
         "  +0.0000 +0.0000 +1.0000 +0.0000  \n"
@@ -284,15 +394,15 @@ TEST_F(ProtoConvertorTest, PreOrderTreeGeneration) {
 
 TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   // TODO(https://crbug.com/1278249): Add more tests.
-  const base::FilePath input_json_path =
+  const base::FilePath kInputJsonPath =
       GetTestFilePath("sample_01_ax_tree.json");
-  const base::FilePath expected_proto_path =
+  const base::FilePath kExpectedProtoPath =
       GetTestFilePath("sample_01_expected_proto.pbtxt");
 
   // Load JSON file.
   std::string file_content;
-  ASSERT_TRUE(base::ReadFileToString(input_json_path, &file_content))
-      << "Failed to load input AX tree: " << input_json_path;
+  ASSERT_TRUE(base::ReadFileToString(kInputJsonPath, &file_content))
+      << "Failed to load input AX tree: " << kInputJsonPath;
   absl::optional<base::Value> json = base::JSONReader::Read(file_content);
   ASSERT_TRUE(json.has_value());
 
@@ -310,15 +420,15 @@ TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   WriteDebugProto(serialized_proto, "proto_convertor_output.pbtxt");
 
   // Load expected Proto.
-  ASSERT_TRUE(base::ReadFileToString(expected_proto_path, &file_content))
-      << "Failed to read expected proto from " << expected_proto_path;
+  ASSERT_TRUE(base::ReadFileToString(kExpectedProtoPath, &file_content))
+      << "Failed to read expected proto from " << kExpectedProtoPath;
   screenai::ViewHierarchy expected_view_hierarchy;
   ASSERT_TRUE(expected_view_hierarchy.ParseFromString(file_content))
       << "Failed to parse expected proto.";
 
   // Compare protos.
-  ASSERT_NO_FATAL_FAILURE(CompareViewHierarchyProtos(generated_view_hierarchy,
-                                                     expected_view_hierarchy));
+  ASSERT_NO_FATAL_FAILURE(ExpectViewHierarchyProtos(generated_view_hierarchy,
+                                                    expected_view_hierarchy));
 }
 
 }  // namespace screen_ai

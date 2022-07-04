@@ -64,7 +64,14 @@
     },
     "name": "UK government sets out plans to rein in Big Tech - BBC News",
     "interesting": true,
-    "extras": {},
+    "extras": {
+      "bounds": [
+        0,
+        0,
+        1440,
+        10380
+      ]
+    },
     "backendDomId": 2,
     "children": [
       {

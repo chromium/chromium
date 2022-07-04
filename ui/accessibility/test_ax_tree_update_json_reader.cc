@@ -124,13 +124,15 @@ void ParseAxNodeProperties(ui::AXNodeData& node_data,
 }
 
 // In a few cases, role values in JSON file are different from the ones used in
-// AxEnumUtils::ToString and need preprocessing.
-// TODO(https://crbug.com/1278249): Investigate why and if this can be fixed
-// upstream.
+// AxEnumUtils::ToString and need preprocessing. This function and the entire
+// class will be removed after Screen2X starts using Chrome for training data
+// proto generation.
 ax::mojom::Role RoleFromString(std::string role) {
+  // TODO(https://crbug.com/1278249): Consider using
+  // GetScreen2xRoleFromChromeRole in proto_convertor.cc or add test to ensure
+  // the conversions match.
   if (role == "combobox")
-    // TODO(https://crbug.com/1278249): Find a replacement.
-    return ax::mojom::Role::kUnknown;
+    role = "comboBoxGrouping";
   else if (role == "contentinfo")
     role = "contentInfo";
   else if (role == "DescriptionList")
