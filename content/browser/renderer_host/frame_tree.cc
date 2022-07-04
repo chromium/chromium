@@ -203,7 +203,12 @@ FrameTree::FrameTree(
                               blink::FrameOwnerElementType::kNone,
                               blink::FramePolicy())),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
-      load_progress_(0.0) {}
+      load_progress_(0.0),
+      fenced_frames_impl_(
+          blink::features::IsFencedFramesEnabled()
+              ? absl::optional<blink::features::FencedFramesImplementationType>(
+                    blink::features::kFencedFramesImplementationTypeParam.Get())
+              : absl::nullopt) {}
 
 FrameTree::~FrameTree() {
   is_being_destroyed_ = true;

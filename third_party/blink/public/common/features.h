@@ -143,6 +143,9 @@ BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
+// Note: This performs a string comparison on the feature param which is slow.
+// When possible, prefer to use the equivalent accessors on blink::Page in the
+// renderer and on content::FrameTree in the browser, which cache the value.
 BLINK_COMMON_EXPORT bool IsFencedFramesMPArchBased();
 BLINK_COMMON_EXPORT bool IsFencedFramesShadowDOMBased();
 

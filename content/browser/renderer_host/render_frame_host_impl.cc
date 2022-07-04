@@ -6678,9 +6678,8 @@ void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
       return;
     }
 
-    proxy = blink::features::IsFencedFramesMPArchBased()
-                ? GetProxyToOuterDelegate()
-                : GetProxyToParent();
+    proxy = frame_tree_->IsFencedFramesMPArchBased() ? GetProxyToOuterDelegate()
+                                                     : GetProxyToParent();
   } else {
     proxy = GetProxyToParent();
   }
@@ -7479,8 +7478,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
                             base::UnguessableToken::Create());
     return;
   }
-  if (!blink::features::IsFencedFramesEnabled() ||
-      !blink::features::IsFencedFramesMPArchBased()) {
+  if (!frame_tree_->IsFencedFramesMPArchBased()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_FENCED_FRAME_MOJO_WHEN_DISABLED);
     std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),

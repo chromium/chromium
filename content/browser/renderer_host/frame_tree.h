@@ -25,6 +25,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
@@ -497,6 +498,22 @@ class CONTENT_EXPORT FrameTree {
   // each inner FrameTree is attached.
   void FocusOuterFrameTrees();
 
+  absl::optional<blink::features::FencedFramesImplementationType>
+  FencedFramesImplementationType() const {
+    return fenced_frames_impl_;
+  }
+
+  bool IsFencedFramesMPArchBased() const {
+    return fenced_frames_impl_.has_value() &&
+           fenced_frames_impl_.value() ==
+               blink::features::FencedFramesImplementationType::kMPArch;
+  }
+  bool IsFencedFramesShadowDOMBased() const {
+    return fenced_frames_impl_.has_value() &&
+           fenced_frames_impl_.value() ==
+               blink::features::FencedFramesImplementationType::kShadowDOM;
+  }
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -554,6 +571,9 @@ class CONTENT_EXPORT FrameTree {
 
   // Overall load progress.
   double load_progress_;
+
+  absl::optional<blink::features::FencedFramesImplementationType>
+      fenced_frames_impl_;
 
   // Whether the initial empty page has been accessed by another page, making it
   // unsafe to show the pending URL. Usually false unless another window tries

@@ -2036,7 +2036,7 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     }
   } else {
     if (frame_tree_node_->IsFencedFrameRoot() &&
-        blink::features::IsFencedFramesMPArchBased()) {
+        frame_tree_node_->frame_tree()->IsFencedFramesMPArchBased()) {
       StartNavigation();
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
@@ -5203,7 +5203,7 @@ net::Error NavigationRequest::CheckCSPDirectives(
   // [frame-src] or [fenced-frame-src]
   if (parent_policies) {
     bool is_opaque_fenced_frame =
-        blink::features::IsFencedFramesShadowDOMBased()
+        frame_tree_node_->frame_tree()->IsFencedFramesShadowDOMBased()
             ? (frame_tree_node_->IsFencedFrameRoot() &&
                frame_tree_node_->GetFencedFrameMode() ==
                    blink::mojom::FencedFrameMode::kOpaqueAds)
