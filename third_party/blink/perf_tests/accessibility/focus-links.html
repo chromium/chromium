@@ -47,7 +47,7 @@ function runTest() {
         // Iterate over some of the links and focus each one with a different
         // delay. Just focusing a link shouldn't incur a large cost,
         // even if the page has a lot of elements.
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 33; i++) {
             window.setTimeout(() => {
                 document.getElementById('link' + i).focus();
             }, 10 * i);

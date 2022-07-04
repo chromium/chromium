@@ -29,11 +29,11 @@ function runTest() {
         }
 
         setTimeout(() => {
-            // Add 100 cells to each row.
+            // Add 33 cells to each row.
             for (let row = table.firstElementChild;
                  row;
                  row = row.nextElementSibling) {
-                for (let i = 0; i < 100; i++) {
+                for (let i = 0; i < 33; i++) {
                     let cell = document.createElement('td');
                     cell.innerHTML = i;
                     row.appendChild(cell);

@@ -48,7 +48,7 @@ function runTest() {
 function insertDivChildAfterManySpanChildren() {
   testColor(getComputedStyle(container).color, red, 'Initial color');
 
-  for (let i = 0; i < 2500; ++i)
+  for (let i = 0; i < 833; ++i)
     container.appendChild(document.createElement("span"));
   container.appendChild(document.createElement("div"));
   container.classList.add('a');
