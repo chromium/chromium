@@ -838,10 +838,6 @@ export class FileManager extends EventTarget {
     this.setContextMenuForInput_(this.ui_.listContainer.renameInput);
     this.setContextMenuForInput_(
         this.directoryTreeNamingController_.getInputElement());
-
-    this.document_.addEventListener(
-        'command',
-        this.ui_.listContainer.clearHover.bind(this.ui_.listContainer));
     CommandHandler.registerUndoDeleteToast(this);
   }
 

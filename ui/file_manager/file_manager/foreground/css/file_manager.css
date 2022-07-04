@@ -1787,8 +1787,8 @@ body.files-ng.check-select #list-container list > li[lead] {
   border: 1px solid var(--cros-focus-ring-color-inactive);
 }
 
-#list-container.nohover grid > .accepts {
-  background-color: transparent;
+#list-container grid > .accepts {
+  background-color: var(--cros-highlight-color-hover)
 }
 
 #directory-tree .tree-item.accepts > .tree-row,
