@@ -777,7 +777,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="173628468822554835">Ok. Per impostazione predefinita, i nuovi siti che visiti non ti invieranno notifiche.</translation>
 <translation id="1736419249208073774">Esplora</translation>
 <translation id="1737968601308870607">Segnala bug</translation>
-<translation id="1739684185846730053">Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono disponibili soltanto in alcune aree geografiche. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti.</translation>
+<translation id="1739684185846730053">Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono disponibili soltanto in alcune regioni. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti.</translation>
 <translation id="1741190788710022490">Ricarica adattiva</translation>
 <translation id="174123615272205933">Personalizzati</translation>
 <translation id="1741314857973421784">Continua</translation>
@@ -5135,7 +5135,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6027945736510816438">Intendevi <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Aggiungi impronta</translation>
 <translation id="6031600495088157824">Opzioni di immissione nella barra degli strumenti</translation>
-<translation id="6032091552407840792">Questa prova è attiva soltanto in <ph name="BEGIN_LINK" />alcune aree geografiche<ph name="END_LINK" />.</translation>
+<translation id="6032091552407840792">Questa prova è attiva soltanto in <ph name="BEGIN_LINK" />alcune regioni<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Per consentire a un'estensione di accedere a questo sito, fai clic sull'estensione.</translation>
 <translation id="6032912588568283682">File system</translation>
 <translation id="603539183851330738">Pulsante per annullare la correzione automatica. Ripristina <ph name="TYPED_WORD" />.  Premi Invio per attivare o Esc per ignorare.</translation>
@@ -7012,7 +7012,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7879631849810108578">Scorciatoia impostata: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880591377632733558">Ti diamo il benvenuto in Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7880685873361171388">Quando la funzionalità è attivata e lo stato è attivo, Chrome usa la tua cronologia di navigazione di 7 giorni per definire un gruppo, o "coorte", di cui fai parte. Gli inserzionisti possono selezionare annunci per il gruppo. La cronologia di navigazione rimane privata sul tuo dispositivo. Questa prova è attiva soltanto in
-    <ph name="BEGIN_LINK" />alcune aree geografiche<ph name="END_LINK" />.</translation>
+    <ph name="BEGIN_LINK" />alcune regioni<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">I dati locali verranno eliminati al riavvio</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Visualizza account</translation>
