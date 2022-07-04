@@ -477,8 +477,10 @@ CGFloat ToolbarHeight() {
     _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       GradientView* gradientView = [[GradientView alloc]
-          initWithTopColor:[UIColor colorNamed:kGrey300Color]
-               bottomColor:[UIColor colorNamed:kGrey200Color]];
+          initWithTopColor:[UIColor
+                               colorNamed:@"fake_omnibox_top_gradient_color"]
+               bottomColor:
+                   [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"]];
       gradientView.translatesAutoresizingMaskIntoConstraints = NO;
       [_fakeLocationBar addSubview:gradientView];
       AddSameConstraints(_fakeLocationBar, gradientView);

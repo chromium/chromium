@@ -148,7 +148,8 @@
   if (IsContentSuggestionsUIModuleRefreshEnabled()) {
     GradientView* gradientView = [[GradientView alloc]
         initWithTopColor:[UIColor colorNamed:kBackgroundColor]
-             bottomColor:[UIColor colorNamed:kGrey50Color]];
+             bottomColor:
+                 [UIColor colorNamed:@"ntp_background_bottom_gradient_color"]];
     gradientView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:gradientView];
     AddSameConstraints(self.view, gradientView);
