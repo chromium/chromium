@@ -13,7 +13,7 @@
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/metrics.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"

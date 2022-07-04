@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/client_settings.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 

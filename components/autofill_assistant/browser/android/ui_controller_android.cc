@@ -41,7 +41,7 @@
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/metrics.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/user_model.h"

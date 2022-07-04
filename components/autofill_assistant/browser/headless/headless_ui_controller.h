@@ -11,13 +11,14 @@
 
 #include "base/callback_helpers.h"
 #include "components/autofill_assistant/browser/autofill_assistant_impl.h"
-#include "components/autofill_assistant/browser/controller_observer.h"
+#include "components/autofill_assistant/browser/empty_controller_observer.h"
 #include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 
 namespace autofill_assistant {
 
-class HeadlessUiController : public ScriptExecutorUiDelegate {
+class HeadlessUiController : public ScriptExecutorUiDelegate,
+                             public EmptyControllerObserver {
  public:
   // The |action_extension_delegate| parameter can be null but if an extension
   // action is requested it will cause the script to fail.
@@ -86,6 +87,12 @@ class HeadlessUiController : public ScriptExecutorUiDelegate {
           end_action_callback) override;
   void OnInterruptStarted() override;
   void OnInterruptFinished() override;
+
+  // Overrides ControllerObserver.
+  void OnTouchableAreaChanged(
+      const RectF& visual_viewport,
+      const std::vector<RectF>& touchable_areas,
+      const std::vector<RectF>& restricted_areas) override;
 
  private:
   const raw_ptr<ExternalActionDelegate> action_extension_delegate_;

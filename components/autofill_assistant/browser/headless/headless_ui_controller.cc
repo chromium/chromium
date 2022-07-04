@@ -167,4 +167,14 @@ HeadlessUiController::GetLastSuccessfulUserDataOptions() const {
   return nullptr;
 }
 
+void HeadlessUiController::OnTouchableAreaChanged(
+    const RectF& visual_viewport,
+    const std::vector<RectF>& touchable_areas,
+    const std::vector<RectF>& restricted_areas) {
+  if (action_extension_delegate_) {
+    action_extension_delegate_->OnTouchableAreaChanged(
+        visual_viewport, touchable_areas, restricted_areas);
+  }
+}
+
 }  // namespace autofill_assistant

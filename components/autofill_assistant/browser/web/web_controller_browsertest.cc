@@ -43,7 +43,7 @@
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/model.pb.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/selector.h"

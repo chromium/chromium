@@ -170,6 +170,13 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnInputTextFocusChanged(bool is_text_focused) override;
   EventHandler* GetEventHandler() override;
   void DispatchEvent(const EventHandler::EventKey& key) override;
+  bool SupportsExternalActions() override;
+  void ExecuteExternalAction(
+      const external::Action& external_action,
+      base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+          start_dom_checks_callback,
+      base::OnceCallback<void(const external::Result& result)>
+          end_action_callback) override;
 
   // Overrides ControllerObserver.
   void OnError(const std::string& error_message,
@@ -181,13 +188,6 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnStop() override;
   void OnResetState() override;
   void OnUiShownChanged(bool shown) override;
-  bool SupportsExternalActions() override;
-  void ExecuteExternalAction(
-      const external::Action& external_action,
-      base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
-          start_dom_checks_callback,
-      base::OnceCallback<void(const external::Result& result)>
-          end_action_callback) override;
 
   // Overrides AutofillAssistantTtsController::TtsEventDelegate
   void OnTtsEvent(AutofillAssistantTtsController::TtsEventType event) override;

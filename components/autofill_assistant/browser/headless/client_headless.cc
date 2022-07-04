@@ -72,6 +72,7 @@ void ClientHeadless::Start(const GURL& url,
       /* annotate_dom_model_service= */
       common_dependencies_->GetOrCreateAnnotateDomModelService(
           GetWebContents()->GetBrowserContext()));
+  controller_->AddObserver(headless_ui_controller_.get());
   controller_->Start(url, std::move(trigger_context));
 }
 

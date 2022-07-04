@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_RECTF_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_RECTF_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_RECTF_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_RECTF_H_
 
 #include <ostream>
 
@@ -33,4 +33,4 @@ struct RectF {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_RECTF_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_RECTF_H_

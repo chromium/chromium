@@ -20,7 +20,7 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_network.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/user_data.h"

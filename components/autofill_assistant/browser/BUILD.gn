@@ -226,8 +226,6 @@ static_library("browser") {
     "protocol_utils.h",
     "radio_button_controller.cc",
     "radio_button_controller.h",
-    "rectf.cc",
-    "rectf.h",
     "retry_timer.cc",
     "retry_timer.h",
     "save_password_leak_detection_delegate.cc",

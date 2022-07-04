@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 
 namespace autofill_assistant {
 
@@ -31,11 +32,30 @@ class ExternalActionDelegate {
           end_action_callback) = 0;
 
   // Called before starting the execution of an interrupt.
-  virtual void OnInterruptStarted() = 0;
+  virtual void OnInterruptStarted(){};
 
   // Called after finishing to execute an interrupt, before resuming the
   // execution of the main script.
-  virtual void OnInterruptFinished() = 0;
+  virtual void OnInterruptFinished(){};
+
+  // Called to notify a change in the configuration of the touchable area.
+  //
+  // |visual_viewport| contains the position and size of the visual viewport in
+  // the layout viewport. It might be empty if not known or the touchable area
+  // is empty.
+  //
+  // |touchable_areas| contains one element per configured rectangle that should
+  // be visible/touchable, though these can correspond to empty rectangles.
+  //
+  // |restricted_areas| contains one element per configured rectangle that
+  // shouldn't be visible nor touchable. Those rectangles have precedence over
+  // |touchable_areas|.
+  //
+  // All rectangles are expressed in absolute CSS coordinates.
+  virtual void OnTouchableAreaChanged(
+      const RectF& visual_viewport,
+      const std::vector<RectF>& touchable_areas,
+      const std::vector<RectF>& restricted_areas){};
 };
 
 }  // namespace autofill_assistant

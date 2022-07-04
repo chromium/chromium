@@ -27,7 +27,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element.h"
