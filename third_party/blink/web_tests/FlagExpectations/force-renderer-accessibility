@@ -145,3 +145,7 @@ wpt_internal/webcodecs/annexb_decoding.https.any.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
+
+#Sheriff 2022-7-04 crbug.com/1341679
+virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/reinsert.https.html [ Failure Pass ]
+virtual/fenced-frame-mparch/wpt_internal/fenced_frame/reinsert.https.html [ Failure Pass ]
