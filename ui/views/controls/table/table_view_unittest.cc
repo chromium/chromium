@@ -608,7 +608,9 @@ class TableViewTest : public ViewsTestBase,
   std::unique_ptr<TestTableModel2> model_;
 
   // Owned by |parent_|.
-  raw_ptr<TableView> table_ = nullptr;
+  //
+  // TODO(crbug.com/1298696): Breaks views_unittests.
+  raw_ptr<TableView, DegradeToNoOpWhenMTE> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 

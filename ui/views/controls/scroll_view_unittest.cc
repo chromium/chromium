@@ -113,7 +113,8 @@ class ObserveViewDeletion : public ViewObserver {
 
  private:
   base::ScopedObservation<View, ViewObserver> observer_{this};
-  raw_ptr<View> deleted_view_ = nullptr;
+  // TODO(crbug.com/1298696): Breaks views_unittests.
+  raw_ptr<View, DegradeToNoOpWhenMTE> deleted_view_ = nullptr;
 };
 
 }  // namespace test
