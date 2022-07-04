@@ -4,6 +4,7 @@
 
 #include "net/http/http_server_properties_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -715,7 +716,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
   // Convert |server_info_map| to a list Value and add it to
   // |http_server_properties_dict|.
   base::Value::List servers_list;
-  for (const auto& [key, server_info] : base::Reversed(server_info_map)) {
+  for (const auto& [key, server_info] : server_info_map) {
     // If can't convert the NetworkIsolationKey to a value, don't save to disk.
     // Generally happens because the key is for a unique origin.
     base::Value network_isolation_key_value;
@@ -750,6 +751,9 @@ void HttpServerPropertiesManager::WriteToPrefs(
                     std::move(network_isolation_key_value));
     servers_list.Append(std::move(server_dict));
   }
+  // Reverse `servers_list`. The least recently used item will be in the front.
+  std::reverse(servers_list.begin(), servers_list.end());
+
   http_server_properties_dict.Set(kServersKey, std::move(servers_list));
 
   http_server_properties_dict.Set(kVersionKey, kVersionNumber);

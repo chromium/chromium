@@ -2376,22 +2376,19 @@ TEST_F(HttpServerPropertiesManagerTest,
       std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
   unowned_pref_delegate->InitializePrefs(saved_value);
 
-  // Only the first of the values learned for kNetworkIsolationKey1 should have
+  // Only the last of the values learned for kNetworkIsolationKey1 should have
   // been saved, and the value for kNetworkIsolationKey2 as well. The canonical
   // suffix logic should still be respected.
-  //
-  // TODO(mmenke): Preferring the oldest value seems unexpected.
-  // https://crbug.com/994842.
   EXPECT_EQ(
-      1u,
+      2u,
       properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey1)
           .size());
   EXPECT_EQ(
-      1u,
+      2u,
       properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey1)
           .size());
   EXPECT_EQ(
-      1u,
+      2u,
       properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey1)
           .size());
   EXPECT_EQ(
