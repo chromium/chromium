@@ -75,7 +75,8 @@
             # on images that do not have playstore.
             # They will be ran in chrome_public_test_apk_with_playstore below.
             '--gtest_filter=-'
-            'org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*'
+            'org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:'
+            'org.chromium.shape_detection.*'
         ],
         'swarming': {
           'shards': 20,
@@ -91,7 +92,8 @@
             # present. See crbug.com/1056330 for more details.
             # They should be ran in emulator on images that have playstore.
             '--gtest_filter='
-            'org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*'
+            'org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:'
+            'org.chromium.shape_detection.*'
         ],
         'mixins': [
           'skia_gold_test',

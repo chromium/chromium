@@ -4,17 +4,16 @@
 
 package org.chromium.shape_detection;
 
-import android.os.Build;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.shape_detection.mojom.TextDetection;
@@ -28,8 +27,9 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1, message = "crbug.com/1153716")
+@DisabledTest(message = "https://crbug.com/1153716")
 public class TextDetectionImplTest {
+    private static final float BOUNDS_TOLERANCE = 20.0f;
     private static final String[] DETECTION_EXPECTED_TEXT = {
             "The quick brown fox jumped over the lazy dog.", "Helvetica Neue 36."};
     private static final float[][] TEXT_BOUNDING_BOX = {
@@ -57,30 +57,43 @@ public class TextDetectionImplTest {
         return toReturn;
     }
 
+    @Before
+    public void setUp() {
+        TestUtils.waitForVisionLibraryReady();
+    }
+
     @Test
     @SmallTest
     @Feature({"ShapeDetection"})
     public void testDetectSucceedsOnValidBitmap() {
-        if (!TestUtils.IS_GMS_CORE_SUPPORTED) {
-            return;
-        }
         TextDetectionResult[] results = detect(TEXT_DETECTION_BITMAP);
         Assert.assertEquals(DETECTION_EXPECTED_TEXT.length, results.length);
 
         for (int i = 0; i < DETECTION_EXPECTED_TEXT.length; i++) {
-            Assert.assertEquals(results[i].rawValue, DETECTION_EXPECTED_TEXT[i]);
-            Assert.assertEquals(TEXT_BOUNDING_BOX[i][0], results[i].boundingBox.x, 0.0);
-            Assert.assertEquals(TEXT_BOUNDING_BOX[i][1], results[i].boundingBox.y, 0.0);
-            Assert.assertEquals(TEXT_BOUNDING_BOX[i][2], results[i].boundingBox.width, 0.0);
-            Assert.assertEquals(TEXT_BOUNDING_BOX[i][3], results[i].boundingBox.height, 0.0);
+            Assert.assertEquals(DETECTION_EXPECTED_TEXT[i], results[i].rawValue);
+            Assert.assertEquals(
+                    TEXT_BOUNDING_BOX[i][0], results[i].boundingBox.x, BOUNDS_TOLERANCE);
+            Assert.assertEquals(
+                    TEXT_BOUNDING_BOX[i][1], results[i].boundingBox.y, BOUNDS_TOLERANCE);
+            Assert.assertEquals(
+                    TEXT_BOUNDING_BOX[i][2], results[i].boundingBox.width, BOUNDS_TOLERANCE);
+            Assert.assertEquals(
+                    TEXT_BOUNDING_BOX[i][3], results[i].boundingBox.height, BOUNDS_TOLERANCE);
 
             RectF cornerRectF = new RectF();
             cornerRectF.x = results[i].cornerPoints[0].x;
             cornerRectF.y = results[i].cornerPoints[0].y;
             cornerRectF.width = results[i].cornerPoints[1].x - cornerRectF.x;
             cornerRectF.height = results[i].cornerPoints[2].y - cornerRectF.y;
-            Assert.assertEquals(results[i].boundingBox, cornerRectF);
-            Assert.assertEquals(results[i].cornerPoints[3].x, results[i].cornerPoints[1].x, 0.0);
+            Assert.assertEquals(results[i].boundingBox.x, cornerRectF.x, 0.0);
+            Assert.assertEquals(results[i].boundingBox.y, cornerRectF.y, 0.0);
+            Assert.assertEquals(results[i].boundingBox.width, cornerRectF.width, 0.0);
+            Assert.assertEquals(results[i].boundingBox.height, cornerRectF.height, 0.0);
+
+            // 4 corner points are in clockwise direction starting with top-left by spec.
+            Assert.assertEquals(results[i].cornerPoints[3].x, results[i].cornerPoints[0].x, 0.0);
+            Assert.assertEquals(results[i].cornerPoints[2].x, results[i].cornerPoints[1].x, 0.0);
+            Assert.assertEquals(results[i].cornerPoints[1].y, results[i].cornerPoints[0].y, 0.0);
             Assert.assertEquals(results[i].cornerPoints[3].y, results[i].cornerPoints[2].y, 0.0);
         }
     }
