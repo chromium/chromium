@@ -1694,6 +1694,8 @@ mixed_component("base") {
       "android/task_scheduler/post_task_android.h",
       "android/task_scheduler/task_runner_android.cc",
       "android/task_scheduler/task_runner_android.h",
+      "android/thread_instruction_count.cc",
+      "android/thread_instruction_count.h",
       "android/timezone_utils.cc",
       "android/timezone_utils.h",
       "android/trace_event_binding.cc",
