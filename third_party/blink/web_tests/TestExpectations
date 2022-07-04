@@ -7144,7 +7144,7 @@ crbug.com/1340421 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/quadraticCurveT
 crbug.com/1340716 [ Linux ] accessibility/notification-listeners.html [ Skip ]
 
 # Sheriff 2022-06-30
-crbug.com/1340781 virtual/android/fullscreen/full-screen-table-section.html [ Skip ]
+crbug.com/1340781 fullscreen/full-screen-table-section.html [ Skip ]
 crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ Failure Pass ]
 
 # Temporarily disable the tests during the rollout of V8 that fixes the
