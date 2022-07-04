@@ -292,6 +292,12 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1341288
   "launcher.Smoke",
   "launcher.BubbleSmoke",
+
+  # https://crbug.com/1341074
+  "launcher.BubbleLaunchApp.enable_launcher_app_sort",
+
+  # https://crbug.com/1341076
+  "launcher.BubbleLaunchApp.disable_launcher_app_sort",
 ]
 
 # To create filters to be used on specific builders add them like this:
