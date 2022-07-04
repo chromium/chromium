@@ -63,9 +63,6 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
   void OnAddAPIActionToExtensionActivityLog(
       const std::string& extension_id,
       const ExtensionHostMsg_APIActionOrEvent_Params& params);
-  void OnAddBlockedCallToExtensionActivityLog(
-      const std::string& extension_id,
-      const std::string& function_name);
   void OnAddDOMActionToExtensionActivityLog(
       const std::string& extension_id,
       const ExtensionHostMsg_DOMAction_Params& params);
