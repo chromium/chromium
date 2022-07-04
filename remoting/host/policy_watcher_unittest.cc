@@ -162,8 +162,10 @@ class PolicyWatcherTest : public testing::Test {
 
     curtain_true_.SetBoolKey(key::kRemoteAccessHostRequireCurtain, true);
     curtain_false_.SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     username_true_.SetBoolKey(key::kRemoteAccessHostMatchUsername, true);
     username_false_.SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
+#endif
     third_party_auth_partial_.SetStringKey(key::kRemoteAccessHostTokenUrl,
                                            "https://token.com");
     third_party_auth_partial_.SetStringKey(
@@ -316,7 +318,9 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetStringKey(key::kRemoteAccessHostUdpPortRange, "");
     dict.SetKey(key::kRemoteAccessHostClientDomainList, base::ListValue());
     dict.SetKey(key::kRemoteAccessHostDomainList, base::ListValue());
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     dict.SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
+#endif
     dict.SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
     dict.SetStringKey(key::kRemoteAccessHostTokenUrl, "");
     dict.SetStringKey(key::kRemoteAccessHostTokenValidationUrl, "");
@@ -324,8 +328,10 @@ class PolicyWatcherTest : public testing::Test {
                       "");
     dict.SetBoolKey(key::kRemoteAccessHostAllowClientPairing, true);
     dict.SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, true);
+#if BUILDFLAG(IS_WIN)
     dict.SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                     false);
+#endif
     dict.SetInteger(key::kRemoteAccessHostClipboardSizeBytes, -1);
     dict.SetBoolKey(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -636,25 +642,22 @@ TEST_F(PolicyWatcherTest, Curtain) {
   SetPolicies(curtain_false_);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 TEST_F(PolicyWatcherTest, MatchUsername) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-#if !BUILDFLAG(IS_WIN)
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&username_true_)));
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&username_false_)));
-#else
-// On Windows the MatchUsername policy is ignored and therefore the 2
-// SetPolicies calls won't result in any calls to OnPolicyUpdate.
-#endif
 
   SetPolicies(empty_);
   StartWatching();
   SetPolicies(username_true_);
   SetPolicies(username_false_);
 }
+#endif
 
 TEST_F(PolicyWatcherTest, ThirdPartyAuthFull) {
   testing::InSequence sequence;
@@ -716,21 +719,16 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
        i.Advance()) {
     expected_schema[i.key()] = i.value().type();
   }
-#if BUILDFLAG(IS_WIN)
-  // RemoteAccessHostMatchUsername is marked in policy_templates.json as not
-  // supported on Windows and therefore is (by design) excluded from the schema.
-  expected_schema.erase(key::kRemoteAccessHostMatchUsername);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Me2Me Policies are not supported on ChromeOS.
   expected_schema.erase(key::kRemoteAccessHostAllowGnubbyAuth);
   expected_schema.erase(key::kRemoteAccessHostAllowClientPairing);
-  expected_schema.erase(key::kRemoteAccessHostMatchUsername);
   expected_schema.erase(key::kRemoteAccessHostRequireCurtain);
   expected_schema.erase(key::kRemoteAccessHostTokenUrl);
   expected_schema.erase(key::kRemoteAccessHostTokenValidationUrl);
   expected_schema.erase(key::kRemoteAccessHostTokenValidationCertificateIssuer);
   expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
-#else  // !BUILDFLAG(IS_WIN)
+#elif !BUILDFLAG(IS_WIN)
   // RemoteAssistanceHostAllowUiAccess does not exist on non-Windows platforms.
   expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
 #endif

@@ -734,14 +734,8 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kAuthServerAllowlist,
     base::Value::Type::STRING
   },
-  { key::kGSSAPILibraryName,
-    prefs::kGSSAPILibraryName,
-    base::Value::Type::STRING },
   { key::kDiskCacheSize,
     prefs::kDiskCacheSize,
-    base::Value::Type::INTEGER },
-  { key::kDevicePolicyRefreshRate,
-    prefs::kDevicePolicyRefreshRate,
     base::Value::Type::INTEGER },
   { key::kDefaultBrowserSettingEnabled,
     prefs::kDefaultBrowserSettingEnabled,
@@ -845,9 +839,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowedDomainsForApps,
     prefs::kAllowedDomainsForApps,
     base::Value::Type::STRING },
-  { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-    prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-    base::Value::Type::LIST },
   { key::kVariationsRestrictParameter,
     variations::prefs::kVariationsRestrictParameter,
     base::Value::Type::STRING },
@@ -1420,6 +1411,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX)
+  { key::kGSSAPILibraryName,
+    prefs::kGSSAPILibraryName,
+    base::Value::Type::STRING },
+#endif // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN)
   { key::kChromeCleanupEnabled,
     prefs::kSwReporterEnabled,
@@ -1530,6 +1527,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #if BUILDFLAG(IS_CHROMEOS)
   { key::kDeviceAttributesAllowedForOrigins,
     prefs::kDeviceAttributesAllowedForOrigins,
+    base::Value::Type::LIST },
+  { key::kDevicePolicyRefreshRate,
+    prefs::kDevicePolicyRefreshRate,
+    base::Value::Type::INTEGER },
+  { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
+    prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
     base::Value::Type::LIST },
   { key::kLacrosSecondaryProfilesAllowed,
     prefs::kLacrosSecondaryProfilesAllowed,
@@ -1966,6 +1969,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kDeviceChromeVariations, nullptr,
+      static_cast<int>(variations::RestrictionPolicy::NO_RESTRICTIONS),
+      static_cast<int>(variations::RestrictionPolicy::ALL), false));
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kAttestationExtensionAllowlist,
       prefs::kAttestationExtensionAllowlist, false));
@@ -2311,10 +2318,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionSettingsPolicyHandler>(
           chrome_schema));
-  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kDeviceChromeVariations, nullptr,
-      static_cast<int>(variations::RestrictionPolicy::NO_RESTRICTIONS),
-      static_cast<int>(variations::RestrictionPolicy::ALL), false));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)

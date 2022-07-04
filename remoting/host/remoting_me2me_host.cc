@@ -1327,6 +1327,7 @@ bool HostProcess::OnUsernamePolicyUpdate(base::DictionaryValue* policies) {
   // Returns false: never restart the host after this policy update.
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   absl::optional<bool> host_username_match_required =
       policies->FindBoolKey(policy::key::kRemoteAccessHostMatchUsername);
   if (!host_username_match_required.has_value())
@@ -1334,6 +1335,7 @@ bool HostProcess::OnUsernamePolicyUpdate(base::DictionaryValue* policies) {
 
   host_username_match_required_ = host_username_match_required.value();
   ApplyUsernamePolicy();
+#endif
   return false;
 }
 

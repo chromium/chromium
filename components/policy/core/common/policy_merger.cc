@@ -6,6 +6,8 @@
 #include <map>
 #include <set>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -15,13 +17,14 @@ namespace policy {
 
 namespace {
 
-constexpr std::array<const char*, 6> kDictionaryPoliciesToMerge{
+constexpr const char* kDictionaryPoliciesToMerge[] = {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    key::kExtensionSettings,       key::kDeviceLoginScreenPowerManagement,
+    key::kKeyPermissions,          key::kPowerManagementIdleSettings,
+    key::kScreenBrightnessPercent, key::kScreenLockDelays,
+#else
     key::kExtensionSettings,
-    key::kDeviceLoginScreenPowerManagement,
-    key::kKeyPermissions,
-    key::kPowerManagementIdleSettings,
-    key::kScreenBrightnessPercent,
-    key::kScreenLockDelays,
+#endif
 };
 
 }  // namespace
@@ -178,8 +181,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
 PolicyDictionaryMerger::PolicyDictionaryMerger(
     base::flat_set<std::string> policies_to_merge)
     : policies_to_merge_(std::move(policies_to_merge)),
-      allowed_policies_(kDictionaryPoliciesToMerge.begin(),
-                        kDictionaryPoliciesToMerge.end()) {}
+      allowed_policies_(std::begin(kDictionaryPoliciesToMerge),
+                        std::end(kDictionaryPoliciesToMerge)) {}
 PolicyDictionaryMerger::~PolicyDictionaryMerger() = default;
 
 void PolicyDictionaryMerger::Merge(PolicyMap* policies) const {

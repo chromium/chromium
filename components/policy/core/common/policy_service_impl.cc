@@ -66,8 +66,11 @@ void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
   // Capture both the Chrome-only and device-level policies on Chrome OS.
   const std::vector<const char*> metrics_keys = {
-      policy::key::kMetricsReportingEnabled,
-      policy::key::kDeviceMetricsReportingEnabled};
+    policy::key::kMetricsReportingEnabled,
+#if BUILDFLAG(IS_CHROMEOS)
+    policy::key::kDeviceMetricsReportingEnabled,
+#endif
+  };
   for (const char* policy_key : metrics_keys) {
     PolicyMap::Entry* policy = policies->GetMutable(policy_key);
     if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&

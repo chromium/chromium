@@ -500,7 +500,12 @@ def _GetSupportedChromeUserPolicies(policies, protobuf_type):
 
 
 # Returns the policies supported by at least one platform.
-def _GetSupportedPolicies(policies):
+# Ensure only windows supported policies are returned when building for windows.
+# Eventually only supported policies on every platforms will be returned.
+def _GetSupportedPolicies(policies, target_platform):
+  if target_platform == 'win':
+    return [policy for policy in policies if policy.is_supported]
+
   return [
       policy for policy in policies
       if len(policy.platforms) + len(policy.future_on) > 0
@@ -518,7 +523,7 @@ def _GetMetapoliciesOfType(policies, metapolicy_type):
 
 def _WritePolicyConstantHeader(all_policies, policy_atomic_groups,
                                target_platform, f, risk_tags):
-  policies = _GetSupportedPolicies(all_policies)
+  policies = _GetSupportedPolicies(all_policies, target_platform)
   f.write('''#ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_H_
 #define COMPONENTS_POLICY_POLICY_CONSTANTS_H_
 
@@ -1108,7 +1113,7 @@ def _GenerateDefaultValue(value):
 
 def _WritePolicyConstantSource(all_policies, policy_atomic_groups,
                                target_platform, f, risk_tags):
-  policies = _GetSupportedPolicies(all_policies)
+  policies = _GetSupportedPolicies(all_policies, target_platform)
   policy_names = [policy.name for policy in policies]
   f.write('''#include "components/policy/policy_constants.h"
 

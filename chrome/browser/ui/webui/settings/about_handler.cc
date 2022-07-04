@@ -378,10 +378,12 @@ void AboutHandler::OnJavascriptAllowed() {
   policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       g_browser_process->policy_service(),
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+#if BUILDFLAG(IS_CHROMEOS)
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
       base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
                           base::Unretained(this)));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void AboutHandler::OnJavascriptDisallowed() {

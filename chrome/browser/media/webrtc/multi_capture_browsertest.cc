@@ -77,6 +77,7 @@ IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
       current_web_contents->GetBrowserContext(), GURL("")));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SelectAllScreensTest,
                        SelectAllScreensDisabledWithEmptyPolicy) {
   initialization_end_checkpoint.Call();
@@ -273,3 +274,4 @@ IN_PROC_BROWSER_TEST_F(
           GURL("https://www.chromium.org"));
   EXPECT_EQ(multi_capture_allowed, MULTI_CAPTURE_SUPPORTED_ON_PLATFORM);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
