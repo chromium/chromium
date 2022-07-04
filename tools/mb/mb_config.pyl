@@ -311,6 +311,8 @@
 
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
+      # Keep in sync with linux-rel, but with reclient.
+      'Build Perf Linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'CFI Linux CF (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
       'Comparison Android (reclient)': {
         'goma': 'android_webview_google_debug_static_bot_arm64',
@@ -2740,6 +2742,10 @@
     # except devtools_do_typecheck.
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
+    ],
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
     ],
 

@@ -15,6 +15,21 @@
       "use_goma": true
     }
   },
+  "Build Perf Linux": {
+    "gn_args": {
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+      "dcheck_always_on": true,
+      "devtools_skip_typecheck": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_dummy_lastchange": true,
+      "use_remoteexec": true
+    }
+  },
   "CFI Linux CF (reclient shadow)": {
     "gn_args": {
       "dcheck_always_on": false,
