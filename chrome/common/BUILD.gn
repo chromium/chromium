@@ -191,6 +191,7 @@ static_library("common_lib") {
     "//components/component_updater",
     "//components/content_settings/core/common",
     "//components/crash/core/common",
+    "//components/device_signals/core/common:features",
     "//components/dom_distiller/core",
     "//components/embedder_support/origin_trials",
     "//components/error_page/common",
