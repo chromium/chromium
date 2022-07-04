@@ -234,9 +234,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   const CommandBufferId command_buffer_id_;
   std::unique_ptr<CommandBufferHelper> command_buffer_helper_;
 
-  base::OnceCallback<std::unique_ptr<SharedImageFactory>(
-      bool enable_wrapped_sk_image)>
-      create_factory_;
+  base::OnceCallback<std::unique_ptr<SharedImageFactory>()> create_factory_;
 
   // Sequence checker for tasks that run on the gpu "thread".
   SEQUENCE_CHECKER(gpu_sequence_checker_);

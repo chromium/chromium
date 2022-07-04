@@ -200,7 +200,8 @@ class OopPixelTest : public testing::Test,
     auto* raster_implementation = raster_context_provider_->RasterInterface();
     auto* sii = raster_context_provider_->SharedImageInterface();
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
-                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+                     gpu::SHARED_IMAGE_USAGE_GLES2;
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         viz::ResourceFormat::RGBA_8888, gfx::Size(width, height),
         options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
@@ -313,7 +314,8 @@ class OopPixelTest : public testing::Test,
                                         const RasterOptions& options,
                                         viz::ResourceFormat image_format) {
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
-                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+                     gpu::SHARED_IMAGE_USAGE_GLES2;
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         image_format, options.resource_size,
         options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,

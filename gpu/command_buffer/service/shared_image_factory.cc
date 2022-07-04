@@ -214,7 +214,6 @@ SharedImageFactory::SharedImageFactory(
     SharedImageManager* shared_image_manager,
     ImageFactory* image_factory,
     MemoryTracker* memory_tracker,
-    bool enable_wrapped_sk_image,
     bool is_for_display_compositor)
     : mailbox_manager_(mailbox_manager),
       shared_image_manager_(shared_image_manager),
@@ -289,7 +288,7 @@ SharedImageFactory::SharedImageFactory(
       std::make_unique<SharedImageBackingFactorySharedMemory>();
   factories_.push_back(std::move(shared_memory_backing_factory));
 
-  if (enable_wrapped_sk_image && context_state) {
+  if (context_state) {
     auto wrapped_sk_image_factory =
         std::make_unique<raster::WrappedSkImageFactory>(context_state);
     factories_.push_back(std::move(wrapped_sk_image_factory));

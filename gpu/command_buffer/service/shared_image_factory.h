@@ -55,7 +55,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                      SharedImageManager* manager,
                      ImageFactory* image_factory,
                      MemoryTracker* tracker,
-                     bool enable_wrapped_sk_image,
                      bool is_for_display_compositor);
   ~SharedImageFactory();
 

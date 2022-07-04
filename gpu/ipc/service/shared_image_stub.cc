@@ -508,7 +508,6 @@ ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
       channel_manager->mailbox_manager(),
       channel_manager->shared_image_manager(),
       gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this,
-      /*enable_wrapped_sk_image=*/true,
       /*is_for_display_compositor=*/false);
   return ContextResult::kSuccess;
 }

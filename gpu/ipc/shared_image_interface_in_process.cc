@@ -121,14 +121,13 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
   context_state_ = params->context_state.get();
 
   create_factory_ = base::BindOnce(
-      [](std::unique_ptr<SetUpOnGpuParams> params,
-         bool enable_wrapped_sk_image) {
+      [](std::unique_ptr<SetUpOnGpuParams> params) {
         auto shared_image_factory = std::make_unique<SharedImageFactory>(
             params->gpu_preferences, params->gpu_workarounds,
             params->gpu_feature_info, params->context_state,
             params->mailbox_manager, params->shared_image_manager,
             params->image_factory, params->memory_tracker,
-            enable_wrapped_sk_image, params->is_for_display_compositor);
+            params->is_for_display_compositor);
         return shared_image_factory;
       },
       std::move(params));
@@ -182,14 +181,7 @@ bool SharedImageInterfaceInProcess::LazyCreateSharedImageFactory() {
   if (!MakeContextCurrent(/*needs_gl=*/true))
     return false;
 
-  // We need WrappedSkImage to support creating a SharedImage with pixel data
-  // when GL is unavailable. This is used in various unit tests. If we don't
-  // have a command buffer helper, that means this class is created for
-  // SkiaRenderer, and we definitely need to turn on enable_wrapped_sk_image.
-  const bool enable_wrapped_sk_image =
-      !command_buffer_helper_ || command_buffer_helper_->EnableWrappedSkImage();
-  shared_image_factory_ =
-      std::move(create_factory_).Run(enable_wrapped_sk_image);
+  shared_image_factory_ = std::move(create_factory_).Run();
   return true;
 }
 

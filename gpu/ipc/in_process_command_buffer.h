@@ -185,8 +185,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
     void SetError();
     void WrapTaskWithGpuCheck(base::OnceClosure task);
 
-    bool EnableWrappedSkImage() const;
-
    private:
     raw_ptr<InProcessCommandBuffer> command_buffer_;
   };

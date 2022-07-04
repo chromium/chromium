@@ -233,7 +233,6 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     shared_image_factory_ = std::make_unique<SharedImageFactory>(
         GpuPreferences(), workarounds, GpuFeatureInfo(), context_state_.get(),
         &mailbox_manager_, &shared_image_manager_, nullptr, nullptr,
-        /*enable_wrapped_sk_image=*/true,
         /*is_for_display_compositor=*/false);
 
     client_texture_mailbox_ =

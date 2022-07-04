@@ -109,14 +109,6 @@ void InProcessCommandBuffer::SharedImageInterfaceHelper::WrapTaskWithGpuCheck(
   command_buffer_->RunTaskOnGpuThread(std::move(task));
 }
 
-bool InProcessCommandBuffer::SharedImageInterfaceHelper::EnableWrappedSkImage()
-    const {
-  // We need WrappedSkImage to support creating a SharedImage with pixel data
-  // when GL is unavailable. This is used in various unit tests.
-  return command_buffer_->context_state_ &&
-         !command_buffer_->context_state_->GrContextIsGL();
-}
-
 InProcessCommandBuffer::InProcessCommandBuffer(
     CommandBufferTaskExecutor* task_executor,
     const GURL& active_url)
