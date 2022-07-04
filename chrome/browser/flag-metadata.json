@@ -1001,17 +1001,17 @@
   {
     "name": "contextual-triggers-selection-handles",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "contextual-triggers-selection-menu",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "contextual-triggers-selection-size",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "conversion-measurement-debug-mode",
