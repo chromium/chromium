@@ -105,6 +105,65 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
                   AnchorTestData{"--div3", PhysicalRect(0, 70, 800, 0)}));
 }
 
+TEST_F(NGAnchorQueryTest, Inline) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+      width: 800px;
+      font-family: Ahem;
+      font-size: 10px;
+      line-height: 1;
+    }
+    img {
+      width: 10px;
+      height: 8px;
+    }
+    .after .add {
+      anchor-name: --add;
+    }
+    </style>
+    <div id="container">
+      0
+      <!-- culled and non-culled inline boxes. -->
+      <span style="anchor-name: --culled">23</span>
+      <span style="anchor-name: --non-culled; background: yellow">56</span>
+
+      <!-- Adding `anchor-name` dynamically should uncull. -->
+      <span class="add">89</span>
+
+      <!-- Atomic inlines: replaced elements and inline blocks. -->
+      <img style="anchor-name: --img" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=">
+      <span style="anchor-name: --inline-block; display: inline-block">X</span>
+    </div>
+  )HTML");
+  Element* container = GetElementById("container");
+  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  ASSERT_NE(anchor_query, nullptr);
+  EXPECT_THAT(
+      AnchorTestData::ToList(*anchor_query),
+      testing::ElementsAre(
+          AnchorTestData{"--culled", PhysicalRect(20, 0, 20, 10)},
+          AnchorTestData{"--img", PhysicalRect(110, 0, 10, 8)},
+          AnchorTestData{"--inline-block", PhysicalRect(130, 0, 10, 10)},
+          AnchorTestData{"--non-culled", PhysicalRect(50, 0, 20, 10)}));
+
+  // Add the "after" class and test anchors are updated accordingly.
+  container->classList().Add("after");
+  UpdateAllLifecyclePhasesForTest();
+  anchor_query = AnchorQuery(*container);
+  ASSERT_NE(anchor_query, nullptr);
+  EXPECT_THAT(
+      AnchorTestData::ToList(*anchor_query),
+      testing::ElementsAre(
+          AnchorTestData{"--add", PhysicalRect(80, 0, 20, 10)},
+          AnchorTestData{"--culled", PhysicalRect(20, 0, 20, 10)},
+          AnchorTestData{"--img", PhysicalRect(110, 0, 10, 8)},
+          AnchorTestData{"--inline-block", PhysicalRect(130, 0, 10, 10)},
+          AnchorTestData{"--non-culled", PhysicalRect(50, 0, 20, 10)}));
+}
+
 TEST_F(NGAnchorQueryTest, OutOfFlow) {
   SetBodyInnerHTML(R"HTML(
     <style>
