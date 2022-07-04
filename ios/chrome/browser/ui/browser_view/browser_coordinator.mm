@@ -170,6 +170,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                                   PolicyChangeCommands,
                                   PreloadControllerDelegate,
                                   RepostFormTabHelperDelegate,
+                                  SigninPresenter,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
                                   WebStateListObserving>
@@ -1511,8 +1512,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   // The view controller should have been created.
   DCHECK(self.viewController);
 
-  SyncErrorBrowserAgent::FromBrowser(self.browser)
-      ->SetUIProviders(self.viewController, self);
+  SyncErrorBrowserAgent::FromBrowser(self.browser)->SetUIProviders(self, self);
 
   WebStateDelegateBrowserAgent::FromBrowser(self.browser)
       ->SetUIProviders(self.contextMenuProvider,
@@ -1827,6 +1827,14 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
           self.viewController
                                                                 trigger:
                                                                     trigger];
+}
+
+#pragma mark - SigninPresenter
+
+- (void)showSignin:(ShowSigninCommand*)command {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+              showSignin:command
+      baseViewController:self.viewController];
 }
 
 @end

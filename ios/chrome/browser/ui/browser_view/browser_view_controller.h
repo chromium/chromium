@@ -83,7 +83,6 @@ typedef struct {
                         LogoAnimationControllerOwnerOwner,
                         OmniboxPopupPresenterDelegate,
                         PageInfoPresentation,
-                        SigninPresenter,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
                         WebNavigationNTPDelegate,

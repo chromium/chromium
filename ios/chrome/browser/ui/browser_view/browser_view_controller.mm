@@ -4128,12 +4128,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return _toolbarAccessoryPresenter;
 }
 
-#pragma mark - SigninPresenter
-
-- (void)showSignin:(ShowSigninCommand*)command {
-  [self.dispatcher showSignin:command baseViewController:self];
-}
-
 #pragma mark - NewTabPageTabHelperDelegate
 
 - (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
