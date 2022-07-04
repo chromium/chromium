@@ -191,8 +191,9 @@ public class FeatureList {
         return null;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isInitialized();
     }
 }

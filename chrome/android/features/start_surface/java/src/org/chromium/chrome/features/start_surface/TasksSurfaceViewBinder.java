@@ -52,7 +52,7 @@ class TasksSurfaceViewBinder {
             viewHolder.parentView.addView(viewHolder.tasksSurfaceView, pos);
             MarginLayoutParams layoutParams =
                     (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
-            layoutParams.bottomMargin = model.get(BOTTOM_BAR_HEIGHT);
+            if (layoutParams != null) layoutParams.bottomMargin = model.get(BOTTOM_BAR_HEIGHT);
             setTopMargin(viewHolder, model.get(TOP_MARGIN));
         }
 

@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -216,8 +217,9 @@ public class FaviconHelper {
                 urls.toArray(new GURL[0]), desiredSizeInPixel, faviconImageCallback);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
         void destroy(long nativeFaviconHelper);
         boolean getComposedFaviconImage(long nativeFaviconHelper, Profile profile, GURL[] urls,

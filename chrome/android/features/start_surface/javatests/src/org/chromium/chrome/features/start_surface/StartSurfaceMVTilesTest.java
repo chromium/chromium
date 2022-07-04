@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -169,61 +168,6 @@ public class StartSurfaceMVTilesTest {
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    public void testCleanUpMVTilesAfterHiding() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
-        });
-
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-        Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
-                TabLaunchType.FROM_START_SURFACE,
-                cta.getActivityTabProvider().get().getLaunchType());
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
-        });
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    public void testMVTilesInitialized() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(startSurfaceCoordinator.isMVTilesInitializedForTesting());
-        });
-
-        TabUiTestHelper.enterTabSwitcher(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(startSurfaceCoordinator.isMVTilesInitializedForTesting());
-        });
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(startSurfaceCoordinator.isMVTilesInitializedForTesting());
-        });
     }
 
     /* MV tiles context menu tests starts. */

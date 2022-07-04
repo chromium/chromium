@@ -42,8 +42,10 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.WindowAndroid;
 
-// The view of the tasks surface.
-class TasksView extends CoordinatorLayoutForPointer {
+/**
+ * The view of the tasks surface. Set public for testing.
+ */
+public class TasksView extends CoordinatorLayoutForPointer {
     private static final int OMNIBOX_BOTTOM_PADDING_DP = 4;
 
     private final Context mContext;

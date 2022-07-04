@@ -56,9 +56,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -73,7 +71,6 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -456,23 +453,5 @@ public class StartSurfaceBackButtonTest {
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;
-    }
-
-    private List<Tab> getTabsInCurrentTabModel(TabModel currentTabModel) {
-        List<Tab> tabs = new ArrayList<>();
-        for (int i = 0; i < currentTabModel.getCount(); i++) {
-            tabs.add(currentTabModel.getTabAt(i));
-        }
-        return tabs;
-    }
-
-    private boolean isTabGridDialogShown(ChromeTabbedActivity cta) {
-        View dialogView = cta.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view);
-        return dialogView.getVisibility() == View.VISIBLE && dialogView.getAlpha() == 1f;
-    }
-
-    private boolean isTabGridDialogHidden(ChromeTabbedActivity cta) {
-        View dialogView = cta.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view);
-        return dialogView.getVisibility() == View.GONE;
     }
 }

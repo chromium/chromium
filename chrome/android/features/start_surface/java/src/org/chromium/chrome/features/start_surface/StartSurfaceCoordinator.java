@@ -70,7 +70,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Root coordinator that is responsible for showing start surfaces, like a grid of Tabs, explore
@@ -645,11 +644,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     @VisibleForTesting
     public boolean isSecondaryTaskInitPendingForTesting() {
         return mIsSecondaryTaskInitPending;
-    }
-
-    @VisibleForTesting
-    public void showTabSelectionEditorForTesting(List<Tab> tabs) {
-        mStartSurfaceMediator.getSecondaryTasksSurfaceController().showTabSelectionEditor(tabs);
     }
 
     @VisibleForTesting

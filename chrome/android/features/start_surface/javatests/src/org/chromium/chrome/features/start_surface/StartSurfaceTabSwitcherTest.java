@@ -372,32 +372,6 @@ public class StartSurfaceTabSwitcherTest {
                 () -> Assert.assertEquals(tab2.getTitle(), title2.getText()));
     }
 
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    public void testDoNotInitializeSecondaryTasksSurfaceWithoutOpenGridTabSwitcher() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(startSurfaceCoordinator.isSecondaryTasksSurfaceEmptyForTesting());
-        });
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(startSurfaceCoordinator.isSecondaryTasksSurfaceEmptyForTesting());
-        });
-
-        TabUiTestHelper.enterTabSwitcher(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(startSurfaceCoordinator.isSecondaryTasksSurfaceEmptyForTesting());
-        });
-    }
-
     /**
      * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and
      * {@link ChromeFeatureList#TAB_SWITCHER_ON_RETURN} are enabled.

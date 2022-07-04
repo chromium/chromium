@@ -1394,7 +1394,6 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testBackPressHandler() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doAnswer((inv) -> mControllerDialogVisibleSupplier.get())

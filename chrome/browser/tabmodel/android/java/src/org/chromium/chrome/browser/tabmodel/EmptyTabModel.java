@@ -23,7 +23,7 @@ public class EmptyTabModel implements TabModel {
      * EmptyTabModel.
      */
     @VisibleForTesting
-    protected EmptyTabModel() {}
+    public EmptyTabModel() {}
 
     // "Initialization on demand holder idiom"
     private static class LazyHolder {

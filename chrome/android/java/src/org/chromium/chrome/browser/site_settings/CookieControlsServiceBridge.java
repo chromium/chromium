@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -77,8 +79,9 @@ public class CookieControlsServiceBridge {
         mObserver.sendCookieControlsUIChanges(checked, enforcement);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(CookieControlsServiceBridge caller);
         void destroy(long nativeCookieControlsServiceBridge, CookieControlsServiceBridge caller);
         void handleCookieControlsToggleChanged(

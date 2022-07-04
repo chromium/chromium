@@ -1350,8 +1350,9 @@ public class BookmarkBridge {
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         BookmarkId getBookmarkIdForWebContents(long nativeBookmarkBridge, BookmarkBridge caller,
                 WebContents webContents, boolean onlyEditable);
         BookmarkItem getBookmarkByID(

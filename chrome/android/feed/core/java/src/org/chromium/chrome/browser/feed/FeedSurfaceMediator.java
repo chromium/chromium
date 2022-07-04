@@ -174,8 +174,9 @@ public class FeedSurfaceMediator
         }
     }
 
-    @VisibleForTesting
-    static void setPrefForTest(PrefChangeRegistrar prefChangeRegistrar, PrefService prefService) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void setPrefForTest(
+            PrefChangeRegistrar prefChangeRegistrar, PrefService prefService) {
         sTestPrefChangeRegistar = prefChangeRegistrar;
         sPrefServiceForTest = prefService;
     }
