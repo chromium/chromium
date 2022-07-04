@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 """GPU-specific implementation of the unexpected passes' queries module."""
 
+import typing
 
 from unexpected_passes_common import constants
+from unexpected_passes_common import data_types
 from unexpected_passes_common import queries as queries_module
 
 RESULTS_SUBQUERY = """\
@@ -182,7 +184,8 @@ TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
 
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
-  def __init__(self, suite, project, num_samples, large_query_mode):
+  def __init__(self, suite: str, project: str, num_samples: int,
+               large_query_mode: bool):
     super().__init__(suite, project, num_samples, large_query_mode)
 
     self._check_webgl_version = None
@@ -211,12 +214,14 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     self._suite = TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP.get(
         self._suite, self._suite + '_integration_test')
 
-  def _ShouldSkipOverResult(self, result):
+  def _ShouldSkipOverResult(self, result: queries_module.QueryResult) -> bool:
     # Skip over the result if the WebGL version does not match the one we're
     # looking for.
     return not self._check_webgl_version(result['typ_tags'])
 
-  def _GetQueryGeneratorForBuilder(self, builder):
+  def _GetQueryGeneratorForBuilder(
+      self, builder: data_types.BuilderEntry
+  ) -> typing.Optional[queries_module.BaseQueryGenerator]:
     if not self._large_query_mode:
       # Look for all tests that match the given suite.
       return GpuFixedQueryGenerator(
@@ -241,15 +246,18 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
 
     # Only consider specific test cases that were found to have active
     # expectations in the above query. Also perform any initial query splitting.
-    target_num_ids = queries_module.TARGET_RESULTS_PER_QUERY / self._num_samples
+    target_num_ids = (queries_module.TARGET_RESULTS_PER_QUERY //
+                      self._num_samples)
     return GpuSplitQueryGenerator(builder, test_ids, target_num_ids)
 
-  def _GetRelevantExpectationFilesForQueryResult(self, _):
+  def _GetRelevantExpectationFilesForQueryResult(
+      self,
+      _: queries_module.QueryResult) -> typing.Optional[typing.Iterable[str]]:
     # Only one expectation file is ever used for the GPU tests, so just use
     # whichever one we've read in.
     return None
 
-  def _GetSuiteFilterClause(self):
+  def _GetSuiteFilterClause(self) -> str:
     """Returns a SQL clause to only include relevant suites.
 
     Meant for cases where suites are differentiated by typ tag rather than
@@ -264,7 +272,7 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
 
     return 'AND "%s" IN UNNEST(typ_tags)' % self._webgl_version_tag
 
-  def _StripPrefixFromTestId(self, test_id):
+  def _StripPrefixFromTestId(self, test_id: str) -> str:
     # GPU test IDs provided by ResultDB are the test name as known by the test
     # runner prefixed by
     # "ninja://<target>/gpu_tests.<suite>_integration_test.<class>.", e.g.
@@ -274,7 +282,8 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     assert len(split_id) == 4
     return split_id[-1]
 
-  def _GetActiveBuilderQuery(self, builder_type, include_internal_builders):
+  def _GetActiveBuilderQuery(self, builder_type: str,
+                             include_internal_builders: bool) -> str:
     if include_internal_builders:
       subquery = ACTIVE_INTERNAL_BUILDER_SUBQUERY.format(
           builder_project='chrome', builder_type=builder_type)
@@ -287,16 +296,17 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
 
 
 class GpuFixedQueryGenerator(queries_module.FixedQueryGenerator):
-  def GetQueries(self):
+  def GetQueries(self) -> typing.List[str]:
     return QueryGeneratorImpl(self.GetClauses(), self._builder)
 
 
 class GpuSplitQueryGenerator(queries_module.SplitQueryGenerator):
-  def GetQueries(self):
+  def GetQueries(self) -> typing.List[str]:
     return QueryGeneratorImpl(self.GetClauses(), self._builder)
 
 
-def QueryGeneratorImpl(test_filter_clauses, builder):
+def QueryGeneratorImpl(test_filter_clauses: typing.List[str],
+                       builder: data_types.BuilderEntry) -> typing.List[str]:
   queries = []
   query_template = None
   if builder.builder_type == constants.BuilderTypes.CI:

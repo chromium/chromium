@@ -37,6 +37,7 @@ FILES_AND_DIRECTORIES_TO_CHECK = [
     'flake_suppressor',
     'gold_inexact_matching',
     'gpu_tests',
+    'unexpected_passes',
 ]
 FILES_AND_DIRECTORIES_TO_CHECK = [
     os.path.join(GPU_DIR, f) for f in FILES_AND_DIRECTORIES_TO_CHECK

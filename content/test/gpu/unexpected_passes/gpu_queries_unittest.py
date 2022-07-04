@@ -19,7 +19,7 @@ from unexpected_passes_common import unittest_utils as uu
 
 
 class QueryBuilderUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self._patcher = mock.patch.object(subprocess, 'Popen')
     self._popen_mock = self._patcher.start()
     self.addCleanup(self._patcher.stop)
@@ -27,7 +27,7 @@ class QueryBuilderUnittest(unittest.TestCase):
     builders.ClearInstance()
     uu.RegisterGenericBuildersImplementation()
 
-  def testWebGlVersion(self):
+  def testWebGlVersion(self) -> None:
     """Tests that only results for the correct WebGL version are returned."""
     query_results = [
         {
@@ -87,10 +87,10 @@ class QueryBuilderUnittest(unittest.TestCase):
         data_types.Result('test_name', ['webgl-version-2'], 'Failure',
                           'step_name', '2345'))
 
-  def testSuiteExceptionMap(self):
+  def testSuiteExceptionMap(self) -> None:
     """Tests that the suite passed to the query changes for some suites."""
 
-    def assertSuiteInQuery(suite, call_args):
+    def assertSuiteInQuery(suite: str, call_args: tuple) -> None:
       query = call_args[0][0][0]
       s = 'r"gpu_tests\\.%s\\."' % suite
       self.assertIn(s, query)
@@ -128,17 +128,18 @@ class QueryBuilderUnittest(unittest.TestCase):
 
 
 class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self._querier = gpu_uu.CreateGenericGpuQuerier()
     self._query_patcher = mock.patch.object(
         self._querier, '_RunBigQueryCommandsForJsonOutput')
     self._query_mock = self._query_patcher.start()
     self.addCleanup(self._query_patcher.stop)
 
-  def testNoLargeQueryMode(self):
+  def testNoLargeQueryMode(self) -> None:
     """Tests that the expected clause is returned in normal mode."""
     query_generator = self._querier._GetQueryGeneratorForBuilder(
         data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
+    self.assertIsNotNone(query_generator)
     self.assertEqual(len(query_generator.GetClauses()), 1)
     self.assertEqual(
         query_generator.GetClauses()[0], """\
@@ -151,7 +152,7 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
     q = query_generator.GetQueries()
     self.assertEqual(len(q), 1)
 
-  def testLargeQueryModeNoTests(self):
+  def testLargeQueryModeNoTests(self) -> None:
     """Tests that a special value is returned if no tests are found."""
     querier = gpu_uu.CreateGenericGpuQuerier(large_query_mode=True)
     with mock.patch.object(querier,
@@ -162,7 +163,7 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
       self.assertIsNone(query_generator)
       query_mock.assert_called_once()
 
-  def testLargeQueryModeFoundTests(self):
+  def testLargeQueryModeFoundTests(self) -> None:
     """Tests that a clause containing found tests is returned."""
     querier = gpu_uu.CreateGenericGpuQuerier(large_query_mode=True)
     with mock.patch.object(querier,
@@ -174,6 +175,7 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
       }]
       query_generator = querier._GetQueryGeneratorForBuilder(
           data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
+      self.assertIsNotNone(query_generator)
       self.assertEqual(query_generator.GetClauses(),
                        ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
       self.assertIsInstance(query_generator, gpu_queries.GpuSplitQueryGenerator)
@@ -183,10 +185,10 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
 
 
 class GetActiveBuilderQueryUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.querier = gpu_uu.CreateGenericGpuQuerier()
 
-  def testPublicCi(self):
+  def testPublicCi(self) -> None:
     """Tests that the active query for public CI is as expected."""
     expected_query = """\
 WITH
@@ -207,7 +209,7 @@ FROM builders
         self.querier._GetActiveBuilderQuery(constants.BuilderTypes.CI, False),
         expected_query)
 
-  def testInternalCi(self):
+  def testInternalCi(self) -> None:
     """Tests that the active query for internal CI is as expected."""
     expected_query = """\
 WITH
@@ -235,7 +237,7 @@ FROM builders
         self.querier._GetActiveBuilderQuery(constants.BuilderTypes.CI, True),
         expected_query)
 
-  def testPublicTry(self):
+  def testPublicTry(self) -> None:
     """Tests that the active query for public try is as expected."""
     expected_query = """\
 WITH
@@ -256,7 +258,7 @@ FROM builders
         self.querier._GetActiveBuilderQuery(constants.BuilderTypes.TRY, False),
         expected_query)
 
-  def testInternalTry(self):
+  def testInternalTry(self) -> None:
     """Tests that the active query for internal try is as expected."""
     expected_query = """\
 WITH
@@ -288,7 +290,7 @@ FROM builders
 class GeneratedQueryUnittest(unittest.TestCase):
   maxDiff = None
 
-  def testPublicCi(self):
+  def testPublicCi(self) -> None:
     """Tests that the generated public CI query is as expected."""
     expected_query = """\
 WITH
@@ -340,7 +342,7 @@ WHERE
                                                     test_filter_clause='tfc'),
         expected_query)
 
-  def testInternalCi(self):
+  def testInternalCi(self) -> None:
     """Tests that the generated internal CI query is as expected."""
     expected_query = """\
 WITH
@@ -392,7 +394,7 @@ WHERE
                                                     test_filter_clause='tfc'),
         expected_query)
 
-  def testPublicTry(self):
+  def testPublicTry(self) -> None:
     """Tests that the generated public try query is as expected."""
     expected_query = """\
 WITH
@@ -471,7 +473,7 @@ WHERE
                                                      test_filter_clause='tfc'),
         expected_query)
 
-  def testInternalTry(self):
+  def testInternalTry(self) -> None:
     """Tests that the generated internal try query is as expected."""
     expected_query = """\
 WITH
@@ -552,7 +554,7 @@ WHERE
 
 
 class QueryGeneratorImplUnittest(unittest.TestCase):
-  def testPublicCi(self):
+  def testPublicCi(self) -> None:
     """Tests that public CI builders use the correct query."""
     q = gpu_queries.QueryGeneratorImpl(['tfc'],
                                        data_types.BuilderEntry(
@@ -563,7 +565,7 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
         builder_project='chromium', test_filter_clause='tfc')
     self.assertEqual(q[0], expected_query)
 
-  def testInternalCi(self):
+  def testInternalCi(self) -> None:
     """Tests that internal CI builders use the correct query."""
     q = gpu_queries.QueryGeneratorImpl(['tfc'],
                                        data_types.BuilderEntry(
@@ -574,7 +576,7 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
         builder_project='chrome', test_filter_clause='tfc')
     self.assertEqual(q[0], expected_query)
 
-  def testPublicTry(self):
+  def testPublicTry(self) -> None:
     """Tests that public try builders use the correct query."""
     q = gpu_queries.QueryGeneratorImpl(['tfc'],
                                        data_types.BuilderEntry(
@@ -585,7 +587,7 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
         builder_project='chromium', test_filter_clause='tfc')
     self.assertEqual(q[0], expected_query)
 
-  def testInternalTry(self):
+  def testInternalTry(self) -> None:
     """Tests that internal try builders use the correct query."""
     q = gpu_queries.QueryGeneratorImpl(['tfc'],
                                        data_types.BuilderEntry(
@@ -596,7 +598,7 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
         builder_project='chrome', test_filter_clause='tfc')
     self.assertEqual(q[0], expected_query)
 
-  def testUnknownBuilderType(self):
+  def testUnknownBuilderType(self) -> None:
     """Tests that an exception is raised for unknown builder types."""
     with self.assertRaises(RuntimeError):
       gpu_queries.QueryGeneratorImpl(['tfc'],
@@ -606,7 +608,7 @@ class QueryGeneratorImplUnittest(unittest.TestCase):
 
 
 class GetSuiteFilterClauseUnittest(unittest.TestCase):
-  def testNonWebGl(self):
+  def testNonWebGl(self) -> None:
     """Tests that no filter is returned for non-WebGL suites."""
     for suite in [
         'context_lost',
@@ -622,7 +624,7 @@ class GetSuiteFilterClauseUnittest(unittest.TestCase):
       querier = gpu_uu.CreateGenericGpuQuerier(suite=suite)
       self.assertEqual(querier._GetSuiteFilterClause(), '')
 
-  def testWebGl(self):
+  def testWebGl(self) -> None:
     """Tests that filters are returned for WebGL suites."""
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance1')
     expected_filter = 'AND "webgl-version-1" IN UNNEST(typ_tags)'
@@ -634,7 +636,7 @@ class GetSuiteFilterClauseUnittest(unittest.TestCase):
 
 
 class HelperMethodUnittest(unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.instance = gpu_uu.CreateGenericGpuQuerier()
 
   def testStripPrefixFromTestIdValidId(self):
@@ -645,7 +647,7 @@ class HelperMethodUnittest(unittest.TestCase):
     test_id = prefix + test_name
     self.assertEqual(self.instance._StripPrefixFromTestId(test_id), test_name)
 
-  def testStripPrefixFromTestIdInvalidId(self):
+  def testStripPrefixFromTestIdInvalidId(self) -> None:
     test_name = 'conformance/programs/program-handling_html'
     prefix = ('ninja://chrome/test:telemetry_gpu_integration_test/'
               'gpu_testse.webgl_conformance_integration_test.')

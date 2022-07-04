@@ -48,7 +48,7 @@ class SimpleSplitQueryGenerator(queries_module.SplitQueryGenerator):
 
 class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
   def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
-                                   ) -> queries_module._BaseQueryGenerator:
+                                   ) -> queries_module.BaseQueryGenerator:
     if not self._large_query_mode:
       return SimpleFixedQueryGenerator(builder, 'AND True')
     return SimpleSplitQueryGenerator(builder, ['test_id'], 200)

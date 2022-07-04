@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import os
+import typing
 
 import validate_tag_consistency
 
@@ -17,12 +18,12 @@ EXPECTATIONS_DIR = os.path.realpath(
 
 
 class GpuExpectations(expectations.Expectations):
-  def GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self) -> typing.List[str]:
     filepaths = []
     for f in os.listdir(EXPECTATIONS_DIR):
       if f.endswith('_expectations.txt'):
         filepaths.append(os.path.join(EXPECTATIONS_DIR, f))
     return filepaths
 
-  def _GetExpectationFileTagHeader(self, _):
+  def _GetExpectationFileTagHeader(self, _: str) -> str:
     return validate_tag_consistency.TAG_HEADER

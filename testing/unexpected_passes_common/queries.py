@@ -341,26 +341,26 @@ class BigQueryQuerier(object):
     return False
 
   def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
-                                   ) -> typing.Optional['_BaseQueryGenerator']:
-    """Returns a _BaseQueryGenerator instance to only include relevant tests.
+                                   ) -> typing.Optional['BaseQueryGenerator']:
+    """Returns a BaseQueryGenerator instance to only include relevant tests.
 
     Args:
       builder: A data_types.BuilderEntry containing the builder to query.
 
     Returns:
       None if the query returned no results. Otherwise, some instance of a
-      _BaseQueryGenerator.
+      BaseQueryGenerator.
     """
     raise NotImplementedError()
 
-  def _RunBigQueryCommandsForJsonOutput(self, queries: typing.List[str],
-                                        parameters: QueryParameters
-                                        ) -> typing.List[QueryResult]:
+  def _RunBigQueryCommandsForJsonOutput(
+      self, queries: typing.Union[str, typing.List[str]],
+      parameters: QueryParameters) -> typing.List[QueryResult]:
     """Runs the given BigQuery queries and returns their outputs as JSON.
 
     Args:
-      queries: A list of strings containing valid BigQuery queries to run or a
-          single string containing a query.
+      queries: A string or list of strings containing valid BigQuery queries to
+          run or a single string containing a query.
       parameters: A dict specifying parameters to substitute in the query in
           the format {type: {key: value}}. For example, the dict:
           {'INT64': {'num_builds': 5}}
@@ -480,7 +480,7 @@ class BigQueryQuerier(object):
     raise NotImplementedError()
 
 
-class _BaseQueryGenerator(object):
+class BaseQueryGenerator(object):
   """Abstract base class for query generators."""
 
   def __init__(self, builder: data_types.BuilderEntry):
@@ -510,7 +510,7 @@ class _BaseQueryGenerator(object):
 
 
 # pylint: disable=abstract-method
-class FixedQueryGenerator(_BaseQueryGenerator):
+class FixedQueryGenerator(BaseQueryGenerator):
   """Concrete test filter that cannot be split."""
 
   def __init__(self, builder: data_types.BuilderEntry, test_filter: str):
@@ -531,7 +531,7 @@ class FixedQueryGenerator(_BaseQueryGenerator):
 
 
 # pylint: disable=abstract-method
-class SplitQueryGenerator(_BaseQueryGenerator):
+class SplitQueryGenerator(BaseQueryGenerator):
   """Concrete test filter that can be split to a desired size."""
 
   def __init__(self, builder: data_types.BuilderEntry,

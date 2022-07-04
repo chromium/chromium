@@ -11,7 +11,7 @@ from unexpected_passes import gpu_expectations
 
 
 class GetExpectationFilepathsUnittest(unittest.TestCase):
-  def testGetExpectationFilepathsFindsSomething(self):
+  def testGetExpectationFilepathsFindsSomething(self) -> None:
     """Tests that the _GetExpectationFilepaths finds something in the dir."""
     expectations = gpu_expectations.GpuExpectations()
     self.assertTrue(len(expectations.GetExpectationFilepaths()) > 0)

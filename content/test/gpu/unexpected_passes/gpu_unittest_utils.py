@@ -5,11 +5,15 @@
 
 from __future__ import print_function
 
+import typing
+
 from unexpected_passes import gpu_queries
 from unexpected_passes_common import unittest_utils as uu
 
 
-def CreateGenericGpuQuerier(*args, **kwargs):
-  return uu.CreateGenericQuerier(cls=gpu_queries.GpuBigQueryQuerier,
-                                 *args,
-                                 **kwargs)
+def CreateGenericGpuQuerier(*args, **kwargs) -> gpu_queries.GpuBigQueryQuerier:
+  return typing.cast(
+      gpu_queries.GpuBigQueryQuerier,
+      uu.CreateGenericQuerier(cls=gpu_queries.GpuBigQueryQuerier,
+                              *args,
+                              **kwargs))
