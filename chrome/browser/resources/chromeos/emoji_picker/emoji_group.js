@@ -34,6 +34,8 @@ export class EmojiGroupComponent extends PolymerElement {
     return {
       /** @type {!Array<EmojiVariants>} */
       data: {type: Array, readonly: true},
+      /** @type {?string} */
+      group: {type: String, value: null, readonly: true},
       /** @type {Object<string,string>} */
       preferred: {type: Object, value: () => ({})},
       /** @type {boolean} */

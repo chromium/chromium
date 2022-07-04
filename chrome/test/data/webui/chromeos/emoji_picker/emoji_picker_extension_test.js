@@ -35,6 +35,10 @@ suite('emoji-picker-extension', () => {
     document.body.innerHTML = '';
     window.localStorage.clear();
 
+     // Set default incognito state to False.
+    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+        new Promise((resolve) => resolve({incognito: false}));
+
     emojiPicker =
         /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
     emojiPicker.emojiDataUrl = '/emoji_test_ordering';
@@ -185,8 +189,7 @@ suite('emoji-picker-extension', () => {
       'clicking at recently used emoticon buttons should trigger emoticon ' +
           'insertion.',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
 
         const emoticonButton = findEmojiFirstButton(emoticonGroupSelector);
         emoticonButton.click();
@@ -212,9 +215,7 @@ suite('emoji-picker-extension', () => {
       'recently used emoticon group should contain the correct emoticon ' +
           'after it is clicked.',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
-
+        emojiPicker.updateIncognitoState(false);
         const emoticonButton = findEmojiFirstButton(emoticonGroupSelector);
         emoticonButton.click();
 
