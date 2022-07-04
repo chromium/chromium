@@ -8,14 +8,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
 import android.graphics.drawable.Drawable;
+import android.view.View.OnClickListener;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +35,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LargeMessageCardViewBinderUnitTest {
+    private static final String FAKE_DISPLAY_TEXT = "Fake Text";
+    private static final int FAKE_ICON_WIDTH = 666;
+    private static final int FAKE_ICON_HEIGHT = 999;
+
     @Mock
     LargeMessageCardView mMockLargeCardView;
 
@@ -56,7 +63,9 @@ public class LargeMessageCardViewBinderUnitTest {
     @Mock
     Drawable mMockDrawable;
 
-    private static final String FAKE_DISPLAY_TEXT = "Fake Text";
+    @Mock
+    private OnClickListener mMockOnClickListenerMock;
+
     private PropertyModel mModel;
 
     @Before
@@ -66,6 +75,13 @@ public class LargeMessageCardViewBinderUnitTest {
         mModel = new PropertyModel(MessageCardViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 mModel, mMockLargeCardView, LargeMessageCardViewBinder::bind);
+    }
+
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(mMockLargeCardView, mMockDismissActionProvider1,
+                mMockDismissActionProvider2, mMockReviewActionProvider1, mMockReviewActionProvider2,
+                mMockPriceDrop, mMockIconProvider, mMockDrawable, mMockOnClickListenerMock);
     }
 
     @Test
@@ -90,6 +106,22 @@ public class LargeMessageCardViewBinderUnitTest {
         mModel.set(MessageCardViewProperties.ACTION_TEXT, null);
         verify(mMockLargeCardView, times(1)).setActionText(null);
         verify(mMockLargeCardView, times(2)).setActionButtonOnClickListener(any());
+    }
+
+    @Test
+    @SmallTest
+    public void updateSecondaryActionButtonText() {
+        mModel.set(MessageCardViewProperties.SECONDARY_ACTION_TEXT, FAKE_DISPLAY_TEXT);
+        verify(mMockLargeCardView, times(1)).setSecondaryActionText(FAKE_DISPLAY_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    public void updateSecondaryActionButtonOnClickListener() {
+        mModel.set(MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
+                mMockOnClickListenerMock);
+        verify(mMockLargeCardView, times(1))
+                .setSecondaryActionButtonOnClickListener(mMockOnClickListenerMock);
     }
 
     @Test
@@ -121,9 +153,35 @@ public class LargeMessageCardViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void updateIconWidth() {
+        mModel.set(MessageCardViewProperties.ICON_WIDTH, FAKE_ICON_WIDTH);
+        verify(mMockLargeCardView, times(1)).updateIconWidth(FAKE_ICON_WIDTH);
+    }
+
+    @Test
+    @SmallTest
+    public void updateIconHeight() {
+        mModel.set(MessageCardViewProperties.ICON_HEIGHT, FAKE_ICON_HEIGHT);
+        verify(mMockLargeCardView, times(1)).updateIconHeight(FAKE_ICON_HEIGHT);
+    }
+
+    @Test
+    @SmallTest
+    public void updateCloseIconVisibility() {
+        mModel.set(MessageCardViewProperties.IS_CLOSE_BUTTON_VISIBLE, false);
+        verify(mMockLargeCardView, times(1)).setCloseButtonVisibility(false);
+
+        mModel.set(MessageCardViewProperties.IS_CLOSE_BUTTON_VISIBLE, true);
+        verify(mMockLargeCardView, times(1)).setCloseButtonVisibility(true);
+    }
+
+    @Test
+    @SmallTest
     public void updateIconDrawable() {
         when(mMockIconProvider.getIconDrawable()).thenReturn(mMockDrawable);
         mModel.set(MessageCardViewProperties.ICON_PROVIDER, mMockIconProvider);
+
+        verify(mMockIconProvider, times(1)).getIconDrawable();
         verify(mMockLargeCardView, times(1)).setIconDrawable(mMockDrawable);
     }
 

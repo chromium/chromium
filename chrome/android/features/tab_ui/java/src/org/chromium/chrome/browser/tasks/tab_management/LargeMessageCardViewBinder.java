@@ -34,6 +34,12 @@ class LargeMessageCardViewBinder {
                     model.get(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION));
             itemView.setDismissButtonOnClickListener(
                     v -> { LargeMessageCardViewBinder.handleDismissActionButton(model); });
+        } else if (MessageCardViewProperties.SECONDARY_ACTION_TEXT == propertyKey) {
+            itemView.setSecondaryActionText(
+                    model.get(MessageCardViewProperties.SECONDARY_ACTION_TEXT));
+        } else if (MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER == propertyKey) {
+            itemView.setSecondaryActionButtonOnClickListener(
+                    model.get(MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER));
         } else if (MessageCardViewProperties.PRICE_DROP == propertyKey) {
             itemView.setupPriceInfoBox(model.get(MessageCardViewProperties.PRICE_DROP));
         } else if (MessageCardViewProperties.ICON_PROVIDER == propertyKey) {
@@ -43,6 +49,15 @@ class LargeMessageCardViewBinder {
             itemView.setIconVisibility(model.get(MessageCardViewProperties.IS_ICON_VISIBLE));
         } else if (CARD_ALPHA == propertyKey) {
             itemView.setAlpha(model.get(CARD_ALPHA));
+        } else if (MessageCardViewProperties.IS_CLOSE_BUTTON_VISIBLE == propertyKey) {
+            itemView.setCloseButtonVisibility(
+                    model.get(MessageCardViewProperties.IS_CLOSE_BUTTON_VISIBLE));
+        } else if (MessageCardViewProperties.IS_INCOGNITO == propertyKey) {
+            itemView.updateMessageCardColor(model.get(MessageCardViewProperties.IS_INCOGNITO));
+        } else if (MessageCardViewProperties.ICON_WIDTH == propertyKey) {
+            itemView.updateIconWidth(model.get(MessageCardViewProperties.ICON_WIDTH));
+        } else if (MessageCardViewProperties.ICON_HEIGHT == propertyKey) {
+            itemView.updateIconHeight(model.get(MessageCardViewProperties.ICON_HEIGHT));
         }
     }
 

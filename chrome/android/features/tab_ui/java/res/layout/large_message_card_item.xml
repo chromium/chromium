@@ -18,6 +18,7 @@
             android:id="@+id/large_message_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
             android:orientation="vertical">
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box"
@@ -62,12 +63,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
                 android:layout_gravity="center"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/secondary_action_button"
+                style="@style/TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
         </LinearLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/close_button"

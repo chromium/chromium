@@ -456,7 +456,18 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Returns the text appearance for the message card description based on the incognito mode.
+     * Returns the text appearance for the message card title based on the incognito mode.
+     *
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     * @return The text appearance for the message card title.
+     */
+    public static int getMessageCardTitleTextAppearance(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                           : R.style.TextAppearance_TextLarge_Primary;
+    }
+
+    /**
+     * Returns the text appearance for message card description based on the incognito mode.
      *
      * @param isIncognito Whether the text appearance is used for incognito mode.
      * @return The text appearance for the message card description.
@@ -475,6 +486,55 @@ public class TabUiThemeProvider {
     public static int getMessageCardActionButtonTextAppearance(boolean isIncognito) {
         return isIncognito ? R.style.TextAppearance_Button_Text_Blue_Dark
                            : R.style.TextAppearance_Button_Text_Blue;
+    }
+
+    /**
+     * Returns the text appearance for the message card title based on the incognito mode.
+     *
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     * @return The text appearance for the message card title.
+     */
+    public static int getLargeMessageCardTitleTextAppearance(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                           : R.style.TextAppearance_TextLarge_Primary;
+    }
+
+    /**
+     * Returns the text appearance for large message card description based on the incognito mode.
+     *
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     * @return The text appearance for the message card description.
+     */
+    public static int getLargeMessageCardDescriptionTextAppearance(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_TextMedium_Secondary_Baseline_Light
+                           : R.style.TextAppearance_TextMedium_Secondary;
+    }
+
+    /**
+     * Returns the text appearance for the large message card action button based on the incognito
+     * mode.
+     *
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     * @return The text appearance for the message card action button.
+     */
+    public static int getLargeMessageCardActionButtonTextAppearance(boolean isIncognito) {
+        return isIncognito ? R.style.TextAppearance_Button_Text_Blue_Dark
+                           : R.style.TextAppearance_Button_Text_Filled;
+    }
+
+    /**
+     * Returns the text color for the message card secondary action button based on the
+     * incognito mode.
+     *
+     * @param context The {@link Context} to use to fetch the resources.
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     *
+     * @return The {@link ColorInt} to set for the message card secondary action button.
+     */
+    public static @ColorInt int getMessageCardSecondaryActionButtonColor(
+            Context context, boolean isIncognito) {
+        return isIncognito ? context.getColor(R.color.default_text_color_link_light)
+                           : SemanticColorUtils.getDefaultTextColorLink(context);
     }
 
     /**

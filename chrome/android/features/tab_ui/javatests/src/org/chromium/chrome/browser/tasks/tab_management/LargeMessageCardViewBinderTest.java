@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Batch.UNIT_TESTS;
+
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -22,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -38,15 +45,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link LargeMessageCardViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(UNIT_TESTS)
 public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String TITLE_TEXT = "titleText";
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
+    private static final String SECONDARY_ACTION_TEXT = "secondaryActionText";
     private static final String DISMISS_BUTTON_CONTENT_DESCRIPTION = "dismiss";
     private static final String PRICE = "$300";
     private static final String PREVIOUS_PRICE = "$400";
 
     private final AtomicBoolean mReviewButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mSecondaryActionButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mMessageServiceReviewCallbackRan = new AtomicBoolean();
     private final AtomicBoolean mMessageServiceDismissCallbackRan = new AtomicBoolean();
@@ -59,11 +69,14 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
             () -> mMessageServiceReviewCallbackRan.set(true);
     private final MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
             (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
+    private final OnClickListener mSecondaryActionButtonClickListener =
+            view -> mSecondaryActionButtonClicked.set(true);
 
     private ChromeImageView mIcon;
     private TextView mTitle;
     private TextView mDescription;
     private ButtonCompat mActionButton;
+    private ButtonCompat mSecondaryActionButton;
     private ChromeImageView mCloseButton;
     private PriceCardView mPriceInfoBox;
     private LargeMessageCardView mItemView;
@@ -88,6 +101,7 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
             mTitle = mItemView.findViewById(R.id.title);
             mDescription = mItemView.findViewById(R.id.description);
             mActionButton = mItemView.findViewById(R.id.action_button);
+            mSecondaryActionButton = mItemView.findViewById(R.id.secondary_action_button);
             mCloseButton = mItemView.findViewById(R.id.close_button);
 
             mItemViewModel =
@@ -113,6 +127,10 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
         assertEquals(ACTION_TEXT, mActionButton.getText().toString());
         assertEquals(DESCRIPTION_TEXT, mDescription.getText().toString());
         assertEquals(DISMISS_BUTTON_CONTENT_DESCRIPTION, mCloseButton.getContentDescription());
+        assertEquals("Secondary action button should be gone by default.", GONE,
+                mSecondaryActionButton.getVisibility());
+        assertEquals("Close button should be visible by default.", VISIBLE,
+                mCloseButton.getVisibility());
     }
 
     @Test
@@ -131,30 +149,61 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     @UiThreadTest
     @SmallTest
     public void testSetIconVisibility() {
-        assertEquals(View.GONE, mIcon.getVisibility());
+        assertEquals(GONE, mIcon.getVisibility());
 
         mItemViewModel.set(MessageCardViewProperties.IS_ICON_VISIBLE, true);
-        assertEquals(View.VISIBLE, mIcon.getVisibility());
+        assertEquals(VISIBLE, mIcon.getVisibility());
         mItemViewModel.set(MessageCardViewProperties.IS_ICON_VISIBLE, false);
-        assertEquals(View.GONE, mIcon.getVisibility());
+        assertEquals(GONE, mIcon.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetCloseIconVisibility() {
+        mItemViewModel.set(MessageCardViewProperties.IS_CLOSE_BUTTON_VISIBLE, false);
+        assertEquals("Close button should not be visible.", GONE, mCloseButton.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSecondaryActionText() {
+        mItemViewModel.set(MessageCardViewProperties.SECONDARY_ACTION_TEXT, SECONDARY_ACTION_TEXT);
+        assertEquals("Fail to set secondary action text.", SECONDARY_ACTION_TEXT,
+                mSecondaryActionButton.getText());
+        assertEquals("Secondary action text should be visible.", View.VISIBLE,
+                mSecondaryActionButton.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSecondaryActionOnClickListenerTest() {
+        mSecondaryActionButtonClicked.set(false);
+        mItemViewModel.set(MessageCardViewProperties.SECONDARY_ACTION_TEXT, SECONDARY_ACTION_TEXT);
+        mItemViewModel.set(MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
+                mSecondaryActionButtonClickListener);
+        mSecondaryActionButton.performClick();
+        assertTrue("Secondary button didn't fire properly.", mSecondaryActionButtonClicked.get());
     }
 
     @Test
     @UiThreadTest
     @SmallTest
     public void testSetupPriceInfoBox() {
-        assertEquals(View.GONE, mPriceInfoBox.getVisibility());
+        assertEquals(GONE, mPriceInfoBox.getVisibility());
 
         mItemViewModel.set(MessageCardViewProperties.PRICE_DROP,
                 new ShoppingPersistedTabData.PriceDrop(PRICE, PREVIOUS_PRICE));
-        assertEquals(View.VISIBLE, mPriceInfoBox.getVisibility());
+        assertEquals(VISIBLE, mPriceInfoBox.getVisibility());
         assertEquals(PRICE,
                 ((TextView) mItemView.findViewById(R.id.current_price)).getText().toString());
         assertEquals(PREVIOUS_PRICE,
                 ((TextView) mItemView.findViewById(R.id.previous_price)).getText().toString());
 
         mItemViewModel.set(MessageCardViewProperties.PRICE_DROP, null);
-        assertEquals(View.GONE, mPriceInfoBox.getVisibility());
+        assertEquals(GONE, mPriceInfoBox.getVisibility());
     }
 
     @Test

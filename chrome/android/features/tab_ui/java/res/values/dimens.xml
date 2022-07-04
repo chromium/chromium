@@ -23,8 +23,8 @@
     <dimen name="tab_grid_iph_dialog_text_top_margin_landscape">8dp</dimen>
     <dimen name="tab_grid_iph_dialog_text_top_margin_portrait">16dp</dimen>
     <dimen name="tab_grid_iph_dialog_text_side_margin">32dp</dimen>
-    <dimen name="tab_grid_merge_threshold">45dp</dimen>
     <dimen name="tab_grid_large_message_side_padding_landscape">114dp</dimen>
+    <dimen name="tab_grid_merge_threshold">45dp</dimen>
     <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_frame_corner_radius">7dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_frame_size">24dp</dimen>

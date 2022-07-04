@@ -105,6 +105,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardView.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinder.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageService.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/MultiThumbnailCardProvider.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/NewTabTileCoordinator.java",
