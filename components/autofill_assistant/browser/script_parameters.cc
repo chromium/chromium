@@ -54,13 +54,6 @@ const char kOverlayColorParameterName[] = "OVERLAY_COLORS";
 // TODO(b/151401974): Eliminate duplicate parameter definitions.
 const char kPasswordChangeUsernameParameterName[] = "PASSWORD_CHANGE_USERNAME";
 
-// Parameter that contains a base64-encoded GetTriggerScriptsResponseProto
-// message. Instructs the client to decode and run this trigger script prior to
-// starting the regular flow. Takes precedence over REQUEST_TRIGGER_SCRIPT if
-// both are specified.
-const char kBase64TriggerScriptsResponseProtoParameterName[] =
-    "TRIGGER_SCRIPTS_BASE64";
-
 // Special parameter for instructing the client to request and run a trigger
 // script from a remote RPC prior to starting the regular flow.
 const char kRequestTriggerScriptParameterName[] = "REQUEST_TRIGGER_SCRIPT";
@@ -220,11 +213,6 @@ absl::optional<std::string> ScriptParameters::GetOverlayColors() const {
 absl::optional<std::string> ScriptParameters::GetPasswordChangeUsername()
     const {
   return GetParameter(kPasswordChangeUsernameParameterName);
-}
-
-absl::optional<std::string>
-ScriptParameters::GetBase64TriggerScriptsResponseProto() const {
-  return GetParameter(kBase64TriggerScriptsResponseProtoParameterName);
 }
 
 absl::optional<bool> ScriptParameters::GetRequestsTriggerScript() const {

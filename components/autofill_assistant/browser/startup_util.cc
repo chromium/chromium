@@ -68,13 +68,9 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
     return StartupMode::START_REGULAR;
   }
 
-  if (!(script_parameters.GetRequestsTriggerScript().value_or(false) ||
-        !script_parameters.GetBase64TriggerScriptsResponseProto()
-             .value_or(std::string())
-             .empty())) {
-    VLOG(1)
-        << "Invalid Autofill Assistant intent: START_IMMEDIATELY=false "
-           "requires either REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE64.";
+  if (!(script_parameters.GetRequestsTriggerScript().value_or(false))) {
+    VLOG(1) << "Invalid Autofill Assistant intent: START_IMMEDIATELY=false "
+               "requires REQUEST_TRIGGER_SCRIPT=true.";
     return StartupMode::MANDATORY_PARAMETERS_MISSING;
   }
 
@@ -82,12 +78,6 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
     VLOG(1) << "Invalid Autofill Assistant intent: The 'Proactive help' Chrome "
                "setting was turned off.";
     return StartupMode::SETTING_DISABLED;
-  }
-
-  if (script_parameters.GetBase64TriggerScriptsResponseProto().has_value()) {
-    // Base64 trigger scripts do not require further checks, and they take
-    // precedence over RPC trigger scripts.
-    return StartupMode::START_BASE64_TRIGGER_SCRIPT;
   }
 
   DCHECK(script_parameters.GetRequestsTriggerScript().value_or(false));

@@ -138,7 +138,6 @@ Metrics::AutofillAssistantStarted ToAutofillAssistantStarted(
       return Metrics::AutofillAssistantStarted::FAILED_NO_INITIAL_URL;
     case StartupMode::START_REGULAR:
       return Metrics::AutofillAssistantStarted::OK_IMMEDIATE_START;
-    case StartupMode::START_BASE64_TRIGGER_SCRIPT:
     case StartupMode::START_RPC_TRIGGER_SCRIPT:
       return Metrics::AutofillAssistantStarted::OK_DELAYED_START;
   }
@@ -334,7 +333,6 @@ void Metrics::RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
     case StartupMode::MANDATORY_PARAMETERS_MISSING:
       event = TriggerScriptStarted::MANDATORY_PARAMETER_MISSING;
       break;
-    case StartupMode::START_BASE64_TRIGGER_SCRIPT:
     case StartupMode::START_RPC_TRIGGER_SCRIPT:
       event = is_first_time_user ? TriggerScriptStarted::FIRST_TIME_USER
                                  : TriggerScriptStarted::RETURNING_USER;
@@ -735,7 +733,7 @@ std::ostream& operator<<(std::ostream& out,
       out << "DISABLED_PROACTIVE_HELP_SETTING";
       break;
     case Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR:
-      out << "BASE64_DECODING_ERROR";
+      out << "BASE64 DECODING ERROR";
       break;
     case Metrics::TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED:
       out << "BOTTOMSHEET_ONBOARDING_REJECTED";

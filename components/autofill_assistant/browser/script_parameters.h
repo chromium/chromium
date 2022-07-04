@@ -52,7 +52,6 @@ class ScriptParameters {
   // Getters for specific parameters.
   absl::optional<std::string> GetOverlayColors() const;
   absl::optional<std::string> GetPasswordChangeUsername() const;
-  absl::optional<std::string> GetBase64TriggerScriptsResponseProto() const;
   absl::optional<bool> GetRequestsTriggerScript() const;
   absl::optional<bool> GetStartImmediately() const;
   absl::optional<bool> GetEnabled() const;

@@ -343,9 +343,6 @@ class Metrics {
     // Since Chrome M-88. The proactive help switch was enabled at start, but
     // then manually disabled in the Chrome settings.
     DISABLED_PROACTIVE_HELP_SETTING = 23,
-    // Since Chrome M-88. The client failed to base64-decode the trigger script
-    // specified in the script parameters.
-    BASE64_DECODING_ERROR = 24,
     // The user rejected the bottom sheet onboarding
     BOTTOMSHEET_ONBOARDING_REJECTED = 25,
     // Transitioning from CCT to regular tab is currently not supported.
@@ -382,6 +379,11 @@ class Metrics {
     PROMPT_FAILED_OTHER = 12,
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     PROMPT_SWIPE_DISMISSED = 16,
+
+    // Note: DEPRECATED since M-105
+    // Since Chrome M-88. The client failed to base64-decode the trigger script
+    // specified in the script parameters.
+    BASE64_DECODING_ERROR = 24,
 
     kMaxValue = CANCELED
   };

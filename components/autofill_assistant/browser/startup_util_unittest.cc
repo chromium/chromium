@@ -35,9 +35,6 @@ std::ostream& operator<<(std::ostream& out, const StartupMode& result) {
     case StartupMode::START_REGULAR:
       out << "START_REGULAR";
       break;
-    case StartupMode::START_BASE64_TRIGGER_SCRIPT:
-      out << "START_BASE64_TRIGGER_SCRIPT";
-      break;
     case StartupMode::START_RPC_TRIGGER_SCRIPT:
       out << "START_RPC_TRIGGER_SCRIPT";
       break;
@@ -73,11 +70,6 @@ const base::flat_map<std::string, std::string> kRequestTriggerScript = {
     {"ENABLED", "true"},
     {"START_IMMEDIATELY", "false"},
     {"REQUEST_TRIGGER_SCRIPT", "true"},
-    {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
-const base::flat_map<std::string, std::string> kBase64TriggerScript = {
-    {"ENABLED", "true"},
-    {"START_IMMEDIATELY", "false"},
-    {"TRIGGER_SCRIPTS_BASE64", "abc"},
     {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
 
 const TriggerContext::Options kDefaultCCTOptions = {
@@ -279,68 +271,8 @@ TEST_P(StartupUtilParametrizedTest, StartRpcTriggerScript) {
                               : StartupMode::FEATURE_DISABLED));
 }
 
-TEST_P(StartupUtilParametrizedTest, StartBase64TriggerScript) {
-  // Everything true, DFM already installed.
-  EXPECT_THAT(
-      StartupUtil().ChooseStartupModeForIntent(
-          TriggerContext{
-              std::make_unique<ScriptParameters>(kBase64TriggerScript),
-              kDefaultCCTOptions},
-          {.msbb_setting_enabled = true,
-           .proactive_help_setting_enabled = true,
-           .feature_module_installed = true}),
-      MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
-                                              kAutofillAssistantProactiveHelp})
-                              ? StartupMode::START_BASE64_TRIGGER_SCRIPT
-                              : StartupMode::FEATURE_DISABLED));
-
-  // Everything true, but DFM is not yet installed.
-  EXPECT_THAT(StartupUtil().ChooseStartupModeForIntent(
-                  TriggerContext{
-                      std::make_unique<ScriptParameters>(kBase64TriggerScript),
-                      kDefaultCCTOptions},
-                  {.msbb_setting_enabled = true,
-                   .proactive_help_setting_enabled = true,
-                   .feature_module_installed = false}),
-              MatchingStartupMode(
-                  AreFeaturesEnabled(
-                      {kAutofillAssistant, kAutofillAssistantProactiveHelp,
-                       kAutofillAssistantLoadDFMForTriggerScripts})
-                      ? StartupMode::START_BASE64_TRIGGER_SCRIPT
-                      : StartupMode::FEATURE_DISABLED));
-
-  // MSBB is off, but should not be required by base64 trigger scripts.
-  EXPECT_THAT(
-      StartupUtil().ChooseStartupModeForIntent(
-          TriggerContext{
-              std::make_unique<ScriptParameters>(kBase64TriggerScript),
-              kDefaultCCTOptions},
-          {.msbb_setting_enabled = false,
-           .proactive_help_setting_enabled = true,
-           .feature_module_installed = true}),
-      MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
-                                              kAutofillAssistantProactiveHelp})
-                              ? StartupMode::START_BASE64_TRIGGER_SCRIPT
-                              : StartupMode::FEATURE_DISABLED));
-
-  // Proactive help is off.
-  EXPECT_THAT(
-      StartupUtil().ChooseStartupModeForIntent(
-          TriggerContext{
-              std::make_unique<ScriptParameters>(kBase64TriggerScript),
-              kDefaultCCTOptions},
-          {.msbb_setting_enabled = true,
-           .proactive_help_setting_enabled = false,
-           .feature_module_installed = true}),
-      MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
-                                              kAutofillAssistantProactiveHelp})
-                              ? StartupMode::SETTING_DISABLED
-                              : StartupMode::FEATURE_DISABLED));
-}
-
 TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
-  // START_IMMEDIATELY=false requires either REQUEST_TRIGGER_SCRIPT or
-  // TRIGGER_SCRIPTS_BASE64.
+  // START_IMMEDIATELY=false requires REQUEST_TRIGGER_SCRIPT
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
@@ -367,25 +299,6 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
                       {"ENABLED", "true"},
                       {"START_IMMEDIATELY", "false"},
                       {"REQUEST_TRIGGER_SCRIPT", "false"},
-                      {"ORIGINAL_DEEPLINK", "https://www.example.com"}}),
-              kDefaultCCTOptions},
-          {.msbb_setting_enabled = true,
-           .proactive_help_setting_enabled = false,
-           .feature_module_installed = true}),
-      MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
-                                              kAutofillAssistantProactiveHelp})
-                              ? StartupMode::MANDATORY_PARAMETERS_MISSING
-                              : StartupMode::FEATURE_DISABLED));
-
-  // TRIGGER_SCRIPTS_BASE64 must not be empty.
-  EXPECT_THAT(
-      StartupUtil().ChooseStartupModeForIntent(
-          TriggerContext{
-              std::make_unique<ScriptParameters>(
-                  base::flat_map<std::string, std::string>{
-                      {"ENABLED", "true"},
-                      {"START_IMMEDIATELY", "false"},
-                      {"TRIGGER_SCRIPTS_BASE64", ""},
                       {"ORIGINAL_DEEPLINK", "https://www.example.com"}}),
               kDefaultCCTOptions},
           {.msbb_setting_enabled = true,

@@ -31,7 +31,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.os.Build.VERSION_CODES;
-import android.util.Base64;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -346,36 +345,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
-    public void base64TriggerScriptsDontRequireMSBB() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                Profile.getLastUsedRegularProfile(), false));
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-
-        TriggerScriptProto.Builder triggerScript =
-                TriggerScriptProto
-                        .newBuilder()
-                        /* no trigger condition */
-                        .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
-                                /* bubbleMessage = */ "",
-                                /* withProgressBar = */ false));
-        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
-                                                                .addTriggerScripts(triggerScript)
-                                                                .build();
-        byte[] triggerScriptsResponse = triggerScripts.toByteArray();
-        String base64Response = Base64.encodeToString(triggerScriptsResponse, /* offset = */ 0,
-                triggerScriptsResponse.length, Base64.URL_SAFE | Base64.NO_WRAP);
-        Assert.assertEquals(0, base64Response.length() % 4);
-        startAutofillAssistantOnTabWithParams(
-                TEST_PAGE_A, Collections.singletonMap("TRIGGER_SCRIPTS_BASE64", base64Response));
-
-        waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
     }
 
     @Test

@@ -27,8 +27,6 @@ enum class StartupMode {
 
   // Parameters are ok, a regular script should be started immediately.
   START_REGULAR,
-  // Parameters are ok, a base64 trigger script should be started.
-  START_BASE64_TRIGGER_SCRIPT,
   // Parameters are ok, a remote trigger script should be started.
   START_RPC_TRIGGER_SCRIPT
 };
