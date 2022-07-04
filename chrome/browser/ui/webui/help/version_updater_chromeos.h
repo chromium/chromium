@@ -15,7 +15,7 @@ class WebContents;
 }
 
 class VersionUpdaterCros : public VersionUpdater,
-                           public chromeos::UpdateEngineClient::Observer {
+                           public ash::UpdateEngineClient::Observer {
  public:
   VersionUpdaterCros(const VersionUpdaterCros&) = delete;
   VersionUpdaterCros& operator=(const VersionUpdaterCros&) = delete;
@@ -49,7 +49,7 @@ class VersionUpdaterCros : public VersionUpdater,
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
   // Callback from UpdateEngineClient::RequestUpdateCheck().
-  void OnUpdateCheck(chromeos::UpdateEngineClient::UpdateCheckResult result);
+  void OnUpdateCheck(ash::UpdateEngineClient::UpdateCheckResult result);
 
   // Callback from UpdateEngineClient::SetUpdateOverCellularOneTimePermission().
   void OnSetUpdateOverCellularOneTimePermission(bool success);
@@ -59,7 +59,7 @@ class VersionUpdaterCros : public VersionUpdater,
 
   // Callback from UpdateEngineClient::GetEolInfo().
   void OnGetEolInfo(EolInfoCallback cb,
-                    chromeos::UpdateEngineClient::EolInfo eol_info);
+                    ash::UpdateEngineClient::EolInfo eol_info);
 
   // Callback from UpdateEngineClient::IsFeatureEnabled().
   void OnIsFeatureEnabled(IsFeatureEnabledCallback callback,

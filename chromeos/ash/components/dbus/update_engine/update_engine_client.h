@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
-#define CHROMEOS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
 
 #include <stdint.h>
 
@@ -12,18 +12,18 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "dbus/message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class FakeUpdateEngineClient;
 
 // UpdateEngineClient is used to communicate with the update engine.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
+class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
     : public DBusClient {
  public:
   // The result code used for RequestUpdateCheck().
@@ -195,12 +195,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
   ~UpdateEngineClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace ash {
-using ::chromeos::UpdateEngineClient;
-}
-
-#endif  // CHROMEOS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_

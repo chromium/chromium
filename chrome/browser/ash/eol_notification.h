@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 

@@ -8,14 +8,13 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("update_engine") {
-  output_name = "chromeos_update_engine"
-  defines = [ "IS_CHROMEOS_DBUS_UPDATE_ENGINE_IMPL" ]
+  output_name = "ash_update_engine"
+  defines = [ "IS_ASH_DBUS_UPDATE_ENGINE_IMPL" ]
   deps = [
     ":proto",
     "//base",
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
-    "//chromeos/dbus/util",
     "//dbus",
   ]
   sources = [
@@ -40,5 +39,5 @@ proto_library("proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/update_engine/update_engine.proto" ]
 
-  proto_out_dir = "chromeos/dbus/update_engine"
+  proto_out_dir = "chromeos/ash/components/dbus/update_engine"
 }

@@ -8,9 +8,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +41,8 @@ class AboutHandlerTest : public testing::Test {
 
   void SetUp() override {
     DBusThreadManager::Initialize();
-    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     handler_ = std::make_unique<TestAboutHandler>(&profile_);
@@ -57,7 +58,7 @@ class AboutHandlerTest : public testing::Test {
     handler_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     ConciergeClient::Shutdown();
-    UpdateEngineClient::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 
@@ -102,7 +103,7 @@ class AboutHandlerTest : public testing::Test {
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
-  FakeUpdateEngineClient* fake_update_engine_client_;
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<base::SimpleTestClock> clock_;
 };
 

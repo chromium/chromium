@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
-#define CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
 
 #include <map>
 #include <string>
@@ -13,16 +13,16 @@
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of UpdateEngineClient. The user of this class can
 // use set_update_engine_client_status() to set a fake last Status and
 // GetLastStatus() returns the fake with no modification. Other methods do
 // nothing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
+class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
     : public UpdateEngineClient {
  public:
   FakeUpdateEngineClient();
@@ -150,12 +150,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   base::Time eol_date_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace ash {
-using ::chromeos::FakeUpdateEngineClient;
-}
-
-#endif  // CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_

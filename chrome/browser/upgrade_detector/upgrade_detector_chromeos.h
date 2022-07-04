@@ -11,7 +11,7 @@
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 #include "chrome/browser/upgrade_detector/installed_version_updater_chromeos.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 class PrefRegistrySimple;
 namespace base {
@@ -21,7 +21,7 @@ class TickClock;
 
 class UpgradeDetectorChromeos : public UpgradeDetector,
                                 public BuildStateObserver,
-                                public chromeos::UpdateEngineClient::Observer {
+                                public ash::UpdateEngineClient::Observer {
  public:
   UpgradeDetectorChromeos(const UpgradeDetectorChromeos&) = delete;
   UpgradeDetectorChromeos& operator=(const UpgradeDetectorChromeos&) = delete;
@@ -65,7 +65,7 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   // UpgradeDetector:
   void OnMonitoredPrefsChanged() override;
 
-  // chromeos::UpdateEngineClient::Observer implementation.
+  // ash::UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
   void OnUpdateOverCellularOneTimePermissionGranted() override;
 

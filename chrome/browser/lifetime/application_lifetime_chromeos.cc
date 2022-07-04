@@ -5,16 +5,16 @@
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 
 namespace chrome {
 namespace {
 
-chromeos::UpdateEngineClient* GetUpdateEngineClient() {
-  chromeos::UpdateEngineClient* update_engine_client =
-      chromeos::UpdateEngineClient::Get();
+ash::UpdateEngineClient* GetUpdateEngineClient() {
+  ash::UpdateEngineClient* update_engine_client =
+      ash::UpdateEngineClient::Get();
   DCHECK(update_engine_client);
   return update_engine_client;
 }

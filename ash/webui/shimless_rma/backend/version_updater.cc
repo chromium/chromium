@@ -5,8 +5,8 @@
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 
 #include "base/logging.h"
-#include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -199,7 +199,7 @@ void VersionUpdater::UpdateStatusChanged(
 
 void VersionUpdater::OnRequestUpdateCheck(
     UpdateEngineClient::UpdateCheckResult result) {
-  if (result != chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS) {
+  if (result != UpdateEngineClient::UPDATE_RESULT_SUCCESS) {
     LOG(ERROR) << "OS update request failed.";
     ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT,
                         update_engine::ErrorCode::kDownloadTransferError);

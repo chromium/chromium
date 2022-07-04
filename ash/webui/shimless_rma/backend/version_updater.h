@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 namespace ash {
 namespace shimless_rma {
@@ -17,7 +17,7 @@ namespace shimless_rma {
 // TODO(gavindodd): Consider if this can be shared with
 // chrome/browser/ash/login/version_updater/version_updater
 
-class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
+class VersionUpdater : public UpdateEngineClient::Observer {
  public:
   typedef base::RepeatingCallback<void(update_engine::Operation operation,
                                        double progress,
@@ -44,8 +44,7 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
 
  private:
   // Callback from UpdateEngineClient::RequestUpdateCheck().
-  void OnRequestUpdateCheck(
-      chromeos::UpdateEngineClient::UpdateCheckResult result);
+  void OnRequestUpdateCheck(UpdateEngineClient::UpdateCheckResult result);
 
   // UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;

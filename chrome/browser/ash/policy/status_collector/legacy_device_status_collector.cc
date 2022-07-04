@@ -66,6 +66,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -74,7 +75,6 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
@@ -2432,7 +2432,7 @@ bool LegacyDeviceStatusCollector::GetOsUpdateStatus(
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
-      chromeos::UpdateEngineClient::Get()->GetLastStatus();
+      ash::UpdateEngineClient::Get()->GetLastStatus();
 
   absl::optional<base::Version> required_platform_version;
 

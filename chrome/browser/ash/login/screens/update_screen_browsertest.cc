@@ -33,10 +33,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateAvailable) {
 
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestErrorIssuingUpdateCheck) {
   update_engine_client()->set_update_check_result(
-      chromeos::UpdateEngineClient::UPDATE_RESULT_FAILED);
+      UpdateEngineClient::UPDATE_RESULT_FAILED);
   ShowUpdateScreen();
 
   if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {

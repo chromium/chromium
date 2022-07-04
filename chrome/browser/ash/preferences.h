@@ -10,7 +10,7 @@
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/language_preferences.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"

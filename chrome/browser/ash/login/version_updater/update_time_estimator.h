@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
 
 #include "base/time/time.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 namespace base {
 class TickClock;

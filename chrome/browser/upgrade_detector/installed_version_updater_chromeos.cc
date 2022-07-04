@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 namespace {
 
@@ -24,12 +24,12 @@ enum class RollbackReason {
 
 InstalledVersionUpdater::InstalledVersionUpdater(BuildState* build_state)
     : build_state_(build_state) {
-  chromeos::UpdateEngineClient::Get()->AddObserver(this);
+  ash::UpdateEngineClient::Get()->AddObserver(this);
 }
 
 InstalledVersionUpdater::~InstalledVersionUpdater() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  chromeos::UpdateEngineClient::Get()->RemoveObserver(this);
+  ash::UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void InstalledVersionUpdater::UpdateStatusChanged(

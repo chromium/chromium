@@ -19,9 +19,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,7 +100,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
 
     chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ =
-        chromeos::UpdateEngineClient::InitializeFakeForTest();
+        ash::UpdateEngineClient::InitializeFakeForTest();
 
     // Fast forward to set current time to local 2am . This is done to align the
     // relaunch deadline within the default relaunch window of 2am to 4am so
@@ -122,7 +122,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     }
     tzset();
 
-    chromeos::UpdateEngineClient::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -208,7 +208,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   std::unique_ptr<base::Environment> env_;
   absl::optional<std::string> original_tz_;
 
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 };
 
 TEST_F(UpgradeDetectorChromeosTest, PolicyNotEnabled) {

@@ -53,10 +53,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -113,7 +113,7 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
     fake_update_engine_client_ =
-        chromeos::UpdateEngineClient::InitializeFakeForTest();
+        ash::UpdateEngineClient::InitializeFakeForTest();
     const std::string lsb_release =
         base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s", kCurrentVersion);
     version_info_.emplace(lsb_release, base::Time::Now());
@@ -132,7 +132,7 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
 
   DevicePolicyCrosTestHelper helper_;
   base::test::ScopedFeatureList feature_list_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+  ash::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

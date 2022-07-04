@@ -23,10 +23,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,9 +91,7 @@ class UpdateRequiredNotificationTest
     return notification_service_.get();
   }
 
-  chromeos::FakeUpdateEngineClient* update_engine() {
-    return fake_update_engine_client_;
-  }
+  FakeUpdateEngineClient* update_engine() { return fake_update_engine_client_; }
 
   chromeos::NetworkHandlerTestHelper* network_handler_test_helper() {
     return network_handler_test_helper_.get();
@@ -110,7 +108,7 @@ class UpdateRequiredNotificationTest
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
+  FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<policy::MinimumVersionPolicyHandler>
       minimum_version_policy_handler_;

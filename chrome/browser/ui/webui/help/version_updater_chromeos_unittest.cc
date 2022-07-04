@@ -13,10 +13,10 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,7 +61,8 @@ class VersionUpdaterCrosTest : public ::testing::Test {
 
   void SetUp() override {
     DBusThreadManager::Initialize();
-    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
 
     EXPECT_CALL(*mock_user_manager_, IsCurrentUserOwner())
         .WillRepeatedly(Return(false));
@@ -96,7 +97,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   void TearDown() override {
     network_handler_test_helper_.reset();
     version_updater_.reset();
-    UpdateEngineClient::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 
@@ -104,7 +105,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<VersionUpdater> version_updater_;
   VersionUpdaterCros* version_updater_cros_ptr_;
-  FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 
   MockUserManager* mock_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;

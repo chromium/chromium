@@ -7,8 +7,8 @@
 
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
-#include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {

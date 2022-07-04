@@ -10,10 +10,10 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/mock_build_state_observer.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,7 +28,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
   InstalledVersionUpdaterTest() {
     chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ =
-        chromeos::UpdateEngineClient::InitializeFakeForTest();
+        ash::UpdateEngineClient::InitializeFakeForTest();
 
     build_state_.AddObserver(&mock_observer_);
   }
@@ -37,7 +37,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
     build_state_.RemoveObserver(&mock_observer_);
 
     // Be kind; rewind.
-    chromeos::UpdateEngineClient::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -50,7 +50,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
   BuildState build_state_;
 
  private:
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 };
 
 // Tests that an unrelated status change notification does not push data to the

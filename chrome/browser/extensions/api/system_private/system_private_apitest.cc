@@ -12,10 +12,8 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
-
-using chromeos::UpdateEngineClient;
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #endif
 
 namespace extensions {
@@ -40,7 +38,8 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -48,7 +47,7 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
   }
 
  protected:
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+  ash::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(GetUpdateStatusApiTest, Progress) {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeUpdateEngineClient::FakeUpdateEngineClient() {}
 
@@ -137,4 +137,4 @@ void FakeUpdateEngineClient::SetToggleFeature(
   features_[feature] = opt_enabled;
 }
 
-}  // namespace chromeos
+}  // namespace ash

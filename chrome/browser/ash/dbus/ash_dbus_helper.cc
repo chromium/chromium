@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/arc_quota_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
@@ -74,7 +75,6 @@
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -171,7 +171,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::TpmManagerClient>(bus);
   InitializeDBusClient<TypecdClient>(bus);
   InitializeDBusClient<chromeos::U2FClient>(bus);
-  InitializeDBusClient<chromeos::UpdateEngineClient>(bus);
+  InitializeDBusClient<UpdateEngineClient>(bus);
   InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
   InitializeDBusClient<VirtualFileProviderClient>(bus);
@@ -235,7 +235,7 @@ void ShutdownDBus() {
   VirtualFileProviderClient::Shutdown();
   UpstartClient::Shutdown();
   UserDataAuthClient::Shutdown();
-  chromeos::UpdateEngineClient::Shutdown();
+  UpdateEngineClient::Shutdown();
   chromeos::U2FClient::Shutdown();
   TypecdClient::Shutdown();
   chromeos::TpmManagerClient::Shutdown();

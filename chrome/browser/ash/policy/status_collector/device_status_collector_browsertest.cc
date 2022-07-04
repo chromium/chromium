@@ -68,6 +68,8 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -82,8 +84,6 @@
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
@@ -904,8 +904,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     // Use FakeUpdateEngineClient.
     chromeos::DBusThreadManager::Initialize();
-    update_engine_client_ =
-        chromeos::UpdateEngineClient::InitializeFakeForTest();
+    update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
     // Async tasks posted when calling `chromeos::DBusThreadManager::Initialize`
     // need to be flushed.
     base::RunLoop().RunUntilIdle();
@@ -939,7 +938,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
     ash::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
-    chromeos::UpdateEngineClient::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
     ash::KioskAppManager::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
@@ -1227,7 +1226,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
-  chromeos::FakeUpdateEngineClient* update_engine_client_;
+  ash::FakeUpdateEngineClient* update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock test_clock_;

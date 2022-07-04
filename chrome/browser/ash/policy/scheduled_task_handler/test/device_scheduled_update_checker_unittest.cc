@@ -34,13 +34,13 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/policy/core/common/policy_service.h"
@@ -126,7 +126,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
                             base::Unretained(&wake_lock_provider_)));
     chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ =
-        chromeos::UpdateEngineClient::InitializeFakeForTest();
+        ash::UpdateEngineClient::InitializeFakeForTest();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
@@ -154,7 +154,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     device_scheduled_update_checker_.reset();
     network_state_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::UpdateEngineClient::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::NullCallback());
@@ -357,7 +357,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
   std::unique_ptr<DeviceScheduledUpdateCheckerForTest>
       device_scheduled_update_checker_;
   ash::ScopedTestingCrosSettings cros_settings_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
   device::TestWakeLockProvider wake_lock_provider_;
 

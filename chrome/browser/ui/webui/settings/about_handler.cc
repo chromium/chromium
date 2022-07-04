@@ -66,8 +66,8 @@
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -653,7 +653,7 @@ void AboutHandler::HandleGetEndOfLifeInfo(const base::Value::List& args) {
 
 void AboutHandler::OnGetEndOfLifeInfo(
     std::string callback_id,
-    chromeos::UpdateEngineClient::EolInfo eol_info) {
+    ash::UpdateEngineClient::EolInfo eol_info) {
   base::Value response(base::Value::Type::DICTIONARY);
   if (!eol_info.eol_date.is_null()) {
     bool has_eol_passed = eol_info.eol_date <= clock_->Now();

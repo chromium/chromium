@@ -97,14 +97,14 @@ mojom("mojom") {
       traits_headers = [
         "shimless_rma_mojom_traits.h",
         "//chromeos/ash/components/dbus/rmad/rmad.pb.h",
-        "//chromeos/dbus/update_engine/update_engine.pb.h",
-        "//chromeos/dbus/update_engine/update_engine_client.h",
+        "//chromeos/ash/components/dbus/update_engine/update_engine.pb.h",
+        "//chromeos/ash/components/dbus/update_engine/update_engine_client.h",
       ]
       traits_sources = [ "shimless_rma_mojom_traits.cc" ]
       traits_public_deps = [
         "//chromeos/ash/components/dbus/rmad:rmad_proto",
-        "//chromeos/dbus/update_engine:proto",
-        "//chromeos/dbus/update_engine:update_engine",
+        "//chromeos/ash/components/dbus/update_engine:proto",
+        "//chromeos/ash/components/dbus/update_engine:update_engine",
         "//dbus",
       ]
     },
@@ -122,7 +122,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
-    "//chromeos/dbus/update_engine",
+    "//chromeos/ash/components/dbus/update_engine",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

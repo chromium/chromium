@@ -109,7 +109,7 @@ class UpdateRequiredScreen : public BaseScreen,
   // The user requested an attempt to connect to the network should be made.
   void OnConnectRequested();
 
-  void OnGetEolInfo(const chromeos::UpdateEngineClient::EolInfo& info);
+  void OnGetEolInfo(const UpdateEngineClient::EolInfo& info);
 
   void OnErrorScreenHidden();
 

@@ -20,8 +20,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -34,9 +34,9 @@
 
 namespace {
 
+using ::ash::UpdateEngineClient;
 using ::chromeos::OwnerSettingsServiceAsh;
 using ::chromeos::OwnerSettingsServiceAshFactory;
-using ::chromeos::UpdateEngineClient;
 
 // Network status in the context of device update.
 enum NetworkStatus {
@@ -240,9 +240,8 @@ void VersionUpdaterCros::GetEolInfo(EolInfoCallback cb) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
 }
 
-void VersionUpdaterCros::OnGetEolInfo(
-    EolInfoCallback cb,
-    chromeos::UpdateEngineClient::EolInfo eol_info) {
+void VersionUpdaterCros::OnGetEolInfo(EolInfoCallback cb,
+                                      UpdateEngineClient::EolInfo eol_info) {
   std::move(cb).Run(std::move(eol_info));
 }
 

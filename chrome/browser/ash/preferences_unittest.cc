@@ -22,8 +22,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -222,7 +222,7 @@ class PreferencesTest : public testing::Test {
   TestingProfile* test_profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
   input_method::MyMockInputMethodManager* mock_manager_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
+  FakeUpdateEngineClient* fake_update_engine_client_;
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {

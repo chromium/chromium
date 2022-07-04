@@ -30,7 +30,7 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -40,7 +40,7 @@ namespace policy {
 
 namespace {
 
-using chromeos::UpdateEngineClient;
+using ::ash::UpdateEngineClient;
 using MinimumVersionRequirement =
     MinimumVersionPolicyHandler::MinimumVersionRequirement;
 
@@ -333,7 +333,7 @@ void MinimumVersionPolicyHandler::FetchEolInfo() {
 }
 
 void MinimumVersionPolicyHandler::OnFetchEolInfo(
-    const chromeos::UpdateEngineClient::EolInfo info) {
+    const UpdateEngineClient::EolInfo info) {
   if (!ash::switches::IsAueReachedForUpdateRequiredForTest() &&
       (info.eol_date.is_null() || info.eol_date > update_required_time_)) {
     // End of life is not reached. Start update with |warning_time_|.
@@ -588,8 +588,7 @@ void MinimumVersionPolicyHandler::StopObservingNetwork() {
 
 void MinimumVersionPolicyHandler::UpdateOverMeteredPermssionGranted() {
   VLOG(1) << "Permission for update over metered network granted.";
-  chromeos::UpdateEngineClient* const update_engine_client =
-      UpdateEngineClient::Get();
+  UpdateEngineClient* const update_engine_client = UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
   update_engine_client->RequestUpdateCheck(
@@ -598,9 +597,9 @@ void MinimumVersionPolicyHandler::UpdateOverMeteredPermssionGranted() {
 }
 
 void MinimumVersionPolicyHandler::OnUpdateCheckStarted(
-    chromeos::UpdateEngineClient::UpdateCheckResult result) {
+    UpdateEngineClient::UpdateCheckResult result) {
   VLOG(1) << "Update check started.";
-  if (result != chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS)
+  if (result != UpdateEngineClient::UPDATE_RESULT_SUCCESS)
     UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
