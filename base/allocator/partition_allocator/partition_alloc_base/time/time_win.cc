@@ -327,7 +327,7 @@ DWORD (*g_tick_function)(void) = &timeGetTimeWrapper;
 // "rollover" counter.
 union LastTimeAndRolloversState {
   // The state as a single 32-bit opaque value.
-  std::atomic<int32_t> as_opaque_32;
+  std::atomic<int32_t> as_opaque_32{0};
 
   // The state as usable values.
   struct {
