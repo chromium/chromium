@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/perfetto/test_utils.h"
+#include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
@@ -108,7 +109,7 @@ class TraceEventDataSourceTest
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
         base::ThreadTaskRunnerHandle::Get());
-    TraceEventDataSource::GetInstance()->ResetForTesting();
+    CustomEventRecorder::GetInstance();  //->ResetForTesting();
     TraceEventMetadataSource::GetInstance()->ResetForTesting();
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
@@ -1905,15 +1906,15 @@ TEST_F(TraceEventDataSourceTest, InternedStrings) {
     ExpectInternedEventNames(e_packet3, {{2u, "e2"}});
     ExpectInternedDebugAnnotationNames(e_packet3, {{2u, "arg2"}});
 
-    // Resetting the interning state causes ThreadDescriptor and interning
-    // entries to be emitted again, with the same interning IDs.
-    TraceEventDataSource::GetInstance()->ClearIncrementalState();
-
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     // TODO(skyostil): Perfetto doesn't let us clear the interning state
     // explicitly, so not testing that here for now.
     if (!i)
       break;
+#else
+    // Resetting the interning state causes ThreadDescriptor and interning
+    // entries to be emitted again, with the same interning IDs.
+    TraceEventDataSource::GetInstance()->ClearIncrementalState();
 #endif
   }
 }

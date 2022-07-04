@@ -56,6 +56,8 @@ target(tracing_lib_type, "cpp") {
     sources += [
       "base_agent.cc",
       "base_agent.h",
+      "perfetto/custom_event_recorder.cc",
+      "perfetto/custom_event_recorder.h",
       "perfetto/dummy_producer.cc",
       "perfetto/dummy_producer.h",
       "perfetto/interning_index.h",

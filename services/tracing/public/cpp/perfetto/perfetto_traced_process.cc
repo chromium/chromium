@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_log.h"
 #include "base/tracing/perfetto_platform.h"
 #include "build/build_config.h"
+#include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 #include "services/tracing/public/cpp/perfetto/dummy_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
@@ -411,6 +412,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   perfetto::TrackEvent::Register();
   SetTrackDescriptors();
+  CustomEventRecorder::GetInstance();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 

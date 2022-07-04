@@ -32,8 +32,6 @@
 
 namespace base {
 
-class HistogramSamples;
-
 namespace trace_event {
 class TraceEvent;
 struct TraceEventHandle;
@@ -150,11 +148,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
 // the PerfettoProducer. It converts incoming
 // trace events to ChromeTraceEvent protos and writes
 // them into the Perfetto shared memory.
-class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    public perfetto::TrackEventSessionObserver,
-#endif
-    public PerfettoTracedProcess::DataSourceBase {
+class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
+    : public PerfettoTracedProcess::DataSourceBase {
  public:
   struct SessionFlags {
     // True if startup tracing is enabled for the current tracing session.
@@ -198,25 +193,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   bool IsEnabled();
   bool IsPrivacyFilteringEnabled();
 
-  // Records trace event for a histogram sample. When histogram_samples category
-  // is enabled, it is registered with base::StatisticsRecorder to monitor the
-  // histograms listed in the trace config. If there are no histograms listed in
-  // the trace config, all the histograms will be monitored.
-  static void OnMetricsSampleCallback(const char* histogram_name,
-                                      uint64_t name_hash,
-                                      base::HistogramBase::Sample sample);
-
-  // Registered as a callback to receive every action recorded using
-  // base::RecordAction(), when tracing is enabled with a histogram category.
-  static void OnUserActionSampleCallback(const std::string& action,
-                                         base::TimeTicks action_time);
-
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // perfetto::TrackEventSessionObserver:
-  void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
-  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
  private:
   friend class base::NoDestructor<TraceEventDataSource>;
 
@@ -256,13 +232,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   static base::trace_event::TracePacketHandle OnAddTracePacket();
   static void OnAddEmptyPacket();
 
-  // Extracts UMA histogram names that should be logged in traces and logs their
-  // starting values.
-  void ResetHistograms(const base::trace_event::TraceConfig& trace_config);
-  // Logs selected UMA histogram.
-  void LogHistograms();
-  // Logs a given histogram in traces.
-  void LogHistogram(base::HistogramBase* histogram);
   void EmitTrackDescriptor();
 
   uint32_t IncrementSessionIdOrClearStartupFlagWhileLocked();
@@ -291,24 +260,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   bool is_enabled_ = false;
   bool flushing_trace_log_ = false;
   base::OnceClosure flush_complete_task_;
-  std::vector<std::string> histograms_;
-  // For each of the Histogram that we are tracking, cache the snapshot of their
-  // HistogramSamples from before tracing began. So that we can calculate the
-  // delta when we go to LogHistograms.
-  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
-      startup_histogram_samples_;
-  // Stores the registered histogram callbacks for which OnMetricsSampleCallback
-  // was set individually.
-  std::vector<
-      std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
-      monitored_histograms_;
   bool privacy_filtering_enabled_ = false;
   base::trace_event::TraceRecordMode record_mode_ =
       base::trace_event::RECORD_UNTIL_FULL;
   std::string process_name_;
   int process_id_ = base::kNullProcessId;
-  base::ActionCallback user_action_callback_ =
-      base::BindRepeating(&TraceEventDataSource::OnUserActionSampleCallback);
 };
 
 }  // namespace tracing
