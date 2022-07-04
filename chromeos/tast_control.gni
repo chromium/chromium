@@ -259,11 +259,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/235279574
   "wmp.DragAndDropWindow",
 
-  # http://crbug.com/1336853
-  "arc.StandardizedKeyboardTyping",
-  "arc.StandardizedKeyboardTyping.tablet_mode",
-  "arc.StandardizedKeyboardKeys.tablet_mode",
-
   # http://b/236312054
   "crostini.AppGeditFilesharing",
   "crostini.AppGeditFilesharing.stable",
@@ -281,9 +276,6 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.BasicLxdNext.stable",
   "crostini.RestartApp",
   "crostini.RestartApp.stable",
-
-  # http://crbug.com/1338038
-  "arc.IMEBlockingVK",
 
   # http://crbug.com/1335213
   "arc.WindowState.clamshell",
