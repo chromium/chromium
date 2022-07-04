@@ -109,10 +109,7 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
     DoOnApps(std::move(pending));
   }
 
-  if (base::FeatureList::IsEnabled(
-          kAppServiceOnAppTypeInitializedWithoutMojom)) {
-    OnAppTypeInitialized();
-  }
+  OnAppTypeInitialized();
 }
 
 void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
@@ -333,30 +330,7 @@ bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
   return base::Contains(initialized_app_types_, app_type);
 }
 
-void AppRegistryCache::OnMojomAppTypeInitialized() {
-  if (in_progress_initialized_mojom_app_types_.empty()) {
-    return;
-  }
-
-  auto in_progress_initialized_app_types =
-      in_progress_initialized_mojom_app_types_;
-  in_progress_initialized_mojom_app_types_.clear();
-
-  for (auto app_type : in_progress_initialized_app_types) {
-    for (auto& obs : observers_) {
-      obs.OnAppTypeInitialized(ConvertMojomAppTypToAppType(app_type));
-    }
-    initialized_app_types_.insert(ConvertMojomAppTypToAppType(app_type));
-  }
-}
-
 void AppRegistryCache::OnAppTypeInitialized() {
-  if (!base::FeatureList::IsEnabled(
-          kAppServiceOnAppTypeInitializedWithoutMojom)) {
-    OnMojomAppTypeInitialized();
-    return;
-  }
-
   // Check both the non mojom and mojom initialized status. Only when they are
   // not initialized, call OnAppTypeInitialized to notify observers, because
   // observers might use the non mojom or mojom App struct.

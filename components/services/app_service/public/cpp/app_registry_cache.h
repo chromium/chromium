@@ -258,8 +258,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   void DoOnApps(std::vector<apps::mojom::AppPtr> deltas);
   void DoOnApps(std::vector<AppPtr> deltas);
 
-  void OnMojomAppTypeInitialized();
-
   void OnAppTypeInitialized();
 
   base::ObserverList<Observer> observers_;

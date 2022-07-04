@@ -236,11 +236,7 @@ namespace apps {
 
 class PublisherTest : public extensions::ExtensionServiceTestBase {
  public:
-  PublisherTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kAppServiceOnAppTypeInitializedWithoutMojom);
-  }
-
+  PublisherTest() = default;
   PublisherTest(const PublisherTest&) = delete;
   PublisherTest& operator=(const PublisherTest&) = delete;
 
@@ -646,9 +642,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
-         kAppServiceOnAppTypeInitializedWithoutMojom},
-        {});
+        {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary}, {});
   }
 
   StandaloneBrowserPublisherTest(const StandaloneBrowserPublisherTest&) =
@@ -1026,9 +1020,7 @@ class BorealisPublisherTest : public StandaloneBrowserPublisherTest {
   BorealisPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kBorealis, chromeos::features::kBorealisPermitted,
-         kAppServiceOnAppTypeInitializedWithoutMojom},
-        {});
+        {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
   }
 };
 
