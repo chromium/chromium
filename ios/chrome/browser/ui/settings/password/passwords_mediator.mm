@@ -374,12 +374,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
-  self.faviconLoader->FaviconForPageUrl(
-      URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      self.syncService->IsSyncFeatureEnabled(),
-      ^(FaviconAttributes* attributes) {
-        completion(attributes);
-      });
+  syncer::SyncService* syncService = self.syncService;
+  const BOOL isSyncEnabled = syncService && syncService->IsSyncFeatureEnabled();
+  self.faviconLoader->FaviconForPageUrl(URL.gurl, kDesiredMediumFaviconSizePt,
+                                        kMinFaviconSizePt, isSyncEnabled,
+                                        completion);
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

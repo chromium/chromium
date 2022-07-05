@@ -140,8 +140,7 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
   DCHECK(filename);
   if (skip_max_verification) {
     ContinueFetchingFavicon(favicon_loader->AsWeakPtr(), site_url, filename,
-                            sync_enabled,
-                            /* continue_fetching */ YES);
+                            sync_enabled, /* continue_fetching */ YES);
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},

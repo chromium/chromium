@@ -1326,15 +1326,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 - (void)performFaviconsCleanup {
-  if (!self.currentBrowserState)
+  ChromeBrowserState* browserState = self.currentBrowserState;
+  if (!browserState)
     return;
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.currentBrowserState);
+      SyncServiceFactory::GetForBrowserState(browserState);
   if (syncService) {
-    UpdateFaviconsStorage(IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                              self.currentBrowserState),
-                          syncService->IsSyncFeatureEnabled());
+    UpdateFaviconsStorage(
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState),
+        syncService->IsSyncFeatureEnabled());
   }
 }
 #endif
