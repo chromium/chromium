@@ -167,6 +167,8 @@ void ShowWebStore(Browser* browser);
 void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdPersonalization(Browser* browser);
 void ShowPrivacySandboxLearnMore(Browser* browser);
+void ShowAddresses(Browser* browser);
+void ShowPaymentMethods(Browser* browser);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows the enterprise management info page in a browser tab.

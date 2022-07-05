@@ -41,7 +41,7 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            personal_data_manager_.get(), nullptr, menu_model_.get());
+            personal_data_manager_.get(), nullptr, menu_model_.get(), nullptr);
   }
 
   void TearDown() override {
@@ -78,10 +78,13 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with address descriptions.
   auto* address_menu_model = menu_model()->GetSubmenuModelAt(0);
-  ASSERT_EQ(address_menu_model->GetItemCount(), 1);
+  ASSERT_EQ(address_menu_model->GetItemCount(), 3);
   ASSERT_EQ(u"John H. Doe, 666 Erebus St.", address_menu_model->GetLabelAt(0));
   ASSERT_EQ(address_menu_model->GetTypeAt(0),
             ui::MenuModel::ItemType::TYPE_SUBMENU);
+  ASSERT_EQ(address_menu_model->GetTypeAt(1),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  ASSERT_EQ(u"Manage addresses", address_menu_model->GetLabelAt(2));
 
   // Check for submenu with address details.
   auto* address_details_submenu = address_menu_model->GetSubmenuModelAt(0);
@@ -97,7 +100,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with credit card descriptions.
   auto* card_menu_model = menu_model()->GetSubmenuModelAt(1);
-  ASSERT_EQ(card_menu_model->GetItemCount(), 1);
+  ASSERT_EQ(card_menu_model->GetItemCount(), 3);
   ASSERT_EQ(
       u"Visa  "
       u"\x202A\x2022\x2060\x2006\x2060\x2022\x2060\x2006\x2060\x2022\x2060"
@@ -106,6 +109,9 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
       card_menu_model->GetLabelAt(0));
   ASSERT_EQ(card_menu_model->GetTypeAt(0),
             ui::MenuModel::ItemType::TYPE_SUBMENU);
+  ASSERT_EQ(card_menu_model->GetTypeAt(1),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  ASSERT_EQ(u"Manage payment methods", card_menu_model->GetLabelAt(2));
 
   // Check for submenu with credit card details.
   auto* card_details_submenu = card_menu_model->GetSubmenuModelAt(0);

@@ -23119,6 +23119,11 @@ should be able to be added at any place in this file.
   <description>Set system time dialog was launched.</description>
 </action>
 
+<action name="Options_ShowAddresses">
+  <owner>vidhanj@google.com</owner>
+  <description>Settings: Show addresses</description>
+</action>
+
 <action name="Options_ShowAdvancedSettings">
   <owner>stevenjb@chromium.org</owner>
   <description>Settings: Show advanced settings</description>
@@ -23169,6 +23174,11 @@ should be able to be added at any place in this file.
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <description>Settings: saved passwords</description>
+</action>
+
+<action name="Options_ShowPaymentMethods">
+  <owner>vidhanj@google.com</owner>
+  <description>Settings: Show payment options</description>
 </action>
 
 <action name="Options_ShowPowerSettings">

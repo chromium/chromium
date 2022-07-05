@@ -466,6 +466,16 @@ void ShowPrivacySandboxLearnMore(Browser* browser) {
   ShowSettingsSubPage(browser, kPrivacySandboxLearnMoreSubPage);
 }
 
+void ShowAddresses(Browser* browser) {
+  base::RecordAction(UserMetricsAction("Options_ShowAddresses"));
+  ShowSettingsSubPage(browser, kAddressesSubPage);
+}
+
+void ShowPaymentMethods(Browser* browser) {
+  base::RecordAction(UserMetricsAction("Options_ShowPaymentMethods"));
+  ShowSettingsSubPage(browser, kPaymentsSubPage);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the

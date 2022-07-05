@@ -7,6 +7,8 @@
 #include <string>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -60,10 +62,12 @@ bool AutofillContextMenuManager::IsAutofillCustomCommandId(
 AutofillContextMenuManager::AutofillContextMenuManager(
     PersonalDataManager* personal_data_manager,
     ui::SimpleMenuModel::Delegate* delegate,
-    ui::SimpleMenuModel* menu_model)
+    ui::SimpleMenuModel* menu_model,
+    Browser* browser)
     : personal_data_manager_(personal_data_manager),
       menu_model_(menu_model),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      browser_(browser) {}
 
 AutofillContextMenuManager::~AutofillContextMenuManager() {
   cached_menu_models_.clear();
@@ -128,6 +132,26 @@ void AutofillContextMenuManager::ExecuteCommand(
   if (!params.field_renderer_id)
     return;
 
+  if (it->second.is_manage_item) {
+    DCHECK(browser_);
+    switch (it->second.sub_menu_type) {
+      case SubMenuType::SUB_MENU_TYPE_ADDRESS:
+        chrome::ShowAddresses(browser_);
+        break;
+      case SubMenuType::SUB_MENU_TYPE_CREDIT_CARD:
+        chrome::ShowPaymentMethods(browser_);
+        break;
+      case SubMenuType::SUB_MENU_TYPE_PASSWORD:
+        chrome::ShowPasswordManager(browser_);
+        break;
+      case SubMenuType::NUM_SUBMENU_TYPES:
+        [[fallthrough]];
+      default:
+        NOTREACHED();
+    }
+    return;
+  }
+
   driver->RendererShouldFillFieldWithValue(
       {LocalFrameToken(render_frame_host->GetFrameToken().value()),
        FieldRendererId(params.field_renderer_id.value())},
@@ -187,6 +211,16 @@ void AutofillContextMenuManager::AppendAddressItems(
   if (!address_added)
     return;
 
+  profile_menu->AddSeparator(ui::NORMAL_SEPARATOR);
+  absl::optional<CommandId> manage_item_command_id =
+      GetNextAvailableAutofillCommandId();
+  DCHECK(manage_item_command_id);
+  // TODO(crbug.com/1325811): Use i18n string.
+  profile_menu->AddItem(manage_item_command_id->value(), u"Manage addresses");
+  detail_items_added_to_context_menu.emplace_back(
+      *manage_item_command_id,
+      ContextMenuItem{u"", SubMenuType::SUB_MENU_TYPE_ADDRESS, true});
+
   // Add a menu option to suggest filling address in the context menu.
   // Hovering over it opens a submenu suggesting all the address profiles
   // stored in the profile.
@@ -244,6 +278,17 @@ void AutofillContextMenuManager::AppendCreditCardItems(
   if (!card_added)
     return;
 
+  card_submenu->AddSeparator(ui::NORMAL_SEPARATOR);
+  absl::optional<CommandId> manage_item_command_id =
+      GetNextAvailableAutofillCommandId();
+  DCHECK(manage_item_command_id);
+  // TODO(crbug.com/1325811): Use i18n string.
+  card_submenu->AddItem(manage_item_command_id->value(),
+                        u"Manage payment methods");
+  detail_items_added_to_context_menu.emplace_back(
+      *manage_item_command_id,
+      ContextMenuItem{u"", SubMenuType::SUB_MENU_TYPE_CREDIT_CARD, true});
+
   // Add a menu option to suggest filling a credit card in the context menu.
   // Hovering over it opens a submenu suggesting all the credit cards
   // stored in the profile.
@@ -277,10 +322,12 @@ bool AutofillContextMenuManager::CreateSubMenuWithData(
   // Check if there are enough command ids for adding all the items to the
   // context menu.
   // 1 is added to count for the address/credit card description.
-  if (!IsAutofillCustomCommandId(CommandId(kAutofillContextCustomFirst +
-                                           SubMenuType::NUM_SUBMENU_TYPES +
-                                           count_of_items_added_to_menu_model_ +
-                                           count_of_items_to_be_added + 1))) {
+  // Another 1 is added to account for the manage addresses/payment methods
+  // option.
+  if (!IsAutofillCustomCommandId(CommandId(
+          kAutofillContextCustomFirst + SubMenuType::NUM_SUBMENU_TYPES +
+          count_of_items_added_to_menu_model_ + count_of_items_to_be_added + 1 +
+          1))) {
     return false;
   }
 
