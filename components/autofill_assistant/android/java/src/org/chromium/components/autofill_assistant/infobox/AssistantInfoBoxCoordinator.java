@@ -13,9 +13,7 @@ import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxViewBi
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Coordinator responsible for showing an InfoBox.
- */
+/** Coordinator responsible for showing an InfoBox. */
 public class AssistantInfoBoxCoordinator {
     private final View mView;
     private AssistantInfoBoxViewBinder mViewBinder;
@@ -31,31 +29,22 @@ public class AssistantInfoBoxCoordinator {
 
         // InfoBox view is initially hidden.
         setVisible(false);
-
         // Observe InfoBox in model to hide or show this coordinator view.
         model.addObserver((source, propertyKey) -> {
             if (AssistantInfoBoxModel.INFO_BOX == propertyKey) {
                 AssistantInfoBox infoBox = model.get(AssistantInfoBoxModel.INFO_BOX);
-                if (infoBox != null) {
-                    setVisible(true);
-                } else {
-                    setVisible(false);
-                }
+                setVisible(!isEmpty(infoBox));
             }
         });
     }
 
-    /**
-     * Explicitly clean up.
-     */
+    /** Explicitly clean up. */
     public void destroy() {
         mViewBinder.destroy();
         mViewBinder = null;
     }
 
-    /**
-     * Return the view associated to the info box.
-     */
+    /** Return the view associated to the info box. */
     public View getView() {
         return mView;
     }
@@ -69,5 +58,10 @@ public class AssistantInfoBoxCoordinator {
         if (mView.getVisibility() != visibility) {
             mView.setVisibility(visibility);
         }
+    }
+
+    private boolean isEmpty(AssistantInfoBox infoBox) {
+        return infoBox == null
+                || (infoBox.getImagePath().isEmpty() && infoBox.getExplanation().isEmpty());
     }
 }

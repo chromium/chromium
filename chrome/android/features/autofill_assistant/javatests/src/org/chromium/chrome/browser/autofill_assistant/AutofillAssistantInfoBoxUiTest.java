@@ -40,9 +40,7 @@ import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxCoordi
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for the Autofill Assistant infobox.
- */
+/** Tests for the Autofill Assistant infobox. */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantInfoBoxUiTest {
@@ -135,10 +133,26 @@ public class AutofillAssistantInfoBoxUiTest {
 
     @Test
     @MediumTest
-    public void testVisibility() throws Exception {
+    public void hideIfEmpty() throws Exception {
         AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
-        AssistantInfoBox infoBox = new AssistantInfoBox("", "");
+
+        TestThreadUtils.runOnUiThreadBlocking(()
+                                                      -> model.set(AssistantInfoBoxModel.INFO_BOX,
+                                                              new AssistantInfoBox("", "Message")));
+        onView(is(coordinator.getView())).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantInfoBoxModel.INFO_BOX, new AssistantInfoBox("", "")));
+        onView(is(coordinator.getView())).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void hideIfNull() throws Exception {
+        AssistantInfoBoxModel model = createModel();
+        AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
+        AssistantInfoBox infoBox = new AssistantInfoBox("Message", "");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantInfoBoxModel.INFO_BOX, infoBox));
