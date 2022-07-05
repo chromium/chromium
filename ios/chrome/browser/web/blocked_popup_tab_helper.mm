@@ -36,7 +36,7 @@ namespace {
 // The infobar to display when a popup is blocked.
 
 // The size of the symbol image.
-NSInteger kSymbolImagePointSize = 18;
+const CGFloat kSymbolImagePointSize = 18.;
 
 // The name if the popup symbol.
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";

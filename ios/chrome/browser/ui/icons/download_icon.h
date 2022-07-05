@@ -8,12 +8,12 @@
 #import <UIKit/UIKit.h>
 
 // The size of the symbol image used in the download toolbar.
-extern NSInteger kSymbolDownloadInfobarPointSize;
-extern NSInteger kSymbolDownloadSmallInfobarPointSize;
+extern const CGFloat kSymbolDownloadInfobarPointSize;
+extern const CGFloat kSymbolDownloadSmallInfobarPointSize;
 
 // Specific symbols used in the download toolbar.
-extern NSString* kDownloadPromptFillSymbol;
-extern NSString* kDownloadDocFillSymbol;
-extern NSString* kOpenInDownloadsSymbol;
+extern NSString* const kDownloadPromptFillSymbol;
+extern NSString* const kDownloadDocFillSymbol;
+extern NSString* const kOpenInDownloadsSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_DOWNLOAD_ICON_H_

@@ -31,7 +31,7 @@ NSString* const kReloadActionImage = @"ptr_reload";
 NSString* const kCloseActionImage = @"ptr_close";
 
 // The size of overscroll symbol images.
-NSInteger kOverScrollSymbolPointSize = 17;
+const CGFloat kOverScrollSymbolPointSize = 17.;
 
 // Represents a simple min/max range.
 typedef struct {

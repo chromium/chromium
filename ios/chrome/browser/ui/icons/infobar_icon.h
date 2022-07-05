@@ -8,6 +8,6 @@
 #import <UIKit/UIKit.h>
 
 // The size of the symbol image displayed in infobars.
-extern NSInteger kSymbolImagePointSize;
+extern const CGFloat kSymbolImagePointSize;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_INFOBAR_ICON_H_

@@ -29,10 +29,10 @@ NSString* const kOverflowPopupMenuActionIdentifier =
     @"kOverflowPopupMenuActionIdentifier";
 
 // The size of the incognito symbol image.
-NSInteger kSymbolIncognitoPointSize = 28;
+const CGFloat kSymbolIncognitoPointSize = 28.;
 
 // The size of the incognito full screen symbol image.
-NSInteger kSymbolIncognitoFullScreenPointSize = 14;
+const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 }  // namespace
 

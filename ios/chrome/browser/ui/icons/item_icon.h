@@ -8,10 +8,10 @@
 #import <UIKit/UIKit.h>
 
 // The size of accessory symbol images.
-extern NSInteger kSymbolAccessoryPointSize;
+extern const CGFloat kSymbolAccessoryPointSize;
 
 // Specific symbols used to create items.
-extern NSString* kExternalLinkSmbol;
-extern NSString* kChevronForwardSymbol;
+extern NSString* const kExternalLinkSmbol;
+extern NSString* const kChevronForwardSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_ITEM_ICON_H_

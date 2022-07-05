@@ -107,7 +107,7 @@ const CGFloat kBackgroundAlpha = 0.3;
 const CGFloat kSelectedColor = 0x3C4043;
 
 // The size of the symbol image.
-NSInteger kSymbolTabGridPageControlPointSize = 24;
+const CGFloat kSymbolTabGridPageControlPointSize = 24.;
 
 // Returns the point that's at the center of `rect`.
 CGPoint RectCenter(CGRect rect) {

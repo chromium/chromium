@@ -15,7 +15,7 @@ namespace {
 
 // Returns the default configuration with the given `pointSize`.
 UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
-    NSInteger pointSize) {
+    CGFloat pointSize) {
   return [UIImageSymbolConfiguration
       configurationWithPointSize:pointSize
                           weight:UIImageSymbolWeightMedium
@@ -90,24 +90,24 @@ UIImage* CustomSymbolWithConfiguration(NSString* symbolName,
   return SymbolWithConfiguration(symbolName, configuration, false);
 }
 
-UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
+UIImage* DefaultSymbolWithPointSize(NSString* symbolName, CGFloat pointSize) {
   return DefaultSymbolWithConfiguration(
       symbolName, DefaultSymbolConfigurationWithPointSize(pointSize));
 }
 
-UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
+UIImage* CustomSymbolWithPointSize(NSString* symbolName, CGFloat pointSize) {
   return CustomSymbolWithConfiguration(
       symbolName, DefaultSymbolConfigurationWithPointSize(pointSize));
 }
 
 UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbolName,
-                                            NSInteger pointSize) {
+                                            CGFloat pointSize) {
   return [DefaultSymbolWithPointSize(symbolName, pointSize)
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
-                                           NSInteger pointSize) {
+                                           CGFloat pointSize) {
   return [CustomSymbolWithPointSize(symbolName, pointSize)
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }

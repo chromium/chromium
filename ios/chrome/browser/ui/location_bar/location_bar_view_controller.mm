@@ -45,7 +45,7 @@ typedef NS_ENUM(int, TrailingButtonState) {
 };
 
 // The size of the symbol image.
-NSInteger kSymbolImagePointSize = 18;
+const CGFloat kSymbolImagePointSize = 18.;
 
 // FullScreen progress threshold in which to toggle between full screen on and
 // off mode for the badge view.

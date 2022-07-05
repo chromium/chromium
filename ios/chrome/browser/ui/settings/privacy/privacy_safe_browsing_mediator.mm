@@ -41,7 +41,7 @@ using ItemArray = NSArray<TableViewItem*>*;
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolImagePointSize = 17;
+CGFloat kSymbolImagePointSize = 17.;
 
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {

@@ -54,21 +54,21 @@ UIImage* CustomSymbolWithConfiguration(NSString* symbolName,
 
 // Returns a SF symbol named `symbolName` configured with the default
 // configuration and the given `pointSize`.
-UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
+UIImage* DefaultSymbolWithPointSize(NSString* symbolName, CGFloat pointSize);
 
 // Returns a custom symbol named `symbolName` configured with the default
 // configuration and the given `pointSize`.
-UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
+UIImage* CustomSymbolWithPointSize(NSString* symbolName, CGFloat pointSize);
 
 // Returns a SF symbol named `symbolName` as a template image, configured with
 // the default configuration and the given `pointSize`.
 UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbolName,
-                                            NSInteger pointSize);
+                                            CGFloat pointSize);
 
 // Returns a custom symbol named `symbolName` as a template image, configured
 // with the default configuration and the given `pointSize`.
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
-                                           NSInteger pointSize);
+                                           CGFloat pointSize);
 
 // Returns YES if the kUseSFSymbols flag is enabled.
 bool UseSymbols();

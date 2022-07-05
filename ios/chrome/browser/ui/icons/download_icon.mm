@@ -8,9 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-NSInteger kSymbolDownloadInfobarPointSize = 18;
-NSInteger kSymbolDownloadSmallInfobarPointSize = 13;
+const CGFloat kSymbolDownloadInfobarPointSize = 18.;
+const CGFloat kSymbolDownloadSmallInfobarPointSize = 13.;
 
-NSString* kDownloadPromptFillSymbol = @"arrow.down.to.line.circle.fill";
-NSString* kDownloadDocFillSymbol = @"doc.fill";
-NSString* kOpenInDownloadsSymbol = @"arrow.down.to.line.alt";
+NSString* const kDownloadPromptFillSymbol = @"arrow.down.to.line.circle.fill";
+NSString* const kDownloadDocFillSymbol = @"doc.fill";
+NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.alt";

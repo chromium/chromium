@@ -8,4 +8,4 @@
 #error "This file requires ARC support."
 #endif
 
-NSInteger kSymbolImagePointSize = 18;
+const CGFloat kSymbolImagePointSize = 18.;
