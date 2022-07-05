@@ -7159,3 +7159,4 @@ crbug.com/1341693 [ Linux ] external/wpt/dom/nodes/MutationObserver-document.htm
 # Sheriff 2022-07-05
 crbug.com/1321217 [ Mac11-arm64 ] http/tests/devtools/layers/layer-canvas-log.js [ Failure Pass ]
 crbug.com/1342050 [ Mac10.15 ] virtual/prerender/wpt_internal/prerender/activate-from-iframe.html [ Failure Pass ]
+crbug.com/1340763 external/wpt/pointerevents/pointerevent_capture_mouse.html [ Failure Pass ]
