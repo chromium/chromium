@@ -25,6 +25,7 @@
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -580,6 +581,67 @@ TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
   std::string dte_json_result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
   EXPECT_EQ("", dte_json_result);
+}
+
+// See crbug.com/1339344
+TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacrosSourceChanged) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kLacros);
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
+        (GURL("https://www.google.com"))));
+    writer.WriteText(u"Test data");
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(4u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("UTF8_STRING"));
+  EXPECT_EQ(1u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+
+  // Clipboard data changed
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"Data changed with no source");
+  }
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Data changed with no source", text_result);
+
+  // Retrieve encoded clipboard source data transfer endpoint.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+#if DCHECK_IS_ON()
+  EXPECT_DEATH_IF_SUPPORTED(
+      data_offer.Receive("chromium/x-data-transfer-endpoint",
+                         std::move(write_pipe));
+      ,
+      "Check failed: data_src. Clipboard source DataTransferEndpoint has "
+      "changed after initial MIME advertising. If you see this please file a "
+      "bug and contact the chromeos-dlp team.");
+#else
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ("", dte_json_result);
+#endif
 }
 
 TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {

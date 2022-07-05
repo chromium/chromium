@@ -101,9 +101,16 @@ void ReadDataTransferEndpointFromClipboard(
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 
-  DCHECK(data_src);
-  std::u16string encoded_endpoint =
-      base::UTF8ToUTF16(ui::ConvertDataTransferEndpointToJson(*data_src));
+  std::u16string encoded_endpoint;
+  if (data_src) {
+    encoded_endpoint =
+        base::UTF8ToUTF16(ui::ConvertDataTransferEndpointToJson(*data_src));
+  } else {
+    DCHECK(data_src) << "Clipboard source DataTransferEndpoint has changed "
+                        "after initial MIME advertising. If you see this "
+                        "please file a bug and contact the chromeos-dlp team.";
+  }
+
   std::move(callback).Run(EncodeAsRefCountedString(encoded_endpoint, charset));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
