@@ -17,6 +17,9 @@ import org.chromium.net.NetworkQualityRttListener;
 import org.chromium.net.NetworkQualityThroughputListener;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
+import org.chromium.net.impl.CronetLogger.CronetSource;
+import org.chromium.net.impl.CronetLogger.CronetVersion;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -42,8 +45,10 @@ import java.util.concurrent.TimeUnit;
 public final class JavaCronetEngine extends CronetEngineBase {
     private final String mUserAgent;
     private final ExecutorService mExecutorService;
+    private final int mCronetEngineId;
 
     public JavaCronetEngine(CronetEngineBuilderImpl builder) {
+        mCronetEngineId = hashCode();
         // On android, all background threads (and all threads that are part
         // of background processes) are put in a cgroup that is allowed to
         // consume up to 5% of CPU - these worker threads spend the vast
@@ -67,6 +72,18 @@ public final class JavaCronetEngine extends CronetEngineBase {
                         });
                     }
                 });
+        CronetLogger logger = CronetLoggerFactory.createLogger();
+        // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
+        // about the "w.x.y.z" bit.
+        String version = getVersionString();
+        version = version.split("/")[1];
+        version = version.split("@")[0];
+        logger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
+                new CronetVersion(version), CronetSource.CRONET_SOURCE_FALLBACK);
+    }
+
+    int getCronetEngineId() {
+        return mCronetEngineId;
     }
 
     @Override
@@ -81,7 +98,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
                     "The multi-network API is not supported by the Java implementation "
                     + "of Cronet Engine");
         }
-        return new JavaUrlRequest(callback, mExecutorService, executor, url, mUserAgent,
+        return new JavaUrlRequest(this, callback, mExecutorService, executor, url, mUserAgent,
                 allowDirectExecutor, trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet,
                 trafficStatsUid);
     }

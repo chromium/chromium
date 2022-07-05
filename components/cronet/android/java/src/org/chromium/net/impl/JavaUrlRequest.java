@@ -10,12 +10,15 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlResponseInfo;
+import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
 import org.chromium.net.impl.JavaUrlRequestUtils.DirectPreventingExecutor;
 import org.chromium.net.impl.JavaUrlRequestUtils.State;
@@ -30,6 +33,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.time.Duration;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -101,6 +105,7 @@ final class JavaUrlRequest extends UrlRequestBase {
     private String mPendingRedirectUrl;
     private HttpURLConnection mCurrentUrlConnection; // Only accessed on mExecutor.
     private OutputStreamDataSink mOutputStreamDataSink; // Only accessed on mExecutor.
+    private final int mCronetEngineId;
 
     // Executor that runs one task at a time on an underlying Executor.
     // NOTE: Do not use to wrap user supplied Executor as lock is held while underlying execute()
@@ -173,9 +178,10 @@ final class JavaUrlRequest extends UrlRequestBase {
      * @param executor The executor used for reading and writing from sockets
      * @param userExecutor The executor used to dispatch to {@code callback}
      */
-    JavaUrlRequest(Callback callback, final Executor executor, Executor userExecutor, String url,
-            String userAgent, boolean allowDirectExecutor, boolean trafficStatsTagSet,
-            int trafficStatsTag, final boolean trafficStatsUidSet, final int trafficStatsUid) {
+    JavaUrlRequest(JavaCronetEngine engine, Callback callback, final Executor executor,
+            Executor userExecutor, String url, String userAgent, boolean allowDirectExecutor,
+            boolean trafficStatsTagSet, int trafficStatsTag, final boolean trafficStatsUidSet,
+            final int trafficStatsUid) {
         if (url == null) {
             throw new NullPointerException("URL is required");
         }
@@ -189,11 +195,11 @@ final class JavaUrlRequest extends UrlRequestBase {
             throw new NullPointerException("userExecutor is required");
         }
 
-        this.mAllowDirectExecutor = allowDirectExecutor;
-        this.mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
+        mAllowDirectExecutor = allowDirectExecutor;
+        mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
         final int trafficStatsTagToUse =
                 trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
-        this.mExecutor = new SerializingExecutor(new Executor() {
+        mExecutor = new SerializingExecutor(new Executor() {
             @Override
             public void execute(final Runnable command) {
                 executor.execute(new Runnable() {
@@ -216,8 +222,9 @@ final class JavaUrlRequest extends UrlRequestBase {
                 });
             }
         });
-        this.mCurrentUrl = url;
-        this.mUserAgent = userAgent;
+        mCronetEngineId = engine.getCronetEngineId();
+        mCurrentUrl = url;
+        mUserAgent = userAgent;
     }
 
     @Override
@@ -732,6 +739,52 @@ final class JavaUrlRequest extends UrlRequestBase {
         return state == State.COMPLETE || state == State.ERROR || state == State.CANCELLED;
     }
 
+    /**
+     * Estimates the byte size of the headers in their on-wire format.
+     * We are not really interested in their specific size but something which is close enough.
+     */
+    @VisibleForTesting
+    static long estimateHeadersSizeInBytesList(Map<String, List<String>> headers) {
+        if (headers == null) return 0;
+
+        long responseHeaderSizeInBytes = 0;
+        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+            String key = entry.getKey();
+            if (key != null) responseHeaderSizeInBytes += key.length();
+            if (entry.getValue() == null) continue;
+
+            for (String content : entry.getValue()) {
+                if (content != null) responseHeaderSizeInBytes += content.length();
+            }
+        }
+        return responseHeaderSizeInBytes;
+    }
+
+    /**
+     * Estimates the byte size of the headers in their on-wire format.
+     * We are not really interested in their specific size but something which is close enough.
+     */
+    @VisibleForTesting
+    static long estimateHeadersSizeInBytes(Map<String, String> headers) {
+        if (headers == null) return 0;
+        long responseHeaderSizeInBytes = 0;
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            String key = entry.getKey();
+            if (key != null) responseHeaderSizeInBytes += key.length();
+            String value = entry.getValue();
+            if (value != null) responseHeaderSizeInBytes += value.length();
+        }
+        return responseHeaderSizeInBytes;
+    }
+
+    private static long parseContentLengthString(String contentLength) {
+        try {
+            return Long.parseLong(contentLength);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     @Override
     public void getStatus(StatusListener listener) {
         @State
@@ -834,6 +887,69 @@ final class JavaUrlRequest extends UrlRequestBase {
             });
         }
 
+        /**
+         * Builds the {@link CronetTrafficInfo} associated to this request internal state.
+         * This helper methods makes strong assumptions about the state of the request. For this
+         * reason it should only be called within {@link JavaUrlRequest#maybeReportMetrics} where
+         * these assumptions are guaranteed to be true.
+         * @return the {@link CronetTrafficInfo} associated to this request internal state
+         */
+        @RequiresApi(Build.VERSION_CODES.O)
+        private CronetTrafficInfo buildCronetTrafficInfo() {
+            assert mRequestHeaders != null;
+
+            // Most of the CronetTrafficInfo fields have similar names/semantics. To avoid bugs due
+            // to typos everything is final, this means that things have to initialized through an
+            // if/else.
+            final Map<String, List<String>> responseHeaders;
+            final String negotiatedProtocol;
+            final int httpStatusCode;
+            if (mUrlResponseInfo != null) {
+                responseHeaders = mUrlResponseInfo.getAllHeaders();
+                negotiatedProtocol = mUrlResponseInfo.getNegotiatedProtocol();
+                httpStatusCode = mUrlResponseInfo.getHttpStatusCode();
+            } else {
+                responseHeaders = Collections.emptyMap();
+                negotiatedProtocol = "";
+                httpStatusCode = 0;
+            }
+
+            final long requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
+            // TODO(stefanoduo): Add logic to keep track of body size.
+            final long requestBodySizeInBytes = -1;
+
+            final long responseBodySizeInBytes;
+            final long responseHeaderSizeInBytes = estimateHeadersSizeInBytesList(responseHeaders);
+            // Content-Length is not mandatory, if missing report a non-valid response body size for
+            // the time being.
+            if (responseHeaders.containsKey("Content-Length")) {
+                responseBodySizeInBytes =
+                        parseContentLengthString(responseHeaders.get("Content-Length").get(0));
+            } else {
+                responseBodySizeInBytes = -1;
+            }
+
+            final Duration headersLatency = Duration.ofSeconds(0);
+            final Duration totalLatency = Duration.ofSeconds(0);
+
+            return new CronetTrafficInfo(requestHeaderSizeInBytes, requestBodySizeInBytes,
+                    responseHeaderSizeInBytes, responseBodySizeInBytes, httpStatusCode,
+                    headersLatency, totalLatency, negotiatedProtocol,
+                    // There is no connection migration for the fallback implementation.
+                    false, // wasConnectionMigrationAttempted
+                    false // didConnectionMigrationSucceed
+            );
+        }
+
+        // Maybe report metrics. This method should only be called on Callback's executor thread and
+        // after Callback's onSucceeded, onFailed and onCanceled.
+        private void maybeReportMetrics() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CronetLogger logger = CronetLoggerFactory.createLogger();
+                logger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+            }
+        }
+
         void onCanceled(final UrlResponseInfo info) {
             closeResponseChannel();
             mUserExecutor.execute(new Runnable() {
@@ -841,6 +957,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                 public void run() {
                     try {
                         mCallback.onCanceled(JavaUrlRequest.this, info);
+                        maybeReportMetrics();
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onCanceled method", exception);
                     }
@@ -854,6 +971,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                 public void run() {
                     try {
                         mCallback.onSucceeded(JavaUrlRequest.this, info);
+                        maybeReportMetrics();
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onSucceeded method", exception);
                     }
@@ -868,6 +986,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                 public void run() {
                     try {
                         mCallback.onFailed(JavaUrlRequest.this, urlResponseInfo, e);
+                        maybeReportMetrics();
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onFailed method", exception);
                     }
