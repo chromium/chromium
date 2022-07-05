@@ -217,8 +217,10 @@ def ConvertSimpleperfToPprof(simpleperf_out_path, build_directory,
   report_path = os.path.join(script_dir, 'report.py')
   report_cmd = [sys.executable, report_path, '-i', simpleperf_out_path]
   device_lib_path = None
-  for line in subprocess.check_output(
-      report_cmd, stderr=subprocess.STDOUT).splitlines():
+  output = subprocess.check_output(report_cmd, stderr=subprocess.STDOUT)
+  if isinstance(output, bytes):
+    output = output.decode()
+  for line in output.splitlines():
     fields = line.split()
     if len(fields) < 5:
       continue
