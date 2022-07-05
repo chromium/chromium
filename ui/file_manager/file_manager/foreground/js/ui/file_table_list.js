@@ -27,7 +27,7 @@ import {TableList} from './table/table_list.js';
 const filelist = {};
 
 // Group Heading height, align with CSS #list-container li[group-heading].
-const GROUP_HEADING_HEIGHT = 56;
+const GROUP_HEADING_HEIGHT = 57;
 
 /**
  * File table list.

@@ -331,6 +331,7 @@ js_library("android_app_list_model") {
 js_library("app_state_controller") {
   deps = [
     ":directory_model",
+    ":file_list_model",
     "ui:file_manager_ui",
     "ui:list_container",
     "//ui/file_manager/file_manager/common/js:app_util",
@@ -525,7 +526,9 @@ js_library("file_list_model") {
     "//ui/file_manager/file_manager/common/js:recent_date_bucket",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:array_data_model.m",
   ]
 }

@@ -1425,6 +1425,7 @@ body.files-ng .thumbnail-grid {
 }
 
 body.files-ng grid .grid-title {
+  box-sizing: border-box;
   color: var(--cros-text-color-secondary);
   font-family: 'Roboto Medium';
   padding-inline-start: 16px;
@@ -1432,8 +1433,21 @@ body.files-ng grid .grid-title {
   width: 100%;
 }
 
-body.files-ng grid .grid-title.files {
-  padding-top: calc(20px + 16px);
+grid .grid-title.group-by-isDirectory {
+  /* Folders/Files heading doesn't have border bottom, so having a padding
+   * bottom together with grid item's margin-top will make the gap too big.
+   * To prevent that, we can treat grid item (.thumbnail-item)'s margin-top
+   * (16px) as heading's padding bottom, that's why we use the desired height
+   * to minus the margin-top value here.
+   */
+  height: calc(56px - 16px);
+}
+
+grid .grid-title.group-by-modificationTime {
+  border-bottom: 1px solid var(--cros-separator-color);
+  /* The desired height plus the border width. */
+  height: calc(56px + 1px);
+  padding-bottom: 16px;
 }
 
 body.files-ng .thumbnail-frame > .img-container {
@@ -1756,7 +1770,8 @@ body.files-ng #list-container li {
 
 /* Modify GROUP_HEADING_HEIGHT in file_table_list.js if this height changes. */
 #list-container li[group-heading] {
-  margin-top: 56px;
+  /* The desired height plus the border width. */
+  margin-top: calc(56px + 1px);
 }
 
 #list-container li[group-heading]::before {
@@ -1764,13 +1779,16 @@ body.files-ng #list-container li {
   color: var(--cros-text-color-secondary);
   content: attr(group-heading);
   display: block;
-  font-size: 13px;
-  font-weight: 500;
+  font-family: 'Roboto Medium';
   left: 0;
-  padding: 20px 20px 16px 16px;
+  padding-bottom: 16px;
+  padding-inline-end: 20px;
+  padding-inline-start: 16px;
+  padding-top: 20px;
   pointer-events: none;
   position: absolute;
-  top: -56px;
+  /* Align with li[group-heading]'s margin-top. */
+  top: -57px;
   width: 100%;
 }
 

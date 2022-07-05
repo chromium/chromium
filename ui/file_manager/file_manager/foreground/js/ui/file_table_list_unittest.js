@@ -9,7 +9,6 @@ import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
-import {DirectoryModel} from '../directory_model.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
@@ -21,9 +20,6 @@ import {FileTableList} from './file_table_list.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;
-
-/** @type {!DirectoryModel} */
-let directoryModel;
 
 /** @type {!MetadataModel} */
 let metadataModel;
@@ -367,12 +363,27 @@ function enableGroupByForDataModel(fileListModel) {
   fileListModel.shouldShowGroupHeading = () => true;
   fileListModel.getGroupBySnapshot = () => {
     return [
-      {startIndex: 0, endIndex: 1, label: 'today'},
-      {startIndex: 2, endIndex: 2, label: 'yesterday'},
-      {startIndex: 3, endIndex: 4, label: 'earlier_this_week'},
-      {startIndex: 5, endIndex: 6, label: 'earlier_this_month'},
-      {startIndex: 7, endIndex: 8, label: 'earlier_this_year'},
-      {startIndex: 9, endIndex: 9, label: 'older'},
+      {startIndex: 0, endIndex: 1, label: 'today', group: 'today'},
+      {startIndex: 2, endIndex: 2, label: 'yesterday', group: 'yesterday'},
+      {
+        startIndex: 3,
+        endIndex: 4,
+        label: 'earlier_this_week',
+        group: 'earlier_this_week'
+      },
+      {
+        startIndex: 5,
+        endIndex: 6,
+        label: 'earlier_this_month',
+        group: 'earlier_this_month'
+      },
+      {
+        startIndex: 7,
+        endIndex: 8,
+        label: 'earlier_this_year',
+        group: 'earlier_this_year'
+      },
+      {startIndex: 9, endIndex: 9, label: 'older', group: 'older'},
     ];
   };
 }

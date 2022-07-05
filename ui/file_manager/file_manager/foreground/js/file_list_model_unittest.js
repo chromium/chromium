@@ -7,7 +7,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 
-import {FileListModel, GroupHeader} from './file_list_model.js';
+import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupHeader} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 const TEST_METADATA = {
@@ -40,6 +40,8 @@ export function setUp() {
     'RECENT_TIME_HEADING_THIS_MONTH': 'earlier_this_month',
     'RECENT_TIME_HEADING_THIS_YEAR': 'earlier_this_year',
     'RECENT_TIME_HEADING_OLDER': 'older',
+    'GRID_VIEW_FOLDERS_TITLE': 'folders',
+    'GRID_VIEW_FILES_TITLE': 'files',
   });
 
   // Set up mock of chrome.fileManagerPrivate APIs.
@@ -260,13 +262,15 @@ export function testSpliceWithoutDeletingItems() {
 export function testShouldShowGroupHeading() {
   const fileListModel = makeSimpleFileListModel([]);
   assertFalse(fileListModel.shouldShowGroupHeading());
-  fileListModel.sort('modificationTime', 'asc');
+  fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
   assertFalse(fileListModel.shouldShowGroupHeading());
-  fileListModel.toggleGroupHeading(true);
+  fileListModel.sort(GROUP_BY_FIELD_MODIFICATION_TIME, 'asc');
+  assertTrue(fileListModel.shouldShowGroupHeading());
+  fileListModel.groupByField = GROUP_BY_FIELD_DIRECTORY;
   assertTrue(fileListModel.shouldShowGroupHeading());
 }
 
-export function testGetGroupBySnapshot() {
+export function testGroupByModificationTime() {
   /**
    * @type {!Array<{
    *  metadataMap: !Object<string, {modificationTime: Date}>,
@@ -289,8 +293,10 @@ export function testGetGroupBySnapshot() {
           modificationTime: new Date(2022, 5, 8, 8, 0, 2),
         },
       },
-      expectedGroups: [{startIndex: 0, endIndex: 0, label: 'today'}],
-      expectedReversedGroups: [{startIndex: 0, endIndex: 0, label: 'today'}],
+      expectedGroups:
+          [{startIndex: 0, endIndex: 0, label: 'today', group: 'today'}],
+      expectedReversedGroups:
+          [{startIndex: 0, endIndex: 0, label: 'today', group: 'today'}],
     },
     // All items are in the same group.
     {
@@ -308,8 +314,10 @@ export function testGetGroupBySnapshot() {
           modificationTime: new Date(2022, 5, 8, 6, 0, 2),
         },
       },
-      expectedGroups: [{startIndex: 0, endIndex: 2, label: 'today'}],
-      expectedReversedGroups: [{startIndex: 0, endIndex: 2, label: 'today'}],
+      expectedGroups:
+          [{startIndex: 0, endIndex: 2, label: 'today', group: 'today'}],
+      expectedReversedGroups:
+          [{startIndex: 0, endIndex: 2, label: 'today', group: 'today'}],
     },
     // Items belong to different groups.
     {
@@ -344,18 +352,48 @@ export function testGetGroupBySnapshot() {
         },
       },
       expectedGroups: [
-        {startIndex: 0, endIndex: 1, label: 'today'},
-        {startIndex: 2, endIndex: 2, label: 'yesterday'},
-        {startIndex: 3, endIndex: 4, label: 'earlier_this_week'},
-        {startIndex: 5, endIndex: 5, label: 'earlier_this_month'},
-        {startIndex: 6, endIndex: 6, label: 'earlier_this_year'},
+        {startIndex: 0, endIndex: 1, label: 'today', group: 'today'},
+        {startIndex: 2, endIndex: 2, label: 'yesterday', group: 'yesterday'},
+        {
+          startIndex: 3,
+          endIndex: 4,
+          label: 'earlier_this_week',
+          group: 'earlier_this_week'
+        },
+        {
+          startIndex: 5,
+          endIndex: 5,
+          label: 'earlier_this_month',
+          group: 'earlier_this_month'
+        },
+        {
+          startIndex: 6,
+          endIndex: 6,
+          label: 'earlier_this_year',
+          group: 'earlier_this_year'
+        },
       ],
       expectedReversedGroups: [
-        {startIndex: 0, endIndex: 0, label: 'earlier_this_year'},
-        {startIndex: 1, endIndex: 1, label: 'earlier_this_month'},
-        {startIndex: 2, endIndex: 3, label: 'earlier_this_week'},
-        {startIndex: 4, endIndex: 4, label: 'yesterday'},
-        {startIndex: 5, endIndex: 6, label: 'today'},
+        {
+          startIndex: 0,
+          endIndex: 0,
+          label: 'earlier_this_year',
+          group: 'earlier_this_year'
+        },
+        {
+          startIndex: 1,
+          endIndex: 1,
+          label: 'earlier_this_month',
+          group: 'earlier_this_month'
+        },
+        {
+          startIndex: 2,
+          endIndex: 3,
+          label: 'earlier_this_week',
+          group: 'earlier_this_week'
+        },
+        {startIndex: 4, endIndex: 4, label: 'yesterday', group: 'yesterday'},
+        {startIndex: 5, endIndex: 6, label: 'today', group: 'today'},
       ],
     },
   ];
@@ -363,8 +401,8 @@ export function testGetGroupBySnapshot() {
   for (const test of testData) {
     const fileListModel =
         new FileListModel(createFakeMetadataModel(test.metadataMap));
-    fileListModel.toggleGroupHeading(true);
-    fileListModel.sort('modificationTime', 'desc');
+    fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
+    fileListModel.sort(GROUP_BY_FIELD_MODIFICATION_TIME, 'desc');
     const files = Object.keys(test.metadataMap).map(fileName => {
       return {name: fileName, isDirectory: false};
     });
@@ -372,8 +410,95 @@ export function testGetGroupBySnapshot() {
     const snapshot = fileListModel.getGroupBySnapshot();
     assertArrayEquals(snapshot, test.expectedGroups);
     // Reverse order.
-    fileListModel.sort('modificationTime', 'asc');
+    fileListModel.sort(GROUP_BY_FIELD_MODIFICATION_TIME, 'asc');
     const snapshotReverse = fileListModel.getGroupBySnapshot();
     assertArrayEquals(snapshotReverse, test.expectedReversedGroups);
+  }
+}
+
+export function testGroupByDirectory() {
+  /**
+   * @type {!Array<{
+   *  metadataMap: !Object<string, {isDirectory: boolean}>,
+   *  expectedGroups: !Array<!GroupHeader>,
+   *  expectedFileList: !Array<string>,
+   *  expectedReversedFileList: !Array<string>,
+   * }>}
+   */
+  const testData = [
+    // Empty list.
+    {
+      metadataMap: {},
+      expectedGroups: [],
+      expectedFileList: [],
+      expectedReversedFileList: [],
+    },
+    // Only one item.
+    {
+      metadataMap: {
+        'a.txt': {isDirectory: false},
+      },
+      expectedGroups:
+          [{startIndex: 0, endIndex: 0, label: 'files', group: false}],
+      expectedFileList: ['a.txt'],
+      expectedReversedFileList: ['a.txt'],
+    },
+    // All items are in the same group.
+    {
+      metadataMap: {
+        'a': {isDirectory: true},
+        'b': {isDirectory: true},
+        'c': {isDirectory: true},
+      },
+      expectedGroups:
+          [{startIndex: 0, endIndex: 2, label: 'folders', group: true}],
+      expectedFileList: ['a', 'b', 'c'],
+      expectedReversedFileList: ['c', 'b', 'a'],
+    },
+    // Items belong to different groups.
+    {
+      metadataMap: {
+        'a': {isDirectory: true},
+        'c': {isDirectory: true},
+        'f': {isDirectory: true},
+        'b.txt': {isDirectory: false},
+        'd.txt': {isDirectory: false},
+        'e.txt': {isDirectory: false},
+      },
+      expectedGroups: [
+        {startIndex: 0, endIndex: 2, label: 'folders', group: true},
+        {startIndex: 3, endIndex: 5, label: 'files', group: false},
+      ],
+      expectedFileList: ['a', 'c', 'f', 'b.txt', 'd.txt', 'e.txt'],
+      expectedReversedFileList: ['f', 'c', 'a', 'e.txt', 'd.txt', 'b.txt'],
+    },
+  ];
+
+  for (const test of testData) {
+    const fileListModel = new FileListModel(createFakeMetadataModel({}));
+    fileListModel.groupByField = GROUP_BY_FIELD_DIRECTORY;
+    fileListModel.sort('name', 'asc');
+    const files = Object.keys(test.metadataMap).map(fileName => {
+      return {
+        name: fileName,
+        isDirectory: test.metadataMap[fileName].isDirectory
+      };
+    });
+    fileListModel.push(...files);
+    const snapshot = fileListModel.getGroupBySnapshot();
+    assertArrayEquals(snapshot, test.expectedGroups);
+    for (let i = 0; i < fileListModel.length; i++) {
+      const item = fileListModel.item(i);
+      assertEquals(item.name, test.expectedFileList[i]);
+    }
+    // Reverse order won't change the group snapshot, e.g Folders are always
+    // at the beginning.
+    fileListModel.sort('name', 'desc');
+    const snapshotReverse = fileListModel.getGroupBySnapshot();
+    assertArrayEquals(snapshotReverse, test.expectedGroups);
+    for (let i = 0; i < fileListModel.length; i++) {
+      const item = fileListModel.item(i);
+      assertEquals(item.name, test.expectedReversedFileList[i]);
+    }
   }
 }

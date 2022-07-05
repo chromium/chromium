@@ -12,7 +12,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {util} from '../../../common/js/util.js';
-import {FileListModel} from '../file_list_model.js';
+import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 
 import {FileGrid} from './file_grid.js';
@@ -125,6 +125,13 @@ export class ListContainer {
      */
     this.allowContextMenuByTouch_ = false;
 
+    /**
+     * List container needs to know if the current active directory is Recent
+     * or not so it can update groupBy filed accordingly.
+     * @public {boolean}
+     */
+    this.isOnRecent = false;
+
     // Overriding the default role 'list' to 'listbox' for better accessibility
     // on ChromeOS.
     this.table.list.setAttribute('role', 'listbox');
@@ -234,6 +241,8 @@ export class ListContainer {
     // view that is not in use.
     switch (listType) {
       case ListContainer.ListType.DETAIL:
+        this.dataModel.groupByField =
+            this.isOnRecent ? GROUP_BY_FIELD_MODIFICATION_TIME : null;
         this.table.dataModel = this.dataModel;
         this.table.setListThumbnailLoader(this.listThumbnailLoader);
         this.table.selectionModel = this.selectionModel;
@@ -245,6 +254,13 @@ export class ListContainer {
         break;
 
       case ListContainer.ListType.THUMBNAIL:
+        if (this.isOnRecent) {
+          this.dataModel.groupByField = util.isRecentsFilterV2Enabled() ?
+              GROUP_BY_FIELD_MODIFICATION_TIME :
+              null;
+        } else {
+          this.dataModel.groupByField = GROUP_BY_FIELD_DIRECTORY;
+        }
         this.grid.dataModel = this.dataModel;
         this.grid.setListThumbnailLoader(this.listThumbnailLoader);
         this.grid.selectionModel = this.selectionModel;

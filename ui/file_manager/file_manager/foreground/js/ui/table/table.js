@@ -295,7 +295,14 @@ export class Table {
    */
   handleSorted_(e) {
     this.header_.redraw();
+    this.onDataModelSorted();
   }
+
+  /**
+   * Override to inject custom logic after data model sorting is done.
+   * @protected
+   */
+  onDataModelSorted() {}
 
   /**
    * This handles data model 'change' and 'splice' events.
