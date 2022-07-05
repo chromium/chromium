@@ -4819,7 +4819,6 @@ crbug.com/919789 [ Linux ] paint/invalidation/resize-iframe-text.html [ Pass Tim
 crbug.com/919789 paint/invalidation/scroll/scrollbar-damage-and-full-viewport-repaint.html [ Pass Timeout ]
 
 crbug.com/1021627 fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Failure Pass Timeout ]
-crbug.com/1130876 fast/dynamic/window-resize-scrollbars-test.html [ Failure Pass ]
 
 # Sheriff 2019-03-28
 crbug.com/946711 http/tests/devtools/editor/text-editor-search-switch-editor.js [ Failure Pass ]
