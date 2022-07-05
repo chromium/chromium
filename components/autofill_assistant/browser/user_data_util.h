@@ -187,6 +187,11 @@ void UpsertContact(const autofill::AutofillProfile& profile,
 void UpsertPhoneNumber(const autofill::AutofillProfile& profile,
                        std::vector<std::unique_ptr<PhoneNumber>>& list);
 
+// Returns true if the |profile| contains at least one required field.
+bool ContactHasAtLeastOneRequiredField(
+    const autofill::AutofillProfile& profile,
+    const CollectUserDataOptions& collect_user_data_options);
+
 }  // namespace user_data
 }  // namespace autofill_assistant
 

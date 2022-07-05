@@ -1711,6 +1711,89 @@ TEST(UserDataUtilTest, UpdateExistingPhoneNumberInList) {
       u"+41441234567");
 }
 
+TEST(UserDataUtilTest, ContactHasAtLeastOneRequiredField) {
+  autofill::AutofillProfile only_email;
+  autofill::test::SetProfileInfo(&only_email, "", "", "", "adam.west@gmail.com",
+                                 "", "", "", "", "", "", "", "");
+
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = true;
+    EXPECT_FALSE(ContactHasAtLeastOneRequiredField(only_email, options));
+  }
+
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = true;
+    options.request_payer_phone = true;
+    EXPECT_FALSE(ContactHasAtLeastOneRequiredField(only_email, options));
+  }
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = true;
+    options.request_payer_phone = true;
+    options.request_payer_email = true;
+    EXPECT_TRUE(ContactHasAtLeastOneRequiredField(only_email, options));
+  }
+
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = false;
+    options.request_payer_phone = false;
+    options.request_payer_email = true;
+    EXPECT_TRUE(ContactHasAtLeastOneRequiredField(only_email, options));
+  }
+
+  autofill::AutofillProfile only_name;
+  autofill::test::SetProfileInfo(&only_name, "Adam", "", "", "", "",
+                                 "Baker Street 221b", "", "London", "",
+                                 "WC2N 5DU", "UK", "");
+
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = false;
+    options.request_payer_phone = false;
+    options.request_payer_email = true;
+    EXPECT_FALSE(ContactHasAtLeastOneRequiredField(only_name, options));
+  }
+
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = true;
+    options.request_payer_phone = false;
+    options.request_payer_email = true;
+    EXPECT_TRUE(ContactHasAtLeastOneRequiredField(only_name, options));
+  }
+
+  autofill::AutofillProfile only_phone;
+  autofill::test::SetProfileInfo(&only_phone, "", "", "", "", "",
+                                 "Baker Street 221b", "", "London", "",
+                                 "WC2N 5DU", "UK", "+44");
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = true;
+    options.request_payer_phone = false;
+    options.request_payer_email = true;
+    EXPECT_FALSE(ContactHasAtLeastOneRequiredField(only_phone, options));
+  }
+  {
+    CollectUserDataOptions options;
+    options.request_payer_name = true;
+    options.request_payer_phone = true;
+    options.request_payer_email = true;
+    EXPECT_TRUE(ContactHasAtLeastOneRequiredField(only_phone, options));
+  }
+
+  autofill::AutofillProfile full_profile;
+  autofill::test::SetProfileInfo(&full_profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "London", "", "WC2N 5DU", "UK", "+44");
+  {
+    CollectUserDataOptions options;
+    EXPECT_FALSE(ContactHasAtLeastOneRequiredField(only_phone, options));
+  }
+}
+
 }  // namespace
 }  // namespace user_data
 }  // namespace autofill_assistant

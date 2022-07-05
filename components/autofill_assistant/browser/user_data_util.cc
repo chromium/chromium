@@ -922,5 +922,32 @@ void UpsertPhoneNumber(const autofill::AutofillProfile& profile,
   UpsertAutofillProfile(profile, list);
 }
 
+bool ContactHasAtLeastOneRequiredField(
+    const autofill::AutofillProfile& profile,
+    const CollectUserDataOptions& collect_user_data_options) {
+  autofill::ServerFieldTypeSet non_empty_fields;
+  profile.GetNonEmptyTypes(kDefaultLocale, &non_empty_fields);
+
+  if (collect_user_data_options.request_payer_name &&
+      (non_empty_fields.contains(autofill::NAME_FULL) ||
+       non_empty_fields.contains(autofill::NAME_FIRST) ||
+       non_empty_fields.contains(autofill::NAME_LAST))) {
+    return true;
+  }
+
+  if (collect_user_data_options.request_payer_email &&
+      non_empty_fields.contains(autofill::EMAIL_ADDRESS)) {
+    return true;
+  }
+
+  if (collect_user_data_options.request_payer_phone &&
+      (non_empty_fields.contains(autofill::PHONE_HOME_NUMBER) ||
+       non_empty_fields.contains(autofill::PHONE_HOME_COUNTRY_CODE) ||
+       non_empty_fields.contains(autofill::PHONE_HOME_WHOLE_NUMBER))) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace user_data
 }  // namespace autofill_assistant

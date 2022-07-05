@@ -1692,7 +1692,8 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   user_data->available_contacts_.clear();
   user_data->available_addresses_.clear();
   for (const auto* profile : personal_data_manager->GetProfilesToSuggest()) {
-    if (requires_contact) {
+    if (requires_contact && user_data::ContactHasAtLeastOneRequiredField(
+                                *profile, *collect_user_data_options_)) {
       user_data->available_contacts_.emplace_back(std::make_unique<Contact>(
           user_data::MakeUniqueFromProfile(*profile)));
     }
