@@ -268,7 +268,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.NoPromptReason"
-    enum="SoftwareReporterNoPromptReason" expires_after="2022-10-30">
+    enum="SoftwareReporterNoPromptReason" expires_after="2023-01-01">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -302,7 +302,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.PromptDialogResponse"
-    enum="SoftwareReporterPromptDialogResponse" expires_after="2022-10-30">
+    enum="SoftwareReporterPromptDialogResponse" expires_after="2023-01-01">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
