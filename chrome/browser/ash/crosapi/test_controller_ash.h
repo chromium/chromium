@@ -85,13 +85,6 @@ class TestControllerAsh : public mojom::TestController,
       const std::string& job_title,
       CreateAndCancelPrintJobCallback callback) override;
 
-  void BindShillClientTestInterface(
-      mojo::PendingReceiver<crosapi::mojom::ShillClientTestInterface> receiver,
-      BindShillClientTestInterfaceCallback callback) override;
-
-  void GetSanitizedActiveUsername(
-      GetSanitizedActiveUsernameCallback callback) override;
-
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
@@ -146,51 +139,6 @@ class TestShillControllerAsh : public crosapi::mojom::TestShillController {
   void OnPlatformMessage(const std::string& extension_id,
                          const std::string& configuration_name,
                          uint32_t message) override;
-};
-
-class ShillClientTestInterfaceAsh
-    : public crosapi::mojom::ShillClientTestInterface {
- public:
-  ShillClientTestInterfaceAsh();
-  ~ShillClientTestInterfaceAsh() override;
-
-  void AddDevice(const std::string& device_path,
-                 const std::string& type,
-                 const std::string& name,
-                 AddDeviceCallback callback) override;
-  void ClearDevices(ClearDevicesCallback callback) override;
-  void SetDeviceProperty(const std::string& device_path,
-                         const std::string& name,
-                         ::base::Value value,
-                         bool notify_changed,
-                         SetDevicePropertyCallback callback) override;
-  void SetSimLocked(const std::string& device_path,
-                    bool enabled,
-                    SetSimLockedCallback callback) override;
-
-  void AddService(const std::string& service_path,
-                  const std::string& guid,
-                  const std::string& name,
-                  const std::string& type,
-                  const std::string& state,
-                  bool visible,
-                  AddServiceCallback callback) override;
-  void ClearServices(ClearServicesCallback callback) override;
-  void SetServiceProperty(const std::string& service_path,
-                          const std::string& property,
-                          base::Value value,
-                          SetServicePropertyCallback callback) override;
-
-  void AddProfile(const std::string& profile_path,
-                  const std::string& userhash,
-                  AddProfileCallback callback) override;
-  void AddServiceToProfile(const std::string& profile_path,
-                           const std::string& service_path,
-                           AddServiceToProfileCallback callback) override;
-
-  void AddIPConfig(const std::string& ip_config_path,
-                   ::base::Value properties,
-                   AddIPConfigCallback callback) override;
 };
 
 }  // namespace crosapi
