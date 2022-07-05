@@ -989,6 +989,10 @@ void NetworkContext::ClearHttpCache(base::Time start_time,
       url_request_context_, std::move(filter), start_time, end_time,
       base::BindOnce(&NetworkContext::OnHttpCacheCleared,
                      base::Unretained(this), std::move(callback))));
+
+  NetworkServiceMemoryCache* memory_cache = GetMemoryCache();
+  if (memory_cache)
+    memory_cache->Clear();
 }
 
 void NetworkContext::ComputeHttpCacheSize(

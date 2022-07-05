@@ -66,6 +66,10 @@ NetworkServiceMemoryCache::NetworkServiceMemoryCache()
 
 NetworkServiceMemoryCache::~NetworkServiceMemoryCache() = default;
 
+void NetworkServiceMemoryCache::Clear() {
+  entries_.Clear();
+}
+
 base::WeakPtr<NetworkServiceMemoryCache>
 NetworkServiceMemoryCache::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

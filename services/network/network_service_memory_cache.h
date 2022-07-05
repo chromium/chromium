@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
 
   base::WeakPtr<NetworkServiceMemoryCache> GetWeakPtr();
 
+  // Clears all cache entries.
+  void Clear();
+
   // Creates a NetworkServiceMemoryCacheWriter when the response is 200 and it
   // can be cacheable.
   std::unique_ptr<NetworkServiceMemoryCacheWriter> MaybeCreateWriter(

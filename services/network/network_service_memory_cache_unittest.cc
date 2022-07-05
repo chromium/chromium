@@ -459,6 +459,33 @@ TEST_F(NetworkServiceMemoryCacheTest, EvictLeastRecentlyUsed) {
   ASSERT_TRUE(CanServeFromMemoryCache(request3));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, Clear) {
+  constexpr int kBodySize = 64;
+
+  // Stores three responses.
+  ResourceRequest request1 = CreateRequest(
+      base::StringPrintf("/cacheable?id=1&body-size=%d", kBodySize));
+  StoreResponseToMemoryCache(request1);
+
+  ResourceRequest request2 = CreateRequest(
+      base::StringPrintf("/cacheable?id=2&body-size=%d", kBodySize));
+  StoreResponseToMemoryCache(request2);
+
+  ResourceRequest request3 = CreateRequest(
+      base::StringPrintf("/cacheable?id=3&body-size=%d", kBodySize));
+  StoreResponseToMemoryCache(request3);
+
+  ASSERT_TRUE(CanServeFromMemoryCache(request1));
+  ASSERT_TRUE(CanServeFromMemoryCache(request2));
+  ASSERT_TRUE(CanServeFromMemoryCache(request3));
+
+  memory_cache().Clear();
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request1));
+  ASSERT_FALSE(CanServeFromMemoryCache(request2));
+  ASSERT_FALSE(CanServeFromMemoryCache(request3));
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, ClientDisconnectedWhileCaching) {
   ResourceRequest request = CreateRequest("/cacheable");
   LoaderPair pair = CreateLoaderAndStart(request);
