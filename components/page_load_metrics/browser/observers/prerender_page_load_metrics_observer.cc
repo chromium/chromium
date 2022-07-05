@@ -9,6 +9,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -49,11 +50,13 @@ PrerenderPageLoadMetricsObserver::OnStart(
   return STOP_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // are not supported. So, this class doesn't need forwarding.
+  DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   return STOP_OBSERVING;
 }
 
@@ -61,6 +64,10 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // are not supported.
+  DCHECK(navigation_handle->GetNavigatingFrameType() !=
+         content::FrameType::kFencedFrameRoot);
   return CONTINUE_OBSERVING;
 }
 
