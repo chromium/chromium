@@ -130,6 +130,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(Shutdown, void(bool show_feedback_chip));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Restart, void());
+  MOCK_CONST_METHOD0(GetMutableUserData, UserData*());
   MOCK_CONST_METHOD0(GetUserData, UserData*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
@@ -231,6 +232,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(MaybeSetPreviousAction,
                void(const ProcessedActionProto& processed_action));
   MOCK_CONST_METHOD0(GetIntent, absl::optional<std::string>());
+  MOCK_CONST_METHOD0(GetLocale, const std::string());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -244,6 +246,7 @@ class MockActionDelegate : public ActionDelegate {
   FakeElementStore fake_element_store_;
   ClientSettings client_settings_;
   ProcessedActionStatusDetailsProto log_info_;
+  UserData user_data_;
 
   base::WeakPtrFactory<MockActionDelegate> weak_ptr_factory_{this};
 };

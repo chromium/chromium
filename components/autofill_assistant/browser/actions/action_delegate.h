@@ -419,6 +419,9 @@ class ActionDelegate {
   // Gets the user data.
   virtual const UserData* GetUserData() const = 0;
 
+  // Gets the user data (mutable).
+  virtual UserData* GetMutableUserData() const = 0;
+
   // Access to the user model.
   virtual UserModel* GetUserModel() const = 0;
 
@@ -499,6 +502,9 @@ class ActionDelegate {
 
   // Returns the Autofill Assistant intent for the current flow.
   virtual absl::optional<std::string> GetIntent() const = 0;
+
+  // Returns the client's locale.
+  virtual const std::string GetLocale() const = 0;
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 

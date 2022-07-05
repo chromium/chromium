@@ -432,6 +432,8 @@ static_library("unit_test_support") {
     "mock_personal_data_manager.h",
     "mock_ui_controller_observer.cc",
     "mock_ui_controller_observer.h",
+    "mock_user_model.cc",
+    "mock_user_model.h",
     "mock_user_model_observer.cc",
     "mock_user_model_observer.h",
     "mock_website_login_manager.cc",

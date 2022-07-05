@@ -124,6 +124,7 @@ class Controller : public ScriptExecutorDelegate,
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
+  const std::string GetLocale() override;
   void SetJsFlowLibrary(const std::string& js_flow_library) override;
   JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
@@ -437,6 +438,9 @@ class Controller : public ScriptExecutorDelegate,
   // If instantiated, will start delivering the required model for annotating
   // DOM nodes. May be nullptr.
   const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
+
+  // Holds the client's locale.
+  std::string locale_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

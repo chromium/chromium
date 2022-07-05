@@ -114,6 +114,7 @@ class ScriptExecutor : public ActionDelegate,
   void Run(const UserData* user_data, RunScriptCallback callback);
 
   const UserData* GetUserData() const override;
+  UserData* GetMutableUserData() const override;
   UserModel* GetUserModel() const override;
 
   // Override ScriptExecutorDelegate::NavigationListener
@@ -278,6 +279,7 @@ class ScriptExecutor : public ActionDelegate,
   void MaybeSetPreviousAction(
       const ProcessedActionProto& processed_action) override;
   absl::optional<std::string> GetIntent() const override;
+  const std::string GetLocale() const override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.

@@ -148,6 +148,10 @@ content::WebContents* Controller::GetWebContents() {
   return web_contents();
 }
 
+const std::string Controller::GetLocale() {
+  return client_->GetLocale();
+}
+
 void Controller::SetJsFlowLibrary(const std::string& js_flow_library) {
   if (js_flow_library.empty()) {
     return;

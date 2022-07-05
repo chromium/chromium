@@ -133,6 +133,10 @@ const UserData* ScriptExecutor::GetUserData() const {
   return user_data_;
 }
 
+UserData* ScriptExecutor::GetMutableUserData() const {
+  return delegate_->GetUserData();
+}
+
 UserModel* ScriptExecutor::GetUserModel() const {
   return delegate_->GetUserModel();
 }
@@ -1179,6 +1183,10 @@ absl::optional<std::string> ScriptExecutor::GetIntent() const {
 TriggerContext ScriptExecutor::GetMergedTriggerContext() const {
   return TriggerContext(
       {delegate_->GetTriggerContext(), additional_context_.get()});
+}
+
+const std::string ScriptExecutor::GetLocale() const {
+  return delegate_->GetLocale();
 }
 
 }  // namespace autofill_assistant

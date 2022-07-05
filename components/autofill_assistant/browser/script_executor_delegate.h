@@ -64,6 +64,7 @@ class ScriptExecutorDelegate {
   virtual password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() = 0;
   virtual content::WebContents* GetWebContents() = 0;
+  virtual const std::string GetLocale() = 0;
 
   virtual void SetJsFlowLibrary(const std::string& js_flow_library) = 0;
   virtual JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() = 0;
@@ -92,6 +93,7 @@ class ScriptExecutorDelegate {
   virtual void SetClientSettings(
       const ClientSettingsProto& client_settings) = 0;
   virtual UserModel* GetUserModel() = 0;
+  virtual UserData* GetUserData() = 0;
 
   // The next navigation is expected and will not cause an error.
   virtual void ExpectNavigation() = 0;

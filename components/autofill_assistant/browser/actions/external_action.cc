@@ -5,10 +5,30 @@
 #include "components/autofill_assistant/browser/actions/external_action.h"
 
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/user_model.h"
 
 namespace autofill_assistant {
+namespace {
+
+void SetInfoOnAutofillDataModel(
+    const google::protobuf::Map<google::protobuf::int32, std::string>&
+        server_field_type_int_to_value,
+    const std::string locale,
+    autofill::AutofillDataModel* model) {
+  for (const auto& [server_field_type_int, value] :
+       server_field_type_int_to_value) {
+    model->SetInfo(
+        static_cast<autofill::ServerFieldType>(server_field_type_int),
+        base::UTF8ToUTF16(value), locale);
+  }
+}
+
+}  // namespace
 
 ExternalAction::ExternalAction(ActionDelegate* delegate,
                                const ActionProto& proto)
@@ -162,7 +182,7 @@ void ExternalAction::OnDoneWaitForDom(const ClientStatus& status) {
   // external response and report the error, as we might not be in a state to
   // continue with the script.
   if (status.ok() && external_action_end_requested_) {
-    EndWithExternalResult();
+    ProcessExternalResult();
     return;
   }
   EndAction(status);
@@ -182,10 +202,17 @@ void ExternalAction::OnExternalActionFinished(const external::Result& result) {
     return;
   }
 
-  EndWithExternalResult();
+  ProcessExternalResult();
 }
 
-void ExternalAction::EndWithExternalResult() {
+void ExternalAction::ProcessExternalResult() {
+  if (!external_action_result_.selected_profiles().empty()) {
+    SetSelectedProfiles(external_action_result_.selected_profiles());
+  }
+  if (external_action_result_.has_selected_credit_card()) {
+    SetSelectedCreditCard(external_action_result_.selected_credit_card());
+  }
+
   *processed_action_proto_->mutable_external_action_result()
        ->mutable_result_info() = external_action_result_.result_info();
   EndAction(external_action_result_.success()
@@ -196,6 +223,54 @@ void ExternalAction::EndWithExternalResult() {
 void ExternalAction::EndAction(const ClientStatus& status) {
   UpdateProcessedAction(status);
   std::move(callback_).Run(std::move(processed_action_proto_));
+}
+
+void ExternalAction::SetSelectedProfiles(
+    const google::protobuf::Map<std::string,
+                                autofill_assistant::external::ProfileProto>&
+        profiles_proto) {
+  for (const auto& [profile_name, profile_proto] : profiles_proto) {
+    auto autofill_profile = std::make_unique<autofill::AutofillProfile>();
+
+    SetInfoOnAutofillDataModel(profile_proto.values(), delegate_->GetLocale(),
+                               autofill_profile.get());
+
+    autofill_profile->FinalizeAfterImport();
+
+    delegate_->GetUserModel()->SetSelectedAutofillProfile(
+        profile_name, std::move(autofill_profile),
+        delegate_->GetMutableUserData());
+  }
+}
+
+void ExternalAction::SetSelectedCreditCard(
+    const autofill_assistant::external::CreditCardProto& credit_card_proto) {
+  auto credit_card = std::make_unique<autofill::CreditCard>();
+
+  SetInfoOnAutofillDataModel(credit_card_proto.values(), delegate_->GetLocale(),
+                             credit_card.get());
+
+  if (credit_card_proto.has_record_type()) {
+    credit_card->set_record_type(static_cast<autofill::CreditCard::RecordType>(
+        credit_card_proto.record_type()));
+  }
+
+  if (credit_card_proto.has_instrument_id()) {
+    credit_card->set_instrument_id(credit_card_proto.instrument_id());
+  }
+
+  if (!credit_card_proto.network().empty() &&
+      credit_card->record_type() ==
+          autofill::CreditCard::RecordType::MASKED_SERVER_CARD) {
+    credit_card->SetNetworkForMaskedCard(credit_card_proto.network());
+  }
+
+  if (!credit_card_proto.server_id().empty()) {
+    credit_card->set_server_id(credit_card_proto.server_id());
+  }
+
+  delegate_->GetUserModel()->SetSelectedCreditCard(
+      std::move(credit_card), delegate_->GetMutableUserData());
 }
 
 }  // namespace autofill_assistant

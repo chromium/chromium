@@ -61,6 +61,10 @@ content::WebContents* FakeScriptExecutorDelegate::GetWebContents() {
   return web_contents_;
 }
 
+const std::string FakeScriptExecutorDelegate::GetLocale() {
+  return "en-US";
+}
+
 void FakeScriptExecutorDelegate::SetJsFlowLibrary(
     const std::string& js_flow_library) {
   GetJsFlowDevtoolsWrapper()->SetJsFlowLibrary(js_flow_library);
@@ -160,6 +164,10 @@ void FakeScriptExecutorDelegate::SetClientSettings(
 
 UserModel* FakeScriptExecutorDelegate::GetUserModel() {
   return user_model_;
+}
+
+UserData* FakeScriptExecutorDelegate::GetUserData() {
+  return user_data_;
 }
 
 void FakeScriptExecutorDelegate::SetOverlayBehavior(

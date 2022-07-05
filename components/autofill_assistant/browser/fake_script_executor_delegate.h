@@ -45,6 +45,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
+  const std::string GetLocale() override;
   void SetJsFlowLibrary(const std::string& js_flow_library) override;
   JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
@@ -58,6 +59,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   ViewportMode GetViewportMode() override;
   void SetClientSettings(const ClientSettingsProto& client_settings) override;
   UserModel* GetUserModel() override;
+  UserData* GetUserData() override;
   void ExpectNavigation() override;
   bool HasNavigationError() override;
   bool IsNavigatingToNewDocument() override;
@@ -139,6 +141,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   ViewportMode viewport_mode_ = ViewportMode::NO_RESIZE;
   std::vector<std::string> browse_domains_;
   raw_ptr<UserModel> user_model_ = nullptr;
+  raw_ptr<UserData> user_data_ = nullptr;
   ProcessedActionStatusDetailsProto log_info_;
   bool must_use_backend_data_ = false;
 

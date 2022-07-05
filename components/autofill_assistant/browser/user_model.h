@@ -48,7 +48,7 @@ class UserModel {
   UserModel(const UserModel&) = delete;
   UserModel& operator=(const UserModel&) = delete;
 
-  ~UserModel();
+  virtual ~UserModel();
 
   base::WeakPtr<UserModel> GetWeakPtr();
 
@@ -94,8 +94,8 @@ class UserModel {
   // Sets the selected credit card. A nullptr |card| will clear the selected
   // card. This also sets it to |user_data|.
   // TODO(b/187286050) complete the migration to UserModel and remove UserData.
-  void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
-                             UserData* user_data);
+  virtual void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
+                                     UserData* user_data);
 
   // Sets the selected login choice. A nullptr |login_choice| will clear the
   // selected login choice. This sets it to |user_data|.
@@ -119,7 +119,7 @@ class UserModel {
   // Sets the selected autofill profile for |profile_name|. A nullptr |profile|
   // will clear the entry. The profile is also set in |user_data|.
   // TODO(b/187286050) complete the migration to UserModel and remove UserData.
-  void SetSelectedAutofillProfile(
+  virtual void SetSelectedAutofillProfile(
       const std::string& profile_name,
       std::unique_ptr<autofill::AutofillProfile> profile,
       UserData* user_data);
