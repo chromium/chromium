@@ -10,9 +10,9 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-import "browser/action_value.proto";
-import "browser/model.proto";
-import "browser/view_layout.proto";
+import "components/autofill_assistant/browser/action_value.proto";
+import "components/autofill_assistant/browser/model.proto";
+import "components/autofill_assistant/browser/view_layout.proto";
 
 message GenericUserInterfaceProto {
   // The root view, usually a view container.

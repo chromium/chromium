@@ -9,7 +9,7 @@ if (is_android) {
 }
 
 proto_library("proto") {
-  proto_in_dir = "//components/autofill_assistant/"
+  proto_in_dir = "//"
   sources = [
     "action_strategy.proto",
     "action_value.proto",
@@ -27,6 +27,7 @@ proto_library("proto") {
 }
 
 proto_library("test_proto") {
+  proto_in_dir = "//"
   sources = [
     "external_action_extension_test.proto",
     "parse_jspb_test.proto",
@@ -623,7 +624,7 @@ source_set("unit_tests") {
 
 if (is_android) {
   proto_java_library("proto_java") {
-    proto_path = "//components/autofill_assistant/"
+    proto_path = "//"
     sources = [
       "action_strategy.proto",
       "action_value.proto",

@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 
 class PasswordChangeRunController;
 

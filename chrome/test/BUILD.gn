@@ -6846,7 +6846,6 @@ test("unit_tests") {
     deps += [
       "//chrome:packed_resources_integrity_hash",
       "//chrome/browser/ash/system_web_apps/test_support",
-      "//chrome/browser/autofill_assistant/password_change/proto:proto",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery:discovery",
@@ -6870,6 +6869,7 @@ test("unit_tests") {
       "//components/app_constants",
       "//components/autofill_assistant/browser/public:proto",
       "//components/autofill_assistant/browser/public:unit_test_support",
+      "//components/autofill_assistant/browser/public/password_change/proto:proto",
       "//components/chrome_cleaner/test:test_name_helper",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:coupon_db_content_proto",

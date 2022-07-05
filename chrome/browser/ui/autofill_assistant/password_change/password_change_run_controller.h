@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "url/gurl.h"
 
 class PasswordChangeRunDisplay;

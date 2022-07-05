@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 // Mocked PasswordChangeRunDisplay used in unit tests.

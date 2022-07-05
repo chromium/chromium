@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_UTILS_H_
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 
 // Returns the icon for Google Assistant on Google-branded builds and a
 // Chromium icon as a placeholder on non-branded builds.

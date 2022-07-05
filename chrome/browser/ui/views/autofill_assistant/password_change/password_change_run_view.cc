@@ -10,11 +10,11 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "chrome/browser/ui/views/autofill_assistant/password_change/password_change_run_progress.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"

@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PasswordChangeRunDisplay;

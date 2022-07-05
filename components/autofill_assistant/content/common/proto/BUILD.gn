@@ -9,7 +9,7 @@ if (is_android) {
 }
 
 proto_library("proto") {
-  proto_in_dir = "//components/autofill_assistant/"
+  proto_in_dir = "//"
   sources = [ "semantic_feature_overrides.proto" ]
 }
 

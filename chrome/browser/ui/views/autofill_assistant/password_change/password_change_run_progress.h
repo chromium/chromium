@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_PROGRESS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_PROGRESS_H_
 
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "ui/views/view.h"
 
 namespace views {

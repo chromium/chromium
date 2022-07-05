@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"

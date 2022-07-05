@@ -10,6 +10,8 @@ option java_multiple_files = true;
 
 package autofill_assistant.external;
 
+import "components/autofill_assistant/browser/public/password_change/proto/actions.proto";
+
 // Defines an action to be executed by the ExternalActionDelegate.
 message Action {
   // Integrator-specific information. This was forwarded without modifications.
@@ -19,6 +21,11 @@ message Action {
 // Extended by the integrator.
 message ActionInfo {
   optional bytes action_payload = 1;
+
+  oneof Action {
+    password_change.GenericPasswordChangeSpecification
+        generic_password_change_specification = 2;
+  }
 
   extensions 100 to max;
 }

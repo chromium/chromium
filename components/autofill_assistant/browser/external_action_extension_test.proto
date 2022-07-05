@@ -8,7 +8,7 @@ package autofill_assistant.testing;
 
 option optimize_for = LITE_RUNTIME;
 
-import "public/external_action.proto";
+import "components/autofill_assistant/browser/public/external_action.proto";
 
 extend external.ResultInfo {
   optional TestResultExtension test_result_extension = 100;
