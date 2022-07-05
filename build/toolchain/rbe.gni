@@ -13,9 +13,6 @@ declare_args() {
   # Set to true to enable remote compilation using reclient.
   use_remoteexec = false
 
-  # Set to true to enable remote compilation using reclient (deprecated).
-  use_rbe = false
-
   # The directory where the re-client configuration files are.
   rbe_cfg_dir = rebase_path("//buildtools/reclient_cfgs", root_build_dir)
 
@@ -24,12 +21,6 @@ declare_args() {
 
   # Set to the path of the RBE recleint wrapper for ChromeOS.
   rbe_cros_cc_wrapper = "${rbe_bin_dir}/rewrapper"
-}
-
-# Set use_remoteexec if use_rbe is set.  Remove this once use_rbe is no longer
-# used to configure builds.
-if (!use_remoteexec && use_rbe) {
-  use_remoteexec = true
 }
 
 # Configuration file selection based on operating system.
