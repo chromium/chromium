@@ -15,8 +15,8 @@ import androidx.annotation.VisibleForTesting;
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
 
-    public CachedFlag(String name, boolean defaultValue) {
-        super(name);
+    public CachedFlag(String featureName, boolean defaultValue) {
+        super(featureName);
         mDefaultValue = defaultValue;
     }
 

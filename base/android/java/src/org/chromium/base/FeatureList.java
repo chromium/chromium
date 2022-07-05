@@ -151,6 +151,14 @@ public class FeatureList {
     }
 
     /**
+     * @param featureName The name of the feature to query.
+     * @return Whether the feature has a test value configured.
+     */
+    public static boolean hasTestFeature(String featureName) {
+        return hasTestFeatures() && sTestFeatures.mFeatureFlags.containsKey(featureName);
+    }
+
+    /**
      * Returns the test value of the feature with the given name.
      *
      * @param featureName The name of the feature to query.

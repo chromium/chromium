@@ -18,6 +18,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
     "android/java/src/org/chromium/chrome/browser/flags/Flag.java",
     "android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/MutableFlagWithSafeDefault.java",
+    "android/java/src/org/chromium/chrome/browser/flags/PostNativeFlag.java",
     "android/java/src/org/chromium/chrome/browser/flags/StringCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/ValuesOverridden.java",
     "android/java/src/org/chromium/chrome/browser/flags/ValuesReturned.java",
@@ -83,6 +85,9 @@ robolectric_library("flags_junit_tests") {
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithoutProcessorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtilsUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/FlagUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/MutableFlagWithSafeDefaultUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/PostNativeFlagUnitTest.java",
   ]
   deps = [
     ":java",
