@@ -1800,6 +1800,20 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_EQ(pending_url, activated_controller.GetEntryAtIndex(1)->GetURL());
 }
 
+namespace {
+
+// Returns which RenderFrameHost is focused within a given portal's frame tree.
+RenderFrameHostImpl* GetFocusedFrameWithinPortalFrameTree(
+    WebContentsImpl* portal_contents) {
+  FrameTreeNode* focused_node =
+      portal_contents->GetPrimaryFrameTree().GetFocusedFrame();
+  if (!focused_node)
+    return nullptr;
+  return focused_node->current_frame_host();
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
@@ -1825,6 +1839,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
   EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), nullptr);
 
   // Simulate renderer sending LocalFrameHost::DidFocusFrame IPC.
   RenderFrameHostImpl* iframe =
@@ -1835,7 +1850,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   // focused frame should have updated.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
-  EXPECT_EQ(portal_contents->GetFocusedFrame(), iframe);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), iframe);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
@@ -1868,6 +1884,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
   EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), nullptr);
 
   FrameTreeNode* iframe_ftn = portal_main_frame->child_at(0);
   RenderFrameHostImpl* rfhi = iframe_ftn->current_frame_host();
@@ -1882,7 +1899,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   // focused frame should have updated.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
-  EXPECT_EQ(portal_contents->GetFocusedFrame(), rfhi);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), rfhi);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
@@ -1901,6 +1919,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
   EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(portal_contents), nullptr);
   EXPECT_TRUE(main_frame->GetRenderWidgetHost()->is_focused());
 
   // Activate portal, keep in orphaned state for a while, and then adopt and
@@ -1949,7 +1968,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
   // Adoption is complete, so |web_contents_impl_| is no longer orphaned and is
   // an inner WebContents.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), portal_contents);
-  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), nullptr);
+  EXPECT_EQ(GetFocusedFrameWithinPortalFrameTree(web_contents_impl),
+            main_frame);
   EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
 }
 

@@ -399,8 +399,8 @@ class WebContents : public PageNavigator,
   // be used instead of getting the primary page from the WebContents.
   virtual Page& GetPrimaryPage() = 0;
 
-  // Returns the focused frame for the currently active view. Might be nullptr
-  // if nothing is focused.
+  // Returns the focused frame for the primary page or an inner page thereof.
+  // Might be nullptr if nothing is focused.
   virtual RenderFrameHost* GetFocusedFrame() = 0;
 
   // Returns true if |frame_tree_node_id| refers to a frame in a prerendered

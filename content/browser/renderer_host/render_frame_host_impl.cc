@@ -9979,7 +9979,7 @@ ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {
     return ui::AXTreeIDUnknown();
 
   auto* focused_frame = static_cast<RenderFrameHostImpl*>(
-      delegate_->GetFocusedFrameIncludingInnerWebContents());
+      delegate_->GetFocusedFrameIncludingInnerFrameTrees());
   if (focused_frame)
     return focused_frame->GetAXTreeID();
 

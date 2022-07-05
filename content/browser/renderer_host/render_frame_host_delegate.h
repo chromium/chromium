@@ -361,14 +361,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // initializations instead.
   virtual bool IsInnerWebContentsForGuest();
 
-  // Searches the WebContents for a focused frame, potentially in an inner
-  // WebContents. If this WebContents has no focused frame, returns |nullptr|.
-  // If there is no inner WebContents at the focused tree node, returns its
-  // RenderFrameHost. If there is an inner WebContents, search it for focused
-  // frames and inner contents. If an inner WebContents does not have a focused
-  // frame, return its main frame, since the attachment frame in its outer
-  // WebContents is not live.
-  virtual RenderFrameHostImpl* GetFocusedFrameIncludingInnerWebContents();
+  // Returns the focused frame if it exists, potentially in an inner frame tree.
+  // If an inner frame tree has focus, but doesn't have a focused frame, returns
+  // the inner frame tree's main frame. Otherwise returns nullptr.
+  virtual RenderFrameHostImpl* GetFocusedFrameIncludingInnerFrameTrees();
 
   // Called by when |source_rfh| advances focus to a RenderFrameProxyHost.
   virtual void OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {}

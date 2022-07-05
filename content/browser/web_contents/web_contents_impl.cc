@@ -1315,9 +1315,23 @@ PageImpl& WebContentsImpl::GetPrimaryPage() {
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
-  FrameTreeNode* focused_node = primary_frame_tree_.GetFocusedFrame();
-  if (!focused_node)
+  // If this method is called on an inner WebContents, don't return frames from
+  // outside of the inner WebContents's subtree.
+  if (GetOuterWebContents() && !ContainsOrIsFocusedWebContents()) {
     return nullptr;
+  }
+
+  FrameTreeNode* focused_node = GetFocusedFrameTree()->GetFocusedFrame();
+  if (!focused_node) {
+    return nullptr;
+  }
+
+  // If an inner frame tree has focus, we should return a RenderFrameHost from
+  // the inner frame tree and not the placeholder RenderFrameHost.
+  DCHECK_EQ(
+      focused_node->current_frame_host()->inner_tree_main_frame_tree_node_id(),
+      FrameTreeNode::kFrameTreeNodeInvalidId);
+
   return focused_node->current_frame_host();
 }
 
@@ -7841,30 +7855,22 @@ void WebContentsImpl::DidCallFocus() {
 }
 
 RenderFrameHostImpl*
-WebContentsImpl::GetFocusedFrameIncludingInnerWebContents() {
+WebContentsImpl::GetFocusedFrameIncludingInnerFrameTrees() {
   OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::GetFocusedFrameIncludingInnerWebContents");
-  WebContentsImpl* contents = this;
-  FrameTreeNode* focused_node = contents->primary_frame_tree_.GetFocusedFrame();
-
-  // If there is no focused frame in the outer WebContents, we need to return
-  // null.
-  if (!focused_node)
-    return nullptr;
-
-  // If the focused frame is embedding an inner WebContents, we must descend
-  // into that contents. If the current WebContents does not have a focused
-  // frame, return the main frame of this contents instead of the focused empty
-  // frame embedding this contents.
-  while (true) {
-    contents = contents->node_.GetInnerWebContentsInFrame(focused_node);
-    if (!contents)
-      return focused_node->current_frame_host();
-
-    focused_node = contents->primary_frame_tree_.GetFocusedFrame();
-    if (!focused_node)
-      return contents->GetPrimaryMainFrame();
+      "content", "WebContentsImpl::GetFocusedFrameIncludingInnerFrameTrees");
+  auto* focused_frame = GetFocusedFrame();
+  if (focused_frame) {
+    return focused_frame;
   }
+
+  // If there is no focused frame in the primary frame tree, we need to return
+  // null. If an inner frame tree has focus, but doesn't have a focused frame,
+  // treat its main frame as having focus.
+  if (GetFocusedFrameTree() != &primary_frame_tree_) {
+    return GetFocusedFrameTree()->root()->current_frame_host();
+  }
+
+  return nullptr;
 }
 
 void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {

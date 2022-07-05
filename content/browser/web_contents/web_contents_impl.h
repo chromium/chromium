@@ -661,7 +661,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const GURL& url) override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   void DidCallFocus() override;
-  RenderFrameHostImpl* GetFocusedFrameIncludingInnerWebContents() override;
+  RenderFrameHostImpl* GetFocusedFrameIncludingInnerFrameTrees() override;
   void OnFocusedElementChangedInFrame(
       RenderFrameHostImpl* frame,
       const gfx::Rect& bounds_in_root_view,

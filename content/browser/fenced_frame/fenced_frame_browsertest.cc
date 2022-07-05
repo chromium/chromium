@@ -955,6 +955,31 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UserInteractionForFencedFrame) {
   fenced_frame_rfh->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
 }
 
+// Test that WebContents::GetFocusedFrame includes results from a fenced
+// frame's frame tree.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, FocusedFrameInFencedFrame) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL url = https_server()->GetURL("c.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+
+  // NavigateToURL sets initial focus, which is why GetFocusedFrame doesn't
+  // start as null.
+  EXPECT_EQ(web_contents()->GetFocusedFrame(), primary_main_frame_host());
+
+  FrameFocusedObserver focus_observer(fenced_frame_rfh.get());
+  // ExecJs runs with a user gesture which is needed for the fenced frame to be
+  // allowed to take focus.
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(), "window.focus()"));
+  focus_observer.Wait();
+  EXPECT_EQ(web_contents()->GetFocusedFrame(), fenced_frame_rfh.get());
+}
+
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
                        ProcessAllocationWithFullSiteIsolation) {
   ASSERT_TRUE(https_server()->Start());

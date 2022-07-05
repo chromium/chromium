@@ -99,7 +99,7 @@ bool RenderFrameHostDelegate::IsInnerWebContentsForGuest() {
 }
 
 RenderFrameHostImpl*
-RenderFrameHostDelegate::GetFocusedFrameIncludingInnerWebContents() {
+RenderFrameHostDelegate::GetFocusedFrameIncludingInnerFrameTrees() {
   return nullptr;
 }
 
