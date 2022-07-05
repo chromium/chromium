@@ -578,9 +578,17 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows \
+  DISABLED_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows
+#else
+#define MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows \
+  SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows
+#endif
 IN_PROC_BROWSER_TEST_P(
     SideSearchBrowserControllerTest,
-    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+    MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -737,8 +745,15 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_SidePanelCrashesCloseSidePanel \
+  DISABLED_SidePanelCrashesCloseSidePanel
+#else
+#define MAYBE_SidePanelCrashesCloseSidePanel SidePanelCrashesCloseSidePanel
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
-                       SidePanelCrashesCloseSidePanel) {
+                       MAYBE_SidePanelCrashesCloseSidePanel) {
   // Open two tabs with the side panel open.
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
   AppendTab(browser(), GetNonMatchingUrl());
@@ -965,7 +980,15 @@ IN_PROC_BROWSER_TEST_P(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
             coordinator->GetCurrentSidePanelEntryForTesting()->id());
 }
 
-IN_PROC_BROWSER_TEST_P(SideSearchV2Test, SwitchTabsWithoutGlobalSidePanel) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_SwitchTabsWithoutGlobalSidePanel \
+  DISABLED_SwitchTabsWithoutGlobalSidePanel
+#else
+#define MAYBE_SwitchTabsWithoutGlobalSidePanel SwitchTabsWithoutGlobalSidePanel
+#endif
+IN_PROC_BROWSER_TEST_P(SideSearchV2Test,
+                       MAYBE_SwitchTabsWithoutGlobalSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
 
@@ -1167,9 +1190,17 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows \
+  DISABLED_ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows
+#else
+#define MAYBE_ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows \
+  ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows
+#endif
 IN_PROC_BROWSER_TEST_P(
     SideSearchDSEClobberingTest,
-    ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows) {
+    MAYBE_ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows) {
   // Open two browsers with three tabs each. Both have open global side panel
   // and an open side search panel for their last tab.
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -1212,8 +1243,16 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(side_search_panel1->GetVisible());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_ClosingTheContextualPanelClosesAllBrowserPanels \
+  DISABLED_ClosingTheContextualPanelClosesAllBrowserPanels
+#else
+#define MAYBE_ClosingTheContextualPanelClosesAllBrowserPanels \
+  ClosingTheContextualPanelClosesAllBrowserPanels
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
-                       ClosingTheContextualPanelClosesAllBrowserPanels) {
+                       MAYBE_ClosingTheContextualPanelClosesAllBrowserPanels) {
   SetupBrowserForClobberingTests(browser());
   auto* global_panel = GetGlobalSidePanelFor(browser());
   auto* side_search_panel = GetSidePanelFor(browser());
@@ -1296,8 +1335,15 @@ class SideSearchExtensionsTest : public SideSearchBrowserControllerTest {
 
 INSTANTIATE_TEST_SUITE_P(All, SideSearchExtensionsTest, ::testing::Bool());
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_ContentScriptsExecuteInSidePanel \
+  DISABLED_ContentScriptsExecuteInSidePanel
+#else
+#define MAYBE_ContentScriptsExecuteInSidePanel ContentScriptsExecuteInSidePanel
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchExtensionsTest,
-                       ContentScriptsExecuteInSidePanel) {
+                       MAYBE_ContentScriptsExecuteInSidePanel) {
   const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
   const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
   const GURL third_url = embedded_test_server()->GetURL("third.example", "/");
