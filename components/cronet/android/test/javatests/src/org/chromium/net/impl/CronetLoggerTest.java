@@ -45,6 +45,7 @@ import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.impl.CronetEngineBuilderImpl.HttpCacheMode;
 import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 
@@ -86,6 +87,7 @@ public final class CronetLoggerTest {
         private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
         private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
         private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
+        private AtomicReference<CronetSource> mSource = new AtomicReference<>();
         private final ConditionVariable mBlock = new ConditionVariable();
 
         @Override
@@ -96,6 +98,7 @@ public final class CronetLoggerTest {
             mCronetEngineId.set(cronetEngineId);
             mBuilderInfo.set(engineBuilderInfo);
             mVersion.set(version);
+            mSource.set(source);
         }
 
         @Override
@@ -137,6 +140,10 @@ public final class CronetLoggerTest {
 
         public CronetVersion getLastCronetVersion() {
             return mVersion.get();
+        }
+
+        public CronetSource getLastCronetSource() {
+            return mSource.get();
         }
     }
 
@@ -263,6 +270,7 @@ public final class CronetLoggerTest {
         CronetEngine engine = builder.build();
         final CronetEngineBuilderInfo builderInfo = mTestLogger.getLastCronetEngineBuilderInfo();
         final CronetVersion version = mTestLogger.getLastCronetVersion();
+        final CronetSource source = mTestLogger.getLastCronetSource();
 
         assertEquals(isPublicKeyPinningBypassForLocalTrustAnchorsEnabled,
                 builderInfo.isPublicKeyPinningBypassForLocalTrustAnchorsEnabled());
@@ -276,7 +284,12 @@ public final class CronetLoggerTest {
         assertEquals(
                 isNetworkQualityEstimatorEnabled, builderInfo.isNetworkQualityEstimatorEnabled());
         assertEquals(threadPriority, builderInfo.getThreadPriority());
-        assertEquals(version.toString(), ImplVersion.getCronetVersion());
+        assertEquals(ImplVersion.getCronetVersion(), version.toString());
+        if (mTestRule.testingJavaImpl()) {
+            assertEquals(CronetSource.CRONET_SOURCE_FALLBACK, source);
+        } else {
+            assertEquals(CronetSource.CRONET_SOURCE_STATICALLY_LINKED, source);
+        }
 
         assertEquals(1, mTestLogger.callsToLogCronetEngineCreation());
         assertEquals(0, mTestLogger.callsToLogCronetTrafficInfo());

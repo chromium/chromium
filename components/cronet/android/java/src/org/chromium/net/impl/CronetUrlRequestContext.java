@@ -20,6 +20,7 @@ import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.net.BidirectionalStream;
+import org.chromium.net.CronetEngine;
 import org.chromium.net.EffectiveConnectionType;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.NetworkQualityRttListener;
@@ -210,7 +211,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         version = version.split("@")[0];
         // TODO(stefanoduo): Correctly generate the CronetSource parameter.
         mLogger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
-                new CronetVersion(version), CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
+                new CronetVersion(version), getCronetSource());
 
         // Init native Chromium URLRequestContext on init thread.
         CronetLibraryLoader.postToInitThread(new Runnable() {
@@ -226,6 +227,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 }
             }
         });
+    }
+
+    static CronetSource getCronetSource() {
+        ClassLoader apiClassLoader = CronetEngine.class.getClassLoader();
+        ClassLoader implClassLoader = CronetUrlRequest.class.getClassLoader();
+        return apiClassLoader.equals(implClassLoader) ? CronetSource.CRONET_SOURCE_STATICALLY_LINKED
+                                                      : CronetSource.CRONET_SOURCE_PLAY_SERVICES;
     }
 
     @VisibleForTesting
