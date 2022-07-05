@@ -42,7 +42,7 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   static int GetNumInstances();
 
  private:
-  content::WebUIDataSource* CreateTrustedAppDataSource();
+  content::WebUIDataSource* CreateTrustedAppDataSource(int window_number);
 
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -54,7 +54,13 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
   std::unique_ptr<FileManagerPageHandler> page_handler_;
 
-  static inline int num_instances_ = 0;
+  // Counts the number of active Files SWA instances. This counter goes up every
+  // time a new window is opened and down every time a window is closed.
+  static inline int instance_count_ = 0;
+
+  // Counts the total number of windows opened. Unlike the instance_count_ this
+  // counter never is decremented.
+  static inline int window_counter_ = 0;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

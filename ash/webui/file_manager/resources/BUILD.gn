@@ -108,7 +108,7 @@ preprocess_if_expr("preprocess_mojo") {
 }
 
 optimize_webui("build") {
-  host = "file_manager"
+  host = "file-manager"
   input = rebase_path(preprocess_folder, root_build_dir)
 
   js_module_in_files = [

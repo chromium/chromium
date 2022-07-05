@@ -10,7 +10,9 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -28,19 +30,26 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
     : MojoWebDialogUI(web_ui), delegate_(std::move(delegate)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  auto* trusted_source = CreateTrustedAppDataSource();
-  content::WebUIDataSource::Add(browser_context, trusted_source);
 
+  // Count the number of active windows. This is done so that we can tell if
+  // there are any active Files SWA windows.
+  ++instance_count_;
+  DCHECK_GT(instance_count_, 0);
+  DLOG(WARNING) << "Starting FileManagerUI. Open windows: " << instance_count_;
+
+  // Increment the counter each time a window is opened. This is to give a
+  // unique ID to each window.
+  ++window_counter_;
+
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  auto* trusted_source = CreateTrustedAppDataSource(window_counter_);
+  content::WebUIDataSource::Add(browser_context, trusted_source);
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
-
-  ++num_instances_;
-  DCHECK_GT(num_instances_, 0);
-  LOG(WARNING) << "Starting FileManagerUI. Open windows: " << num_instances_;
 }
 
-content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
+content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource(
+    int window_number) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIFileManagerHost);
 
@@ -58,7 +67,9 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
 
   // Load time data: add files app strings and feature flags.
   source->EnableReplaceI18nInJS();
-  delegate_->PopulateLoadTimeData(source);
+  base::Value::Dict dict = delegate_->GetLoadTimeData();
+  dict.Set("WINDOW_NUMBER", window_number);
+  source->AddLocalizedStrings(dict);
   source->UseStringsJs();
 
   // Script security policy.
@@ -86,16 +97,16 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
 
 int FileManagerUI::GetNumInstances() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return num_instances_;
+  return instance_count_;
 }
 
 FileManagerUI::~FileManagerUI() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DCHECK_GT(num_instances_, 0);
-  --num_instances_;
+  DCHECK_GT(instance_count_, 0);
+  --instance_count_;
 
-  LOG(WARNING) << "Stopping FileManagerUI. Open windows: " << num_instances_;
+  DLOG(WARNING) << "Stopping FileManagerUI. Open windows: " << instance_count_;
 }
 
 void FileManagerUI::BindInterface(

@@ -4,12 +4,12 @@
 
 // init_globals.js must be the first loaded module.
 import './init_globals.js';
+import './strings.m.js';
 import 'chrome://file-manager/background/js/metrics_start.js';
 import './test_util_swa.js';
 
 import {background} from 'chrome://file-manager/background/js/background.js';
 import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
-import {promisify} from 'chrome://file-manager/common/js/api.js';
 import {GlitchType, reportGlitch} from 'chrome://file-manager/common/js/glitch.js';
 
 import {ScriptLoader} from './script_loader.js';
@@ -21,8 +21,7 @@ import {ScriptLoader} from './script_loader.js';
 class FileManagerApp {
   async run() {
     try {
-      const win = await promisify(chrome.windows.getCurrent);
-      window.appID = win.id;
+      window.appID = loadTimeData.getInteger('WINDOW_NUMBER');
     } catch (e) {
       reportGlitch(GlitchType.CAUGHT_EXCEPTION);
       console.warn('Failed to get the app ID', e);

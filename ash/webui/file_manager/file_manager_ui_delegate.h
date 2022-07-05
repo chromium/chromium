@@ -5,9 +5,7 @@
 #ifndef ASH_WEBUI_FILE_MANAGER_FILE_MANAGER_UI_DELEGATE_H_
 #define ASH_WEBUI_FILE_MANAGER_FILE_MANAGER_UI_DELEGATE_H_
 
-namespace content {
-class WebUIDataSource;
-}  // namespace content
+#include "base/values.h"
 
 namespace ash {
 
@@ -17,7 +15,7 @@ class FileManagerUIDelegate {
   virtual ~FileManagerUIDelegate() = default;
 
   // Populates (writes) load time data to the source.
-  virtual void PopulateLoadTimeData(content::WebUIDataSource*) const = 0;
+  virtual base::Value::Dict GetLoadTimeData() const = 0;
 };
 
 }  // namespace ash

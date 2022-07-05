@@ -20,8 +20,10 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   ChromeFileManagerUIDelegate& operator=(const ChromeFileManagerUIDelegate&) =
       delete;
 
-  // FileManagerUIDelegate:
-  void PopulateLoadTimeData(content::WebUIDataSource*) const override;
+  // Fetches a map that maps message IDs to actual strings shown to the user.
+  // Extends the map with properties used by the files app, such as which
+  // features are enabled. Returns the populated map to the caller.
+  base::Value::Dict GetLoadTimeData() const override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.
