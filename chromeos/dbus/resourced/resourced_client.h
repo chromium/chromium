@@ -9,6 +9,8 @@
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
+#include <cstdint>
+
 namespace dbus {
 class Bus;
 }
@@ -50,6 +52,16 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
     FOREGROUND = 3,
   };
 
+  // Indicates whether game mode is on, and which kind of game mode if it is on.
+  // Borealis game mode will put more memory pressure on ARCVM processes than
+  // will ARC game mode.
+  // D-Bus serializes this as a u8, hence the uint8_t specifier.
+  enum class GameMode : uint8_t {
+    OFF = 0,
+    BOREALIS = 1,
+    ARC = 2,
+  };
+
   // Observer class for ARCVM memory pressure signal.
   class ArcVmObserver : public base::CheckedObserver {
    public:
@@ -74,12 +86,13 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   // Returns the global instance which may be null if not initialized.
   static ResourcedClient* Get();
 
-  // Attempts to enter game mode if state is true, exit if state is false.
+  // Attempts to enter or exit game mode depending on the value of |game_mode|.
   // Will automatically exit game mode once refresh_seconds is reached.
   // Callback will be called with whether game mode was on prior to this.
-  virtual void SetGameModeWithTimeout(bool state,
-                                      uint32_t refresh_seconds,
-                                      DBusMethodCallback<bool> callback) = 0;
+  virtual void SetGameModeWithTimeout(
+      GameMode game_mode,
+      uint32_t refresh_seconds,
+      DBusMethodCallback<GameMode> callback) = 0;
 
   using SetMemoryMarginsBpsCallback =
       base::OnceCallback<void(bool, uint64_t, uint64_t)>;

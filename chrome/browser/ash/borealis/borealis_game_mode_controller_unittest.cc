@@ -128,7 +128,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
 
 TEST_F(BorealisGameModeControllerTest, SetGameModeFailureDoesNotCrash) {
   fake_resourced_client_->set_set_game_mode_with_timeout_response(
-      absl::optional<bool>(absl::nullopt));
+      absl::nullopt);
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -166,7 +166,8 @@ TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
                                        BorealisGameModeResult::kFailed, 0);
 
   // Previous game mode timed out/failed followed by refresh.
-  fake_resourced_client_->set_set_game_mode_with_timeout_response(false);
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(
+      chromeos::ResourcedClient::GameMode::OFF);
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_EQ(3, fake_resourced_client_->get_enter_game_mode_count());
   histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
@@ -176,7 +177,8 @@ TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
 
   // Previous game mode timed out/failed followed by exit.
   // Should not record to histogram as it was already recorded above.
-  fake_resourced_client_->set_set_game_mode_with_timeout_response(false);
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(
+      chromeos::ResourcedClient::GameMode::OFF);
   test_widget->SetFullscreen(false);
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());

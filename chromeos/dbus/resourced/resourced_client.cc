@@ -54,9 +54,9 @@ class ResourcedClientImpl : public ResourcedClient {
   }
 
   // ResourcedClient interface.
-  void SetGameModeWithTimeout(bool state,
+  void SetGameModeWithTimeout(GameMode game_mode,
                               uint32_t refresh_seconds,
-                              DBusMethodCallback<bool> callback) override;
+                              DBusMethodCallback<GameMode> callback) override;
 
   void SetMemoryMarginsBps(uint32_t critical_margin,
                            uint32_t moderate_margin,
@@ -72,8 +72,9 @@ class ResourcedClientImpl : public ResourcedClient {
 
  private:
   // D-Bus response handlers.
-  void HandleSetGameModeWithTimeoutResponse(DBusMethodCallback<bool> callback,
-                                            dbus::Response* response);
+  void HandleSetGameModeWithTimeoutResponse(
+      DBusMethodCallback<GameMode> callback,
+      dbus::Response* response);
 
   void HandleSetMemoryMarginBps(uint32_t critical_margin,
                                 uint32_t moderate_margin,
@@ -204,7 +205,7 @@ void ResourcedClientImpl::MemoryPressureConnected(
 
 // Response will be true if game mode was on previously, false otherwise.
 void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
-    DBusMethodCallback<bool> callback,
+    DBusMethodCallback<GameMode> callback,
     dbus::Response* response) {
   dbus::MessageReader reader(response);
   uint8_t previous;
@@ -212,17 +213,17 @@ void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  std::move(callback).Run(previous);
+  std::move(callback).Run(static_cast<GameMode>(previous));
 }
 
 void ResourcedClientImpl::SetGameModeWithTimeout(
-    bool status,
+    GameMode game_mode,
     uint32_t refresh_seconds,
-    DBusMethodCallback<bool> callback) {
+    DBusMethodCallback<GameMode> callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
                                resource_manager::kSetGameModeWithTimeoutMethod);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendByte(status);
+  writer.AppendByte(static_cast<uint8_t>(game_mode));
   writer.AppendUint32(refresh_seconds);
 
   proxy_->CallMethod(

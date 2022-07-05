@@ -20,9 +20,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   FakeResourcedClient& operator=(const FakeResourcedClient&) = delete;
 
   // ResourcedClient:
-  void SetGameModeWithTimeout(bool state,
+  void SetGameModeWithTimeout(GameMode game_mode,
                               uint32_t refresh_seconds,
-                              DBusMethodCallback<bool> callback) override;
+                              DBusMethodCallback<GameMode> callback) override;
 
   void SetMemoryMarginsBps(uint32_t critical,
                            uint32_t moderate,
@@ -32,11 +32,12 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
     total_system_memory_kb_ = mem_kb;
   }
 
-  void set_set_game_mode_response(absl::optional<bool> response) {
+  void set_set_game_mode_response(absl::optional<GameMode> response) {
     set_game_mode_response_ = response;
   }
 
-  void set_set_game_mode_with_timeout_response(absl::optional<bool> response) {
+  void set_set_game_mode_with_timeout_response(
+      absl::optional<GameMode> response) {
     previous_game_mode_state_ = response;
   }
 
@@ -55,8 +56,8 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
                                uint64_t reclaim_target_kb);
 
  private:
-  absl::optional<bool> set_game_mode_response_;
-  absl::optional<bool> previous_game_mode_state_ = false;
+  absl::optional<GameMode> set_game_mode_response_;
+  absl::optional<GameMode> previous_game_mode_state_ = GameMode::OFF;
 
   int enter_game_mode_count_ = 0;
   int exit_game_mode_count_ = 0;

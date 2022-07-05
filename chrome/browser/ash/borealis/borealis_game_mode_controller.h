@@ -47,7 +47,9 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
     ~GameModeEnabler();
 
    private:
-    static void OnSetGameMode(bool was_refresh, absl::optional<bool> previous);
+    static void OnSetGameMode(
+        bool was_refresh,
+        absl::optional<chromeos::ResourcedClient::GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.

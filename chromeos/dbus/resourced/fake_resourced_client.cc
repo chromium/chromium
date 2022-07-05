@@ -13,17 +13,16 @@ FakeResourcedClient::FakeResourcedClient() = default;
 FakeResourcedClient::~FakeResourcedClient() = default;
 
 void FakeResourcedClient::SetGameModeWithTimeout(
-    bool state,
+    GameMode state,
     uint32_t refresh_seconds,
-    DBusMethodCallback<bool> callback) {
-  absl::optional<bool> response = previous_game_mode_state_;
-  if (state) {
-    enter_game_mode_count_++;
-    previous_game_mode_state_ = true;
-  } else {
+    DBusMethodCallback<GameMode> callback) {
+  absl::optional<GameMode> response = previous_game_mode_state_;
+  if (state == GameMode::OFF) {
     exit_game_mode_count_++;
-    previous_game_mode_state_ = false;
+  } else {
+    enter_game_mode_count_++;
   }
+  previous_game_mode_state_ = state;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
