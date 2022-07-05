@@ -411,10 +411,9 @@ void PasswordCheckDelegate::StartPasswordCheck(
   // If automated password change from password check in settings is enabled,
   // we make sure that the cache is warm prior to analyzing passwords.
   is_check_running_ = true;
-  // TODO(crbug.com/1340073): Expose method in PasswordScriptsFetcher that
-  // allows checking cache state. Only run this branch if the cache is stale.
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChange)) {
+          password_manager::features::kPasswordChange) &&
+      GetPasswordScriptsFetcher()->IsCacheStale()) {
     GetPasswordScriptsFetcher()->RefreshScriptsIfNecessary(
         base::BindOnce(&PasswordCheckDelegate::OnPasswordScriptsFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

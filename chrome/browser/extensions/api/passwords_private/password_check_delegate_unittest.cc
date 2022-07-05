@@ -1441,6 +1441,9 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
               UnorderedElementsAre(ExpectCredentialWithScriptInfo(
                   kUsername1, /*has_startable_script=*/false)));
 
+  // Simulate a stale cache.
+  EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(true));
+
   base::OnceClosure refresh_callback;
   EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
       .WillOnce(MoveArg<0>(&refresh_callback));
@@ -1523,6 +1526,37 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
                   kUsername1, /*has_startable_script=*/false)));
 }
 
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChange);
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  store().AddLogin(form1);
+  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+
+  RunUntilIdle();
+
+  EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(false));
+  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary).Times(0);
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillRepeatedly(Return(true));
+
+  delegate().StartPasswordCheck();
+  event_router_observer().ClearEvents();
+
+  RunUntilIdle();
+
+  // Check that no update event was fired.
+  EXPECT_FALSE(base::Contains(
+      event_router_observer().events(),
+      api::passwords_private::OnCompromisedCredentialsChanged::kEventName));
+}
+
 TEST_F(PasswordCheckDelegateTest,
        HasStartableScript_CredentialListUpdateAfterScriptsFetched) {
   base::test::ScopedFeatureList feature_list(
@@ -1539,6 +1573,7 @@ TEST_F(PasswordCheckDelegateTest,
 
   RunUntilIdle();
 
+  EXPECT_CALL(password_scripts_fetcher(), IsCacheStale).WillOnce(Return(true));
   base::OnceClosure refresh_callback;
   EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
       .WillOnce(MoveArg<0>(&refresh_callback));
