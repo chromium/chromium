@@ -89,7 +89,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/pc:ice_server_parsing",
   "//third_party/webrtc/pc:libjingle_peerconnection",
   "//third_party/webrtc/pc:media_session",
-  "//third_party/webrtc/pc:peerconnection",
   "//third_party/webrtc/pc:rtc_pc",
   "//third_party/webrtc/pc:session_description",
   "//third_party/webrtc/pc:webrtc_sdp",
