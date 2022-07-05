@@ -42,6 +42,9 @@
 - (BOOL)isTabMatch {
   return NO;
 }
+- (BOOL)isClipboardMatch {
+  return NO;
+}
 - (BOOL)isTailSuggestion {
   return NO;
 }

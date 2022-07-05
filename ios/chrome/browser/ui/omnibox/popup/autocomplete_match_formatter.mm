@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
@@ -232,6 +233,16 @@ UIColor* DimColorIncognito() {
 
 - (BOOL)isTabMatch {
   return _match.has_tab_match.value_or(false);
+}
+
+- (BOOL)isClipboardMatch {
+  if (base::FeatureList::IsEnabled(kOmniboxPasteButton)) {
+    return _match.type == AutocompleteMatchType::CLIPBOARD_URL ||
+           _match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
+           _match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
+  } else {
+    return NO;
+  }
 }
 
 - (id<OmniboxPedal>)pedal {

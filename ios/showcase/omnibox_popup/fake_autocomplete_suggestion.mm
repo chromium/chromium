@@ -281,6 +281,8 @@ NSAttributedString* calculatorText() {
 
 @implementation FakeAutocompleteSuggestion
 
+@synthesize isClipboardMatch = _isClipboardMatch;
+
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -292,6 +294,7 @@ NSAttributedString* calculatorText() {
         [[UIImage imageNamed:@"omnibox_completion_default_favicon"]
             imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _icon = [[SimpleOmniboxIcon alloc] init];
+    _isClipboardMatch = NO;
   }
   return self;
 }

@@ -211,6 +211,27 @@ struct PopupMatchRowView: View {
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
             .foregroundColor(isHighlighted ? highlightColor : .chromeBlue)
+        } else if match.isClipboardMatch {
+          // Clipboard matches are never appendable or tab matches.
+          #if __IPHONE_16_0
+            if #available(iOS 16.0, *) {
+              PasteButton(
+                // The clipboard suggestion row is only going to appear for these
+                // types of clipboard content.
+                supportedContentTypes: [.text, .image, .url],
+                payloadAction: { _ in
+                  DispatchQueue.main.async {
+                    // The clipboard content will be retrieved in a later stage by the
+                    // clipboard provider. After the tap on `PasteButton`, later request
+                    // on the same clipboard content won't trigger the permission popup.
+                    selectionHandler()
+                  }
+                }
+              )
+              .buttonBorderShape(.capsule)
+              .labelStyle(.iconOnly)
+            }
+          #endif  // __IPHONE_16_0
         }
         Color.clear.frame(width: trailingMarginForRowContent)
       }
