@@ -13,6 +13,9 @@
 #include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
+#include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/language_detection/language_detection_service_impl.h"
 #include "components/services/language_detection/public/mojom/language_detection.mojom.h"
@@ -159,6 +162,13 @@ auto RunWebAppOriginAssociationParser(
     mojo::PendingReceiver<webapps::mojom::WebAppOriginAssociationParser>
         receiver) {
   return std::make_unique<webapps::WebAppOriginAssociationParserImpl>(
+      std::move(receiver));
+}
+
+auto RunCSVPasswordParser(
+    mojo::PendingReceiver<password_manager::mojom::CSVPasswordParser>
+        receiver) {
+  return std::make_unique<password_manager::CSVPasswordParserImpl>(
       std::move(receiver));
 }
 
@@ -397,6 +407,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunLanguageDetectionService);
   services.Add(RunQRCodeGeneratorService);
   services.Add(RunWebAppOriginAssociationParser);
+
+  if (base::FeatureList::IsEnabled(password_manager::features::kPasswordImport))
+    services.Add(RunCSVPasswordParser);
 
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);

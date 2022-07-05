@@ -43,6 +43,8 @@ include_rules = [
   "+components/mirroring/mojom",
   "+components/mirroring/service",
   "+components/paint_preview/buildflags",
+  "+components/password_manager/services/csv_password",
+  "+components/password_manager/core/common",
   "+components/payments/content/utility",
   "+components/safe_browsing/buildflags.h",
   "+components/services/language_detection",

@@ -27,14 +27,25 @@ class CSVPassword {
   // Number of values in the Label enum.
   static constexpr size_t kLabelCount = 3;
 
+  explicit CSVPassword();
   explicit CSVPassword(const ColumnMap& map, base::StringPiece csv_row);
-  CSVPassword(const CSVPassword&) = delete;
-  CSVPassword(CSVPassword&&) = delete;
-  CSVPassword& operator=(const CSVPassword&) = delete;
-  CSVPassword& operator=(CSVPassword&&) = delete;
+  explicit CSVPassword(GURL url, std::string username, std::string password);
+  CSVPassword(const CSVPassword&);
+  CSVPassword(CSVPassword&&);
+  CSVPassword& operator=(const CSVPassword&);
+  CSVPassword& operator=(CSVPassword&&);
 
   // Returns the status of the parse.
   Status GetParseStatus() const;
+
+  // Returns the password.
+  const std::string& GetPassword() const;
+
+  // Returns the username.
+  const std::string& GetUsername() const;
+
+  // Returns the URL.
+  const GURL& GetURL() const;
 
   // Returns PasswordForm populated with parsed data, if initial parsing
   // completed successfully.
@@ -42,8 +53,8 @@ class CSVPassword {
 
  private:
   GURL url_;
-  base::StringPiece username_;
-  base::StringPiece password_;
+  std::string username_;
+  std::string password_;
 
   Status status_;
 };

@@ -20,16 +20,28 @@ namespace password_manager {
 
 namespace {
 
-// Convert() unescapes a CSV field |str| and converts the result to a 16-bit
+// ConvertUTF8() unescapes a CSV field |str| and converts the result to a 8-bit
 // string. |str| is assumed to exclude the outer pair of quotation marks, if
 // originally present.
-std::u16string Convert(base::StringPiece str) {
+std::string ConvertUTF8(base::StringPiece str) {
   std::string str_copy(str);
   base::ReplaceSubstringsAfterOffset(&str_copy, 0, "\"\"", "\"");
-  return base::UTF8ToUTF16(str_copy);
+  return str_copy;
+}
+
+// Convert() converts the result to a 16-bit string.
+std::u16string Convert(const std::string& str) {
+  return base::UTF8ToUTF16(str);
 }
 
 }  // namespace
+
+CSVPassword::CSVPassword() : status_(Status::kSemanticError) {}
+CSVPassword::CSVPassword(GURL url, std::string username, std::string password)
+    : url_(std::move(url)),
+      username_(std::move(username)),
+      password_(std::move(password)),
+      status_(Status::kOK) {}
 
 CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
   if (map.size() != kLabelCount) {
@@ -60,11 +72,11 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
         url_ = GURL(field);
         break;
       case Label::kUsername:
-        username_ = field;
+        username_ = ConvertUTF8(field);
         username_set = true;
         break;
       case Label::kPassword:
-        password_ = field;
+        password_ = ConvertUTF8(field);
         break;
     }
   }
@@ -75,6 +87,11 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
     status_ = Status::kSemanticError;
   }
 }
+
+CSVPassword::CSVPassword(const CSVPassword&) = default;
+CSVPassword::CSVPassword(CSVPassword&&) = default;
+CSVPassword& CSVPassword::operator=(const CSVPassword&) = default;
+CSVPassword& CSVPassword::operator=(CSVPassword&&) = default;
 
 CSVPassword::Status CSVPassword::GetParseStatus() const {
   return status_;
@@ -97,6 +114,18 @@ PasswordForm CSVPassword::ToPasswordForm() const {
   form.date_created = base::Time::Now();
   form.date_password_modified = form.date_created;
   return form;
+}
+
+const std::string& CSVPassword::GetPassword() const {
+  return password_;
+}
+
+const std::string& CSVPassword::GetUsername() const {
+  return username_;
+}
+
+const GURL& CSVPassword::GetURL() const {
+  return url_;
 }
 
 }  // namespace password_manager
