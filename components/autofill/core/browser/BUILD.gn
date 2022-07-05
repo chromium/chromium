@@ -198,6 +198,8 @@ static_library("browser") {
     "form_parsing/search_field.h",
     "form_parsing/travel_field.cc",
     "form_parsing/travel_field.h",
+    "form_processing/autocomplete_attribute_processing_util.cc",
+    "form_processing/autocomplete_attribute_processing_util.h",
     "form_processing/label_processing_util.cc",
     "form_processing/label_processing_util.h",
     "form_processing/name_processing_util.cc",
