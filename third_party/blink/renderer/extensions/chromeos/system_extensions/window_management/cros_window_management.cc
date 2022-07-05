@@ -44,7 +44,12 @@ CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
     : Supplement(execution_context),
       ExecutionContextClient(&execution_context),
       cros_window_management_(&execution_context),
-      receiver_(this, &execution_context) {}
+      receiver_(this, &execution_context) {
+  auto receiver = cros_window_management_.BindNewPipeAndPassReceiver(
+      execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
+  execution_context.GetBrowserInterfaceBroker().GetInterface(
+      std::move(receiver));
+}
 
 void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_);
@@ -73,10 +78,7 @@ CrosWindowManagement::GetCrosWindowManagementOrNull() {
   }
 
   if (!cros_window_management_.is_bound()) {
-    auto receiver = cros_window_management_.BindNewPipeAndPassReceiver(
-        execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-    execution_context->GetBrowserInterfaceBroker().GetInterface(
-        std::move(receiver));
+    return nullptr;
   }
   return cros_window_management_.get();
 }
