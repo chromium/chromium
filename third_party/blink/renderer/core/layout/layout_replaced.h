@@ -133,6 +133,16 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return true;
   }
 
+  bool IsInSelfHitTestingPhase(HitTestPhase phase) const final {
+    NOT_DESTROYED();
+    if (LayoutBox::IsInSelfHitTestingPhase(phase))
+      return true;
+
+    auto* element = DynamicTo<Element>(GetNode());
+    return element && element->IsReplacedElementRespectingCSSOverflow() &&
+           phase == HitTestPhase::kSelfBlockBackground;
+  }
+
   void WillBeDestroyed() override;
 
   void UpdateLayout() override;

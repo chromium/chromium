@@ -5567,14 +5567,20 @@ TEST_P(PaintPropertyTreeBuilderTest, ImageBorderRadius) {
   )HTML");
 
   const auto* properties = PaintPropertiesForElement("img");
-  const auto* border_radius_clip = properties->OverflowClip();
+  const auto* overflow_clip = properties->OverflowClip();
+  ASSERT_NE(nullptr, overflow_clip);
+  EXPECT_CLIP_RECT(
+      FloatRoundedRect(gfx::RectF(18, 18, 50, 50), FloatRoundedRect::Radii(0)),
+      overflow_clip);
+  EXPECT_EQ(properties->InnerBorderRadiusClip(), overflow_clip->Parent());
+  EXPECT_EQ(DocScrollTranslation(), &overflow_clip->LocalTransformSpace());
+
+  const auto* border_radius_clip = properties->InnerBorderRadiusClip();
   ASSERT_NE(nullptr, border_radius_clip);
+  EXPECT_EQ(DocContentClip(), border_radius_clip->Parent());
   EXPECT_CLIP_RECT(
       FloatRoundedRect(gfx::RectF(18, 18, 50, 50), FloatRoundedRect::Radii(20)),
       border_radius_clip);
-  EXPECT_EQ(DocContentClip(), border_radius_clip->Parent());
-  EXPECT_EQ(DocScrollTranslation(), &border_radius_clip->LocalTransformSpace());
-  EXPECT_EQ(nullptr, properties->InnerBorderRadiusClip());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {

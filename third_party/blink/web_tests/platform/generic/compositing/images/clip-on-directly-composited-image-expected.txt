@@ -8,8 +8,7 @@
     },
     {
       "name": "LayoutImage (positioned) IMG class='composited'",
-      "position": [10, 10],
-      "bounds": [140, 140],
+      "bounds": [200, 200],
       "contentsOpaqueForText": true,
       "transform": 1
     }

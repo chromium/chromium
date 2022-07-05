@@ -783,10 +783,18 @@ bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
   if (StyleRef().IsDeprecatedWebkitBox())
     return false;
 
-  // TODO(dgrogan): MainAxisOverflowForChild == kClip also qualifies, not just
-  // kVisible.
-  return !child.ShouldApplySizeContainment() &&
-         MainAxisOverflowForChild(child) == EOverflow::kVisible;
+  if (child.ShouldApplySizeContainment())
+    return false;
+
+  bool is_replaced_element_respecting_overflow = false;
+  if (auto* element = DynamicTo<Element>(child.GetNode())) {
+    is_replaced_element_respecting_overflow =
+        element->IsReplacedElementRespectingCSSOverflow();
+  }
+
+  return MainAxisOverflowForChild(child) == EOverflow::kVisible ||
+         (is_replaced_element_respecting_overflow &&
+          MainAxisOverflowForChild(child) == EOverflow::kClip);
 }
 
 LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {

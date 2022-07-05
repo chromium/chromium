@@ -1428,32 +1428,31 @@ TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForImage) {
 
   auto* target = GetDocument().getElementById("target");
   const auto* properties = PaintPropertiesForElement("target");
-  // We don't need paint properties for object-fit: fill because the content
-  // never overflows.
-  EXPECT_EQ(nullptr, properties);
+  // Image elements need a clip node to clip the image to its content box.
+  EXPECT_NE(nullptr, properties);
 
   target->setAttribute(html_names::kStyleAttr, "object-fit: cover");
   UpdateAllLifecyclePhasesForTest();
   properties = PaintPropertiesForElement("target");
-  // We don't need paint properties because image painter always clip to the
-  // content box.
-  EXPECT_EQ(nullptr, properties);
+  // Image elements need a clip node to clip the image to its content box.
+  EXPECT_NE(nullptr, properties);
 
   target->setAttribute(html_names::kStyleAttr, "object-fit: none");
   UpdateAllLifecyclePhasesForTest();
   properties = PaintPropertiesForElement("target");
   // Ditto.
-  EXPECT_EQ(nullptr, properties);
+  EXPECT_NE(nullptr, properties);
 
-  // We need overflow clip when there is border radius.
   target->setAttribute(html_names::kStyleAttr,
                        "object-fit: none; border-radius: 2px");
   UpdateAllLifecyclePhasesForTest();
   properties = PaintPropertiesForElement("target");
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->OverflowClip());
-  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(8, 8, 8, 8), 2),
+  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(8, 8, 8, 8), 0),
                    properties->OverflowClip());
+  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(8, 8, 8, 8), 2),
+                   properties->InnerBorderRadiusClip());
 
   // We should update clip rect on border radius change.
   target->setAttribute(html_names::kStyleAttr,
@@ -1461,8 +1460,10 @@ TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForImage) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(properties, PaintPropertiesForElement("target"));
   ASSERT_TRUE(properties->OverflowClip());
-  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(8, 8, 8, 8), 3),
+  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(8, 8, 8, 8), 0),
                    properties->OverflowClip());
+  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(8, 8, 8, 8), 3),
+                   properties->InnerBorderRadiusClip());
 
   // We should update clip rect on padding change.
   target->setAttribute(
@@ -1476,7 +1477,7 @@ TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForImage) {
   EXPECT_CLIP_RECT(
       FloatRoundedRect(gfx::RectF(12, 9, 2, 4), gfx::SizeF(0, 2),
                        gfx::SizeF(1, 2), gfx::SizeF(), gfx::SizeF(1, 0)),
-      properties->OverflowClip());
+      properties->InnerBorderRadiusClip());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForVideo) {

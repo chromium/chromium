@@ -178,9 +178,15 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
   PhysicalRect paint_rect = layout_image_.ReplacedContentRect();
   paint_rect.offset += paint_offset;
 
-  BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
-                              paint_offset);
-  PaintIntoRect(context, paint_rect, content_rect);
+  // If |overflow| is supported for replaced elements, paint the complete image
+  // and the painting will be clipped based on overflow value by clip paint
+  // property nodes.
+  const PhysicalRect visual_rect =
+      layout_image_.ClipsToContentBox() ? content_rect : paint_rect;
+
+  DrawingRecorder recorder(context, layout_image_, paint_info.phase,
+                           ToEnclosingRect(visual_rect));
+  PaintIntoRect(context, paint_rect, visual_rect);
 }
 
 void ImagePainter::PaintIntoRect(GraphicsContext& context,
