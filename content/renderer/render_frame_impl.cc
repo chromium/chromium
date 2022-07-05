@@ -1751,17 +1751,6 @@ void RenderFrame::ForEach(RenderFrameVisitor* visitor) {
 }
 
 // static
-int RenderFrame::GetRoutingIdForWebFrame(blink::WebFrame* web_frame) {
-  if (!web_frame)
-    return MSG_ROUTING_NONE;
-  if (web_frame->IsWebRemoteFrame()) {
-    return RenderFrameProxy::FromWebFrame(web_frame->ToWebRemoteFrame())
-        ->routing_id();
-  }
-  return RenderFrameImpl::FromWebFrame(web_frame)->GetRoutingID();
-}
-
-// static
 RenderFrameImpl* RenderFrameImpl::FromWebFrame(blink::WebFrame* web_frame) {
   DCHECK(RenderThread::IsMainThread());
   auto iter = g_frame_map.Get().find(web_frame);
@@ -1880,9 +1869,8 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   initialized_ = true;
   is_main_frame_ = !parent;
 
-  TRACE_EVENT2("navigation,rail", "RenderFrameImpl::Initialize", "routing_id",
-               routing_id_, "parent_id",
-               RenderFrame::GetRoutingIdForWebFrame(parent));
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::Initialize", "routing_id",
+               routing_id_);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   new PepperBrowserConnection(this);

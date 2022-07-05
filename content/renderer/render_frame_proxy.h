@@ -128,7 +128,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // RenderFrameProxy's WebRemoteFrame.
   void SetReplicatedState(blink::mojom::FrameReplicationStatePtr state);
 
-  int routing_id() { return routing_id_; }
   blink::WebRemoteFrame* web_frame() { return web_frame_; }
 
   // blink::WebRemoteFrameClient implementation:
