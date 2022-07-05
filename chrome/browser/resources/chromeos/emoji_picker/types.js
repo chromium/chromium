@@ -41,6 +41,14 @@ export let StoredItem;
 export let SubcategoryData;
 
 /**
+ * @typedef {{name: string, category: string, emoji: Array<EmojiVariants>,
+ *            groupId: string, activate: boolean, disabled: boolean,
+ *            pagination: ?number, preferences: Object<string,string>,
+ *            isHistory: boolean}} EmojiGroupElement
+ */
+export let EmojiGroupElement;
+
+/**
  * @enum {string}
  */
 export const CategoryEnum = {
