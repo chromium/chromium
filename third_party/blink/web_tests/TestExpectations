@@ -4814,7 +4814,6 @@ crbug.com/945665 http/tests/devtools/elements/styles-3/styles-change-node-while-
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally timeout,
 # but the test coverage is still good.
 crbug.com/919789 fast/dom/Window/window-resize-contents.html [ Pass Timeout ]
-crbug.com/919789 [ Linux ] paint/invalidation/resize-iframe-text.html [ Pass Timeout ]
 
 crbug.com/1021627 fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Failure Pass Timeout ]
 
