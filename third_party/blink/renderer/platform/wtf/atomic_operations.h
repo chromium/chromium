@@ -191,9 +191,6 @@ ALWAYS_INLINE void AtomicMemzeroAligned(void* buf) {
 template <size_t bytes, size_t alignment>
 ALWAYS_INLINE void AtomicMemzero(void* buf) {
   static_assert(bytes > 0, "Number of copied bytes should be greater than 0");
-  AtomicMemzero(buf, bytes);
-
-  static_assert(bytes > 0, "Number of copied bytes should be greater than 0");
   if constexpr (alignment == sizeof(size_t)) {
     internal::AtomicMemzeroAligned<bytes, size_t>(buf);
   } else if constexpr (alignment == sizeof(uint32_t)) {
