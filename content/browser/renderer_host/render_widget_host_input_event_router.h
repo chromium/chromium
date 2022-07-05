@@ -379,8 +379,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
   // Tracked for the purpose of providing a root_view when dispatching emulated
   // touch/gesture events.
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged>
-      last_emulated_event_root_view_;
+  raw_ptr<RenderWidgetHostViewBase> last_emulated_event_root_view_;
 
   // Used to send a GSE with proper source device to terminate scroll bubbling
   // whenever needed.

@@ -412,6 +412,9 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewBaseDestroyed(
   if (view == last_mouse_down_target_)
     last_mouse_down_target_ = nullptr;
 
+  if (view == last_emulated_event_root_view_)
+    last_emulated_event_root_view_ = nullptr;
+
   event_targeter_->ViewWillBeDestroyed(view);
 }
 
