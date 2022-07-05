@@ -130,7 +130,7 @@ class BASE_EXPORT CPU final {
 
   struct TimeInStateEntry {
     CPU::CoreType core_type;      // type of the cores in this cluster.
-    uint32_t cluster_core_index;  // index of the first core in the cluster.
+    size_t cluster_core_index;    // index of the first core in the cluster.
     uint64_t core_frequency_khz;
     TimeDelta cumulative_time;
   };

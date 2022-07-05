@@ -85,10 +85,11 @@ constexpr const char* MutatorIdToTracingString(
 // Inject TRACE_EVENT_BEGIN/END, TRACE_COUNTER1, and UmaHistogramTimes.
 class StatsReporterImpl final : public partition_alloc::StatsReporter {
  public:
-  void ReportTraceEvent(partition_alloc::internal::StatsCollector::ScannerId id,
-                        [[maybe_unused]] uint32_t tid,
-                        int64_t start_time_ticks_internal_value,
-                        int64_t end_time_ticks_internal_value) override {
+  void ReportTraceEvent(
+      partition_alloc::internal::StatsCollector::ScannerId id,
+      [[maybe_unused]] partition_alloc::internal::base::PlatformThreadId tid,
+      int64_t start_time_ticks_internal_value,
+      int64_t end_time_ticks_internal_value) override {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
     // TRACE_EVENT_* macros below drop most parameters when tracing is
     // disabled at compile time.
@@ -104,10 +105,11 @@ class StatsReporterImpl final : public partition_alloc::StatsReporter {
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
   }
 
-  void ReportTraceEvent(partition_alloc::internal::StatsCollector::MutatorId id,
-                        [[maybe_unused]] uint32_t tid,
-                        int64_t start_time_ticks_internal_value,
-                        int64_t end_time_ticks_internal_value) override {
+  void ReportTraceEvent(
+      partition_alloc::internal::StatsCollector::MutatorId id,
+      [[maybe_unused]] partition_alloc::internal::base::PlatformThreadId tid,
+      int64_t start_time_ticks_internal_value,
+      int64_t end_time_ticks_internal_value) override {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
     // TRACE_EVENT_* macros below drop most parameters when tracing is
     // disabled at compile time.

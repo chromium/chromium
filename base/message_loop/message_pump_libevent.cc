@@ -128,7 +128,7 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
   // threadsafe, and your watcher may never be registered.
   DCHECK(watch_file_descriptor_caller_checker_.CalledOnValidThread());
 
-  int event_mask = persistent ? EV_PERSIST : 0;
+  short event_mask = persistent ? EV_PERSIST : 0;
   if (mode & WATCH_READ) {
     event_mask |= EV_READ;
   }
@@ -281,7 +281,7 @@ void MessagePumpLibevent::Quit() {
 void MessagePumpLibevent::ScheduleWork() {
   // Tell libevent (in a threadsafe way) that it should break out of its loop.
   char buf = 0;
-  int nwrite = HANDLE_EINTR(write(wakeup_pipe_in_, &buf, 1));
+  long nwrite = HANDLE_EINTR(write(wakeup_pipe_in_, &buf, 1));
   DPCHECK(nwrite == 1 || errno == EAGAIN) << "nwrite:" << nwrite;
 }
 
@@ -364,7 +364,7 @@ void MessagePumpLibevent::OnWakeup(int socket, short flags, void* context) {
 
   // Remove and discard the wakeup byte.
   char buf;
-  int nread = HANDLE_EINTR(read(socket, &buf, 1));
+  long nread = HANDLE_EINTR(read(socket, &buf, 1));
   DCHECK_EQ(nread, 1);
   that->processed_io_events_ = true;
   // Tell libevent to break out of inner loop.

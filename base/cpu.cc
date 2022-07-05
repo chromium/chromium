@@ -21,6 +21,7 @@
     BUILDFLAG(IS_AIX)
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
+#include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
@@ -392,25 +393,26 @@ CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
 namespace {
 
 constexpr char kTimeInStatePath[] =
-    "/sys/devices/system/cpu/cpu%d/cpufreq/stats/time_in_state";
+    "/sys/devices/system/cpu/cpu%" PRIuS "/cpufreq/stats/time_in_state";
 constexpr char kPhysicalPackageIdPath[] =
-    "/sys/devices/system/cpu/cpu%d/topology/physical_package_id";
+    "/sys/devices/system/cpu/cpu%" PRIuS "/topology/physical_package_id";
 constexpr char kCoreIdleStateTimePath[] =
-    "/sys/devices/system/cpu/cpu%d/cpuidle/state%d/time";
+    "/sys/devices/system/cpu/cpu%" PRIuS "/cpuidle/state%d/time";
 
 bool SupportsTimeInState() {
   // Reading from time_in_state doesn't block (it amounts to reading a struct
   // from the cpufreq-stats kernel driver).
   ThreadRestrictions::ScopedAllowIO allow_io;
   // Check if the time_in_state path for the first core is readable.
-  FilePath time_in_state_path(StringPrintf(kTimeInStatePath, /*core_index=*/0));
+  FilePath time_in_state_path(
+      StringPrintf(kTimeInStatePath, /*core_index=*/size_t{0}));
   ScopedFILE file_stream(OpenFile(time_in_state_path, "rb"));
   return static_cast<bool>(file_stream);
 }
 
 bool ParseTimeInState(const std::string& content,
                       CPU::CoreType core_type,
-                      uint32_t core_index,
+                      size_t core_index,
                       CPU::TimeInState& time_in_state) {
   const char* begin = content.data();
   size_t max_pos = content.size() - 1;
@@ -429,8 +431,8 @@ bool ParseTimeInState(const std::string& content,
     // Each line should have two integer fields, frequency (kHz) and time (in
     // jiffies), separated by a space, e.g. "2419200 132".
     uint64_t frequency;
-    uint64_t time;
-    int matches = sscanf(begin + pos, "%" PRIu64 " %" PRIu64 "\n%n", &frequency,
+    int64_t time;
+    int matches = sscanf(begin + pos, "%" PRIu64 " %" PRId64 "\n%n", &frequency,
                          &time, &num_chars);
     if (matches != 2)
       return false;
@@ -444,7 +446,7 @@ bool ParseTimeInState(const std::string& content,
 
     // Advance line.
     DCHECK_GT(num_chars, 0);
-    pos += num_chars;
+    pos += static_cast<size_t>(num_chars);
   }
 
   return true;
@@ -454,8 +456,8 @@ bool SupportsCoreIdleTimes() {
   // Reading from the cpuidle driver doesn't block.
   ThreadRestrictions::ScopedAllowIO allow_io;
   // Check if the path for the idle time in state 0 for core 0 is readable.
-  FilePath idle_state0_path(
-      StringPrintf(kCoreIdleStateTimePath, /*core_index=*/0, /*idle_state=*/0));
+  FilePath idle_state0_path(StringPrintf(
+      kCoreIdleStateTimePath, /*core_index=*/size_t{0}, /*idle_state=*/0));
   ScopedFILE file_stream(OpenFile(idle_state0_path, "rb"));
   return static_cast<bool>(file_stream);
 }
@@ -464,8 +466,8 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
   // Try to guess the CPU architecture and cores of each cluster by comparing
   // the maximum frequencies of the available (online and offline) cores.
   const char kCPUMaxFreqPath[] =
-      "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq";
-  int num_cpus = SysInfo::NumberOfProcessors();
+      "/sys/devices/system/cpu/cpu%" PRIuS "/cpufreq/cpuinfo_max_freq";
+  size_t num_cpus = static_cast<size_t>(SysInfo::NumberOfProcessors());
   std::vector<CPU::CoreType> core_index_to_type(num_cpus,
                                                 CPU::CoreType::kUnknown);
 
@@ -476,7 +478,7 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
     // Reading from cpuinfo_max_freq doesn't block (it amounts to reading a
     // struct field from the cpufreq kernel driver).
     ThreadRestrictions::ScopedAllowIO allow_io;
-    for (int core_index = 0; core_index < num_cpus; ++core_index) {
+    for (size_t core_index = 0; core_index < num_cpus; ++core_index) {
       std::string content;
       uint32_t frequency_khz = 0;
       auto path = StringPrintf(kCPUMaxFreqPath, core_index);
@@ -491,7 +493,7 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
 
   size_t num_frequencies = frequencies_mhz.size();
 
-  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+  for (size_t core_index = 0; core_index < num_cpus; ++core_index) {
     uint32_t core_frequency_mhz = max_core_frequencies_mhz[core_index];
 
     CPU::CoreType core_type = CPU::CoreType::kOther;
@@ -501,7 +503,7 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
       auto it = frequencies_mhz.find(core_frequency_mhz);
       if (it != frequencies_mhz.end()) {
         // flat_set is sorted.
-        size_t frequency_index = it - frequencies_mhz.begin();
+        ptrdiff_t frequency_index = it - frequencies_mhz.begin();
         switch (frequency_index) {
           case 0:
             core_type = num_frequencies == 2u
@@ -550,10 +552,11 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
 
   // time_in_state is reported per cluster. Identify the first cores of each
   // cluster.
-  static NoDestructor<std::vector<int>> kFirstCoresIndexes([]() {
-    std::vector<int> first_cores;
+  static NoDestructor<std::vector<size_t>> kFirstCoresIndexes([]() {
+    std::vector<size_t> first_cores;
     int last_core_package_id = 0;
-    for (int core_index = 0; core_index < SysInfo::NumberOfProcessors();
+    for (size_t core_index = 0;
+         core_index < static_cast<size_t>(SysInfo::NumberOfProcessors());
          core_index++) {
       // Reading from physical_package_id doesn't block (it amounts to reading a
       // struct field from the kernel).
@@ -563,12 +566,12 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
           StringPrintf(kPhysicalPackageIdPath, core_index));
       std::string package_id_str;
       if (!ReadFileToString(package_id_path, &package_id_str))
-        return std::vector<int>();
+        return std::vector<size_t>();
       int package_id;
       base::StringPiece trimmed = base::TrimWhitespaceASCII(
           package_id_str, base::TrimPositions::TRIM_ALL);
       if (!base::StringToInt(trimmed, &package_id))
-        return std::vector<int>();
+        return std::vector<size_t>();
 
       if (last_core_package_id != package_id || core_index == 0)
         first_cores.push_back(core_index);
@@ -587,7 +590,7 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
 
   // Read the time_in_state for each cluster from the /sys directory of the
   // cluster's first core.
-  for (int cluster_core_index : *kFirstCoresIndexes) {
+  for (size_t cluster_core_index : *kFirstCoresIndexes) {
     FilePath time_in_state_path(
         StringPrintf(kTimeInStatePath, cluster_core_index));
 
@@ -616,10 +619,10 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
   // Reading from the cpuidle driver doesn't block.
   ThreadRestrictions::ScopedAllowIO allow_io;
 
-  int num_cpus = SysInfo::NumberOfProcessors();
+  size_t num_cpus = static_cast<size_t>(SysInfo::NumberOfProcessors());
 
   bool success = false;
-  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+  for (size_t core_index = 0; core_index < num_cpus; ++core_index) {
     std::string content;
     TimeDelta idle_time;
 

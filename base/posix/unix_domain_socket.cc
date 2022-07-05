@@ -71,7 +71,7 @@ bool UnixDomainSocket::SendMsg(int fd,
 
   char* control_buffer = nullptr;
   if (fds.size()) {
-    const unsigned control_len = CMSG_SPACE(sizeof(int) * fds.size());
+    const size_t control_len = CMSG_SPACE(sizeof(int) * fds.size());
     control_buffer = new char[control_len];
 
     struct cmsghdr* cmsg;
@@ -155,13 +155,13 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
     return -1;
 
   int* wire_fds = nullptr;
-  unsigned wire_fds_len = 0;
+  size_t wire_fds_len = 0;
   ProcessId pid = -1;
 
   if (msg.msg_controllen > 0) {
     struct cmsghdr* cmsg;
     for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)) {
-      const unsigned payload_len = cmsg->cmsg_len - CMSG_LEN(0);
+      const size_t payload_len = cmsg->cmsg_len - CMSG_LEN(0);
       if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
         DCHECK_EQ(payload_len % sizeof(int), 0u);
         DCHECK_EQ(wire_fds, static_cast<void*>(nullptr));
@@ -186,14 +186,14 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
       LOG(ERROR) << "recvmsg returned MSG_CTRUNC flag, buffer len is "
                  << msg.msg_controllen;
     }
-    for (unsigned i = 0; i < wire_fds_len; ++i)
+    for (size_t i = 0; i < wire_fds_len; ++i)
       close(wire_fds[i]);
     errno = EMSGSIZE;
     return -1;
   }
 
   if (wire_fds) {
-    for (unsigned i = 0; i < wire_fds_len; ++i)
+    for (size_t i = 0; i < wire_fds_len; ++i)
       fds->push_back(ScopedFD(wire_fds[i]));  // TODO(mdempsky): emplace_back
   }
 
