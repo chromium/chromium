@@ -407,7 +407,7 @@ src/webgpu/shader/validation/parse/source.spec.ts
 src/webgpu/shader/validation/parse/var_and_let.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
-src/webgpu/shader/validation/shader_io/entry_point.ts
+src/webgpu/shader/validation/shader_io/entry_point.spec.ts
 src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
