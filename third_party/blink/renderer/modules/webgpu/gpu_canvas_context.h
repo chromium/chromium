@@ -135,6 +135,11 @@ class GPUCanvasContext : public CanvasRenderingContext,
   std::unique_ptr<TextureAlphaClearer> alpha_clearer_;
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
 
+  // TODO(bajones): These don't need to be tracked if swap_buffers can persist
+  // across resizes.
+  WGPUTextureUsage usage_;
+  WGPUTextureFormat format_;
+
   gfx::Size size_;
 
   bool stopped_ = false;
