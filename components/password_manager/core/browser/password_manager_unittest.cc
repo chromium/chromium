@@ -4460,6 +4460,54 @@ TEST_P(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
 
+// Check that a leak warning is not shown for a single username submission.
+TEST_P(PasswordManagerTest, DontStartLeakDetectionForSingleUsernameSubmission) {
+  auto mock_factory =
+      std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
+  MockLeakDetectionCheckFactory* weak_factory = mock_factory.get();
+  manager()->set_leak_factory(std::move(mock_factory));
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // User sees a single username field. The password field is hidden.
+  PasswordForm username_form = MakeSimpleForm();
+  username_form.form_data.fields[1].is_focusable = false;
+  username_form.password_issues.insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+  std::vector<FormData> observed = {username_form.form_data};
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), username_form)));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // User submits the single username. No leak warning expected.
+  OnPasswordFormSubmitted(username_form.form_data);
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(*check_instance, Start).Times(0);
+  Mock::VerifyAndClearExpectations(&check_instance);
+
+  // User sees a single password field. The username field is hidden.
+  PasswordForm password_form = MakeSimpleForm();
+  password_form.form_data.fields[0].is_focusable = false;
+  password_form.password_issues.insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+  observed = {password_form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // User submits the single password field.
+  OnPasswordFormSubmitted(password_form.form_data);
+
+  // As no forms are seen, login has completed. Now expect a leak warning.
+  observed.clear();
+  EXPECT_CALL(*check_instance, Start);
+  EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+}
+
 TEST_P(PasswordManagerTest, ParsingNewFormsTriggersSettingFetch) {
   // Check that seeing the form for the first time triggers fetching settings.
   std::vector<FormData> observed;

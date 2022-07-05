@@ -205,6 +205,23 @@ bool HasMutedCredentials(const std::vector<const PasswordForm*>& credentials,
   });
 }
 
+// Returns true iff a password field is absent or hidden.
+bool IsSingleUsernameSubmission(const PasswordForm& submitted_form) {
+  if (submitted_form.IsSingleUsername())
+    return true;
+
+  for (auto const& field : submitted_form.form_data.fields) {
+    if (submitted_form.password_element_renderer_id ==
+            field.unique_renderer_id ||
+        submitted_form.new_password_element_renderer_id ==
+            field.unique_renderer_id) {
+      if (field.is_focusable)
+        return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -996,10 +1013,13 @@ void PasswordManager::OnLoginSuccessful() {
     return;
 
   client_->GetStoreResultFilter()->ReportFormLoginSuccess(*submitted_manager);
-  // Check for leaks only if there are no muted credentials.
+  // Check for leaks only if there are no muted credentials and it is not a
+  // single username submission (a leak warning may offer an automated password
+  // change, which requires a user to be logged in).
   if (!HasMutedCredentials(
           submitted_manager->GetInsecureCredentials(),
-          submitted_manager->GetSubmittedForm()->username_value)) {
+          submitted_manager->GetSubmittedForm()->username_value) &&
+      !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
     leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials(),
                                   submitted_form->IsLikelySignupForm());
   }
