@@ -1183,7 +1183,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [self primaryToolbarHeightWithInset];
 
   if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
-    _ntpCoordinator.viewController.view.frame =
+    self.ntpCoordinator.viewController.view.frame =
         [self ntpFrameForWebState:self.currentWebState];
   }
 }
@@ -2045,7 +2045,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
-      NewTabPageCoordinator* coordinator = _ntpCoordinator;
+      NewTabPageCoordinator* coordinator = self.ntpCoordinator;
       UIViewController* viewController = coordinator.viewController;
       [coordinator ntpDidChangeVisibility:YES];
       viewController.view.frame = [self ntpFrameForWebState:webState];
@@ -2228,7 +2228,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return nil;
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    return _ntpCoordinator.viewController.view;
+    return self.ntpCoordinator.webState != nil
+               ? self.ntpCoordinator.viewController.view
+               : nil;
   }
   DCHECK(self.browser->GetWebStateList()->GetIndexOfWebState(webState) !=
          WebStateList::kInvalidIndex);
@@ -2406,8 +2408,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)stopNTP {
-  [_ntpCoordinator stop];
-  _ntpCoordinator = nullptr;
+  [self.ntpCoordinator stop];
+  self.ntpCoordinator = nullptr;
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
@@ -2718,7 +2720,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // If NTP exists, use NTP coordinator's scroll offset.
   if (self.isNTPActiveForCurrentWebState) {
-    NewTabPageCoordinator* coordinator = _ntpCoordinator;
+    NewTabPageCoordinator* coordinator = self.ntpCoordinator;
     CGFloat scrolledToTopOffset = [coordinator contentInset].top;
     return [coordinator contentOffset].y == scrolledToTopOffset;
   }
@@ -2841,7 +2843,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     willUpdateSnapshotForWebState:(web::WebState*)webState {
   DCHECK(webState);
   if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinator willUpdateSnapshot];
+    [self.ntpCoordinator willUpdateSnapshot];
   }
   OverscrollActionsTabHelper::FromWebState(webState)->Clear();
 }
@@ -2850,7 +2852,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
          baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive())
-    return _ntpCoordinator.viewController.view;
+    return self.ntpCoordinator.viewController.view;
   return webState->GetView();
 }
 
@@ -3018,7 +3020,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webState);
     if (NTPHelper && NTPHelper->IsActive()) {
-      UIViewController* viewController = _ntpCoordinator.viewController;
+      UIViewController* viewController = self.ntpCoordinator.viewController;
       [viewController becomeFirstResponder];
     } else {
       [self.currentWebState->GetWebViewProxy() becomeFirstResponder];
@@ -3452,7 +3454,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)locationBarDidBecomeFirstResponder {
   if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinator locationBarDidBecomeFirstResponder];
+    [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
   [_sideSwipeController setEnabled:NO];
 
@@ -3477,7 +3479,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _keyCommandsProvider.canDismissModals = NO;
   [_sideSwipeController setEnabled:YES];
 
-  [_ntpCoordinator locationBarDidResignFirstResponder];
+  [self.ntpCoordinator locationBarDidResignFirstResponder];
 
   [UIView animateWithDuration:0.3
       animations:^{
@@ -3575,7 +3577,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)focusFakebox {
   if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinator focusFakebox];
+    [self.ntpCoordinator focusFakebox];
   }
 }
 
@@ -3605,11 +3607,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  [_ntpCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
+  [self.ntpCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
 }
 
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
-  [_ntpCoordinator handleFeedModelDidEndUpdates:feedType];
+  [self.ntpCoordinator handleFeedModelDidEndUpdates:feedType];
 }
 
 #pragma mark - WebStateListObserving methods
@@ -3633,7 +3635,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(oldWebState);
     if (NTPHelper && NTPHelper->IsActive()) {
-      [_ntpCoordinator ntpDidChangeVisibility:NO];
+      [self.ntpCoordinator ntpDidChangeVisibility:NO];
     }
     [self dismissPopups];
   }
@@ -3651,7 +3653,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(newWebState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    [_ntpCoordinator ntpDidChangeVisibility:YES];
+    [self.ntpCoordinator ntpDidChangeVisibility:YES];
   }
 
   [self webStateSelected:newWebState notifyToolbar:YES];
@@ -4016,7 +4018,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
   if (self.isNTPActiveForCurrentWebState) {
-    NewTabPageCoordinator* coordinator = _ntpCoordinator;
+    NewTabPageCoordinator* coordinator = self.ntpCoordinator;
     if ([coordinator logoAnimationControllerOwner]) {
       // If NTP coordinator is showing a GLIF view (e.g. the NTP when there is
       // no doodle), use that GLIFControllerOwner.
