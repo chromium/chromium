@@ -49,6 +49,8 @@ extern const base::Feature kAutofillInferCountryCallingCode;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillComplementCountryCodeOnImport;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillConsiderPhoneNumberSeparatorsValidLabels;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillConsiderPlaceholderForParsing;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers;

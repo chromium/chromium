@@ -307,21 +307,14 @@ std::u16string FindChildTextWithIgnoreList(
 
 bool IsLabelValid(base::StringPiece16 inferred_label) {
   // List of characters a label can't be entirely made of (this list can grow).
-  auto IsStopWord = [](char16_t c) {
-    switch (c) {
-      case u' ':
-      case u'*':
-      case u':':
-      case u'-':
-      case u'–':  // U+2013
-      case u'(':
-      case u')':
-        return true;
-      default:
-        return false;
-    }
-  };
-  return !base::ranges::all_of(inferred_label, IsStopWord);
+  const base::StringPiece16 invalid_chars =
+      base::FeatureList::IsEnabled(
+          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
+          ? u" *:"
+          : u" *:-–()";  // U+2013 dash
+  return !base::ranges::all_of(inferred_label, [&](char16_t c) {
+    return base::Contains(invalid_chars, c);
+  });
 }
 
 // Shared function for InferLabelFromPrevious() and InferLabelFromNext().

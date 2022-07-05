@@ -97,6 +97,13 @@ const base::Feature kAutofillInferCountryCallingCode{
 const base::Feature kAutofillComplementCountryCodeOnImport{
     "AutofillComplementCountryCodeOnImport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, label inference considers strings entirely made up of  '(', ')'
+// and '-' as valid labels.
+// TODO(crbug.com/1311937): Cleanup when launched.
+const base::Feature kAutofillConsiderPhoneNumberSeparatorsValidLabels{
+    "AutofillConsiderPhoneNumberSeparatorsValidLabels",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, local heuristics fall back to the fields placeholder attribute.
 const base::Feature kAutofillConsiderPlaceholderForParsing{
     "AutofillConsiderPlaceholderForParsing", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -207,11 +207,11 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
       {"DIV table test 6", R"(
        <div>
          label
-         <div>-</div>
+         <div>*</div>
          <div><input id='target'></div>
        </div>)",
-       // TODO(crbug.com/796918): Should be "label" or "label-". This happens
-       // because "-" is inferred, but discarded because `!IsLabelValid()`.
+       // TODO(crbug.com/796918): Should be "label" or "label*". This happens
+       // because "*" is inferred, but discarded because `!IsLabelValid()`.
        u""},
       {"Infer from next sibling",
        "<input id='target' type='checkbox'>hello <b>world</b>", u"hello world"},
