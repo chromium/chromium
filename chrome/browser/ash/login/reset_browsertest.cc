@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
@@ -281,13 +282,7 @@ IN_PROC_BROWSER_TEST_F(ResetTest, ShowAndCancelMultipleTimes) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
-// TODO(https://crbug.com/1337714): Flaky.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RestartBeforePowerwash DISABLED_RestartBeforePowerwash
-#else
-#define MAYBE_RestartBeforePowerwash RestartBeforePowerwash
-#endif
-IN_PROC_BROWSER_TEST_F(ResetTest, MAYBE_RestartBeforePowerwash) {
+IN_PROC_BROWSER_TEST_F(ResetTest, RestartBeforePowerwash) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   PrefService* prefs = g_browser_process->local_state();
 
@@ -295,7 +290,11 @@ IN_PROC_BROWSER_TEST_F(ResetTest, MAYBE_RestartBeforePowerwash) {
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
-  ClickRestartButton();
+
+  // Clicking on the button to restart can be flaky if a synchronous call is
+  // used because the WebUI can be destroyed before it returns.
+  test::TapOnPathAndWaitForOobeToBeDestroyed({kResetScreen, kRestartButton});
+
   ASSERT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   ASSERT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
