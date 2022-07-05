@@ -514,7 +514,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
       const SharedImageRepresentationOverlayVideo&) = delete;
 
  protected:
-  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
+  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     // A |CodecImage| must have TextureOwner() for SurfaceControl overlays.
     // Legacy overlays are handled by SharedImageRepresentationLegacyOverlay.
@@ -530,7 +530,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
     gfx::GpuFenceHandle handle;
     handle.owned_fd = scoped_hardware_buffer_->TakeFence();
     if (!handle.is_null())
-      acquire_fences->emplace_back(std::move(handle));
+      acquire_fence = std::move(handle);
 
     return true;
   }

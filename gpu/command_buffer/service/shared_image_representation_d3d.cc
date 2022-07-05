@@ -127,7 +127,7 @@ SharedImageRepresentationOverlayD3D::~SharedImageRepresentationOverlayD3D() =
     default;
 
 bool SharedImageRepresentationOverlayD3D::BeginReadAccess(
-    std::vector<gfx::GpuFence>* acquire_fences) {
+    gfx::GpuFenceHandle& acquire_fence) {
   // Only D3D images need keyed mutex synchronization.
   if (gl_image_->GetType() == gl::GLImage::Type::D3D)
     return static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();

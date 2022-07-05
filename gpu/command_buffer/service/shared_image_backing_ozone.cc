@@ -91,7 +91,7 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
   ~SharedImageRepresentationOverlayOzone() override = default;
 
  private:
-  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
+  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
     auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
     std::vector<gfx::GpuFenceHandle> fences;
     bool need_end_fence;
@@ -99,8 +99,9 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
                                &fences, need_end_fence);
     // Always need an end fence when finish reading from overlays.
     DCHECK(need_end_fence);
-    for (auto& fence : fences) {
-      acquire_fences->emplace_back(std::move(fence));
+    if (!fences.empty()) {
+      DCHECK(fences.size() == 1);
+      acquire_fence = std::move(fences.front());
     }
     return true;
   }

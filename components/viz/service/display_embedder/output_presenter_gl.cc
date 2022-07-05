@@ -39,11 +39,10 @@ namespace viz {
 
 namespace {
 
-// Helper function for moving a GpuFence from a vector to a unique_ptr.
-std::unique_ptr<gfx::GpuFence> TakeGpuFence(std::vector<gfx::GpuFence> fences) {
-  DCHECK(fences.empty() || fences.size() == 1u);
-  return fences.empty() ? nullptr
-                        : std::make_unique<gfx::GpuFence>(std::move(fences[0]));
+// Helper function for moving a GpuFence from a fence handle to a unique_ptr.
+std::unique_ptr<gfx::GpuFence> TakeGpuFence(gfx::GpuFenceHandle fence) {
+  return fence.is_null() ? nullptr
+                         : std::make_unique<gfx::GpuFence>(std::move(fence));
 }
 
 class PresenterImageGL : public OutputPresenter::Image {
@@ -148,7 +147,7 @@ gl::GLImage* PresenterImageGL::GetGLImage(
     std::unique_ptr<gfx::GpuFence>* fence) {
   DCHECK(scoped_overlay_read_access_);
   if (fence) {
-    *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFences());
+    *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFence());
   }
   return scoped_overlay_read_access_->gl_image();
 }
@@ -425,7 +424,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
 #endif
     gl_surface_->ScheduleOverlayPlane(
         gl_image,
-        (access ? TakeGpuFence(access->TakeAcquireFences())
+        (access ? TakeGpuFence(access->TakeAcquireFence())
                 : std::move(acquire_fence)),
         gfx::OverlayPlaneData(
             overlay_plane_candidate.plane_z_order,

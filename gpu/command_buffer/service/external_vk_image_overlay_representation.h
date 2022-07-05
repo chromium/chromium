@@ -26,12 +26,12 @@ class ExternalVkImageOverlayRepresentation
 
  protected:
   // SharedImageRepresentationOverlay implementation
-  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override;
+  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
   gl::GLImage* GetGLImage() override;
 
  private:
-  void GetAcquireFences(std::vector<gfx::GpuFence>* fences);
+  void GetAcquireFence(gfx::GpuFenceHandle& fence);
 
   const raw_ptr<ExternalVkImageBacking> vk_image_backing_;
   std::vector<ExternalSemaphore> read_begin_semaphores_;

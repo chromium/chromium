@@ -26,7 +26,7 @@ ExternalVkImageOverlayRepresentation::~ExternalVkImageOverlayRepresentation() =
     default;
 
 bool ExternalVkImageOverlayRepresentation::BeginReadAccess(
-    std::vector<gfx::GpuFence>* acquire_fences) {
+    gfx::GpuFenceHandle& acquire_fence) {
   DCHECK(read_begin_semaphores_.empty());
   if (!vk_image_backing_->BeginAccess(/*readonly=*/true,
                                       &read_begin_semaphores_,
@@ -34,7 +34,7 @@ bool ExternalVkImageOverlayRepresentation::BeginReadAccess(
     return false;
   }
 
-  GetAcquireFences(acquire_fences);
+  GetAcquireFence(acquire_fence);
   return true;
 }
 
@@ -66,17 +66,18 @@ gl::GLImage* ExternalVkImageOverlayRepresentation::GetGLImage() {
   return nullptr;
 }
 
-void ExternalVkImageOverlayRepresentation::GetAcquireFences(
-    std::vector<gfx::GpuFence>* fences) {
+void ExternalVkImageOverlayRepresentation::GetAcquireFence(
+    gfx::GpuFenceHandle& fence) {
   const VkDevice& device = vk_image_backing_->context_provider()
                                ->GetDeviceQueue()
                                ->GetVulkanDevice();
-  for (auto& semaphore : read_begin_semaphores_) {
-    DCHECK(semaphore.is_valid());
-    fences->emplace_back(
-        vk_image_backing_->vulkan_implementation()
-            ->GetSemaphoreHandle(device, semaphore.GetVkSemaphore())
-            .ToGpuFenceHandle());
+  if (!read_begin_semaphores_.empty()) {
+    DCHECK(read_begin_semaphores_.size() == 1);
+    DCHECK(read_begin_semaphores_.front().is_valid());
+    fence = vk_image_backing_->vulkan_implementation()
+                ->GetSemaphoreHandle(
+                    device, read_begin_semaphores_.front().GetVkSemaphore())
+                .ToGpuFenceHandle();
   }
 }
 

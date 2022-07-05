@@ -113,10 +113,11 @@ void PresenterImageFuchsia::BeginPresent() {
             /*needs_gl_image=*/false);
     DCHECK(scoped_overlay_read_access_);
 
-    // Take ownership of acquire fences.
-    for (auto& gpu_fence : scoped_overlay_read_access_->TakeAcquireFences()) {
-      read_begin_fences_.push_back(gpu_fence.GetGpuFenceHandle().Clone());
-    }
+    // Take ownership of acquire fence.
+    gfx::GpuFenceHandle gpu_fence_handle =
+        scoped_overlay_read_access_->TakeAcquireFence();
+    if (!gpu_fence_handle.is_null())
+      read_begin_fences_.push_back(std::move(gpu_fence_handle));
   }
 
   // A new release fence is generated for each present. The fence for the last

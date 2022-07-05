@@ -417,7 +417,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     ScopedReadAccess(base::PassKey<SharedImageRepresentationOverlay> pass_key,
                      SharedImageRepresentationOverlay* representation,
                      gl::GLImage* gl_image,
-                     std::vector<gfx::GpuFence> acquire_fences);
+                     gfx::GpuFenceHandle acquire_fence);
     ~ScopedReadAccess();
 
     gl::GLImage* gl_image() const { return gl_image_; }
@@ -432,9 +432,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     }
 #endif
 
-    std::vector<gfx::GpuFence> TakeAcquireFences() {
-      return std::move(acquire_fences_);
-    }
+    gfx::GpuFenceHandle TakeAcquireFence() { return std::move(acquire_fence_); }
     void SetReleaseFence(gfx::GpuFenceHandle release_fence) {
       // Note: We overwrite previous fence. In case if window manager uses fence
       // for each frame we schedule overlay and the same image is scheduled for
@@ -445,7 +443,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
 
    private:
     const raw_ptr<gl::GLImage> gl_image_;
-    std::vector<gfx::GpuFence> acquire_fences_;
+    gfx::GpuFenceHandle acquire_fence_;
     gfx::GpuFenceHandle release_fence_;
   };
 
@@ -454,10 +452,10 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
  protected:
   // Notifies the backing that an access will start. Returns false if there is a
   // conflict. Otherwise, returns true and:
-  // - Adds gpu fences to |acquire_fences| that should be waited on before the
-  // SharedImage is ready to be displayed. These fences are fired when the gpu
+  // - Set a gpu fence to |acquire_fence| that should be waited on before the
+  // SharedImage is ready to be displayed. This fence is fired when the gpu
   // has finished writing.
-  virtual bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) = 0;
+  virtual bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) = 0;
 
   // |release_fence| is a fence that will be signaled when the image can be
   // safely re-used. Note, on some platforms window manager doesn't support

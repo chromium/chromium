@@ -73,12 +73,9 @@ class OverlayProcessorWebView::Manager
         return;
       }
 
-      std::vector<gfx::GpuFence> acquire_fences =
-          read_access_->TakeAcquireFences();
-      if (!acquire_fences.empty()) {
-        DCHECK_EQ(acquire_fences.size(), 1u);
-        begin_read_fence_ = std::move(
-            acquire_fences.front().GetGpuFenceHandle().Clone().owned_fd);
+      gfx::GpuFenceHandle acquire_fence = read_access_->TakeAcquireFence();
+      if (!acquire_fence.is_null()) {
+        begin_read_fence_ = std::move(acquire_fence.owned_fd);
       }
 
       AHardwareBuffer_Desc desc;
