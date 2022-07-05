@@ -378,6 +378,16 @@ chrome.passwordsPrivate.stopPasswordCheck = function(callback) {};
 chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
 
 /**
+ * Starts an automated password change for |credential|. Invokes |callback| on
+ * completion with a boolean parameter that signals whether the credential was
+ * changed successfully.
+ * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {function(boolean): void=} callback
+ */
+chrome.passwordsPrivate.startAutomatedPasswordChange = function(
+    credential, callback) {};
+
+/**
  * Requests whether the account store is a default location for saving
  * passwords. False means the device store is a default one. Must be called when
  * the current user has already opted-in for account storage.

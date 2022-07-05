@@ -393,6 +393,15 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPasswordCheckStatus) {
   EXPECT_TRUE(RunPasswordsSubtest("getPasswordCheckStatus")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartAutomatedPasswordChange) {
+  EXPECT_TRUE(RunPasswordsSubtest("startAutomatedPasswordChange"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       StartAutomatedPasswordChangeWithEmptyUrl) {
+  EXPECT_TRUE(RunPasswordsSubtest("startAutomatedPasswordChangeWithEmptyUrl"));
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MovePasswordsToAccount) {
   EXPECT_TRUE(last_moved_passwords().empty());
   EXPECT_TRUE(RunPasswordsSubtest("movePasswordsToAccount")) << message_;

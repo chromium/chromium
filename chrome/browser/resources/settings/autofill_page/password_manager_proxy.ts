@@ -233,6 +233,13 @@ export interface PasswordManagerProxy {
       Promise<chrome.passwordsPrivate.PasswordCheckStatus>;
 
   /**
+   * Starts an automated password change flow.
+   * @param credential The credential for which to start the flow.
+   */
+  startAutomatedPasswordChange(
+      credential: chrome.passwordsPrivate.InsecureCredential): Promise<boolean>;
+
+  /**
    * Requests to remove |insecureCredential| from the password store.
    */
   removeInsecureCredential(
@@ -529,6 +536,13 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   getPasswordCheckStatus() {
     return new Promise<chrome.passwordsPrivate.PasswordCheckStatus>(resolve => {
       chrome.passwordsPrivate.getPasswordCheckStatus(resolve);
+    });
+  }
+
+  startAutomatedPasswordChange(credential:
+                                   chrome.passwordsPrivate.InsecureCredential) {
+    return new Promise<boolean>(resolve => {
+      chrome.passwordsPrivate.startAutomatedPasswordChange(credential, resolve);
     });
   }
 

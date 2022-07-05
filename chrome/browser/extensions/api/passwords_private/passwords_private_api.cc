@@ -445,6 +445,35 @@ ResponseAction PasswordsPrivateGetPasswordCheckStatusFunction::Run() {
           GetDelegate(browser_context())->GetPasswordCheckStatus())));
 }
 
+// PasswordsPrivateStartAutomatedPasswordChangeFunction:
+PasswordsPrivateStartAutomatedPasswordChangeFunction::
+    ~PasswordsPrivateStartAutomatedPasswordChangeFunction() = default;
+
+ResponseAction PasswordsPrivateStartAutomatedPasswordChangeFunction::Run() {
+  auto parameters =
+      api::passwords_private::StartAutomatedPasswordChange::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  // Forward the call to the delegate.
+  GetDelegate(browser_context())
+      ->StartAutomatedPasswordChange(
+          parameters->credential,
+          base::BindOnce(&PasswordsPrivateStartAutomatedPasswordChangeFunction::
+                             OnResultReceived,
+                         base::RetainedRef(this)));
+
+  // `OnResultReceived()` might respond before we reach this point.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateStartAutomatedPasswordChangeFunction::OnResultReceived(
+    bool success) {
+  Respond(ArgumentList(
+      api::passwords_private::StartAutomatedPasswordChange::Results::Create(
+          success)));
+}
+
 // PasswordsPrivateIsAccountStoreDefaultFunction
 ResponseAction PasswordsPrivateIsAccountStoreDefaultFunction::Run() {
   return RespondNow(OneArgument(

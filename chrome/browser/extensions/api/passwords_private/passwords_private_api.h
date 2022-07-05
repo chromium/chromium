@@ -393,6 +393,22 @@ class PasswordsPrivateGetPasswordCheckStatusFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateStartAutomatedPasswordChangeFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.startAutomatedPasswordChange",
+                             PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE)
+
+ protected:
+  ~PasswordsPrivateStartAutomatedPasswordChangeFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnResultReceived(bool success);
+};
+
 class PasswordsPrivateIsAccountStoreDefaultFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isAccountStoreDefault",

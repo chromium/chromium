@@ -110,6 +110,9 @@ class PasswordsPrivateDelegateImpl
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
+  void StartAutomatedPasswordChange(
+      const api::passwords_private::InsecureCredential& credential,
+      StartAutomatedPasswordChangeCallback callback) override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
 

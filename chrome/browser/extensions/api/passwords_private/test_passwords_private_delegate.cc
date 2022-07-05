@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
@@ -305,6 +306,13 @@ void TestPasswordsPrivateDelegate::StartPasswordCheck(
 
 void TestPasswordsPrivateDelegate::StopPasswordCheck() {
   stop_password_check_triggered_ = true;
+}
+
+void TestPasswordsPrivateDelegate::StartAutomatedPasswordChange(
+    const api::passwords_private::InsecureCredential& credential,
+    StartAutomatedPasswordChangeCallback callback) {
+  std::move(callback).Run(credential.change_password_url &&
+                          GURL(*credential.change_password_url).is_valid());
 }
 
 api::passwords_private::PasswordCheckStatus

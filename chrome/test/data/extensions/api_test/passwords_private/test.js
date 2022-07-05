@@ -803,6 +803,55 @@ var availableTests = [
     });
   },
 
+  function startAutomatedPasswordChange() {
+    chrome.passwordsPrivate.startAutomatedPasswordChange(
+      {
+        id: 0,
+        formattedOrigin: 'example.com',
+        detailedOrigin: 'https://example.com',
+        isAndroidCredential: false,
+        hasStartableScript: true,
+        signonRealm: 'https://example.com',
+        username: 'alice',
+        changePasswordUrl: 'https://example.com/.well-known/change-password',
+        compromisedInfo: {
+          compromiseTime: COMPROMISE_TIME,
+          elapsedTimeSinceCompromise: '3 days ago',
+          compromiseType: 'LEAKED',
+          isMuted: false,
+        },
+      },
+      (status) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq(true, status);
+        chrome.test.succeed();
+      });
+  },
+
+  function startAutomatedPasswordChangeWithEmptyUrl() {
+    chrome.passwordsPrivate.startAutomatedPasswordChange(
+      {
+        id: 0,
+        formattedOrigin: 'example.com',
+        detailedOrigin: 'https://example.com',
+        isAndroidCredential: false,
+        hasStartableScript: true,
+        signonRealm: 'https://example.com',
+        username: 'alice',
+        compromisedInfo: {
+          compromiseTime: COMPROMISE_TIME,
+          elapsedTimeSinceCompromise: '3 days ago',
+          compromiseType: 'LEAKED',
+          isMuted: false,
+        },
+      },
+      (status) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq(false, status);
+        chrome.test.succeed();
+      });
+  },
+
   function movePasswordsToAccount() {
     chrome.passwordsPrivate.movePasswordsToAccount([42]);
     chrome.test.succeed();

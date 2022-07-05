@@ -113,6 +113,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'removeSavedPasswords',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
+      'startAutomatedPasswordChange',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
       'unmuteInsecureCredential'
@@ -291,6 +292,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   getPasswordCheckStatus() {
     this.methodCalled('getPasswordCheckStatus');
     return Promise.resolve(this.data.checkStatus);
+  }
+
+  startAutomatedPasswordChange(credential:
+                                   chrome.passwordsPrivate.InsecureCredential) {
+    this.methodCalled('startAutomatedPasswordChange', credential);
+    // Return `false` for empty origins for testing purposes.
+    return Promise.resolve(!!credential.changePasswordUrl);
   }
 
   addCompromisedCredentialsListener(listener: CredentialsChangedListener) {

@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_client.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -36,10 +39,12 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
@@ -578,6 +583,38 @@ void PasswordsPrivateDelegateImpl::StopPasswordCheck() {
 api::passwords_private::PasswordCheckStatus
 PasswordsPrivateDelegateImpl::GetPasswordCheckStatus() {
   return password_check_delegate_.GetPasswordCheckStatus();
+}
+
+void PasswordsPrivateDelegateImpl::StartAutomatedPasswordChange(
+    const api::passwords_private::InsecureCredential& credential,
+    StartAutomatedPasswordChangeCallback callback) {
+  if (!credential.change_password_url) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  GURL url =
+      url::SchemeHostPort(GURL(*credential.change_password_url)).GetURL();
+  if (!url.is_valid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  NavigateParams params(profile_, url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&params);
+
+  if (!navigation_handle) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(
+      navigation_handle.get()->GetWebContents());
+  apc_client->Start(url, credential.username,
+                    /*skip_login=*/false, std::move(callback));
 }
 
 password_manager::InsecureCredentialsManager*

@@ -2867,6 +2867,7 @@ if (!is_android) {
         "../browser/extensions/api/offscreen/offscreen_document_manager_browsertest.cc",
         "../browser/extensions/api/page_capture/page_capture_apitest.cc",
         "../browser/extensions/api/passwords_private/passwords_private_apitest.cc",
+        "../browser/extensions/api/passwords_private/passwords_private_delegate_impl_browsertest.cc",
         "../browser/extensions/api/permissions/permissions_apitest.cc",
         "../browser/extensions/api/preference/preference_apitest.cc",
         "../browser/extensions/api/printer_provider/printer_provider_apitest.cc",

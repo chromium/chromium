@@ -40,6 +40,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   using PlaintextInsecurePasswordCallback = base::OnceCallback<void(
       absl::optional<api::passwords_private::InsecureCredential>)>;
 
+  using StartAutomatedPasswordChangeCallback = base::OnceCallback<void(bool)>;
+
   ~PasswordsPrivateDelegate() override = default;
 
   // Gets the saved passwords list.
@@ -205,6 +207,13 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Returns the current status of the password check.
   virtual api::passwords_private::PasswordCheckStatus
   GetPasswordCheckStatus() = 0;
+
+  // Starts an automated password change flow for `credential` and returns
+  // whether the credential was changed successfully by calling `callback` with
+  // a boolean parameter.
+  virtual void StartAutomatedPasswordChange(
+      const api::passwords_private::InsecureCredential& credential,
+      StartAutomatedPasswordChangeCallback callback) = 0;
 
   // Returns a pointer to the current instance of InsecureCredentialsManager.
   // Needed to get notified when compromised credentials are written out to

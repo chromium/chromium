@@ -34891,6 +34891,7 @@ Called by update_extension_histograms.py.-->
   <int value="1677" label="AUTOTESTPRIVATE_ISINPUTMETHODREADYFORTESTING"/>
   <int value="1678" label="AUTOTESTPRIVATE_GETARCAPPKILLS"/>
   <int value="1679" label="FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS"/>
+  <int value="1680" label="PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE"/>
 </enum>
 
 <enum name="ExtensionIconState">
