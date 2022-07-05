@@ -38,6 +38,8 @@ GPU_EXPORT extern const base::Feature kCanvasContextLostInBackground;
 
 #if BUILDFLAG(IS_WIN)
 GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
+
+GPU_EXPORT extern const base::Feature kDisableVideoOverlayIfMoving;
 #endif
 
 GPU_EXPORT extern const base::Feature kGpuUseDisplayThreadPriority;

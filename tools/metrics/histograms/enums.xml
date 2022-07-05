@@ -23960,6 +23960,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="12" label="Failed has copy requests"/>
   <int value="13" label="Failed video capture enabled"/>
   <int value="14" label="Failed output colorspace HDR"/>
+  <int value="15" label="Failed quad not damaged"/>
+  <int value="16" label="Failed YUV video quad moved"/>
 </enum>
 
 <enum name="DebugScenario">

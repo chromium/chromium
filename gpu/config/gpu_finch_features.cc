@@ -159,6 +159,11 @@ const base::Feature kCanvasContextLostInBackground{
 // Use a high priority for GPU process on Windows.
 const base::Feature kGpuProcessHighPriorityWin{
     "GpuProcessHighPriorityWin", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Disable overlay promotion for clear video quads when their MPO quad would
+// move.
+const base::Feature kDisableVideoOverlayIfMoving{
+    "DisableVideoOverlayIfMoving", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.

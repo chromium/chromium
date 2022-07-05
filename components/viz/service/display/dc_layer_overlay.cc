@@ -61,7 +61,8 @@ enum DCLayerResult {
   DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED = 13,
   DC_LAYER_FAILED_OUTPUT_HDR = 14,
   DC_LAYER_FAILED_NOT_DAMAGED = 15,
-  kMaxValue = DC_LAYER_FAILED_NOT_DAMAGED,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED,
 };
 
 enum : size_t {
@@ -263,7 +264,7 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   dc_layer->color_space = gfx::ColorSpace::CreateSRGB();
 }
 
-bool IsProtectedVideo(const QuadList::Iterator& it) {
+bool IsProtectedVideo(const QuadList::ConstIterator& it) {
   if (it->material == DrawQuad::Material::kYuvVideoContent) {
     const auto* yuv_quad = YUVVideoDrawQuad::MaterialCast(*it);
     return yuv_quad->protected_video_type ==
@@ -383,7 +384,7 @@ void RecordVideoDCLayerResult(DCLayerResult result,
   }
 }
 
-void RecordDCLayerResult(DCLayerResult result, QuadList::Iterator it) {
+void RecordDCLayerResult(DCLayerResult result, QuadList::ConstIterator it) {
   // Skip recording unsupported quads since that'd dwarf the data we care about.
   if (result == DC_LAYER_FAILED_UNSUPPORTED_QUAD)
     return;
@@ -447,6 +448,11 @@ QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
       it = quad_it;
   }
   return it;
+}
+
+bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
+  return it->material == DrawQuad::Material::kYuvVideoContent &&
+         !IsProtectedVideo(it);
 }
 
 }  // namespace
@@ -662,6 +668,55 @@ bool DCLayerOverlayProcessor::IsPreviousFrameUnderlayRect(
   }
 }
 
+void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
+    const gfx::Transform& transform_to_root_target,
+    const QuadList* quad_list,
+    std::vector<size_t>* candidate_index_list) {
+  // The number of frames all overlay candidates need to be stable before we
+  // allow overlays again. This number was chosen experimentally.
+  constexpr int kFramesOfStabilityForOverlayPromotion = 5;
+
+  std::vector<gfx::Rect> current_frame_overlay_candidate_rects;
+  current_frame_overlay_candidate_rects.reserve(candidate_index_list->size());
+
+  for (auto index : *candidate_index_list) {
+    auto candidate_it = std::next(quad_list->begin(), index);
+    if (IsClearVideoQuad(candidate_it)) {
+      gfx::Rect quad_rectangle_in_target_space =
+          cc::MathUtil::MapEnclosingClippedRect(
+              transform_to_root_target,
+              gfx::ToEnclosingRect(ClippedQuadRectangle(*candidate_it)));
+      current_frame_overlay_candidate_rects.push_back(
+          quad_rectangle_in_target_space);
+    }
+  }
+
+  if (previous_frame_overlay_candidate_rects_ !=
+      current_frame_overlay_candidate_rects) {
+    frames_since_last_overlay_candidate_rects_change_ = 0;
+
+    std::swap(previous_frame_overlay_candidate_rects_,
+              current_frame_overlay_candidate_rects);
+  } else {
+    frames_since_last_overlay_candidate_rects_change_++;
+  }
+
+  if (frames_since_last_overlay_candidate_rects_change_ <=
+      kFramesOfStabilityForOverlayPromotion) {
+    // Remove all video quad candidates if any of them moved recently
+    auto candidate_index_it = candidate_index_list->begin();
+    while (candidate_index_it != candidate_index_list->end()) {
+      auto candidate_it = std::next(quad_list->begin(), *candidate_index_it);
+      if (IsClearVideoQuad(candidate_it)) {
+        candidate_index_it = candidate_index_list->erase(candidate_index_it);
+        RecordDCLayerResult(DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED, candidate_it);
+      } else {
+        candidate_index_it++;
+      }
+    }
+  }
+}
+
 void DCLayerOverlayProcessor::Process(
     DisplayResourceProvider* resource_provider,
     const gfx::RectF& display_rect,
@@ -824,6 +879,12 @@ void DCLayerOverlayProcessor::Process(
   // Recount the YUV overlays when they are added to the overlay list
   // successfully.
   processed_yuv_overlay_count_ = 0;
+
+  if (base::FeatureList::IsEnabled(features::kDisableVideoOverlayIfMoving)) {
+    RemoveClearVideoQuadCandidatesIfMoving(
+        render_pass->transform_to_root_target, quad_list,
+        &candidate_index_list);
+  }
 
   // Copy the overlay quad info to dc_layer_overlays and replace/delete overlay
   // quads in quad_list.

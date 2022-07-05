@@ -163,6 +163,31 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   bool IsPreviousFrameUnderlayRect(const gfx::Rect& quad_rectangle,
                                    size_t index);
 
+  // Remove all video overlay candidates from `candidate_index_list` if any of
+  // them have moved in the last several frames.
+  //
+  // We do this because it could cause visible stuttering of playback on certain
+  // older hardware. The stuttering does not occur if other overlay quads move
+  // while a non-moving video is playing.
+  //
+  // This only tracks clear video quads because hardware-protected videos cannot
+  // be accessed by the viz compositor, so they must be promoted to overlay,
+  // even if they could cause stutter. Software-protected video aren't required
+  // to be in overlay, but we also exclude them from de-promotion to keep the
+  // protection benefits of being in an overlay.
+  //
+  // `transform_to_root_target` is needed to track the quad positions in a
+  // uniform space. It should be in screen space (to handle the case when the
+  // window itself moves), but we don't easily know of the position of the
+  // window in screen space.
+  //
+  // `candidate_index_list` contains the indexes in `quad_list` of overlay
+  // candidates.
+  void RemoveClearVideoQuadCandidatesIfMoving(
+      const gfx::Transform& transform_to_root_target,
+      const QuadList* quad_list,
+      std::vector<size_t>* candidate_index_list);
+
   bool has_overlay_support_;
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
@@ -187,6 +212,11 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   std::vector<OverlayRect> previous_frame_overlay_rects_;
   std::vector<OverlayRect> current_frame_overlay_rects_;
   SurfaceDamageRectList surface_damage_rect_list_;
+
+  // Used in `RemoveClearVideoQuadCandidatesIfMoving`:
+  // List of clear video content candidate bounds.
+  std::vector<gfx::Rect> previous_frame_overlay_candidate_rects_{};
+  int frames_since_last_overlay_candidate_rects_change_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
 };

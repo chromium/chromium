@@ -245,6 +245,61 @@ class DCLayerOverlayTest : public testing::Test {
   std::vector<gfx::Rect> content_bounds_;
 };
 
+TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
+  auto ProcessForOverlaysSingleVideoRectWithOffset =
+      [&](gfx::Vector2d video_rect_offset) {
+        auto pass = CreateRenderPass();
+        auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+            resource_provider_.get(), child_resource_provider_.get(),
+            child_provider_.get(), pass->shared_quad_state_list.back(),
+            pass.get());
+        video_quad->rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
+        video_quad->visible_rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
+
+        DCLayerOverlayList dc_layer_list;
+        OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+        OverlayProcessorInterface::FilterOperationsMap
+            render_pass_backdrop_filters;
+
+        AggregatedRenderPassList pass_list;
+        pass_list.push_back(std::move(pass));
+
+        overlay_processor_->ProcessForOverlays(
+            resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+            render_pass_filters, render_pass_backdrop_filters, {}, nullptr,
+            &dc_layer_list, &damage_rect_, &content_bounds_);
+
+        return dc_layer_list;
+      };
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kDisableVideoOverlayIfMoving);
+    EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
+    EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kDisableVideoOverlayIfMoving);
+    // We expect an overlay promotion after a couple frames of no movement
+    for (int i = 0; i < 10; i++) {
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size();
+    }
+    EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
+
+    // Since the overlay candidate moved, we expect no overlays
+    EXPECT_EQ(0U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
+
+    // After some number of frames with no movement, we expect an overlay again
+    for (int i = 0; i < 10; i++) {
+      ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size();
+    }
+    EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
+  }
+}
+
 TEST_F(DCLayerOverlayTest, Occluded) {
   {
     auto pass = CreateRenderPass();
