@@ -323,17 +323,12 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             resource_request.trusted_params->accept_ch_frame_observer));
   }
 
-  // Check for third party cookies being disabled by testing a non-existant
-  // third-party cookie. This will also be false if all cookies are disabled.
-  const auto dummy_cookie = net::CanonicalCookie::Create(
-      GURL("https://does-not-exist./"), "a=n", base::Time::Now(), absl::nullopt,
-      absl::nullopt);
-
+  // Check for third party cookies being disabled. This will also be false if
+  // all cookies are disabled.
   const bool third_party_cookies_enabled =
-      context_->cookie_manager()->cookie_settings().IsCookieAccessible(
-          *dummy_cookie, GURL("https://also-does-not-exist./"),
-          net::SiteForCookies(net::SchemefulSite(url::Origin())),
-          url::Origin());
+      !context_->cookie_manager()
+           ->cookie_settings()
+           .are_third_party_cookies_blocked();
 
   auto loader = std::make_unique<URLLoader>(
       *this,
