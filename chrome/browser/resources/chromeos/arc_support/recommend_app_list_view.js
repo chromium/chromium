@@ -147,12 +147,4 @@ function selectAll() {
   sendNumberOfSelectedApps();
 }
 
-/**
- * Calculate height of the recommend-apps-container.
- * @return {number}
- */
-function getHeight() {
-  return document.querySelector('#recommend-apps-container').clientHeight;
-}
-
 window.addEventListener('message', onMessage_);

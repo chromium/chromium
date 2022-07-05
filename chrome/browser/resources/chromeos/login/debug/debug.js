@@ -1274,6 +1274,7 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
+      // TODO(https://crbug.com/1261902): update debug overlay
       id: 'recommend-apps',
       kind: ScreenKind.NORMAL,
       handledSteps: 'list',
@@ -1284,7 +1285,7 @@ cr.define('cr.ui.login.debug', function() {
           id: '2-apps',
           trigger: (screen) => {
             screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
+            screen.setWebview(RECOMMENDED_APPS_CONTENT);
             screen.loadAppList([
               {
                 name: 'Test app 1',
@@ -1302,7 +1303,7 @@ cr.define('cr.ui.login.debug', function() {
           trigger: (screen) => {
             // There can be up to 21 apps: see recommend_apps_fetcher_impl
             screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
+            screen.setWebview(RECOMMENDED_APPS_CONTENT);
             const apps = [];
             for (let i = 1; i <= 21; i++) {
               apps.push({

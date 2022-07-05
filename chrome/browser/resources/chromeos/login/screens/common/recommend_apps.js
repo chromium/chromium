@@ -18,6 +18,8 @@ const RecommendAppsUiState = {
   LIST: 'list',
 };
 
+const BLANK_PAGE_URL = 'about:blank';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -129,6 +131,15 @@ class RecommendAppsElement extends RecommendAppsElementBase {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
+  onBeforeHide() {
+    if (this.isOobeNewRecommendAppsEnabled_) {
+      this.appList_ = [];
+      return;
+    }
+    const appListView = this.shadowRoot.querySelector('#appView');
+    appListView.src = BLANK_PAGE_URL;
+  }
+
   setWebview(contents) {
     cr.ui.login.invokePolymerMethod(this.$.appsDialog, 'onBeforeShow');
     // Can't use this.$.appView here as the element is in a <dom-if>.
@@ -179,7 +190,7 @@ class RecommendAppsElement extends RecommendAppsElementBase {
     const appListView = this.shadowRoot.querySelector('#appView');
     appListView.addEventListener('contentload', () => {
       appListView.executeScript(
-          {file: 'recommend_app_old_list_view.js'}, () => {
+          {file: 'recommend_app_list_view.js'}, () => {
             appListView.contentWindow.postMessage('initialMessage', '*');
 
             appList.forEach(function(app_data, index) {

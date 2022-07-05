@@ -103,7 +103,7 @@ void RecommendAppsScreenHandler::LoadAppListInUI(base::Value app_list) {
     const ui::ResourceBundle& resource_bundle =
         ui::ResourceBundle::GetSharedInstance();
     std::string app_list_webview = resource_bundle.LoadDataResourceString(
-        IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
+        IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
     CallExternalAPI("setWebview", app_list_webview);
   }
   CallExternalAPI("loadAppList", std::move(app_list));
