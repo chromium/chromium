@@ -48,8 +48,6 @@ target(link_target_type, "service_sources") {
     "gpu_switches.h",
     "image_factory.cc",
     "image_factory.h",
-    "image_manager.cc",
-    "image_manager.h",
     "mailbox_manager.h",
     "memory_tracking.cc",
     "memory_tracking.h",

@@ -592,7 +592,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   gles2::Logger* GetLogger() override;
 
   void SetIgnoreCachedStateForTest(bool ignore) override;
-  gles2::ImageManager* GetImageManagerForTest() override;
 
   void SetCopyTextureResourceManagerForTest(
       gles2::CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager)
@@ -1509,11 +1508,6 @@ void RasterDecoderImpl::SetIgnoreCachedStateForTest(bool ignore) {
   if (use_passthrough_)
     return;
   state()->SetIgnoreCachedStateForTest(ignore);
-}
-
-gles2::ImageManager* RasterDecoderImpl::GetImageManagerForTest() {
-  NOTREACHED();
-  return nullptr;
 }
 
 void RasterDecoderImpl::SetCopyTextureResourceManagerForTest(

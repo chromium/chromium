@@ -1810,11 +1810,6 @@ GLES2DecoderPassthroughImpl::GetVertexArrayManager() {
   return nullptr;
 }
 
-gpu::gles2::ImageManager*
-GLES2DecoderPassthroughImpl::GetImageManagerForTest() {
-  return group_->image_manager();
-}
-
 bool GLES2DecoderPassthroughImpl::HasPendingQueries() const {
   return !pending_queries_.empty();
 }

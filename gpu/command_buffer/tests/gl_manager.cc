@@ -354,7 +354,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
     context_group = new gles2::ContextGroup(
         gpu_preferences_, true, mailbox_manager_, nullptr /* memory_tracker */,
         translator_cache_.get(), &completeness_cache_, feature_info,
-        options.bind_generates_resource, &image_manager_, options.image_factory,
+        options.bind_generates_resource, options.image_factory,
         nullptr /* progress_reporter */, gpu_feature_info,
         discardable_manager_.get(), passthrough_discardable_manager_.get(),
         &shared_image_manager_);

@@ -101,8 +101,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 
   SyncPointManager* sync_point_manager() const { return sync_point_manager_; }
 
-  gles2::ImageManager* image_manager() const { return image_manager_.get(); }
-
   const scoped_refptr<base::SingleThreadTaskRunner>& task_runner() const {
     return task_runner_;
   }
@@ -281,7 +279,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // process use.
   scoped_refptr<gl::GLShareGroup> share_group_;
 
-  std::unique_ptr<gles2::ImageManager> image_manager_;
   std::unique_ptr<SharedImageStub> shared_image_stub_;
 
   const bool is_gpu_host_;

@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "gpu/config/gpu_test_config.h"

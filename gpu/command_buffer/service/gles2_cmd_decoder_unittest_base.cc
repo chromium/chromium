@@ -207,14 +207,13 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   scoped_refptr<FeatureInfo> feature_info =
       new FeatureInfo(workarounds, gpu_feature_info);
 
-  group_ = scoped_refptr<ContextGroup>(
-      new ContextGroup(gpu_preferences_, GetParam(), &mailbox_manager_,
-                       std::move(memory_tracker_), &shader_translator_cache_,
-                       &framebuffer_completeness_cache_, feature_info,
-                       normalized_init.bind_generates_resource, &image_manager_,
-                       nullptr /* image_factory */,
-                       nullptr /* progress_reporter */, gpu_feature_info,
-                       &discardable_manager_, nullptr, &shared_image_manager_));
+  group_ = scoped_refptr<ContextGroup>(new ContextGroup(
+      gpu_preferences_, GetParam(), &mailbox_manager_,
+      std::move(memory_tracker_), &shader_translator_cache_,
+      &framebuffer_completeness_cache_, feature_info,
+      normalized_init.bind_generates_resource, nullptr /* image_factory */,
+      nullptr /* progress_reporter */, gpu_feature_info, &discardable_manager_,
+      nullptr, &shared_image_manager_));
   bool use_default_textures = normalized_init.bind_generates_resource;
 
   InSequence sequence;
@@ -2440,7 +2439,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   group_ = new gles2::ContextGroup(
       gpu_preferences_, true, &mailbox_manager_, nullptr /* memory_tracker */,
       &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
-      context_creation_attribs_.bind_generates_resource, &image_manager_,
+      context_creation_attribs_.bind_generates_resource,
       nullptr /* image_factory */, nullptr /* progress_reporter */,
       GpuFeatureInfo(), &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_);

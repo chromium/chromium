@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gl_state_restorer_impl.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -109,7 +108,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->mailbox_manager(), CreateMemoryTracker(),
         manager->shader_translator_cache(),
         manager->framebuffer_completeness_cache(), feature_info,
-        init_params.attribs.bind_generates_resource, channel_->image_manager(),
+        init_params.attribs.bind_generates_resource,
         gmb_factory ? gmb_factory->AsImageFactory() : nullptr,
         manager->watchdog() /* progress_reporter */,
         manager->gpu_feature_info(), manager->discardable_manager(),

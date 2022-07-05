@@ -258,9 +258,9 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       task_executor_->mailbox_manager(), std::move(memory_tracker),
       task_executor_->shader_translator_cache(),
       task_executor_->framebuffer_completeness_cache(), feature_info,
-      params.attribs.bind_generates_resource, task_executor_->image_manager(),
-      params.image_factory, nullptr /* progress_reporter */,
-      task_executor_->gpu_feature_info(), task_executor_->discardable_manager(),
+      params.attribs.bind_generates_resource, params.image_factory,
+      nullptr /* progress_reporter */, task_executor_->gpu_feature_info(),
+      task_executor_->discardable_manager(),
       task_executor_->passthrough_discardable_manager(),
       task_executor_->shared_image_manager());
 

@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/service/context_group.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
@@ -256,8 +255,8 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
   scoped_refptr<gpu::gles2::ContextGroup> group(new gpu::gles2::ContextGroup(
       gpu_preferences, true, &mailbox_manager_, nullptr /* memory_tracker */,
       &translator_cache_, &completeness_cache_, feature_info, true,
-      &image_manager_, nullptr /* image_factory */,
-      nullptr /* progress_reporter */, gpu_feature_info, &discardable_manager_,
+      nullptr /* image_factory */, nullptr /* progress_reporter */,
+      gpu_feature_info, &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_));
 
   auto command_buffer = std::make_unique<gpu::CommandBufferDirect>();

@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
@@ -178,7 +177,6 @@ class GLManager : private GpuControl {
 
   gles2::MailboxManagerImpl owned_mailbox_manager_;
   gles2::TraceOutputter outputter_;
-  gles2::ImageManager image_manager_;
   std::unique_ptr<ServiceDiscardableManager> discardable_manager_;
   std::unique_ptr<PassthroughDiscardableManager>
       passthrough_discardable_manager_;

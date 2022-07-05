@@ -65,7 +65,6 @@
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/image_factory.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -739,9 +738,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   VertexArrayManager* GetVertexArrayManager() override {
     return vertex_array_manager_.get();
   }
-  ImageManager* GetImageManagerForTest() override {
-    return group_->image_manager();
-  }
 
   bool HasPendingQueries() const override;
   void ProcessPendingQueries(bool did_finish) override;
@@ -965,8 +961,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   MailboxManager* mailbox_manager() {
     return group_->mailbox_manager();
   }
-
-  ImageManager* image_manager() { return group_->image_manager(); }
 
   VertexArrayManager* vertex_array_manager() {
     return vertex_array_manager_.get();

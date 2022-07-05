@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_mock.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
@@ -52,14 +51,13 @@ class ContextGroupTest : public GpuServiceTest {
         gpu_preferences_, false, &mailbox_manager_,
         nullptr /* memory_tracker */, nullptr /* shader_translator_cache */,
         nullptr /* framebuffer_completeness_cache */, feature_info,
-        kBindGeneratesResource, &image_manager_, nullptr /* image_factory */,
+        kBindGeneratesResource, nullptr /* image_factory */,
         nullptr /* progress_reporter */, GpuFeatureInfo(),
         &discardable_manager_, nullptr /* passthrough_discardable_manager */,
         &shared_image_manager_));
   }
 
   GpuPreferences gpu_preferences_;
-  ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
   SharedImageManager shared_image_manager_;
   FakeCommandBufferServiceBase command_buffer_service_;
