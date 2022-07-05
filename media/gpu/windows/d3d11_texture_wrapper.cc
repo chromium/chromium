@@ -18,7 +18,6 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/win/mf_helpers.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 

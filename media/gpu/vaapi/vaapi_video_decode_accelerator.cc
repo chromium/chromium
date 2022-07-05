@@ -44,7 +44,6 @@
 #include "media/gpu/vp8_decoder.h"
 #include "media/gpu/vp9_decoder.h"
 #include "media/video/picture.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 

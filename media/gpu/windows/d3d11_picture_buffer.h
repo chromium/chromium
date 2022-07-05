@@ -25,7 +25,6 @@
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 

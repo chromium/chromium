@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_egl_api_implementation.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
