@@ -341,8 +341,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =
       ui::SetAlpha(kColorNewTabPageHeader, 0x50);
-  mixer[kColorNewTabPageText] = ui::SelectBasedOnDarkInput(
-      kColorNewTabPageBackground, gfx::kGoogleGrey200, SK_ColorBLACK);
+  mixer[kColorNewTabPageText] = {dark_mode ? gfx::kGoogleGrey200
+                                           : SK_ColorBLACK};
   mixer[kColorNewTabPageTextUnthemed] = {gfx::kGoogleGrey050};
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
