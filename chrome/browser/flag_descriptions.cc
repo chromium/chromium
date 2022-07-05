@@ -2544,6 +2544,10 @@ const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
 const char kSuppressToolbarCapturesDescription[] =
     "Suppress Toolbar Captures except when certain properties change.";
 
+const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
+const char kSyncEnableHistoryDataTypeDescription[] =
+    "Enables the History sync data type instead of TypedURLs";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

@@ -8717,6 +8717,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableWebHidOnExtensionServiceWorker)},
 #endif
 
+    {"enable-sync-history-datatype",
+     flag_descriptions::kSyncEnableHistoryDataTypeName,
+     flag_descriptions::kSyncEnableHistoryDataTypeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncEnableHistoryDataType)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

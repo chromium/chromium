@@ -1009,6 +1009,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-user-policy", flag_descriptions::kEnableUserPolicyName,
      flag_descriptions::kEnableUserPolicyDescription, flags_ui::kOsIos,
      SINGLE_VALUE_TYPE(policy::kEnableUserPolicy)},
+    {"enable-sync-history-datatype",
+     flag_descriptions::kSyncEnableHistoryDataTypeName,
+     flag_descriptions::kSyncEnableHistoryDataTypeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncEnableHistoryDataType)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -2786,6 +2786,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-sync-history-datatype",
+    "owners": [ "treib", "chrome-sync-dev@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-system-notifications",
     "owners": [ "peter", "finnur", "knollr" ],
     "expiry_milestone": 110

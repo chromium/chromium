@@ -564,6 +564,10 @@ extern const char kSyntheticCrashReportsForUteDescription[];
 extern const char kSynthesizedRestoreSessionName[];
 extern const char kSynthesizedRestoreSessionDescription[];
 
+// Title and description for the flag to enable the Sync History data type.
+extern const char kSyncEnableHistoryDataTypeName[];
+extern const char kSyncEnableHistoryDataTypeDescription[];
+
 // Title and description for the flag to control if Chrome Sync should support
 // trusted vault RPC.
 extern const char kSyncTrustedVaultPassphraseiOSRPCName[];

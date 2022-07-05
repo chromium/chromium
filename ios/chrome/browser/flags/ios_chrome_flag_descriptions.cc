@@ -617,6 +617,10 @@ const char kSyntheticCrashReportsForUteDescription[] =
     "When enabled the app will create synthetic crash report when chrome "
     "starts up after Unexplained Termination Event (UTE).";
 
+const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
+const char kSyncEnableHistoryDataTypeDescription[] =
+    "Enables the History sync data type instead of TypedURLs";
+
 const char kSyncTrustedVaultPassphraseiOSRPCName[] =
     "Enable RPC for sync trusted vault passphrase.";
 const char kSyncTrustedVaultPassphraseiOSRPCDescription[] =
