@@ -13,8 +13,7 @@ namespace policy {
 class RequestHandlerForUnregister
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForUnregister(ClientStorage* client_storage,
-                              PolicyStorage* policy_storage);
+  explicit RequestHandlerForUnregister(EmbeddedPolicyTestServer* parent);
   RequestHandlerForUnregister(RequestHandlerForUnregister&& handler) = delete;
   RequestHandlerForUnregister& operator=(
       RequestHandlerForUnregister&& handler) = delete;

@@ -13,8 +13,7 @@ namespace policy {
 class RequestHandlerForRemoteCommands
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForRemoteCommands(ClientStorage* client_storage,
-                                  PolicyStorage* policy_storage);
+  explicit RequestHandlerForRemoteCommands(EmbeddedPolicyTestServer* parent);
   RequestHandlerForRemoteCommands(RequestHandlerForRemoteCommands&& handler) =
       delete;
   RequestHandlerForRemoteCommands& operator=(

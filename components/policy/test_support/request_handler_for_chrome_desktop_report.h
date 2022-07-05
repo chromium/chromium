@@ -13,8 +13,8 @@ namespace policy {
 class RequestHandlerForChromeDesktopReport
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForChromeDesktopReport(ClientStorage* client_storage,
-                                       PolicyStorage* policy_storage);
+  explicit RequestHandlerForChromeDesktopReport(
+      EmbeddedPolicyTestServer* parent);
   RequestHandlerForChromeDesktopReport(
       RequestHandlerForChromeDesktopReport&& handler) = delete;
   RequestHandlerForChromeDesktopReport& operator=(

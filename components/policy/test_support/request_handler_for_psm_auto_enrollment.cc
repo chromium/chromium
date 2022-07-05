@@ -31,10 +31,8 @@ constexpr const char* kPsmMembershipEncryptedTestIds[] = {
 }  // namespace
 
 RequestHandlerForPsmAutoEnrollment::RequestHandlerForPsmAutoEnrollment(
-    ClientStorage* client_storage,
-    PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForPsmAutoEnrollment::~RequestHandlerForPsmAutoEnrollment() =
     default;

@@ -20,10 +20,8 @@ namespace em = enterprise_management;
 namespace policy {
 
 RequestHandlerForApiAuthorization::RequestHandlerForApiAuthorization(
-    ClientStorage* client_storage,
-    PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForApiAuthorization::~RequestHandlerForApiAuthorization() =
     default;

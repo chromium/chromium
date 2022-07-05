@@ -28,9 +28,8 @@ namespace em = enterprise_management;
 namespace policy {
 
 RequestHandlerForRegisterCertBased::RequestHandlerForRegisterCertBased(
-    ClientStorage* client_storage,
-    PolicyStorage* policy_storage)
-    : RequestHandlerForRegisterDeviceAndUser(client_storage, policy_storage) {}
+    EmbeddedPolicyTestServer* parent)
+    : RequestHandlerForRegisterDeviceAndUser(parent) {}
 
 RequestHandlerForRegisterCertBased::~RequestHandlerForRegisterCertBased() =
     default;

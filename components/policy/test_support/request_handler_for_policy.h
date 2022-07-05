@@ -18,12 +18,13 @@ class PolicyFetchResponse;
 
 namespace policy {
 
+inline constexpr char kDefaultUsername[] = "username@example.com";
+
 // Handler for request type `policy`.
 class RequestHandlerForPolicy
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForPolicy(ClientStorage* client_storage,
-                          PolicyStorage* policy_storage);
+  explicit RequestHandlerForPolicy(EmbeddedPolicyTestServer* parent);
   RequestHandlerForPolicy(RequestHandlerForPolicy&& handler) = delete;
   RequestHandlerForPolicy& operator=(RequestHandlerForPolicy&& handler) =
       delete;

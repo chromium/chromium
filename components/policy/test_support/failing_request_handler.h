@@ -13,8 +13,7 @@ namespace policy {
 // Handler that always returns specified error code for a given request type.
 class FailingRequestHandler : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  FailingRequestHandler(ClientStorage* client_storage,
-                        PolicyStorage* policy_storage,
+  FailingRequestHandler(EmbeddedPolicyTestServer* parent,
                         const std::string& request_type,
                         net::HttpStatusCode error_code);
   FailingRequestHandler(FailingRequestHandler&& handler) = delete;

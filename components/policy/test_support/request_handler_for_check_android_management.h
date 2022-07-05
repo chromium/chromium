@@ -18,8 +18,8 @@ extern const char kUnmanagedAuthToken[];
 class RequestHandlerForCheckAndroidManagement
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForCheckAndroidManagement(ClientStorage* client_storage,
-                                          PolicyStorage* policy_storage);
+  explicit RequestHandlerForCheckAndroidManagement(
+      EmbeddedPolicyTestServer* parent);
   RequestHandlerForCheckAndroidManagement(
       RequestHandlerForCheckAndroidManagement&& handler) = delete;
   RequestHandlerForCheckAndroidManagement& operator=(

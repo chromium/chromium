@@ -38,7 +38,7 @@ constexpr base::StringPiece kSHA256HashForRawPolicyPayload(
 
 class FakeRequestHandler : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  FakeRequestHandler() : RequestHandler(nullptr, nullptr) {}
+  FakeRequestHandler() : RequestHandler(nullptr) {}
   ~FakeRequestHandler() override = default;
 
   std::string RequestType() override { return kFakeRequestType; }

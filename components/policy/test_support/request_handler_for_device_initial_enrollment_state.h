@@ -13,8 +13,8 @@ namespace policy {
 class RequestHandlerForDeviceInitialEnrollmentState
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForDeviceInitialEnrollmentState(ClientStorage* client_storage,
-                                                PolicyStorage* policy_storage);
+  explicit RequestHandlerForDeviceInitialEnrollmentState(
+      EmbeddedPolicyTestServer* parent);
   RequestHandlerForDeviceInitialEnrollmentState(
       RequestHandlerForDeviceInitialEnrollmentState&& handler) = delete;
   RequestHandlerForDeviceInitialEnrollmentState& operator=(

@@ -21,10 +21,8 @@ namespace em = enterprise_management;
 namespace policy {
 
 RequestHandlerForChromeDesktopReport::RequestHandlerForChromeDesktopReport(
-    ClientStorage* client_storage,
-    PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForChromeDesktopReport::~RequestHandlerForChromeDesktopReport() =
     default;

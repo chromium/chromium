@@ -13,8 +13,7 @@ namespace policy {
 class RequestHandlerForAutoEnrollment
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForAutoEnrollment(ClientStorage* client_storage,
-                                  PolicyStorage* policy_storage);
+  explicit RequestHandlerForAutoEnrollment(EmbeddedPolicyTestServer* parent);
   RequestHandlerForAutoEnrollment(RequestHandlerForAutoEnrollment&& handler) =
       delete;
   RequestHandlerForAutoEnrollment& operator=(

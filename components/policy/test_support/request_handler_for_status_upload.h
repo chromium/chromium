@@ -13,8 +13,7 @@ namespace policy {
 class RequestHandlerForStatusUpload
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForStatusUpload(ClientStorage* client_storage,
-                                PolicyStorage* policy_storage);
+  explicit RequestHandlerForStatusUpload(EmbeddedPolicyTestServer* parent);
   RequestHandlerForStatusUpload(RequestHandlerForStatusUpload&& handler) =
       delete;
   RequestHandlerForStatusUpload& operator=(

@@ -22,10 +22,8 @@ namespace em = enterprise_management;
 namespace policy {
 
 RequestHandlerForRegisterBrowser::RequestHandlerForRegisterBrowser(
-    ClientStorage* client_storage,
-    PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForRegisterBrowser::~RequestHandlerForRegisterBrowser() = default;
 

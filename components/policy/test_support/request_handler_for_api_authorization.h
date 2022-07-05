@@ -13,8 +13,7 @@ namespace policy {
 class RequestHandlerForApiAuthorization
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForApiAuthorization(ClientStorage* client_storage,
-                                    PolicyStorage* policy_storage);
+  explicit RequestHandlerForApiAuthorization(EmbeddedPolicyTestServer* parent);
   RequestHandlerForApiAuthorization(
       RequestHandlerForApiAuthorization&& handler) = delete;
   RequestHandlerForApiAuthorization& operator=(

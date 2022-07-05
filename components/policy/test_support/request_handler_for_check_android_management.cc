@@ -25,10 +25,8 @@ const char kManagedAuthToken[] = "managed-auth-token";
 const char kUnmanagedAuthToken[] = "unmanaged-auth-token";
 
 RequestHandlerForCheckAndroidManagement::
-    RequestHandlerForCheckAndroidManagement(ClientStorage* client_storage,
-                                            PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    RequestHandlerForCheckAndroidManagement(EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForCheckAndroidManagement::
     ~RequestHandlerForCheckAndroidManagement() = default;

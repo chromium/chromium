@@ -13,8 +13,8 @@ namespace policy {
 class RequestHandlerForDeviceStateRetrieval
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForDeviceStateRetrieval(ClientStorage* client_storage,
-                                        PolicyStorage* policy_storage);
+  explicit RequestHandlerForDeviceStateRetrieval(
+      EmbeddedPolicyTestServer* parent);
   RequestHandlerForDeviceStateRetrieval(
       RequestHandlerForDeviceStateRetrieval&& handler) = delete;
   RequestHandlerForDeviceStateRetrieval& operator=(

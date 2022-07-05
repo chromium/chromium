@@ -32,10 +32,8 @@ void AddHashes(const std::vector<std::string>& hashes,
 }  // namespace
 
 RequestHandlerForAutoEnrollment::RequestHandlerForAutoEnrollment(
-    ClientStorage* client_storage,
-    PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForAutoEnrollment::~RequestHandlerForAutoEnrollment() = default;
 

@@ -23,10 +23,8 @@ namespace policy {
 
 RequestHandlerForDeviceAttributeUpdatePermission::
     RequestHandlerForDeviceAttributeUpdatePermission(
-        ClientStorage* client_storage,
-        PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+        EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForDeviceAttributeUpdatePermission::
     ~RequestHandlerForDeviceAttributeUpdatePermission() = default;

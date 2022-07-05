@@ -69,6 +69,9 @@ class ClientStorage {
   std::vector<std::string> GetMatchingStateKeyHashes(uint64_t modulus,
                                                      uint64_t remainder) const;
 
+  // Returns all the clients in the storage.
+  std::vector<ClientInfo> GetAllClients();
+
  private:
   // Key: device ids.
   std::map<std::string, ClientInfo> clients_;

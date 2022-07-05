@@ -14,8 +14,7 @@ namespace policy {
 class RequestHandlerForRegisterCertBased
     : public RequestHandlerForRegisterDeviceAndUser {
  public:
-  RequestHandlerForRegisterCertBased(ClientStorage* client_storage,
-                                     PolicyStorage* policy_storage);
+  explicit RequestHandlerForRegisterCertBased(EmbeddedPolicyTestServer* parent);
   RequestHandlerForRegisterCertBased(
       RequestHandlerForRegisterCertBased&& handler) = delete;
   RequestHandlerForRegisterCertBased& operator=(

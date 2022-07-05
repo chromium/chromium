@@ -22,10 +22,9 @@ namespace em = enterprise_management;
 namespace policy {
 
 RequestHandlerForDeviceInitialEnrollmentState::
-    RequestHandlerForDeviceInitialEnrollmentState(ClientStorage* client_storage,
-                                                  PolicyStorage* policy_storage)
-    : EmbeddedPolicyTestServer::RequestHandler(client_storage, policy_storage) {
-}
+    RequestHandlerForDeviceInitialEnrollmentState(
+        EmbeddedPolicyTestServer* parent)
+    : EmbeddedPolicyTestServer::RequestHandler(parent) {}
 
 RequestHandlerForDeviceInitialEnrollmentState::
     ~RequestHandlerForDeviceInitialEnrollmentState() = default;

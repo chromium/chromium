@@ -36,8 +36,7 @@ class EmbeddedPolicyTestServer {
  public:
   class RequestHandler {
    public:
-    RequestHandler(ClientStorage* client_storage,
-                   PolicyStorage* policy_storage);
+    explicit RequestHandler(EmbeddedPolicyTestServer* parent);
     virtual ~RequestHandler();
 
     // Returns the value associated with the "request_type" query param handled
@@ -49,15 +48,18 @@ class EmbeddedPolicyTestServer {
     virtual std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
         const net::test_server::HttpRequest& request) = 0;
 
-    const ClientStorage* client_storage() const { return client_storage_; }
-    ClientStorage* client_storage() { return client_storage_; }
+    const ClientStorage* client_storage() const {
+      return parent_->client_storage();
+    }
+    ClientStorage* client_storage() { return parent_->client_storage(); }
 
-    const PolicyStorage* policy_storage() const { return policy_storage_; }
-    PolicyStorage* policy_storage() { return policy_storage_; }
+    const PolicyStorage* policy_storage() const {
+      return parent_->policy_storage();
+    }
+    PolicyStorage* policy_storage() { return parent_->policy_storage(); }
 
    private:
-    raw_ptr<ClientStorage> client_storage_;
-    raw_ptr<PolicyStorage> policy_storage_;
+    const raw_ptr<EmbeddedPolicyTestServer> parent_;
   };
 
   EmbeddedPolicyTestServer();
@@ -83,6 +85,10 @@ class EmbeddedPolicyTestServer {
   // |error_code|.
   void ConfigureRequestError(const std::string& request_type,
                              net::HttpStatusCode error_code);
+
+  // Resets the policy/client storage to its original state.
+  void ResetPolicyStorage();
+  void ResetClientStorage();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Updates policy selected by |type| and optional |entity_id|. The

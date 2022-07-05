@@ -17,8 +17,8 @@ namespace policy {
 class RequestHandlerForRegisterDeviceAndUser
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForRegisterDeviceAndUser(ClientStorage* client_storage,
-                                         PolicyStorage* policy_storage);
+  explicit RequestHandlerForRegisterDeviceAndUser(
+      EmbeddedPolicyTestServer* parent);
   RequestHandlerForRegisterDeviceAndUser(
       RequestHandlerForRegisterDeviceAndUser&& handler) = delete;
   RequestHandlerForRegisterDeviceAndUser& operator=(

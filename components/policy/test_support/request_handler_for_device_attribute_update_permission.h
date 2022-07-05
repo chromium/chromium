@@ -13,9 +13,8 @@ namespace policy {
 class RequestHandlerForDeviceAttributeUpdatePermission
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  RequestHandlerForDeviceAttributeUpdatePermission(
-      ClientStorage* client_storage,
-      PolicyStorage* policy_storage);
+  explicit RequestHandlerForDeviceAttributeUpdatePermission(
+      EmbeddedPolicyTestServer* parent);
   RequestHandlerForDeviceAttributeUpdatePermission(
       RequestHandlerForDeviceAttributeUpdatePermission&& handler) = delete;
   RequestHandlerForDeviceAttributeUpdatePermission& operator=(

@@ -18,8 +18,7 @@ class RequestHandlerForPsmAutoEnrollment
     kPirResponseHasNoMembership = 2,
   };
 
-  RequestHandlerForPsmAutoEnrollment(ClientStorage* client_storage,
-                                     PolicyStorage* policy_storage);
+  explicit RequestHandlerForPsmAutoEnrollment(EmbeddedPolicyTestServer* parent);
   RequestHandlerForPsmAutoEnrollment(
       RequestHandlerForPsmAutoEnrollment&& handler) = delete;
   RequestHandlerForPsmAutoEnrollment& operator=(

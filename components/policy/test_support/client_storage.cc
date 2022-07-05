@@ -109,4 +109,11 @@ std::vector<std::string> ClientStorage::GetMatchingStateKeyHashes(
   return hashes;
 }
 
+std::vector<ClientStorage::ClientInfo> ClientStorage::GetAllClients() {
+  std::vector<ClientStorage::ClientInfo> result;
+  for (const auto& [device_id, client_info] : clients_) {
+    result.push_back(client_info);
+  }
+  return result;
+}
 }  // namespace policy
