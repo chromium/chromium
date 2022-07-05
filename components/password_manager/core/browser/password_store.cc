@@ -109,9 +109,8 @@ bool PasswordStore::Init(
 
 void PasswordStore::AddLogin(const PasswordForm& form) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1324588): Replace by DCHECK
-  CHECK(!form.blocked_by_user ||
-        (form.username_value.empty() && form.password_value.empty()));
+  DCHECK(!form.blocked_by_user ||
+         (form.username_value.empty() && form.password_value.empty()));
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->AddLoginAsync(
@@ -123,9 +122,8 @@ void PasswordStore::AddLogin(const PasswordForm& form) {
 
 void PasswordStore::UpdateLogin(const PasswordForm& form) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1324588): Replace by DCHECK
-  CHECK(!form.blocked_by_user ||
-        (form.username_value.empty() && form.password_value.empty()));
+  DCHECK(!form.blocked_by_user ||
+         (form.username_value.empty() && form.password_value.empty()));
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->UpdateLoginAsync(

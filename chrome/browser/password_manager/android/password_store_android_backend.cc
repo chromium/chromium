@@ -436,9 +436,8 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
 void PasswordStoreAndroidBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  // TODO(crbug.com/1324588): remove this check
-  CHECK(!form.blocked_by_user ||
-        (form.username_value.empty() && form.password_value.empty()));
+  DCHECK(!form.blocked_by_user ||
+         (form.username_value.empty() && form.password_value.empty()));
   JobId job_id =
       bridge_->AddLogin(form, GetAccount(GetSyncingAccount(sync_service_)));
   QueueNewJob(job_id, std::move(callback), MetricInfix("AddLoginAsync"));
@@ -447,9 +446,8 @@ void PasswordStoreAndroidBackend::AddLoginAsync(
 void PasswordStoreAndroidBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  // TODO(crbug.com/1324588): remove this check
-  CHECK(!form.blocked_by_user ||
-        (form.username_value.empty() && form.password_value.empty()));
+  DCHECK(!form.blocked_by_user ||
+         (form.username_value.empty() && form.password_value.empty()));
   JobId job_id =
       bridge_->UpdateLogin(form, GetAccount(GetSyncingAccount(sync_service_)));
   QueueNewJob(job_id, std::move(callback), MetricInfix("UpdateLoginAsync"));
