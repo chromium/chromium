@@ -4,7 +4,7 @@
 
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EMOJI_BUTTON_CLICK, V2_CONTENT_LOADED} from 'chrome://emoji-picker/events.js';
+import {EMOJI_BUTTON_CLICK, EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from '../../chai_assert.js';
@@ -39,11 +39,18 @@ suite('emoji-picker-extension', () => {
      // Set default incognito state to False.
     EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
         new Promise((resolve) => resolve({incognito: false}));
+    EmojiPicker.configs = () => ({
+      'dataUrls': {
+        'emoji': [
+            '/emoji_test_ordering_start.json',
+            '/emoji_test_ordering_remaining.json'
+        ],
+        'emoticon': ['/emoticon_test_ordering.json'],
+      },
+    });
 
     emojiPicker =
         /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
-    emojiPicker.emojiDataUrl = '/emoji_test_ordering';
-    emojiPicker.emoticonDataUrl = '/emoticon_test_ordering.json';
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
@@ -57,7 +64,7 @@ suite('emoji-picker-extension', () => {
 
     // Wait until emoji data is loaded before executing tests.
     return new Promise((resolve) => {
-      emojiPicker.addEventListener(V2_CONTENT_LOADED, () => {
+      emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
         flush();
         resolve();
       });

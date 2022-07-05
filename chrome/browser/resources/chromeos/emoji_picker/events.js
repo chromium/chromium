@@ -40,18 +40,27 @@ export let EmojiVariantsShownEvent;
 export const EMOJI_VARIANTS_SHOWN = 'emoji-variants-shown';
 
 /**
- * @typedef {!CustomEvent}
+ * @typedef {!CustomEvent<{category: string}>}
  */
-export let EmojiDataLoadedEvent;
-
-export const EMOJI_DATA_LOADED = 'emoji-data-loaded';
+export let CategoryDataLoadEvent;
 
 /**
- * @typedef {!CustomEvent}
+ * The event that data of a category is fetched and processed for rendering.
+ * Note: this event does not indicate if rendering of the category data is
+ * completed or not.
  */
-export let EmojiRemainingDataLoadedEvent;
+export const CATEGORY_DATA_LOADED = 'category-data-loaded';
 
-export const EMOJI_REMAINING_DATA_LOADED = 'emoji-data-remaining-loaded';
+/**
+ * @typedef {!CustomEvent<{v2Enabled: boolean}>}
+ */
+export let EmojiPickerReadyEvent;
+
+/**
+ * The event that all the data are loaded and rendered and all the
+ * emoji-picker functionalities are ready to use.
+ */
+export const EMOJI_PICKER_READY = 'emoji-picker-ready';
 
 /**
  * @typedef {!CustomEvent}
@@ -60,13 +69,6 @@ export let EmojiClearRecentClickEvent;
 
 export const EMOJI_CLEAR_RECENTS_CLICK = 'emoji-clear-recents-click';
 
-/**
- *
- * @typedef {!CustomEvent}
- */
-export let V2ContentLoadedEvent;
-
-export const V2_CONTENT_LOADED = 'v2-content-loaded';
 /**
  * Constructs a CustomEvent with the given event type and details.
  * The event will bubble up through elements and components.
