@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
-#include "chromeos/dbus/smbprovider/smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"

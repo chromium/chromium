@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_ERRORS_H_
 
 #include "base/files/file.h"
-#include "chromeos/dbus/smbprovider/smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 
 namespace ash {
 namespace smb_client {

@@ -8,8 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("smbprovider") {
-  output_name = "chromeos_smbprovider"
-  defines = [ "IS_CHROMEOS_DBUS_SMBPROVIDER_IMPL" ]
+  output_name = "ash_smbprovider"
+  defines = [ "IS_ASH_DBUS_SMBPROVIDER_IMPL" ]
   deps = [
     ":proto",
     "//base",
@@ -28,5 +28,5 @@ proto_library("proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/smbprovider/directory_entry.proto" ]
 
-  proto_out_dir = "chromeos/dbus/smbprovider"
+  proto_out_dir = "chromeos/ash/components/dbus/smbprovider"
 }

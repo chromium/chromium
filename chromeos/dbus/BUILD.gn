@@ -39,8 +39,6 @@ component("dbus") {
     "//chromeos/dbus/oobe_config:proto",
     "//chromeos/dbus/runtime_probe",
     "//chromeos/dbus/runtime_probe:proto",
-    "//chromeos/dbus/smbprovider",
-    "//chromeos/dbus/smbprovider:proto",
     "//chromeos/dbus/util",
     "//components/account_id",
     "//components/device_event_log",

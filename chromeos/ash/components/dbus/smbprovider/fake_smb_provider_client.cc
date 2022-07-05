@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -107,4 +107,4 @@ void FakeSmbProviderClient::RunStoredReadDirCallback() {
   std::move(stored_readdir_callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

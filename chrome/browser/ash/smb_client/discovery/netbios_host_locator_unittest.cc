@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/smb_client/discovery/fake_netbios_client.h"
 #include "chrome/browser/ash/smb_client/smb_constants.h"
-#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

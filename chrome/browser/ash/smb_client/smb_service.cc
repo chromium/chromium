@@ -426,7 +426,7 @@ file_system_provider::Service* SmbService::GetProviderService() const {
 }
 
 SmbProviderClient* SmbService::GetSmbProviderClient() const {
-  return chromeos::SmbProviderClient::Get();
+  return SmbProviderClient::Get();
 }
 
 void SmbService::RestoreMounts() {

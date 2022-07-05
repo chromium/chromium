@@ -13,7 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 #include "chrome/browser/ash/smb_client/discovery/netbios_client_interface.h"
-#include "chromeos/dbus/smbprovider/smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "net/base/network_interfaces.h"
 
 namespace ash {

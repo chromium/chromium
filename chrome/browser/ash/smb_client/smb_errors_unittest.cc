@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 
 #include "base/files/file.h"
-#include "chromeos/dbus/smbprovider/directory_entry.pb.h"
+#include "chromeos/ash/components/dbus/smbprovider/directory_entry.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

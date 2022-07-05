@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SMBPROVIDER_SMB_PROVIDER_CLIENT_H_
-#define CHROMEOS_DBUS_SMBPROVIDER_SMB_PROVIDER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SMBPROVIDER_SMB_PROVIDER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SMBPROVIDER_SMB_PROVIDER_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -13,17 +13,17 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/smbprovider/directory_entry.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/smbprovider/directory_entry.pb.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // SmbProviderClient is used to communicate with the org.chromium.SmbProvider
 // service. All methods should be called from the origin thread (UI thread)
 // which initializes the DBusThreadManager instance.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
+class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) SmbProviderClient
     : public DBusClient,
       public base::SupportsWeakPtr<SmbProviderClient> {
  public:
@@ -77,11 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
   ~SmbProviderClient() override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when move to ash
-namespace ash {
-using ::chromeos::SmbProviderClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SMBPROVIDER_SMB_PROVIDER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SMBPROVIDER_SMB_PROVIDER_CLIENT_H_

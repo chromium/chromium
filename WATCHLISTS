@@ -1781,8 +1781,7 @@
     'smb': {
       'filepath': 'chrome/browser/ash/file_system_provider' \
                   '|chrome/browser/ash/smb_client'\
-                  '|chromeos/dbus/fake_smb_provider_client'\
-                  '|chromeos/dbus/smb_provider_client',
+                  '|chromeos/ash/components/dbus/smb_provider_client',
     },
     'source_idls': {
       'filepath': 'third_party/blink/renderer/(core|modules|platform)/.*\.idl',
