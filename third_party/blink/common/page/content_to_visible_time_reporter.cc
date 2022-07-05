@@ -108,18 +108,12 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
           show_reason_bfcache_restore));
 }
 
-void ContentToVisibleTimeReporter::TabMeasurementWasInterrupted(
-    TabSwitchResult result) {
-  DCHECK_NE(result, TabSwitchResult::kSuccess);
-  if (result == TabSwitchResult::kUnhandled &&
-      !IsTabSwitchMetric2FeatureEnabled()) {
-    // Unhandled was not reported for the legacy metric.
-    return;
-  }
+void ContentToVisibleTimeReporter::TabWasHidden() {
   if (tab_switch_start_state_ &&
       (!IsTabSwitchMetric2FeatureEnabled() ||
        tab_switch_start_state_->show_reason_tab_switching)) {
-    RecordHistogramsAndTraceEvents(result, true /* show_reason_tab_switching */,
+    RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
+                                   true /* show_reason_tab_switching */,
                                    false /* show_reason_bfcache_restore */,
                                    gfx::PresentationFeedback::Failure());
   }

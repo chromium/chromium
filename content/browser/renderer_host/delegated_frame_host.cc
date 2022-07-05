@@ -124,12 +124,6 @@ void DelegatedFrameHost::CancelPresentationTimeRequest() {
   tab_switch_time_recorder_.TabWasHidden();
 }
 
-void DelegatedFrameHost::UnhandledPresentationTimeRequest() {
-  // Tab was hidden while widget keeps painting, eg. due to being captured.
-  tab_switch_time_recorder_.TabMeasurementWasInterrupted(
-      blink::ContentToVisibleTimeReporter::TabSwitchResult::kUnhandled);
-}
-
 bool DelegatedFrameHost::HasSavedFrame() const {
   return frame_evictor_->has_surface();
 }

@@ -473,9 +473,12 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
 
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
+  // SetRenderWidgetHostIsHidden above will show the DelegatedFrameHost
+  // in this state, but doesn't include the presentation time request.
   if (has_saved_frame && tab_switch_start_state) {
-    browser_compositor_->RequestPresentationTimeForNextFrame(
-        std::move(tab_switch_start_state));
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestPresentationTimeForNextFrame(
+            std::move(tab_switch_start_state));
   }
 }
 
@@ -489,8 +492,8 @@ void RenderWidgetHostViewMac::RequestPresentationTimeFromHostOrDelegate(
   if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
     // If the frame for the renderer is already available, then the
     // tab-switching time is the presentation time for the browser-compositor.
-    browser_compositor_->RequestPresentationTimeForNextFrame(
-        std::move(visible_time_request));
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestPresentationTimeForNextFrame(std::move(visible_time_request));
   } else {
     host()->RequestPresentationTimeForNextFrame(
         std::move(visible_time_request));

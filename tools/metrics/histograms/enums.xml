@@ -92804,7 +92804,7 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Tab hidden before a frame is presented"/>
   <int value="2" label="Presentation failure"/>
   <int value="3" label="Tab shown twice without being hidden"/>
-  <int value="4" label="Unhandled compositor state"/>
+  <int value="4" label="Unhandled compositor state (deprecated)"/>
 </enum>
 
 <enum name="TabUnderAction">
