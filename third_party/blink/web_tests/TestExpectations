@@ -7015,6 +7015,7 @@ crbug.com/1288741 external/wpt/scroll-to-text-fragment/find-range-from-text-dire
 # Sheriff 2022-04-28
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 crbug.com/1289759 [ Win ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
+
 crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-interval.html [ Failure Pass ]
 
 # Sheriff 2022-04-29
@@ -7031,8 +7032,6 @@ crbug.com/1295890 [ Win11 ] http/tests/security/document-domain-canonicalizes-if
 
 # Sheriff 2022-05-04
 crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
-
-crbug.com/1320290 http/tests/devtools/storage-panel-dom-storage-update.js [ Skip ]
 
 crbug.com/1322405 external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Pass Timeout ]
 crbug.com/1322405 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Pass Timeout ]
