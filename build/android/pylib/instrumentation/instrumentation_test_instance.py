@@ -699,6 +699,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._test_launcher_batch_limit = None
     self._initializeTestLauncherAttributes(args)
 
+    self._approve_app_links_domain = None
+    self._approve_app_links_package = None
+    self._initializeApproveAppLinksAttributes(args)
+
     self._wpr_enable_record = args.wpr_enable_record
 
     self._external_shard_index = args.test_launcher_shard_index
@@ -933,6 +937,20 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     if hasattr(args, 'test_launcher_batch_limit'):
       self._test_launcher_batch_limit = args.test_launcher_batch_limit
 
+  def _initializeApproveAppLinksAttributes(self, args):
+    if (not hasattr(args, 'approve_app_links') or not args.approve_app_links):
+      return
+
+    # The argument will be formatted as com.android.thing:www.example.com .
+    app_links = args.approve_app_links.split(':')
+
+    if (len(app_links) != 2 or not app_links[0] or not app_links[1]):
+      logging.warning('--approve_app_links option provided, but malformed.')
+      return
+
+    self._approve_app_links_package = app_links[0]
+    self._approve_app_links_domain = app_links[1]
+
   @property
   def additional_apks(self):
     return self._additional_apks
@@ -944,6 +962,14 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def apk_under_test_incremental_install_json(self):
     return self._apk_under_test_incremental_install_json
+
+  @property
+  def approve_app_links_package(self):
+    return self._approve_app_links_package
+
+  @property
+  def approve_app_links_domain(self):
+    return self._approve_app_links_domain
 
   @property
   def modules(self):

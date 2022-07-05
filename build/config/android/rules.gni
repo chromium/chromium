@@ -4015,6 +4015,7 @@ if (enable_java_templates) {
                                    "data",
                                    "data_deps",
                                    "deps",
+                                   "extra_args",
                                    "proguard_configs",
                                  ])
     }

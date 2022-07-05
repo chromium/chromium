@@ -58,6 +58,10 @@ import java.util.concurrent.TimeoutException;
  * 2. This calls through to TestTrustedWebActivityService.
  * 3. This calls a method on MessengerService.
  * 4. This sends a Message to ResponseHandler in this class.
+ *
+ * In order for this test to work on Android S+, Digital Asset Link verification must pass for
+ * org.chromium.chrome.tests.support and www.example.com. This is accomplished with the
+ * `--approve-app-links` command passed to the test target.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TrustedWebActivityClientTest {

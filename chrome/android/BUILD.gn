@@ -3106,6 +3106,7 @@ template("chrome_test_apk_tmpl") {
                              "data_deps",
                              "enable_lint",
                              "enforce_resource_overlays_in_tests",
+                             "extra_args",
                              "shared_libraries",
                            ])
 
@@ -3288,6 +3289,15 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/android/webapk/shell_apk:javatests_webapk",
     "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
     "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
+  ]
+
+  # TrustedWebActivityClientTest relies on sending a browsable Intent to an
+  # ActivityWithDeepLink. On Android S+, for an app to receive a browsable
+  # Intent it must have Digital Asset Link verification set up. This command
+  # will associate the given package with the given website.
+  extra_args = [
+    "--approve-app-links",
+    "org.chromium.chrome.tests.support:www.example.com",
   ]
 }
 

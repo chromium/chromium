@@ -595,6 +595,12 @@ def AddInstrumentationTestOptions(parser):
                       help='If true, WPR server runs in record mode.'
                       'otherwise, runs in replay mode.')
 
+  parser.add_argument(
+      '--approve-app-links',
+      help='Force enables Digital Asset Link verification for the provided '
+      'package and domain, example usage: --approve-app-links '
+      'com.android.package:www.example.com')
+
   # These arguments are suppressed from the help text because they should
   # only ever be specified by an intermediate script.
   parser.add_argument(
