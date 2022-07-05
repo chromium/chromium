@@ -9,7 +9,8 @@ enum GamepadHapticActuatorType {
 };
 
 enum GamepadHapticEffectType {
-    "dual-rumble"
+    "dual-rumble",
+    "trigger-rumble"
 };
 
 enum GamepadHapticsResult {
@@ -25,6 +26,7 @@ enum GamepadHapticsResult {
     Exposed=Window
 ] interface GamepadHapticActuator {
     readonly attribute GamepadHapticActuatorType type;
+    [RuntimeEnabled=WGIGamepadTriggerRumble] boolean canPlay(GamepadHapticEffectType type);
     [CallWith=ScriptState] Promise<GamepadHapticsResult> playEffect(
         GamepadHapticEffectType type,
         GamepadEffectParameters params);

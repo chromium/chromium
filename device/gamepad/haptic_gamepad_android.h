@@ -18,7 +18,7 @@ class HapticGamepadAndroid final : public AbstractHapticGamepad {
   ~HapticGamepadAndroid() override;
 
   // AbstractHapticGamepad implementation.
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   void SetZeroVibration() override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 

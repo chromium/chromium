@@ -5,6 +5,7 @@
 #include "device/gamepad/wgi_gamepad_device.h"
 
 #include "base/trace_event/trace_event.h"
+#include "device/gamepad/abstract_haptic_gamepad.h"
 
 namespace device {
 
@@ -14,12 +15,12 @@ WgiGamepadDevice::WgiGamepadDevice(
 
 WgiGamepadDevice::~WgiGamepadDevice() = default;
 
-void WgiGamepadDevice::SetVibration(double strong_magnitude,
-                                    double weak_magnitude) {
+void WgiGamepadDevice::SetVibration(mojom::GamepadEffectParametersPtr params) {
   ABI::Windows::Gaming::Input::GamepadVibration vibration = {
-      .LeftMotor = strong_magnitude,
-      .RightMotor = weak_magnitude,
-  };
+      .LeftMotor = params->strong_magnitude,
+      .RightMotor = params->weak_magnitude,
+      .LeftTrigger = params->left_trigger,
+      .RightTrigger = params->right_trigger};
   HRESULT hr = gamepad_->put_Vibration(vibration);
   DCHECK(SUCCEEDED(hr));
 }

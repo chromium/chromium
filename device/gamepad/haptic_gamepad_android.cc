@@ -13,10 +13,10 @@ HapticGamepadAndroid::HapticGamepadAndroid(int device_index)
 
 HapticGamepadAndroid::~HapticGamepadAndroid() = default;
 
-void HapticGamepadAndroid::SetVibration(double strong_magnitude,
-                                        double weak_magnitude) {
+void HapticGamepadAndroid::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   GamepadPlatformDataFetcherAndroid::SetVibration(
-      device_index_, strong_magnitude, weak_magnitude);
+      device_index_, params->strong_magnitude, params->weak_magnitude);
 }
 
 void HapticGamepadAndroid::SetZeroVibration() {

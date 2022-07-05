@@ -66,6 +66,7 @@ class GamepadControllerBindings
   void SetAxisCount(int index, int axes);
   void SetAxisData(int index, int axis, double data);
   void SetDualRumbleVibrationActuator(int index, bool enabled);
+  void SetTriggerRumbleVibrationActuator(int index, bool enabled);
 
   base::WeakPtr<GamepadController> controller_;
 };
@@ -116,7 +117,9 @@ gin::ObjectTemplateBuilder GamepadControllerBindings::GetObjectTemplateBuilder(
       .SetMethod("setAxisCount", &GamepadControllerBindings::SetAxisCount)
       .SetMethod("setAxisData", &GamepadControllerBindings::SetAxisData)
       .SetMethod("setDualRumbleVibrationActuator",
-                 &GamepadControllerBindings::SetDualRumbleVibrationActuator);
+                 &GamepadControllerBindings::SetDualRumbleVibrationActuator)
+      .SetMethod("setTriggerRumbleVibrationActuator",
+                 &GamepadControllerBindings::SetTriggerRumbleVibrationActuator);
 }
 
 void GamepadControllerBindings::Connect(int index) {
@@ -165,6 +168,13 @@ void GamepadControllerBindings::SetDualRumbleVibrationActuator(int index,
                                                                bool enabled) {
   if (controller_)
     controller_->SetDualRumbleVibrationActuator(index, enabled);
+}
+
+void GamepadControllerBindings::SetTriggerRumbleVibrationActuator(
+    int index,
+    bool enabled) {
+  if (controller_)
+    controller_->SetTriggerRumbleVibrationActuator(index, enabled);
 }
 
 GamepadController::MonitorImpl::MonitorImpl(
@@ -418,6 +428,20 @@ void GamepadController::SetDualRumbleVibrationActuator(int index,
   gamepads_->seqlock.WriteBegin();
   Gamepad& pad = gamepads_->data.items[index];
   pad.vibration_actuator.type = device::GamepadHapticActuatorType::kDualRumble;
+  pad.vibration_actuator.not_null = enabled;
+  pad.timestamp = now;
+  gamepads_->seqlock.WriteEnd();
+}
+
+void GamepadController::SetTriggerRumbleVibrationActuator(int index,
+                                                          bool enabled) {
+  if (index < 0 || index >= static_cast<int>(Gamepads::kItemsLengthCap))
+    return;
+  const int64_t now = CurrentTimeInMicroseconds();
+  gamepads_->seqlock.WriteBegin();
+  Gamepad& pad = gamepads_->data.items[index];
+  pad.vibration_actuator.type =
+      device::GamepadHapticActuatorType::kTriggerRumble;
   pad.vibration_actuator.not_null = enabled;
   pad.timestamp = now;
   gamepads_->seqlock.WriteEnd();

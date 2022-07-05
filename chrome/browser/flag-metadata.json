@@ -3123,8 +3123,8 @@
   },
   {
     "name": "enable-windows-gaming-input-data-fetcher",
-    "owners": [ "qiaye@microsoft.com" ],
-    "expiry_milestone": 92
+    "owners": ["gabrielbrito@microsoft.com", "qiaye@microsoft.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "enable-winrt-geolocation-implementation",

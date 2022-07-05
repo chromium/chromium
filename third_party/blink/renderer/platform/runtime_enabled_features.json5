@@ -2841,6 +2841,10 @@
       depends_on: ["WebXRARModule"],
       status: "stable",
     },
+    {
+      name: "WGIGamepadTriggerRumble",
+      status: "test",
+    },
     // New behavior for window.open's interpretation of the windowFeatures parameter.
     {
       name: "WindowOpenNewPopupBehavior",

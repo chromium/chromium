@@ -10,4 +10,7 @@ dictionary GamepadEffectParameters {
     double startDelay = 0.0;
     double strongMagnitude = 0.0;
     double weakMagnitude = 0.0;
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/GamepadHapticsActuatorTriggerRumble/explainer.md
+    [RuntimeEnabled=WGIGamepadTriggerRumble] double leftTrigger = 0.0;
+    [RuntimeEnabled=WGIGamepadTriggerRumble] double rightTrigger = 0.0;
 };

@@ -80,6 +80,7 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
   void SetAxisCount(int index, int axes);
   void SetAxisData(int index, int axis, double data);
   void SetDualRumbleVibrationActuator(int index, bool enabled);
+  void SetTriggerRumbleVibrationActuator(int index, bool enabled);
 
   void OnInterfaceRequest(mojo::ScopedMessagePipeHandle handle);
 

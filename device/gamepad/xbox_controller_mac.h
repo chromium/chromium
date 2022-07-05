@@ -104,7 +104,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   // AbstractHapticGamepad implementation.
   void DoShutdown() override;
   double GetMaxEffectDurationMillis() override;
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
   uint32_t location_id() const { return location_id_; }

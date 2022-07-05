@@ -37,17 +37,16 @@ void XboxHidController::DoShutdown() {
   writer_.reset();
 }
 
-void XboxHidController::SetVibration(double strong_magnitude,
-                                     double weak_magnitude) {
+void XboxHidController::SetVibration(mojom::GamepadEffectParametersPtr params) {
   DCHECK(writer_);
   std::array<uint8_t, 9> control_report;
   control_report.fill(0);
   control_report[0] = 0x03;  // report ID
   control_report[1] = 0x03;  // enable rumble motors, disable trigger haptics
   control_report[4] =
-      static_cast<uint8_t>(strong_magnitude * kRumbleMagnitudeMax);
+      static_cast<uint8_t>(params->strong_magnitude * kRumbleMagnitudeMax);
   control_report[5] =
-      static_cast<uint8_t>(weak_magnitude * kRumbleMagnitudeMax);
+      static_cast<uint8_t>(params->weak_magnitude * kRumbleMagnitudeMax);
   control_report[6] = 0xff;  // duration
   control_report[7] = 0x00;  // start delay
   control_report[8] = 0x01;  // loop count

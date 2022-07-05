@@ -211,17 +211,17 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
   return true;
 }
 
-void Dualshock4Controller::SetVibration(double strong_magnitude,
-                                        double weak_magnitude) {
+void Dualshock4Controller::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   // Genuine DualShock 4 gamepads use an alternate output report when connected
   // over Bluetooth. Always send USB-mode reports to SCUF Vantage gamepads.
   if (bus_type_ == GAMEPAD_BUS_BLUETOOTH &&
       gamepad_id_ != GamepadId::kScufProduct7725) {
-    SetVibrationBluetooth(strong_magnitude, weak_magnitude);
+    SetVibrationBluetooth(params->strong_magnitude, params->weak_magnitude);
     return;
   }
 
-  SetVibrationUsb(strong_magnitude, weak_magnitude);
+  SetVibrationUsb(params->strong_magnitude, params->weak_magnitude);
 }
 
 void Dualshock4Controller::SetVibrationUsb(double strong_magnitude,

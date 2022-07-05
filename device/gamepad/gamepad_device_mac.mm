@@ -429,20 +429,19 @@ bool GamepadDeviceMac::SupportsVibration() {
   return dualshock4_ || xbox_hid_ || hid_haptics_ || ff_device_ref_;
 }
 
-void GamepadDeviceMac::SetVibration(double strong_magnitude,
-                                    double weak_magnitude) {
+void GamepadDeviceMac::SetVibration(mojom::GamepadEffectParametersPtr params) {
   if (dualshock4_) {
-    dualshock4_->SetVibration(strong_magnitude, weak_magnitude);
+    dualshock4_->SetVibration(std::move(params));
     return;
   }
 
   if (xbox_hid_) {
-    xbox_hid_->SetVibration(strong_magnitude, weak_magnitude);
+    xbox_hid_->SetVibration(std::move(params));
     return;
   }
 
   if (hid_haptics_) {
-    hid_haptics_->SetVibration(strong_magnitude, weak_magnitude);
+    hid_haptics_->SetVibration(std::move(params));
     return;
   }
 
@@ -453,9 +452,9 @@ void GamepadDeviceMac::SetVibration(double strong_magnitude,
     DCHECK(ff_custom_force->rglForceData);
 
     ff_custom_force->rglForceData[0] =
-        static_cast<LONG>(strong_magnitude * kRumbleMagnitudeMax);
+        static_cast<LONG>(params->strong_magnitude * kRumbleMagnitudeMax);
     ff_custom_force->rglForceData[1] =
-        static_cast<LONG>(weak_magnitude * kRumbleMagnitudeMax);
+        static_cast<LONG>(params->weak_magnitude * kRumbleMagnitudeMax);
 
     // Download the effect to the device and start the effect.
     HRESULT res = FFEffectSetParameters(

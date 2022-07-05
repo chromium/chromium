@@ -59,7 +59,7 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   void ReadPadState(Gamepad* pad) const;
 
   // AbstractHapticGamepad implementation.
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
  private:

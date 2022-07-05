@@ -25,7 +25,7 @@ class DEVICE_GAMEPAD_EXPORT WgiGamepadDevice final
   ~WgiGamepadDevice() override;
 
   // AbstractHapticGamepad implementation.
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> GetGamepad() {

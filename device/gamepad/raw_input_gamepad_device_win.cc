@@ -209,12 +209,12 @@ bool RawInputGamepadDeviceWin::SupportsVibration() const {
   return dualshock4_ || hid_haptics_;
 }
 
-void RawInputGamepadDeviceWin::SetVibration(double strong_magnitude,
-                                            double weak_magnitude) {
+void RawInputGamepadDeviceWin::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   if (dualshock4_)
-    dualshock4_->SetVibration(strong_magnitude, weak_magnitude);
+    dualshock4_->SetVibration(std::move(params));
   else if (hid_haptics_)
-    hid_haptics_->SetVibration(strong_magnitude, weak_magnitude);
+    hid_haptics_->SetVibration(std::move(params));
 }
 
 bool RawInputGamepadDeviceWin::QueryDeviceInfo() {

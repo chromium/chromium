@@ -38,7 +38,7 @@ class FakeHapticGamepad final : public AbstractHapticGamepad {
   FakeHapticGamepad() : set_vibration_count_(0), set_zero_vibration_count_(0) {}
   ~FakeHapticGamepad() override = default;
 
-  void SetVibration(double strong_magnitude, double weak_magnitude) override {
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override {
     set_vibration_count_++;
   }
 
@@ -78,8 +78,9 @@ class AbstractHapticGamepadTest : public testing::Test {
       mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback) {
     gamepad_->PlayEffect(
         type,
-        mojom::GamepadEffectParameters::New(duration, start_delay,
-                                            kStrongMagnitude, kWeakMagnitude),
+        mojom::GamepadEffectParameters::New(
+            duration, start_delay, kStrongMagnitude, kWeakMagnitude,
+            /*left_trigger=*/0, /*right_trigger=*/0),
         std::move(callback), base::ThreadTaskRunnerHandle::Get());
   }
 

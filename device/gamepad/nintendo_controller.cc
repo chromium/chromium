@@ -1772,19 +1772,24 @@ void NintendoController::DoShutdown() {
   device_info_.reset();
 }
 
-void NintendoController::SetVibration(double strong_magnitude,
-                                      double weak_magnitude) {
+void NintendoController::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   if (is_composite_) {
     // Split the vibration effect between the left and right subdevices.
     if (composite_left_ && composite_right_) {
-      composite_left_->SetVibration(strong_magnitude, 0);
-      composite_right_->SetVibration(0, weak_magnitude);
+      composite_left_->SetVibration(mojom::GamepadEffectParameters::New(
+          params->duration, params->start_delay, params->strong_magnitude,
+          /*weak_magnitude=*/0, /*left_trigger=*/0, /*right_trigger=*/0));
+      composite_right_->SetVibration(mojom::GamepadEffectParameters::New(
+          params->duration, params->start_delay, /*strong_magnitude=*/0,
+          params->weak_magnitude, /*left_trigger=*/0, /*right_trigger=*/0));
     }
   } else {
-    RequestVibration(kVibrationFrequencyStrongRumble,
-                     kVibrationAmplitudeStrongRumbleMax * strong_magnitude,
-                     kVibrationFrequencyWeakRumble,
-                     kVibrationAmplitudeWeakRumbleMax * weak_magnitude);
+    RequestVibration(
+        kVibrationFrequencyStrongRumble,
+        kVibrationAmplitudeStrongRumbleMax * params->strong_magnitude,
+        kVibrationFrequencyWeakRumble,
+        kVibrationAmplitudeWeakRumbleMax * params->weak_magnitude);
   }
 }
 

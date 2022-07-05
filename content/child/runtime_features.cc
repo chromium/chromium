@@ -396,6 +396,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
+          {"WGIGamepadTriggerRumble",
+           features::kEnableWindowsGamingInputDataFetcher},
           {"WindowOpenNewPopupBehavior",
            blink::features::kWindowOpenNewPopupBehavior},
           // TODO(crbug.com/1185950): Remove this flag when the feature is fully

@@ -152,8 +152,9 @@ class Dualshock4ControllerTest : public testing::Test {
       mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback) {
     gamepad->PlayEffect(
         mojom::GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble,
-        mojom::GamepadEffectParameters::New(kDurationMillis, start_delay,
-                                            strong_magnitude, weak_magnitude),
+        mojom::GamepadEffectParameters::New(
+            kDurationMillis, start_delay, strong_magnitude, weak_magnitude,
+            /*left_trigger=*/0, /*right_trigger=*/0),
         std::move(callback), base::ThreadTaskRunnerHandle::Get());
   }
 

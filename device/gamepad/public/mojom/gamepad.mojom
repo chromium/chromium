@@ -84,11 +84,13 @@ enum GamepadHand {
 
 enum GamepadHapticActuatorType {
   GamepadHapticActuatorTypeVibration = 0,
-  GamepadHapticActuatorTypeDualRumble = 1
+  GamepadHapticActuatorTypeDualRumble = 1,
+  GamepadHapticActuatorTypeTriggerRumble = 2
 };
 
 enum GamepadHapticEffectType {
-  GamepadHapticEffectTypeDualRumble = 0
+  GamepadHapticEffectTypeDualRumble = 0,
+  GamepadHapticEffectTypeTriggerRumble = 1
 };
 
 struct GamepadHapticActuator {
@@ -144,6 +146,8 @@ struct GamepadEffectParameters {
   double start_delay;
   double strong_magnitude;
   double weak_magnitude;
+  double left_trigger;
+  double right_trigger;
 };
 
 enum GamepadHapticsResult {

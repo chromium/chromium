@@ -94,7 +94,7 @@ class GamepadDeviceLinux final : public AbstractHapticGamepad {
   void CloseHidrawNode();
 
   // AbstractHapticGamepad public implementation.
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   void SetZeroVibration() override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 

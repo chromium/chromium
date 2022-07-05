@@ -332,14 +332,14 @@ double XboxControllerMac::GetMaxEffectDurationMillis() {
   return kXboxOneMaxEffectDurationMillis;
 }
 
-void XboxControllerMac::SetVibration(double strong_magnitude,
-                                     double weak_magnitude) {
+void XboxControllerMac::SetVibration(mojom::GamepadEffectParametersPtr params) {
   if (!SupportsVibration())
     return;
 
   // Clamp magnitudes to [0,1]
-  strong_magnitude = base::clamp<double>(strong_magnitude, 0.0, 1.0);
-  weak_magnitude = base::clamp<double>(weak_magnitude, 0.0, 1.0);
+  double strong_magnitude =
+      base::clamp<double>(params->strong_magnitude, 0.0, 1.0);
+  double weak_magnitude = base::clamp<double>(params->weak_magnitude, 0.0, 1.0);
 
   if (xinput_type_ == kXInputTypeXbox360) {
     WriteXbox360Rumble(static_cast<uint8_t>(strong_magnitude * 255.0),

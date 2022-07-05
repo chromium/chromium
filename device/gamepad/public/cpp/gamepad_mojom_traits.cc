@@ -70,6 +70,9 @@ EnumTraits<device::mojom::GamepadHapticActuatorType,
     case device::GamepadHapticActuatorType::kDualRumble:
       return device::mojom::GamepadHapticActuatorType::
           GamepadHapticActuatorTypeDualRumble;
+    case device::GamepadHapticActuatorType::kTriggerRumble:
+      return device::mojom::GamepadHapticActuatorType::
+          GamepadHapticActuatorTypeTriggerRumble;
   }
 
   NOTREACHED();
@@ -90,6 +93,10 @@ bool EnumTraits<device::mojom::GamepadHapticActuatorType,
     case device::mojom::GamepadHapticActuatorType::
         GamepadHapticActuatorTypeDualRumble:
       *output = device::GamepadHapticActuatorType::kDualRumble;
+      return true;
+    case device::mojom::GamepadHapticActuatorType::
+        GamepadHapticActuatorTypeTriggerRumble:
+      *output = device::GamepadHapticActuatorType::kTriggerRumble;
       return true;
   }
 

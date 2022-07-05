@@ -11,6 +11,14 @@
 namespace device {
 namespace {
 constexpr double kMaxDurationMillis = 5000.0;  // 5 seconds
+
+bool IsValidEffectType(mojom::GamepadHapticEffectType type) {
+  return type == mojom::GamepadHapticEffectType::
+                     GamepadHapticEffectTypeDualRumble ||
+         type == mojom::GamepadHapticEffectType::
+                     GamepadHapticEffectTypeTriggerRumble;
+}
+
 }  // namespace
 
 AbstractHapticGamepad::AbstractHapticGamepad() = default;
@@ -44,7 +52,7 @@ void AbstractHapticGamepad::Shutdown() {
 
 void AbstractHapticGamepad::SetZeroVibration() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SetVibration(0.0, 0.0);
+  SetVibration(mojom::GamepadEffectParameters::New());
 }
 
 double AbstractHapticGamepad::GetMaxEffectDurationMillis() {
@@ -58,9 +66,8 @@ void AbstractHapticGamepad::PlayEffect(
     scoped_refptr<base::SequencedTaskRunner> callback_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_shut_down_);
-  if (type !=
-      mojom::GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble) {
-    // Only dual-rumble effects are supported.
+  if (!IsValidEffectType(type)) {
+    // Only dual-rumble and trigger-rumble effects are supported.
     GamepadDataFetcher::RunVibrationCallback(
         std::move(callback), std::move(callback_runner),
         mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
@@ -85,8 +92,7 @@ void AbstractHapticGamepad::PlayEffect(
   playing_effect_callback_ = std::move(callback);
   callback_runner_ = std::move(callback_runner);
 
-  PlayDualRumbleEffect(sequence_id, params->duration, params->start_delay,
-                       params->strong_magnitude, params->weak_magnitude);
+  PlayVibrationEffect(sequence_id, std::move(params));
 }
 
 void AbstractHapticGamepad::ResetVibration(
@@ -113,27 +119,27 @@ void AbstractHapticGamepad::ResetVibration(
       mojom::GamepadHapticsResult::GamepadHapticsResultComplete);
 }
 
-void AbstractHapticGamepad::PlayDualRumbleEffect(int sequence_id,
-                                                 double duration,
-                                                 double start_delay,
-                                                 double strong_magnitude,
-                                                 double weak_magnitude) {
+void AbstractHapticGamepad::PlayVibrationEffect(
+    int sequence_id,
+    mojom::GamepadEffectParametersPtr params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  double duration = params->duration;
+  double start_delay = params->start_delay;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AbstractHapticGamepad::StartVibration, GetWeakPtr(),
-                     sequence_id, duration, strong_magnitude, weak_magnitude),
+                     sequence_id, duration, std::move(params)),
       base::Milliseconds(start_delay));
 }
 
-void AbstractHapticGamepad::StartVibration(int sequence_id,
-                                           double duration,
-                                           double strong_magnitude,
-                                           double weak_magnitude) {
+void AbstractHapticGamepad::StartVibration(
+    int sequence_id,
+    double duration,
+    mojom::GamepadEffectParametersPtr params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_shut_down_ || sequence_id != sequence_id_)
     return;
-  SetVibration(strong_magnitude, weak_magnitude);
+  SetVibration(params.Clone());
 
   const double max_duration = GetMaxEffectDurationMillis();
   if (duration > max_duration) {
@@ -143,8 +149,7 @@ void AbstractHapticGamepad::StartVibration(int sequence_id,
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AbstractHapticGamepad::StartVibration, GetWeakPtr(),
-                       sequence_id, remaining_duration, strong_magnitude,
-                       weak_magnitude),
+                       sequence_id, remaining_duration, params.Clone()),
         base::Milliseconds(max_duration));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

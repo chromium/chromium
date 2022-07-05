@@ -36,7 +36,11 @@ class GamepadButton {
   double value{0.0};
 };
 
-enum class GamepadHapticActuatorType { kVibration = 0, kDualRumble = 1 };
+enum class GamepadHapticActuatorType {
+  kVibration = 0,
+  kDualRumble = 1,
+  kTriggerRumble = 2
+};
 
 enum class GamepadHapticEffectType { kDualRumble = 0 };
 

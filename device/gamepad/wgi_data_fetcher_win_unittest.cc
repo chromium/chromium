@@ -35,8 +35,9 @@ namespace device {
 
 using ::ABI::Windows::Gaming::Input::GamepadReading;
 
-constexpr uint16_t kHardwareProductId = 1;
-constexpr uint16_t kHardwareVendorId = 100;
+constexpr uint16_t kHardwareVendorId = 0x045e;
+constexpr uint16_t kHardwareProductId = 0x028e;
+constexpr uint16_t kTriggerRumbleHardwareProductId = 0x0b13;
 
 constexpr char kGamepadDisplayName[] = "XBOX_SERIES_X";
 constexpr double kErrorTolerance = 1e-5;
@@ -145,13 +146,15 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
     } while (buffer->seqlock.ReadRetry(version));
   }
 
-  void CheckGamepadAdded(PadState* pad_state) {
+  void CheckGamepadAdded(PadState* pad_state,
+                         GamepadHapticActuatorType actuator_type) {
     // Check size of connected gamepad list and ensure gamepad state
     // is initialized correctly.
     EXPECT_TRUE(pad_state->is_initialized);
     Gamepad& pad = pad_state->data;
     EXPECT_TRUE(pad.connected);
     EXPECT_TRUE(pad.vibration_actuator.not_null);
+    EXPECT_EQ(pad.vibration_actuator.type, actuator_type);
   }
 
   void CheckGamepadRemoved() {
@@ -308,9 +311,9 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
     provider_->PlayVibrationEffectOnce(
         pad_index,
         mojom::GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble,
-        mojom::GamepadEffectParameters::New(kDurationMillis,
-                                            kZeroStartDelayMillis,
-                                            kStrongMagnitude, kWeakMagnitude),
+        mojom::GamepadEffectParameters::New(
+            kDurationMillis, kZeroStartDelayMillis, kStrongMagnitude,
+            kWeakMagnitude, /*left_trigger=*/0, /*right_trigger=*/0),
         base::BindOnce(&WgiDataFetcherWinTest::HapticsCallback,
                        base::Unretained(this))
             .Then(run_loop.QuitClosure()));
@@ -349,6 +352,7 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   EXPECT_TRUE(fetcher().GetGamepadsForTesting().empty());
 
   const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
+  const auto fake_trigger_rumble_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
   auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
 
   // Check that the event handlers were added.
@@ -361,21 +365,29 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   // Corresponding threading simulation is in FakeIGamepadStatics class.
   fake_gamepad_statics->SimulateGamepadAdded(
       fake_gamepad, kHardwareProductId, kHardwareVendorId, kGamepadDisplayName);
+  fake_gamepad_statics->SimulateGamepadAdded(
+      fake_trigger_rumble_gamepad, kTriggerRumbleHardwareProductId,
+      kHardwareVendorId, kGamepadDisplayName);
 
-  // Wait for the gampad polling thread to handle the gamepad added event.
+  // Wait for the gampad polling thread to handle the gamepad added events.
   FlushPollingThread();
 
-  // Assert that the gamepad has been added to the DataFetcher.
+  // Assert that the gamepads have been added to the DataFetcher.
   const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
       fetcher().GetGamepadsForTesting();
-  ASSERT_EQ(gamepads.size(), 1u);
-  CheckGamepadAdded(fetcher().GetPadState(gamepads.begin()->first));
+  ASSERT_EQ(gamepads.size(), 2u);
+  auto gamepad_iter = gamepads.begin();
+  CheckGamepadAdded(fetcher().GetPadState(gamepad_iter++->first),
+                    GamepadHapticActuatorType::kDualRumble);
+  CheckGamepadAdded(fetcher().GetPadState(gamepad_iter->first),
+                    GamepadHapticActuatorType::kTriggerRumble);
 
   // Simulate the gamepad removing behavior, and make the gamepad-removing
   // callback return on a different thread, demonstrated the multi-threaded
   // apartments setting of the GamepadStatics COM API. Corresponding threading
   // simulation is in FakeIGamepadStatics class.
   fake_gamepad_statics->SimulateGamepadRemoved(fake_gamepad);
+  fake_gamepad_statics->SimulateGamepadRemoved(fake_trigger_rumble_gamepad);
 
   // Wait for the gampad polling thread to handle the gamepad removed event.
   FlushPollingThread();
@@ -441,7 +453,7 @@ TEST_F(WgiDataFetcherWinTest, FailuretoGetDisplayNameOnGamepadAdded) {
   PadState* pad = fetcher().GetPadState(gamepads.begin()->first);
   std::u16string display_id(pad->data.id);
   EXPECT_EQ(kDefaultDisplayName, display_id);
-  CheckGamepadAdded(pad);
+  CheckGamepadAdded(pad, GamepadHapticActuatorType::kDualRumble);
 }
 
 TEST_F(WgiDataFetcherWinTest, VerifyGamepadInput) {
@@ -517,7 +529,7 @@ TEST_F(WgiDataFetcherWinTest, PlayDualRumbleEffect) {
   EXPECT_EQ(fake_gamepad_vibration.LeftTrigger, 0.0f);
   EXPECT_EQ(fake_gamepad_vibration.RightTrigger, 0.0f);
 
-  // Calling ResetVibration sets the vibration intensity to 0 for both motors.
+  // Calling ResetVibration sets the vibration intensity to 0 for all motors.
   SimulateResetVibration(/*pad_index=*/0);
   EXPECT_EQ(haptics_callback_count_, 2);
   EXPECT_EQ(haptics_callback_result_,

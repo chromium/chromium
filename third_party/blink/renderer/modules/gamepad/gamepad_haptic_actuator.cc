@@ -23,6 +23,7 @@ const char kGamepadHapticActuatorTypeVibration[] = "vibration";
 const char kGamepadHapticActuatorTypeDualRumble[] = "dual-rumble";
 
 const char kGamepadHapticEffectTypeDualRumble[] = "dual-rumble";
+const char kGamepadHapticEffectTypeTriggerRumble[] = "trigger-rumble";
 
 const char kGamepadHapticsResultComplete[] = "complete";
 const char kGamepadHapticsResultPreempted[] = "preempted";
@@ -32,6 +33,9 @@ const char kGamepadHapticsResultNotSupported[] = "not-supported";
 GamepadHapticEffectType EffectTypeFromString(const String& type) {
   if (type == kGamepadHapticEffectTypeDualRumble)
     return GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble;
+
+  if (type == kGamepadHapticEffectTypeTriggerRumble)
+    return GamepadHapticEffectType::GamepadHapticEffectTypeTriggerRumble;
 
   NOTREACHED();
   return GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble;
@@ -70,11 +74,20 @@ GamepadHapticActuator::GamepadHapticActuator(
 GamepadHapticActuator::~GamepadHapticActuator() = default;
 
 void GamepadHapticActuator::SetType(device::GamepadHapticActuatorType type) {
+  supported_effect_types_.clear();
   switch (type) {
     case device::GamepadHapticActuatorType::kVibration:
       type_ = kGamepadHapticActuatorTypeVibration;
       break;
+    // Currently devices that have trigger rumble support, also have dual-rumble
+    // support. Moreover, gamepads that support trigger-rumble should also be
+    // listed as having GamepadHapticActuatorType::kDualRumble, since we want
+    // to encourage the the use of 'canPlay' method instead.
+    case device::GamepadHapticActuatorType::kTriggerRumble:
+      supported_effect_types_.insert(kGamepadHapticEffectTypeTriggerRumble);
+      [[fallthrough]];
     case device::GamepadHapticActuatorType::kDualRumble:
+      supported_effect_types_.insert(kGamepadHapticEffectTypeDualRumble);
       type_ = kGamepadHapticActuatorTypeDualRumble;
       break;
     default:
@@ -90,7 +103,9 @@ ScriptPromise GamepadHapticActuator::playEffect(
 
   if (params->duration() < 0.0 || params->startDelay() < 0.0 ||
       params->strongMagnitude() < 0.0 || params->strongMagnitude() > 1.0 ||
-      params->weakMagnitude() < 0.0 || params->weakMagnitude() > 1.0) {
+      params->weakMagnitude() < 0.0 || params->weakMagnitude() > 1.0 ||
+      params->leftTrigger() < 0.0 || params->leftTrigger() > 1.0 ||
+      params->rightTrigger() < 0.0 || params->rightTrigger() > 1.0) {
     ScriptPromise promise = resolver->Promise();
     resolver->Resolve(kGamepadHapticsResultInvalidParameter);
     return promise;
@@ -115,7 +130,8 @@ ScriptPromise GamepadHapticActuator::playEffect(
       pad_index_, EffectTypeFromString(type),
       device::mojom::blink::GamepadEffectParameters::New(
           params->duration(), params->startDelay(), params->strongMagnitude(),
-          params->weakMagnitude()),
+          params->weakMagnitude(), params->leftTrigger(),
+          params->rightTrigger()),
       std::move(callback));
 
   return resolver->Promise();
@@ -176,6 +192,10 @@ void GamepadHapticActuator::OnResetCompleted(
     return;
   }
   resolver->Resolve(ResultToString(result));
+}
+
+bool GamepadHapticActuator::canPlay(const String& type) {
+  return supported_effect_types_.Contains(type);
 }
 
 void GamepadHapticActuator::Trace(Visitor* visitor) const {

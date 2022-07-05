@@ -647,28 +647,28 @@ void GamepadDeviceLinux::CloseHidrawNode() {
   hidraw_fd_.reset();
 }
 
-void GamepadDeviceLinux::SetVibration(double strong_magnitude,
-                                      double weak_magnitude) {
+void GamepadDeviceLinux::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   DCHECK(polling_runner_->RunsTasksInCurrentSequence());
   if (dualshock4_) {
-    dualshock4_->SetVibration(strong_magnitude, weak_magnitude);
+    dualshock4_->SetVibration(std::move(params));
     return;
   }
 
   if (xbox_hid_) {
-    xbox_hid_->SetVibration(strong_magnitude, weak_magnitude);
+    xbox_hid_->SetVibration(std::move(params));
     return;
   }
 
   if (hid_haptics_) {
-    hid_haptics_->SetVibration(strong_magnitude, weak_magnitude);
+    hid_haptics_->SetVibration(std::move(params));
     return;
   }
 
   uint16_t strong_magnitude_scaled =
-      static_cast<uint16_t>(strong_magnitude * kRumbleMagnitudeMax);
+      static_cast<uint16_t>(params->strong_magnitude * kRumbleMagnitudeMax);
   uint16_t weak_magnitude_scaled =
-      static_cast<uint16_t>(weak_magnitude * kRumbleMagnitudeMax);
+      static_cast<uint16_t>(params->weak_magnitude * kRumbleMagnitudeMax);
 
   // AbstractHapticGamepad will call SetZeroVibration when the effect is
   // complete, so we don't need to set the duration here except to make sure it
