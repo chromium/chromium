@@ -282,6 +282,14 @@ void LockScreenStartReauthDialog::UpdateState(
 
   const NetworkStateInformer::State state = network_state_informer_->state();
 
+  // If frame didn't load but we believe that we are online then we want to show
+  // the network screen (mimicking behaviour of `ErrorScreen` on signin screen).
+  if (reason == NetworkError::ERROR_REASON_FRAME_ERROR &&
+      state == NetworkStateInformer::ONLINE) {
+    ShowLockScreenNetworkDialog();
+    return;
+  }
+
   if (state == NetworkStateInformer::OFFLINE) {
     ShowLockScreenNetworkDialog();
   } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {

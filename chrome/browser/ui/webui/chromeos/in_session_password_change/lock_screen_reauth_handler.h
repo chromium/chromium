@@ -34,6 +34,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void HandleAuthenticatorLoaded(const base::Value::List&);
   void HandleUpdateUserPassword(const base::Value::List&);
   void HandleOnPasswordTyped(const base::Value::List& value);
+  void HandleWebviewLoadAborted(int error_code);
 
   bool IsAuthenticatorLoaded(base::OnceClosure callback);
 

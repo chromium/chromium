@@ -31,6 +31,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -363,6 +364,30 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, LoadAbort) {
+  Login();
+
+  // Make gaia landing page unreachable
+  fake_gaia_mixin()->fake_gaia()->SetErrorResponse(
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2),
+      net::HTTP_NOT_FOUND);
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  // Unreachable gaia page should have resulted in load abort error which should
+  // trigger the network dialog
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
+
+  // Close dialog at the end of the test - otherwise test will crash on exit
+  reauth_dialog_helper->ClickCloseNetworkButton();
 }
 
 // Sets up proxy server which requires authentication.

@@ -119,6 +119,8 @@ Polymer({
         'authDomainChange', () => void this.onAuthDomainChange_());
     this.authenticator_.addEventListener(
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
+    this.authenticator_.addEventListener(
+        'loadAbort', (e) => void this.onLoadAbortMessage_(e));
     chrome.send('initialize');
   },
 
@@ -230,6 +232,29 @@ Polymer({
       credentials.scrapedSAMLPasswords, credentials.usingSAML,
       credentials.services, credentials.passwordAttributes
     ]);
+  },
+
+  /**
+   * Invoked when onLoadAbort message received.
+   * @param {!CustomEvent<!Object>} e Event with the payload containing
+   *     additional information about error event like:
+   *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
+   *     {string} src The URL that failed to load.
+   * @private
+   */
+  onLoadAbortMessage_(e) {
+    this.onWebviewError_(e.detail);
+  },
+
+  /**
+   * Handler for webview error handling.
+   * @param {!Object} data Additional information about error event like:
+   *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
+   *     {string} src The URL that failed to load.
+   * @private
+   */
+  onWebviewError_(data) {
+    chrome.send('webviewLoadAborted', [data.error_code]);
   },
 
   /**

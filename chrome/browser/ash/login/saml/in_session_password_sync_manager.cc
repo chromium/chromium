@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -303,6 +304,13 @@ void InSessionPasswordSyncManager::OnReauthDialogReadyForTesting() {
   is_dialog_loaded_for_testing_ = true;
   if (on_dialog_loaded_callback_for_testing_) {
     std::move(on_dialog_loaded_callback_for_testing_).Run();
+  }
+}
+
+void InSessionPasswordSyncManager::OnWebviewLoadAborted() {
+  if (lock_screen_start_reauth_dialog_) {
+    lock_screen_start_reauth_dialog_->UpdateState(
+        NetworkError::ERROR_REASON_FRAME_ERROR);
   }
 }
 

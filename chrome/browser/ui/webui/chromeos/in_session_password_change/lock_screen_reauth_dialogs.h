@@ -53,6 +53,9 @@ class LockScreenStartReauthDialog
   bool IsCaptivePortalDialogLoadedForTesting(base::OnceClosure callback);
   void OnNetworkDialogReadyForTesting();
 
+  // NetworkStateInformer::NetworkStateInformerObserver:
+  void UpdateState(NetworkError::ErrorReason reason) override;
+
   LockScreenNetworkDialog* get_network_dialog_for_testing() {
     return lock_screen_network_dialog_.get();
   }
@@ -74,9 +77,6 @@ class LockScreenStartReauthDialog
   // BaseLockDialog:
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
-
-  // NetworkStateInformer::NetworkStateInformerObserver:
-  void UpdateState(NetworkError::ErrorReason reason) override;
 
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()

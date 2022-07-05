@@ -30,6 +30,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/net_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -383,6 +384,24 @@ void LockScreenReauthHandler::SamlConfirmPassword(
                          weak_factory_.GetWeakPtr()));
 }
 
+void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
+  if (error_code == net::ERR_INVALID_AUTH_CREDENTIALS) {
+    // Silently ignore this error - it is used as an intermediate state for
+    // committed interstitials (see https://crbug.com/1049349 for details).
+    return;
+  }
+
+  if (error_code == net::ERR_ABORTED) {
+    LOG(WARNING) << "Ignoring Gaia webview error: "
+                 << net::ErrorToShortString(error_code);
+    return;
+  }
+
+  LOG(ERROR) << "Gaia webview error: " << net::ErrorToShortString(error_code);
+  auto* password_sync_manager = GetInSessionPasswordSyncManager();
+  password_sync_manager->OnWebviewLoadAborted();
+}
+
 void LockScreenReauthHandler::ReloadGaia() {
   CallJavascriptFunction(std::string(kMainElement) + "reloadAuthenticator");
 }
@@ -409,6 +428,10 @@ void LockScreenReauthHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "onPasswordTyped",
       base::BindRepeating(&LockScreenReauthHandler::HandleOnPasswordTyped,
+                          weak_factory_.GetWeakPtr()));
+  web_ui()->RegisterHandlerCallback(
+      "webviewLoadAborted",
+      base::BindRepeating(&LockScreenReauthHandler::HandleWebviewLoadAborted,
                           weak_factory_.GetWeakPtr()));
 }
 

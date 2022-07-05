@@ -123,6 +123,9 @@ class InSessionPasswordSyncManager
   // Notify test that the reauth dialog is ready for testing.
   void OnReauthDialogReadyForTesting();
 
+  // Forces network state update because webview reported frame loading error.
+  void OnWebviewLoadAborted();
+
   LockScreenStartReauthDialog* get_reauth_dialog_for_testing() {
     return lock_screen_start_reauth_dialog_.get();
   }
