@@ -51,15 +51,15 @@ class RenderFrameHostImpl;
 //      | POST /idp_url with OIDC request |
 //      |-------------------------------->|
 //      |                                 |
-//      |      id_token or signin_url     |
+//      |       token or signin_url       |
 //      |<--------------------------------|
 //  .-------.                           .---.
 //  |Browser|                           |IDP|
 //  '-------'                           '---'
 //
-// If the IDP returns an id_token, the sequence finishes. If it returns a
-// signin_url, that URL is loaded as a rendered Document into a new window
-// for the user to interact with the IDP.
+// If the IDP returns an token, the sequence finishes. If it returns a
+// signin_url, that URL is loaded as a rendered Document into a new window for
+// the user to interact with the IDP.
 class CONTENT_EXPORT IdpNetworkRequestManager {
  public:
   enum class FetchStatus {

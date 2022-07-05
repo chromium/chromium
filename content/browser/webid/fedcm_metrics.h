@@ -71,18 +71,17 @@ void RecordCancelOnDialogTime(base::TimeDelta duration,
                               const GURL& provider);
 
 // Records the time from when the user presses the Continue button to when the
-// idtoken response is received. Also records the overall time from when the API
-// is called to when the idtoken response is received.
-void RecordIdTokenResponseAndTurnaroundTime(
-    base::TimeDelta id_token_response_time,
-    base::TimeDelta turnaround_time,
-    ukm::SourceId source_id,
-    const GURL& provider);
+// token response is received. Also records the overall time from when the API
+// is called to when the token response is received.
+void RecordTokenResponseAndTurnaroundTime(base::TimeDelta token_response_time,
+                                          base::TimeDelta turnaround_time,
+                                          ukm::SourceId source_id,
+                                          const GURL& provider);
 
-// Records the status of the |RequestIdToken| call.
-void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
-                                ukm::SourceId source_id,
-                                const GURL& provider);
+// Records the status of the |RequestToken| call.
+void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
+                              ukm::SourceId source_id,
+                              const GURL& provider);
 
 // Records whether the user selected account is for sign-in or not.
 void RecordIsSignInUser(bool is_sign_in);

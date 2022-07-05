@@ -133,7 +133,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       const char* account,
       const char* request,
       net::HttpStatusCode http_status = net::HTTP_OK) {
-    const char response[] = R"({"id_token": "token"})";
+    const char response[] = R"({"token": "token"})";
     GURL token_endpoint(kTestTokenEndpoint);
     test_url_loader_factory().AddResponse(token_endpoint.spec(), response,
                                           http_status);

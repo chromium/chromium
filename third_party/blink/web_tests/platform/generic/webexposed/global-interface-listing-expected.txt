@@ -2627,10 +2627,10 @@ interface FederatedCredential : Credential
     static method logoutRps
     attribute @@toStringTag
     getter iconURL
-    getter idToken
     getter name
     getter protocol
     getter provider
+    getter token
     method constructor
     method login
 interface File : Blob

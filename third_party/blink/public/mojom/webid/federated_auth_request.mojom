@@ -15,7 +15,7 @@ import "url/mojom/url.mojom";
 // the error message of such exception should say. This enum is a subset of
 // FederatedAuthRequestResult in
 // third_party/blink/public/mojom/devtools/inspector_issue.mojom.
-enum RequestIdTokenStatus {
+enum RequestTokenStatus {
   kSuccess,
   kApprovalDeclined,
   kErrorTooManyRequests,
@@ -45,15 +45,15 @@ struct LogoutRpsRequest {
 // This interface is called from a renderer process and implemented in the
 // browser process.
 interface FederatedAuthRequest {
-  // Requests an IdToken to be generated, given an IDP URL.
+  // Requests a token to be generated, given an IDP URL.
   // |client_id| and |nonce| can be empty strings to omit the fields in the
   // request sent to the provider.
-  // Returns the raw content of the IdToken.
-  RequestIdToken(url.mojom.Url provider,
+  // Returns the raw content of the token.
+  RequestToken(url.mojom.Url provider,
                  string client_id,
                  string nonce,
                  bool prefer_auto_sign_in) =>
-      (RequestIdTokenStatus status, string? id_token);
+      (RequestTokenStatus status, string? token);
 
   // Cancels the pending token request, if any.
   CancelTokenRequest();

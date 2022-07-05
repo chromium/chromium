@@ -78,15 +78,14 @@ void RecordCancelOnDialogTime(base::TimeDelta duration,
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.CancelOnDialog", duration);
 }
 
-void RecordIdTokenResponseAndTurnaroundTime(
-    base::TimeDelta id_token_response_time,
-    base::TimeDelta turnaround_time,
-    ukm::SourceId source_id,
-    const GURL& provider) {
+void RecordTokenResponseAndTurnaroundTime(base::TimeDelta token_response_time,
+                                          base::TimeDelta turnaround_time,
+                                          ukm::SourceId source_id,
+                                          const GURL& provider) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder
         .SetTiming_IdTokenResponse(ukm::GetExponentialBucketMinForUserTiming(
-            id_token_response_time.InMilliseconds()))
+            token_response_time.InMilliseconds()))
         .SetTiming_TurnaroundTime(ukm::GetExponentialBucketMinForUserTiming(
             turnaround_time.InMilliseconds()));
     ukm_builder.Record(ukm::UkmRecorder::Get());
@@ -99,14 +98,14 @@ void RecordIdTokenResponseAndTurnaroundTime(
   RecordUkm(fedcm_idp_builder);
 
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.IdTokenResponse",
-                             id_token_response_time);
+                             token_response_time);
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.TurnaroundTime",
                              turnaround_time);
 }
 
-void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
-                                ukm::SourceId source_id,
-                                const GURL& provider) {
+void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
+                              ukm::SourceId source_id,
+                              const GURL& provider) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_RequestIdToken(static_cast<int>(status));
     ukm_builder.Record(ukm::UkmRecorder::Get());

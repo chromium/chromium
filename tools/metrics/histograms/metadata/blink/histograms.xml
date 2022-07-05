@@ -866,7 +866,7 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
   <summary>
-    Records the status of a request id token call to the FedCM API.
+    Records the status of a request token call to the FedCM API.
   </summary>
 </histogram>
 
@@ -908,8 +908,8 @@ chromium-metrics-reviews@google.com.
   <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when the user presses the Continue button to when the
-    idtoken response is received. Only records a sample when the idtoken
-    response is received.
+    token response is received. Only records a sample when the token response is
+    received.
   </summary>
 </histogram>
 
@@ -928,8 +928,8 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
   <summary>
-    Records the overall time from when the API is called to when the idtoken
-    response is received. Only records a sample when the idtoken response is
+    Records the overall time from when the API is called to when the token
+    response is received. Only records a sample when the token response is
     received.
   </summary>
 </histogram>

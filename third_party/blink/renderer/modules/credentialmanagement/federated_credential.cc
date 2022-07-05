@@ -22,7 +22,7 @@ namespace blink {
 
 namespace {
 using mojom::blink::LogoutRpsStatus;
-using mojom::blink::RequestIdTokenStatus;
+using mojom::blink::RequestTokenStatus;
 
 constexpr char kFederatedCredentialType[] = "federated";
 
@@ -96,9 +96,9 @@ FederatedCredential* FederatedCredential::Create(
     const KURL& provider_url,
     const String& client_id,
     const CredentialRequestOptions* options,
-    const String& id_token) {
+    const String& token) {
   return MakeGarbageCollected<FederatedCredential>(provider_url, client_id,
-                                                   options, id_token);
+                                                   options, token);
 }
 
 bool FederatedCredential::IsRejectingPromiseDueToCSP(
@@ -154,13 +154,13 @@ FederatedCredential::FederatedCredential(
     const KURL& provider_url,
     const String& client_id,
     const CredentialRequestOptions* options,
-    const String& id_token)
+    const String& token)
     : Credential(/* id = */ "", kFederatedCredentialType),
       provider_origin_(SecurityOrigin::Create(provider_url)),
       provider_url_(provider_url),
       client_id_(client_id),
       options_(options),
-      id_token_(id_token) {}
+      token_(token) {}
 
 void FederatedCredential::Trace(Visitor* visitor) const {
   Credential::Trace(visitor);

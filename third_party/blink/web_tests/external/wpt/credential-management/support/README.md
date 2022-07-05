@@ -45,7 +45,7 @@ Example usage:
   import {fedcm_test} from './support/fedcm-helper.js';
 
   fedcm_test(async (t, mock) => {
-    mock.returnIdToken("a_token");
+    mock.returnToken("a_token");
     assert_equals("a_token", await navigator.credentials.get(options));
   }, "Successfully obtaining a token using mock.");
 </script>

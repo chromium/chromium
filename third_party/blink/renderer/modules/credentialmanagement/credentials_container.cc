@@ -100,7 +100,7 @@ using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
 using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
-using mojom::blink::RequestIdTokenStatus;
+using mojom::blink::RequestTokenStatus;
 using payments::mojom::blink::PaymentCredentialStorageStatus;
 
 constexpr char kCryptotokenOrigin[] =
@@ -564,33 +564,33 @@ void AbortFederatedCredentialRequest(ScriptState* script_state) {
   auth_request->CancelTokenRequest();
 }
 
-void OnRequestIdToken(ScriptPromiseResolver* resolver,
-                      const KURL& provider_url,
-                      const String& client_id,
-                      const CredentialRequestOptions* options,
-                      RequestIdTokenStatus status,
-                      const WTF::String& id_token) {
+void OnRequestToken(ScriptPromiseResolver* resolver,
+                    const KURL& provider_url,
+                    const String& client_id,
+                    const CredentialRequestOptions* options,
+                    RequestTokenStatus status,
+                    const WTF::String& token) {
   switch (status) {
-    case RequestIdTokenStatus::kErrorTooManyRequests: {
+    case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError,
           "Only one navigator.credentials.get request may be outstanding at "
           "one time."));
       return;
     }
-    case RequestIdTokenStatus::kErrorCanceled: {
+    case RequestTokenStatus::kErrorCanceled: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError, "The request has been aborted."));
       return;
     }
-    case RequestIdTokenStatus::kError: {
+    case RequestTokenStatus::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
+          DOMExceptionCode::kNetworkError, "Error retrieving a token."));
       return;
     }
-    case RequestIdTokenStatus::kSuccess: {
-      FederatedCredential* credential = FederatedCredential::Create(
-          provider_url, client_id, options, id_token);
+    case RequestTokenStatus::kSuccess: {
+      FederatedCredential* credential =
+          FederatedCredential::Create(provider_url, client_id, options, token);
       resolver->Resolve(credential);
       return;
     }
@@ -1248,9 +1248,9 @@ ScriptPromise CredentialsContainer::get(
         auto* auth_request =
             CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
 
-        auth_request->RequestIdToken(
+        auth_request->RequestToken(
             provider_url, client_id, nonce, prefer_auto_sign_in,
-            WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver), provider_url,
+            WTF::Bind(&OnRequestToken, WrapPersistent(resolver), provider_url,
                       client_id, WrapPersistent(options)));
 
         return promise;

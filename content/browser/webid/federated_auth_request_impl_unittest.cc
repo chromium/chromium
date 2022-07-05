@@ -44,14 +44,14 @@ using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::LogoutRpsRequest;
 using blink::mojom::LogoutRpsRequestPtr;
 using blink::mojom::LogoutRpsStatus;
-using blink::mojom::RequestIdTokenStatus;
+using blink::mojom::RequestTokenStatus;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using IdTokenStatus = content::FedCmRequestIdTokenStatus;
+using TokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
@@ -94,7 +94,7 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
 
 static const std::set<std::string> kManifestList{kProviderUrl};
 
-// Parameters for a call to RequestIdToken.
+// Parameters for a call to RequestToken.
 struct RequestParameters {
   const char* provider;
   const char* client_id;
@@ -112,15 +112,15 @@ enum FetchedEndpoint {
 };
 
 // All endpoints which are fetched in a successful
-// FederatedAuthRequestImpl::RequestIdToken() request.
-int FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN =
+// FederatedAuthRequestImpl::RequestToken() request.
+int FETCH_ENDPOINT_ALL_REQUEST_TOKEN =
     FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
     FetchedEndpoint::ACCOUNTS | FetchedEndpoint::TOKEN |
     FetchedEndpoint::MANIFEST_LIST;
 
-// Expected return values from a call to RequestIdToken.
+// Expected return values from a call to RequestToken.
 struct RequestExpectations {
-  absl::optional<RequestIdTokenStatus> return_status;
+  absl::optional<RequestTokenStatus> return_status;
   absl::optional<FederatedAuthRequestResult> devtools_issue_status;
   // Any combination of FetchedEndpoint flags.
   int fetched_endpoints;
@@ -185,8 +185,8 @@ static const MockConfiguration kConfigurationValid{
     "" /* post_request_body */};
 
 static const RequestExpectations kExpectationSuccess{
-    RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
-    FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN};
+    RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
+    FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
 
 // Helper class for receiving the mojo method callback.
 class AuthRequestCallbackHelper {
@@ -198,11 +198,11 @@ class AuthRequestCallbackHelper {
   AuthRequestCallbackHelper& operator=(const AuthRequestCallbackHelper&) =
       delete;
 
-  absl::optional<RequestIdTokenStatus> status() const { return status_; }
+  absl::optional<RequestTokenStatus> status() const { return status_; }
   absl::optional<std::string> token() const { return token_; }
 
   // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(RequestIdTokenStatus,
+  base::OnceCallback<void(RequestTokenStatus,
                           const absl::optional<std::string>&)>
   callback() {
     return base::BindOnce(&AuthRequestCallbackHelper::ReceiverMethod,
@@ -220,7 +220,7 @@ class AuthRequestCallbackHelper {
   }
 
  private:
-  void ReceiverMethod(RequestIdTokenStatus status,
+  void ReceiverMethod(RequestTokenStatus status,
                       const absl::optional<std::string>& token) {
     CHECK(!was_called_);
     status_ = status;
@@ -231,7 +231,7 @@ class AuthRequestCallbackHelper {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  absl::optional<RequestIdTokenStatus> status_;
+  absl::optional<RequestTokenStatus> status_;
   absl::optional<std::string> token_;
 };
 
@@ -535,7 +535,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         std::make_unique<TestIdpNetworkRequestManager>();
     SetNetworkRequestManager(std::move(network_request_manager));
 
-    federated_auth_request_impl_->SetIdTokenRequestDelayForTests(
+    federated_auth_request_impl_->SetTokenRequestDelayForTests(
         base::TimeDelta());
   }
 
@@ -559,7 +559,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         request_parameters.nonce, request_parameters.prefer_auto_sign_in,
         configuration.wait_for_callback);
     ASSERT_EQ(auth_response.first, expectation.return_status);
-    if (auth_response.first == RequestIdTokenStatus::kSuccess) {
+    if (auth_response.first == RequestTokenStatus::kSuccess) {
       EXPECT_EQ(configuration.token, auth_response.second);
     } else {
       EXPECT_TRUE(auth_response.second == absl::nullopt ||
@@ -572,7 +572,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     if (expectation.devtools_issue_status) {
       int issue_count = main_test_rfh()->GetFederatedAuthRequestIssueCount(
           *expectation.devtools_issue_status);
-      if (auth_response.first == RequestIdTokenStatus::kSuccess) {
+      if (auth_response.first == RequestTokenStatus::kSuccess) {
         EXPECT_EQ(0, issue_count);
       } else {
         EXPECT_LT(0, issue_count);
@@ -609,8 +609,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
              "error response code."},
             {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
              "Provider's FedCM manifest configuration is invalid."},
-            {FederatedAuthRequestResult::kError,
-             "Error retrieving an id token."},
+            {FederatedAuthRequestResult::kError, "Error retrieving a token."},
             {FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
              "The provider's accounts list fetch resulted in an error response "
              "code."},
@@ -633,7 +632,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
              "Provider's client metadata is missing or has an invalid privacy "
              "policy url."},
             {FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-             "Provider's id token is invalid."},
+             "Provider's token is invalid."},
         };
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
@@ -647,15 +646,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
   }
 
-  std::pair<absl::optional<RequestIdTokenStatus>, absl::optional<std::string>>
+  std::pair<absl::optional<RequestTokenStatus>, absl::optional<std::string>>
   PerformAuthRequest(const GURL& provider,
                      const std::string& client_id,
                      const std::string& nonce,
                      bool prefer_auto_sign_in,
                      bool wait_for_callback) {
-    request_remote_->RequestIdToken(provider, client_id, nonce,
-                                    prefer_auto_sign_in,
-                                    auth_helper_.callback());
+    request_remote_->RequestToken(provider, client_id, nonce,
+                                  prefer_auto_sign_in, auth_helper_.callback());
     // Ensure that the request makes its way to FederatedAuthRequestImpl.
     request_remote_.FlushForTesting();
     if (wait_for_callback) {
@@ -726,23 +724,23 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
-  void ExpectRequestIdTokenStatusUKM(IdTokenStatus status) {
-    ExpectRequestIdTokenStatusUKMInternal(status, FedCmEntry::kEntryName);
-    ExpectRequestIdTokenStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
+  void ExpectRequestTokenStatusUKM(TokenStatus status) {
+    ExpectRequestTokenStatusUKMInternal(status, FedCmEntry::kEntryName);
+    ExpectRequestTokenStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
   }
 
-  void ExpectRequestIdTokenStatusUKMInternal(IdTokenStatus status,
-                                             const char* entry_name) {
+  void ExpectRequestTokenStatusUKMInternal(TokenStatus status,
+                                           const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     if (entries.empty())
-      FAIL() << "No RequestIdTokenStatus was recorded";
+      FAIL() << "No RequestTokenStatus was recorded";
 
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
     for (const auto* const entry : entries) {
       const int64_t* metric =
-          ukm_recorder()->GetEntryMetric(entry, "Status_RequestIdToken");
+          ukm_recorder()->GetEntryMetric(entry, "Status_RequestToken");
       if (metric && *metric != static_cast<int>(status))
         FAIL() << "Unexpected status was recorded";
     }
@@ -855,7 +853,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListNotInList) {
   list.InitAndEnableFeature(features::kFedCmManifestValidation);
 
   RequestExpectations request_not_in_list = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
       FetchedEndpoint::MANIFEST_LIST};
 
@@ -912,7 +910,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.token_endpoint = "";
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -933,7 +931,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.accounts_endpoint = "";
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -954,8 +952,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.client_metadata_endpoint = "";
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
-      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::CLIENT_METADATA};
+      RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::CLIENT_METADATA};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -965,7 +963,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.accounts_endpoint = kCrossOriginAccountsEndpoint;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -976,7 +974,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_response = FetchStatus::kNoResponseError;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
@@ -988,7 +986,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountsCannotBeParsed) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_response = FetchStatus::kInvalidResponseError;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
@@ -1029,7 +1027,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
   configuration.manifest.accounts_endpoint = "https://cross-origin-1.com";
   configuration.manifest.token_endpoint = "";
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1155,9 +1153,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.token_response = FetchStatus::kInvalidResponseError;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN};
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -1307,7 +1305,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kSuccess, 1);
+                                       TokenStatus::kSuccess, 1);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 1, 1);
 
@@ -1317,7 +1315,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectTimingUKM("Timing.TurnaroundTime");
   ExpectNoTimingUKM("Timing.CancelOnDialog");
 
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kSuccess);
+  ExpectRequestTokenStatusUKM(TokenStatus::kSuccess);
 }
 
 // Test that request fails if user does not select an account.
@@ -1348,8 +1346,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError, FederatedAuthRequestResult::kError,
-      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   ukm_loop.Run();
@@ -1365,7 +1363,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kNotSelectAccount, 1);
+                                       TokenStatus::kNotSelectAccount, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.CancelOnDialog");
@@ -1373,7 +1371,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   ExpectNoTimingUKM("Timing.IdTokenResponse");
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kNotSelectAccount);
+  ExpectRequestTokenStatusUKM(TokenStatus::kNotSelectAccount);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
@@ -1412,8 +1410,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError, FederatedAuthRequestResult::kError,
-      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 0, 1);
@@ -1425,15 +1423,15 @@ TEST_F(BasicFederatedAuthRequestImplTest,
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED);
 
-  RequestExpectations expectations = {RequestIdTokenStatus::kError,
+  RequestExpectations expectations = {RequestTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,
                                       /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kThirdPartyCookiesBlocked,
+                                       TokenStatus::kThirdPartyCookiesBlocked,
                                        1);
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kThirdPartyCookiesBlocked);
+  ExpectRequestTokenStatusUKM(TokenStatus::kThirdPartyCookiesBlocked);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
@@ -1441,14 +1439,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_VARIATIONS);
 
-  RequestExpectations expectations = {RequestIdTokenStatus::kError,
+  RequestExpectations expectations = {RequestTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,
                                       /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kDisabledInFlags, 1);
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInFlags);
+                                       TokenStatus::kDisabledInFlags, 1);
+  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest,
@@ -1470,16 +1468,16 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   // If double counted, the the samples would not be unique so the following
   // checks will fail.
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kDisabledInFlags, 1);
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInFlags);
+                                       TokenStatus::kDisabledInFlags, 1);
+  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
 }
 
 // Test that embargo is requested if the
 // IdentityRequestDialogController::ShowAccountsDialog() callback requests it.
 TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError, FederatedAuthRequestResult::kError,
-      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
@@ -1519,7 +1517,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForOrigin) {
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_SETTINGS);
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorDisabledInSettings,
       /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
@@ -1543,9 +1541,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
 TEST_F(BasicFederatedAuthRequestImplTest, TokenRequestTimesOut) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.delay_token_response = true;
-  RequestExpectations expectations = {RequestIdTokenStatus::kError,
+  RequestExpectations expectations = {RequestTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,
-                                      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN};
+                                      FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
   // RunAuthTest() fast forwards time by a sufficient amount to cause the
   // request to timeout. `MockConfiguration::delay_token_response` disables
   // the auto-run logic for the token request response and enables emulating
@@ -1556,9 +1554,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, TokenRequestTimesOut) {
   test_network_request_manager_->RunDelayedCallbacks();
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kUserInterfaceTimedOut,
-                                       1);
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kUserInterfaceTimedOut);
+                                       TokenStatus::kUserInterfaceTimedOut, 1);
+  ExpectRequestTokenStatusUKM(TokenStatus::kUserInterfaceTimedOut);
 }
 
 class FederatedAuthRequestImplTestCancelConsistency
@@ -1590,14 +1587,14 @@ TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
       /*fetched_endpoints=*/
       fedcm_disabled
           ? 0
-          : FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+          : FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectation, configuration);
   EXPECT_FALSE(auth_helper_.was_callback_called());
 
   request_remote_->CancelTokenRequest();
   request_remote_.FlushForTesting();
   EXPECT_TRUE(auth_helper_.was_callback_called());
-  EXPECT_EQ(RequestIdTokenStatus::kErrorCanceled, auth_helper_.status());
+  EXPECT_EQ(RequestTokenStatus::kErrorCanceled, auth_helper_.status());
 }
 
 // Test that the request fails if user proceeds with the sign in workflow after
@@ -1631,9 +1628,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
   RequestExpectations expectations = {
-      RequestIdTokenStatus::kError,
+      RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorDisabledInSettings,
-      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
 
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
@@ -1646,14 +1643,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kDisabledInSettings, 1);
+                                       TokenStatus::kDisabledInSettings, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectNoTimingUKM("Timing.ContinueOnDialog");
   ExpectNoTimingUKM("Timing.IdTokenResponse");
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInSettings);
+  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInSettings);
 }
 
 // Test that disclosure text is shown for first time user.

@@ -50,16 +50,16 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   ~FederatedAuthRequestImpl() override;
 
   // blink::mojom::FederatedAuthRequest:
-  void RequestIdToken(const GURL& provider,
-                      const std::string& client_id,
-                      const std::string& nonce,
-                      bool prefer_auto_sign_in,
-                      RequestIdTokenCallback) override;
+  void RequestToken(const GURL& provider,
+                    const std::string& client_id,
+                    const std::string& nonce,
+                    bool prefer_auto_sign_in,
+                    RequestTokenCallback) override;
   void CancelTokenRequest() override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  LogoutRpsCallback) override;
 
-  void SetIdTokenRequestDelayForTests(base::TimeDelta delay);
+  void SetTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
@@ -106,14 +106,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnAccountSelected(const std::string& account_id,
                          bool is_sign_in,
                          bool should_embargo);
-  void CompleteIdTokenRequest(IdpNetworkRequestManager::FetchStatus status,
-                              const std::string& id_token);
+  void CompleteTokenRequest(IdpNetworkRequestManager::FetchStatus status,
+                            const std::string& token);
   void OnTokenResponseReceived(IdpNetworkRequestManager::FetchStatus status,
-                               const std::string& id_token);
+                               const std::string& token);
   void DispatchOneLogout();
   void OnLogoutCompleted();
   void CompleteRequest(blink::mojom::FederatedAuthRequestResult,
-                       const std::string& id_token,
+                       const std::string& token,
                        bool should_call_callback);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
 
@@ -196,11 +196,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeTicks start_time_;
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;
-  base::TimeTicks id_token_response_time_;
+  base::TimeTicks token_response_time_;
   base::DelayTimer delay_timer_;
-  base::TimeDelta id_token_request_delay_;
+  base::TimeDelta token_request_delay_;
   bool errors_logged_to_console_{false};
-  RequestIdTokenCallback auth_request_callback_;
+  RequestTokenCallback auth_request_callback_;
 
   base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
   LogoutRpsCallback logout_callback_;

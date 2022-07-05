@@ -46,6 +46,7 @@ constexpr char kManifestListPath[] = "/.well-known/fedcm.json";
 constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
+// TODO(crbug.com/1339373): Rename id_token_endpoint to another name.
 constexpr char kTokenEndpointKey[] = "id_token_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
@@ -76,7 +77,7 @@ constexpr char kAccountApprovedClientsKey[] = "approved_clients";
 constexpr char kIdpBrandingIconUrl[] = "url";
 constexpr char kIdpBrandingIconSize[] = "size";
 
-constexpr char kIdTokenKey[] = "id_token";
+constexpr char kTokenKey[] = "token";
 
 // Token request body keys
 constexpr char kTokenAccountKey[] = "account_id";
@@ -809,15 +810,15 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
   }
 
   auto& response = *result.value;
-  const base::Value* id_token = response.FindKey(kIdTokenKey);
-  bool token_present = id_token && id_token->is_string();
+  const base::Value* token = response.FindKey(kTokenKey);
+  bool token_present = token && token->is_string();
 
   if (!token_present) {
     Fail();
     return;
   }
   std::move(token_request_callback_)
-      .Run(FetchStatus::kSuccess, id_token->GetString());
+      .Run(FetchStatus::kSuccess, token->GetString());
 }
 
 void IdpNetworkRequestManager::OnRevokeResponse(

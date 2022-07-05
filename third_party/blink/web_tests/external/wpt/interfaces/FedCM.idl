@@ -16,7 +16,7 @@ partial interface FederatedCredential {
 
 [Exposed=Window, SecureContext]
 dictionary FederatedTokens {
-  USVString idToken;
+  USVString token;
 };
 
 [Exposed=Window, SecureContext]

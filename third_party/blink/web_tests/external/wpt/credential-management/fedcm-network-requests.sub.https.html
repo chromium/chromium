@@ -23,8 +23,8 @@ const test_options = {
 promise_test(async t => {
   await set_fedcm_cookie();
   const cred = await navigator.credentials.get(test_options);
-  assert_equals(cred.idToken, "token");
-}, "Successfully obtaining id_token should resolve the promise.");
+  assert_equals(cred.token, "token");
+}, "Successfully obtaining token should resolve the promise.");
 
 promise_test(async t => {
   await set_fedcm_cookie();
@@ -37,7 +37,7 @@ promise_test(async t => {
   const rej = promise_rejects_dom(t, 'AbortError', second);
 
   const first_cred = await first;
-  assert_equals(first_cred.idToken, "token");
+  assert_equals(first_cred.token, "token");
 
   return rej;
 },
@@ -88,7 +88,7 @@ promise_test(async t => {
       }]
     }
   });
-  assert_equals(cred.idToken, "token");
+  assert_equals(cred.token, "token");
 }, "nonce is not required in FederatedIdentityProvider.");
 
 promise_test(async t => {
@@ -122,7 +122,7 @@ promise_test(async t => {
   await promise_rejects_dom(t, 'AbortError', first_cred);
 
   const second_cred = await navigator.credentials.get(test_options);
-  assert_equals(second_cred.idToken, "token");
+  assert_equals(second_cred.token, "token");
 }, "Get after abort should work");
 
 promise_test(async t => {
@@ -140,7 +140,7 @@ promise_test(async t => {
 promise_test(async t => {
   await set_fedcm_cookie();
   const cred = await navigator.credentials.get(test_options);
-  assert_equals(cred.idToken, 'token');
+  assert_equals(cred.token, 'token');
 }, 'Test that COEP policy do not apply to FedCM requests');
 
 promise_test(async t => {
