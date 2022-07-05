@@ -173,12 +173,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are
-  // later sent over to the GPU thread by GLRenderer or SkiaRenderer. This
-  // helper function will be called by DirectRenderer to take these overlay
-  // candidates inside overlay processor to avoid sending over DirectRenderer
-  // implementation. This is overridden by each platform that is ready to send
-  // overlay candidates inside |OverlayProcessor|. Must be called before
-  // ScheduleOverlays().
+  // later sent over to the GPU thread by SkiaRenderer. This helper function
+  // will be called by DirectRenderer to take these overlay candidates inside
+  // overlay processor to avoid sending over DirectRenderer implementation. This
+  // is overridden by each platform that is ready to send overlay candidates
+  // inside |OverlayProcessor|. Must be called before ScheduleOverlays().
   virtual void TakeOverlayCandidates(CandidateList* candidate_list) {}
 
   // TODO(weiliangc): Make it pure virtual after it is implemented by every

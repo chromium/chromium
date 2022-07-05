@@ -420,8 +420,8 @@ class GPU_EXPORT I420Converter {
 // and read back a texture from the GPU into CPU-accessible RAM. A single
 // readback pipeline can handle multiple outstanding readbacks at the same time.
 //
-// TODO(crbug.com/870036): DEPRECATED. This will be removed soon, in favor of
-// I420Converter and readback implementation in GLRendererCopier.
+// TODO(crbug.com/870036): DEPRECATED. This will be removed soon in favor of
+// I420Converter.
 class GPU_EXPORT ReadbackYUVInterface {
  public:
   ReadbackYUVInterface() {}

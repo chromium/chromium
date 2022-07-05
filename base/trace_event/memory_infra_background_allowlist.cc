@@ -76,7 +76,6 @@ const char* const kDumpProviderAllowlist[] = {
     "WebMediaPlayer_MediaThread",
     "SyncDirectory",
     "TabRestoreServiceHelper",
-    "VizProcessContextProvider",
     nullptr  // End of list marker.
 };
 

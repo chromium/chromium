@@ -20,7 +20,6 @@
 #include "third_party/skia/include/effects/SkImageFilters.h"
 
 namespace viz {
-class GLRenderer;
 class SkiaRenderer;
 class SoftwareRenderer;
 }  // namespace viz
@@ -146,7 +145,6 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   // For cached skia filter access in SkPaint conversions. Mostly used during
   // raster.
   friend class PaintFlags;
-  friend class viz::GLRenderer;
   friend class viz::SkiaRenderer;
   friend class viz::SoftwareRenderer;
 

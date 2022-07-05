@@ -25,8 +25,7 @@ class Rect;
 
 namespace viz {
 
-// A collection of utility functions used in the GLScaler and GLRenderer-related
-// pixel tests.
+// A collection of utility functions used in pixel tests.
 class GLScalerTestUtil {
  public:
   struct ColorBar {

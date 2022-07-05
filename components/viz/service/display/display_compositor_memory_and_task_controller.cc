@@ -49,9 +49,6 @@ DisplayCompositorMemoryAndTaskController::
       base::Unretained(this), task_executor, image_factory, &event);
   gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(std::move(callback), {});
   event.Wait();
-
-  // TODO(weiliangc): Move VizProcessContextProvider initialization here to take
-  // ownership of the shared image interface.
 }
 
 DisplayCompositorMemoryAndTaskController::

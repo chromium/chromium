@@ -41,15 +41,13 @@ struct SwapTimings {
   // dicontinuities in associated UMA data.
   base::TimeTicks swap_end;
 
-  // When Display Compositor thread scheduled work to GPU Thread. For GLRenderer
-  // it's when InProcessCommandBuffer::Flush() happens, for SkiaRenderer it's
-  // PostTask time for FinishPaintRenderPass or SwapBuffers whichever comes
-  // first.
+  // When Display Compositor thread scheduled work to GPU Thread. For
+  // SkiaRenderer it's PostTask time for FinishPaintRenderPass or SwapBuffers
+  // whichever comes first.
   base::TimeTicks viz_scheduled_draw;
 
   // When GPU thread started draw submitted by Display Compositor thread. For
-  // GLRenderer it's InProcessCommandBuffer::FlushOnGpuThread, for SkiaRenderer
-  // it's FinishPaintRenderPass/SwapBuffers.
+  // SkiaRenderer it's FinishPaintRenderPass/SwapBuffers.
   base::TimeTicks gpu_started_draw;
 
   // When GPU scheduler removed the last required dependency.

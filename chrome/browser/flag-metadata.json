@@ -2756,11 +2756,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-skia-renderer",
-    "owners": [ "backer", "kylechar", "penghuang" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
     "expiry_milestone": 115

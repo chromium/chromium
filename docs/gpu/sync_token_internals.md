@@ -11,7 +11,7 @@ token system.
 In Chrome, multiple processes, for example browser and renderer, submit work to
 the GPU process asynchronously in command buffer. However, there are
 dependencies between the work submitted by different processes, such as
-GLRenderer in display compositor in the browser/viz process rendering a tile
+SkiaRenderer in the display compositor in the GPU process rendering a tile
 produced by the raster worker in the renderer process.
 
 Sync tokens are used to synchronize the work contained in command buffers

@@ -95,15 +95,14 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     return std::make_unique<OutputSurfaceUnified>();
 #endif
 
-  // TODO(penghuang): Merge two output surfaces into one when GLRenderer and
-  // software compositor is removed.
-  std::unique_ptr<OutputSurface> output_surface;
-
   if (!gpu_compositing) {
-    output_surface = std::make_unique<SoftwareOutputSurface>(
+    return std::make_unique<SoftwareOutputSurface>(
         CreateSoftwareOutputDeviceForPlatform(surface_handle, display_client));
   } else {
     DCHECK(gpu_dependency);
+
+    std::unique_ptr<OutputSurface> output_surface;
+
     {
       gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
       output_surface = SkiaOutputSurfaceImpl::Create(
@@ -129,11 +128,10 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
 #elif !BUILDFLAG(IS_ANDROID)
       gpu_service_impl_->DisableGpuCompositing();
 #endif
-      return nullptr;
     }
-  }
 
-  return output_surface;
+    return output_surface;
+  }
 }
 
 std::unique_ptr<SoftwareOutputDevice>

@@ -34,7 +34,7 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
   // For SkiaRenderer.
   explicit DisplayCompositorMemoryAndTaskController(
       std::unique_ptr<SkiaOutputSurfaceDependency> skia_dependency);
-  // For VizProcessContextProvider that uses InProcessCommandBuffer.
+  // For InProcessCommandBuffer.
   DisplayCompositorMemoryAndTaskController(
       gpu::CommandBufferTaskExecutor* task_executor,
       gpu::ImageFactory* image_factory);

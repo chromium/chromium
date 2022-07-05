@@ -402,9 +402,7 @@ class SkiaReadbackPixelTestRGBA : public SkiaReadbackPixelTest,
   }
 };
 
-// Test that SkiaRenderer readback works correctly. This test will use the
-// default readback implementation for the platform, which is either the legacy
-// GLRendererCopier or the new Skia readback API.
+// Test that SkiaRenderer RGBA readback works correctly.
 TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
@@ -469,9 +467,7 @@ class SkiaReadbackPixelTestNV12
   }
 };
 
-// Test that SkiaRenderer readback works correctly. This test will use the
-// default readback implementation for the platform, which is either the legacy
-// GLRendererCopier or the new Skia readback API.
+// Test that SkiaRenderer NV12 readback works correctly.
 TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
@@ -599,9 +595,7 @@ class SkiaReadbackPixelTestNV12WithBlit
   bool populates_gpu_memory_buffer() const { return std::get<2>(GetParam()); }
 };
 
-// Test that SkiaRenderer readback works correctly. This test will use the
-// default readback implementation for the platform, which is either the legacy
-// GLRendererCopier or the new Skia readback API.
+// Test that SkiaRenderer NV12 readback works correctly using existing textures.
 TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   const gfx::Rect result_selection = GetRequestArea();
 

@@ -898,7 +898,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetRendererTypes()),
                          testing::PrintToStringParamName());
 
-// Test GLRenderer as well as SkiaRenderer.
 using GPURendererPixelTest = VizPixelTestWithParam;
 INSTANTIATE_TEST_SUITE_P(,
                          GPURendererPixelTest,
@@ -4229,7 +4228,7 @@ TEST_P(GPURendererPixelTest, CheckReadbackSubset) {
 TEST_P(GPURendererPixelTest, TextureQuadBatching) {
   // This test verifies that multiple texture quads using the same resource
   // get drawn correctly.  It implicitly is trying to test that the
-  // GLRenderer does the right thing with its draw quad cache.
+  // renderer does the right thing with its draw quad cache.
 
   gfx::Rect rect(this->device_viewport_size_);
   bool needs_blending = false;

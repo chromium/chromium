@@ -18,7 +18,6 @@ class TimeTicks;
 }
 
 namespace viz {
-class VizProcessContextProvider;
 class DisplayCompositorMemoryAndTaskController;
 }
 
@@ -36,10 +35,9 @@ class InProcessCommandBuffer;
 // when this class is used outside of actual CommandBuffer, we would need to
 // make sure the order of post tasks still corresponds to the order that tasks
 // are posted to the CommandBuffer.
-// This class is per display compositor. When this is used with command buffer,
-// it is created on VizProcessContextProvider. When this is used with
-// SkiaRenderer, it is created on SkiaOutputSurfaceImpl. Each user of this class
-// would hold a reference.
+// This class is per display compositor. When this is used with SkiaRenderer, it
+// is created on SkiaOutputSurfaceImpl. Each user of this class would hold a
+// reference.
 class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
  public:
   // This constructor is only used for SkiaOutputSurface.
@@ -86,7 +84,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
 
   friend class gpu::GLInProcessContext;
   friend class gpu::InProcessCommandBuffer;
-  friend class viz::VizProcessContextProvider;
   friend class viz::DisplayCompositorMemoryAndTaskController;
   // Only used for inside CommandBuffer implementation.
   SingleTaskSequence* GetTaskSequence() const;
