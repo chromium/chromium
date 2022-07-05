@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [ "infobar_positioner.h" ]
+  sources = []
 }
 
 source_set("constants") {

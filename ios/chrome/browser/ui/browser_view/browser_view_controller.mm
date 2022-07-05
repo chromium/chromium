@@ -79,7 +79,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
-#import "ios/chrome/browser/ui/infobars/infobar_positioner.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
@@ -245,7 +244,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @interface BrowserViewController () <CRWWebStateObserver,
                                      FindBarPresentationDelegate,
                                      FullscreenUIElement,
-                                     InfobarPositioner,
                                      KeyCommandsPlumbing,
                                      MainContentUI,
                                      SideSwipeControllerDelegate,
@@ -3896,12 +3894,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   };
   [self.contentArea addSubview:animatedView];
   [animatedView animateFrom:origin withCompletion:completionBlock];
-}
-
-#pragma mark - InfobarPositioner
-
-- (UIView*)parentView {
-  return self.contentArea;
 }
 
 #pragma mark - IncognitoReauthConsumer
