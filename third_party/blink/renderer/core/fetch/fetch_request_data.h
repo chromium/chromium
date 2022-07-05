@@ -154,13 +154,6 @@ class CORE_EXPORT FetchRequestData final
     trust_token_params_ = std::move(trust_token_params);
   }
 
-  void SetAllowHTTP1ForStreamingUpload(bool allow) {
-    allow_http1_for_streaming_upload_ = allow;
-  }
-  bool AllowHTTP1ForStreamingUpload() const {
-    return allow_http1_for_streaming_upload_;
-  }
-
   void Trace(Visitor*) const;
 
  private:
@@ -212,7 +205,6 @@ class CORE_EXPORT FetchRequestData final
   HeapMojoRemote<network::mojom::blink::URLLoaderFactory> url_loader_factory_;
   base::UnguessableToken window_id_;
   Member<ExecutionContext> execution_context_;
-  bool allow_http1_for_streaming_upload_ = false;
 };
 
 }  // namespace blink

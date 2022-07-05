@@ -578,10 +578,6 @@ Request* Request::CreateRequestWithRequestOrString(
 
     request->SetTrustTokenParams(std::move(params));
   }
-  if (init->hasAllowHTTP1ForStreamingUpload()) {
-    request->SetAllowHTTP1ForStreamingUpload(
-        init->allowHTTP1ForStreamingUpload());
-  }
 
   // "Let |r| be a new Request object associated with |request| and a new
   // Headers object whose guard is "request"."

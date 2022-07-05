@@ -227,8 +227,6 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->is_history_navigation_ = is_history_navigation_;
   request->window_id_ = window_id_;
   request->trust_token_params_ = trust_token_params_;
-  request->allow_http1_for_streaming_upload_ =
-      allow_http1_for_streaming_upload_;
   return request;
 }
 

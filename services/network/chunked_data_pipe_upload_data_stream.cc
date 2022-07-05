@@ -203,6 +203,7 @@ void ChunkedDataPipeUploadDataStream::OnSizeReceived(int32_t status,
     // Clear |buf_| as well, so it's only non-null while there's a pending read.
     buf_ = nullptr;
     buf_len_ = 0;
+    chunked_data_pipe_getter_.reset();
 
     OnReadCompleted(status_);
 

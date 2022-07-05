@@ -27,14 +27,12 @@ StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
   if (auto form_body = mutable_body.FormBody()) {
     // Here we need to keep the original body, because other members such as
     // `identifier` are on the form body.
-    network_body = NetworkResourceRequestBodyFor(
-        blink::ResourceRequestBody(form_body),
-        /*allow_http1_for_streaming_upload=*/false);
+    network_body =
+        NetworkResourceRequestBodyFor(blink::ResourceRequestBody(form_body));
   } else if (mutable_body.StreamBody()) {
     // Here we don't need to keep the original body (and it's impossible to do
     // so, because the streaming body is not copyable).
-    network_body = NetworkResourceRequestBodyFor(
-        std::move(mutable_body), /*allow_http1_for_streaming_upload=*/false);
+    network_body = NetworkResourceRequestBodyFor(std::move(mutable_body));
   }
   if (!network_body) {
     return WTF::Vector<network::DataElement>();

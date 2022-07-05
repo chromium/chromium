@@ -3,6 +3,8 @@
 // META: script=/common/utils.js
 // META: script=/common/get-host-info.sub.js
 
+const duplex = "half";
+
 function testUpload(desc, url, method, createBody, expectedBody) {
   const requestInit = {method};
   promise_test(async () => {
@@ -15,6 +17,17 @@ function testUpload(desc, url, method, createBody, expectedBody) {
     const text = await resp.text();
     assert_equals(text, expectedBody);
   }, desc);
+}
+
+function createStream(chunks) {
+  return new ReadableStream({
+    start: (controller) => {
+      for (const chunk of chunks) {
+        controller.enqueue(chunk);
+      }
+      controller.close();
+    }
+  });
 }
 
 const url = RESOURCES_DIR + "echo-content.h2.py"
@@ -49,7 +62,7 @@ promise_test(async (test) => {
     "/fetch/connection-pool/resources/network-partition-key.py?"
     + `status=421&uuid=${token()}&partition_id=${self.origin}`
     + `&dispatch=check_partition&addcounter=true`,
-    {method: "POST", body: body});
+    {method: "POST", body: body, duplex});
   assert_equals(resp.status, 421);
   const text = await resp.text();
   assert_equals(text, "ok. Request was sent 1 times. 1 connections were created.");
@@ -81,4 +94,45 @@ promise_test(async (test) => {
   const response = await fetch(request);
   assert_equals(await response.text(), 'test', `Response has correct body`);
 }, "Feature detect for POST with ReadableStream, using request object");
+
+promise_test(async (t) => {
+  const body = createStream(["hello"]);
+  const method = "POST";
+  await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
+}, "Streaming upload with body containing a String");
+
+promise_test(async (t) => {
+  const body = createStream([null]);
+  const method = "POST";
+  await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
+}, "Streaming upload with body containing null");
+
+promise_test(async (t) => {
+  const body = createStream([33]);
+  const method = "POST";
+  await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
+}, "Streaming upload with body containing a number");
+
+promise_test(async (t) => {
+  const url = "/fetch/api/resources/redirect.h2.py?location=/common/blank.html";
+  const body = createStream([]);
+  const method = "POST";
+  await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
+}, "Streaming upload should fail on redirect (302)");
+
+promise_test(async (t) => {
+  const url = "/fetch/api/resources/redirect.h2.py?" +
+              "redirect_status=303&location=/common/blank.html";
+  const body = createStream([]);
+  const method = "POST";
+  const resp = await fetch(url, { method, body, duplex });
+  assert_equals(resp.status, 200, 'status');
+}, "Streaming upload should work with 303");
+
+promise_test(async (t) => {
+  const url = "/fetch/api/resources/authentication.py?realm=test";
+  const body = createStream([]);
+  const method = "POST";
+  await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
+}, "Streaming upload should fail on a 401 response");
 

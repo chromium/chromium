@@ -233,8 +233,7 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
 }  // namespace
 
 scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
-    ResourceRequestBody src_body,
-    bool allow_http1_for_streaming_upload) {
+    ResourceRequestBody src_body) {
   scoped_refptr<network::ResourceRequestBody> dest_body;
   if (const EncodedFormData* form_body = src_body.FormBody().get()) {
     dest_body = base::MakeRefCounted<network::ResourceRequestBody>();
@@ -247,8 +246,9 @@ scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
     dest_body->SetToChunkedDataPipe(
         ToCrossVariantMojoType(std::move(stream_body)),
         network::ResourceRequestBody::ReadOnlyOnce(true));
-    dest_body->SetAllowHTTP1ForStreamingUpload(
-        allow_http1_for_streaming_upload);
+  }
+  if (dest_body) {
+    dest_body->SetAllowHTTP1ForStreamingUpload(false);
   }
   return dest_body;
 }
@@ -375,8 +375,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->is_favicon = src.IsFavicon();
 
-  dest->request_body = NetworkResourceRequestBodyFor(
-      std::move(src_body), src.AllowHTTP1ForStreamingUpload());
+  dest->request_body = NetworkResourceRequestBodyFor(std::move(src_body));
   if (dest->request_body) {
     DCHECK_NE(dest->method, net::HttpRequestHeaders::kGetMethod);
     DCHECK_NE(dest->method, net::HttpRequestHeaders::kHeadMethod);

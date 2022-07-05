@@ -790,8 +790,6 @@ void FetchManager::Loader::PerformHTTPFetch() {
             resolver_->GetScriptState(),
             pending_remote.InitWithNewPipeAndPassReceiver());
         request.MutableBody().SetStreamBody(std::move(pending_remote));
-        request.SetAllowHTTP1ForStreamingUpload(
-            fetch_request_data_->AllowHTTP1ForStreamingUpload());
       }
     }
   }

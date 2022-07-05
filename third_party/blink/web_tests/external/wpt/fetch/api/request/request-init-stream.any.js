@@ -50,7 +50,7 @@ test((t) => {
   new Request(request, { body: "..." });
 }, "Constructing a Request with a Request on which body.getReader().read() is called");
 
-promsie_test((t) => {
+promise_test(async (t) => {
   const request = new Request("...", { method: "POST", body: "..." });
   const reader = request.body.getReader();
   await reader.read();
