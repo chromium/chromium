@@ -187,7 +187,8 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // resizes the nested widget.
 // See https://crbug.com/726743 and https://crbug.com/1050635.
 // TODO(crbug.com/1315346): Flaky on Android and Linux.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1341838): Flaky on Mac (Sheriff 2022-07-04)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
   DISABLED_VisualPropertiesPropagation_VisibleViewportSize
 #else
