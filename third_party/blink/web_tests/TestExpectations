@@ -685,6 +685,10 @@ crbug.com/1267924 [ Mac ] external/wpt/css/css-contain/contain-layout-suppress-b
 crbug.com/1267498 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-transformed-offscreen.html [ Failure ]
 crbug.com/1267498 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
 crbug.com/1267498 [ Fuchsia ] transforms/transformed-caret.html [ Failure ]
+crbug.com/1321217 [ Fuchsia ] editing/selection/4402375.html [ Failure ]
+crbug.com/1321217 [ Fuchsia ] compositing/images/clip-on-directly-composited-image.html [ Failure ]
+crbug.com/1321217 [ Fuchsia ] fast/replaced/selection-rect-transform.html [ Failure ]
+crbug.com/1321217 [ Fuchsia ] paint/invalidation/selection/selected-replaced.html [ Failure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
 # separately from other Web Tests.
