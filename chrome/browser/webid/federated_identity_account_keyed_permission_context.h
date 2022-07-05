@@ -7,7 +7,6 @@
 
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <string>
 
@@ -36,10 +35,9 @@ class FederatedIdentityAccountKeyedPermissionContext
 
   // Returns whether there is an existing permission for the (relying_party,
   // identity_provider, account_id) tuple.
-  // When `account_id` == absl::nullopt, all account ids are matched.
   bool HasPermission(const url::Origin& relying_party,
                      const url::Origin& identity_provider,
-                     const absl::optional<std::string>& account_id);
+                     const std::string& account_id);
 
   // Grants permission for the (relying_party, identity_provider, account_id)
   // tuple.

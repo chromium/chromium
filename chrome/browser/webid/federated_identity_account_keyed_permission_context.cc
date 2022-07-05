@@ -33,7 +33,7 @@ FederatedIdentityAccountKeyedPermissionContext::
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
-    const absl::optional<std::string>& account_id) {
+    const std::string& account_id) {
   // TODO(crbug.com/1334019): This is currently origin-bound, but we would like
   // this grant to apply at the 'site' (aka eTLD+1) level. We should override
   // GetGrantedObject to find a grant that matches the RP's site rather
@@ -43,9 +43,6 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
 
   if (!granted_object)
     return false;
-
-  if (!account_id)
-    return true;
 
   const base::Value::List* account_list =
       ExtractAccountList(granted_object->value);
