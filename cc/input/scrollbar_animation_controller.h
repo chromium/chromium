@@ -94,7 +94,8 @@ class CC_EXPORT ScrollbarAnimationController {
 
   ScrollbarSet Scrollbars() const;
 
-  static constexpr float kMouseMoveDistanceToTriggerFadeIn = 30.0f;
+  SingleScrollbarAnimationControllerThinning& GetScrollbarAnimationController(
+      ScrollbarOrientation) const;
 
  private:
   // Describes whether the current animation should FadeIn or FadeOut.
@@ -112,9 +113,6 @@ class CC_EXPORT ScrollbarAnimationController {
                                base::TimeDelta fade_duration,
                                base::TimeDelta thinning_duration,
                                float initial_opacity);
-
-  SingleScrollbarAnimationControllerThinning& GetScrollbarAnimationController(
-      ScrollbarOrientation) const;
 
   // Any scrollbar state update would show scrollbar hen post the delay fade out
   // if needed.
