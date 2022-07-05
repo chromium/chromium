@@ -211,7 +211,8 @@ void BrowserServiceLacros::REMOVED_16(
 void BrowserServiceLacros::NewWindow(bool incognito,
                                      bool should_trigger_session_restore,
                                      NewWindowCallback callback) {
-  if (ProfilePicker::ShouldShowAtLaunch() && !incognito) {
+  if (ProfilePicker::ShouldShowAtLaunch() &&
+      chrome::GetTotalBrowserCount() == 0 && !incognito) {
     // Profile picker does not support passing through the incognito param. It
     // also does not support passing through the
     // `should_trigger_session_restore` param but that's very common (left

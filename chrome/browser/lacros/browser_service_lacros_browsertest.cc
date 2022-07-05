@@ -163,29 +163,59 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
-                       ProfilePickerOpensOnStartup) {
-  Profile* main_profile = browser()->profile();
+                       NewWindow_OpensProfilePicker) {
+  // Keep the browser process running during the test while the browser is
+  // closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // Start in a state with no browser windows opened.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // `NewWindow()` should create a new window if the system has only one
+  // profile.
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Create an additional profile.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath path_profile2 =
       profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
-
   Profile* profile2 =
       profiles::testing::CreateProfileSync(profile_manager, path_profile2);
   // Open a browser window to make it the last used profile.
   chrome::NewEmptyWindow(profile2);
-  ui_test_utils::WaitForBrowserToOpen();
+  Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Profile picker does _not_ open for incognito windows. Instead, the
-  // incognito window for the last used profile is directly opened.
+  // incognito window for the main profile is directly opened.
   NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false);
   EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
   // Main profile should be always used.
-  EXPECT_EQ(profile->GetPath(), main_profile->GetPath());
+  EXPECT_EQ(profile->GetPath(), profile_manager->GetPrimaryUserProfilePath());
   EXPECT_TRUE(profile->IsOffTheRecord());
 
+  BrowserList::SetLastActive(browser2);
+  // Profile picker does _not_ open if Chrome already has opened windows.
+  // Instead, a new browser window for the main profile is directly opened.
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  // A new browser is created for the main profile.
+  EXPECT_EQ(BrowserList::GetInstance()->GetLastActive()->profile()->GetPath(),
+            profile_manager->GetPrimaryUserProfilePath());
+  EXPECT_EQ(4u, chrome::GetTotalBrowserCount());
+
+  size_t browser_count = chrome::GetTotalBrowserCount();
+  chrome::CloseAllBrowsers();
+  for (size_t i = 0; i < browser_count; ++i)
+    ui_test_utils::WaitForBrowserToClose();
+
+  // `NewWindow()` should open the profile picker.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
