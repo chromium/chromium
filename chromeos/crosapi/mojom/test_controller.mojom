@@ -4,8 +4,9 @@
 
 module crosapi.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "chromeos/crosapi/mojom/app_service_types.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 [Stable, Extensible]
 enum TouchEventType {
@@ -65,10 +66,58 @@ interface TestShillController {
 };
 
 // This interface is implemented by Ash-Chrome.
+// It enables tests in Lacros-Chrome to access the TestInterfaces
+// of chromeos::Shill*Client classes.
+[Stable, Uuid="12d5dbb4-e974-4f41-820e-6d92c2215452"]
+interface ShillClientTestInterface {
+  // From chromeos::ShillDeviceClient::TestInterface:
+
+  // Adds a fake networking device.
+  AddDevice@0(string device_path, string type,string name) => ();
+  // Clear all fake networking devices.
+  ClearDevices@1() => ();
+  // Sets a property on the given fake device.
+  SetDeviceProperty@2(string device_path,
+      string name,
+      mojo_base.mojom.Value value,
+      bool notify_changed) => ();
+  // Sets whether the SIM in the given fake device should be locked.
+  SetSimLocked@3(string device_path, bool enabled) => ();
+
+  // From chromeos::ShillServiceClient::TestInterface:
+
+  // Adds a Service to the Manager and Service stubs.
+  AddService@4(string service_path,
+      string guid,
+      string name,
+      string type,
+      string state,
+      bool visible) => ();
+  // Clears all Services from the Manager and Service stubs.
+  ClearServices@5() => ();
+  // Sets a property of the specified service.
+  SetServiceProperty@6(string service_path, string property,
+      mojo_base.mojom.Value value) => ();
+
+  // From chromeos::ShillProfileClient::TestInterface:
+
+  // Adds a profile.
+  AddProfile@7(string profile_path, string userhash) => ();
+  // Adds a service to the profile, copying properties from the
+  // ShillServiceClient entry matching |service_path|.
+  AddServiceToProfile@8(string profile_path, string service_path) => ();
+
+  // From chromeos::ShillIPConfigClient::TestInterface:
+
+  // Adds an IPConfig entry.
+  AddIPConfig@9(string ip_config_path, mojo_base.mojom.Value properties) => ();
+};
+
+// This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 16
-// Next method id: 25
+// Next version: 17
+// Next method id: 27
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -209,4 +258,14 @@ interface TestController {
   // Creates and then cancels a print job.
   [MinVersion=15]
   CreateAndCancelPrintJob@24(string job_title) => ();
+
+  // Binds a |shill_client| that Lacros-Chrome can use to access the Shill
+  // test intefaces in Ash-Chrome.
+  [MinVersion=16]
+  BindShillClientTestInterface@25(
+      pending_receiver<ShillClientTestInterface> shill_client) => ();
+
+  // Returns the sanitized (aka "hashed") username of the active user.
+  [MinVersion=16]
+  GetSanitizedActiveUsername@26() => (string sanitized_active_username);
 };
