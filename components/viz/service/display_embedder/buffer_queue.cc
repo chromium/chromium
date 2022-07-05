@@ -6,74 +6,89 @@
 
 #include <utility>
 
-#include "base/containers/adapters.h"
-#include "base/logging.h"
-#include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace viz {
 
 BufferQueue::BufferQueue(gpu::SharedImageInterface* sii,
-                         gpu::SurfaceHandle surface_handle)
+                         gpu::SurfaceHandle surface_handle,
+                         size_t number_of_buffers)
     : sii_(sii),
-      allocated_count_(0),
-      surface_handle_(surface_handle) {}
+      surface_handle_(surface_handle),
+      number_of_buffers_(number_of_buffers) {}
 
 BufferQueue::~BufferQueue() {
-  FreeAllSurfaces();
+  FreeAllBuffers();
 }
 
-void BufferQueue::SetSyncTokenProvider(SyncTokenProvider* sync_token_provider) {
-  DCHECK(!sync_token_provider_);
-  sync_token_provider_ = sync_token_provider;
-}
-
-gpu::Mailbox BufferQueue::GetCurrentBuffer(gpu::SyncToken* creation_sync_token,
-                                           gfx::GpuFenceHandle* release_fence) {
-  DCHECK(creation_sync_token);
-  if (!current_surface_)
-    current_surface_ = GetNextSurface(creation_sync_token);
-  if (release_fence)
-    *release_fence = current_surface_->release_fence.Clone();
-  return current_surface_ ? current_surface_->mailbox : gpu::Mailbox();
+gpu::Mailbox BufferQueue::GetCurrentBuffer() {
+  if (!current_buffer_) {
+    current_buffer_ = GetNextBuffer();
+  }
+  DCHECK(current_buffer_);
+  return current_buffer_->mailbox;
 }
 
 void BufferQueue::UpdateBufferDamage(const gfx::Rect& damage) {
-  if (displayed_surface_)
-    displayed_surface_->damage.Union(damage);
-  for (auto& surface : available_surfaces_)
-    surface->damage.Union(damage);
-  for (auto& surface : in_flight_surfaces_) {
-    if (surface)
-      surface->damage.Union(damage);
+  if (displayed_buffer_) {
+    displayed_buffer_->damage.Union(damage);
+  }
+  for (auto& buffer : available_buffers_) {
+    buffer->damage.Union(damage);
+  }
+  for (auto& buffer : in_flight_buffers_) {
+    if (buffer) {
+      buffer->damage.Union(damage);
+    }
   }
 }
 
 gfx::Rect BufferQueue::CurrentBufferDamage() const {
-  if (current_surface_)
-    return current_surface_->damage;
-
-  // In case there is no current_surface_, we get the damage from the surface
-  // that will be set as current_surface_ by the next call to GetNextSurface.
-  if (!available_surfaces_.empty()) {
-    return available_surfaces_.back()->damage;
+  if (current_buffer_) {
+    return current_buffer_->damage;
   }
 
-  // If we can't determine which surface will be the next current_surface_, we
+  // In case there is no current_buffer_, we get the damage from the buffer
+  // that will be set as current_buffer_ by the next call to GetNextBuffer.
+  if (!available_buffers_.empty()) {
+    return available_buffers_.front()->damage;
+  }
+
+  // If we can't determine which buffer will be the next current_buffer_, we
   // conservatively invalidate the whole buffer.
   return gfx::Rect(size_);
 }
 
 void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
   UpdateBufferDamage(damage);
-  if (current_surface_)
-    current_surface_->damage = gfx::Rect();
-  in_flight_surfaces_.push_back(std::move(current_surface_));
+  if (current_buffer_) {
+    current_buffer_->damage = gfx::Rect();
+  }
+  // Note: In the case of an empty-swap frame, GetCurrentBuffer() was not called
+  // this frame and current_buffer_ will be nullptr. We will still push nullptr
+  // into in_flight_buffers_ so the queue is kept in sync when
+  // SwapBuffersComplete() is called.
+  in_flight_buffers_.push_back(std::move(current_buffer_));
+}
+
+void BufferQueue::SwapBuffersComplete() {
+  DCHECK(!in_flight_buffers_.empty());
+
+  if (in_flight_buffers_.front()) {
+    if (displayed_buffer_) {
+      available_buffers_.push_back(std::move(displayed_buffer_));
+    }
+    displayed_buffer_ = std::move(in_flight_buffers_.front());
+  }
+
+  in_flight_buffers_.pop_front();
+}
+
+void BufferQueue::SwapBuffersSkipped(const gfx::Rect& damage) {
+  UpdateBufferDamage(damage);
 }
 
 bool BufferQueue::Reshape(const gfx::Size& size,
@@ -82,101 +97,83 @@ bool BufferQueue::Reshape(const gfx::Size& size,
   if (size == size_ && color_space == color_space_ && format == format_)
     return false;
 
-#if !BUILDFLAG(IS_APPLE)
-  // TODO(ccameron): This assert is being hit on Mac try jobs. Determine if that
-  // is cause for concern or if it is benign.
-  // http://crbug.com/524624
-  DCHECK(!current_surface_);
-#endif
   size_ = size;
   color_space_ = color_space;
   format_ = format;
 
-  FreeAllSurfaces();
+  FreeAllBuffers();
+  AllocateBuffers(number_of_buffers_);
+
   return true;
 }
 
-void BufferQueue::SetMaxBuffers(size_t max) {
-  max_buffers_ = max;
-}
-
-void BufferQueue::PageFlipComplete(gfx::GpuFenceHandle release_fence) {
-  DCHECK(!in_flight_surfaces_.empty());
-  if (in_flight_surfaces_.front()) {
-    if (displayed_surface_) {
-      displayed_surface_->release_fence = std::move(release_fence);
-      available_surfaces_.push_back(std::move(displayed_surface_));
-    }
-    displayed_surface_ = std::move(in_flight_surfaces_.front());
-  }
-
-  in_flight_surfaces_.pop_front();
-}
-
-void BufferQueue::FreeAllSurfaces() {
-  DCHECK(sync_token_provider_);
-  const gpu::SyncToken destruction_sync_token =
-      sync_token_provider_->GenSyncToken();
-  FreeSurface(std::move(displayed_surface_), destruction_sync_token);
-  FreeSurface(std::move(current_surface_), destruction_sync_token);
+void BufferQueue::FreeAllBuffers() {
+  FreeBuffer(std::move(displayed_buffer_));
+  FreeBuffer(std::move(current_buffer_));
 
   // This is intentionally not emptied since the swap buffers acks are still
   // expected to arrive.
-  for (auto& surface : in_flight_surfaces_) {
-    FreeSurface(std::move(surface), destruction_sync_token);
+  for (auto& buffer : in_flight_buffers_) {
+    FreeBuffer(std::move(buffer));
   }
 
-  for (auto& surface : available_surfaces_) {
-    FreeSurface(std::move(surface), destruction_sync_token);
+  for (auto& buffer : available_buffers_) {
+    FreeBuffer(std::move(buffer));
   }
-  available_surfaces_.clear();
+  available_buffers_.clear();
 }
 
-void BufferQueue::FreeSurface(std::unique_ptr<AllocatedSurface> surface,
-                              const gpu::SyncToken& sync_token) {
-  if (!surface)
+void BufferQueue::FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer) {
+  if (!buffer) {
     return;
-  DCHECK(!surface->mailbox.IsZero());
-  sii_->DestroySharedImage(sync_token, surface->mailbox);
-  allocated_count_--;
+  }
+  DCHECK(!buffer->mailbox.IsZero());
+  sii_->DestroySharedImage(gpu::SyncToken(), buffer->mailbox);
 }
 
-std::unique_ptr<BufferQueue::AllocatedSurface> BufferQueue::GetNextSurface(
-    gpu::SyncToken* creation_sync_token) {
-  DCHECK(creation_sync_token);
-  if (!available_surfaces_.empty()) {
-    std::unique_ptr<AllocatedSurface> surface =
-        std::move(available_surfaces_.back());
-    available_surfaces_.pop_back();
-    return surface;
-  }
-
-  // We don't want to allow anything more than triple buffering.
-  DCHECK_LT(allocated_count_, max_buffers_);
-
+void BufferQueue::AllocateBuffers(size_t n) {
   DCHECK(format_);
   const ResourceFormat format = GetResourceFormat(format_.value());
-  const gpu::Mailbox mailbox = sii_->CreateSharedImage(
-      format, size_, color_space_, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_SCANOUT |
-          gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-      surface_handle_);
 
-  if (mailbox.IsZero()) {
-    LOG(ERROR) << "Failed to create SharedImage";
-    return nullptr;
+  available_buffers_.reserve(available_buffers_.size() + n);
+  for (size_t i = 0; i < n; ++i) {
+    const gpu::Mailbox mailbox = sii_->CreateSharedImage(
+        format, size_, color_space_, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType,
+        gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY,
+        surface_handle_);
+    DCHECK(!mailbox.IsZero());
+
+    available_buffers_.push_back(
+        std::make_unique<AllocatedBuffer>(mailbox, gfx::Rect(size_)));
   }
-
-  allocated_count_++;
-  *creation_sync_token = sii_->GenUnverifiedSyncToken();
-  return std::make_unique<AllocatedSurface>(mailbox, gfx::Rect(size_));
 }
 
-BufferQueue::AllocatedSurface::AllocatedSurface(const gpu::Mailbox& mailbox,
-                                                const gfx::Rect& rect)
+std::unique_ptr<BufferQueue::AllocatedBuffer> BufferQueue::GetNextBuffer() {
+  DCHECK(!available_buffers_.empty());
+
+  std::unique_ptr<AllocatedBuffer> buffer =
+      std::move(available_buffers_.front());
+  available_buffers_.pop_front();
+  return buffer;
+}
+
+void BufferQueue::EnsureMinNumberOfBuffers(size_t n) {
+  if (n <= number_of_buffers_) {
+    return;
+  }
+
+  // If Reshape hasn't been called yet we can't allocate the buffers.
+  if (!size_.IsEmpty()) {
+    AllocateBuffers(n - number_of_buffers_);
+  }
+  number_of_buffers_ = n;
+}
+
+BufferQueue::AllocatedBuffer::AllocatedBuffer(const gpu::Mailbox& mailbox,
+                                              const gfx::Rect& rect)
     : mailbox(mailbox), damage(rect) {}
 
-BufferQueue::AllocatedSurface::~AllocatedSurface() = default;
+BufferQueue::AllocatedBuffer::~AllocatedBuffer() = default;
 
 }  // namespace viz
