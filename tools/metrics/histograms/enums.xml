@@ -34890,6 +34890,7 @@ Called by update_extension_histograms.py.-->
   <int value="1676" label="AUTOTESTPRIVATE_SENDARCOVERLAYCOLOR"/>
   <int value="1677" label="AUTOTESTPRIVATE_ISINPUTMETHODREADYFORTESTING"/>
   <int value="1678" label="AUTOTESTPRIVATE_GETARCAPPKILLS"/>
+  <int value="1679" label="FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS"/>
 </enum>
 
 <enum name="ExtensionIconState">

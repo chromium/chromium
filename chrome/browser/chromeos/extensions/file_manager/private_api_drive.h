@@ -205,6 +205,19 @@ class FileManagerPrivatePollDriveHostedFilePinStatesFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.openManageSyncSettings method.
+class FileManagerPrivateOpenManageSyncSettingsFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.openManageSyncSettings",
+                             FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS)
+
+ protected:
+  ~FileManagerPrivateOpenManageSyncSettingsFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_DRIVE_H_

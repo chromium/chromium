@@ -2363,7 +2363,7 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
 CommandHandler.COMMANDS_['manage-mirrorsync'] =
     new (class extends FilesCommand {
       execute(event, fileManager) {
-        // TODO(b/237066325): Wire this up to the `ManageMirrorSyncDialog`.
+        chrome.fileManagerPrivate.openManageSyncSettings();
       }
 
       /**

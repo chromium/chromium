@@ -1724,6 +1724,9 @@ interface Functions {
 
   // Tells DriveFS to update its cached pin states of hosted files (once).
   static void pollDriveHostedFilePinStates();
+
+  // Opens the dialog to manage the currently syncing folders.
+  static void openManageSyncSettings();
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

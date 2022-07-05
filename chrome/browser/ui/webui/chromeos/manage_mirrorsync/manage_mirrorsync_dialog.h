@@ -23,11 +23,6 @@ class ManageMirrorSyncDialog : public SystemWebDialogDelegate {
 
   // SystemWebDialogDelegate:
   void GetDialogSize(gfx::Size* size) const override;
-  bool ShouldShowCloseButton() const override;
-  bool ShouldShowDialogTitle() const override;
-  bool ShouldCloseDialogOnEscape() const override;
-  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
-  bool OnDialogCloseRequested() override;
   void OnDialogShown(content::WebUI* webui) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
