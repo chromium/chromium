@@ -310,6 +310,7 @@ function show(toast: Toast, ripple: RippleEffect|null = null): void {
 
   const timeout = setTimeout(hide, SHOWING_TIMEOUT_MS);
   showing = {ripple, toast, timeout};
+  toast.show();
 }
 
 /**
