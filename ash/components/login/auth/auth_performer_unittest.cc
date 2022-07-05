@@ -19,6 +19,8 @@
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -66,7 +68,6 @@ class AuthPerformerTest : public testing::Test {
     CryptohomeMiscClient::InitializeFake();
     chromeos::SystemSaltGetter::Initialize();
     context_ = std::make_unique<UserContext>();
-    context_->SetAuthSessionId("123");
   }
 
   ~AuthPerformerTest() override {
@@ -80,6 +81,69 @@ class AuthPerformerTest : public testing::Test {
   std::unique_ptr<UserContext> context_;
 };
 
+// Checks that a key that has no type is recognized during StartAuthSession() as
+// a password knowledge key.
+TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
+  // Arrange: cryptohome replies with a key that has no |type| set.
+  EXPECT_CALL(mock_client_, StartAuthSession(_, _))
+      .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
+                   UserDataAuthClient::StartAuthSessionCallback callback) {
+        ::user_data_auth::StartAuthSessionReply reply;
+        reply.set_auth_session_id("123");
+        reply.set_user_exists(true);
+        (*reply.mutable_key_label_data())["legacy-0"] = cryptohome::KeyData();
+        std::move(callback).Run(reply);
+      });
+  AuthPerformer performer(&mock_client_);
+
+  // Act.
+  base::test::TestFuture<bool, std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
+                             result.GetCallback());
+  auto [user_exists, user_context, cryptohome_error] = result.Take();
+
+  // Assert: no error, user context has AuthSession ID and the password factor.
+  EXPECT_TRUE(user_exists);
+  ASSERT_TRUE(user_context);
+  EXPECT_EQ(user_context->GetAuthSessionId(), "123");
+  EXPECT_TRUE(user_context->GetAuthFactorsData().FindOnlinePasswordKey());
+}
+
+// Checks that a key that has no type is recognized during StartAuthSession() as
+// a kiosk key for a kiosk user.
+TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
+  // Arrange: user is kiosk, and cryptohome replies with a key that has no
+  // |type| set.
+  context_ = std::make_unique<UserContext>(user_manager::USER_TYPE_KIOSK_APP,
+                                           AccountId());
+  EXPECT_CALL(mock_client_, StartAuthSession(_, _))
+      .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
+                   UserDataAuthClient::StartAuthSessionCallback callback) {
+        ::user_data_auth::StartAuthSessionReply reply;
+        reply.set_auth_session_id("123");
+        reply.set_user_exists(true);
+        (*reply.mutable_key_label_data())["legacy-0"] = cryptohome::KeyData();
+        std::move(callback).Run(reply);
+      });
+  AuthPerformer performer(&mock_client_);
+
+  // Act.
+  base::test::TestFuture<bool, std::unique_ptr<UserContext>,
+                         absl::optional<CryptohomeError>>
+      result;
+  performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
+                             result.GetCallback());
+  auto [user_exists, user_context, cryptohome_error] = result.Take();
+
+  // Assert: no error, user context has AuthSession ID and the kiosk factor.
+  EXPECT_TRUE(user_exists);
+  ASSERT_TRUE(user_context);
+  EXPECT_EQ(user_context->GetAuthSessionId(), "123");
+  EXPECT_TRUE(user_context->GetAuthFactorsData().FindKioskKey());
+}
+
 // Checks that AuthenticateUsingKnowledgeKey (which will be called with "gaia"
 // label after online authentication) correctly falls back to "legacy-0" label.
 TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
@@ -87,6 +151,8 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
   // Password knowledge key in user context.
   *context_->GetKey() = Key("secret");
   context_->GetKey()->SetLabel("gaia");
+  // Simulate the already started auth session.
+  context_->SetAuthSessionId("123");
 
   AuthPerformer performer(&mock_client_);
 
@@ -111,6 +177,8 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
 // fallback to "legacy-0" label.
 TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
   SetupUserWithLegacyPassword(context_.get());
+  // Simulate the already started auth session.
+  context_->SetAuthSessionId("123");
 
   // PIN knowledge key in user context.
   *context_->GetKey() =
@@ -140,6 +208,8 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
 
 TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
   SetupUserWithLegacyPassword(context_.get());
+  // Simulate the already started auth session.
+  context_->SetAuthSessionId("123");
 
   AuthPerformer performer(&mock_client_);
 
@@ -163,6 +233,8 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
 
 TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
   SetupUserWithLegacyPassword(context_.get());
+  // Simulate the already started auth session.
+  context_->SetAuthSessionId("123");
 
   AuthPerformer performer(&mock_client_);
 
