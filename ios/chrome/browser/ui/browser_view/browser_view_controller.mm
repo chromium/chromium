@@ -18,7 +18,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
-#import "components/signin/ios/browser/active_state_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -118,8 +117,6 @@
 #import "ios/chrome/browser/ui/util/page_animation_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
-#import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
-#import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -496,7 +493,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                           (BrowserViewControllerDependencies)dependencies {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
-    // TODO(crbug.com/1272524): DCHECK that `browser` is non-null.
+    DCHECK(browser);
 
     _browserContainerViewController = browserContainerViewController;
     _browserViewControllerHelper = browserViewControllerHelper;
@@ -897,18 +894,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   _active = active;
 
-  // TODO(crbug.com/1272524): Move these updates to BrowserCoordinator.
-  if (self.browserState) {
-    // TODO(crbug.com/1272520): Refactor ActiveStateManager for multiwindow.
-    ActiveStateManager* active_state_manager =
-        ActiveStateManager::FromBrowserState(self.browserState);
-    active_state_manager->SetActive(active);
-
-    TextToSpeechPlaybackControllerFactory::GetInstance()
-        ->GetForBrowserState(self.browserState)
-        ->SetEnabled(_active);
-  }
-
   self.webUsageEnabled = active;
   [self updateBroadcastState];
 
@@ -1020,21 +1005,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(!_isShutdown);
   _isShutdown = YES;
 
-  [self setActive:NO];
-
-  // TODO(crbug.com/1272524): Move these updates to BrowserCoordinator.
-  if (self.browserState) {
-    TextToSpeechPlaybackController* controller =
-        TextToSpeechPlaybackControllerFactory::GetInstance()
-            ->GetForBrowserState(self.browserState);
-    if (controller)
-      controller->SetWebStateList(nullptr);
-
     UrlLoadingNotifierBrowserAgent* notifier =
         UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
     if (notifier)
       notifier->RemoveObserver(_URLLoadingObserverBridge.get());
-  }
 
   // Disconnect child coordinators.
   if (base::FeatureList::IsEnabled(kModernTabStrip)) {
@@ -1600,13 +1574,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _URLLoadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
   UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_URLLoadingObserverBridge.get());
-
-  // Set the TTS playback controller's WebStateList.
-  // TODO(crbug.com/1272528): Move this somewhere else -- BrowserCoordinator at
-  // least.
-  TextToSpeechPlaybackControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->SetWebStateList(self.browser->GetWebStateList());
 
   // When starting the browser with an open tab, it is necessary to reset the
   // clipsToBounds property of the WKWebView so the page can bleed behind the

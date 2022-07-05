@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
@@ -128,6 +129,8 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
+#import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -370,6 +373,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [self startChildCoordinators];
   // Browser delegates can have dependencies on coordinators.
   [self installDelegatesForBrowser];
+  [self installDelegatesForBrowserState];
   [self addWebStateListObserver];
   [super start];
   self.started = YES;
@@ -379,7 +383,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   if (!self.started)
     return;
   [super stop];
+
+  self.active = NO;
   [self removeWebStateListObserver];
+  [self uninstallDelegatesForBrowserState];
   [self uninstallDelegatesForBrowser];
   [self uninstallDelegatesForAllWebStates];
   [self.tabLifecycleMediator disconnect];
@@ -406,6 +413,18 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     [self hideActivityOverlay];
   } else if (!self.activityOverlayCoordinator) {
     [self showActivityOverlay];
+  }
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (browserState) {
+    // TODO(crbug.com/1272520): Refactor ActiveStateManager for multiwindow.
+    ActiveStateManager* active_state_manager =
+        ActiveStateManager::FromBrowserState(browserState);
+    active_state_manager->SetActive(active);
+
+    TextToSpeechPlaybackControllerFactory::GetInstance()
+        ->GetForBrowserState(browserState)
+        ->SetEnabled(active);
   }
 
   // TODO(crbug.com/1272516): Update the WebUsageEnablerBrowserAgent as part of
@@ -512,6 +531,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 // Shuts down the BrowserViewController.
 - (void)destroyViewController {
   // TODO(crbug.com/1272516): Set the WebUsageEnablerBrowserAgent to disabled.
+  self.viewController.active = NO;
   [self.viewController shutdown];
   _viewController = nil;
 }
@@ -1528,6 +1548,26 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   AccountConsistencyBrowserAgent::CreateForBrowser(
       self.browser, self.viewController, applicationCommandHandler);
+}
+
+// Installs delegates for self.browser->GetBrowserState()
+- (void)installDelegatesForBrowserState {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (browserState) {
+    TextToSpeechPlaybackControllerFactory::GetInstance()
+        ->GetForBrowserState(browserState)
+        ->SetWebStateList(self.browser->GetWebStateList());
+  }
+}
+
+// Uninstalls delegates for self.browser->GetBrowserState()
+- (void)uninstallDelegatesForBrowserState {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (browserState) {
+    TextToSpeechPlaybackControllerFactory::GetInstance()
+        ->GetForBrowserState(browserState)
+        ->SetWebStateList(nullptr);
+  }
 }
 
 // Uninstalls delegates for self.browser.
