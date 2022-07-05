@@ -1445,8 +1445,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   blink::test::RunPendingTasks();  // Run hibernation task.
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, painting_layer->SelfNeedsRepaint());
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
+  EXPECT_EQ(Canvas2DLayerBridge::IsHibernationEnabled(),
+            painting_layer->SelfNeedsRepaint());
+  EXPECT_EQ(Canvas2DLayerBridge::IsHibernationEnabled(),
             !CanvasElement().ResourceProvider());
 
   // The page is hidden so it doesn't make sense to paint, and doing so will
@@ -1459,7 +1460,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       mojom::blink::PageVisibilityState::kVisible,
       /*is_initial_state=*/false);
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, painting_layer->SelfNeedsRepaint());
+  EXPECT_EQ(Canvas2DLayerBridge::IsHibernationEnabled(),
+            painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,

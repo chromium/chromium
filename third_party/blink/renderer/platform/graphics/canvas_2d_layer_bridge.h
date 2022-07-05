@@ -64,14 +64,6 @@ class Canvas2DLayerBridgeTest;
 class SharedContextRateLimiter;
 class StaticBitmapImage;
 
-#if BUILDFLAG(IS_MAC)
-// Canvas hibernation is currently disabled on MacOS X due to a bug that causes
-// content loss. TODO: Find a better fix for crbug.com/588434
-#define CANVAS2D_HIBERNATION_ENABLED 0
-#else
-#define CANVAS2D_HIBERNATION_ENABLED 1
-#endif
-
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
  public:
   Canvas2DLayerBridge(const gfx::Size&, RasterMode, OpacityMode opacity_mode);
@@ -164,6 +156,14 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   }
 
   bool HasRateLimiterForTesting();
+
+#if BUILDFLAG(IS_MAC)
+  // Canvas hibernation is not always enabled on MacOS X due to a bug that
+  // causes content loss. TODO: Find a better fix for crbug.com/588434
+  static bool IsHibernationEnabled();
+#else
+  constexpr static bool IsHibernationEnabled() { return true; }
+#endif
 
  private:
   friend class Canvas2DLayerBridgeTest;

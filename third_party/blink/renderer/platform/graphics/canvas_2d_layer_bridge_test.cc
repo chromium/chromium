@@ -391,12 +391,10 @@ class MockLogger : public Canvas2DLayerBridge::Logger {
   ~MockLogger() override = default;
 };
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationLifeCycle)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -436,12 +434,10 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationLifeCycle)
   EXPECT_TRUE(bridge->IsValid());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationReEntry)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -483,12 +479,10 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationReEntry)
   EXPECT_TRUE(bridge->IsValid());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernating)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -520,12 +514,10 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernating)
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_SnapshotWhileHibernating)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -567,12 +559,10 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_SnapshotWhileHibernating)
   bridge->SetIsInHiddenPage(false);
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernationIsPending)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -599,13 +589,10 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernationIsPending)
   // is sound.
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange)
-#else
-TEST_F(Canvas2DLayerBridgeTest,
-       DISABLED_HibernationAbortedDueToVisibilityChange)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -635,12 +622,10 @@ TEST_F(Canvas2DLayerBridgeTest,
   EXPECT_TRUE(bridge->IsValid());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationAbortedDueToLostContext)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
@@ -669,12 +654,10 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationAbortedDueToLostContext)
   EXPECT_FALSE(bridge->IsHibernating());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_PrepareMailboxWhileHibernating)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);

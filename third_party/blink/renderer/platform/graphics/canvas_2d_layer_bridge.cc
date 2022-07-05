@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -56,6 +57,21 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
+
+#if BUILDFLAG(IS_MAC)
+
+namespace {
+
+base::Feature kCanvas2DHibernation{
+    "Canvas2DHibernation", base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+}
+
+// static
+bool Canvas2DLayerBridge::IsHibernationEnabled() {
+  return base::FeatureList::IsEnabled(kCanvas2DHibernation);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
                                          RasterMode raster_mode,
@@ -382,8 +398,8 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
           FROM_HERE, WTF::Bind(&LoseContextInBackgroundWrapper,
                                weak_ptr_factory_.GetWeakPtr()));
     }
-  } else if (CANVAS2D_HIBERNATION_ENABLED && ResourceProvider() &&
-             IsAccelerated() && IsHidden() && !hibernation_scheduled_ &&
+  } else if (IsHibernationEnabled() && ResourceProvider() && IsAccelerated() &&
+             IsHidden() && !hibernation_scheduled_ &&
              !base::FeatureList::IsEnabled(
                  ::features::kCanvasContextLostInBackground)) {
     if (layer_)
