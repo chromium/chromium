@@ -946,8 +946,9 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
   }
 };
 
+// crbug.com/1341073 Disable due to flakiness.
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
-                       SetupProgessStepsDisplayCorrectly) {
+                       DISABLED_SetupProgessStepsDisplayCorrectly) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
@@ -1028,15 +1029,10 @@ class DemoSetupVariantCountryCodeRegionTest : public DemoSetupArcSupportedTest {
   }
 };
 
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
-  DISABLED_VariantCountryCodeRegionDefaultCountryIsSet
-#else
-#define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
-  VariantCountryCodeRegionDefaultCountryIsSet
-#endif
+// crbug.com/1340982 Disable due to flakiness. Note that this test is also
+// disabled with ASAN, see crbug.com/1150349 for more information.
 IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
-                       MAYBE_VariantCountryCodeRegionDefaultCountryIsSet) {
+                       DISABLED_VariantCountryCodeRegionDefaultCountryIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
