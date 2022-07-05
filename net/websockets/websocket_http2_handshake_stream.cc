@@ -296,8 +296,6 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
   http_response_info_->alpn_negotiated_protocol =
       HttpResponseInfo::ConnectionInfoToString(
           http_response_info_->connection_info);
-  http_response_info_->vary_data.Init(*request_info_,
-                                      *http_response_info_->headers.get());
 
   if (callback_)
     std::move(callback_).Run(ValidateResponse());

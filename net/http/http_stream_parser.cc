@@ -1035,7 +1035,6 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
   } else if (headers->GetHttpVersion() == HttpVersion(1, 1)) {
     response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
   }
-  response_->vary_data.Init(*request_, *response_->headers);
   DVLOG(1) << __func__ << "() content_length = \""
            << response_->headers->GetContentLength() << "\n\""
            << " headers = \"" << GetResponseHeaderLines(*response_->headers)

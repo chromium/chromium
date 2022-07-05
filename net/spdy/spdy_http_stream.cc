@@ -435,8 +435,6 @@ void SpdyHttpStream::OnHeadersReceived(
   response_info_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP2;
   response_info_->alpn_negotiated_protocol =
       HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);
-  response_info_->vary_data
-      .Init(*request_info_, *response_info_->headers.get());
 
   // Invalidate HttpRequestInfo pointer. This is to allow |this| to be
   // shared across multiple consumers at the cache layer which might require

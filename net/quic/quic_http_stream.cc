@@ -700,8 +700,6 @@ int QuicHttpStream::ProcessResponseHeaders(
 
   response_info_->connection_info =
       ConnectionInfoFromQuicVersion(quic_session()->GetQuicVersion());
-  response_info_->vary_data.Init(*request_info_,
-                                 *response_info_->headers.get());
   response_info_->was_alpn_negotiated = true;
   response_info_->alpn_negotiated_protocol =
       HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);

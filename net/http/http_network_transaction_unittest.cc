@@ -11169,16 +11169,6 @@ TEST_F(HttpNetworkTransactionTest, ResetStateForRestart) {
   response->response_time = base::Time::Now();
   response->was_cached = true;  // (Wouldn't ever actually be true...)
 
-  { // Setup state for response_.vary_data
-    HttpRequestInfo request;
-    std::string temp("HTTP/1.1 200 OK\nVary: foo, bar\n\n");
-    std::replace(temp.begin(), temp.end(), '\n', '\0');
-    scoped_refptr<HttpResponseHeaders> headers(new HttpResponseHeaders(temp));
-    request.extra_headers.SetHeader("Foo", "1");
-    request.extra_headers.SetHeader("bar", "23");
-    EXPECT_TRUE(response->vary_data.Init(request, *headers.get()));
-  }
-
   // Cause the above state to be reset.
   trans.ResetStateForRestart();
 
@@ -11190,7 +11180,6 @@ TEST_F(HttpNetworkTransactionTest, ResetStateForRestart) {
   EXPECT_FALSE(response->headers);
   EXPECT_FALSE(response->was_cached);
   EXPECT_EQ(0U, response->ssl_info.cert_status);
-  EXPECT_FALSE(response->vary_data.is_valid());
 }
 
 // Test HTTPS connections to a site with a bad certificate

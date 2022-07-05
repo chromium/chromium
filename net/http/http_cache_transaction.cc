@@ -2033,15 +2033,11 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   if (mark_single_keyed_cache_entry_unusable_) {
     response_.single_keyed_cache_entry_unusable = true;
   }
-  if (new_response_->vary_data.is_valid()) {
-    response_.vary_data = new_response_->vary_data;
-  } else if (response_.vary_data.is_valid()) {
-    // There is a vary header in the stored response but not in the current one.
-    // Update the data with the new request headers.
-    HttpVaryData new_vary_data;
-    new_vary_data.Init(*request_, *response_.headers.get());
-    response_.vary_data = new_vary_data;
-  }
+
+  // If the new response didn't have a vary header, we continue to use the
+  // header from the stored response per the effect of headers->Update().
+  // Update the data with the new/updated request headers.
+  response_.vary_data.Init(*request_, *response_.headers);
 
   if (ShouldDisableCaching(*response_.headers)) {
     if (!entry_->doomed) {
@@ -3656,6 +3652,12 @@ bool HttpCache::Transaction::CanResume(bool has_data) {
 
 void HttpCache::Transaction::SetResponse(const HttpResponseInfo& response) {
   response_ = response;
+
+  if (response_.headers) {
+    DCHECK(request_);
+    response_.vary_data.Init(*request_, *response_.headers);
+  }
+
   SyncCacheEntryStatusToResponse();
 }
 
