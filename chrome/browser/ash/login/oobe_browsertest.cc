@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -55,17 +56,9 @@
 
 namespace ash {
 
-class OobeTest : public OobeBaseTest, public testing::WithParamInterface<bool> {
+class OobeTest : public OobeBaseTest, public FeatureAsParameterInterface<1> {
  public:
-  OobeTest() : is_auth_session_enabled_(GetParam()) {
-    if (is_auth_session_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseAuthsessionAuthentication);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseAuthsessionAuthentication);
-    }
-  }
+  OobeTest() = default;
 
   OobeTest(const OobeTest&) = delete;
   OobeTest& operator=(const OobeTest&) = delete;
@@ -98,12 +91,8 @@ class OobeTest : public OobeBaseTest, public testing::WithParamInterface<bool> {
         ->login_window_for_test();
   }
 
- protected:
-  bool is_auth_session_enabled_;
-
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
@@ -129,7 +118,8 @@ IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
   // Create does not make sense in the context of AuthSession,
   // so we only check passed params when AuthSession feature
   // is disabled.
-  if (!is_auth_session_enabled_) {
+  if (!IsFeatureEnabledInThisTestCase(
+          features::kUseAuthsessionAuthentication)) {
     // Key that was passed as mount authentication does not actually matter,
     // but checking it for the sake of completeness.
     const cryptohome::AuthorizationRequest& cryptohome_auth =
@@ -171,6 +161,14 @@ IN_PROC_BROWSER_TEST_P(OobeTest, Accelerator) {
                             false);  // command
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
+
+const auto kAllFeatureVariations = FeatureAsParameterInterface<1>::Generator(
+    {&features::kUseAuthsessionAuthentication});
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OobeTest,
+                         testing::ValuesIn(kAllFeatureVariations),
+                         FeatureAsParameterInterface<1>::ParamInfoToString);
 
 // Checks that update screen is shown with both legacy and actual name stored
 // in the local state.
@@ -271,7 +269,5 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets2kDisplay) {
   EXPECT_EQ(display.width(), 2560);
   EXPECT_EQ(display.height(), 1440);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, OobeTest, testing::Bool());
 
 }  // namespace ash
