@@ -959,7 +959,8 @@ void OverviewSession::OnDisplayAdded(const display::Display& display) {
 
 void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
-  if (window_drag_controller_)
+  // End the current drag if the display changes.
+  if (window_drag_controller_ && window_drag_controller_->item())
     ResetDraggedWindowGesture();
   GetGridWithRootWindow(Shell::GetRootWindowForDisplayId(display.id()))
       ->OnDisplayMetricsChanged();

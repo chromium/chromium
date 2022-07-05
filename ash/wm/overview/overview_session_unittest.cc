@@ -3464,6 +3464,31 @@ TEST_F(TabletModeOverviewSessionTest, HorizontalScrollingOnOverviewItem) {
   EXPECT_LT(leftmost_window->target_bounds(), left_bounds);
 }
 
+// Tests that dragging a fullscreened window to snap in overview does not result
+// in a u-a-f. Regression test for crbug.com/1330042.
+TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
+  UpdateDisplay("800x600");
+
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  WindowState::Get(window.get())->OnWMEvent(&fullscreen_event);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFullscreen());
+
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item = GetOverviewItemForWindow(window.get());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  generator->MoveMouseTo(gfx::Point(10, 300));
+  generator->ReleaseLeftButton();
+
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+}
+
 // A unique test class for testing flings in overview as those rely on observing
 // compositor animations which require a mock time task environment.
 class OverviewSessionFlingTest : public AshTestBase {
