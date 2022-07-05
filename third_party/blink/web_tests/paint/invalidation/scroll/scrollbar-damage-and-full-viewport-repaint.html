@@ -19,17 +19,16 @@ body {
 </style>
 <script src="../resources/text-based-repaint.js" type="text/javascript"></script>
 <script>
-if (window.testRunner) {
-    testRunner.useUnfortunateSynchronousResizeMode();
-}
 function repaintTest() {
     // Invalidation of horizontal scrollbar should be tracked.
     document.getElementById('child').style.width = '2000px';
 }
-window.onload = function() {
+window.onload = async function() {
     // Trigger a full viewport repaint to test if scrollbar damages are cleared
     // even if we shortcut children invalidations.
+    var resizePromise = new Promise(resolve => window.onresize = resolve);
     window.resizeTo(1000, 600);
+    await resizePromise;
     // Invalidation of vertical scrollbar before the repaint test should not be tracked during repaintTest().
     document.getElementById('child').style.height = '2000px';
     runRepaintAndPixelTest();
