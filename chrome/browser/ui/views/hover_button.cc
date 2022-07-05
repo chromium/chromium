@@ -220,13 +220,17 @@ SkColor HoverButton::GetInkDropColor(const views::View* view) {
 
 void HoverButton::SetBorder(std::unique_ptr<views::Border> b) {
   LabelButton::SetBorder(std::move(b));
-  // Make sure the minimum size is correct according to the layout (if any).
-  if (GetLayoutManager())
-    SetMinSize(GetLayoutManager()->GetPreferredSize(this));
+  PreferredSizeChanged();
 }
 
 void HoverButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
+}
+
+void HoverButton::PreferredSizeChanged() {
+  LabelButton::PreferredSizeChanged();
+  if (GetLayoutManager())
+    SetMinSize(GetLayoutManager()->GetPreferredSize(this));
 }
 
 void HoverButton::OnViewBoundsChanged(View* observed_view) {
@@ -246,6 +250,11 @@ void HoverButton::SetSubtitleTextStyle(int text_context,
   subtitle()->SetTextContext(text_context);
   subtitle()->SetTextStyle(text_style);
   subtitle()->SetAutoColorReadabilityEnabled(true);
+
+  // `subtitle_`'s preferred size may have changed. Notify the view because
+  // `subtitle_` is an indirect child and thus
+  // HoverButton::ChildPreferredSizeChanged() is not called.
+  PreferredSizeChanged();
 }
 
 void HoverButton::SetTooltipAndAccessibleName() {

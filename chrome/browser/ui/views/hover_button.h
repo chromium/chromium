@@ -74,6 +74,7 @@ class HoverButton : public views::LabelButton {
   // views::LabelButton:
   void SetBorder(std::unique_ptr<views::Border> b) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void PreferredSizeChanged() override;
   void OnViewBoundsChanged(View* observed_view) override;
 
   // Sets the text style of the title considering the color of the background.
