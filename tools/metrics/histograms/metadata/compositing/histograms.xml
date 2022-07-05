@@ -1409,21 +1409,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.PerSession.AveragePercentDroppedFrames"
-    units="%" expires_after="2022-06-05">
-  <owner>sadrul@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of dropped frames. The metric is reported once per
-    page-load when the page closes.
-
-    AveragePercentDroppedFrames is measured by tracking the number of frames
-    which were not displayed on screen out of the total number of frames
-    expected to be produced and displayed. In other words, the lower this number
-    is, the smoother experience.
-  </summary>
-</histogram>
-
 <histogram
     name="Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow"
     units="%" expires_after="2022-12-04">

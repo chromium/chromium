@@ -1218,9 +1218,6 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   builder.Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramPercentage(
-      "Graphics.Smoothness.PerSession.AveragePercentDroppedFrames",
-      smoothness_data.avg_smoothness);
-  base::UmaHistogramPercentage(
       "Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow",
       smoothness_data.percentile_95);
   base::UmaHistogramPercentage(
