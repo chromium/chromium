@@ -39,21 +39,6 @@ source_set("telemetry_services") {
   ]
 }
 
-source_set("telemetry_services_test") {
-  testonly = true
-  sources = [
-    "fake_diagnostics_service.cc",
-    "fake_diagnostics_service.h",
-  ]
-
-  deps = [
-    ":telemetry_services",
-    "//ash/webui/telemetry_extension_ui/mojom",
-    "//base",
-    "//chrome/test:test_support",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [

@@ -5,8 +5,6 @@
 #ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
 #define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
 
-#include <memory>
-
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,30 +20,13 @@ namespace mojom = ::chromeos::cros_healthd::mojom;
 
 class DiagnosticsService : public health::mojom::DiagnosticsService {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<health::mojom::DiagnosticsService> Create(
-        mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
-
-    static void SetForTesting(Factory* test_factory);
-
-    virtual ~Factory();
-
-   protected:
-    virtual std::unique_ptr<health::mojom::DiagnosticsService> CreateInstance(
-        mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver) = 0;
-
-   private:
-    static Factory* test_factory_;
-  };
-
+  explicit DiagnosticsService(
+      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
   DiagnosticsService(const DiagnosticsService&) = delete;
   DiagnosticsService& operator=(const DiagnosticsService&) = delete;
   ~DiagnosticsService() override;
 
  private:
-  explicit DiagnosticsService(
-      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
   // Ensures that |service_| created and connected to the
   // CrosHealthdDiagnosticsService.
   cros_healthd::mojom::CrosHealthdDiagnosticsService* GetService();

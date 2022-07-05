@@ -4,42 +4,16 @@
 
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
 
-#include <memory>
 #include <utility>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service_converters.h"
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 
 namespace ash {
-
-// static
-DiagnosticsService::Factory* DiagnosticsService::Factory::test_factory_ =
-    nullptr;
-
-// static
-std::unique_ptr<health::mojom::DiagnosticsService>
-DiagnosticsService::Factory::Create(
-    mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver) {
-  if (test_factory_) {
-    return test_factory_->CreateInstance(std::move(receiver));
-  }
-
-  return base::WrapUnique<DiagnosticsService>(
-      new DiagnosticsService(std::move(receiver)));
-}
-
-// static
-void DiagnosticsService::Factory::SetForTesting(Factory* test_factory) {
-  test_factory_ = test_factory;
-}
-
-DiagnosticsService::Factory::~Factory() = default;
 
 DiagnosticsService::DiagnosticsService(
     mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver)
