@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_H_
 
+#include <memory>
+
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
@@ -30,7 +32,7 @@ class DiagnosticsApiFunctionBase
       remote_diagnostics_service_;
 
  private:
-  DiagnosticsService diagnostics_service_;
+  std::unique_ptr<ash::health::mojom::DiagnosticsService> diagnostics_service_;
 };
 
 class OsDiagnosticsGetAvailableRoutinesFunction
