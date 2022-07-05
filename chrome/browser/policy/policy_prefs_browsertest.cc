@@ -19,7 +19,6 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sequence_checker_impl.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -75,11 +74,6 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-    // Add debug information to understand how `V4Database::weak_factory_on_io_`
-    // ends up being used from more than one sequence.
-    // TODO(crbug.com/1341434): Remove after the bug is fixed.
-    base::SequenceCheckerImpl::EnableStackLogging();
-
     GetMockPolicyProvider()->SetDefaultReturns(
         true /* is_initialization_complete_return */,
         true /* is_first_policy_load_complete_return */);
