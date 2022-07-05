@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este închisă</translation>
 <translation id="6393956493820063117">Inserarea de pe <ph name="ORIGIN_NAME" /> în această locație a fost blocată de politica implementată de administrator</translation>
+<translation id="6394852772105848029">Site-ul dorește să deschidă aplicația <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Plâns zgomotos</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="6401136357288658127">Această politică este învechită. Ar trebui să folosești politica <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Modifică marcajul</translation>
+<translation id="6405181733356710802">Accesezi <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Plic)</translation>
 <translation id="6410264514553301377">Introdu data de expirare și codul CVC pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>

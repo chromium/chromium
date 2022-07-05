@@ -831,6 +831,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3226387218769101247">Sličice</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Podatki o različici za napravo in brskalnik</translation>
+<translation id="3229277193950731405">Kopiraj niz različice</translation>
 <translation id="323107829343500871">Vnesite CVC za <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Vedno zaznaj pomembno vsebino na tem spletnem mestu</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prilagoditi videz brskalnika.</translation>
@@ -1960,10 +1961,12 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Preglednica za neujemanje poverilnic poverilnice za varno plačilo je zaprta</translation>
 <translation id="6393956493820063117">Lepljenje iz vira <ph name="ORIGIN_NAME" /> na to mesto je blokiral pravilnik skrbnika.</translation>
+<translation id="6394852772105848029">To spletno mesto želi odpreti aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="6398277657359595425">Točenje solz</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="6401136357288658127">Ta pravilnik je zastarel. Uporabite pravilnik <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Uredi zaznamek</translation>
+<translation id="6405181733356710802">Želite nadaljevati v aplikacijo <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Vnesite datum poteka veljavnosti in kodo CVC za kartico <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium vam lahko pomaga zaščititi račun za Google in spremeniti geslo.</translation>

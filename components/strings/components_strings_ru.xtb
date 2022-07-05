@@ -1959,10 +1959,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Экран несоответствия учетных данных для защищенных платежей закрыт</translation>
 <translation id="6393956493820063117">Администратор запретил вставлять сюда контент со страницы <ph name="ORIGIN_NAME" />.</translation>
+<translation id="6394852772105848029">Этот сайт пытается открыть приложение "<ph name="APP_NAME" />".</translation>
 <translation id="6398277657359595425">Рыдание</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="6401136357288658127">Правило устарело. Используйте <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
+<translation id="6405181733356710802">Открыть приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6406765186087300643">C0 (конверт)</translation>
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Защитите свой аккаунт Google и смените пароль с помощью Chromium.</translation>

@@ -1960,10 +1960,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Arkusz dotyczący braku pasujących danych uwierzytelniających na potrzeby bezpiecznych płatności jest zamknięty</translation>
 <translation id="6393956493820063117">Zasady administratora uniemożliwiają wklejanie tu informacji z <ph name="ORIGIN_NAME" /></translation>
+<translation id="6394852772105848029">Ta strona chce otworzyć aplikację <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Głośny płacz</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
 <translation id="6401136357288658127">Ta zasada została wycofana. Zalecamy używanie zasady <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
+<translation id="6405181733356710802">Otworzyć aplikację <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (koperta)</translation>
 <translation id="6410264514553301377">Wpisz datę ważności i kod CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium może Ci pomóc w zabezpieczeniu Twojego konta Google i zmianie hasła.</translation>

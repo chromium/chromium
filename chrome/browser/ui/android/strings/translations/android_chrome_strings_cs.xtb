@@ -443,6 +443,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="3334729583274622784">Změnit příponu souboru?</translation>
 <translation id="3341262203274374114">Sledování nelze zrušit. Něco se pokazilo.</translation>
 <translation id="3359667936385849800">Použít aktuálního poskytovatele služeb</translation>
+<translation id="3365271666488085187">Chrome může vzít v úvahu tento zájem</translation>
 <translation id="3367813778245106622">Chcete-li zahájit synchronizaci, znovu se přihlaste.</translation>
 <translation id="3373979091428520308">Chcete-li tuto stránku sdílet s jiným zařízením, v nastavení Chromu na druhém zařízení zapněte synchronizaci</translation>
 <translation id="3374023511497244703">Vaše záložky, historie, hesla a další data v Chromu se již nebudou synchronizovat do vašeho účtu Google</translation>
@@ -476,6 +477,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="3542235761944717775">Dostupné místo: <ph name="KILOBYTES" /> kB</translation>
 <translation id="3549657413697417275">Prohledávat historii</translation>
 <translation id="3557336313807607643">Přidat do kontaktů</translation>
+<translation id="3560491354538957576">Web může definovat zájmy</translation>
 <translation id="3563767357928833671">Obsah schránky je zobrazen</translation>
 <translation id="3566923219790363270">Chrome se na virtuální realitu stále připravuje. Restartujte Chrome později.</translation>
 <translation id="3568688522516854065">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte synchronizaci</translation>

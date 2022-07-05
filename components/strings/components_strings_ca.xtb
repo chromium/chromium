@@ -1960,10 +1960,12 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">S'ha tancat el full de credencials no coincidents de credencials de pagament segur</translation>
 <translation id="6393956493820063117">La política de l'administrador no permet enganxar contingut de <ph name="ORIGIN_NAME" /> en aquesta ubicació</translation>
+<translation id="6394852772105848029">Aquest lloc web vol obrir l'aplicació <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Cara que plora molt</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="6401136357288658127">Aquesta política es considera obsoleta. Hauries de fer servir la política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Edita l'adreça d'interès</translation>
+<translation id="6405181733356710802">Vols continuar a <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (sobre)</translation>
 <translation id="6410264514553301377">Introdueix la data de caducitat i el CVC de la targeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium et pot ajudar a protegir el Compte de Google i a canviar la contrasenya.</translation>

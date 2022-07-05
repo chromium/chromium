@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Листът за несъответстващи идентификационни данни за сигурни плащания е затворен</translation>
 <translation id="6393956493820063117">Поставянето на информация от <ph name="ORIGIN_NAME" /> тук е блокирано от администраторски правила</translation>
+<translation id="6394852772105848029">Този сайт иска да отвори приложението <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Рев</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="6401136357288658127">Това правило е оттеглено. Вместо него използвайте <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Редактиране на отметката</translation>
+<translation id="6405181733356710802">Искате ли да продължите към <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (плик)</translation>
 <translation id="6410264514553301377">Въвеждане на датата на валидност и кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да защитите профила си в Google и да промените паролата си.</translation>

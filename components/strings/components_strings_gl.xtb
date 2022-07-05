@@ -1960,10 +1960,12 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está pechada</translation>
 <translation id="6393956493820063117">A política do administrador bloqueou a función de pegar contido nesta localización desde <ph name="ORIGIN_NAME" /></translation>
+<translation id="6394852772105848029">Este sitio quere abrir a aplicación <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Choro desconsolado</translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
 <translation id="6401136357288658127">Esta política quedou obsoleta. Debes utilizar a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
+<translation id="6405181733356710802">Queres ir á aplicación <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (sobre)</translation>
 <translation id="6410264514553301377">Introduce a data de caducidade e o código CVC da tarxeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>

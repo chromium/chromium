@@ -1960,10 +1960,12 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Se ha cerrado la hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="6393956493820063117">La política del administrador no permite pegar desde <ph name="ORIGIN_NAME" /> en esta ubicación.</translation>
+<translation id="6394852772105848029">Este sitio quiere abrir la aplicación <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Llanto</translation>
 <translation id="6398765197997659313">Salir del modo de pantalla completa</translation>
 <translation id="6401136357288658127">Esta política está obsoleta. Deberías usar la política <ph name="NEW_POLICY" /> en su lugar.</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
+<translation id="6405181733356710802">¿Ir a <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (sobre)</translation>
 <translation id="6410264514553301377">Introduce la fecha de vencimiento y el código CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>

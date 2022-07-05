@@ -831,6 +831,7 @@
 <translation id="3226387218769101247">Μικρογραφίες</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3229041911291329567">Πληροφορίες έκδοσης σχετικά με τη συσκευή και το πρόγραμμα περιήγησης</translation>
+<translation id="3229277193950731405">Αντιγραφή συμβολοσειράς έκδοσης</translation>
 <translation id="323107829343500871">Εισαγάγετε τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Να εντοπίζεται πάντα σημαντικό περιεχόμενο σε αυτόν τον ιστότοπο</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
@@ -1964,10 +1965,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Έχει κλείσει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="6393956493820063117">Η επικόλληση από το <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
+<translation id="6394852772105848029">Αυτός ο ιστότοπος θέλει να ανοίξει την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Δυνατό κλάμα</translation>
 <translation id="6398765197997659313">Έξοδος από πλήρη οθόνη</translation>
 <translation id="6401136357288658127">Αυτή η πολιτική έχει καταργηθεί. Θα πρέπει να χρησιμοποιήσετε εναλλακτικά την πολιτική <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
+<translation id="6405181733356710802">Συνέχεια στην εφαρμογή <ph name="APP_NAME" />;</translation>
 <translation id="6406765186087300643">C0 (Φάκελος)</translation>
 <translation id="6410264514553301377">Εισαγάγετε την ημερομηνία λήξης και τον κωδικό CVC για την κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Το Chromium μπορεί να σας βοηθήσει να προστατεύσετε τον Λογαριασμό σας Google και να αλλάξετε τον κωδικό πρόσβασής σας.</translation>

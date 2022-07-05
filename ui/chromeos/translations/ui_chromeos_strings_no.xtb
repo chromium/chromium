@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engelsk (USA) med Dvorak-programmeringstastatur</translation>
 <translation id="1134697384939541955">Engelsk (USA) med utvidet tastatur</translation>
+<translation id="1138691154716715755">Tidligere denne måneden</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> ble funnet.
     <ph name="LINE_BREAK1" />
     Utilstrekkelig plass i lokal lagring. Du trenger <ph name="FILE_SIZE" /> til.
@@ -341,6 +342,7 @@
 <translation id="3971140002794351170">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engelsk (Storbritannia)</translation>
 <translation id="3975895378829046965">Bengali, fonetisk</translation>
+<translation id="3991446849494482687">Dette deaktiverer også SIM-låsinnstillingen på enheten.</translation>
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
 <translation id="4040753847560036377">Feil PUK-kode.</translation>
@@ -377,6 +379,7 @@
 <translation id="4380245540200674032">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
 <translation id="4387004326333427325">Autentiseringssertifikatet ble avvist eksternt</translation>
 <translation id="4394214039309501350">Ekstern link</translation>
+<translation id="4394980935660306080">Tidligere denne uken</translation>
 <translation id="4401287888955153199">Pakk ut alt</translation>
 <translation id="4410695710508688828">Utpakkingsoperasjonen mislyktes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Opprett en snarvei til filene dine</translation>
@@ -420,6 +423,7 @@
 <translation id="4712283082407695269">Åpner «<ph name="PATH" />»</translation>
 <translation id="4720185134442950733">Mobildatanettverk</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> bilder ble sikkerhetskopiert</translation>
+<translation id="4725096204469550614">Tidligere i år</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Landing</translation>
 <translation id="4747271164117300400">Makedonsk</translation>
@@ -469,6 +473,7 @@
 <translation id="508423945471810158">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Det oppsto en feil.</translation>
 <translation id="5098629044894065541">Hebraisk</translation>
+<translation id="5102922915594634436">Administrer synkroniserte mapper</translation>
 <translation id="5109254780565519649">Det oppsto en feil. Noen elementer er kanskje ikke gjenopprettet.</translation>
 <translation id="5110329002213341433">Engelsk (Canada)</translation>
 <translation id="5123433949759960244">Basketball</translation>

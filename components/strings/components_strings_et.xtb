@@ -1960,10 +1960,12 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati, on suletud</translation>
 <translation id="6393956493820063117">Saidilt <ph name="ORIGIN_NAME" /> sellesse asukohta kleepimine on administraatori reegliga blokeeritud</translation>
+<translation id="6394852772105848029">See sait soovib avada rakenduse <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Valjusti nuttev</translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="6401136357288658127">Selle reegli tugi on katkestatud. Peaksite selle asemel kasutama reeglit <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Muuda järjehoidjat</translation>
+<translation id="6405181733356710802">Kas minna edasi rakendusse <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (ümbrik)</translation>
 <translation id="6410264514553301377">Sisestage krediitkaardi <ph name="CREDIT_CARD" /> aegumiskuupäev ja CVC</translation>
 <translation id="6415778972515849510">Chromium aitab teil oma Google'i kontot kaitsta ja parooli muuta.</translation>

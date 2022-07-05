@@ -833,6 +833,7 @@
 <translation id="3226387218769101247">థంబ్‌నెయిల్‌లు</translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
 <translation id="3229041911291329567">మీ పరికరం, బ్రౌజర్‌ల వెర్షన్ సమాచారం</translation>
+<translation id="3229277193950731405">వెర్షన్ స్ట్రింగ్‌ను కాపీ చేయండి</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> కార్డ్ CVCని నమోదు చేయండి</translation>
 <translation id="3234666976984236645">ఈ సైట్‌లో ఎప్పుడూ ముఖ్యమైన కంటెంట్‌ను గుర్తించు</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
@@ -1962,10 +1963,12 @@
 <translation id="6390662030813198813">ఇంజనీరింగ్-E</translation>
 <translation id="6391700400718590966">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ మూసివేయబడలేదు</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> నుండి ఈ లొకేషన్‌లో పేస్ట్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా బ్లాక్ చేయబడింది</translation>
+<translation id="6394852772105848029">ఈ సైట్ <ph name="APP_NAME" /> యాప్‌ను తెరవాలనుకుంటోంది</translation>
 <translation id="6398277657359595425">బిగ్గరగా ఏడవడం</translation>
 <translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="6401136357288658127">ఈ విధానం విస్మరించబడింది. దానికి బదులుగా, మీరు <ph name="NEW_POLICY" /> విధానాన్ని ఉపయోగించాలి.</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" />‌కు కొనసాగించాలా?</translation>
 <translation id="6406765186087300643">C0 (ఎన్వలప్)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> గడువు ముగింపు తేదీ మరియు CVCని నమోదు చేయండి</translation>
 <translation id="6415778972515849510">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chromium మీకు సహాయపడగలదు.</translation>

@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Ingénierie E</translation>
 <translation id="6391700400718590966">L'authentifiant de paiement sécurisé ne correspond pas, la feuille d'authentification est fermée</translation>
 <translation id="6393956493820063117">La politique de l'administrateur bloque le collage de contenu provenant de <ph name="ORIGIN_NAME" /> à cet endroit</translation>
+<translation id="6394852772105848029">Ce site veut ouvrir l'application <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Très triste</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="6401136357288658127">Cette politique est obsolète. Vous devriez utiliser la politique <ph name="NEW_POLICY" /> à la place.</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
+<translation id="6405181733356710802">Continuer vers <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">Enveloppe C0</translation>
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>

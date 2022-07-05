@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">хангул, ромаџа</translation>
 <translation id="112387589102719461">англиски (САД) со програмерска тастатура Dvorak</translation>
 <translation id="1134697384939541955">англиски (САД) со проширена тастатура</translation>
+<translation id="1138691154716715755">Претходно овој месец</translation>
 <translation id="1148097584170732637">Најдени се <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Нема доволно слободен простор во локалната меморија. Потребни се дополнителни <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
 <translation id="4387004326333427325">Одбиена далечинска автентикација на сертификат</translation>
 <translation id="4394214039309501350">Надворешен линк</translation>
+<translation id="4394980935660306080">Претходно оваа седмица</translation>
 <translation id="4401287888955153199">Отпакувај сѐ</translation>
 <translation id="4410695710508688828">Не успеа отпакувањето. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Создајте кратенка за вашите датотеки</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Се отвора „<ph name="PATH" />“</translation>
 <translation id="4720185134442950733">Мобилна мрежа на податоци</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> фотографии се ископирани</translation>
+<translation id="4725096204469550614">Претходно оваа година</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4737050008115666127">Слетување</translation>
 <translation id="4747271164117300400">македонски</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки во <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Настана грешка.</translation>
 <translation id="5098629044894065541">хебрејски</translation>
+<translation id="5102922915594634436">Управувајте со синхронизирани папки</translation>
 <translation id="5109254780565519649">Грешка. Некои ставки можеби не се вратени.</translation>
 <translation id="5110329002213341433">англиски (Канада)</translation>
 <translation id="5123433949759960244">Баскет</translation>

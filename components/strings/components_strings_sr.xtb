@@ -831,6 +831,7 @@
 <translation id="3226387218769101247">Сличице</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3229041911291329567">Информације о верзији за уређај и прегледач</translation>
+<translation id="3229277193950731405">Копирај стринг верзије</translation>
 <translation id="323107829343500871">Унесите CVC за картицу <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Увек откривај важан садржај на овом сајту</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прилагодили изглед прегледача</translation>
@@ -1959,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Затворено је обавештење да нема акредитива који се подударају за безбедно плаћање</translation>
 <translation id="6393956493820063117">Смернице за администраторе блокирају налепљивање са <ph name="ORIGIN_NAME" /> на ову локацију</translation>
+<translation id="6394852772105848029">Овај сајт жели да отвори апликацију <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Гласно плаче</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="6401136357288658127">Ове смернице су застареле. Уместо њих треба да користите нове смернице <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Измена обележивача</translation>
+<translation id="6405181733356710802">Желите ли да наставите на: <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (коверат)</translation>
 <translation id="6410264514553301377">Унесите датум истека и CVC за картицу <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium може да вам помогне да заштитите Google налог и промените лозинку.</translation>

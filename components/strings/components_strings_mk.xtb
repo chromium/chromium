@@ -831,6 +831,7 @@
 <translation id="3226387218769101247">Сликички</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3229041911291329567">Информации за верзијата за уредот и прелистувачот</translation>
+<translation id="3229277193950731405">Копирај ја низата на верзијата</translation>
 <translation id="323107829343500871">Внесете го CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Секогаш откривај важна содржина на оваа локација</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го приспособите изгледот на прелистувачот</translation>
@@ -1960,10 +1961,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Листот што означува дека нема акредитив што се совпаѓа за акредитивот за безбедно плаќање е затворен</translation>
 <translation id="6393956493820063117">Лепењето од <ph name="ORIGIN_NAME" /> на локацијава е блокирано со правило на администраторот</translation>
+<translation id="6394852772105848029">Сајтов сака да ја отвори апликацијата <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Гласно плачење</translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="6401136357288658127">Правилово е неподдржано. Наместо него, треба да го користите правилото <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
+<translation id="6405181733356710802">Сакате да продолжите кон <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (плик)</translation>
 <translation id="6410264514553301377">Внесете ги датумот на истекување и CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да ја заштитите сметката на Google и да ја промените лозинката.</translation>

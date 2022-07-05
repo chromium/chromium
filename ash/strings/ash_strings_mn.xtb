@@ -152,6 +152,7 @@
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, одоогоор <ph name="DATE" />-г сонгосон.</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
+<translation id="1797271123677381264">Нууц үгээ мартсан</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1812997170047690955">Миний дэлгэцэд юу байна вэ?</translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
@@ -610,6 +611,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
 <translation id="4505050298327493054">Идэвхтэй дэлгэц.</translation>
+<translation id="450584155212756404">Dev суваг</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4518404433291145981">Chromebook-нхээ түгжээг тайлахын тулд эхлээд утасныхаа түгжээг тайлна уу</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж хослох зөвшөөрөл хүсч байна.</translation>
@@ -877,6 +879,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" />-н дотор та сүлжээнээс автоматаар гарах болно.</translation>
 <translation id="6064463340679478396">Файлыг ашиглаж дууссан</translation>
 <translation id="6073451960410192870">Бичихийг зогсоох</translation>
+<translation id="6074087755403037157">Бета суваг</translation>
 <translation id="6099678161144790572">Өнгөрсөн сард зассан</translation>
 <translation id="6103838137565245112">систем</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
@@ -1227,6 +1230,7 @@
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8203795194971602413">Баруун талыг товших</translation>
 <translation id="8209010265547628927">Шинэчлэх</translation>
+<translation id="8214996719228530800">Канар суваг</translation>
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
 <translation id="8236042855478648955">Завсарлах цаг</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>

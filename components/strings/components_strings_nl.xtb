@@ -1954,10 +1954,12 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Pagina gesloten waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
 <translation id="6393956493820063117">Plakken van <ph name="ORIGIN_NAME" /> naar deze locatie is geblokkeerd op basis van beheerdersbeleid</translation>
+<translation id="6394852772105848029">Deze site wil de <ph name="APP_NAME" />-app openen</translation>
 <translation id="6398277657359595425">Hard huilend</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
 <translation id="6401136357288658127">Dit beleid is beëindigd. Gebruik in plaats daarvan dit beleid: <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Bookmark bewerken</translation>
+<translation id="6405181733356710802">Doorgaan naar <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (envelop)</translation>
 <translation id="6410264514553301377">Geef de vervaldatum en CVC-code op voor <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium kan je helpen je Google-account te beschermen en je wachtwoord te wijzigen.</translation>

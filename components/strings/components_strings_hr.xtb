@@ -1959,10 +1959,12 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Zatvoren je list obavijesti da nema podudarnih vjerodajnica za sigurno plaćanje</translation>
 <translation id="6393956493820063117">Lijepljenje s <ph name="ORIGIN_NAME" /> na ovu lokaciju blokirano je pravilima administratora</translation>
+<translation id="6394852772105848029">Ova web-lokacija želi otvoriti aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Glasno plakanje</translation>
 <translation id="6398765197997659313">Izađi iz cijelog zaslona</translation>
 <translation id="6401136357288658127">Pravilo je ukinuto. Trebali biste koristiti pravilo <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Uredi oznaku</translation>
+<translation id="6405181733356710802">Nastaviti u aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (omotnica)</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium vam može pomoći da zaštitite svoj Google račun i promijenite zaporku.</translation>

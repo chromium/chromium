@@ -382,6 +382,7 @@
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" сүлжээнээс шаардсан гэрчилгээ нь суугдаагүй дээр нь хүчингүй болсон байна. Шинэ гэрчилгээ аваад, дахин холбогдохыг оролдож үзээрэй.</translation>
 <translation id="1375321115329958930">Хадгалагдсан нууц үг</translation>
 <translation id="1375557162880614858">Та ChromeOS Flex-н бүрэлдэхүүн дэлгэц уншигч болох ChromeVox-г идэвхжүүлэхийг хүсэж байна уу?</translation>
+<translation id="1375938286942050085">Тохируулга дууслаа! Дараа нь төхөөрөмжөө тоглоом тоглоход бэлэн болгоорой</translation>
 <translation id="137651782282853227">Хадгалсан хаяг энд харагдана</translation>
 <translation id="1376771218494401509">Цонхыг &amp;нэрлэх...</translation>
 <translation id="1377600615067678409">Одоогоор алгасъя</translation>
@@ -396,6 +397,7 @@
 <translation id="138784436342154190">Өгөгдмөл эхлүүлэх хуудсыг сэргээх үү?</translation>
 <translation id="1388253969141979417">Таны микрофоныг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1388728792929436380">Шинэчилж дуусахад <ph name="DEVICE_TYPE" /> дахин эхэлнэ.</translation>
+<translation id="1389601498324964367">Квотоор удирддаг хадгалах сан</translation>
 <translation id="139013308650923562">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1390548061267426325">Энгийн цонх хэлбэрээр нээх</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> нь <ph name="PRINTER_NAME" />-р хэвлэх зөвшөөрөлгүй. Админтайгаа холбогдоно уу.</translation>
@@ -1071,6 +1073,7 @@
 <translation id="1992924914582925289">Төхөөрөмжөөс хасах</translation>
 <translation id="1994173015038366702">Сайтын URL</translation>
 <translation id="1995916364271252349">Ямар мэдээллийг сайтууд ашиглаж, харуулж (байршил, камер, үзэгдэх болон бусад зүйл) болохыг хянадаг</translation>
+<translation id="1997433994358798851">Chrome-д таны төхөөрөмжтэй холбогдохын тулд Bluetooth-г ашиглах зөвшөөрөл шаардлагатай</translation>
 <translation id="1997616988432401742">Таны сертификат</translation>
 <translation id="1999115740519098545">Эхлүүлэх</translation>
 <translation id="2000419248597011803">Таны өгөгдмөл хайлтын системд хаяг оруулах хэсэг, хайх хэсгийн зарим күүки болон хайлтыг илгээдэг</translation>
@@ -1735,6 +1738,7 @@
 <translation id="25899519884572181">Уншигчийн горимоос гарах</translation>
 <translation id="2593499352046705383">Эхлэхээсээ өмнө өгөгдлөө нөөцөлсөн эсэхээ шалгана уу. <ph name="DEVICE_OS" />-г суулгаснаар таны хатуу дискийг дарж бичнэ. Та g.co/flex/InstallGuide дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="2594999711683503743">Google-с хайх эсвэл URL бичих</translation>
+<translation id="2599048253926156421">Хэрэглэгчийн нэрийг түр санах ойд хуулсан</translation>
 <translation id="2602501489742255173">Эхлүүлэхийн тулд дээш шударна уу</translation>
 <translation id="2603115962224169880">Компьютерийг цэвэрлэх</translation>
 <translation id="2603355571917519942">Voice Match бэлэн байна</translation>
@@ -1958,6 +1962,7 @@
 <translation id="2804043232879091219">Өөр хөтчийг нээж чадсангүй</translation>
 <translation id="2804667941345577550">Та энэ сайтаас гарах бөгөөд үүнд нээлттэй табын сайт мөн багтана</translation>
 <translation id="2804680522274557040">Камерыг унтраасан</translation>
+<translation id="280518252911523675">Хэрэв та хуучин нууц үгээ оруулалгүйгээр үргэлжлүүлбэл таны дотоод өгөгдлийг устгана. Та энэ хэрэглэгчийг дахин тохируулахын тулд Google Бүртгэлээрээ нэвтэрнэ.</translation>
 <translation id="2805539617243680210">Тохируулж дууслаа!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">Програм</translation>
@@ -3073,6 +3078,7 @@
 <translation id="3895090224522145010">Kerberos хэрэглэгчийн нэр</translation>
 <translation id="389521680295183045">Сайтууд таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{1 зураг}other{# зураг}}</translation>
+<translation id="3897746662269329507">Таны <ph name="DEVICE_TYPE" /> тоглоом тоглоход зориулагдсан. Дараа нь Судлах апп нээгдэх бөгөөд эндээс та сүүлийн үеийн зуу зуун тоглоомд хандах, тоглоомын санал харах болон төхөөрөмжид тань дагалдаж ирсэн тоглоомын онцлогуудтай танилцах боломжтой.</translation>
 <translation id="3898233949376129212">Төхөөрөмжийн хэл</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> дараах зөвшөөрлүүдийг хүсэж байна: <ph name="FIRST_PERMISSION" /> болон <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Гар сонгох</translation>
@@ -3222,6 +3228,7 @@
 <translation id="4033471457476425443">Шинэ фолдер нэмэх</translation>
 <translation id="4033711848170683365">Энэ нь уг төхөөрөмжөөс интернэтээр үзсэн өгөгдлийг бүрмөсөн устгана. Энэ профайл дахь Google Бүртгэлүүдийг таны <ph name="DEVICE_TYPE" /> дээрх бусад апп ашиглаж магадгүй. Та эдгээр бүртгэлийг <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />-с хасах боломжтой.</translation>
 <translation id="4033963223187371752">Аюулгүй сайтууд аюултай зураг эсвэл вебийн фрейм зэрэг контентыг оруулж магадгүй</translation>
+<translation id="4034741552964543387">Дотоод өгөгдөлгүйгээр үргэлжлүүлэх</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
 <translation id="4035758313003622889">&amp; Асуудлын менежер</translation>
 <translation id="4035877632587724847">Бүү зөвшөөр</translation>
@@ -3413,6 +3420,7 @@
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="4242577469625748426">Төхөөрөмж дээр холбогдох бодлогын тохиргоог суурьлуулах үйлдэл амжилтгүй болсон байна: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">Хэвлэгчийг түр зогсоосон</translation>
+<translation id="424423026762293842">Дотоод өгөгдлөө сэргээнэ үү</translation>
 <translation id="4244238649050961491">Мэдрэгч үзэгний бусад аппыг хайх</translation>
 <translation id="4246980464509998944">Нэмэлт сэтгэгдэл:</translation>
 <translation id="424726838611654458">Adobe Reader-д үргэлж нээж байх</translation>
@@ -4972,6 +4980,7 @@
 <translation id="5792728279623964091">Асаах товчийг товшино уу</translation>
 <translation id="5793339252089865437">Хэрэв та шинэчлэлтийг мобайл сүлжээгээрээ татвал нэмэлт төлбөр гарч болзошгүй.</translation>
 <translation id="5793420564274426163">Хослуулалтын баталгаажуулалт</translation>
+<translation id="5793430094159150686">Таны нууц үг өөрчлөгдсөн байна. Дотоод өгөгдлөө сэргээхийн тулд та хуучин нууц үгээ оруулах шаардлагатай.</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> дэлгэцэд хөтчийн <ph name="NUM_BROWSERS" /> цонх нээлттэй байна</translation>
 <translation id="5794414402486823030">Систем харагчтай үргэлж хамт нээх</translation>
 <translation id="5794700615121138172">Linux-н хуваалцсан фолдерууд</translation>
@@ -5895,6 +5904,7 @@
 <translation id="6700093763382332031">Үүрэн холбооны SIM-н түгжээ</translation>
 <translation id="6700480081846086223">Каст хийх <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Хувийн мэдээллийг олж авч чадсангүй.</translation>
+<translation id="6701824422332982935">Эдгээр өргөтгөлийг ашиглахын тулд хуудсыг дахин ачаална уу</translation>
 <translation id="6702639462873609204">&amp;Засах ...</translation>
 <translation id="6703212423117969852">Та дараа Chrome-д дахин оролдох боломжтой.</translation>
 <translation id="6703254819490889819">Нөөцлөлтийг сэргээх</translation>
@@ -7121,6 +7131,7 @@
 <translation id="7903742244674067440">Танд эдгээр сертификатын эрхийг тодорхойлох файлын сертификат байна</translation>
 <translation id="7903925330883316394">Хэрэгсэл: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Linux портыг сүлжээнийхээ бусад төхөөрөмжид боломжтой болгоно уу.</translation>
+<translation id="7906440585529721295">Дотоод өгөгдлийг устгана</translation>
 <translation id="7907837847548254634">Төвлөрсөн объектыг шуурхай тодруулан харуулах</translation>
 <translation id="7908378463497120834">Уучлаарай, таны гадаад хадгалалтын төхөөрөмжийн нэг ч хэсгийг холбож чадсангүй.</translation>
 <translation id="7909324225945368569">Профайлынхаа нэрийг өөрчлөх</translation>
@@ -7457,6 +7468,7 @@
 <translation id="822050276545350872">Үүнээс хойш хүлээх шаардлагагүй болно</translation>
 <translation id="8221491193165283816">Та ихэвчлэн мэдэгдлийг хориглодог. Энэ сайтад танд мэдэгдэхийг зөвшөөрөхийн тулд энд товшино уу.</translation>
 <translation id="822347941086490485">HID төхөөрөмжүүдийг хайж байна...</translation>
+<translation id="8223573963214454788">Үргэлжлүүлээд, өгөгдлийг устгах</translation>
 <translation id="8225046344534779393">Интернэт холболтоо шалгана уу</translation>
 <translation id="8225265270453771718">Аппликейшний цонхыг хуваалцах</translation>
 <translation id="8226222018808695353">Хориотой</translation>
@@ -7557,6 +7569,7 @@
 <translation id="8314381333424235892">Өргөтгөл байхгүй эсвэл устгагдсан</translation>
 <translation id="831440797644402910">Энэ фолдерыг нээх боломжгүй байна</translation>
 <translation id="8314835274931377415">Сэлгүүрийн тохируулгыг эхлүүлэх үү?</translation>
+<translation id="8317582043908962055">P&amp;DF текстийг таних</translation>
 <translation id="8317671367883557781">Сүлжээний холболт нэмэх</translation>
 <translation id="8319414634934645341">Өргөтгөсөн гол хэрэглээ</translation>
 <translation id="8321837372750396788">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирдана.</translation>
@@ -8440,6 +8453,7 @@
 <translation id="9203398526606335860">&amp;Profiling идэвхжсэн</translation>
 <translation id="9203904171912129171">Төхөөрөмж сонгох</translation>
 <translation id="9206889157914079472">Түгжигдсэн дэлгэцээс мэдрэгч үзгээр тэмдэглэл хөтлөх</translation>
+<translation id="9208192193641542858">Дотоод өгөгдлийг таны хуучин нууц үгээр хамгаалдаг. Хэрэв та нууц үгээ саяхан өөрчилсөн бол хуучин нууц үгээрээ дахин оролдоно уу.</translation>
 <translation id="9209563766569767417">Linux контейнерын тохируулгыг шалгаж байна</translation>
 <translation id="9209689095351280025">Сайтууд нь таныг веб дээр хянадаг күүкиг ашиглах боломжгүй байна</translation>
 <translation id="9211177926627870898">Шинэчлэх шаардлагатай</translation>

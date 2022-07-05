@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Slå av mørk modus</translation>
 <translation id="1881188606372070653">Gå til <ph name="BEGIN_LINK1" />siden for juridisk hjelp<ph name="END_LINK1" /> for å be om innholdsendringer på juridisk grunnlag. Noe konto- og systeminformasjon kan bli sendt til Google. Vi bruker informasjonen du gir oss, til å løse tekniske problemer og forbedre tjenestene våre i henhold til <ph name="BEGIN_LINK2" />personvernreglene<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />vilkårene for bruk<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
+<translation id="1904932688895783618">Her er noen andre nyttige ressurser:</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
 <translation id="1932611479324127242">Batteriavkutting</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="2016848882344942759">– ikke noe eget varemerke –</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Koble til et nettverk og last inn siden på nytt for å se skjermspareren.</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
@@ -153,6 +155,7 @@
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2177831236093724629">Fant <ph name="LINK_BEGIN" />ikke-kvalifiserte komponenter<ph name="LINK_END" />. For å sikre at alle kvalifiserte komponenter identifiseres, oppdater Chrome OS til nyeste versjon.</translation>
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
+<translation id="2182088270354640012">Takk for tilbakemeldingen. Tilbakemeldingen din bidrar til å gjøre Chrome OS bedre og blir gjennomgått av Chrome OS-teamet. På grunn av antallet rapporter vi mottar, kan vi ikke gi deg noe direkte svar.</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
 <translation id="2212733584906323460">Navneoppslag</translation>
 <translation id="2217935453350629363">Nåværende hastighet</translation>
@@ -256,6 +259,7 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
+<translation id="3275729367986477355">Brukerbilde</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger filen}other{Rediger filene}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Nøkkelretning</translation>
@@ -429,6 +433,7 @@
 <translation id="4793710386569335688">For å få mer hjelp, gå til <ph name="BEGIN_LINK" />brukerstøtten<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme for komprimering</translation>
 <translation id="4794140124556169553">Kjøring av en prosessortest kan påvirke systemets ytelse</translation>
+<translation id="4800589996161293643">Chromebook-fellesskapet</translation>
 <translation id="4804818685124855865">Koble fra</translation>
 <translation id="4808449224298348341">Avbrøt utskriftsjobben <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Lyst tema</translation>
@@ -488,6 +493,7 @@
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logg av</translation>
+<translation id="522307662484862935">Ikke ta med e-postadressen</translation>
 <translation id="5227902338748591677">Tidsplan for mørkt tema</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5252456968953390977">Datastreifing</translation>
@@ -614,6 +620,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6284632978374966585">Slå på mørkt tema</translation>
 <translation id="6295178529664209245">Vil du fortsette reparasjonen?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
+<translation id="631063167932043783">Utforsk-appen</translation>
 <translation id="6319207335391420837">Oppdater fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Slå på skjermspareren</translation>
 <translation id="6325525973963619867">Mislykket</translation>
@@ -721,6 +728,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7297226631177386107">Kan ikke koble til HTTPS-nettsteder gjennom brannmuren</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Spør ekspertene i Chromebook-hjelpeforumet</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i Google Søk.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
@@ -763,9 +771,11 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="773153675489693198">Syklusantall</translation>
 <translation id="7747039790905080783">Forhåndsdelt nøkkel</translation>
 <translation id="7762130827864645708">Passordendringen var vellykket. Bruk det nye passordet fra nå av.</translation>
+<translation id="7762839321248874531">Send <ph name="BEGIN_LINK1" />system- og appinformasjon<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />verdier<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Samsvarende domenesuffiks</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7784116172884276937">Ingen DNS-tjenere er konfigurert</translation>
+<translation id="779591286616261875">Send ny rapport</translation>
 <translation id="7799817062559422778">Lys modus</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -832,6 +842,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8382302752385457774">Eget varemerke</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
+<translation id="8420955526972171689">Kjør tester og feilsøking for maskinvareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Internt tastatur</translation>
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
@@ -917,6 +928,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9082718469794970195">Bruk denne videoen</translation>
 <translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
+<translation id="9092255287806472980">Tilbakemeldingen din bidrar til å gjøre Chrome OS bedre. Den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Du må ta enheten fra hverandre</translation>
 <translation id="9098156406873149060">Behold brukerdata</translation>

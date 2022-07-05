@@ -1960,10 +1960,12 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är stängt</translation>
 <translation id="6393956493820063117">Möjligheten att klistra in från <ph name="ORIGIN_NAME" /> här blockeras av administratörspolicyn</translation>
+<translation id="6394852772105848029">Webbplatsen vill öppna <ph name="APP_NAME" />-appen</translation>
 <translation id="6398277657359595425">Storgråter</translation>
 <translation id="6398765197997659313">Avsluta helskärmsläge</translation>
 <translation id="6401136357288658127">Den här principen är utfasad. Använd principen <ph name="NEW_POLICY" /> i stället.</translation>
 <translation id="6404511346730675251">Redigera bokmärke</translation>
+<translation id="6405181733356710802">Vill du fortsätta till <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (kuvert)</translation>
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Du kan skydda Google-kontot genom att byta lösenord.</translation>

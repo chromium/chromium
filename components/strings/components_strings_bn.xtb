@@ -832,6 +832,7 @@
 <translation id="3226387218769101247">থাম্বনেল দেখুন</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3229041911291329567">আপনার ডিভাইস এবং ব্রাউজারের ভার্সন সম্বন্ধীয় তথ্য</translation>
+<translation id="3229277193950731405">ভার্সন স্ট্রিং কপি করুন</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-এর CVC লিখুন</translation>
 <translation id="3234666976984236645">এই সাইটে সবসময় গুরুত্বপূর্ণ কন্টেন্ট শনাক্ত করুন</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
@@ -1960,10 +1961,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">সুরক্ষিত পেমেন্ট ক্রেডেনশিয়ালের সাথে মিল নেই এমন ক্রেডেনশিয়াল শিট বন্ধ আছে</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> থেকে কপি করে এই লোকেশনে পেস্ট করা অ্যাডমিনিস্ট্রেটর পলিসির মাধ্যমে ব্লক করা হয়েছে</translation>
+<translation id="6394852772105848029">এই সাইট <ph name="APP_NAME" /> অ্যাপ খুলতে চায়</translation>
 <translation id="6398277657359595425">সশব্দে কান্নাকাটি করা</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="6401136357288658127">এই নীতি বন্ধ করে দেওয়া হয়েছে। পরিবর্তে আপনাকে <ph name="NEW_POLICY" /> নীতি ব্যবহার করতে হবে।</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" />-এ চালিয়ে যেতে চান?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Enter the expiration date and CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">আপনার পাসওয়ার্ড পরিবর্তন করে Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chromium সাহায্য করতে পারবে।</translation>

@@ -1960,10 +1960,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Eşleşmeyen güvenli ödeme kimlik bilgisi sayfası kapatıldı</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> sitesinden bu konuma yapıştırma işlevi, yönetici politikası tarafından engellendi</translation>
+<translation id="6394852772105848029">Bu site, <ph name="APP_NAME" /> uygulamasını açmak istiyor</translation>
 <translation id="6398277657359595425">Yüksek Sesle Ağlama</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="6401136357288658127">Bu politika kullanımdan kaldırılmıştır. Onun yerine <ph name="NEW_POLICY" /> politikasını kullanmalısınız.</translation>
 <translation id="6404511346730675251">Yer işaretini düzenle</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> uygulamasına devam edilsin mi?</translation>
 <translation id="6406765186087300643">C0 (Zarf)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> numaralı kartın son kullanma tarihini ve CVC kodunu girin</translation>
 <translation id="6415778972515849510">Chromium, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>

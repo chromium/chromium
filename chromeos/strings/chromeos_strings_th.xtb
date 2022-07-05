@@ -123,6 +123,7 @@
 <translation id="188114911237521550">ปิดโหมดมืด</translation>
 <translation id="1881188606372070653">ไปที่<ph name="BEGIN_LINK1" />หน้าความช่วยเหลือด้านกฎหมาย<ph name="END_LINK1" />เพื่อส่งคำขอเปลี่ยนแปลงเนื้อหาด้วยเหตุผลทางกฎหมาย อาจมีการส่งข้อมูลระบบและบัญชีบางอย่างไปยัง Google เราจะใช้ข้อมูลดังกล่าวเพื่อช่วยแก้ไขปัญหาทางเทคนิคและปรับปรุงบริการ โดยเป็นไปตาม<ph name="BEGIN_LINK2" />นโยบายความเป็นส่วนตัว<ph name="END_LINK2" />และ<ph name="BEGIN_LINK3" />ข้อกำหนดในการให้บริการ<ph name="END_LINK3" /></translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
+<translation id="1904932688895783618">แหล่งข้อมูลอื่นๆ บางส่วนที่เป็นประโยชน์มีดังต่อไปนี้</translation>
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
 <translation id="1932611479324127242">ตัดแรงดันไฟฟ้าของแบตเตอรี่</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
 <translation id="2016848882344942759">--ไม่มีไวท์เลเบล--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
 <translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">การจับคู่ส่วนต่อท้ายโดเมน</translation>
 <translation id="7769672763586021400">รหัสรุ่น</translation>
 <translation id="7784116172884276937">ไม่มีเซิร์ฟเวอร์ DNS ที่ตั้งค่าไว้</translation>
+<translation id="779591286616261875">ส่งรายงานใหม่</translation>
 <translation id="7799817062559422778">โหมดสว่าง</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7805768142964895445">สถานะ</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">ใช้วิดีโอนี้</translation>
 <translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
+<translation id="9092255287806472980">ความคิดเห็นของคุณจะช่วยปรับปรุง Chrome OS และได้รับการตรวจสอบจากทีม แต่เราจะตอบกลับไม่ได้เนื่องจากได้รับรายงานเข้ามาเป็นจำนวนมาก</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">คุณจะต้องแยกชิ้นส่วนอุปกรณ์</translation>
 <translation id="9098156406873149060">เก็บข้อมูลผู้ใช้ไว้</translation>

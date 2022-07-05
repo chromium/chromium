@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangulski način Romaja</translation>
 <translation id="112387589102719461">angleščina (ZDA) s tipkovnico Dvorak za programerje</translation>
 <translation id="1134697384939541955">angleščina (ZDA) z razširjeno tipkovnico</translation>
+<translation id="1138691154716715755">Prej v tem mesecu</translation>
 <translation id="1148097584170732637">Št. najdenih: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     V lokalni shrambi ni dovolj prostora. Potrebujete dodatnih <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="4387004326333427325">Potrdilo za preverjanje pristnosti je bilo zavrnjeno na oddaljeni lokaciji</translation>
 <translation id="4394214039309501350">Zunanja povezava</translation>
+<translation id="4394980935660306080">Prej v tem tednu</translation>
 <translation id="4401287888955153199">Razširi vse</translation>
 <translation id="4410695710508688828">Dejanje ekstrahiranja ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Ustvarite bližnjico za svoje datoteke</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Odpiranje arhiva »<ph name="PATH" />«</translation>
 <translation id="4720185134442950733">Mobilno podatkovno omrežje</translation>
 <translation id="4724850507808590449">Št. varnostno kopiranih fotografij: <ph name="FILE_COUNT" /></translation>
+<translation id="4725096204469550614">Prej v tem letu</translation>
 <translation id="4725511304875193254">Valižanski ovčar</translation>
 <translation id="4737050008115666127">Pristanek</translation>
 <translation id="4747271164117300400">makedonščina</translation>

@@ -1955,10 +1955,12 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Xavfsiz toʻlov maʼlumotlari yopilgan jadvaldagi maʼlumotlarga mos kelmadi</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> saytidan bu manzilga joylashni administrator taqiqlagan</translation>
+<translation id="6394852772105848029">Bu sayt <ph name="APP_NAME" /> ilovasini ochmoqchi</translation>
 <translation id="6398277657359595425">Hoʻngrab yigʻlash</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="6401136357288658127">Bu parametr eskirgan. Oʻrniga <ph name="NEW_POLICY" /> parametridan foydalaning.</translation>
 <translation id="6404511346730675251">Xatcho‘pni tahrirlash</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> ochilsinmi?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> kartasining amal qilish muddati va CVC kodini kiriting</translation>
 <translation id="6415778972515849510">Chromium Google hisobingizni himoyalash va parolni almashtirish uchun yordam beradi.</translation>

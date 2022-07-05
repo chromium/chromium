@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Караңгы теманы өчүрүү</translation>
 <translation id="1881188606372070653">Эгер кандайдыр бир мыйзам бузулуп жатса, <ph name="BEGIN_LINK1" />Юридикалык жардам бетине<ph name="END_LINK1" /> өтүңүз. Аккаунт жана тутум жөнүндө айрым маалымат Google'га жөнөтүлүшү мүмкүн. Сиз берген маалыматты <ph name="BEGIN_LINK2" />Купуялык саясаты<ph name="END_LINK2" /> менен <ph name="BEGIN_LINK3" />Тейлөө шарттарына<ph name="END_LINK3" /> ылайык техникалык маселелерди чечүү жана кызматтарыбызды жакшыртуу үчүн пайдаланабыз.</translation>
 <translation id="1887850431809612466">Жабдыкты оңдоо</translation>
+<translation id="1904932688895783618">Бул жерде башка пайдалуу булактар келтирилди:</translation>
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
 <translation id="1908234395526491708">Ишке ашпай калган UDP сурамдары</translation>
 <translation id="1932611479324127242">Батареяны өчүрүү</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Бузулууларды аныктап оңдоо кадамдарын аткарып көрүңүз</translation>
 <translation id="2016848882344942759">--ак энбелги жок--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Көшөгөнү көрүү үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>
 <translation id="2080070583977670716">Дагы параметрлер</translation>
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
 <translation id="2105810540595158374">Түзмөк — оюнду көзөмөлдөгүч.</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">Домен суффиксине окшош</translation>
 <translation id="7769672763586021400">Үлгү ID'си</translation>
 <translation id="7784116172884276937">DNS серверлери туураланган жок</translation>
+<translation id="779591286616261875">Жаңы кабарды жөнөтүү</translation>
 <translation id="7799817062559422778">Жарык режим</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7805768142964895445">Статусу</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">Ушул видеону колдонуу</translation>
 <translation id="9087578468327036362">Бул сурам тууралуу кабарлоо</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
+<translation id="9092255287806472980">Пикириңиз Chrome OS'ту жакшыртууга жардам берип, жамаатыбыз тарабынан каралып чыгат. Кабарлардын көп болгонуна байланыштуу жооп жаза албайбыз.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Түзмөктү ажыратышыңыз керек болот</translation>
 <translation id="9098156406873149060">Колдонуучунун маалыматын сактоо</translation>

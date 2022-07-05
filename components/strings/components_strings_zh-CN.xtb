@@ -1955,10 +1955,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">“无匹配的安全付款凭据”表单已关闭</translation>
 <translation id="6393956493820063117">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容粘贴到此处</translation>
+<translation id="6394852772105848029">此网站想打开<ph name="APP_NAME" />应用</translation>
 <translation id="6398277657359595425">嚎啕大哭</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6401136357288658127">此政策已被弃用。您应改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">修改书签</translation>
+<translation id="6405181733356710802">继续访问<ph name="APP_NAME" />？</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">请输入“<ph name="CREDIT_CARD" />”的到期日期和银行卡验证码 (CVC)</translation>
 <translation id="6415778972515849510">Chromium 可以帮助您保护您的 Google 帐号和更改密码。</translation>

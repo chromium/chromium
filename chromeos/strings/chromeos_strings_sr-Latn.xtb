@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Isključite tamni režim</translation>
 <translation id="1881188606372070653">Idite na <ph name="BEGIN_LINK1" />stranicu pravne pomoći<ph name="END_LINK1" /> da biste zatražili promene sadržaja iz pravnih razloga. Neke informacije o nalogu i sistemu mogu da se šalju Google-u. Koristićemo informacije koje nam date kao pomoć u rešavanju tehničkih problema i u cilju poboljšanja usluga, a shodno <ph name="BEGIN_LINK2" />politici privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />uslovima korišćenja usluge<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
+<translation id="1904932688895783618">Evo još nekih korisnih resursa:</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspeli UDP zahtevi</translation>
 <translation id="1932611479324127242">Gašenje baterije</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Isprobajte korake za rešavanje problema</translation>
 <translation id="2016848882344942759">--nema bele oznake--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Povežite se na mrežu i ponovo učitajte stranicu da biste videli čuvar ekrana.</translation>
 <translation id="2080070583977670716">Više podešavanja</translation>
 <translation id="2085089206770112532">Smanjite osvetljenost ekrana</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za igre.</translation>
@@ -773,6 +775,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7763470514545477072">Podudaranje sufiksa domena</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Nije podešen nijedan DNS server</translation>
+<translation id="779591286616261875">Pošalji novi izveštaj</translation>
 <translation id="7799817062559422778">Svetli režim</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -925,6 +928,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9082718469794970195">Koristi ovaj video</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>
+<translation id="9092255287806472980">Povratne informacije nam pomažu da poboljšamo Chrome OS i pregledaće ih naš tim. Zbog velikog broja izveštaja ne možemo da šaljemo odgovore.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Treba da rastavite ovaj uređaj</translation>
 <translation id="9098156406873149060">Zadrži podatke korisnika</translation>

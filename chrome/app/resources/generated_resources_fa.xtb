@@ -383,6 +383,7 @@
 <translation id="1374844444528092021">گواهی‌نامه مورد نیاز شبکه "<ph name="NETWORK_NAME" />" یا نصب نشده است و یا دیگر اعتبار ندارد. لطفاً گواهی‌نامه جدیدی بگیرید و دوباره سعی کنید وصل شوید.</translation>
 <translation id="1375321115329958930">رمزهای ورود ذخیره شده</translation>
 <translation id="1375557162880614858">‏آیا می‌خواهید ChromeVox را که صفحه‌خوان داخلی ChromeOS Flex است فعال کنید؟</translation>
+<translation id="1375938286942050085">راه‌اندازی کامل شد! سپس، دستگاهتان را برای بازی آماده کنید</translation>
 <translation id="137651782282853227">نشانی‌های ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
 <translation id="1376771218494401509">نام‌گذاری پنجره…</translation>
 <translation id="1377600615067678409">فعلاً رد شود</translation>
@@ -397,6 +398,7 @@
 <translation id="138784436342154190">صفحه شروع پیش‌فرض بازیابی شود؟</translation>
 <translation id="1388253969141979417">اجازه دارد از میکروفون استفاده کند</translation>
 <translation id="1388728792929436380">وقتی به‌روزرسانی‌ها تمام شد، <ph name="DEVICE_TYPE" /> بازراه‌اندازی می‌شود.</translation>
+<translation id="1389601498324964367">فضای ذخیره‌سازی سهمیه‌بندی‌شده</translation>
 <translation id="139013308650923562">اجازه دارد از قلم‌های نصب‌شده در دستگاه استفاده کند</translation>
 <translation id="1390548061267426325">بازکردن به‌عنوان برگه عادی</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> اجازه ندارد با <ph name="PRINTER_NAME" /> چاپ کند. لطفاً با سرپرست تماس بگیرید.</translation>
@@ -1072,6 +1074,7 @@
 <translation id="1992924914582925289">حذف از دستگاه</translation>
 <translation id="1994173015038366702">نشانی وب سایت</translation>
 <translation id="1995916364271252349">کنترل می‌کند سایت‌ها می‌توانند از چه اطلاعاتی استفاده کنند و چه اطلاعاتی را نشان دهند (مکان، دوربین، بالاپرها، و موارد دیگر)</translation>
+<translation id="1997433994358798851">‏Chrome برای استفاده از بلوتوث به اجازه نیاز دارد تا به دستگاهتان وصل شود</translation>
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="2000419248597011803">برخی کوکی‌ها و جستجوها را از نوار نشانی و جعبه جستجو به موتور جستجوی پیش‌فرض ارسال می‌کند</translation>
@@ -1736,6 +1739,7 @@
 <translation id="25899519884572181">خروج از «حالت خواننده»</translation>
 <translation id="2593499352046705383">‏پیش‌از شروع، حتماً از داده‌هایتان پشتیبان‌گیری کنید. نصب <ph name="DEVICE_OS" /> داده‌های دیسک سخت را بازنویسی خواهد کرد. در g.co/flex/InstallGuide، اطلاعات بیشتری دریافت کنید.</translation>
 <translation id="2594999711683503743">‏در Google جستجو کنید یا نشانی وب را تایپ کنید</translation>
+<translation id="2599048253926156421">نام کاربری در بریده‌دان کپی شد</translation>
 <translation id="2602501489742255173">برای شروع‌به‌کار تند بکشید</translation>
 <translation id="2603115962224169880">پاک کردن رایانه</translation>
 <translation id="2603355571917519942">‏Voice Match آماده است</translation>
@@ -1959,6 +1963,7 @@
 <translation id="2804043232879091219">مرورگر جایگزین باز نشد</translation>
 <translation id="2804667941345577550">از سیستم این سایت (ازجمله در برگه‌های باز) خارج خواهید شد</translation>
 <translation id="2804680522274557040">دوربین خاموش است</translation>
+<translation id="280518252911523675">‏اگر بدون وارد کردن گذرواژه قدیمی ادامه دهید، داده‌های محلی شما حذف خواهد شد. برای راه‌اندازی مجدد این حساب، با «حساب Google» به سیستم وارد خواهید شد.</translation>
 <translation id="2805539617243680210">همه چیز آماده است!</translation>
 <translation id="2805646850212350655">‏سیستم فایل رمزگذاری Microsoft</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
@@ -3074,6 +3079,7 @@
 <translation id="3895090224522145010">‏نام کاربری Kerberos</translation>
 <translation id="389521680295183045">سایت‌ها می‌توانند درخواست کنند که وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شوند</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{یک تصویر}one{# تصویر}other{# تصویر}}</translation>
+<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> شما برای بازی ساخته شده است. در مرحله بعد برنامه «کاوش» باز می‌شود که در آن می‌توانید به صدها بازی جدید دسترسی داشته باشید، پیشنهادهای بازی را ببینید، و ویژگی‌های بازی ارائه‌شده با دستگاهتان را کشف کنید.</translation>
 <translation id="3898233949376129212">زبان دستگاه</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> می‌خواهد: <ph name="FIRST_PERMISSION" /> و <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">انتخاب صفحه‌کلید</translation>
@@ -3224,6 +3230,7 @@
 <translation id="4033471457476425443">افزودن پوشه جدید</translation>
 <translation id="4033711848170683365">‏با این کار، داده‌های مرور برای همیشه از این دستگاه حذف خواهد شد. ممکن است دیگر برنامه‌های موجود در <ph name="DEVICE_TYPE" /> شما از «حساب‌های Google» این نمایه استفاده کنند. می‌توانید با مراجعه به <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />، این حساب‌ها را بردارید.</translation>
 <translation id="4033963223187371752">ممکن است سایت‌های امن محتوایی مثل قاب وب یا تصویری را که امن نیست جاسازی کنند</translation>
+<translation id="4034741552964543387">ادامه بدون داده‌های محلی</translation>
 <translation id="4034824040120875894">چاپگر</translation>
 <translation id="4035758313003622889">مدیر &amp;فعالیت ها</translation>
 <translation id="4035877632587724847">مجاز نیست</translation>
@@ -3415,6 +3422,7 @@
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4242577469625748426">تنظیمات خط‌مشی روی دستگاه نصب نشد: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">چاپگر موقتاً متوقف شده است</translation>
+<translation id="424423026762293842">بازیابی داده‌های محلی</translation>
 <translation id="4244238649050961491">پیدا کردن برنامه‌های قلم بیشتر</translation>
 <translation id="4246980464509998944">نظرات تکمیلی:</translation>
 <translation id="424726838611654458">‏همیشه در Adobe Reader باز شود</translation>
@@ -4973,6 +4981,7 @@
 <translation id="5792728279623964091">لطفاً روی دکمه روشن/خاموش ضربه بزنید</translation>
 <translation id="5793339252089865437">بارگیری به‌روزرسانی ازطریق شبکه تلفن می‌تواند به کسر هزینه‌های مازاد منجر شود.</translation>
 <translation id="5793420564274426163">تأیید مرتبط‌سازی</translation>
+<translation id="5793430094159150686">گذرواژه شما تغییر کرد. برای بازیابی داده‌های محلی، باید گذرواژه قدیمی‌تان را وارد کنید.</translation>
 <translation id="5794034487966529952">در میزکار <ph name="DESK_TITLE" />، <ph name="NUM_BROWSERS" /> پنجره مرورگر باز است</translation>
 <translation id="5794414402486823030">همیشه با نظاره‌گر سیستم باز شود</translation>
 <translation id="5794700615121138172">‏پوشه‌های هم‌رسانی‌شده Linux</translation>
@@ -5899,6 +5908,7 @@
 <translation id="6700093763382332031">قفل سیم کارت شبکه تلفن همراه</translation>
 <translation id="6700480081846086223">فرستادن <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">نمایه دریافت نشد.</translation>
+<translation id="6701824422332982935">برای استفاده از این افزونه‌ها، صفحه را مجدد بار کنید</translation>
 <translation id="6702639462873609204">&amp;ویرایش...</translation>
 <translation id="6703212423117969852">‏می‌توانید بعداً در Chrome دوباره امتحان کنید.</translation>
 <translation id="6703254819490889819">بازیابی نسخه پشتیبان</translation>
@@ -7125,6 +7135,7 @@
 <translation id="7903742244674067440">گواهی‌هایی برای فایل دارید که اعتبارهای این گواهی را شناسایی می‌کنند</translation>
 <translation id="7903925330883316394">ابزار کمکی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">‏درگاه‌های Linux را در دسترس دستگاه‌های دیگری که در شبکه‌تان موجود هستند قرار دهید.</translation>
+<translation id="7906440585529721295">داده‌های محلی حذف خواهد شد</translation>
 <translation id="7907837847548254634">شیء متمرکزشده سریع برجسته شود</translation>
 <translation id="7908378463497120834">متأسفیم، حداقل یک بخش از دستگاه ذخیره‌سازی خارجی نصب نمی‌شود.</translation>
 <translation id="7909324225945368569">تغییر نام نمایه</translation>
@@ -7463,6 +7474,7 @@
 <translation id="822050276545350872">ازاین‌پس نیازی نیست منتظر بمانید</translation>
 <translation id="8221491193165283816">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان بفرستد، اینجا را کلیک کنید.</translation>
 <translation id="822347941086490485">‏درحال پیدا کردن دستگاه‌های HID…</translation>
+<translation id="8223573963214454788">ادامه و حذف داده‌ها</translation>
 <translation id="8225046344534779393">اتصال اینترنت را بررسی کنید</translation>
 <translation id="8225265270453771718">هم‌رسانی پنجره برنامه</translation>
 <translation id="8226222018808695353">ممنوع</translation>
@@ -7563,6 +7575,7 @@
 <translation id="8314381333424235892">افزونه وجود ندارد یا حذف نصب شده است</translation>
 <translation id="831440797644402910">نمی‌توان این پوشه را باز کرد</translation>
 <translation id="8314835274931377415">راه‌اندازی «دسترسی کلیدی» شروع شود؟</translation>
+<translation id="8317582043908962055">‏شناسایی نوشتار P&amp;DF</translation>
 <translation id="8317671367883557781">افزودن اتصال شبکه</translation>
 <translation id="8319414634934645341">کاربرد کلید توسعه یافته</translation>
 <translation id="8321837372750396788">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
@@ -8449,6 +8462,7 @@
 <translation id="9203398526606335860">&amp;نمایه سازی فعال شد</translation>
 <translation id="9203904171912129171">انتخاب دستگاه</translation>
 <translation id="9206889157914079472">یادداشت‌برداری قلم از صفحه قفل</translation>
+<translation id="9208192193641542858">داده‌های محلی با گذرواژه قدیمی‌تان محافظت می‌شود. اگر اخیراً گذرواژه‌تان را تغییر داده‌اید، گذرواژه قدیمی‌تان را دوباره امتحان کنید.</translation>
 <translation id="9209563766569767417">‏درحال بررسی تنظیم محتوی Linux</translation>
 <translation id="9209689095351280025">سایت‌ها نمی‌توانند از کوکی‌هایی که شما را در وب ردیابی می‌کند استفاده کنند</translation>
 <translation id="9211177926627870898">به‌روزرسانی لازم است</translation>

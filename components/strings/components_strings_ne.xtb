@@ -1957,10 +1957,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल बन्द गरियो</translation>
 <translation id="6393956493820063117">एड्मिनले <ph name="ORIGIN_NAME" /> बाट कपी गरी यो स्थानमा पेस्ट गर्न रोक लगाउनुभएको छ</translation>
+<translation id="6394852772105848029">यो साइटले <ph name="APP_NAME" /> एप खोल्न चाहन्छ</translation>
 <translation id="6398277657359595425">चर्को स्वर निकालेर रोइरहेको</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="6401136357288658127">यो नीति चल्तीबाट हटाइएको छ। तपाईंले यसको साटो <ph name="NEW_POLICY" /> नीति प्रयोग गर्नु पर्छ।</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> मा जारी राख्ने हो?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> को म्याद सकिने मिति र CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="6415778972515849510">Chromium ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>

@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Бараан горимыг унтраах</translation>
 <translation id="1881188606372070653">Хууль эрх зүйн шалтгаанаар контентод өөрчлөлт хийхийг хүсвэл <ph name="BEGIN_LINK1" />Хуулийн тусламжийн хуудас<ph name="END_LINK1" /> руу очно уу. Зарим бүртгэл болон системийн мэдээллийг Google рүү илгээж болзошгүй. Бид таны өгсөн мэдээллийг өөрсдийн <ph name="BEGIN_LINK2" />Нууцлалын бодлого<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Үйлчилгээний нөхцөлийн<ph name="END_LINK3" /> дагуу техникийн асуудлыг шийдвэрлэхэд туслах болон үйлчилгээнүүдээ сайжруулахад ашиглана.</translation>
 <translation id="1887850431809612466">Техник хангамжийн шалгалт</translation>
+<translation id="1904932688895783618">Эндээс бусад хэрэгтэй нөөцийг харна уу:</translation>
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
 <translation id="1908234395526491708">UDP хүсэлтийн алдаа</translation>
 <translation id="1932611479324127242">Батарейг таслах</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Асуудал шийдэх алхмуудыг турших</translation>
 <translation id="2016848882344942759">--цагаан-шошго байхгүй--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Дэлгэц амраагчийг үзэхийн тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2085089206770112532">Дэлгэцийн гэрэлтүүлгийг багасгах</translation>
 <translation id="2105810540595158374">Төхөөрөмж нь тоглоомын гар байна.</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
 <translation id="7784116172884276937">Тохируулсан DNS сервер байхгүй</translation>
+<translation id="779591286616261875">Шинэ мэдээлэл илгээх</translation>
 <translation id="7799817062559422778">Гэрэлтэй горим</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">Энэ видеог ашиглах</translation>
 <translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
+<translation id="9092255287806472980">Таны санал хүсэлт Chrome OS-г сайжруулахад туслах бөгөөд үүнийг манай баг шалгана. Олон тооны мэдээлэл ирдэг тул бид хариу илгээх боломжгүй.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Та төхөөрөмжийг задлах шаардлагатай болно</translation>
 <translation id="9098156406873149060">Хэрэглэгчийн өгөгдлийг хадгалах</translation>

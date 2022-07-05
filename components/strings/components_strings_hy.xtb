@@ -1961,10 +1961,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Փակվել է պատուհան, որը ցուցադրում է անվտանգ վճարման տվյալների անհամապատասխանությունը տվյալների աղյուսակի հետ</translation>
 <translation id="6393956493820063117">Դուք չեք կարող <ph name="ORIGIN_NAME" /> կայքից բովանդակություն տեղադրել այստեղ, քանի որ ադմինիստրատորն արգելափակել է այդ հնարավորությունը։</translation>
+<translation id="6394852772105848029">Այս կայքին անհրաժեշտ է բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6398277657359595425">Հեկեկոց</translation>
 <translation id="6398765197997659313">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="6401136357288658127">Այս կանոնը հնացել է: Փոխարենն օգտագործեք <ph name="NEW_POLICY" /> կանոնը։</translation>
 <translation id="6404511346730675251">Փոփոխել էջանիշը</translation>
+<translation id="6405181733356710802">Անցնե՞լ <ph name="APP_NAME" /></translation>
 <translation id="6406765186087300643">C0 (ծրար)</translation>
 <translation id="6410264514553301377">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի սպառման ամսաթիվը և CVC կոդը</translation>
 <translation id="6415778972515849510">Chromium-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>

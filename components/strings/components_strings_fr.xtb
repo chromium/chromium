@@ -1960,10 +1960,12 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">La bottom sheet indiquant qu'aucun identifiant ne correspond pour le paiement sécurisé est fermée</translation>
 <translation id="6393956493820063117">Le règlement de l'administrateur bloque le collage de contenus provenant de "<ph name="ORIGIN_NAME" />" à cet endroit</translation>
+<translation id="6394852772105848029">Ce site veut ouvrir l'appli <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Pleurer fort</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="6401136357288658127">Cette règle est obsolète. Vous devez utiliser la règle "<ph name="NEW_POLICY" />" à la place.</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
+<translation id="6405181733356710802">Accéder à <ph name="APP_NAME" /> ?</translation>
 <translation id="6406765186087300643">C0 (enveloppe)</translation>
 <translation id="6410264514553301377">Saisissez la date d'expiration et le code CVC pour <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à modifier votre mot de passe.</translation>

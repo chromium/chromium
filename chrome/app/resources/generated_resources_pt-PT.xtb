@@ -380,6 +380,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1374844444528092021">O certificado requerido pela rede "<ph name="NETWORK_NAME" />" não está instalado ou já não é válido. Obtenha um novo certificado e tente ligar novamente.</translation>
 <translation id="1375321115329958930">Palavras-passe guardadas</translation>
 <translation id="1375557162880614858">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex?</translation>
+<translation id="1375938286942050085">A configuração está concluída! Em seguida, prepare o seu dispositivo para jogar</translation>
 <translation id="137651782282853227">Os endereços guardados aparecem aqui</translation>
 <translation id="1376771218494401509">Nome da &amp;janela…</translation>
 <translation id="1377600615067678409">Ignorar por enquanto</translation>
@@ -394,6 +395,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="138784436342154190">Pretende restaurar a página inicial predefinida?</translation>
 <translation id="1388253969141979417">Com autorização para utilizar o seu microfone</translation>
 <translation id="1388728792929436380">O <ph name="DEVICE_TYPE" /> irá reiniciar quando as atualizações estiverem concluídas.</translation>
+<translation id="1389601498324964367">Armazenamento gerido por quota</translation>
 <translation id="139013308650923562">Com autorização para utilizar tipos de letra instalados no dispositivo</translation>
 <translation id="1390548061267426325">Abrir como Separador Normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> não tem autorização para imprimir para <ph name="PRINTER_NAME" />. Contacte o seu administrador.</translation>
@@ -1063,6 +1065,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1992924914582925289">Remover do dispositivo</translation>
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="1995916364271252349">Controla as informações que os sites podem utilizar e apresentar (localização, câmara, pop-ups e muito mais).</translation>
+<translation id="1997433994358798851">O Chrome precisa de autorização para usar o Bluetooth para estabelecer ligação ao seu dispositivo</translation>
 <translation id="1997616988432401742">Os seus certificados</translation>
 <translation id="1999115740519098545">No arranque</translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
@@ -1724,6 +1727,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="25899519884572181">Sair do modo de leitor</translation>
 <translation id="2593499352046705383">Antes de iniciar, certifique-se de que tem uma cópia de segurança dos dados. A instalação do <ph name="DEVICE_OS" /> substitui o seu disco rígido. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Pesquise no Google ou escreva o URL</translation>
+<translation id="2599048253926156421">Nome de utilizador copiado para a área de transferência</translation>
 <translation id="2602501489742255173">Deslize rapidamente para cima para começar.</translation>
 <translation id="2603115962224169880">Limpar o computador</translation>
 <translation id="2603355571917519942">O Voice Match está pronto</translation>
@@ -1947,6 +1951,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2804043232879091219">Não foi possível abrir o navegador alternativo.</translation>
 <translation id="2804667941345577550">A sua sessão neste site será terminada, incluindo em separadores abertos.</translation>
 <translation id="2804680522274557040">A câmara está desativada</translation>
+<translation id="280518252911523675">Se continuar sem introduzir a palavra-passe antiga, os seus dados locais vão ser eliminados. Inicie sessão com a sua Conta Google para configurar este utilizador novamente.</translation>
 <translation id="2805539617243680210">Está tudo pronto!</translation>
 <translation id="2805646850212350655">Sistema de encriptação de ficheiros Microsoft</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -3063,6 +3068,7 @@ Pretende pará-lo?</translation>
 <translation id="3895090224522145010">Nome de utilizador Kerberos</translation>
 <translation id="389521680295183045">Os sites podem pedir para saber quando está a utilizar ativamente o dispositivo</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{uma imagem}other{# imagens}}</translation>
+<translation id="3897746662269329507">O seu <ph name="DEVICE_TYPE" /> foi concebido para jogos. A app Explore é apresentada a seguir, onde pode aceder a centenas de jogos mais recentes, ver ofertas de videojogos e descobrir funcionalidades de videojogos que os dispositivos oferecem.</translation>
 <translation id="3898233949376129212">Idioma do dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> pretende: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
@@ -3213,6 +3219,7 @@ Pretende pará-lo?</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
 <translation id="4033711848170683365">Esta ação elimina permanentemente os dados de navegação deste dispositivo. As Contas Google neste perfil podem ser usadas por outras apps no seu dispositivo <ph name="DEVICE_TYPE" />. Pode remover estas contas em <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Os sites seguros podem incorporar conteúdo como imagens ou frames da Web que não são seguros</translation>
+<translation id="4034741552964543387">Continuar sem dados locais</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4035758313003622889">Gestor de &amp;tarefas</translation>
 <translation id="4035877632587724847">Não permitir</translation>
@@ -3404,6 +3411,7 @@ Pretende pará-lo?</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4242577469625748426">Falha ao instalar as definições da política no dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">A impressora está em pausa.</translation>
+<translation id="424423026762293842">Restaure os seus dados locais</translation>
 <translation id="4244238649050961491">Encontrar mais aplicações para a caneta stylus</translation>
 <translation id="4246980464509998944">Comentários adicionais:</translation>
 <translation id="424726838611654458">Sempre aberto no Adobe Reader</translation>
@@ -4962,6 +4970,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5792728279623964091">Toque no botão ligar/desligar</translation>
 <translation id="5793339252089865437">Transferir a atualização através da sua rede móvel pode resultar em custos adicionais.</translation>
 <translation id="5793420564274426163">Confirmação de sincronização</translation>
+<translation id="5793430094159150686">A sua palavra-passe foi alterada. Para restaurar os dados locais, tem de introduzir a palavra-passe antiga.</translation>
 <translation id="5794034487966529952">O espaço de trabalho <ph name="DESK_TITLE" /> tem <ph name="NUM_BROWSERS" /> janelas do navegador abertas</translation>
 <translation id="5794414402486823030">Abrir sempre com o visualizador do sistema</translation>
 <translation id="5794700615121138172">Pastas partilhadas do Linux</translation>
@@ -5886,6 +5895,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6700093763382332031">Bloqueio do SIM de rede móvel</translation>
 <translation id="6700480081846086223">Transmitir <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Não foi possível obter o perfil.</translation>
+<translation id="6701824422332982935">Atualize a página para usar estas extensões</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6703212423117969852">Pode tentar novamente mais tarde no Chrome.</translation>
 <translation id="6703254819490889819">Restaurar cópia de segurança</translation>
@@ -7113,6 +7123,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7903742244674067440">Tem certificados em arquivo que identificam estas autoridades de certificação</translation>
 <translation id="7903925330883316394">Utilitário: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Disponibilize as portas do Linux a outros dispositivos na sua rede.</translation>
+<translation id="7906440585529721295">Os dados locais vão ser eliminados</translation>
 <translation id="7907837847548254634">Mostrar um realce rápido no objeto em foco</translation>
 <translation id="7908378463497120834">Lamentamos, mas não foi possível montar, pelo menos, uma partição no aparelho de armazenamento externo.</translation>
 <translation id="7909324225945368569">Mude o nome do perfil</translation>
@@ -7451,6 +7462,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="822050276545350872">A partir deste momento, não é preciso esperar</translation>
 <translation id="8221491193165283816">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique aqui.</translation>
 <translation id="822347941086490485">A procurar dispositivos HID…</translation>
+<translation id="8223573963214454788">Continuar e eliminar dados</translation>
 <translation id="8225046344534779393">Verifique a ligação à Internet</translation>
 <translation id="8225265270453771718">Partilhe uma janela da aplicação</translation>
 <translation id="8226222018808695353">Proibido</translation>
@@ -7551,6 +7563,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8314381333424235892">Extensão em falta ou desinstalada.</translation>
 <translation id="831440797644402910">Não é possível abrir esta pasta</translation>
 <translation id="8314835274931377415">Pretende iniciar a configuração do acesso por comutador?</translation>
+<translation id="8317582043908962055">Reconhecer texto em P&amp;DF</translation>
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>
 <translation id="8319414634934645341">Utilização alargada da chave</translation>
 <translation id="8321837372750396788">Este <ph name="DEVICE_TYPE" /> vai ser gerido por <ph name="MANAGER" />.</translation>
@@ -8436,6 +8449,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9203398526606335860">Criação de &amp;perfis ativada</translation>
 <translation id="9203904171912129171">Selecionar um dispositivo</translation>
 <translation id="9206889157914079472">Tirar notas com a caneta stylus a partir do ecrã de bloqueio</translation>
+<translation id="9208192193641542858">Os dados locais estão protegidos pela sua palavra-passe antiga. Se alterou a sua palavra-passe recentemente, experimente a palavra-passe antiga novamente.</translation>
 <translation id="9209563766569767417">A verificar a configuração do contentor do Linux…</translation>
 <translation id="9209689095351280025">Os sites não podem utilizar cookies que monitorizem a sua navegação na Web.</translation>
 <translation id="9211177926627870898">Atualização necessária</translation>

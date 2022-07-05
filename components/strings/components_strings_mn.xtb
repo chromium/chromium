@@ -832,6 +832,7 @@
 <translation id="3226387218769101247">Өнгөц зураг</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3229041911291329567">Таны төхөөрөмж болон хөтчийн хувилбарын талаарх мэдээлэл</translation>
+<translation id="3229277193950731405">Хувилбарын мөрийг хуулах</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-н карт баталгаажуулалтын кодыг оруулна уу</translation>
 <translation id="3234666976984236645">Чухал агуулга бүхий мэдээллийг үргэлж илрүүлэх</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Хөтчийнхөө харагдах байдлыг өөрчлөхийн тулд tab, дараа нь Enter дээр дарна уу</translation>
@@ -1960,10 +1961,12 @@
 <translation id="6390662030813198813">Инженерчлэл-E</translation>
 <translation id="6391700400718590966">Тохирох мандат үнэмлэхгүй аюулгүй төлбөрийн мандат үнэмлэхийн хүснэгтийг хаасан</translation>
 <translation id="6393956493820063117">Администраторын бодлогын дагуу <ph name="ORIGIN_NAME" />-с энэ байршил руу буулгахыг блоклосон</translation>
+<translation id="6394852772105848029">Энэ сайт <ph name="APP_NAME" /> аппыг нээхийг хүсэж байна</translation>
 <translation id="6398277657359595425">Чангаар уйлж буй</translation>
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
 <translation id="6401136357288658127">Энэ удирдамжийг зогсоосон байна. Та оронд нь <ph name="NEW_POLICY" /> удирдамжийг ашиглавал зохино.</translation>
 <translation id="6404511346730675251">Хадгалагдсан хуудсыг засах</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> руу үргэлжлүүлэх үү?</translation>
 <translation id="6406765186087300643">C0 (Дугтуй)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-н дуусах огноо, карт баталгаажуулалтын кодыг оруулна уу</translation>
 <translation id="6415778972515849510">Chromium танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>

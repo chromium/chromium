@@ -831,6 +831,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3226387218769101247">Miniaturas</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3229041911291329567">Informações da versão do dispositivo e do navegador.</translation>
+<translation id="3229277193950731405">Copiar string da versão</translation>
 <translation id="323107829343500871">Introduzir o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detetar sempre conteúdo importante neste site</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar o aspeto do seu navegador</translation>
@@ -1960,10 +1961,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">A página de credenciais de pagamento seguro sem correspondência com as credenciais está fechada</translation>
 <translation id="6393956493820063117">A ação de colar a partir de <ph name="ORIGIN_NAME" /> nesta localização está bloqueada por uma política do administrador.</translation>
+<translation id="6394852772105848029">Este site quer abrir a app <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Choro alto</translation>
 <translation id="6398765197997659313">Sair do modo de ecrã inteiro</translation>
 <translation id="6401136357288658127">Esta política foi descontinuada. Deverá optar por utilizar a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
+<translation id="6405181733356710802">Continuar para <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Introduza a data de validade e o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">O Chromium pode ajudá-lo a proteger a sua Conta Google e alterar a palavra-passe.</translation>

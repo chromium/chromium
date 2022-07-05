@@ -1961,10 +1961,12 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6390662030813198813">Insinööri-E</translation>
 <translation id="6391700400718590966">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko on suljettu</translation>
 <translation id="6393956493820063117">Järjestelmänvalvojakäytäntö on estänyt tähän paikkaan liittämisen sivustolta<ph name="ORIGIN_NAME" /></translation>
+<translation id="6394852772105848029">Sivusto haluaa avata <ph name="APP_NAME" />-sovelluksen</translation>
 <translation id="6398277657359595425">Äänekäs itku</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="6401136357288658127">Tämä käytäntö on vanhentunut. Käytä <ph name="NEW_POLICY" /> ‑käytäntöä sen sijaan.</translation>
 <translation id="6404511346730675251">Muokkaa kirjanmerkkiä</translation>
+<translation id="6405181733356710802">Jatketaanko osoitteeseen <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (kirjekuori)</translation>
 <translation id="6410264514553301377">Anna kortin <ph name="CREDIT_CARD" /> vanhentumispäivä ja CVC</translation>
 <translation id="6415778972515849510">Chromium voi auttaa suojaamaan Google-tiliäsi ja vaihtamaan salasanasi.</translation>

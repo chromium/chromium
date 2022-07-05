@@ -1961,10 +1961,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Secure payment credential no matching credential sheet is closed</translation>
 <translation id="6393956493820063117">Pasting from <ph name="ORIGIN_NAME" /> to this location is blocked by administrator policy</translation>
+<translation id="6394852772105848029">This site wants to open the <ph name="APP_NAME" /> app</translation>
 <translation id="6398277657359595425">Loudly crying</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="6401136357288658127">This policy is deprecated. You should use the <ph name="NEW_POLICY" /> policy instead.</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
+<translation id="6405181733356710802">Continue to <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Enter the expiry date and CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium can help you protect your Google account and change your password.</translation>

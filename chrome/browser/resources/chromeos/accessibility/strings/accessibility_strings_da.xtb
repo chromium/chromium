@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Berøringsbevægelser</translation>
 <translation id="1201402288615127009">Næste</translation>
+<translation id="1202112913213080585">annuller</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Der er ikke flere niveau 4-overskrifter</translation>
 <translation id="1212770441379271564">Følgende genveje er ikke ChromeVox-kommandoer, men de kan stadig hjælpe dig med at optimere din Chrome-oplevelse.
@@ -43,6 +44,7 @@
     Tryk på Alt+F for at åbne browsermenuen i Chrome.</translation>
 <translation id="1213216066620407844">ChromeVox – talerør til Chrome</translation>
 <translation id="1225969361094801578">Mørk skifergrå</translation>
+<translation id="122928249241119550">gå til den forrige sætning</translation>
 <translation id="1230503547248836149">Start på markering</translation>
 <translation id="1236794971743289975">Slutnote</translation>
 <translation id="1237797094773582699">På samme måde kan du stryge fra højre mod venstre med fire fingre for at gå til den forrige sektion. Prøv det nu.</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">Lys azurblå</translation>
 <translation id="2438712309510062123">Foreslå</translation>
 <translation id="2450814015951372393">Afkrydsningsfelt</translation>
+<translation id="2450992626945324272">gå til den næste sætning</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="2462626033734746142">Gruppe af alternativknapper</translation>
 <translation id="2467741090055146971">fjern markering</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">Blågrå</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{tankestreg}one{# tankestreger}other{# tankestreger}}</translation>
+<translation id="4220024144662591089">vælg mellem <ph name="START_PHRASE" /> og <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">Der er ingen forrige lister</translation>
 <translation id="4225355998815256469">Styringselementer for formular</translation>
 <translation id="4230834257931120629">Lys skifergrå</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">knp</translation>
 <translation id="6132506484792346370">Et listefelt eller kombifelt</translation>
+<translation id="613344593214611552">slet den forrige sætning</translation>
 <translation id="6142308968191113180">Overskrift 4</translation>
 <translation id="6150023170003443621">Gulgrøn</translation>
 <translation id="6158882249329863701">række <ph name="TABLECELLROWINDEX" /> kolonne <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">Gå til bunden af siden</translation>
 <translation id="6187190722927752226">Akvamarin</translation>
 <translation id="6197361807490522975">Mørkeblå</translation>
+<translation id="6218813441317556731">erstat <ph name="DELETE_PHRASE" /> med <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Næste overskrift</translation>
 <translation id="6254901459154107917">Næste tekstområde, som kan redigeres</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> er afsluttet.</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">Oplysning i beskrivelsesliste</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{og-tegn}one{# og-tegn}other{# og-tegn}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">slet det forrige tegn</translation>
 <translation id="738899727977260036">Skiferblå</translation>
 <translation id="7393979322571982935">Lyde og indstillinger</translation>
 <translation id="739763518212184081">Forrige linje</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">Lysegul gyldenris</translation>
 <translation id="7543255924852002459">Kassér etiket</translation>
 <translation id="7552432549459840808">Nyttige genveje i Chrome</translation>
+<translation id="7553679324939294712">indsæt <ph name="INSERT_PHRASE" /> før <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">Sort</translation>
 <translation id="7579911500627256166">prikken <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Udvalgte</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">Rediger tekst, webadresseindtastning</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Forrige alternativknap</translation>
+<translation id="7696631298608145306">gå til det næste ord</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Naturlig stemme</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">Maksimum <ph name="X" /></translation>
 <translation id="84575901236241018">har hurtigtasten <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Går væk fra grammatikfejlen</translation>
+<translation id="8465573210279050749">slet det forrige ord</translation>
 <translation id="847040613207937740">Der er ikke flere afkrydsningsfelter</translation>
 <translation id="8473540203671727883">Oplæs teksten under markøren</translation>
 <translation id="8476408756881832830">Sæt afspilning på pause, når ChromeVox taler</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{streg}one{# lodrette streger}other{# lodrette streger}}</translation>
 <translation id="8741370088760768424">Tip! Tryk på søgetasten+mellemrumstasten for at aktivere det aktuelle element.</translation>
 <translation id="8743786158317878347">angiv struktureret indhold, f.eks. tabeller</translation>
+<translation id="8746846427395705317">gå til det forrige ord</translation>
 <translation id="8747966237988593539">Sorteret liste</translation>
 <translation id="8749988712346667988">Sølvfarvet</translation>
 <translation id="875769700429317857">Download af <ph name="FILE_NAME" /> er gennemført</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">Der er ingen forrige afsnit</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">slet <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8989104346085848538">Tryk på Ctrl-tasten for at stoppe oplæsning i ChromeVox.</translation>
 <translation id="8993737615451556423">Giver mulighed for at sænke eller øge hastigheden på oplæsningsstemmen eller sætte den på pause</translation>

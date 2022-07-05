@@ -828,6 +828,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3226387218769101247">Miniatúry</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3229041911291329567">Informácie o verzii vášho zariadenia a prehliadača</translation>
+<translation id="3229277193950731405">Kopírovať reťazec verzie</translation>
 <translation id="323107829343500871">Zadajte kód CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Vždy na tomto webe zisťovať dôležitý obsah</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter si prispôsobte vzhľad prehliadača</translation>
@@ -1955,10 +1956,12 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Hárok s nezodpovedajúcim poverením pre prihlasovací údaj zabezpečenej platby je zavretý</translation>
 <translation id="6393956493820063117">Prilepenie zo zdroja <ph name="ORIGIN_NAME" /> na toto miesto je blokované pravidlami správcu</translation>
+<translation id="6394852772105848029">Tento web chce otvoriť aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Nahlas plačúca tvár</translation>
 <translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="6401136357288658127">Podpora tohto pravidla bola ukončená. Namiesto neho použite pravidlo <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Upraviť záložku</translation>
+<translation id="6405181733356710802">Chcete pokračovať do aplikácie <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (obálka)</translation>
 <translation id="6410264514553301377">Zadajte dátum vypršania platnosti a kód CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium vám pomôže ochrániť účet Google a zmeniť heslo.</translation>

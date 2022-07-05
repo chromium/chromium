@@ -1955,10 +1955,12 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Ordainketak egiteko kredentzial segurua bat ez datorrela dioen kredentzial-orria itxita dago</translation>
 <translation id="6393956493820063117">Administratzailearen gidalerroek blokeatu egin dute <ph name="ORIGIN_NAME" /> domeinuko edukia kokapen honetan itsasteko aukera</translation>
+<translation id="6394852772105848029">Webguneak <ph name="APP_NAME" /> aplikazioa ireki nahi du</translation>
 <translation id="6398277657359595425">Ozen negarrez</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
 <translation id="6401136357288658127">Gidalerro hau zaharkituta dago. Horren ordez <ph name="NEW_POLICY" /> gidalerroa erabili beharko zenuke.</translation>
 <translation id="6404511346730675251">Editatu laster-marka</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> aplikaziora joan nahi duzu?</translation>
 <translation id="6406765186087300643">C0 (gutun-azala)</translation>
 <translation id="6410264514553301377">Idatzi <ph name="CREDIT_CARD" /> txartelaren iraungitze-data eta CVC kodea</translation>
 <translation id="6415778972515849510">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chromium-ek.</translation>

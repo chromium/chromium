@@ -1959,10 +1959,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Kredenciali i pagesës së sigurt pa fletë përkatëse kredenciali është i mbyllur</translation>
 <translation id="6393956493820063117">Ngjitja nga <ph name="ORIGIN_NAME" /> te kjo vendndodhje është bllokuar nga politika e administratorit</translation>
+<translation id="6394852772105848029">Ky sajt dëshiron të hapë aplikacionin "<ph name="APP_NAME" />"</translation>
 <translation id="6398277657359595425">Duke qarë me zë të lartë</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="6401136357288658127">Kjo politikë është e vjetruar. Duhet të përdorësh politikën <ph name="NEW_POLICY" /> më mirë.</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
+<translation id="6405181733356710802">Do të vazhdosh te "<ph name="APP_NAME" />"?</translation>
 <translation id="6406765186087300643">C0 (Zarf)</translation>
 <translation id="6410264514553301377">Fut datën e skadimit dhe kodin CVC për <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>

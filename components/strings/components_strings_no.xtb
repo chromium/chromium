@@ -831,6 +831,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3226387218769101247">Miniatyrbilder</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Versjonsinformasjon om enheten og nettleseren din</translation>
+<translation id="3229277193950731405">Kopier versjonsstrengen</translation>
 <translation id="323107829343500871">Skriv inn verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Oppdag alltid viktig innhold på dette nettstedet</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse nettleserens utseende</translation>
@@ -931,6 +932,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3477679029130949506">Kino- og teaterprogram</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3484560055331845446">Du kan miste tilgangen til Google-kontoen din. Chrome anbefaler at du endrer passordet ditt nå. Du blir bedt om å logge på.</translation>
+<translation id="3484861421501147767">Påminnelse: En lagret kampanjekode er tilgjengelig</translation>
 <translation id="3487845404393360112">Skuff 4</translation>
 <translation id="3495081129428749620">Finn på siden
     <ph name="PAGE_TITLE" /></translation>
@@ -1959,10 +1961,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon er lukket</translation>
 <translation id="6393956493820063117">Innliming fra <ph name="ORIGIN_NAME" /> på denne plasseringen er blokkert av en administratorregel</translation>
+<translation id="6394852772105848029">Dette nettstedet vil åpne <ph name="APP_NAME" />-appen</translation>
 <translation id="6398277657359595425">Strigråtende</translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="6401136357288658127">Denne regelen er avviklet. Du bør bruke den nye regelen <ph name="NEW_POLICY" /> i stedet.</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
+<translation id="6405181733356710802">Vil du fortsette til <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (konvolutt)</translation>
 <translation id="6410264514553301377">Skriv inn utløpsdatoen og verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
@@ -2209,6 +2213,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />Informasjon du har lagt inn i skjemaer<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Kan ikke sende til denne adressen. Velg en annen adresse.</translation>
+<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7132939140423847331">Administratoren din har forbudt kopiering av disse dataene.</translation>
 <translation id="7135130955892390533">Vis statusen</translation>
 <translation id="7138472120740807366">Leveringsmetode</translation>

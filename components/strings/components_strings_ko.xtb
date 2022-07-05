@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 닫힘</translation>
 <translation id="6393956493820063117">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 이 위치로 붙여넣는 작업이 차단되었습니다.</translation>
+<translation id="6394852772105848029">이 사이트에서 <ph name="APP_NAME" /> 앱을 열려고 합니다.</translation>
 <translation id="6398277657359595425">엉엉 울기</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="6401136357288658127">지원 중단된 정책입니다. <ph name="NEW_POLICY" /> 정책을 대신 사용해야 합니다.</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> 앱으로 이동</translation>
 <translation id="6406765186087300643">C0(봉투)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />의 만료일과 CVC를 입력하세요.</translation>
 <translation id="6415778972515849510">Chromium을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>

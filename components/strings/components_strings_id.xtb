@@ -1959,10 +1959,12 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Sheet tidak ada kredensial yang cocok untuk Kredensial pembayaran aman ditutup</translation>
 <translation id="6393956493820063117">Penempelan dari <ph name="ORIGIN_NAME" /> ke lokasi ini diblokir oleh kebijakan administrator</translation>
+<translation id="6394852772105848029">Situs ini ingin membuka aplikasi <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Menangis Keras</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="6401136357288658127">Kebijakan ini tidak digunakan lagi. Sebaiknya Anda menggunakan kebijakan <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
+<translation id="6405181733356710802">Lanjutkan ke <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Masukkan tanggal kedaluwarsa dan CVC <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>

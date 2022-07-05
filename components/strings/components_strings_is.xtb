@@ -1960,10 +1960,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Skilríki öruggrar greiðslu — tilkynningasíðu um engin samsvarandi skilríki var lokað</translation>
 <translation id="6393956493820063117">Regla stjórnanda lokar á að hægt sé að líma frá <ph name="ORIGIN_NAME" /> á þessa staðsetningu</translation>
+<translation id="6394852772105848029">Þetta forrit vill opna <ph name="APP_NAME" /> forritið</translation>
 <translation id="6398277657359595425">Hávær grátur</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
 <translation id="6401136357288658127">Þessi regla er úrelt. Þú ættir að nota regluna <ph name="NEW_POLICY" /> í staðinn.</translation>
 <translation id="6404511346730675251">Breyta bókamerki</translation>
+<translation id="6405181733356710802">Halda áfram í <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (umslag)</translation>
 <translation id="6410264514553301377">Sláðu inn gildistímann og CVC-númerið fyrir <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium getur hjálpað þér að vernda Google reikninginn þinn og breyta aðgangsorðinu.</translation>

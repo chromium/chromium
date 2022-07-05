@@ -152,6 +152,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
 <translation id="1774796056689732716">Calendário, <ph name="CURRENT_MONTH_YEAR" />, atualmente, está selecionada a data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desativado</translation>
+<translation id="1797271123677381264">Esqueci-me da palavra-passe</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="1812997170047690955">O que está no meu ecrã?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos não sincronizados</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
+<translation id="450584155212756404">Canal para programadores</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4518404433291145981">Para desbloquear o Chromebook, desbloqueie primeiro o seu telemóvel</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
@@ -876,6 +878,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6062360702481658777">A sessão será terminada automaticamente dentro de <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Já não estou a usar o ficheiro</translation>
 <translation id="6073451960410192870">Parar gravação</translation>
+<translation id="6074087755403037157">Canal beta</translation>
 <translation id="6099678161144790572">Editado no mês passado</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>
@@ -1226,6 +1229,7 @@ Nova instalação</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8203795194971602413">Clicar com o botão direito do rato</translation>
 <translation id="8209010265547628927">Repor</translation>
+<translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">O Chromebook tem de permanecer ativo e ligado à alimentação durante este período. Certifique-se de que os cabos do carregador ou transformador estão completamente ligados à tomada elétrica e à respetiva entrada do Chromebook. Não desligue o Chromebook.</translation>
 <translation id="8236042855478648955">Hora de fazer uma pausa</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>

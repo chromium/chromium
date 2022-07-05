@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Χανγκίλ Romaja</translation>
 <translation id="112387589102719461">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Programmer Dvorak</translation>
 <translation id="1134697384939541955">Αγγλικά (ΗΠΑ) με εκτεταμένο πληκτρολόγιο</translation>
+<translation id="1138691154716715755">Νωρίτερα αυτόν το μήνα</translation>
 <translation id="1148097584170732637">Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία.
     <ph name="LINE_BREAK1" />
     Δεν υπάρχει αρκετός διαθέσιμος χώρος στον τοπικό αποθηκευτικό χώρο. Απαιτούνται επιπλέον <ph name="FILE_SIZE" />.
@@ -386,6 +387,7 @@
 <translation id="4380245540200674032">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="4387004326333427325">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε απομακρυσμένα</translation>
 <translation id="4394214039309501350">Εξωτερικός σύνδεσμος</translation>
+<translation id="4394980935660306080">Νωρίτερα αυτήν την εβδομάδα</translation>
 <translation id="4401287888955153199">Εξαγωγή όλων</translation>
 <translation id="4410695710508688828">Η λειτουργία εξαγωγής απέτυχε. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Δημιουργήστε μια συντόμευση για τα αρχεία σας</translation>
@@ -430,6 +432,7 @@
 <translation id="4712283082407695269">Άνοιγμα "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Δίκτυο δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="4724850507808590449">Δημιουργήθηκαν αντίγραφα ασφαλείας για <ph name="FILE_COUNT" /> φωτογραφίες</translation>
+<translation id="4725096204469550614">Νωρίτερα φέτος</translation>
 <translation id="4725511304875193254">Κόργκι</translation>
 <translation id="4737050008115666127">Προσγείωση</translation>
 <translation id="4747271164117300400">Σλαβομακεδονικά</translation>

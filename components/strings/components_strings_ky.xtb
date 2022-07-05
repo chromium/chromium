@@ -831,6 +831,7 @@
 <translation id="3226387218769101247">Эскиздер</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3229041911291329567">Түзмөгүңүздүн жана серепчиңиздин версиясы тууралуу маалымат</translation>
+<translation id="3229277193950731405">Версиянын сабын көчүрүү</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> карточкаңыз үчүн CVC кодун киргизиңиз</translation>
 <translation id="3234666976984236645">Бул сайттагы маанилүү мазмун ар дайым аныкталсын</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, серепчинин көрүнүшүн ыңгайлаштыруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
@@ -1959,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Коопсуз төлөө үчүн дал келбеген эсептик дайындар барагы жабылды</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> cайтынан бул жерге чаптоо аракети администратордун саясатына ылайык бөгөттөлгөн</translation>
+<translation id="6394852772105848029">Бул сайт <ph name="APP_NAME" /> колдонмосун ачканы жатат</translation>
 <translation id="6398277657359595425">Боздогон</translation>
 <translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
 <translation id="6401136357288658127">Бул саясат жоюлган. Анын ордуна <ph name="NEW_POLICY" /> саясатын колдонуңуз.</translation>
 <translation id="6404511346730675251">Кыстарманы түзөтүү</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> колдонмосуна өтөсүзбү?</translation>
 <translation id="6406765186087300643">C0 (Конверт)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> карточкасынын мөөнөтү аяктоочу күнүн жана CVC кодун киргизиңиз</translation>
 <translation id="6415778972515849510">Chromium Google аккаунтуңуздун коопсуздугун коргоп, сырсөзүңүздү өзгөртүүгө жардам берет.</translation>

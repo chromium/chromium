@@ -123,6 +123,7 @@
 <translation id="188114911237521550">'ডার্ক মোড' বন্ধ করুন</translation>
 <translation id="1881188606372070653">আইনি কারণে কন্টেন্ট পরিবর্তনের অনুরোধ জানাতে <ph name="BEGIN_LINK1" />আইনি সহায়তা পৃষ্ঠা<ph name="END_LINK1" /> দেখুন। অ্যাকাউন্ট ও সিস্টেমের কিছু তথ্য Google-এর কাছে পাঠানো হতে পারে। আপনার দেওয়া তথ্য আমরা টেকনিক্যাল সমস্যা সমাধানের কাজে এবং আমাদের পরিষেবা আরও ভাল করে তোলার জন্য ব্যবহার করব। এই তথ্য <ph name="BEGIN_LINK2" />গোপনীয়তা নীতি<ph name="END_LINK2" /> এবং <ph name="BEGIN_LINK3" />পরিষেবার শর্তাবলী<ph name="END_LINK3" /> মেনেই ব্যবহার করা হবে।</translation>
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
+<translation id="1904932688895783618">এখানে কিছু অন্যান্য সহায়ক রিসোর্স রয়েছে:</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
 <translation id="1932611479324127242">ব্যাটারি কাটঅফ</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
 <translation id="2016848882344942759">--কোনও সাদা-লেবেল নেই--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">স্ক্রিনসেভার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
@@ -772,6 +774,7 @@
 <translation id="7763470514545477072">ডোমেন সাফিক্সের সাথে মিল থাকা</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
 <translation id="7784116172884276937">কোনও ডিএনএস সার্ভার সেট আপ করা হয়নি</translation>
+<translation id="779591286616261875">নতুন রিপোর্ট পাঠান</translation>
 <translation id="7799817062559422778">'লাইট মোড'</translation>
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
@@ -924,6 +927,7 @@
 <translation id="9082718469794970195">এই ভিডিওটি ব্যবহার করুন</translation>
 <translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
+<translation id="9092255287806472980">আপনার মতামত ChromeOS-কে উন্নত করতে সাহায্য করে এবং আমাদের টিম তা পর্যালোচনা করবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">আপনাকে ডিভাইসটি আলাদা করতে হবে</translation>
 <translation id="9098156406873149060">ব্যবহারকারীর ডেটা রাখুন</translation>

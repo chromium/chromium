@@ -152,6 +152,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1771761307086386028">Listaj udesno</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutno je odabran datum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
+<translation id="1797271123677381264">Zaboravljena lozinka</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1812997170047690955">Šta je na ekranu?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Uređaj čije je uparivanje okončano</translation>
 <translation id="4505050298327493054">Aktivna radna površina.</translation>
+<translation id="450584155212756404">Kanal za programere</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4518404433291145981">Da otključate Chromebook, najprije otključajte telefon</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje.</translation>
@@ -876,6 +878,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6062360702481658777">Bit ćete automatski odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Završio/la sam s korištenjem fajla</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
+<translation id="6074087755403037157">Beta kanal</translation>
 <translation id="6099678161144790572">Uređeno u proteklom mjesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
@@ -1226,6 +1229,7 @@ Nova instalacija</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8203795194971602413">Desni klik</translation>
 <translation id="8209010265547628927">Vrati na zadano</translation>
+<translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Za to vrijeme vaš Chromebook mora ostati uključen i priključen na napajanje. Provjerite jesu li kablovi punjača ili adaptera dobro priključeni u Chromebook i utičnicu. Nemojte isključivati Chromebook.</translation>
 <translation id="8236042855478648955">Vrijeme je za odmor</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ဟံဂူလ် Romaja</translation>
 <translation id="112387589102719461">ပရိုဂရမ်မာ Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="1134697384939541955">နောက်ဆက်တွဲကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
+<translation id="1138691154716715755">ဤလ အစောပိုင်း</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> တွေ့ပါသည်။
     <ph name="LINE_BREAK1" />
     စက်အတွင်း သိုလှောင်မှုတွင် နေရာမလုံလောက်ပါ။ နောက်ထပ် <ph name="FILE_SIZE" /> လိုအပ်ပါသည်။
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံသည်၊ အသေးစိတ်</translation>
 <translation id="4387004326333427325">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အဝေးမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
+<translation id="4394980935660306080">ဤရက်သတ္တပတ် အစောပိုင်း</translation>
 <translation id="4401287888955153199">အားလုံးထုတ်ယူရန်</translation>
 <translation id="4410695710508688828">ထုတ်ယူ၍ မရပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" ကို ဖွင့်နေသည်</translation>
 <translation id="4720185134442950733">မိုဘိုင်းဒေတာကွန်ရက်</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ဓာတ်ပုံများ အရံသိမ်းဆည်းပြီးပါပြီ</translation>
+<translation id="4725096204469550614">ဤနှစ် အစောပိုင်း</translation>
 <translation id="4725511304875193254">ခွေးငယ်လေး</translation>
 <translation id="4737050008115666127">ဆင်းသက်ခြင်း</translation>
 <translation id="4747271164117300400">မက်ဆီဒိုးနီးယန်း</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ခုကို <ph name="FOLDER_NAME" /> သို့ ရွှေ့နေသည်</translation>
 <translation id="509429900233858213">အမှား တစ်ခု ကြုံခဲ့ရသည်။</translation>
 <translation id="5098629044894065541">ဟီဘရူး</translation>
+<translation id="5102922915594634436">စင့်ခ်လုပ်ထားသောဖိုင်တွဲများ စီမံရန်</translation>
 <translation id="5109254780565519649">အမှား ဖြစ်သွားသည်။ အချို့အရာများကို ပြန်ယူ၍မရနိုင်ပါ။</translation>
 <translation id="5110329002213341433">အင်္ဂလိပ် (ကနေဒါ)</translation>
 <translation id="5123433949759960244">ဘတ်စကက်ဘော</translation>

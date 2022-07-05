@@ -152,6 +152,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="1787955149152357925">Af</translation>
+<translation id="1797271123677381264">Wagwoord vergeet</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1812997170047690955">Wat wys op my skerm?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -610,6 +611,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Losgemaakte toestelle</translation>
 <translation id="4505050298327493054">Aktiewe lessenaar.</translation>
+<translation id="450584155212756404">Ontwikkelingskanaal</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4518404433291145981">Ontsluit eers jou foon as jy jou Chromebook wil ontsluit</translation>
 <translation id="4527045527269911712">Bluetooth-toestel "<ph name="DEVICE_NAME" />" wil graag toestemming hê om saam te bind.</translation>
@@ -877,6 +879,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>
 <translation id="6064463340679478396">Hierdie lêer klaar gebruik</translation>
 <translation id="6073451960410192870">Stop opname</translation>
+<translation id="6074087755403037157">Beta-kanaal</translation>
 <translation id="6099678161144790572">In die afgelope maand gewysig</translation>
 <translation id="6103838137565245112">stelsel</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />-spraaklêers is afgelaai</translation>
@@ -1227,6 +1230,7 @@ Nuwe installasie</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8203795194971602413">Regsklik</translation>
 <translation id="8209010265547628927">Stel terug</translation>
+<translation id="8214996719228530800">Kanarie-kanaal</translation>
 <translation id="8219451629189078428">Jou Chromebook moet in hierdie tyd aangeskakel bly en aan krag gekoppel wees. Maak seker dat die laaier of kragprop se drade behoorlik by sowel jou Chromebook as die kragpunt ingeprop is. Moenie jou Chromebook afskakel nie.</translation>
 <translation id="8236042855478648955">Tyd vir 'n blaaskans</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>

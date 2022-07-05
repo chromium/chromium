@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Anglická (US) programátorská klávesnica s rozložením Dvorak</translation>
 <translation id="1134697384939541955">Anglická (US) rozšírená klávesnica</translation>
+<translation id="1138691154716715755">Skôr v tomto mesiaci</translation>
 <translation id="1148097584170732637">Počet nájdených: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     V miestnom úložisku nie je dostatok miesta. Potrebujete ďalšie miesto – <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, ovládaná správcom, podrobnosti</translation>
 <translation id="4387004326333427325">Certifikát na overenie totožnosti bol zamietnutý na diaľku</translation>
 <translation id="4394214039309501350">Externý odkaz</translation>
+<translation id="4394980935660306080">Skôr v tomto týždni</translation>
 <translation id="4401287888955153199">Extrahovať všetko</translation>
 <translation id="4410695710508688828">Nepodarilo sa extrahovať. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Vytvorenie skratky k súborom</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Otvára sa <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Mobilná dátová sieť</translation>
 <translation id="4724850507808590449">Počet zálohovaných fotiek: <ph name="FILE_COUNT" /></translation>
+<translation id="4725096204469550614">Skôr v tomto roku</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Pristátie</translation>
 <translation id="4747271164117300400">Macedónčina</translation>

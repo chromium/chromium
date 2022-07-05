@@ -831,6 +831,7 @@
 <translation id="3226387218769101247">تصاویر کوچک</translation>
 <translation id="3227137524299004712">میکروفن</translation>
 <translation id="3229041911291329567">اطلاعات مربوط به نسخه دستگاه و مرورگر</translation>
+<translation id="3229277193950731405">کپی کردن رشته نسخه</translation>
 <translation id="323107829343500871">‏CVC کارت <ph name="CREDIT_CARD" /> را وارد کنید</translation>
 <translation id="3234666976984236645">همیشه محتوای مهم در این سایت شناسایی شود</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای سفارشی کردن ظاهر مرورگر، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -1960,10 +1961,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">برگ «اطلاعات کاربری مطابقت ندارد» در روند وارد کردن اطلاعات کاربری پرداخت امن بسته شد</translation>
 <translation id="6393956493820063117">براساس خط‌مشی سرپرست، جای‌گذاری از <ph name="ORIGIN_NAME" /> در این ناحیه مسدود شده است</translation>
+<translation id="6394852772105848029">این سایت می‌خواهد برنامه <ph name="APP_NAME" /> را باز کند</translation>
 <translation id="6398277657359595425">گریه با صدای بلند</translation>
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
 <translation id="6401136357288658127">این خط‌مشی منسوخ شده است. درعوض، باید از خط‌مشی <ph name="NEW_POLICY" /> استفاده کنید.</translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
+<translation id="6405181733356710802">به <ph name="APP_NAME" /> می‌روید؟</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">‏CVC‏ و تاریخ انقضای <ph name="CREDIT_CARD" /> را وارد کنید</translation>
 <translation id="6415778972515849510">‏Chromium می‌تواند کمک کند از حساب Google خود محافظت کنید و گذرواژه‌تان را تغییر دهید.</translation>

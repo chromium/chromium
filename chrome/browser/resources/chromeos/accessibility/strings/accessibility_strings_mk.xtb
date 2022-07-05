@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">Портокалова</translation>
 <translation id="1198865190323699001">Движења за допир</translation>
 <translation id="1201402288615127009">Следно</translation>
+<translation id="1202112913213080585">откажи</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Нема следен наслов на ниво 4</translation>
 <translation id="1212770441379271564">Следните неколку кратенки не се наредби на ChromeVox, но сепак се многу корисни за да го извлечете максимумот од Chrome.
@@ -43,6 +44,7 @@
     За да го отворите менито на прелистувачот Chrome, притиснете Alt + F.</translation>
 <translation id="1213216066620407844">ChromeVox - Давање глас на Chrome</translation>
 <translation id="1225969361094801578">Темносива како шкрилец</translation>
+<translation id="122928249241119550">преместете на претходната реченица</translation>
 <translation id="1230503547248836149">Почеток на изборот</translation>
 <translation id="1236794971743289975">Референца</translation>
 <translation id="1237797094773582699">Слично, повлекувањето оддесно налево со четири прста може да се користи за да се преместите на претходниот дел. Пробајте сега.</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">Сина како Доџерси</translation>
 <translation id="2438712309510062123">Предложете</translation>
 <translation id="2450814015951372393">Поле за избор</translation>
+<translation id="2450992626945324272">преместете на следната реченица</translation>
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="2462626033734746142">Група радио-копчиња</translation>
 <translation id="2467741090055146971">поништи избор</translation>
@@ -490,6 +493,7 @@
 <translation id="42164919740161077">Сивосина</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{цртичка}one{# цртичка}other{# цртички}}</translation>
+<translation id="4220024144662591089">изберете од „<ph name="START_PHRASE" />“ до „<ph name="END_PHRASE" />“</translation>
 <translation id="4221012616705981690">Нема претходен список</translation>
 <translation id="4225355998815256469">Контроли за формулари</translation>
 <translation id="4230834257931120629">Светлосива како шкрилец</translation>
@@ -760,6 +764,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Список или поле со комбинации</translation>
+<translation id="613344593214611552">избришете ја претходната реченица</translation>
 <translation id="6142308968191113180">Заглавие 4</translation>
 <translation id="6150023170003443621">Жолто-зелена</translation>
 <translation id="6158882249329863701">ред <ph name="TABLECELLROWINDEX" />, колона <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -769,6 +774,7 @@
 <translation id="6186305613600865047">Скокни до дното на страницата</translation>
 <translation id="6187190722927752226">Боја на аквамарин</translation>
 <translation id="6197361807490522975">Темносина</translation>
+<translation id="6218813441317556731">заменете „<ph name="DELETE_PHRASE" />“ со „<ph name="INSERT_PHRASE" />“</translation>
 <translation id="6236061028292614533">Следен наслов</translation>
 <translation id="6254901459154107917">Следна област за уредување текст</translation>
 <translation id="6259464875943891919">Излеговте од <ph name="TYPE" />.</translation>
@@ -922,6 +928,7 @@
 <translation id="7356610683936413584">Детали за списокот со опис</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{амперсанд}one{# амперсанди}other{# амперсанди}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">избришете го претходниот знак</translation>
 <translation id="738899727977260036">Сина како шкрилец</translation>
 <translation id="7393979322571982935">Звуци и поставки</translation>
 <translation id="739763518212184081">Претходна линија</translation>
@@ -942,6 +949,7 @@
 <translation id="7533226154149229506">Светлозлатеста-жолта</translation>
 <translation id="7543255924852002459">Отфрли етикета</translation>
 <translation id="7552432549459840808">Корисни кратенки на Chrome</translation>
+<translation id="7553679324939294712">вметнете „<ph name="INSERT_PHRASE" />“ пред „<ph name="BEFORE_PHRASE" />“</translation>
 <translation id="7569983096843329377">Црна</translation>
 <translation id="7579911500627256166">точка <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Некои</translation>
@@ -965,6 +973,7 @@
 <translation id="7684431668231950609">Измени текст, внес на URL-адреса</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Претходно радио-копче</translation>
+<translation id="7696631298608145306">преместете на следниот збор</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Природен глас</translation>
@@ -1072,6 +1081,7 @@
 <translation id="8455868257606149352">Макс. <ph name="X" /></translation>
 <translation id="84575901236241018">има пристапен клуч, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Оставате граматичка грешка</translation>
+<translation id="8465573210279050749">избришете го претходниот збор</translation>
 <translation id="847040613207937740">Нема следно поле за избор</translation>
 <translation id="8473540203671727883">Изговарај го текстот под глувчето</translation>
 <translation id="8476408756881832830">Паузирај ja репродукцијата кога зборува ChromeVox</translation>
@@ -1108,6 +1118,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{цевка}one{# вертикална цевка}other{# вертикални цевки}}</translation>
 <translation id="8741370088760768424">Совет: притиснете Search + празно место за да ја активирате тековната ставка.</translation>
 <translation id="8743786158317878347">внесува структурирана содржина како табели</translation>
+<translation id="8746846427395705317">преместете на претходниот збор</translation>
 <translation id="8747966237988593539">Подреден список</translation>
 <translation id="8749988712346667988">Сребрена</translation>
 <translation id="875769700429317857">Преземањето на <ph name="FILE_NAME" /> заврши</translation>
@@ -1135,6 +1146,7 @@
 <translation id="8970172509886453271">Нема претходна секција</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">избришете „<ph name="PHRASE" />“</translation>
 <translation id="8986362086234534611">Заборави</translation>
 <translation id="8989104346085848538">За да го запрете тековниот говор на ChromeVox, притиснете го копчето Control.</translation>
 <translation id="8993737615451556423">Дава контроли за забрзување, забавување и паузирање на гласот за читање</translation>

@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Deaktiver mørk tilstand</translation>
 <translation id="1881188606372070653">Gå til <ph name="BEGIN_LINK1" />siden Hjælp til Juridisk<ph name="END_LINK1" /> for at anmode om indholdsændringer af juridiske årsager. Visse konto- og systemoplysninger kan blive sendt til Google. Vi bruger de oplysninger, du giver os, til at løse tekniske problemer og forbedre vores tjenester. Oplysningerne håndteres i henhold til vores <ph name="BEGIN_LINK2" />privatlivspolitik<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />servicevilkår<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
+<translation id="1904932688895783618">Her er nogle andre nyttige ressourcer:</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
 <translation id="1932611479324127242">Deaktivering af batteri</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Prøv fejlfindingstrinnene</translation>
 <translation id="2016848882344942759">--intet white-label--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2085089206770112532">Reducer skærmens lysstyrke</translation>
 <translation id="2105810540595158374">Enheden er en spilcontroller.</translation>
@@ -772,6 +774,7 @@
 <translation id="7763470514545477072">Match af domænesuffiks</translation>
 <translation id="7769672763586021400">Model-id</translation>
 <translation id="7784116172884276937">Der er ikke konfigureret nogen DNS-servere</translation>
+<translation id="779591286616261875">Send ny rapport</translation>
 <translation id="7799817062559422778">Lys tilstand</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -924,6 +927,7 @@
 <translation id="9082718469794970195">Brug denne video</translation>
 <translation id="9087578468327036362">Rapportér denne forespørgsel</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
+<translation id="9092255287806472980">Din feedback er med til at forbedre Chrome OS og gennemgås af vores team. Vi modtager et stort antal rapporter, så vi kan ikke sende dig et svar.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Du er nødt til at skille enheden ad</translation>
 <translation id="9098156406873149060">Behold brugerdata</translation>

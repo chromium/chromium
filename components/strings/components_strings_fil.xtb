@@ -831,6 +831,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3226387218769101247">Mga Thumbnail</translation>
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3229041911291329567">Impormasyon ng bersyon tungkol sa iyong device at browser</translation>
+<translation id="3229277193950731405">Kopyahin ang string ng bersyon</translation>
 <translation id="323107829343500871">Ilagay ang iyong CVC para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Palaging tukuyin ang mahalagang content sa site na ito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-customize ang hitsura ng iyong browser</translation>
@@ -1960,10 +1961,12 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Nakasara ang sheet na walang tumutugmang kredensyal sa kredensyal sa secure na pagbabayad</translation>
 <translation id="6393956493820063117">Na-block ng patakaran ng administrator ang pag-paste sa lokasyong ito mula sa <ph name="ORIGIN_NAME" /></translation>
+<translation id="6394852772105848029">Gusto ng site na ito na buksan ang <ph name="APP_NAME" /> app</translation>
 <translation id="6398277657359595425">Umiiyak Nang Malakas</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
 <translation id="6401136357288658127">Hindi na ginagamit ang patakarang ito. Dapat mong gamitin ang patakarang <ph name="NEW_POLICY" /> sa halip.</translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
+<translation id="6405181733356710802">Magpatuloy sa <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Ilagay ang petsa ng pag-expire at CVC para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Makakatulong sa iyo ang Chromium na protektahan ang iyong Google Account at palitan ang password mo.</translation>

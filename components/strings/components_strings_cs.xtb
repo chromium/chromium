@@ -828,6 +828,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3226387218769101247">Miniatury</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Informace o verzi zařízení a prohlížeče</translation>
+<translation id="3229277193950731405">Zkopírovat řetězec verze</translation>
 <translation id="323107829343500871">Zadejte kód CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Vždy na tomto webu zjišťovat důležitý obsah</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si přizpůsobíte vzhled prohlížeče</translation>
@@ -1955,10 +1956,12 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">List identifikačních údajů pro zabezpečené platby o nenalezených odpovídajících identifikačních údajích je zavřený</translation>
 <translation id="6393956493820063117">Vkládání ze zdroje <ph name="ORIGIN_NAME" /> do tohoto umístění blokuje zásada administrátora</translation>
+<translation id="6394852772105848029">Web chce otevřít aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Hlasitý pláč</translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="6401136357288658127">Podpora této zásady byla ukončena. Měli byste místo ní používat zásadu <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Upravit záložku</translation>
+<translation id="6405181733356710802">Pokračovat na <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (obálka)</translation>
 <translation id="6410264514553301377">Zadejte datum vypršení platnosti a kód CVC karty <ph name="CREDIT_CARD" />.</translation>
 <translation id="6415778972515849510">Chromium vám může pomoci ochránit váš účet Google a změnit heslo.</translation>

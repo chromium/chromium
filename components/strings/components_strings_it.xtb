@@ -1956,10 +1956,12 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Le credenziali per il pagamento sicuro non corrispondono: riquadro inferiore chiuso</translation>
 <translation id="6393956493820063117">La possibilità di incollare da <ph name="ORIGIN_NAME" /> a questa posizione è stata bloccata da un criterio dell'amministratore</translation>
+<translation id="6394852772105848029">Questo sito vuole aprire l'app <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Pianto disperato</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="6401136357288658127">Questa norma è obsoleta. Dovresti usare invece la norma <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Modifica preferito</translation>
+<translation id="6405181733356710802">Continuare su <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Inserisci la data di scadenza e il codice CVC della carta <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium può aiutarti a proteggere il tuo Account Google e a modificare la password.</translation>

@@ -1960,10 +1960,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6390662030813198813">Engineering E</translation>
 <translation id="6391700400718590966">A página de credenciais para pagamento seguro sem correspondência está fechada</translation>
 <translation id="6393956493820063117">A política do administrador bloqueou a opção de colar conteúdo de <ph name="ORIGIN_NAME" /> neste local</translation>
+<translation id="6394852772105848029">Este site quer abrir o app <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Chorando muito</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
+<translation id="6405181733356710802">Ir para <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Digite a data de validade e o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">No Chromium, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha.</translation>

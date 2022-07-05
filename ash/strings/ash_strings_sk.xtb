@@ -152,6 +152,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1771761307086386028">Posunúť doprava</translation>
 <translation id="1774796056689732716">Kalendár, <ph name="CURRENT_MONTH_YEAR" />, momentálne je vybraný dátum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Vypnuté</translation>
+<translation id="1797271123677381264">Zabudnuté heslo</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="1812997170047690955">Čo je na obrazovke?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárované zariadenia</translation>
 <translation id="4505050298327493054">Aktívna plocha.</translation>
+<translation id="450584155212756404">Verzia pre vývojárov</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4518404433291145981">Ak chcete Chromebook odomknúť, najprv odomknite telefón</translation>
 <translation id="4527045527269911712">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania.</translation>
@@ -876,6 +878,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6062360702481658777">Odhlásenie prebehne automaticky o <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Tento súbor už nebudem používať</translation>
 <translation id="6073451960410192870">Zastaviť zaznamenávanie</translation>
+<translation id="6074087755403037157">Beta verzia</translation>
 <translation id="6099678161144790572">Upravené za posledný mesiac</translation>
 <translation id="6103838137565245112">systém</translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
@@ -1226,6 +1229,7 @@ Nová inštalácia</translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8203795194971602413">Kliknutie pravým tlačidlom myši</translation>
 <translation id="8209010265547628927">Resetovať</translation>
+<translation id="8214996719228530800">Kanál Canary</translation>
 <translation id="8219451629189078428">Chromebook musíte mať v tomto období zapnutý a pripojený k zásuvke. Uistite sa, či je kábel nabíjačky alebo adaptéra riadne pripojený do Chromebooku aj elektrickej zásuvky. Chromebook nevypínajte.</translation>
 <translation id="8236042855478648955">Čas na prestávku</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>

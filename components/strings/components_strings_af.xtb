@@ -831,6 +831,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3226387218769101247">Kleinkiekies</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3229041911291329567">Weergawe-inligting oor jou toestel en blaaier</translation>
+<translation id="3229277193950731405">Kopieer weergawestring</translation>
 <translation id="323107829343500871">Voer die CVC vir <ph name="CREDIT_CARD" /> in</translation>
 <translation id="3234666976984236645">Bespeur altyd belangrike inhoud op hierdie werf</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om die voorkoms van jou blaaier te pasmaak</translation>
@@ -1960,10 +1961,12 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Blad vir geen passende eiebewys vir veilige betalingeiebewys is toegemaak</translation>
 <translation id="6393956493820063117">Administrateurbeleid blokkeer plak van <ph name="ORIGIN_NAME" /> af na hierdie ligging toe</translation>
+<translation id="6394852772105848029">Hierdie werf wil die <ph name="APP_NAME" />-app oopmaak</translation>
 <translation id="6398277657359595425">Huil hardop</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="6401136357288658127">Hierdie beleid is opgeskort. Jy moet liewer die <ph name="NEW_POLICY" />-beleid gebruik.</translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
+<translation id="6405181733356710802">Gaan voort na <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Voer die vervaldatum en CVC vir <ph name="CREDIT_CARD" /> in</translation>
 <translation id="6415778972515849510">Chromium kan jou help om jou Google-rekening te beskerm en jou wagwoord te verander.</translation>

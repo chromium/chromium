@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">უსაფრთხო გადახდისთვის საჭირო ავტორიზაციის მონაცემების არარსებობის ფურცელი დახურულია</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" />-დან ამ მდებარეობაზე ჩასმა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
+<translation id="6394852772105848029">ამ საიტს სურს, გახსნას <ph name="APP_NAME" /> აპი</translation>
 <translation id="6398277657359595425">ხმამაღლა მტირალი</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="6401136357288658127">ეს წესები მოძველდა. სანაცვლოდ უნდა გამოიყენოთ <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">სანიშნის რედაქტირება</translation>
+<translation id="6405181733356710802">გსურთ <ph name="APP_NAME" />-ზე გადასვლა?</translation>
 <translation id="6406765186087300643">C0 (კონვერტი)</translation>
 <translation id="6410264514553301377">შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC</translation>
 <translation id="6415778972515849510">Chromium-ს შეუძლია დაგეხმაროთ თქვენი Google ანგარიშის დაცვასა და პაროლის შეცვლაში.</translation>

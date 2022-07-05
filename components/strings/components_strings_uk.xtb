@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Закрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="6393956493820063117">Адміністратор заблокував можливість вставляти сюди контент зі сторінки <ph name="ORIGIN_NAME" /></translation>
+<translation id="6394852772105848029">Сайт хоче відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Гірко ридає</translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="6401136357288658127">Це правило не підтримується. Натомість потрібно застосувати правило <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
+<translation id="6405181733356710802">Перейти в додаток <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (конверт)</translation>
 <translation id="6410264514553301377">Введіть дату закінчення терміну дії та код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium допоможе захистити обліковий запис Google і змінити пароль.</translation>

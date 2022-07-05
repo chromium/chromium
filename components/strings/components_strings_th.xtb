@@ -831,6 +831,7 @@
 <translation id="3226387218769101247">ภาพขนาดย่อ</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3229041911291329567">ข้อมูลเวอร์ชันเกี่ยวกับอุปกรณ์และเบราว์เซอร์</translation>
+<translation id="3229277193950731405">คัดลอกสตริงเวอร์ชัน</translation>
 <translation id="323107829343500871">ป้อน CVC สำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">ตรวจหาเนื้อหาที่สำคัญบนไซต์นี้เสมอ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
@@ -1959,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">ระบบได้ปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="6393956493820063117">นโยบายของผู้ดูแลระบบบล็อกการวางจาก <ph name="ORIGIN_NAME" /> ลงในตำแหน่งนี้ไว้</translation>
+<translation id="6394852772105848029">เว็บไซต์นี้ต้องการเปิดแอป <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">ร้องไห้ฟูมฟาย</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
 <translation id="6401136357288658127">นโยบายนี้เลิกใช้งานไปแล้ว คุณควรใช้นโยบาย <ph name="NEW_POLICY" /> แทน</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
+<translation id="6405181733356710802">ไปที่ <ph name="APP_NAME" /> ไหม</translation>
 <translation id="6406765186087300643">C0 (ซองจดหมาย)</translation>
 <translation id="6410264514553301377">ป้อนวันหมดอายุและ CVC ของ <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>

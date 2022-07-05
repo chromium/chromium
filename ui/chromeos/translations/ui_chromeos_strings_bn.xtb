@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">হাঙ্গুল রোমাজা</translation>
 <translation id="112387589102719461">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় প্রোগ্রামার Dvorak কীবোর্ড</translation>
 <translation id="1134697384939541955">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় বর্ধিত কীবোর্ড</translation>
+<translation id="1138691154716715755">এই মাসের শুরুর দিকে</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" />টি পাওয়া গেছে।
     <ph name="LINE_BREAK1" />
     আপনার স্থানীয় স্টোরেজে পর্যাপ্ত জায়গা নেই। আরও <ph name="FILE_SIZE" /> প্রয়োজন।
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="4387004326333427325">দূরবর্তী লোকেশন থেকে প্রমাণীকরণ সার্টিফিকেট প্রত্যাখ্যান করা হয়েছে</translation>
 <translation id="4394214039309501350">এক্সটার্নাল লিঙ্ক</translation>
+<translation id="4394980935660306080">এই সপ্তাহের শুরুর দিকে</translation>
 <translation id="4401287888955153199">জিপ ফাইল থেকে সব কন্টেন্ট এক্সট্র্যাক্ট করুন</translation>
 <translation id="4410695710508688828">এক্সট্র্যাক্ট করা যায়নি। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">আপনার ফাইলের একটি শর্টকাট তৈরি করুন</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" খোলা হচ্ছে</translation>
 <translation id="4720185134442950733">মোবাইল ডেটা নেটওয়ার্ক</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" />টি ফটোর ব্যাকআপ নেওয়া হয়েছে</translation>
+<translation id="4725096204469550614">এই বছরের শুরুর দিকে</translation>
 <translation id="4725511304875193254">কর্গি কুকুর</translation>
 <translation id="4737050008115666127">ল্যান্ডিং</translation>
 <translation id="4747271164117300400">ম্যাসিডোনীয়</translation>

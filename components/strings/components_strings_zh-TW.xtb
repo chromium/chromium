@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">無相符安全付款憑證表已關閉</translation>
 <translation id="6393956493820063117">系統管理員政策禁止將 <ph name="ORIGIN_NAME" /> 的內容貼到這個位置</translation>
+<translation id="6394852772105848029">這個網站想要開啟「<ph name="APP_NAME" />」應用程式</translation>
 <translation id="6398277657359595425">大哭</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6401136357288658127">這項政策目前已淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
+<translation id="6405181733356710802">要繼續使用「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="6406765186087300643">C0 (信封)</translation>
 <translation id="6410264514553301377">輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼</translation>
 <translation id="6415778972515849510">Chromium 可協助你保護 Google 帳戶並變更密碼。</translation>

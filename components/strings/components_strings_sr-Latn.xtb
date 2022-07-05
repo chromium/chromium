@@ -831,6 +831,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3226387218769101247">Sličice</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Informacije o verziji za uređaj i pregledač</translation>
+<translation id="3229277193950731405">Kopiraj string verzije</translation>
 <translation id="323107829343500871">Unesite CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvek otkrivaj važan sadržaj na ovom sajtu</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste prilagodili izgled pregledača</translation>
@@ -1959,10 +1960,12 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Zatvoreno je obaveštenje da nema akreditiva koji se podudaraju za bezbedno plaćanje</translation>
 <translation id="6393956493820063117">Smernice za administratore blokiraju nalepljivanje sa <ph name="ORIGIN_NAME" /> na ovu lokaciju</translation>
+<translation id="6394852772105848029">Ovaj sajt želi da otvori aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6398277657359595425">Glasno plače</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="6401136357288658127">Ove smernice su zastarele. Umesto njih treba da koristite nove smernice <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Izmena obeleživača</translation>
+<translation id="6405181733356710802">Želite li da nastavite na: <ph name="APP_NAME" />?</translation>
 <translation id="6406765186087300643">C0 (koverat)</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium može da vam pomogne da zaštitite Google nalog i promenite lozinku.</translation>

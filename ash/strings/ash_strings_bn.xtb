@@ -152,6 +152,7 @@
 <translation id="1771761307086386028">ডান দিকে স্ক্রল করুন</translation>
 <translation id="1774796056689732716">ক্যালেন্ডার, <ph name="CURRENT_MONTH_YEAR" />, বর্তমানে <ph name="DATE" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="1787955149152357925">বন্ধ আছে</translation>
+<translation id="1797271123677381264">পাসওয়ার্ড ভুলে গেছেন</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="1812997170047690955">আমার স্ক্রিনে কী রয়েছে?</translation>
 <translation id="1823873187264960516">ইথারনেট: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
 <translation id="4505050298327493054">অ্যাক্টিভ ডেস্কটপ।</translation>
+<translation id="450584155212756404">ডেভ চ্যানেল</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4518404433291145981">Chromebook আনলক করতে, প্রথমে আপনার ফোন আনলক করুন</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
@@ -876,6 +878,7 @@
 <translation id="6062360702481658777">আপনি <ph name="LOGOUT_TIME_LEFT" /> এর মধ্যে স্বয়ংক্রিয়ভাবে প্রস্থান করুন হবেন৷</translation>
 <translation id="6064463340679478396">ফাইল ব্যবহার করে সম্পূর্ণ করা হয়েছে</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
+<translation id="6074087755403037157">বিটা চ্যানেল</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -1226,6 +1229,7 @@
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8203795194971602413">ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="8209010265547628927">রিসেট করুন</translation>
+<translation id="8214996719228530800">ক্যানারি চ্যানেল</translation>
 <translation id="8219451629189078428">এই সময়ে আপনার Chromebook চালু অবস্থায় থাকতে হবে ও সেটি চার্জে বসিয়ে রাখতে হবে। আপনার Chromebook ও প্লাগ পয়েন্ট, উভয়ের সাথে চার্জার বা অ্যাডাপ্টার কেবল ঠিকমতো প্লাগ-ইন করা আছে কিনা তা দেখে নিন। আপনার Chromebook বন্ধ করবেন না।</translation>
 <translation id="8236042855478648955">বিরতির সময় হয়েছে</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>

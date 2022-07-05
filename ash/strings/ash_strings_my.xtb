@@ -152,6 +152,7 @@
 <translation id="1771761307086386028">ညာသို့ လှိမ့်ရန်</translation>
 <translation id="1774796056689732716">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" />၊ လက်ရှိ <ph name="DATE" /> ကိုရွေးထားသည်။</translation>
 <translation id="1787955149152357925">ပိတ်ထားသည်</translation>
+<translation id="1797271123677381264">စကားဝှက် မေ့နေသည်</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1812997170047690955">ကျွန်ုပ်၏ ဖန်သားပြင်ပေါ်တွင် မည်သည့်အရာများ ရှိပါသလဲ။</translation>
 <translation id="1823873187264960516">အီသာနက်− <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4481530544597605423">ချိတ်ဆက်မှု ဖြုတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="4505050298327493054">အသုံးပြုနေသော နေရာ။</translation>
+<translation id="450584155212756404">တိုးတက်မှုချန်နယ်</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
 <translation id="4518404433291145981">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်းကို ဦးစွာ လော့ခ်ဖွင့်ပါ</translation>
 <translation id="4527045527269911712">ဘလူးတုသ် ကိရိယာ "<ph name="DEVICE_NAME" />" က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။</translation>
@@ -876,6 +878,7 @@
 <translation id="6062360702481658777">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အကြာတွင် အလိုအလျောက် ထွက်ခွာမည်။</translation>
 <translation id="6064463340679478396">ဤဖိုင်ကို သုံးပြီးပါပြီ</translation>
 <translation id="6073451960410192870">ကူးယူမှု ရပ်ရန်</translation>
+<translation id="6074087755403037157">စမ်းသပ်ချန်နယ်</translation>
 <translation id="6099678161144790572">ယခင်လက ပြင်ဆင်ထားသည်</translation>
 <translation id="6103838137565245112">စနစ်</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
@@ -1226,6 +1229,7 @@
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="8209010265547628927">ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="8214996719228530800">Canary ချန်နယ်</translation>
 <translation id="8219451629189078428">ဤအချိန်အတွင်းတွင် သင့် Chromebook ကို ဖွင့်ထားပြီး ပါဝါချိတ်ဆက်ထားရန် လိုအပ်ပါသည်။ အားသွင်းကိရိယာ သို့မဟုတ် ကြားခံကိရိယာကြိုးများကို သင့် Chromebook နှင့် ပလတ်ပေါက် နှစ်ခုစလုံးတွင် တပ်ထားကြောင်း သေချာပါစေ။ သင့် Chromebook ကို မပိတ်ပါနှင့်။</translation>
 <translation id="8236042855478648955">နားချိန် ရောက်ပါပြီ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" /></translation>

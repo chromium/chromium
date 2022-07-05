@@ -152,6 +152,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1771761307086386028">Rull til høyre</translation>
 <translation id="1774796056689732716">Kalender – <ph name="CURRENT_MONTH_YEAR" />. For øyeblikket er <ph name="DATE" /> valgt.</translation>
 <translation id="1787955149152357925">Av</translation>
+<translation id="1797271123677381264">Glemt passord</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="1812997170047690955">Hva er på skjermen?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -536,6 +537,7 @@ Koble enheten til strøm.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">vindu</translation>
 <translation id="4123259114412175274">For å låse opp Chromebooken, sørg for at Bluetooth er påslått på telefonen</translation>
+<translation id="4125970834901680537">Kan ikke strømme apper i nettbrettmodus. Prøv på nytt i laptopmodus.</translation>
 <translation id="4129129681837227511">For å se varsler på låseskjermen, lås opp for å endre innstillingen</translation>
 <translation id="4136724716305260864">Påslått til soloppgang</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
@@ -553,6 +555,7 @@ Koble enheten til strøm.</translation>
 <translation id="4215497585250573029">VPN-innstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installert app, satt på pause</translation>
+<translation id="423685346499232137">Kan ikke kopiere eller lime inn innhold akkurat nå</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
@@ -607,6 +610,7 @@ Koble enheten til strøm.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Frakoblede enheter</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
+<translation id="450584155212756404">Utviklerkanal</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
 <translation id="4518404433291145981">For å låse opp Chromebooken, lås opp telefonen først</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
@@ -874,6 +878,7 @@ Koble enheten til strøm.</translation>
 <translation id="6062360702481658777">Du logges automatisk av om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Ferdig med filen</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
+<translation id="6074087755403037157">Betakanal</translation>
 <translation id="6099678161144790572">Redigert den siste måneden</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
@@ -1224,6 +1229,7 @@ Nylig installert</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>
 <translation id="8209010265547628927">Tilbakestill</translation>
+<translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebooken må være påslått og koblet til strøm i denne perioden. Sørg for at lader- eller adapterkabelen er plugget helt inn i både Chromebooken og stikkontakten. Ikke slå av Chromebook.</translation>
 <translation id="8236042855478648955">På tide med en pause</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>

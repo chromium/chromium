@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Isključi tamni način rada</translation>
 <translation id="1881188606372070653">Idite na <ph name="BEGIN_LINK1" />stranicu Pravna pomoć<ph name="END_LINK1" /> da zatražite izmjenu sadržaja zbog zakona. Možda će se neke informacije o računu i sistemu poslati Googleu. Informacije koje navedete će nam pomoći da riješimo tehničke probleme i poboljšamo usluge, u skladu s našim <ph name="BEGIN_LINK2" />Pravilima privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslovima korištenja usluge<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
+<translation id="1904932688895783618">Evo još nekih korisnih izvora:</translation>
 <translation id="1905710495812624430">Prekoračen je maksimalan broj dozvoljenih pokušaja.</translation>
 <translation id="1908234395526491708">Greške UDP zahtjeva</translation>
 <translation id="1932611479324127242">Isključivanje baterije</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="2016848882344942759">--ukloni white-label--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Povežite se s mrežom i ponovo učitajte stranicu da vidite čuvara ekrana.</translation>
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2085089206770112532">Smanjivanje osvjetljenja ekrana</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za igre.</translation>
@@ -773,6 +775,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7763470514545477072">Podudaranje sufiksa domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Nije postavljen nijedan DNS server</translation>
+<translation id="779591286616261875">Pošalji novu prijavu</translation>
 <translation id="7799817062559422778">Svijetli način rada</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -925,6 +928,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="9082718469794970195">Koristi ovaj videozapis</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutno korištenje</translation>
+<translation id="9092255287806472980">Vaše povratne informacije pomažu nam da poboljšamo ChromeOS i naš tim će ih pregledati. Zbog velikog broja prijava, nećemo moći poslati odgovor.</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="90977145661420967">Morat ćete rastaviti uređaj</translation>
 <translation id="9098156406873149060">Zadržavanje korisničkih podataka</translation>

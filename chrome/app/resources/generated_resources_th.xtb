@@ -380,6 +380,7 @@
 <translation id="1374844444528092021">ใบรับรองที่เครือข่าย "<ph name="NETWORK_NAME" />" ต้องการไม่ได้รับการติดตั้ง หรือใช้ไม่ได้อีกต่อไปแล้ว โปรดรับใบรับรองใหม่และลองเชื่อมต่ออีกครั้ง</translation>
 <translation id="1375321115329958930">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="1375557162880614858">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS Flex ไหม</translation>
+<translation id="1375938286942050085">การตั้งค่าเสร็จสมบูรณ์ เตรียมอุปกรณ์ให้พร้อมสำหรับการเล่นเกมครั้งถัดไป</translation>
 <translation id="137651782282853227">ที่อยู่ที่บันทึกไว้จะแสดงที่นี่</translation>
 <translation id="1376771218494401509">ตั้งชื่อ&amp;หน้าต่าง...</translation>
 <translation id="1377600615067678409">ข้ามไปก่อน</translation>
@@ -394,6 +395,7 @@
 <translation id="138784436342154190">คืนค่าเป็นหน้าเริ่มต้นใช้งานเริ่มต้นไหม</translation>
 <translation id="1388253969141979417">ได้รับอนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> จะรีสตาร์ทเมื่อการอัปเดตเสร็จสมบูรณ์</translation>
+<translation id="1389601498324964367">พื้นที่เก็บข้อมูลที่มีการจัดการโควต้า</translation>
 <translation id="139013308650923562">อนุญาตให้ใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
 <translation id="1390548061267426325">เปิดเป็นแท็บทั่วไป</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ไม่ได้รับอนุญาตให้สั่งพิมพ์ไปยัง <ph name="PRINTER_NAME" /> โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -1063,6 +1065,7 @@
 <translation id="1992924914582925289">นำออกจากอุปกรณ์</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
 <translation id="1995916364271252349">กำหนดประเภทข้อมูลที่เว็บไซต์ต่างๆ จะใช้และแสดงได้ (เช่น ข้อมูลตำแหน่ง กล้อง ป๊อปอัป)</translation>
+<translation id="1997433994358798851">Chrome ต้องได้รับสิทธิ์ในการใช้บลูทูธเพื่อเชื่อมต่อกับอุปกรณ์</translation>
 <translation id="1997616988432401742">ใบรับรองของคุณ</translation>
 <translation id="1999115740519098545">เมื่อเริ่มต้นใช้งาน</translation>
 <translation id="2000419248597011803">ส่งคุกกี้และการค้นหาบางรายการจากแถบที่อยู่และช่องค้นหาไปยังเครื่องมือค้นหาเริ่มต้น</translation>
@@ -1724,6 +1727,7 @@
 <translation id="25899519884572181">ออกจากโหมดผู้อ่าน</translation>
 <translation id="2593499352046705383">ตรวจสอบว่าคุณได้สำรองข้อมูลไว้แล้วก่อนที่จะเริ่ม การติดตั้ง <ph name="DEVICE_OS" /> จะเขียนทับข้อมูลในฮาร์ดไดรฟ์ ดูข้อมูลเพิ่มเติมที่ g.co/flex/InstallGuide</translation>
 <translation id="2594999711683503743">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
+<translation id="2599048253926156421">คัดลอกชื่อผู้ใช้ไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="2602501489742255173">เลื่อนขึ้นเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="2603115962224169880">ล้างข้อมูลในคอมพิวเตอร์</translation>
 <translation id="2603355571917519942">Voice Match พร้อมใช้งานแล้ว</translation>
@@ -1947,6 +1951,7 @@
 <translation id="2804043232879091219">เปิดเบราว์เซอร์สำรองไม่ได้</translation>
 <translation id="2804667941345577550">คุณจะออกจากระบบของเว็บไซต์นี้ รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="2804680522274557040">ปิดกล้องอยู่</translation>
+<translation id="280518252911523675">หากดำเนินการต่อโดยไม่ป้อนรหัสผ่านเก่า ระบบจะลบข้อมูลในเครื่อง คุณจะต้องลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อตั้งค่าผู้ใช้รายนี้อีกครั้ง</translation>
 <translation id="2805539617243680210">คุณพร้อมแล้ว</translation>
 <translation id="2805646850212350655">ระบบไฟล์การเข้ารหัสของ Microsoft</translation>
 <translation id="2805756323405976993">แอป</translation>
@@ -3062,6 +3067,7 @@
 <translation id="3895090224522145010">ชื่อผู้ใช้ Kerberos</translation>
 <translation id="389521680295183045">เว็บไซต์สามารถขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{1 รูปภาพ}other{# รูปภาพ}}</translation>
+<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> สร้างมาเพื่อการเล่นเกม แอปสำรวจจะเปิดขึ้นถัดไปเพื่อให้คุณเข้าถึงเกมใหม่ล่าสุดหลายร้อยเกม ดูข้อเสนอเกี่ยวกับเกม และค้นพบฟีเจอร์สำหรับเล่นเกมที่มาพร้อมกับอุปกรณ์</translation>
 <translation id="3898233949376129212">ภาษาของอุปกรณ์</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ต้องการ<ph name="FIRST_PERMISSION" />และ<ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">เลือกแป้นพิมพ์</translation>
@@ -3212,6 +3218,7 @@
 <translation id="4033471457476425443">เพิ่มโฟลเดอร์ใหม่</translation>
 <translation id="4033711848170683365">การดำเนินการนี้จะลบข้อมูลการท่องเว็บของคุณจากอุปกรณ์นี้อย่างถาวร แอปอื่นๆ ใน <ph name="DEVICE_TYPE" /> อาจใช้บัญชี Google ในโปรไฟล์นี้อยู่ คุณนำบัญชีเหล่านี้ออกได้ใน <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /></translation>
 <translation id="4033963223187371752">เว็บไซต์ที่ปลอดภัยอาจฝังเนื้อหา เช่น เฟรมรูปภาพหรือเว็บ ซึ่งไม่ปลอดภัย</translation>
+<translation id="4034741552964543387">ดำเนินการต่อโดยไม่ต้องมีข้อมูลในเครื่อง</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4035758313003622889">&amp;ตัวจัดการงาน</translation>
 <translation id="4035877632587724847">ไม่อนุญาต</translation>
@@ -3403,6 +3410,7 @@
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4242577469625748426">ไม่สามารถติดตั้งการตั้งค่านโยบายบนอุปกรณ์: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4243504193894350135">เครื่องพิมพ์หยุดชั่วคราว</translation>
+<translation id="424423026762293842">กู้คืนข้อมูลในเครื่อง</translation>
 <translation id="4244238649050961491">ค้นหาแอปสไตลัสเพิ่มเติม</translation>
 <translation id="4246980464509998944">ความคิดเห็นเพิ่มเติม</translation>
 <translation id="424726838611654458">เปิดใน Adobe Reader ทุกครั้ง</translation>
@@ -4958,6 +4966,7 @@
 <translation id="5792728279623964091">โปรดแตะปุ่มเปิด/ปิด</translation>
 <translation id="5793339252089865437">หากดาวน์โหลดอัปเดตผ่านเครือข่ายมือถือ อาจทำให้มีค่าบริการเน็ตมือถือเพิ่มเติม</translation>
 <translation id="5793420564274426163">การยืนยันการจับคู่</translation>
+<translation id="5793430094159150686">เปลี่ยนรหัสผ่านแล้ว คุณต้องป้อนรหัสผ่านเก่าหากต้องการกู้คืนข้อมูลในเครื่อง</translation>
 <translation id="5794034487966529952">เดสก์ <ph name="DESK_TITLE" /> มีเบราว์เซอร์เปิดอยู่ <ph name="NUM_BROWSERS" /> หน้าต่าง</translation>
 <translation id="5794414402486823030">เปิดด้วยโปรแกรมดูของระบบทุกครั้ง</translation>
 <translation id="5794700615121138172">โฟลเดอร์ที่แชร์ใน Linux</translation>
@@ -5881,6 +5890,7 @@
 <translation id="6700093763382332031">การล็อกซิมมือถือ</translation>
 <translation id="6700480081846086223">แคสต์ <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">ไม่สามารถโหลดโปรไฟล์</translation>
+<translation id="6701824422332982935">โหลดหน้าเว็บซ้ำเพื่อใช้ส่วนขยายเหล่านี้</translation>
 <translation id="6702639462873609204">&amp;แก้ไข...</translation>
 <translation id="6703212423117969852">คุณลองอีกครั้งภายหลังได้ใน Chrome</translation>
 <translation id="6703254819490889819">กู้คืนข้อมูลสำรอง</translation>
@@ -7107,6 +7117,7 @@
 <translation id="7903742244674067440">คุณมีใบรับรองของไฟล์ซึ่งระบุตัวตนของผู้ออกใบรับรองเหล่านี้</translation>
 <translation id="7903925330883316394">ยูทิลิตี: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">ทำให้พอร์ต Linux ใช้งานได้กับอุปกรณ์อื่นๆ ในเครือข่าย</translation>
+<translation id="7906440585529721295">ระบบจะลบข้อมูลในเครื่อง</translation>
 <translation id="7907837847548254634">แสดงไฮไลต์เป็นระยะเวลาสั้นๆ บนวัตถุที่โฟกัส</translation>
 <translation id="7908378463497120834">ขออภัย ไม่สามารถติดตั้งอย่างน้อยหนึ่งพาร์ทิชันในอุปกรณ์จัดเก็บข้อมูลภายนอกของคุณ</translation>
 <translation id="7909324225945368569">เปลี่ยนชื่อโปรไฟล์</translation>
@@ -7445,6 +7456,7 @@
 <translation id="822050276545350872">คุณไม่จำเป็นต้องรอขั้นตอนต่อจากนี้</translation>
 <translation id="8221491193165283816">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกที่นี่</translation>
 <translation id="822347941086490485">กำลังค้นหาอุปกรณ์ HID...</translation>
+<translation id="8223573963214454788">ดำเนินการต่อและลบข้อมูล</translation>
 <translation id="8225046344534779393">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="8225265270453771718">แชร์หน้าต่างแอปพลิเคชัน</translation>
 <translation id="8226222018808695353">ต้องห้าม</translation>
@@ -7545,6 +7557,7 @@
 <translation id="8314381333424235892">ไม่มีส่วนขยายหรือไม่ได้ติดตั้ง</translation>
 <translation id="831440797644402910">เปิดโฟลเดอร์นี้ไม่ได้</translation>
 <translation id="8314835274931377415">เริ่มตั้งค่าการเข้าถึงด้วยสวิตช์ไหม</translation>
+<translation id="8317582043908962055">จดจำข้อความจาก PDF</translation>
 <translation id="8317671367883557781">เพิ่มการเชื่อมต่อเครือข่าย</translation>
 <translation id="8319414634934645341">การใช้คีย์เพิ่มเติม</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> จะจัดการ <ph name="DEVICE_TYPE" /> นี้</translation>
@@ -8430,6 +8443,7 @@
 <translation id="9203398526606335860">&amp;เปิดใช้งานการทำแฟ้มประวัติ</translation>
 <translation id="9203904171912129171">เลือกอุปกรณ์</translation>
 <translation id="9206889157914079472">การจดบันทึกด้วยสไตลัสจากหน้าจอล็อก</translation>
+<translation id="9208192193641542858">ข้อมูลในเครื่องได้รับการปกป้องโดยรหัสผ่านเก่า หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ลองใช้รหัสผ่านเก่าอีกครั้ง</translation>
 <translation id="9209563766569767417">กำลังตรวจสอบการตั้งค่าคอนเทนเนอร์ Linux</translation>
 <translation id="9209689095351280025">เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้</translation>
 <translation id="9211177926627870898">ต้องอัปเดต</translation>

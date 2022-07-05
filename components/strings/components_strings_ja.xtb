@@ -1960,10 +1960,12 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">保護されたお支払い認証情報（認証情報の一致なし）シートは閉じています</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> からこの場所への貼り付けは管理者が設定したポリシーによってブロックされています</translation>
+<translation id="6394852772105848029">このサイトは <ph name="APP_NAME" /> アプリを開くよう要求しています</translation>
 <translation id="6398277657359595425">大泣き</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6401136357288658127">このポリシーはサポートが終了したため、代わりに <ph name="NEW_POLICY" /> ポリシーを使用してください。</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
+<translation id="6405181733356710802"><ph name="APP_NAME" /> に移動しますか？</translation>
 <translation id="6406765186087300643">C0（封筒）</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> の有効期限と CVC を入力</translation>
 <translation id="6415778972515849510">Chromium には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
