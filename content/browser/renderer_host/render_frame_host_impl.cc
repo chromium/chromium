@@ -4447,9 +4447,13 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   // tricky to support because the NavigationRequest would change its
   // NavigationController in the course of the activation, and while that may be
   // safe for a normal navigation, it has more implications for a history
-  // navigation. Fortunately, for prerendering, we do not expect there to be any
-  // ongoing history navigations in a subframe, because we maintain a trivial
-  // session history, so check that nav_entry_id() is 0 here.
+  // navigation as it already has an associated NavigationEntry and we do not
+  // transfer pending NavigationEntries during activation. Fortunately, for
+  // prerendering, we do not expect there to be any ongoing history navigations
+  // in a subframe, because we maintain a trivial session history, so check that
+  // nav_entry_id() is 0 here. Reloading subframes are considered
+  // renderer-initiated navigations and do not create a new navigation entry
+  // when NavigationRequest is created.
   //
   // Note that due to PrerenderCommitDeferringCondition, the main frame should
   // have no ongoing NavigationRequest at all, so it is not checked here.
