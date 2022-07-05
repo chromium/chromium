@@ -20,7 +20,7 @@ constexpr char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
 constexpr char kCallerParameterName[] = "CALLER";
 constexpr char kSourceParameterName[] = "SOURCE";
 
-constexpr char kIntentValue[] = "FAST_CHECKOUT";
+constexpr char kIntentValue[] = "CHROME_FAST_CHECKOUT";
 constexpr char kTrue[] = "true";
 // TODO(crbug.com/1338521): Define and specify proper caller(s) and source(s).
 constexpr char kCaller[] = "7";  // run was started from within Chromium
