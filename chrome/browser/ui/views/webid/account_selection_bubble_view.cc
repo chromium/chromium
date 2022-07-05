@@ -291,12 +291,15 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowTitle(false);
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kTopBottomPadding));
+
   std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
       base::UTF8ToUTF16(rp_for_display), idp_for_display_);
+  SetAccessibleTitle(title);
+
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kTopBottomPadding));
   bool has_icon = idp_metadata.brand_icon_url.is_valid();
   header_view_ = AddChildView(CreateHeaderView(title, has_icon));
   AddChildView(std::make_unique<views::Separator>());
