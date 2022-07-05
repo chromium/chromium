@@ -251,7 +251,7 @@ PermissionService* WakeLock::GetPermissionService() {
 }
 
 void WakeLock::Trace(Visitor* visitor) const {
-  for (const WakeLockManager* manager : managers_)
+  for (const Member<WakeLockManager>& manager : managers_)
     visitor->Trace(manager);
   visitor->Trace(permission_service_);
   Supplement<NavigatorBase>::Trace(visitor);
