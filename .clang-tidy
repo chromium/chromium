@@ -36,7 +36,7 @@
     - key:          bugprone-dangling-handle.HandleClasses
       value:        ::std::basic_string_view;::std::span;::absl::string_view;::base::BasicStringPiece;::base::span
     - key:          bugprone-string-constructor.StringNames
-      value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece
+      value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece;::absl::string_view
     - key:          modernize-use-default-member-init.UseAssignment
       value:        1
     # This relaxes modernize-use-emplace in some cases; we might want to make it
