@@ -612,27 +612,22 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   onGoogleEulaLinkClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.GOOGLE_EULA);
-    this.$.googleEulaOkButton.focus();
   }
 
   onCrosEulaLinkClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.CROS_EULA);
-    this.$.crosEulaOkButton.focus();
   }
 
   onArcTosLinkClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.ARC);
-    this.$.ArcTosOkButton.focus();
   }
 
   onPrivacyPolicyLinkClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.PRIVACY);
-    this.$.privacyOkButton.focus();
   }
 
   onTermsStepOkClick_() {
     this.setUIStep(ConsolidatedConsentScreenState.LOADED);
-    this.$.acceptButton.focus();
   }
 
   onUsageLearnMoreClick_() {
