@@ -42,6 +42,21 @@ promise_test(() => {
 }, "A microtask queued after a long setTimeout task with text input is a " +
    "descendant of the dispatching task");
 
+promise_test(async () => {
+  window.initialId = scheduler.taskId;
+  await new Promise((resolve, reject) => {
+    window.resolve = resolve;
+    window.reject = reject;
+    setTimeout(`
+     try {
+       assert_equals(scheduler.isAncestor(initialId), "ancestor");
+       resolve();
+     } catch {
+       reject("Not an ancestor");
+     }`, 100);
+  });
+}, "A long setTimeout task with text input is a descendant of the dispatching task");
+
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
     const initialId = scheduler.taskId;
