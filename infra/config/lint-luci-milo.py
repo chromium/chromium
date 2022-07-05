@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -43,12 +43,15 @@ def compare_builders(name, main_builders, sub_builders):
   sub_desc = to_list(sub_builders, name)
 
   if main_desc != sub_desc:
-    print ('bot lists different between main waterfall ' +
-           'and stand-alone %s waterfall:' % name)
-    print '\n'.join(difflib.unified_diff(main_desc, sub_desc,
-                                         fromfile='main', tofile=name,
-                                         lineterm=''))
-    print
+    print('bot lists different between main waterfall ' +
+          'and stand-alone %s waterfall:' % name)
+    print('\n'.join(
+        difflib.unified_diff(main_desc,
+                             sub_desc,
+                             fromfile='main',
+                             tofile=name,
+                             lineterm='')))
+    print('')
     return False
   return True
 
@@ -81,7 +84,7 @@ def main():
   referenced_names = set(subwaterfalls.keys())
   missing_names = referenced_names - set(all_console_names + excluded_names)
   if missing_names:
-    print 'Missing subwaterfall console for', missing_names
+    print('Missing subwaterfall console for', missing_names)
     return 1
 
   # Check that the bots on a subwaterfall match the corresponding bots on the
