@@ -162,7 +162,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
 apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
                                      apps::AppType app_type,
                                      const std::string& app_id,
-                                     apps::mojom::LaunchContainer container) {
+                                     apps::LaunchContainer container) {
   switch (app_type) {
     case apps::AppType::kUnknown:
       return apps::AppTypeNameV2::kUnknown;
@@ -173,7 +173,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
     case apps::AppType::kChromeApp:
-      return container == apps::mojom::LaunchContainer::kLaunchContainerWindow
+      return container == apps::LaunchContainer::kLaunchContainerWindow
                  ? apps::AppTypeNameV2::kChromeAppWindow
                  : apps::AppTypeNameV2::kChromeAppTab;
     case apps::AppType::kWeb: {
@@ -326,7 +326,7 @@ void RecordAppLaunchMetrics(Profile* profile,
                             AppType app_type,
                             const std::string& app_id,
                             apps::mojom::LaunchSource launch_source,
-                            apps::mojom::LaunchContainer container) {
+                            apps::LaunchContainer container) {
   if (app_type == AppType::kUnknown) {
     return;
   }
@@ -636,7 +636,7 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
     AppType app_type,
     const std::string& app_id,
     apps::mojom::LaunchSource launch_source,
-    apps::mojom::LaunchContainer container) {
+    apps::LaunchContainer container) {
   if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_)) {
     return;
   }
@@ -661,9 +661,8 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
     AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
-  AppTypeName app_type_name =
-      GetAppTypeName(profile_, app_type, app_id,
-                     apps::mojom::LaunchContainer::kLaunchContainerNone);
+  AppTypeName app_type_name = GetAppTypeName(
+      profile_, app_type, app_id, apps::LaunchContainer::kLaunchContainerNone);
 
   ukm::SourceId source_id = GetSourceId(profile_, app_id);
   if (source_id == ukm::kInvalidSourceId) {
@@ -959,7 +958,7 @@ void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
 
         AppTypeName app_type_name =
             GetAppTypeName(profile_, update.AppType(), update.AppId(),
-                           apps::mojom::LaunchContainer::kLaunchContainerNone);
+                           apps::LaunchContainer::kLaunchContainerNone);
 
         if (app_type_name == AppTypeName::kChromeBrowser ||
             app_type_name == AppTypeName::kUnknown) {
@@ -1103,7 +1102,7 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
                                               InstallTime install_time) {
   AppTypeName app_type_name =
       GetAppTypeName(profile_, update.AppType(), update.AppId(),
-                     apps::mojom::LaunchContainer::kLaunchContainerNone);
+                     apps::LaunchContainer::kLaunchContainerNone);
 
   ukm::SourceId source_id = GetSourceId(profile_, update.AppId());
   if (source_id == ukm::kInvalidSourceId) {

@@ -6,18 +6,6 @@
 
 namespace apps {
 
-apps::mojom::LaunchContainer ConvertLaunchContainerToMojomLaunchContainer(
-    LaunchContainer launch_container) {
-  switch (launch_container) {
-    case LaunchContainer::kLaunchContainerWindow:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    case LaunchContainer::kLaunchContainerPanelDeprecated:
-      return apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
-    case LaunchContainer::kLaunchContainerTab:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
-    case LaunchContainer::kLaunchContainerNone:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
-  }
-}
+// TODO(crbug.com/1253250): Add function for the non mojom window info struct.
 
 }  // namespace apps

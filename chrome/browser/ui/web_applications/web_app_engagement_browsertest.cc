@@ -121,10 +121,10 @@ void ExpectLaunchCounts(const base::HistogramTester& tester,
                         base::HistogramBase::Count windowLaunches,
                         base::HistogramBase::Count tabLaunches) {
   tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
-                           apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                           apps::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);
   tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
-                           apps::mojom::LaunchContainer::kLaunchContainerTab,
+                           apps::LaunchContainer::kLaunchContainerTab,
                            tabLaunches);
   tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
                           windowLaunches + tabLaunches);
@@ -142,10 +142,10 @@ void ExpectLaunchCounts(const base::HistogramTester& tester,
                             windowLaunches + tabLaunches);
 
   tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
-                           apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                           apps::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);
   tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
-                           apps::mojom::LaunchContainer::kLaunchContainerTab,
+                           apps::LaunchContainer::kLaunchContainerTab,
                            tabLaunches);
   tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
                           windowLaunches + tabLaunches);

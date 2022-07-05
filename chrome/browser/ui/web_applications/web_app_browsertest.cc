@@ -1472,9 +1472,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   EXPECT_EQ(provider->registrar().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
   EXPECT_FALSE(provider->registrar().GetAppLastLaunchTime(app_id).is_null());
-  tester.ExpectUniqueSample(
-      "Extensions.BookmarkAppLaunchContainer",
-      apps::mojom::LaunchContainer::kLaunchContainerWindow, 1);
+  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchContainer",
+                            apps::LaunchContainer::kLaunchContainerWindow, 1);
   tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
                             extensions::AppLaunchSource::kSourceReparenting, 1);
 }

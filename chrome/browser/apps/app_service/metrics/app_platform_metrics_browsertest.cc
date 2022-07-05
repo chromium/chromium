@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -46,13 +47,12 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   apps::AppTypeName GetWebAppTypeName(const std::string& app_id,
-                                      apps::mojom::LaunchContainer container) {
+                                      apps::LaunchContainer container) {
     return GetAppTypeName(profile(), apps::AppType::kWeb, app_id, container);
   }
 
-  apps::AppTypeName GetSystemWebAppTypeName(
-      const std::string& app_id,
-      apps::mojom::LaunchContainer container) {
+  apps::AppTypeName GetSystemWebAppTypeName(const std::string& app_id,
+                                            apps::LaunchContainer container) {
     return GetAppTypeName(profile(), apps::AppType::kSystemWeb, app_id,
                           container);
   }
@@ -67,54 +67,45 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, SystemWebApp) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
-  EXPECT_EQ(
-      GetWebAppTypeName(system_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kSystemWeb);
+  EXPECT_EQ(GetWebAppTypeName(system_app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kSystemWeb);
 
-  EXPECT_EQ(
-      GetSystemWebAppTypeName(
-          system_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kSystemWeb);
+  EXPECT_EQ(GetSystemWebAppTypeName(
+                system_app_id, apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kSystemWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(system_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kSystemWeb);
+  EXPECT_EQ(GetWebAppTypeName(system_app_id,
+                              apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kSystemWeb);
 
-  EXPECT_EQ(
-      GetSystemWebAppTypeName(
-          system_app_id, apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kSystemWeb);
+  EXPECT_EQ(GetSystemWebAppTypeName(system_app_id,
+                                    apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kSystemWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(system_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kSystemWeb);
+  EXPECT_EQ(GetWebAppTypeName(system_app_id,
+                              apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kSystemWeb);
 
-  EXPECT_EQ(
-      GetSystemWebAppTypeName(
-          system_app_id, apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kSystemWeb);
+  EXPECT_EQ(GetSystemWebAppTypeName(
+                system_app_id, apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kSystemWeb);
 }
 
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, UnknownWebApp) {
   const AppId unknown_app_id = "unknown";
 
-  EXPECT_EQ(
-      GetWebAppTypeName(unknown_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(unknown_app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kChromeBrowser);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(unknown_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(unknown_app_id,
+                              apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kChromeBrowser);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(unknown_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(unknown_app_id,
+                              apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kChromeBrowser);
 }
 
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
@@ -133,38 +124,32 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
   // When container is specified, |user_display_mode| and |display_mode| are
   // ignored.
 
-  EXPECT_EQ(
-      GetWebAppTypeName(standalone_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kWeb);
+  EXPECT_EQ(GetWebAppTypeName(standalone_app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(browser_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kWeb);
+  EXPECT_EQ(GetWebAppTypeName(browser_app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(standalone_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(standalone_app_id,
+                              apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kChromeBrowser);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(browser_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(browser_app_id,
+                              apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kChromeBrowser);
 
   // For a web app with no container given, |user_display_mode| kStandalone
   // leads to |AppTypeName::kWeb|.
 
-  EXPECT_EQ(
-      GetWebAppTypeName(standalone_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kWeb);
+  EXPECT_EQ(GetWebAppTypeName(standalone_app_id,
+                              apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(browser_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kWeb);
+  EXPECT_EQ(GetWebAppTypeName(browser_app_id,
+                              apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kWeb);
 }
 
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, TabbedWebApps) {
@@ -183,36 +168,30 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, TabbedWebApps) {
   // When container is specified, |user_display_mode| and |display_mode| are
   // ignored.
 
-  EXPECT_EQ(
-      GetWebAppTypeName(standalone_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kWeb);
+  EXPECT_EQ(GetWebAppTypeName(standalone_app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(browser_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      apps::AppTypeName::kWeb);
+  EXPECT_EQ(GetWebAppTypeName(browser_app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow),
+            apps::AppTypeName::kWeb);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(standalone_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(standalone_app_id,
+                              apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kChromeBrowser);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(browser_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerTab),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(browser_app_id,
+                              apps::LaunchContainer::kLaunchContainerTab),
+            apps::AppTypeName::kChromeBrowser);
 
   // For a web app with no container given, |user_display_mode| kBrowser leads
   // to |AppTypeName::kChromeBrowser|.
 
-  EXPECT_EQ(
-      GetWebAppTypeName(standalone_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(standalone_app_id,
+                              apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kChromeBrowser);
 
-  EXPECT_EQ(
-      GetWebAppTypeName(browser_app_id,
-                        apps::mojom::LaunchContainer::kLaunchContainerNone),
-      apps::AppTypeName::kChromeBrowser);
+  EXPECT_EQ(GetWebAppTypeName(browser_app_id,
+                              apps::LaunchContainer::kLaunchContainerNone),
+            apps::AppTypeName::kChromeBrowser);
 }

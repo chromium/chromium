@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
@@ -393,7 +394,7 @@ class AppServiceProxyBase : public KeyedService,
   virtual void RecordAppPlatformMetrics(Profile* profile,
                                         const apps::AppUpdate& update,
                                         apps::mojom::LaunchSource launch_source,
-                                        apps::mojom::LaunchContainer container);
+                                        apps::LaunchContainer container);
 
   virtual void PerformPostUninstallTasks(
       apps::AppType app_type,

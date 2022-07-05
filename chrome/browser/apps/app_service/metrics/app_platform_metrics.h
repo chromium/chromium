@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -60,7 +61,7 @@ void RecordAppLaunchMetrics(Profile* profile,
                             AppType app_type,
                             const std::string& app_id,
                             apps::mojom::LaunchSource launch_source,
-                            apps::mojom::LaunchContainer container);
+                            apps::LaunchContainer container);
 
 class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
                            public apps::InstanceRegistry::Observer {
@@ -127,7 +128,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void RecordAppLaunchUkm(AppType app_type,
                           const std::string& app_id,
                           apps::mojom::LaunchSource launch_source,
-                          apps::mojom::LaunchContainer container);
+                          apps::LaunchContainer container);
 
   // Records UKM when uninstalling an app.
   void RecordAppUninstallUkm(AppType app_type,

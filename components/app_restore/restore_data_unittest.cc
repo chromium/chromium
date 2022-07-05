@@ -237,7 +237,7 @@ class RestoreDataTest : public testing::Test {
   }
 
   void VerifyAppRestoreData(const std::unique_ptr<AppRestoreData>& data,
-                            apps::mojom::LaunchContainer container,
+                            apps::LaunchContainer container,
                             WindowOpenDisposition disposition,
                             int64_t display_id,
                             std::vector<base::FilePath> file_paths,
@@ -392,7 +392,7 @@ class RestoreDataTest : public testing::Test {
 
     VerifyAppRestoreData(
         app_restore_data_it1->second,
-        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
@@ -409,7 +409,7 @@ class RestoreDataTest : public testing::Test {
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
     VerifyAppRestoreData(
         app_restore_data_it2->second,
-        apps::mojom::LaunchContainer::kLaunchContainerTab,
+        apps::LaunchContainer::kLaunchContainerTab,
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
@@ -429,7 +429,7 @@ class RestoreDataTest : public testing::Test {
     EXPECT_EQ(kWindowId3, launch_list_it2->second.begin()->first);
     VerifyAppRestoreData(
         launch_list_it2->second.begin()->second,
-        apps::mojom::LaunchContainer::kLaunchContainerNone,
+        apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_POPUP, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
@@ -493,8 +493,7 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
   const auto app_restore_data_it4 = launch_list_it1->second.find(kWindowId4);
   EXPECT_TRUE(app_restore_data_it4 != launch_list_it1->second.end());
   VerifyAppRestoreData(
-      app_restore_data_it4->second,
-      apps::mojom::LaunchContainer::kLaunchContainerTab,
+      app_restore_data_it4->second, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
       CreateIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
@@ -655,9 +654,8 @@ TEST_F(RestoreDataTest, GetAppLaunchInfo) {
   EXPECT_FALSE(app_launch_info->event_flag.has_value());
 
   EXPECT_TRUE(app_launch_info->container.has_value());
-  EXPECT_EQ(
-      static_cast<int>(apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      app_launch_info->container.value());
+  EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
+            app_launch_info->container.value());
 
   EXPECT_TRUE(app_launch_info->disposition.has_value());
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),

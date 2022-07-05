@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -119,7 +120,7 @@ constexpr char kStandaloneBrowserWebAppTabHistogramName[] =
 // Chrome browser.
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
-                                    apps::mojom::LaunchContainer container);
+                                    apps::LaunchContainer container);
 
 // Determines what app type a chrome app in Lacros should be logged as based on
 // its launch container and app id. In particular, chrome apps in Lacros tabs
@@ -127,7 +128,7 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
 AppTypeName GetAppTypeNameForStandaloneBrowserChromeApp(
     Profile* profile,
     const std::string& app_id,
-    apps::mojom::LaunchContainer container);
+    apps::LaunchContainer container);
 
 // Returns false if |window| is a Chrome app window or a standalone web app
 // window. Otherwise, return true.
@@ -188,7 +189,7 @@ int GetUserTypeByDeviceTypeMetrics();
 AppTypeName GetAppTypeName(Profile* profile,
                            AppType app_type,
                            const std::string& app_id,
-                           apps::mojom::LaunchContainer container);
+                           apps::LaunchContainer container);
 
 // Gets the app type of a given app_id. Checks multiple sources, not just the
 // app registry cache, so can identify apps which aren't registered with app

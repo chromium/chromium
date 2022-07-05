@@ -59,6 +59,7 @@
 #include "components/drive/drive_api_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
@@ -490,10 +491,9 @@ void ExecuteTaskAfterMimeTypesCollected(
   }
 
   DCHECK_EQ(task.task_type, TASK_TYPE_ARC_APP);
-  apps::RecordAppLaunchMetrics(
-      profile, apps::AppType::kArc, task.app_id,
-      apps::mojom::LaunchSource::kFromFileManager,
-      apps::mojom::LaunchContainer::kLaunchContainerWindow);
+  apps::RecordAppLaunchMetrics(profile, apps::AppType::kArc, task.app_id,
+                               apps::mojom::LaunchSource::kFromFileManager,
+                               apps::LaunchContainer::kLaunchContainerWindow);
   ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));
 }
 

@@ -24,12 +24,6 @@ enum class LaunchContainer {
   kMaxValue = kLaunchContainerNone,
 };
 
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::LaunchContainer ConvertLaunchContainerToMojomLaunchContainer(
-    LaunchContainer launch_container);
-
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
