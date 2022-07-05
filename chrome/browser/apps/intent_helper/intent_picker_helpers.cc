@@ -167,8 +167,8 @@ void MaybeShowIntentPicker(content::WebContents* web_contents) {
       ->ShowIconForApps(GetAppsForIntentPicker(web_contents));
 }
 
-void ShowIntentPickerBubble(content::WebContents* web_contents,
-                            const GURL& url) {
+void ShowIntentPickerOrLaunchApp(content::WebContents* web_contents,
+                                 const GURL& url) {
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
   if (apps.empty())
     return;
@@ -178,10 +178,26 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
       apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconClicked);
 #endif
 
-  if (apps.size() == 1 && apps::features::ShouldIntentChipSkipIntentPicker()) {
-    LaunchAppFromIntentPicker(web_contents, url, apps[0].launch_name,
-                              apps[0].type);
-    return;
+  if (apps.size() == 1) {
+    // If there is only a single available app, immediately launch it if either:
+    // - ShouldIntentChipSkipIntentPicker() is enabled, or
+    // - LinkCapturingUiUpdateEnabled() is enabled and the app is preferred for
+    // this link.
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
+
+    bool should_launch_for_preferred_app =
+        apps::features::LinkCapturingUiUpdateEnabled() &&
+        proxy->PreferredAppsList().FindPreferredAppForUrl(url) ==
+            apps[0].launch_name;
+
+    if (apps::features::ShouldIntentChipSkipIntentPicker() ||
+        should_launch_for_preferred_app) {
+      LaunchAppFromIntentPicker(web_contents, url, apps[0].launch_name,
+                                apps[0].type);
+      return;
+    }
   }
 
   IntentPickerTabHelper::LoadAppIcons(

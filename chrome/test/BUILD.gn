@@ -1401,6 +1401,7 @@ if (!is_android) {
       "//components/segmentation_platform/internal:test_support",
       "//components/segmentation_platform/public",
       "//components/services/app_service/public/cpp:protocol_handling",
+      "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/mojom",
       "//components/services/language_detection/public/cpp",
       "//components/services/language_detection/public/mojom",
@@ -4691,6 +4692,7 @@ if (is_chromeos_lacros) {
       "//components/proxy_config:proxy_config",
       "//components/services/app_service/public/cpp:intents",
       "//components/services/app_service/public/cpp:preferred_apps",
+      "//components/services/app_service/public/cpp:test_support",
       "//ui/gfx/codec",
       "//ui/platform_window",
     ]

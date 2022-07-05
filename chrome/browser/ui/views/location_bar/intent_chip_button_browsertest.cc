@@ -4,7 +4,10 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "content/public/browser/web_contents.h"
@@ -27,6 +31,12 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/preferred_apps_test_util.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -37,10 +47,8 @@ class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentChipButtonBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{apps::features::kLinkCapturingUiUpdate,
-                              apps::features::kIntentChipSkipsPicker},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::features::kLinkCapturingUiUpdate);
   }
 
   void TearDownOnMainThread() override {
@@ -116,19 +124,16 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
   EXPECT_TRUE(GetIntentChip()->GetVisible());
 
-  // Clicking the chip should immediately launch the app.
-
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "IntentPickerBubbleView");
   ClickIntentChip();
 
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
-                                                         test_web_app_id()));
+  waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
 }
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
@@ -140,9 +145,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
   const GURL out_of_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ClickLinkAndWait(web_contents, out_of_scope_url, LinkTarget::SELF, "");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), out_of_scope_url));
 
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 }
@@ -173,6 +176,63 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
   EXPECT_FALSE(intent_chip_button->GetVisible());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Using the Intent Chip for an app which is set as preferred should launch
+// directly into the app. Preferred apps are only available on ChromeOS.
+IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
+  if (!HasRequiredAshVersionForLacros())
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
+
+  InstallTestWebApp();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetSupportedLinksPreference(test_web_app_id());
+
+  // Wait for asynchronous preferred apps changes with lacros web apps and/or
+  // mojo app service.
+  if (web_app::IsWebAppsCrosapiEnabled() ||
+      !base::FeatureList::IsEnabled(
+          apps::kAppServicePreferredAppsWithoutMojom)) {
+    apps_util::PreferredAppUpdateWaiter waiter(proxy->PreferredAppsList());
+    waiter.WaitForPreferredAppUpdate(test_web_app_id());
+  }
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
+
+  ClickIntentChip();
+
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
+                                                         test_web_app_id()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+class IntentChipButtonSkipIntentPickerBrowserTest
+    : public IntentChipButtonBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      apps::features::kIntentChipSkipsPicker};
+};
+
+IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
+                       ClickingChipOpensApp) {
+  if (!HasRequiredAshVersionForLacros())
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
+
+  InstallTestWebApp();
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
+
+  ClickIntentChip();
+
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
+                                                         test_web_app_id()));
+}
+
 // TODO(crbug.com/1313274): Fix test flakiness on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ShowsIntentPickerWhenMultipleApps \
@@ -181,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 #define MAYBE_ShowsIntentPickerWhenMultipleApps \
   ShowsIntentPickerWhenMultipleApps
 #endif
-IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
+IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
                        MAYBE_ShowsIntentPickerWhenMultipleApps) {
   if (!HasRequiredAshVersionForLacros())
     GTEST_SKIP() << "Ash version is too old to support Intent Picker";
@@ -191,9 +251,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   base::RunLoop().RunUntilIdle();
 
   // The Intent Chip should appear, but the intent picker bubble should not
@@ -209,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
   ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
 }
 
-IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsIntentChipCollapsed) {
+IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
+                       ShowsIntentChipCollapsed) {
   if (!HasRequiredAshVersionForLacros())
     GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
