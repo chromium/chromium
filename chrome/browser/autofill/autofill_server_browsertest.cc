@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   } else if (structured_names && honorific_prefix && structured_address) {
     upload->set_data_present("1f7e0003780000080004000001c404");
   } else if (!structured_names && !honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c");
+    upload->set_data_present("1f7e0003780000080004000001c0");
   } else {
     upload->set_data_present("1f7e0003780000080004");
   }
