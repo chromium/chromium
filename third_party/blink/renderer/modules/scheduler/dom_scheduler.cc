@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_task_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -77,6 +78,10 @@ ScriptPromise DOMScheduler::postTask(
     return ScriptPromise();
   }
 
+  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  if (tracker && script_state->World().IsMainWorld()) {
+    callback_function->SetParentTaskId(tracker->RunningTaskId(script_state));
+  }
   // Always honor the priority and the task signal if given.
   DOMTaskQueue* task_queue;
   AbortSignal* signal = options->hasSignal() ? options->signal() : nullptr;

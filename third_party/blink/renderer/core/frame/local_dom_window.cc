@@ -137,6 +137,7 @@
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -1826,6 +1827,11 @@ void LocalDOMWindow::cancelAnimationFrame(int id) {
 }
 
 void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
+  ScriptState* script_state = callback->CallbackRelevantScriptState();
+  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  if (tracker && script_state->World().IsMainWorld()) {
+    callback->SetParentTaskId(tracker->RunningTaskId(script_state));
+  }
   Microtask::EnqueueMicrotask(
       WTF::Bind(&V8VoidFunction::InvokeAndReportException,
                 WrapPersistent(callback), nullptr));

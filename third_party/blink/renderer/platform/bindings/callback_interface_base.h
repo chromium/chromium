@@ -84,7 +84,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
   absl::optional<scheduler::TaskId> GetParentTaskId() const {
-    return parent_task_id_;
+    return absl::nullopt;
   }
 
  protected:
@@ -103,8 +103,6 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   // converted to an IDL value.
   // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
-
-  absl::optional<scheduler::TaskId> parent_task_id_;
 };
 
 }  // namespace blink

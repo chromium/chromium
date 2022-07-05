@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -61,6 +62,10 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           BindingSecurity::ErrorReportOption::kDoNotReport)) {
     function_ = handler;
     arguments_ = arguments;
+    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    if (tracker && script_state->World().IsMainWorld()) {
+      function_->SetParentTaskId(tracker->RunningTaskId(script_state));
+    }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -33,10 +32,6 @@ CallbackInterfaceBase::CallbackInterfaceBase(
           BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {
     callback_relevant_script_state_ =
         ScriptState::From(creation_context.ToLocalChecked());
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      parent_task_id_ = tracker->RunningTaskId(callback_relevant_script_state_);
-    }
   }
 }
 

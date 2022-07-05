@@ -93,6 +93,10 @@ class PLATFORM_EXPORT CallbackFunctionBase
     return parent_task_id_;
   }
 
+  void SetParentTaskId(absl::optional<scheduler::TaskId> task_id) {
+    parent_task_id_ = task_id;
+  }
+
  protected:
   explicit CallbackFunctionBase(v8::Local<v8::Object>);
 

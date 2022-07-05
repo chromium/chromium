@@ -99,9 +99,21 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     }
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      task_attribution_scope_ =
-          tracker->CreateTaskScope(callback_->CallbackRelevantScriptState(),
-                                   callback_->GetParentTaskId());
+      // There are 3 possible callbacks here:
+      // a) Callbacks which track their registering task as their parent
+      // b) Callbacks which don't do the above, split into two groups:
+      //   1) If there's a current running task, use it as your parent. We could
+      //   have also elided creating a new scope entirely. 2) If there is no
+      //   current running task, set the parent to absl::nullopt, making the
+      //   current callback a root task.
+      absl::optional<scheduler::TaskId> parent_id =
+          callback_->GetParentTaskId();
+      if (!parent_id) {
+        parent_id =
+            tracker->RunningTaskId(callback_->CallbackRelevantScriptState());
+      }
+      task_attribution_scope_ = tracker->CreateTaskScope(
+          callback_->CallbackRelevantScriptState(), parent_id);
     }
   }
 

@@ -26,6 +26,25 @@ promise_test(() => {
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
     const initialId = scheduler.taskId;
+    await new Promise(internal_resolve => {
+      window.resolve = internal_resolve;
+      setTimeout("resolve()", 100);
+    });
+    queueMicrotask(() => {
+      try {
+        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        resolve();
+      } catch {
+        reject("Not an ancestor");
+      }
+    });
+  });
+}, "A microtask queued after a long setTimeout task with text input is a " +
+   "descendant of the dispatching task");
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    const initialId = scheduler.taskId;
     await new Promise(resolve => setTimeout(resolve, 100));
     queueMicrotask(() => {
       try {
