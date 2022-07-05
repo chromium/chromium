@@ -39601,7 +39601,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3361" label="OBSOLETE_MainFrameCSPViaOriginPolicy"/>
   <int value="3362" label="HtmlClipboardApiRead"/>
   <int value="3363" label="HtmlClipboardApiWrite"/>
-  <int value="3364" label="CSSSystemColorComputeToSelf"/>
+  <int value="3364" label="OBSOLETE_CSSSystemColorComputeToSelf"/>
   <int value="3365" label="ConversionAPIAll"/>
   <int value="3366" label="ImpressionRegistration"/>
   <int value="3367" label="ConversionRegistration"/>
@@ -40567,6 +40567,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4290" label="DeviceOrientationUsedWithoutPermissionRequest"/>
   <int value="4291" label="DeviceMotionPermissionRequested"/>
   <int value="4292" label="DeviceMotionUsedWithoutPermissionRequest"/>
+  <int value="4293" label="PrivateNetworkAccessPermissionPrompt"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
