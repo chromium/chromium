@@ -75,7 +75,7 @@ IPC_STRUCT_BEGIN(ExtensionHostMsg_APIActionOrEvent_Params)
   IPC_STRUCT_MEMBER(std::string, api_call)
 
   // List of arguments.
-  IPC_STRUCT_MEMBER(base::ListValue, arguments)
+  IPC_STRUCT_MEMBER(base::Value::List, arguments)
 
   // Extra logging information.
   IPC_STRUCT_MEMBER(std::string, extra)

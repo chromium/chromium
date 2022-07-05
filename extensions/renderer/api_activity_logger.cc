@@ -179,9 +179,7 @@ void APIActivityLogger::LogInternal(
   DCHECK(IsLoggingEnabled());
   ExtensionHostMsg_APIActionOrEvent_Params params;
   params.api_call = call_name;
-  // TODO(https://crbug.com/1187062): Switch to base::Value::List instead of
-  // base::ListValue, which is deprecated.
-  params.arguments.GetList() = std::move(arguments);
+  params.arguments = std::move(arguments);
   params.extra = extra;
   ipc_sender->SendActivityLogIPC(extension_id, call_type, params);
 }
