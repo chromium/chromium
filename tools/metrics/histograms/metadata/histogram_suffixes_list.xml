@@ -1365,11 +1365,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Same" label="Same priority for both trees."/>
   <suffix name="Smoothness" label="Smoothness takes priority."/>
   <affected-histogram
-      name="Scheduling.Browser.CommitToReadyToActivateDuration2"/>
-  <affected-histogram
       name="Scheduling.Browser.InvalidationToReadyToActivateDuration2"/>
-  <affected-histogram
-      name="Scheduling.Renderer.CommitToReadyToActivateDuration2"/>
   <affected-histogram
       name="Scheduling.Renderer.InvalidationToReadyToActivateDuration2"/>
 </histogram_suffixes>

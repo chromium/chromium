@@ -30,8 +30,6 @@ class CompositorTimingHistory::UMAReporter {
 
   // Latency measurements
   virtual void AddBeginImplFrameLatency(base::TimeDelta delta) = 0;
-  virtual void AddCommitToReadyToActivateDuration(base::TimeDelta duration,
-                                                  TreePriority priority) = 0;
   virtual void AddInvalidationToReadyToActivateDuration(
       base::TimeDelta duration,
       TreePriority priority) = 0;
@@ -346,13 +344,6 @@ class RendererUMAReporter : public CompositorTimingHistory::UMAReporter {
         "Scheduling.Renderer.BeginImplFrameLatency", delta);
   }
 
-  void AddCommitToReadyToActivateDuration(base::TimeDelta duration,
-                                          TreePriority priority) override {
-    UMA_HISTOGRAM_READY_TO_ACTIVATE(
-        "Scheduling.Renderer.CommitToReadyToActivateDuration", duration,
-        priority);
-  }
-
   void AddInvalidationToReadyToActivateDuration(
       base::TimeDelta duration,
       TreePriority priority) override {
@@ -389,13 +380,6 @@ class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
         "Scheduling.Browser.BeginImplFrameLatency", delta);
   }
 
-  void AddCommitToReadyToActivateDuration(base::TimeDelta duration,
-                                          TreePriority priority) override {
-    UMA_HISTOGRAM_READY_TO_ACTIVATE(
-        "Scheduling.Browser.CommitToReadyToActivateDuration", duration,
-        priority);
-  }
-
   void AddInvalidationToReadyToActivateDuration(
       base::TimeDelta duration,
       TreePriority priority) override {
@@ -423,8 +407,6 @@ class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
   void AddDrawIntervalWithCustomPropertyAnimations(
       base::TimeDelta inverval) override {}
   void AddBeginImplFrameLatency(base::TimeDelta delta) override {}
-  void AddCommitToReadyToActivateDuration(base::TimeDelta duration,
-                                          TreePriority priority) override {}
   void AddInvalidationToReadyToActivateDuration(
       base::TimeDelta duration,
       TreePriority priority) override {}
@@ -755,8 +737,6 @@ void CompositorTimingHistory::ReadyToActivate() {
 
     base::TimeDelta commit_to_ready_to_activate_estimate =
         CommitToReadyToActivateDurationEstimate();
-    uma_reporter_->AddCommitToReadyToActivateDuration(time_since_commit,
-                                                      tree_priority_);
     rendering_stats_instrumentation_->AddCommitToActivateDuration(
         time_since_commit, commit_to_ready_to_activate_estimate);
 
