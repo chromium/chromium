@@ -621,6 +621,7 @@ void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
                                    ? end_ts - visit_row.visit_time
                                    : base::Microseconds(0);
     db_->UpdateVisitRow(visit_row);
+    NotifyVisitUpdated(visit_row);
   }
 }
 
@@ -792,6 +793,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
             visit_row.transition = ui::PageTransitionFromInt(
                 visit_row.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
             db_->UpdateVisitRow(visit_row);
+            NotifyVisitUpdated(visit_row);
           }
 
           extended_redirect_chain = GetCachedRecentRedirects(request.referrer);
@@ -1385,6 +1387,7 @@ bool HistoryBackend::UpdateSyncedVisit(const VisitRow& visit) {
   if (!db_->UpdateVisitRow(updated_row))
     return false;
 
+  NotifyVisitUpdated(updated_row);
   ScheduleCommit();
   return true;
 }
@@ -1425,6 +1428,13 @@ bool HistoryBackend::GetURL(const GURL& url, URLRow* url_row) {
 bool HistoryBackend::GetURLByID(URLID url_id, URLRow* url_row) {
   if (db_)
     return db_->GetURLRow(url_id, url_row);
+  return false;
+}
+
+bool HistoryBackend::GetLastVisitByTime(base::Time visit_time,
+                                        VisitRow* visit_row) {
+  if (db_)
+    return db_->GetLastRowForVisitByVisitTime(visit_time, visit_row);
   return false;
 }
 
@@ -1773,21 +1783,34 @@ Cluster HistoryBackend::GetCluster(int64_t cluster_id) {
 }
 
 VisitRow HistoryBackend::GetRedirectChainStart(VisitRow visit) {
+  VisitVector redirect_chain = GetRedirectChain(visit);
+  if (redirect_chain.empty())
+    return {};
+  return redirect_chain.front();
+}
+
+VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
   // Iterate up `visit.referring_visit` while `visit.transition` is a redirect.
+  VisitVector result;
+  result.push_back(visit);
   if (db_) {
     base::flat_set<VisitID> visit_set;
     while (!(visit.transition & ui::PAGE_TRANSITION_CHAIN_START)) {
       visit_set.insert(visit.visit_id);
       // `GetRowForVisit()` should not return false if the DB is correct.
-      if (!db_->GetRowForVisit(visit.referring_visit, &visit))
+      VisitRow referring_visit;
+      if (!db_->GetRowForVisit(visit.referring_visit, &referring_visit))
         return {};
-      if (visit_set.count(visit.visit_id)) {
+      if (visit_set.count(referring_visit.visit_id)) {
         NOTREACHED() << "Loop in visit redirect chain, giving up";
         break;
       }
+      result.push_back(referring_visit);
+      visit = referring_visit;
     }
   }
-  return visit;
+  std::reverse(result.begin(), result.end());
+  return result;
 }
 
 // Observers -------------------------------------------------------------------
@@ -2708,8 +2731,17 @@ void HistoryBackend::NotifyURLsDeleted(DeletionInfo deletion_info) {
   delegate_->NotifyURLsDeleted(std::move(deletion_info));
 }
 
+void HistoryBackend::NotifyVisitUpdated(const VisitRow& visit) {
+  for (HistoryBackendObserver& observer : observers_) {
+    observer.OnVisitUpdated(visit);
+  }
+}
+
 void HistoryBackend::NotifyVisitDeleted(const VisitRow& visit) {
   tracker_.RemoveVisitById(visit.visit_id);
+  for (HistoryBackendObserver& observer : observers_) {
+    observer.OnVisitDeleted(visit);
+  }
 }
 
 // Deleting --------------------------------------------------------------------

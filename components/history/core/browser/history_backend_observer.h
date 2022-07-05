@@ -53,6 +53,15 @@ class HistoryBackendObserver {
                              bool expired,
                              const URLRows& deleted_rows,
                              const std::set<GURL>& favicon_urls) = 0;
+
+  // Called when a visit is updated. Typically this happens when the visit
+  // duration is updated, and in some redirect cases when the transition type
+  // is updated.
+  virtual void OnVisitUpdated(const VisitRow& visit) = 0;
+
+  // Called when a visit is deleted - usually either due to expiry, or because
+  // the user explicitly deleted it.
+  virtual void OnVisitDeleted(const VisitRow& visit) = 0;
 };
 
 }  // namespace history

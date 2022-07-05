@@ -3896,6 +3896,77 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   }
 }
 
+TEST_F(HistoryBackendTest, GetRedirectChain) {
+  const auto add_visit_chain = [&](std::vector<std::string> urls,
+                                   base::Time visit_time,
+                                   VisitID referring_visit) {
+    std::vector<VisitID> ids;
+    for (size_t i = 0; i < urls.size(); i++) {
+      int transition = ui::PAGE_TRANSITION_TYPED;
+      if (i == 0) {
+        transition |= ui::PAGE_TRANSITION_CHAIN_START;
+      }
+      if (i == urls.size() - 1) {
+        transition |= ui::PAGE_TRANSITION_CHAIN_END;
+      } else {
+        transition |= ui::PAGE_TRANSITION_SERVER_REDIRECT;
+      }
+      auto url_and_visit_id =
+          backend_->AddPageVisit(GURL(urls[i]), visit_time, referring_visit,
+                                 ui::PageTransitionFromInt(transition), false,
+                                 SOURCE_BROWSED, false, 0);
+      ids.push_back(url_and_visit_id.second);
+
+      referring_visit = url_and_visit_id.second;
+    }
+
+    return ids;
+  };
+
+  base::Time time1 = base::Time::Now();
+  base::Time time2 = time1 + base::Minutes(1);
+  base::Time time3 = time2 + base::Minutes(2);
+
+  // Create visits: A single visit (no redirects), and a 2-entry redirect chain
+  // which further refers to another 3-entry redirect chain.
+  std::vector<VisitID> chain1_ids =
+      add_visit_chain({"https://url.com"}, time1, 0);
+  std::vector<VisitID> chain2_ids =
+      add_visit_chain({"https://chain2a.com", "https://chain2b.com"}, time2, 0);
+  std::vector<VisitID> chain3_ids = add_visit_chain(
+      {"https://chain3a.com", "https://chain3b.com", "https://chain3c.com"},
+      time3, chain2_ids.back());
+
+  ASSERT_EQ(chain1_ids.size(), 1u);
+  ASSERT_EQ(chain2_ids.size(), 2u);
+  ASSERT_EQ(chain3_ids.size(), 3u);
+
+  // Querying the redirect chain for the individual visit should just return
+  // that one visit.
+  VisitRow visit1;
+  backend_->db_->GetRowForVisit(chain1_ids.back(), &visit1);
+  VisitVector chain1 = backend_->GetRedirectChain(visit1);
+  ASSERT_EQ(chain1.size(), 1u);
+  EXPECT_EQ(chain1[0].visit_id, chain1_ids[0]);
+
+  // Querying the chains should return the full chains, but only as linked by
+  // redirects (not by referrals).
+  VisitRow chain2end;
+  backend_->db_->GetRowForVisit(chain2_ids.back(), &chain2end);
+  VisitVector chain2 = backend_->GetRedirectChain(chain2end);
+  ASSERT_EQ(chain2.size(), 2u);
+  EXPECT_EQ(chain2[0].visit_id, chain2_ids[0]);
+  EXPECT_EQ(chain2[1].visit_id, chain2_ids[1]);
+
+  VisitRow chain3end;
+  backend_->db_->GetRowForVisit(chain3_ids.back(), &chain3end);
+  VisitVector chain3 = backend_->GetRedirectChain(chain3end);
+  ASSERT_EQ(chain3.size(), 3u);
+  EXPECT_EQ(chain3[0].visit_id, chain3_ids[0]);
+  EXPECT_EQ(chain3[1].visit_id, chain3_ids[1]);
+  EXPECT_EQ(chain3[2].visit_id, chain3_ids[2]);
+}
+
 TEST_F(HistoryBackendTest, GetCluster) {
   AddAnnotatedVisit(0);
   AddAnnotatedVisit(1);

@@ -76,9 +76,13 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
     return other_->IsTrackingMetadata();
   }
 
-  std::string TrackedAccountId() override { return other_->TrackedAccountId(); }
+  std::string TrackedAccountId() const override {
+    return other_->TrackedAccountId();
+  }
 
-  std::string TrackedCacheGuid() override { return other_->TrackedCacheGuid(); }
+  std::string TrackedCacheGuid() const override {
+    return other_->TrackedCacheGuid();
+  }
 
   void ReportError(const ModelError& error) override {
     other_->ReportError(error);

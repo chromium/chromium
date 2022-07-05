@@ -44,6 +44,9 @@ class HistoryBackendNotifier {
   // `deletion_info` describes the urls that have been removed from history.
   virtual void NotifyURLsDeleted(DeletionInfo deletion_info) = 0;
 
+  // Called after a visit has been updated.
+  virtual void NotifyVisitUpdated(const VisitRow& visit) = 0;
+
   // Called after a visit has been deleted.
   virtual void NotifyVisitDeleted(const VisitRow& visit) = 0;
 };

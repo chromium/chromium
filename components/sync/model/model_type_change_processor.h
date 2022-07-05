@@ -102,11 +102,11 @@ class ModelTypeChangeProcessor {
 
   // Returns the account ID for which metadata is being tracked, or empty if not
   // tracking metadata.
-  virtual std::string TrackedAccountId() = 0;
+  virtual std::string TrackedAccountId() const = 0;
 
   // Returns the cache guid for which metadata is being tracked, or empty if not
   // tracking metadata.
-  virtual std::string TrackedCacheGuid() = 0;
+  virtual std::string TrackedCacheGuid() const = 0;
 
   // Report an error in the model to sync. Should be called for any persistence
   // or consistency error the bridge encounters outside of a method that allows

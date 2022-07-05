@@ -479,6 +479,10 @@ void TypedURLSyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
   }
 }
 
+void TypedURLSyncBridge::OnVisitUpdated(const VisitRow& visit) {}
+
+void TypedURLSyncBridge::OnVisitDeleted(const VisitRow& visit) {}
+
 void TypedURLSyncBridge::Init() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 

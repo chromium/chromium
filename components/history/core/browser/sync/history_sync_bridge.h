@@ -8,8 +8,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -65,6 +67,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
                      bool expired,
                      const URLRows& deleted_rows,
                      const std::set<GURL>& favicon_urls) override;
+  void OnVisitUpdated(const VisitRow& visit_row) override;
+  void OnVisitDeleted(const VisitRow& visit_row) override;
 
   // Called by HistoryBackend when database error is reported through
   // DatabaseErrorCallback.
@@ -84,6 +88,15 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // commonly, because no matching entry exists in the backend).
   bool UpdateEntityInBackend(const sync_pb::HistorySpecifics& specifics);
 
+  // Returns the cache GUID of the Sync client on this device. Must only be
+  // called after `change_processor()->IsTrackingMetadata()` returns true
+  // (because before that, the cache GUID isn't known).
+  std::string GetLocalCacheGuid() const;
+
+  // For each entry in `visits`, queries the corresponding URLRow from the
+  // history backend.
+  std::vector<URLRow> QueryURLsForVisits(const std::vector<VisitRow>& visits);
+
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to. Never null.
   const raw_ptr<HistoryBackendForSync> history_backend_;
@@ -99,6 +112,11 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // HistoryBackend uses SequencedTaskRunner, so this makes sure
   // HistorySyncBridge is used on the correct sequence.
   base::SequenceChecker sequence_checker_;
+
+  // Tracks observed history backend, for receiving updates from history
+  // backend.
+  base::ScopedObservation<HistoryBackendForSync, HistoryBackendObserver>
+      history_backend_observation_{this};
 };
 
 }  // namespace history

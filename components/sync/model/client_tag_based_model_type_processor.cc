@@ -279,7 +279,7 @@ bool ClientTagBasedModelTypeProcessor::IsTrackingMetadata() const {
   return entity_tracker_ != nullptr;
 }
 
-std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() {
+std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
@@ -291,7 +291,7 @@ std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() {
   return entity_tracker_->model_type_state().authenticated_account_id();
 }
 
-std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() {
+std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
