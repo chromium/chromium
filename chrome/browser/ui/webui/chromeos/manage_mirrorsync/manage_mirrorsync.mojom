@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.manage_mirrorsync.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// that enables communication between a renderer and the browser process.
+interface PageHandlerFactory {
+  // Create a page handler to enable communication with the browser process.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer uses this to invoke methods that
+// are implemented in the browser process.
+interface PageHandler {
+  // Returns a list of paths that are enabled for syncing via MirrorSync.
+  GetSyncingPaths() => (array<mojo_base.mojom.FilePath> paths);
+};

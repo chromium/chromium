@@ -22,6 +22,7 @@ group("resources") {
     "launcher_internals:resources",
     "login:conditional_resources",
     "login:unconditional_resources",
+    "manage_mirrorsync:resources",
     "multidevice_internals:resources",
     "network_ui:resources",
     "notification_tester:resources",

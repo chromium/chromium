@@ -1,0 +1,67 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+# Copy all the source files into the gen/ directory.
+copy("copy_src") {
+  sources = [
+    "browser_proxy.ts",
+    "mirrorsync.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+# Mojo bindings are generated in the corresponding webui folder, copy the JS
+# binding outputs to the same gen/ directory as above.
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/chromeos/manage_mirrorsync:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [
+    "mirrorsync.ts",
+    "browser_proxy.ts",
+    "manage_mirrorsync.mojom-webui.js",
+  ]
+  tsconfig_base = "tsconfig_base.json"
+  extra_deps = [
+    ":copy_mojo",
+    ":copy_src",
+  ]
+}
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+# Generate a grd file dynamically, this takes static files via `input_files` and
+# all the files ran through tsc (via the output manifest_files).
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  input_files = [ "index.html" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+
+  grd_prefix = "manage_mirrorsync"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/manage_mirrorsync_resources.h",
+    "grit/manage_mirrorsync_resources_map.cc",
+    "grit/manage_mirrorsync_resources_map.h",
+    "manage_mirrorsync_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

@@ -254,6 +254,8 @@
 #include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
@@ -1166,6 +1168,12 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::firmware_update::mojom::UpdateProvider, ash::FirmwareUpdateAppUI>(
         map);
+  }
+
+  if (ash::features::IsDriveFsMirroringEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        chromeos::manage_mirrorsync::mojom::PageHandlerFactory,
+        chromeos::ManageMirrorSyncUI>(map);
   }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -224,8 +224,6 @@
         <include name="IDR_VM_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\vm\app.js" type="BINDATA" use_base_dir="false" />
         <include name="IDR_VM_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\chromeos\vm\vm.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_GUEST_OS_DIAGNOSTICS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ash\guest_os\guest_os_diagnostics.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-
-        <include name="IDR_MANAGE_MIRRORSYNC_INDEX_HTML" file="resources\chromeos\manage_mirrorsync\index.html" type="BINDATA" />
       </if>
       <if expr="chromeos_ash and _google_chrome">
         <include name="IDR_HELP_MANIFEST" file="resources\help_app\manifest.json" type="BINDATA" />

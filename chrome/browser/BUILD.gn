@@ -5117,6 +5117,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/launcher_internals:mojo_bindings",
+      "//chrome/browser/ui/webui/chromeos/manage_mirrorsync:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",

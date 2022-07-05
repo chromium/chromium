@@ -7,7 +7,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/manage_mirrorsync_resources.h"
+#include "chrome/grit/manage_mirrorsync_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -18,12 +19,32 @@ ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIManageMirrorSyncHost);
   auto* profile = Profile::FromWebUI(web_ui);
-  source->SetDefaultResource(IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
+  webui::SetupWebUIDataSource(source,
+                              base::make_span(kManageMirrorsyncResources,
+                                              kManageMirrorsyncResourcesSize),
+                              IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
 
   content::WebUIDataSource::Add(profile, source);
 }
 
 ManageMirrorSyncUI::~ManageMirrorSyncUI() = default;
+
+void ManageMirrorSyncUI::BindInterface(
+    mojo::PendingReceiver<
+        chromeos::manage_mirrorsync::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (factory_receiver_.is_bound()) {
+    factory_receiver_.reset();
+  }
+  factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void ManageMirrorSyncUI::CreatePageHandler(
+    mojo::PendingReceiver<chromeos::manage_mirrorsync::mojom::PageHandler>
+        receiver) {
+  page_handler_ =
+      std::make_unique<ManageMirrorSyncPageHandler>(std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ManageMirrorSyncUI)
 
