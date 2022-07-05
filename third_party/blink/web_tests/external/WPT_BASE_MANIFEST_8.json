@@ -298152,6 +298152,22 @@
       "dd683f6f65f89f097ca70594e4a02c2027fdb66b",
       []
      ],
+     "non-cancelable-when-passive": {
+      "resources": {
+       "scrolling.js": [
+        "1e96a7f49715db0822867727a1fcb14a30fdad48",
+        []
+       ],
+       "touching.js": [
+        "620d26804bf8c74662d4299eccfbbb409949c212",
+        []
+       ],
+       "wait-for.js": [
+        "0bf3e558342fd60e1bbd2cf85b3bcf7c5db6f4e1",
+        []
+       ]
+      }
+     },
      "resources": {
       "empty-document.html": [
        "b9cd130a07f77ee1a54f4bf54df54dc126fec1ee",
@@ -326110,6 +326126,10 @@
       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
       []
      ],
+     "empty_style.css": [
+      "eb90b432e8421f42db47942d906e95153b2ad333",
+      []
+     ],
      "entry-invariants.js": [
       "4bef9496103ca61475f8041a7d2c57b2b5d9fc4e",
       []
@@ -326123,7 +326143,7 @@
       []
      ],
      "fake_responses.py": [
-      "e33adbfe44efc734a2ee6f98c6b0115327ee2f58",
+      "66b17be154b8c71bca1378aba44635eaada46b21",
       []
      ],
      "fake_responses_https.sub.html": [
@@ -326192,6 +326212,26 @@
      ],
      "import.sub.css": [
       "618c568d2a1d7be2365c7c2cd4078601d8aad25f",
+      []
+     ],
+     "importer.css": [
+      "771204cdd154023fae0adbc5642fb1cdec36b3a8",
+      []
+     ],
+     "importer.js": [
+      "e73d45da29fb29066ee93d65845a541991d5c7fc",
+      []
+     ],
+     "importer_async.js": [
+      "4b1cd4ddaef46d88ccb62b0b2ea104f82b024d26",
+      []
+     ],
+     "importer_dynamic.css": [
+      "f0ba069f0c98ab247357cdd99674dc67256cd905",
+      []
+     ],
+     "importer_print.css": [
+      "aac191635ed5203d401f5a0e91c850b3a8a0a5c4",
       []
      ],
      "inject_resource_test.html": [
@@ -403751,24 +403791,6 @@
        {}
       ]
      ],
-     "document-level-touchmove-event-listener-passive-by-default.tentative.html": [
-      "f3f0d58209fd8edda4fa1cc092dbe8d19bc4f143",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "document-level-wheel-event-listener-passive-by-default.tentative.html": [
-      "b7224835fa398b3a81415af4ff288899bf53c266",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
      "event-disabled-dynamic.html": [
       "3f995b02f1b421f376dc6037d42c442307503fb2",
       [
@@ -403827,6 +403849,375 @@
        {}
       ]
      ],
+     "non-cancelable-when-passive": {
+      "non-passive-mousewheel-event-listener-on-body.html": [
+       "4c40291aa0a7159f3f5569f8535730fa4b20f52f",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-mousewheel-event-listener-on-div.html": [
+       "a37276b4227bd0076ca6efb776a54aeac4ffc264",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-mousewheel-event-listener-on-document.html": [
+       "cdbfd2346fa276871f68e8e3b2ca3a0c5c413e19",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-mousewheel-event-listener-on-root.html": [
+       "c7e818e094b9b5e19f3c1fccf29662458276ba9e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-mousewheel-event-listener-on-window.html": [
+       "6a394a2c544b793e49d392ceedbcf6e43dc89a39",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchmove-event-listener-on-body.html": [
+       "d2e84de6be51dcd5a162654461269d998bf1f8cb",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchmove-event-listener-on-div.html": [
+       "9f026ee22b60de25ca3f08b88354d33c254ee49f",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchmove-event-listener-on-document.html": [
+       "b5b27b4f006d4176c2ea892f30eb4e54d98df7b7",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchmove-event-listener-on-root.html": [
+       "c2f42cc19357f5064debc72fb17cc0be57fd8fc5",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchmove-event-listener-on-window.html": [
+       "dee076f9643a171113b195183d242a1ca751659e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchstart-event-listener-on-body.html": [
+       "f4c22461017ff71ccef2ea14649bf66b305c8096",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchstart-event-listener-on-div.html": [
+       "ba050c0364c3993ae02e83971daff70232d702ef",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchstart-event-listener-on-document.html": [
+       "a1da298e6eaa34fc227a96ce134c3d1608ef96f2",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchstart-event-listener-on-root.html": [
+       "38bcf9b8a170aa03293f4399b561076f3d51cf15",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-touchstart-event-listener-on-window.html": [
+       "3642af2bf9174afe67eacae34f340c2eb01dabf2",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-wheel-event-listener-on-body.html": [
+       "3a573407856e0e4dce8d35bd11ecff7dd74fcbe8",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-wheel-event-listener-on-div.html": [
+       "05b655ff9bccbcc0c0cfa4203ddc8d8a4bcecc00",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-wheel-event-listener-on-document.html": [
+       "6e19c832dc437532aa7923b5caa16485aafa7594",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-wheel-event-listener-on-root.html": [
+       "26279cbc7e0527da888380df8f2168382dc9674e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "non-passive-wheel-event-listener-on-window.html": [
+       "f428e4851c1f33196b61f3ef1a5445f4982e92ba",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-mousewheel-event-listener-on-body.html": [
+       "1c94592482653a81dc423d42350f7659c3b3f52d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-mousewheel-event-listener-on-div.html": [
+       "2edf612b7e0fc777caa234b0d4cb50322a37ee1e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-mousewheel-event-listener-on-document.html": [
+       "4027f3fccebe7e7be62753ff362b967721faf891",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-mousewheel-event-listener-on-root.html": [
+       "40ef488e6bf1d66edc138671edf25abf343957ea",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-mousewheel-event-listener-on-window.html": [
+       "6609c2a2d7470925b792f6e64158c1f0a8c8b251",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchmove-event-listener-on-body.html": [
+       "8077d1b033d3a9c6eba928885e8d864f93a7cd51",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchmove-event-listener-on-div.html": [
+       "057474f8135cfc06e891973cb7d378659ffb1d76",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchmove-event-listener-on-document.html": [
+       "60b17de63b285c6294424329be05b3fbafc4b57e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchmove-event-listener-on-root.html": [
+       "853992048987a1c25977dcd60d2df0ae6e75d28b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchmove-event-listener-on-window.html": [
+       "3e1d0d4e9eefb67ba1d351c5cee36ebb77d795cb",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchstart-event-listener-on-body.html": [
+       "63dd68d25605d4c4c886615575aea84abfc3784b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchstart-event-listener-on-div.html": [
+       "f9aba60fd0b4781e9823243ca1472be370448b4b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchstart-event-listener-on-document.html": [
+       "011b87f7b7fab5ade50f4c33521e2d9e44f2253e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchstart-event-listener-on-root.html": [
+       "f2db44a360f2abeddee05c671f0abdeca3a07b13",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-touchstart-event-listener-on-window.html": [
+       "e8d83cdc5c4738507a44267f49e6bded03cd8f5a",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-wheel-event-listener-on-body.html": [
+       "82de4bd332641be3874341ea3e1e6364056635dd",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-wheel-event-listener-on-div.html": [
+       "906c5e2d8f96d9d2e05ed2bc522ff11703da5927",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-wheel-event-listener-on-document.html": [
+       "9512313259b62d22c0c5ed8069eac2fd8c10072b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-wheel-event-listener-on-root.html": [
+       "fe5d6d7915808cf8f659ffd67e97a25a10c37798",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "passive-wheel-event-listener-on-window.html": [
+       "0107c1f01fef06bcde29e5631a0d294ae86076ef",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "synthetic-events-cancelable.html": [
+       "4287770b8d58281c09c8174b9d7757174e51ff29",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "passive-by-default.html": [
       "02029f4dacf81180c846b27f0f2de4b0e8f5cc05",
       [
@@ -517499,6 +517890,20 @@
       {}
      ]
     ],
+    "render-blocking-status-link.html": [
+     "8c6544db48664e0b58dde49d73a8449715f6d20d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "render-blocking-status-script.html": [
+     "bcd55b89944fc696bf1dedadb95378b6ad9943a9",
+     [
+      null,
+      {}
+     ]
+    ],
     "resource-ignore-data-url.html": [
      "a7056a80807967d9b94b1d4c54c0620dc2a4bad8",
      [
@@ -517797,7 +518202,7 @@
      ]
     ],
     "tojson.html": [
-     "2fe2a60e74a6a9bdcd5576c0a6d8e8d12d73a9a3",
+     "7a6187d3d55bcdf6b937602fbe3ce5b87a1f9f03",
      [
       null,
       {}
