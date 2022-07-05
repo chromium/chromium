@@ -1612,10 +1612,6 @@ void GL_APIENTRY GLES2UnlockDiscardableTextureCHROMIUM(GLuint texture_id) {
 bool GL_APIENTRY GLES2LockDiscardableTextureCHROMIUM(GLuint texture_id) {
   return gles2::GetGLContext()->LockDiscardableTextureCHROMIUM(texture_id);
 }
-void GL_APIENTRY GLES2SetColorSpaceMetadataCHROMIUM(GLuint texture_id,
-                                                    GLcolorSpace color_space) {
-  gles2::GetGLContext()->SetColorSpaceMetadataCHROMIUM(texture_id, color_space);
-}
 void GL_APIENTRY GLES2WindowRectanglesEXT(GLenum mode,
                                           GLsizei count,
                                           const GLint* box) {
@@ -3004,10 +3000,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glLockDiscardableTextureCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glLockDiscardableTextureCHROMIUM),
-    },
-    {
-        "glSetColorSpaceMetadataCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glSetColorSpaceMetadataCHROMIUM),
     },
     {
         "glWindowRectanglesEXT",

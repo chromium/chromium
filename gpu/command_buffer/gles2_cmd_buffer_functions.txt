@@ -355,9 +355,6 @@ GL_APICALL void         GL_APIENTRY glInitializeDiscardableTextureCHROMIUM (GLui
 GL_APICALL void         GL_APIENTRY glUnlockDiscardableTextureCHROMIUM (GLuint texture_id);
 GL_APICALL bool         GL_APIENTRY glLockDiscardableTextureCHROMIUM (GLuint texture_id);
 
-// Extension CHROMIUM_color_space_metadata
-GL_APICALL void         GL_APIENTRY glSetColorSpaceMetadataCHROMIUM (GLuint texture_id, GLcolorSpace color_space);
-
 // Extension EXT_window_rectangles
 GL_APICALL void         GL_APIENTRY glWindowRectanglesEXT (GLenumWindowRectanglesMode mode, GLsizeiNotNegative count, const GLint* box);
 

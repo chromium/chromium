@@ -2335,14 +2335,6 @@ bool GLES2TraceImplementation::LockDiscardableTextureCHROMIUM(
   return gl_->LockDiscardableTextureCHROMIUM(texture_id);
 }
 
-void GLES2TraceImplementation::SetColorSpaceMetadataCHROMIUM(
-    GLuint texture_id,
-    GLcolorSpace color_space) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "GLES2Trace::SetColorSpaceMetadataCHROMIUM");
-  gl_->SetColorSpaceMetadataCHROMIUM(texture_id, color_space);
-}
-
 void GLES2TraceImplementation::WindowRectanglesEXT(GLenum mode,
                                                    GLsizei count,
                                                    const GLint* box) {

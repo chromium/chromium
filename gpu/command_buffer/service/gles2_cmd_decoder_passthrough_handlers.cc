@@ -2206,21 +2206,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleDiscardBackbufferCHROMIUM(
   return DoDiscardBackbufferCHROMIUM();
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleSetColorSpaceMetadataCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::SetColorSpaceMetadataCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::SetColorSpaceMetadataCHROMIUM*>(
-          cmd_data);
-  GLuint texture_id = c.texture_id;
-  gfx::ColorSpace color_space;
-  if (!ReadColorSpace(c.shm_id, c.shm_offset, c.color_space_size,
-                      &color_space)) {
-    return error::kOutOfBounds;
-  }
-  return DoSetColorSpaceMetadataCHROMIUM(texture_id, color_space);
-}
-
 error::Error
 GLES2DecoderPassthroughImpl::HandleBindFragDataLocationIndexedEXTBucket(
     uint32_t immediate_data_size,

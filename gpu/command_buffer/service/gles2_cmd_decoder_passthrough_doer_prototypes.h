@@ -886,8 +886,7 @@ error::Error DoWaitSyncTokenCHROMIUM(CommandBufferNamespace namespace_id,
                                      GLuint64 release_count);
 error::Error DoDrawBuffersEXT(GLsizei count, const volatile GLenum* bufs);
 error::Error DoDiscardBackbufferCHROMIUM();
-error::Error DoSetColorSpaceMetadataCHROMIUM(GLuint texture_id,
-                                             gfx::ColorSpace color_space);
+
 error::Error DoFlushDriverCachesCHROMIUM();
 error::Error DoMatrixLoadfCHROMIUM(GLenum matrixMode,
                                    const volatile GLfloat* m);

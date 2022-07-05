@@ -3075,17 +3075,6 @@ void LockDiscardableTextureCHROMIUM(GLuint texture_id) {
   }
 }
 
-void SetColorSpaceMetadataCHROMIUM(GLuint texture_id,
-                                   GLuint shm_id,
-                                   GLuint shm_offset,
-                                   GLsizei color_space_size) {
-  gles2::cmds::SetColorSpaceMetadataCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::SetColorSpaceMetadataCHROMIUM>();
-  if (c) {
-    c->Init(texture_id, shm_id, shm_offset, color_space_size);
-  }
-}
-
 void WindowRectanglesEXTImmediate(GLenum mode,
                                   GLsizei count,
                                   const GLint* box) {

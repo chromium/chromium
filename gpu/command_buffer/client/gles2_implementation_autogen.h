@@ -1136,9 +1136,6 @@ void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) override;
 
 bool LockDiscardableTextureCHROMIUM(GLuint texture_id) override;
 
-void SetColorSpaceMetadataCHROMIUM(GLuint texture_id,
-                                   GLcolorSpace color_space) override;
-
 void WindowRectanglesEXT(GLenum mode, GLsizei count, const GLint* box) override;
 
 GLuint CreateGpuFenceCHROMIUM() override;

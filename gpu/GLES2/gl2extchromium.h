@@ -701,17 +701,6 @@ GL_APICALL void GL_APIENTRY glCoverageModulationCHROMIUM(GLenum components);
 #define GL_TEXTURE_FILTERING_HINT_CHROMIUM 0x8AF0
 #endif /* GL_CHROMIUM_texture_filtering_hint */
 
-#ifndef GL_CHROMIUM_color_space_metadata
-#define GL_CHROMIUM_color_space_metadata 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY
-glSetColorSpaceMetadataCHROMIUM(GLuint texture_id, GLcolorSpace color_space);
-#endif
-typedef void(GL_APIENTRYP PFNGLSETCOLORSPACEMETADATACHROMIUM)(
-    GLuint texture_id,
-    GLcolorSpace color_space);
-#endif /* GL_CHROMIUM_color_space_metadata */
-
 #ifndef GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT
 #define GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT 0x8868
 #endif

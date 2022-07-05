@@ -3939,14 +3939,6 @@ _FUNCTION_INFO = {
     'client_test': False,
     'extension': True,
   },
-  'SetColorSpaceMetadataCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'cmd_args': 'GLuint texture_id, GLuint shm_id, GLuint shm_offset, '
-                'GLsizei color_space_size',
-    'extension': 'CHROMIUM_color_space_metadata',
-  },
   'WindowRectanglesEXT': {
     'type': 'PUTn',
     'count': 4,

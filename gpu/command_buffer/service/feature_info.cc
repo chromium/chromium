@@ -498,7 +498,6 @@ void FeatureInfo::InitializeFeatures() {
 
   AddExtensionString("GL_CHROMIUM_async_pixel_transfers");
   AddExtensionString("GL_CHROMIUM_bind_uniform_location");
-  AddExtensionString("GL_CHROMIUM_color_space_metadata");
   AddExtensionString("GL_CHROMIUM_command_buffer_query");
   AddExtensionString("GL_CHROMIUM_command_buffer_latency_query");
   AddExtensionString("GL_CHROMIUM_copy_texture");

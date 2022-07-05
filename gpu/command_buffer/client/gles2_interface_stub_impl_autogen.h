@@ -1100,9 +1100,6 @@ bool GLES2InterfaceStub::LockDiscardableTextureCHROMIUM(
     GLuint /* texture_id */) {
   return 0;
 }
-void GLES2InterfaceStub::SetColorSpaceMetadataCHROMIUM(
-    GLuint /* texture_id */,
-    GLcolorSpace /* color_space */) {}
 void GLES2InterfaceStub::WindowRectanglesEXT(GLenum /* mode */,
                                              GLsizei /* count */,
                                              const GLint* /* box */) {}
