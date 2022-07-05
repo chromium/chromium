@@ -19,7 +19,7 @@ android_nocompile_test_suite("android_lookup_dep_tests") {
     {
       target = "nocompile_gn:android_library_factory_missing_symbol_test_java"
       nocompile_sources = []
-      expected_compile_output_regex = "error: package org\.chromium\.chrome\.browser\.android_library_factory does not exist\nHint: Add \"//chrome/android/features/android_library_factory/test/nocompile_gn:b_factory_java\" to deps of //chrome/android/features/android_library_factory/test/nocompile_gn:android_library_factory_missing_symbol_test_java"
+      expected_compile_output_regex = "Hint: Try adding the following to //chrome/android/features/android_library_factory/test/nocompile_gn:android_library_factory_missing_symbol_test_java\n *\"//chrome/android/features/android_library_factory/test/nocompile_gn:b_factory_java\""
     },
   ]
 }
