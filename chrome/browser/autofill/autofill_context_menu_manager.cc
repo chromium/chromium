@@ -115,13 +115,22 @@ void AutofillContextMenuManager::ExecuteCommand(
     CommandId command_id,
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
-  auto it = command_id_to_menu_item_value_mapper_.find(command_id);
-  if (it == command_id_to_menu_item_value_mapper_.end())
-    return;
-
   ContentAutofillDriver* driver =
       ContentAutofillDriver::GetForRenderFrameHost(render_frame_host);
   if (!driver)
+    return;
+
+  ExecuteCommand(command_id, driver, params,
+                 render_frame_host->GetFrameToken());
+}
+
+void AutofillContextMenuManager::ExecuteCommand(
+    CommandId command_id,
+    ContentAutofillDriver* driver,
+    const content::ContextMenuParams& params,
+    const blink::LocalFrameToken local_frame_token) {
+  auto it = command_id_to_menu_item_value_mapper_.find(command_id);
+  if (it == command_id_to_menu_item_value_mapper_.end())
     return;
 
   DCHECK(IsAutofillCustomCommandId(command_id));
@@ -153,7 +162,7 @@ void AutofillContextMenuManager::ExecuteCommand(
   }
 
   driver->RendererShouldFillFieldWithValue(
-      {LocalFrameToken(render_frame_host->GetFrameToken().value()),
+      {LocalFrameToken(local_frame_token.value()),
        FieldRendererId(params.field_renderer_id.value())},
       it->second.fill_value);
 

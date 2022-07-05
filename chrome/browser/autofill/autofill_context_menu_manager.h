@@ -23,6 +23,7 @@ class RenderFrameHost;
 namespace autofill {
 
 class AutofillProfile;
+class ContentAutofillDriver;
 class CreditCard;
 class PersonalDataManager;
 
@@ -93,6 +94,10 @@ class AutofillContextMenuManager {
   void ExecuteCommand(CommandId command_id,
                       content::RenderFrameHost* render_frame_host,
                       const content::ContextMenuParams& params);
+  void ExecuteCommand(CommandId command_id,
+                      ContentAutofillDriver* driver,
+                      const content::ContextMenuParams& params,
+                      const blink::LocalFrameToken local_frame_token);
 
 #if defined(UNIT_TEST)
   // Getter for `command_id_to_menu_item_value_mapper_` used for testing
