@@ -8,7 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
-const CGFloat kSymbolAccessoryPointSize = 22.;
+const CGFloat kSymbolAccessoryPointSize = 18.;
 
 NSString* const kExternalLinkSmbol = @"arrow.up.forward.square";
 NSString* const kChevronForwardSymbol = @"chevron.forward";
