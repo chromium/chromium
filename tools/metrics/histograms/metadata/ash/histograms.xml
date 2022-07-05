@@ -4201,13 +4201,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.StateKeysPresent" enum="BooleanPresent"
-    expires_after="2022-07-03">
+    expires_after="2023-06-01">
   <owner>igorcov@chromium.org</owner>
   <owner>vsavu@google.com</owner>
   <summary>
     The presense of state keys on first device policy fetch response. It is
     expected for state keys to be present. The histogram is logged only in case
-    of successful device policy fetch response.
+    of successful device policy fetch response. Warning: This histogram was
+    expired from 2022-07-03 to 2022-07-05; data may be missing.
   </summary>
 </histogram>
 
