@@ -79,6 +79,8 @@ component("network_service") {
     "network_service.h",
     "network_service_memory_cache.cc",
     "network_service_memory_cache.h",
+    "network_service_memory_cache_url_loader.cc",
+    "network_service_memory_cache_url_loader.h",
     "network_service_memory_cache_writer.cc",
     "network_service_memory_cache_writer.h",
     "network_service_network_delegate.cc",

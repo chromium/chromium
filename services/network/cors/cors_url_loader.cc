@@ -18,6 +18,7 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/cors/preflight_controller.h"
+#include "services/network/network_service_memory_cache.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
@@ -256,7 +257,8 @@ CorsURLLoader::CorsURLLoader(
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    const mojom::ClientSecurityState* factory_client_security_state)
+    const mojom::ClientSecurityState* factory_client_security_state,
+    NetworkServiceMemoryCache* memory_cache)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -276,6 +278,7 @@ CorsURLLoader::CorsURLLoader(
           non_wildcard_request_headers_support),
       isolation_info_(isolation_info),
       factory_client_security_state_(factory_client_security_state),
+      memory_cache_(memory_cache),
       devtools_observer_(std::move(devtools_observer)),
       // CORS preflight related events are logged in a series of URL_REQUEST
       // logs.
@@ -838,8 +841,21 @@ void CorsURLLoader::StartNetworkRequest() {
   // Binding |this| as an unretained pointer is safe because
   // |network_client_receiver_| shares this object's lifetime.
   network_loader_.reset();
-  if (sync_network_loader_factory_ &&
-      base::FeatureList::IsEnabled(features::kURLLoaderSyncClient)) {
+
+  // Check whether a fresh entry exists in the in-memory cache.
+  absl::optional<std::string> cache_key;
+  if (memory_cache_) {
+    cache_key = memory_cache_->CanServe(
+        request_, isolation_info_.network_isolation_key());
+  }
+
+  if (cache_key.has_value()) {
+    memory_cache_->CreateLoaderAndStart(
+        network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        *cache_key, request_,
+        network_client_receiver_.BindNewPipeAndPassRemote());
+  } else if (sync_network_loader_factory_ &&
+             base::FeatureList::IsEnabled(features::kURLLoaderSyncClient)) {
     sync_network_loader_factory_->CreateLoaderAndStartWithSyncClient(
         network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
         request_, network_client_receiver_.BindNewPipeAndPassRemote(),

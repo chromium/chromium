@@ -15,6 +15,7 @@
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
 #include "services/network/network_context.h"
+#include "services/network/network_service_memory_cache_url_loader.h"
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -171,7 +172,8 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   // TODO(https://crbug.com/1339708): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
-  DCHECK(network_isolation_key.IsFullyPopulated());
+  if (!network_isolation_key.IsFullyPopulated())
+    return absl::nullopt;
 
   const GURL& url = resource_request.url;
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
@@ -207,6 +209,43 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   return std::move(cache_key);
 }
 
+void NetworkServiceMemoryCache::CreateLoaderAndStart(
+    mojo::PendingReceiver<mojom::URLLoader> receiver,
+    int32_t request_id,
+    uint32_t options,
+    const std::string& cache_key,
+    const ResourceRequest& resource_request,
+    mojo::PendingRemote<mojom::URLLoaderClient> client) {
+  auto it = entries_.Get(cache_key);
+  CHECK(it != entries_.end());
+
+  auto loader = std::make_unique<NetworkServiceMemoryCacheURLLoader>(
+      this, GetNextTraceId(), resource_request.url, std::move(receiver),
+      std::move(client), it->second->content);
+  NetworkServiceMemoryCacheURLLoader* raw_loader = loader.get();
+  url_loaders_.insert(std::move(loader));
+
+  raw_loader->Start(resource_request, it->second->response_head.Clone());
+}
+
+uint32_t NetworkServiceMemoryCache::GetDataPipeCapacity(size_t content_length) {
+  if (data_pipe_capacity_for_testing_.has_value())
+    return *data_pipe_capacity_for_testing_;
+
+  uint32_t default_capacity = features::GetDataPipeDefaultAllocationSize();
+  if (content_length > default_capacity)
+    return default_capacity;
+  return static_cast<size_t>(content_length);
+}
+
+void NetworkServiceMemoryCache::OnLoaderCompleted(
+    NetworkServiceMemoryCacheURLLoader* loader) {
+  DCHECK(loader);
+  auto it = url_loaders_.find(loader);
+  DCHECK(it != url_loaders_.end());
+  url_loaders_.erase(it);
+}
+
 void NetworkServiceMemoryCache::SetCurrentTimeForTesting(
     base::Time current_time) {
   current_time_for_testing_ = current_time;
@@ -218,6 +257,11 @@ mojom::URLResponseHeadPtr NetworkServiceMemoryCache::GetResponseHeadForTesting(
   if (it == entries_.end())
     return nullptr;
   return it->second->response_head.Clone();
+}
+
+void NetworkServiceMemoryCache::SetDataPipeCapacityForTesting(
+    uint32_t capacity) {
+  data_pipe_capacity_for_testing_ = capacity;
 }
 
 base::Time NetworkServiceMemoryCache::GetCurrentTime() {

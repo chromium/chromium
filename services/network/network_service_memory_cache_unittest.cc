@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -63,7 +64,8 @@ mojom::URLResponseHeadPtr CreateCacheableURLResponseHead() {
 }
 
 // An EmbeddedTestServer request handler that returns a cacheable response of
-// which body size and max-age are specified by the query string.
+// which body size and max-age are specified by the query string. The content
+// body consists of 'a'.
 std::unique_ptr<net::test_server::HttpResponse> CacheableResponseHandler(
     const net::test_server::HttpRequest& request) {
   if (request.GetURL().path_piece() != "/cacheable")
@@ -157,6 +159,7 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     url::Origin origin = url::Origin::Create(url);
     request.url = url;
     request.request_initiator = origin;
+    request.enable_load_timing = true;
     return request;
   }
 
@@ -469,6 +472,150 @@ TEST_F(NetworkServiceMemoryCacheTest, ClientDisconnectedWhileCaching) {
   loop.Run();
 
   ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_Basic) {
+  constexpr int kBodySize = 371;
+  const std::string kExpectedBody(kBodySize, 'a');
+
+  ResourceRequest request =
+      CreateRequest(base::StringPrintf("/cacheable?body-size=%d", kBodySize));
+  StoreResponseToMemoryCache(request);
+
+  const base::TimeTicks before_start = base::TimeTicks::Now();
+
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilComplete();
+  ASSERT_EQ(pair.client->completion_status().error_code, net::OK);
+
+  const mojom::URLResponseHeadPtr& response = pair.client->response_head();
+  ASSERT_FALSE(response->network_accessed);
+  ASSERT_FALSE(response->is_validated);
+  ASSERT_TRUE(response->was_fetched_via_cache);
+  ASSERT_LT(before_start, response->request_start);
+  ASSERT_LT(before_start, response->response_start);
+
+  const net::LoadTimingInfo& load_timing = response->load_timing;
+  ASSERT_LT(before_start, load_timing.request_start);
+  ASSERT_LT(before_start, load_timing.send_start);
+  ASSERT_LT(before_start, load_timing.send_end);
+  ASSERT_LT(before_start, load_timing.receive_headers_start);
+  ASSERT_LT(before_start, load_timing.receive_headers_end);
+
+  std::string received_body;
+  ASSERT_TRUE(mojo::BlockingCopyToString(pair.client->response_body_release(),
+                                         &received_body));
+  ASSERT_EQ(kExpectedBody, received_body);
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_DisableLoadTiming) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+
+  const base::TimeTicks before_start = base::TimeTicks::Now();
+
+  request.enable_load_timing = false;
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilComplete();
+  ASSERT_EQ(pair.client->completion_status().error_code, net::OK);
+
+  const mojom::URLResponseHeadPtr& response = pair.client->response_head();
+  ASSERT_FALSE(response->network_accessed);
+  ASSERT_FALSE(response->is_validated);
+  ASSERT_TRUE(response->was_fetched_via_cache);
+  ASSERT_LT(before_start, response->request_start);
+  ASSERT_LT(before_start, response->response_start);
+
+  const net::LoadTimingInfo& load_timing = response->load_timing;
+  ASSERT_TRUE(load_timing.request_start.is_null());
+  ASSERT_TRUE(load_timing.send_start.is_null());
+  ASSERT_TRUE(load_timing.send_end.is_null());
+  ASSERT_TRUE(load_timing.receive_headers_start.is_null());
+  ASSERT_TRUE(load_timing.receive_headers_end.is_null());
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
+  constexpr uint32_t kReadDataSize = 512;
+  // Arbitrary response body size larger than `kReadDataSize`.
+  constexpr int kBodySize = 4 * 1024 + 659;
+
+  ResourceRequest request =
+      CreateRequest(base::StringPrintf("/cacheable?body-size=%d", kBodySize));
+  StoreResponseToMemoryCache(request);
+
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilResponseReceived();
+
+  mojo::ScopedDataPipeConsumerHandle consumer_handle =
+      pair.client->response_body_release();
+  std::string received_body;
+  while (true) {
+    char buf[kReadDataSize];
+    uint32_t num_bytes = kReadDataSize;
+    MojoResult result =
+        consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      base::RunLoop run_loop;
+      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+      run_loop.Run();
+      continue;
+    }
+
+    if (result == MOJO_RESULT_FAILED_PRECONDITION)
+      break;
+
+    ASSERT_EQ(result, MOJO_RESULT_OK);
+    received_body.append(buf, num_bytes);
+  }
+
+  pair.client->RunUntilComplete();
+  ASSERT_EQ(pair.client->completion_status().error_code, net::OK);
+
+  const std::string kExpectedBody(kBodySize, 'a');
+  ASSERT_EQ(kExpectedBody, received_body);
+}
+
+TEST_F(NetworkServiceMemoryCacheTest,
+       ServeFromCache_DataPipeDisconnectWhileReading) {
+  constexpr int kBodySize = 512;
+  constexpr int kReadDataSize = kBodySize / 2;
+  ResourceRequest request =
+      CreateRequest(base::StringPrintf("/cacheable?body-size=%d", kBodySize));
+  StoreResponseToMemoryCache(request);
+
+  // Set a small data pipe capacity so that writing data to a data pipe doesn't
+  // complete at once.
+  memory_cache().SetDataPipeCapacityForTesting(kReadDataSize);
+
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilResponseReceived();
+
+  mojo::ScopedDataPipeConsumerHandle consumer_handle =
+      pair.client->response_body_release();
+
+  // Read the half of the response body.
+  int num_read = 0;
+  while (num_read < kReadDataSize) {
+    char buf[kReadDataSize];
+    uint32_t num_bytes = kReadDataSize;
+    MojoResult result =
+        consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      base::RunLoop run_loop;
+      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+      run_loop.Run();
+      continue;
+    }
+    ASSERT_EQ(result, MOJO_RESULT_OK);
+    num_read += num_bytes;
+  }
+
+  consumer_handle.reset();
+  pair.client->RunUntilComplete();
+  ASSERT_EQ(pair.client->completion_status().error_code, net::ERR_FAILED);
 }
 
 }  // namespace network

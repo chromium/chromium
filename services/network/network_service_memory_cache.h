@@ -11,9 +11,13 @@
 
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,6 +29,7 @@ class URLRequest;
 
 namespace network {
 
+class NetworkServiceMemoryCacheURLLoader;
 class NetworkServiceMemoryCacheWriter;
 struct ResourceRequest;
 
@@ -63,10 +68,29 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
       const ResourceRequest& resource_request,
       const net::NetworkIsolationKey& network_isolation_key);
 
+  // Creates and starts a custom URLLoader that serves a response from the
+  // in-memory cache, instead of creating a network::URLLoader. Must be called
+  // immediately after CanServe().
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
+                            int32_t request_id,
+                            uint32_t options,
+                            const std::string& cache_key,
+                            const ResourceRequest& resource_request,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client);
+
+  // Returns a suitable capacity for a data pipe that is used to serve a
+  // response from `this`.
+  uint32_t GetDataPipeCapacity(size_t content_length);
+
+  // Called when a custom URLLoader is completed.
+  void OnLoaderCompleted(NetworkServiceMemoryCacheURLLoader* loader);
+
   void SetCurrentTimeForTesting(base::Time current_time);
 
   mojom::URLResponseHeadPtr GetResponseHeadForTesting(
       const std::string& cache_key);
+
+  void SetDataPipeCapacityForTesting(uint32_t capacity);
 
  private:
   struct Entry;
@@ -88,7 +112,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   const size_t max_total_bytes_;
   size_t total_bytes_ = 0;
 
+  std::set<std::unique_ptr<NetworkServiceMemoryCacheURLLoader>,
+           base::UniquePtrComparator>
+      url_loaders_;
+
   base::Time current_time_for_testing_;
+
+  absl::optional<uint32_t> data_pipe_capacity_for_testing_;
 
   base::WeakPtrFactory<NetworkServiceMemoryCache> weak_ptr_factory_{this};
 };

@@ -28,6 +28,7 @@
 namespace network {
 
 class URLLoaderFactory;
+class NetworkServiceMemoryCache;
 
 namespace cors {
 
@@ -65,7 +66,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      const mojom::ClientSecurityState* factory_client_security_state);
+      const mojom::ClientSecurityState* factory_client_security_state,
+      NetworkServiceMemoryCache* memory_cache);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -268,6 +270,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // initializes this member explicitly.
   raw_ptr<const mojom::ClientSecurityState> factory_client_security_state_ =
       nullptr;
+
+  // Outlives `this`, or nullptr when the in-memory cache is disabled.
+  const raw_ptr<NetworkServiceMemoryCache> memory_cache_;
 
   bool has_authorization_covered_by_wildcard_ = false;
 

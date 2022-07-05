@@ -1,0 +1,206 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/network/network_service_memory_cache_url_loader.h"
+
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
+#include "services/network/network_service_memory_cache.h"
+#include "services/network/public/cpp/resource_request.h"
+
+namespace network {
+
+NetworkServiceMemoryCacheURLLoader::NetworkServiceMemoryCacheURLLoader(
+    NetworkServiceMemoryCache* memory_cache,
+    uint64_t trace_id,
+    const GURL& url,
+    mojo::PendingReceiver<mojom::URLLoader> receiver,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
+    scoped_refptr<base::RefCountedBytes> content)
+    : memory_cache_(memory_cache),
+      trace_id_(trace_id),
+      receiver_(this, std::move(receiver)),
+      client_(std::move(client)),
+      content_(std::move(content)) {
+  DCHECK(memory_cache_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "loading", "NetworkServiceMemoryCacheURLLoader",
+      TRACE_ID_LOCAL(trace_id_), "url", url.spec());
+
+  client_.set_disconnect_handler(
+      base::BindOnce(&NetworkServiceMemoryCacheURLLoader::OnClientDisconnected,
+                     base::Unretained(this)));
+}
+
+NetworkServiceMemoryCacheURLLoader::~NetworkServiceMemoryCacheURLLoader() {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("loading",
+                                  "NetworkServiceMemoryCacheURLLoader",
+                                  TRACE_ID_LOCAL(trace_id_));
+}
+
+void NetworkServiceMemoryCacheURLLoader::Start(
+    const ResourceRequest& resource_request,
+    mojom::URLResponseHeadPtr response_head) {
+  UpdateResponseHead(resource_request, response_head);
+
+  // Create a data pipe.
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes =
+      memory_cache_->GetDataPipeCapacity(content_->size());
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  MojoResult result =
+      mojo::CreateDataPipe(&options, producer_handle_, consumer_handle);
+  if (result != MOJO_RESULT_OK) {
+    Finish(net::ERR_FAILED);
+    return;
+  }
+
+  // Start sending the response.
+  client_->OnReceiveResponse(std::move(response_head),
+                             std::move(consumer_handle));
+
+  // Set up data pipe producer.
+  producer_handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+      base::SequencedTaskRunnerHandle::Get());
+  producer_handle_watcher_->Watch(
+      producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(
+          &NetworkServiceMemoryCacheURLLoader::OnProducerHandleReady,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  WriteMore();
+}
+
+void NetworkServiceMemoryCacheURLLoader::UpdateResponseHead(
+    const ResourceRequest& resource_request,
+    mojom::URLResponseHeadPtr& response_head) {
+  response_head->network_accessed = false;
+  response_head->is_validated = false;
+  response_head->was_fetched_via_cache = true;
+
+  const base::Time now_time = base::Time::Now();
+  const base::TimeTicks now_ticks = base::TimeTicks::Now();
+
+  response_head->request_start = now_ticks;
+  response_head->response_start = now_ticks;
+
+  net::LoadTimingInfo load_timing;
+  if (resource_request.enable_load_timing) {
+    load_timing.request_start_time = now_time;
+    load_timing.request_start = now_ticks;
+
+    load_timing.send_start = now_ticks;
+    load_timing.send_end = now_ticks;
+    load_timing.receive_headers_start = now_ticks;
+    load_timing.receive_headers_end = now_ticks;
+  }
+  response_head->load_timing = load_timing;
+}
+
+void NetworkServiceMemoryCacheURLLoader::WriteMore() {
+  size_t total_write_size = 0;
+  bool write_completed = false;
+  while (true) {
+    DCHECK_GE(content_->size(), write_position_);
+    DCHECK_GE(std::numeric_limits<uint32_t>::max(),
+              content_->size() - write_position_);
+    uint32_t write_size =
+        static_cast<uint32_t>(content_->size() - write_position_);
+    if (write_size == 0) {
+      write_completed = true;
+      break;
+    }
+
+    MojoResult result =
+        producer_handle_->WriteData(content_->data().data() + write_position_,
+                                    &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      producer_handle_watcher_->ArmOrNotify();
+      break;
+    }
+
+    if (result != MOJO_RESULT_OK) {
+      Finish(net::ERR_FAILED);
+      return;
+    }
+
+    write_position_ += write_size;
+    total_write_size += write_size;
+  }
+
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2(
+      "loading", "NetworkServiceMemoryCacheURLLoader::WriteMore",
+      TRACE_ID_LOCAL(trace_id_), "write_position", write_position_,
+      "total_write_bytes", total_write_size);
+
+  if (write_completed) {
+    Finish(net::OK);
+  }
+}
+
+void NetworkServiceMemoryCacheURLLoader::OnProducerHandleReady(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  if (result == MOJO_RESULT_OK) {
+    WriteMore();
+  } else {
+    Finish(net::ERR_FAILED);
+  }
+}
+
+void NetworkServiceMemoryCacheURLLoader::Finish(int error_code) {
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0(
+      "loading", "NetworkServiceMemoryCacheURLLoader::Finish",
+      TRACE_ID_LOCAL(trace_id_));
+
+  producer_handle_.reset();
+  producer_handle_watcher_.reset();
+
+  if (error_code == net::OK) {
+    DCHECK(client_.is_connected());
+
+    URLLoaderCompletionStatus status;
+    status.error_code = net::OK;
+    status.exists_in_cache = true;
+    status.completion_time = base::TimeTicks::Now();
+    status.encoded_body_length = content_->size();
+    status.decoded_body_length = content_->size();
+
+    client_->OnComplete(status);
+  } else if (client_.is_connected()) {
+    URLLoaderCompletionStatus status;
+    status.error_code = error_code;
+    client_->OnComplete(status);
+  }
+
+  memory_cache_->OnLoaderCompleted(this);
+  // `memory_cache_` deleted `this`.
+}
+
+void NetworkServiceMemoryCacheURLLoader::OnClientDisconnected() {
+  Finish(net::ERR_FAILED);
+}
+
+void NetworkServiceMemoryCacheURLLoader::FollowRedirect(
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers,
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const absl::optional<GURL>& new_url) {
+  NOTREACHED();
+}
+
+void NetworkServiceMemoryCacheURLLoader::SetPriority(
+    net::RequestPriority priority,
+    int32_t intra_priority_value) {}
+
+void NetworkServiceMemoryCacheURLLoader::PauseReadingBodyFromNet() {}
+
+void NetworkServiceMemoryCacheURLLoader::ResumeReadingBodyFromNet() {}
+
+}  // namespace network
