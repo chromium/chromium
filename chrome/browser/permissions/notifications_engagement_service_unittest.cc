@@ -10,12 +10,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_metrics_service.h"
-#include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
-#endif
-
 namespace permissions {
 constexpr char kEngagementKey[] = "click_count";
 constexpr char kDisplayedKey[] = "display_count";
@@ -48,13 +42,6 @@ class NotificationsEngagementServiceTest : public testing::Test {
 
 void NotificationsEngagementServiceTest::SetUp() {
   testing::Test::SetUp();
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // Disable supervised user metrics reporting, otherwise the calls to
-  // FastForwardUntilNoTasksRemain() never return.
-  SupervisedUserMetricsServiceFactory::GetForBrowserContext(profile())
-      ->Shutdown();
-#endif
 }
 
 TEST_F(NotificationsEngagementServiceTest,

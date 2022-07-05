@@ -56,3 +56,7 @@ bool SupervisedUserMetricsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
+
+bool SupervisedUserMetricsServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}

@@ -56,8 +56,6 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
 
   CheckForNewDay();
   // Check for a new day every |kTimerInterval| as well.
-  DLOG(WARNING) << "If your test uses mock timers and hangs, you may need "
-                   "to call Shutdown() on SupervisedUserMetricsService.";
   timer_.Start(FROM_HERE, kTimerInterval, this,
                &SupervisedUserMetricsService::CheckForNewDay);
 }
