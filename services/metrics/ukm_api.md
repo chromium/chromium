@@ -171,7 +171,37 @@ ukm::builders::MyEvent(source_id)
     .Record(ukm_recorder.get());
 ```
 
-3) Within blink/renderer, use `blink::Document::UkmRecorder()`.
+3) Within blink/renderer, use one of the following methods:
+
+* `blink::Document::UkmRecorder()`
+* `blink::ExecutionContext::UkmRecorder()`
+* `blink::ResourceFetcher::UkmRecorder()`
+
+4) If you do not have access to any of the methods in 3), establish a remote
+connection to a UkmRecorderInterface and use a MojoUkmRecorder to get a
+UkmRecorder.
+
+```cpp
+mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+
+// This step depends on how the Metrics service is embedded in the application.
+BindUkmRecorderSomewhere(recorder.InitWithNewPipeAndPassReceiver());
+
+ukm_recorder = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+ukm::builders::MyEvent(source_id)
+    .SetMyMetric(metric_value)
+    .Record(ukm_recorder.get());
+```
+Depending on which directory you are getting the UkmRecorder from, you need the
+correct interface binder to replace the `BindUkmRecorderSomewhere()` part above.
+Some options are:
+
+* blink/renderer: `Platform::Current()->GetBrowserInterfaceBroker()->GetInterface()`
+* content/renderer: `content::RenderThread::Get()->BindHostReceiver()`
+
+Note: Establishing a new remote connection each time (i.e. per frame, etc.) has
+overhead, so try to avoid opening a new one each time.
+
 
 ### Get A ukm::SourceId
 
