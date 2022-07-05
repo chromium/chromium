@@ -6,6 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
+assert(use_aura)
+
 component("wm") {
   output_name = "ui_wm"
   sources = [
