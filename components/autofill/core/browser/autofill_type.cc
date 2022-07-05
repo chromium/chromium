@@ -94,11 +94,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
-    case PHONE_FAX_NUMBER:
-    case PHONE_FAX_CITY_CODE:
-    case PHONE_FAX_COUNTRY_CODE:
-    case PHONE_FAX_CITY_AND_NUMBER:
-    case PHONE_FAX_WHOLE_NUMBER:
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:

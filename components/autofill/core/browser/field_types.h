@@ -50,15 +50,7 @@ enum ServerFieldType {
   PHONE_HOME_WHOLE_NUMBER = 14,
 
   // Work phone numbers (values [15,19]) are deprecated.
-
-  // Fax numbers (values [20,24]) are deprecated in Chrome, but still supported
-  // by the server.
-  PHONE_FAX_NUMBER = 20,
-  PHONE_FAX_CITY_CODE = 21,
-  PHONE_FAX_COUNTRY_CODE = 22,
-  PHONE_FAX_CITY_AND_NUMBER = 23,
-  PHONE_FAX_WHOLE_NUMBER = 24,
-
+  // Fax numbers (values [20,24]) are deprecated.
   // Cell phone numbers (values [25, 29]) are deprecated.
 
   ADDRESS_HOME_LINE1 = 30,

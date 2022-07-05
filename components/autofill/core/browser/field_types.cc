@@ -28,11 +28,10 @@ ServerFieldType ToSafeServerFieldType(
            !(37 <= t && t <= 43) && t != 78 && t != 80 && t != 82 && t != 84 &&
            // Billing phone numbers (values [62,66]) are deprecated.
            !(62 <= t && t <= 66) &&
-           // Billing names (values [67, 72]) are deprecated.
+           // Billing names (values [67,72]) are deprecated.
            !(67 <= t && t <= 72) &&
-           // Fax numbers (values [20,24]) are deprecated in Chrome, but still
-           // supported by the server.
-           !(PHONE_FAX_NUMBER <= t && t <= PHONE_FAX_WHOLE_NUMBER);
+           // Fax numbers (values [20,24]) are deprecated.
+           !(20 <= t && t <= 24);
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -137,11 +136,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
-    case PHONE_FAX_NUMBER:
-    case PHONE_FAX_CITY_CODE:
-    case PHONE_FAX_COUNTRY_CODE:
-    case PHONE_FAX_CITY_AND_NUMBER:
-    case PHONE_FAX_WHOLE_NUMBER:
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
@@ -211,16 +205,6 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "PHONE_HOME_WHOLE_NUMBER";
     case PHONE_HOME_EXTENSION:
       return "PHONE_HOME_EXTENSION";
-    case PHONE_FAX_NUMBER:
-      return "PHONE_FAX_NUMBER";
-    case PHONE_FAX_CITY_CODE:
-      return "PHONE_FAX_CITY_CODE";
-    case PHONE_FAX_COUNTRY_CODE:
-      return "PHONE_FAX_COUNTRY_CODE";
-    case PHONE_FAX_CITY_AND_NUMBER:
-      return "PHONE_FAX_CITY_AND_NUMBER";
-    case PHONE_FAX_WHOLE_NUMBER:
-      return "PHONE_FAX_WHOLE_NUMBER";
     case ADDRESS_HOME_ADDRESS:
       return "ADDRESS_HOME_ADDRESS";
     case ADDRESS_HOME_ADDRESS_WITH_NAME:

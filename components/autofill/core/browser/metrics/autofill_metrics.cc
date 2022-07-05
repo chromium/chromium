@@ -335,11 +335,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case PHONE_HOME_CITY_AND_NUMBER:
         case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
         case PHONE_HOME_WHOLE_NUMBER:
-        case PHONE_FAX_NUMBER:
-        case PHONE_FAX_CITY_CODE:
-        case PHONE_FAX_COUNTRY_CODE:
-        case PHONE_FAX_CITY_AND_NUMBER:
-        case PHONE_FAX_WHOLE_NUMBER:
         case CREDIT_CARD_NAME_FULL:
         case CREDIT_CARD_NUMBER:
         case CREDIT_CARD_EXP_MONTH:

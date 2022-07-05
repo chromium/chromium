@@ -5825,7 +5825,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   auto* field_prediction0 = field0->add_predictions();
   field_prediction0->set_type(NAME_FULL);
   auto* field_prediction1 = field0->add_predictions();
-  field_prediction1->set_type(PHONE_FAX_COUNTRY_CODE);
+  field_prediction1->set_type(PHONE_HOME_COUNTRY_CODE);
   AddFieldSuggestionToForm(form_suggestion, form.fields[1], ADDRESS_HOME_LINE1);
   // Make form 2 suggestions.
   form_suggestion = api_response.add_form_suggestions();
@@ -5848,7 +5848,8 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
   ASSERT_EQ(2U, forms[0]->field(0)->server_predictions().size());
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_predictions()[0].type());
-  EXPECT_EQ(NO_SERVER_DATA, forms[0]->field(0)->server_predictions()[1].type());
+  EXPECT_EQ(PHONE_HOME_COUNTRY_CODE,
+            forms[0]->field(0)->server_predictions()[1].type());
   EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(1)->server_type());
   ASSERT_EQ(1U, forms[0]->field(1)->server_predictions().size());
   EXPECT_EQ(ADDRESS_HOME_LINE1,
