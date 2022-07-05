@@ -150,8 +150,7 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       tile_format_(tile_format),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
-      random_generator_(static_cast<uint32_t>(base::RandUint64())),
-      bernoulli_distribution_(raster_metric_probability),
+      raster_metric_probability_(raster_metric_probability),
       is_using_raw_draw_(features::IsUsingRawDraw()) {
   DCHECK(pending_raster_queries);
   DCHECK(compositor_context_provider);
@@ -288,8 +287,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       client_->worker_context_provider_->RasterInterface();
   DCHECK(ri);
 
-  const bool measure_raster_metric =
-      client_->bernoulli_distribution_(client_->random_generator_);
+  const bool measure_raster_metric = client_->metrics_subsampler_.ShouldSample(
+      client_->raster_metric_probability_);
 
   gfx::Rect playback_rect = raster_full_rect;
   if (resource_has_previous_content_) {
