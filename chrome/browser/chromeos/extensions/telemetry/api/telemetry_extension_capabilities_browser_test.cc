@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesWithCmdBrowserTest,
   const auto extension_info = GetChromeOSExtensionInfoForId(extension_id());
   EXPECT_EQ(kPwaOriginOverride, extension_info.pwa_origin);
 
-  // Open the PWA page url to bypass IsPwaUiOpen() check.
+  // Open the PWA page url to bypass IsPwaUiOpenAndSecure() check.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kPwaPageUrl)));
 
   // Start listening on the extension.

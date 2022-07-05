@@ -30,8 +30,8 @@ class BaseTelemetryExtensionBrowserTest
  protected:
   std::string extension_id() const;
   std::string public_key() const;
-  std::string pwa_page_url() const;
-  std::string matches_origin() const;
+  virtual std::string pwa_page_url() const;
+  virtual std::string matches_origin() const;
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
   virtual std::string GetManifestFile(const std::string& matches_origin);

@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "components/security_state/content/content_utils.h"
+#include "components/security_state/core/security_state.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -70,8 +72,8 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
       return;
     }
 
-    if (!IsPwaUiOpen(context, extension)) {
-      std::move(callback).Run("Companion PWA UI is not open");
+    if (!IsPwaUiOpenAndSecure(context, extension)) {
+      std::move(callback).Run("Companion PWA UI is not open or not secure");
       return;
     }
 
@@ -97,8 +99,8 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
     return user_manager::UserManager::Get()->IsCurrentUserOwner();
   }
 
-  bool IsPwaUiOpen(content::BrowserContext* context,
-                   const extensions::Extension* extension) {
+  bool IsPwaUiOpenAndSecure(content::BrowserContext* context,
+                            const extensions::Extension* extension) {
     Profile* profile = Profile::FromBrowserContext(context);
 
     const auto* externally_connectable_info =
@@ -116,7 +118,13 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
             target_tab_strip->GetWebContentsAt(i);
         if (externally_connectable_info->matches.MatchesURL(
                 target_contents->GetLastCommittedURL())) {
-          return true;
+          // Ensure the PWA URL connection is secure (e.g. valid certificate).
+          const auto visible_security_state =
+              security_state::GetVisibleSecurityState(target_contents);
+          return security_state::GetSecurityLevel(
+                     *visible_security_state,
+                     /*used_policy_installed_certificate=*/false) ==
+                 security_state::SecurityLevel::SECURE;
         }
       }
     }

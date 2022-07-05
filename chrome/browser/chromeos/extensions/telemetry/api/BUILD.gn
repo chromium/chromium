@@ -37,6 +37,8 @@ source_set("api") {
     "//chrome/browser/ui",
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
+    "//components/security_state/content",
+    "//components/security_state/core",
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/browser",
@@ -86,10 +88,13 @@ source_set("browser_tests") {
     "//chromeos/dbus",
     "//chromeos/dbus/debug_daemon",
     "//components/user_manager",
+    "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/common",
+    "//net",
+    "//net:test_support",
     "//url",
   ]
 }

@@ -7903,6 +7903,9 @@ test("unit_tests") {
         "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
         "//chrome/common/chromeos/extensions",
         "//chromeos/dbus/image_burner",
+        "//content/public/browser",
+        "//net",
+        "//net:test_support",
       ]
     } else {
       sources += [
