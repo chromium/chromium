@@ -43,8 +43,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::RecordingNetLogObserver net_log_observer;
 
   net::TestCompletionCallback callback;
-  std::unique_ptr<net::FuzzedSocket> fuzzed_socket(
-      new net::FuzzedSocket(&data_provider, net::NetLog::Get()));
+  auto fuzzed_socket =
+      std::make_unique<net::FuzzedSocket>(&data_provider, net::NetLog::Get());
   CHECK_EQ(net::OK, fuzzed_socket->Connect(callback.callback()));
 
   // Create auth handler supporting basic and digest schemes.  Other schemes can

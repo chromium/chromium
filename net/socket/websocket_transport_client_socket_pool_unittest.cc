@@ -546,7 +546,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleReset) {
 // The lock on the endpoint is released when a ClientSocketHandle is deleted.
 TEST_F(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleDelete) {
   TestCompletionCallback callback;
-  std::unique_ptr<ClientSocketHandle> handle(new ClientSocketHandle);
+  auto handle = std::make_unique<ClientSocketHandle>();
   int rv =
       handle->Init(group_id_, params_, absl::nullopt /* proxy_annotation_tag */,
                    LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,

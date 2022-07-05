@@ -330,8 +330,7 @@ TEST_F(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
   for (size_t i = 0; i < kNumIPs; ++i)
     ip_list.push_back(IPAddress(72, 14, 213, i));
 
-  std::unique_ptr<TestSocketPerformanceWatcher> watcher(
-      new TestSocketPerformanceWatcher());
+  auto watcher = std::make_unique<TestSocketPerformanceWatcher>();
   TestSocketPerformanceWatcher* watcher_ptr = watcher.get();
 
   std::vector<std::string> aliases({"example.com"});

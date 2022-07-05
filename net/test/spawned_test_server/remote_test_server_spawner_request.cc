@@ -196,8 +196,9 @@ RemoteTestServerSpawnerRequest::RemoteTestServerSpawnerRequest(
     const GURL& url,
     const std::string& post_data)
     : io_task_runner_(io_task_runner),
-      core_(new Core()),
-      allowed_port_(new ScopedPortException(url.EffectiveIntPort())) {
+      core_(std::make_unique<Core>()),
+      allowed_port_(
+          std::make_unique<ScopedPortException>(url.EffectiveIntPort())) {
   io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::SendRequest,
                                 base::Unretained(core_.get()), url, post_data));

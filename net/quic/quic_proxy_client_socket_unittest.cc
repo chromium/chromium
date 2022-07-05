@@ -188,7 +188,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         destination_endpoint_(url::kHttpsScheme, kOriginHost, kOriginPort),
         http_auth_cache_(
             false /* key_server_entries_by_network_isolation_key */),
-        host_resolver_(new MockCachingHostResolver()),
+        host_resolver_(std::make_unique<MockCachingHostResolver>()),
         http_auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     IPAddress ip(192, 0, 2, 33);
@@ -210,8 +210,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   }
 
   void Initialize() {
-    std::unique_ptr<MockUDPClientSocket> socket(new MockUDPClientSocket(
-        mock_quic_data_.InitializeAndGetSequencedSocketData(), NetLog::Get()));
+    auto socket = std::make_unique<MockUDPClientSocket>(
+        mock_quic_data_.InitializeAndGetSequencedSocketData(), NetLog::Get());
     socket->Connect(peer_addr_);
     runner_ = new TestTaskRunner(&clock_);
     send_algorithm_ = new quic::test::MockSendAlgorithm();

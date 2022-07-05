@@ -437,7 +437,7 @@ int SocketPosix::DoAccept(std::unique_ptr<SocketPosix>* socket) {
   if (new_socket < 0)
     return MapAcceptError(errno);
 
-  std::unique_ptr<SocketPosix> accepted_socket(new SocketPosix);
+  auto accepted_socket = std::make_unique<SocketPosix>();
   int rv = accepted_socket->AdoptConnectedSocket(new_socket, new_peer_address);
   if (rv != OK)
     return rv;

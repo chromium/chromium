@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/record_rdata.h"
@@ -82,9 +83,9 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   if (!rdata.get() && !unrecognized_type)
     return nullptr;
 
-  return std::unique_ptr<const RecordParsed>(
-      new RecordParsed(record.name, record.type, record.klass, record.ttl,
-                       std::move(rdata), time_created));
+  return base::WrapUnique(new RecordParsed(record.name, record.type,
+                                           record.klass, record.ttl,
+                                           std::move(rdata), time_created));
 }
 
 bool RecordParsed::IsEqual(const RecordParsed* other, bool is_mdns) const {

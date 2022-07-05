@@ -17,7 +17,7 @@ TEST(DiskCacheStatsTest, Init) {
 TEST(DiskCacheStatsTest, InitWithEmptyBuffer) {
   disk_cache::Stats stats;
   int required_len = stats.StorageSize();
-  std::unique_ptr<char[]> storage(new char[required_len]);
+  auto storage = std::make_unique<char[]>(required_len);
   memset(storage.get(), 0, required_len);
 
   ASSERT_TRUE(stats.Init(storage.get(), required_len, disk_cache::Addr()));
@@ -27,7 +27,7 @@ TEST(DiskCacheStatsTest, InitWithEmptyBuffer) {
 TEST(DiskCacheStatsTest, FailsInit) {
   disk_cache::Stats stats;
   int required_len = stats.StorageSize();
-  std::unique_ptr<char[]> storage(new char[required_len]);
+  auto storage = std::make_unique<char[]>(required_len);
   memset(storage.get(), 0, required_len);
 
   // Try a small buffer.
@@ -41,7 +41,7 @@ TEST(DiskCacheStatsTest, FailsInit) {
 }
 
 TEST(DiskCacheStatsTest, SaveRestore) {
-  std::unique_ptr<disk_cache::Stats> stats(new disk_cache::Stats);
+  auto stats = std::make_unique<disk_cache::Stats>();
 
   disk_cache::Addr addr(5);
   ASSERT_TRUE(stats->Init(nullptr, 0, addr));
@@ -52,7 +52,7 @@ TEST(DiskCacheStatsTest, SaveRestore) {
   stats->OnEvent(disk_cache::Stats::DOOM_RECENT);
 
   int required_len = stats->StorageSize();
-  std::unique_ptr<char[]> storage(new char[required_len]);
+  auto storage = std::make_unique<char[]>(required_len);
   disk_cache::Addr out_addr;
   int real_len = stats->SerializeStats(storage.get(), required_len, &out_addr);
   EXPECT_GE(required_len, real_len);

@@ -301,8 +301,8 @@ TEST_F(BaseNetworkChangeNotifierAndroidTest,
             delegate_.GetCurrentConnectionType());
   // Instantiate another delegate to validate that it uses the actual
   // connection type at construction.
-  std::unique_ptr<NetworkChangeNotifierDelegateAndroid> other_delegate(
-      new NetworkChangeNotifierDelegateAndroid());
+  auto other_delegate =
+      std::make_unique<NetworkChangeNotifierDelegateAndroid>();
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
             other_delegate->GetCurrentConnectionType());
 

@@ -238,8 +238,8 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
   HttpResponseBodyDrainerTest()
       : proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
-        ssl_config_service_(new SSLConfigServiceDefaults),
-        http_server_properties_(new HttpServerProperties()),
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
+        http_server_properties_(std::make_unique<HttpServerProperties>()),
         session_(CreateNetworkSession()),
         mock_stream_(new MockHttpStream(&result_waiter_)),
         drainer_(new HttpResponseBodyDrainer(mock_stream_)) {}

@@ -593,9 +593,9 @@ int MultiThreadedProxyResolverFactory::CreateProxyResolver(
     std::unique_ptr<ProxyResolver>* resolver,
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request) {
-  std::unique_ptr<Job> job(new Job(this, pac_script, resolver,
+  auto job = std::make_unique<Job>(this, pac_script, resolver,
                                    CreateProxyResolverFactory(),
-                                   max_num_threads_, std::move(callback)));
+                                   max_num_threads_, std::move(callback));
   jobs_.insert(job.get());
   *request = std::move(job);
   return ERR_IO_PENDING;

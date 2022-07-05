@@ -361,21 +361,22 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
 
 TEST_F(SOCKS5ClientSocketTest, Tag) {
   StaticSocketDataProvider data;
-  MockTaggingStreamSocket* tagging_sock =
-      new MockTaggingStreamSocket(std::unique_ptr<StreamSocket>(
-          new MockTCPClientSocket(address_list_, NetLog::Get(), &data)));
+  auto tagging_sock = std::make_unique<MockTaggingStreamSocket>(
+      std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
+                                            &data));
+  MockTaggingStreamSocket* raw_tagging_sock = tagging_sock.get();
 
   // |socket| takes ownership of |tagging_sock|, but keep a non-owning pointer
   // to it.
-  SOCKS5ClientSocket socket(std::unique_ptr<StreamSocket>(tagging_sock),
+  SOCKS5ClientSocket socket(std::move(tagging_sock),
                             HostPortPair("localhost", 80),
                             TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  EXPECT_EQ(tagging_sock->tag(), SocketTag());
+  EXPECT_EQ(raw_tagging_sock->tag(), SocketTag());
 #if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
-  EXPECT_EQ(tagging_sock->tag(), tag);
+  EXPECT_EQ(raw_tagging_sock->tag(), tag);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

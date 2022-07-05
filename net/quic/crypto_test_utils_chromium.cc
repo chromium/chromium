@@ -38,8 +38,7 @@ using std::string;
 namespace net::test {
 
 std::unique_ptr<quic::ProofSource> ProofSourceForTestingChromium() {
-  std::unique_ptr<net::ProofSourceChromium> source(
-      new net::ProofSourceChromium());
+  auto source = std::make_unique<net::ProofSourceChromium>();
   base::FilePath certs_dir = net::GetTestCertsDirectory();
   CHECK(source->Initialize(certs_dir.AppendASCII("quic-chain.pem"),
                            certs_dir.AppendASCII("quic-leaf-cert.key"),

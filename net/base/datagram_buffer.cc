@@ -38,7 +38,7 @@ void DatagramBufferPool::Dequeue(DatagramBuffers* buffers) {
 }
 
 DatagramBuffer::DatagramBuffer(size_t max_buffer_size)
-    : data_(new char[max_buffer_size]) {}
+    : data_(std::make_unique<char[]>(max_buffer_size)) {}
 
 DatagramBuffer::~DatagramBuffer() = default;
 

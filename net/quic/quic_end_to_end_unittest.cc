@@ -90,7 +90,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   QuicEndToEndTest()
       : host_resolver_impl_(CreateResolverImpl()),
         host_resolver_(std::move(host_resolver_impl_)),
-        ssl_config_service_(new SSLConfigServiceDefaults),
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()) {

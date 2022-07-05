@@ -18,8 +18,8 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::TestCompletionCallback callback;
   FuzzedDataProvider data_provider(data, size);
-  std::unique_ptr<net::FuzzedSourceStream> fuzzed_source_stream(
-      new net::FuzzedSourceStream(&data_provider));
+  auto fuzzed_source_stream =
+      std::make_unique<net::FuzzedSourceStream>(&data_provider);
   std::unique_ptr<net::SourceStream> brotli_stream =
       net::CreateBrotliSourceStream(std::move(fuzzed_source_stream));
   while (true) {

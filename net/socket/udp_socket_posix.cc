@@ -299,7 +299,7 @@ int UDPSocketPosix::GetPeerAddress(IPEndPoint* address) const {
     SockaddrStorage storage;
     if (getpeername(socket_, storage.addr, &storage.addr_len))
       return MapSystemError(errno);
-    std::unique_ptr<IPEndPoint> address(new IPEndPoint());
+    auto address = std::make_unique<IPEndPoint>();
     if (!address->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
     remote_address_ = std::move(address);
@@ -319,7 +319,7 @@ int UDPSocketPosix::GetLocalAddress(IPEndPoint* address) const {
     SockaddrStorage storage;
     if (getsockname(socket_, storage.addr, &storage.addr_len))
       return MapSystemError(errno);
-    std::unique_ptr<IPEndPoint> address(new IPEndPoint());
+    auto address = std::make_unique<IPEndPoint>();
     if (!address->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
     local_address_ = std::move(address);

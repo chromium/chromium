@@ -114,8 +114,7 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
   }
 
   void SetUp() override {
-    std::unique_ptr<MockSimpleIndexFile> index_file(
-        new MockSimpleIndexFile(CacheType()));
+    auto index_file = std::make_unique<MockSimpleIndexFile>(CacheType());
     index_file_ = index_file->AsWeakPtr();
     index_ =
         std::make_unique<SimpleIndex>(/* io_thread = */ nullptr,
@@ -263,13 +262,13 @@ TEST_F(SimpleIndexTest, IndexSizeCorrectOnMerge) {
   index()->UpdateEntrySize(hashes_.at<4>(), 4u * kSizeResolution);
   EXPECT_EQ(9u * kSizeResolution, index()->cache_size_);
   {
-    std::unique_ptr<SimpleIndexLoadResult> result(new SimpleIndexLoadResult());
+    auto result = std::make_unique<SimpleIndexLoadResult>();
     result->did_load = true;
     index()->MergeInitializingSet(std::move(result));
   }
   EXPECT_EQ(9u * kSizeResolution, index()->cache_size_);
   {
-    std::unique_ptr<SimpleIndexLoadResult> result(new SimpleIndexLoadResult());
+    auto result = std::make_unique<SimpleIndexLoadResult>();
     result->did_load = true;
     const uint64_t new_hash_key = hashes_.at<11>();
     result->entries.insert(std::make_pair(

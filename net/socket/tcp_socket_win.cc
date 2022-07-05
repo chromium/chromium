@@ -804,8 +804,8 @@ int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
     net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT, net_error);
     return net_error;
   }
-  std::unique_ptr<TCPSocketWin> tcp_socket(
-      new TCPSocketWin(nullptr, net_log_.net_log(), net_log_.source()));
+  auto tcp_socket = std::make_unique<TCPSocketWin>(nullptr, net_log_.net_log(),
+                                                   net_log_.source());
   int adopt_result = tcp_socket->AdoptConnectedSocket(new_socket, ip_end_point);
   if (adopt_result != OK) {
     net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT,

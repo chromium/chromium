@@ -132,7 +132,7 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::set<HttpAuth::Scheme> disabled_schemes;
   MockAllowHttpAuthPreferences http_auth_preferences;
-  std::unique_ptr<HostResolver> host_resolver(new MockHostResolver());
+  auto host_resolver = std::make_unique<MockHostResolver>();
   std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
       HttpAuthHandlerFactory::CreateDefault());
   http_auth_handler_factory->SetHttpAuthPreferences(kNegotiateAuthScheme,

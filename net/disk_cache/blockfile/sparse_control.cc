@@ -130,7 +130,7 @@ void ChildrenDeleter::ReadData(disk_cache::Addr address, int len) {
   size_t file_offset = address.start_block() * address.BlockSize() +
                        disk_cache::kBlockHeaderSize;
 
-  buffer_.reset(new char[len]);
+  buffer_ = std::make_unique<char[]>(len);
   bool completed;
   if (!file->Read(buffer_.get(), len, file_offset, this, &completed))
     return Release();

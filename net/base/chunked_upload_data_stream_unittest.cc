@@ -339,8 +339,7 @@ TEST(ChunkedUploadDataStreamTest, RewindWhileReading) {
 
 // Check the behavior of ChunkedUploadDataStream::Writer.
 TEST(ChunkedUploadDataStreamTest, ChunkedUploadDataStreamWriter) {
-  std::unique_ptr<ChunkedUploadDataStream> stream(
-      new ChunkedUploadDataStream(0));
+  auto stream = std::make_unique<ChunkedUploadDataStream>(0);
   std::unique_ptr<ChunkedUploadDataStream::Writer> writer(
       stream->CreateWriter());
 

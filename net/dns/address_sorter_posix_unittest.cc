@@ -157,8 +157,7 @@ class TestSocketFactory : public ClientSocketFactory {
       DatagramSocket::BindType,
       NetLog*,
       const NetLogSource&) override {
-    return std::unique_ptr<DatagramClientSocket>(
-        new TestUDPClientSocket(&mapping_));
+    return std::make_unique<TestUDPClientSocket>(&mapping_);
   }
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList&,

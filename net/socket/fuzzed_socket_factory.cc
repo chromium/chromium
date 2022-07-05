@@ -126,8 +126,7 @@ FuzzedSocketFactory::CreateTransportClientSocket(
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
     const NetLogSource& source) {
-  std::unique_ptr<FuzzedSocket> socket(
-      new FuzzedSocket(data_provider_, net_log));
+  auto socket = std::make_unique<FuzzedSocket>(data_provider_, net_log);
   socket->set_fuzz_connect_result(fuzz_connect_result_);
   // Just use the first address.
   socket->set_remote_address(*addresses.begin());

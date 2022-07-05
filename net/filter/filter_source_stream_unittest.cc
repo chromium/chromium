@@ -257,7 +257,7 @@ INSTANTIATE_TEST_SUITE_P(FilterSourceStreamTests,
 // upstream. In this case, FilterSourceStream should continue reading from
 // upstream to complete filtering.
 TEST_P(FilterSourceStreamTest, FilterDataReturnNoBytesExceptLast) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input("hello, world!");
   size_t read_size = 2;
   size_t num_reads = 0;
@@ -293,7 +293,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnNoBytesExceptLast) {
 // Tests that FilterData() returns 0 byte read because the upstream gives an
 // EOF.
 TEST_P(FilterSourceStreamTest, FilterDataReturnNoByte) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input;
   source->AddReadResult(input.data(), 0, OK, GetParam());
   MockSourceStream* mock_stream = source.get();
@@ -310,7 +310,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnNoByte) {
 // Tests that FilterData() returns 0 byte filtered even though the upstream
 // produces data.
 TEST_P(FilterSourceStreamTest, FilterDataOutputNoData) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   size_t read_size = 2;
   size_t num_reads = 0;
@@ -339,7 +339,7 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputNoData) {
 // Tests that FilterData() returns non-zero bytes because the upstream
 // returns data.
 TEST_P(FilterSourceStreamTest, FilterDataReturnData) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   size_t read_size = 2;
   // Add a sequence of small reads.
@@ -371,7 +371,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnData) {
 
 // Tests that FilterData() returns more data than what it consumed.
 TEST_P(FilterSourceStreamTest, FilterDataReturnMoreData) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   size_t read_size = 2;
   // Add a sequence of small reads.
@@ -405,7 +405,7 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnMoreData) {
 // Tests that FilterData() returns non-zero bytes and output buffer size is
 // smaller than the number of bytes read from the upstream.
 TEST_P(FilterSourceStreamTest, FilterDataOutputSpace) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   size_t read_size = 2;
   // Add a sequence of small reads.
@@ -441,7 +441,7 @@ TEST_P(FilterSourceStreamTest, FilterDataOutputSpace) {
 // Tests that FilterData() returns an error code, which is then surfaced as
 // the result of calling Read().
 TEST_P(FilterSourceStreamTest, FilterDataReturnError) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input;
   source->AddReadResult(input.data(), 0, OK, GetParam());
   scoped_refptr<IOBufferWithSize> output_buffer =
@@ -460,21 +460,22 @@ TEST_P(FilterSourceStreamTest, FilterDataReturnError) {
 }
 
 TEST_P(FilterSourceStreamTest, FilterChaining) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   source->AddReadResult(input.data(), input.length(), OK, GetParam());
   source->AddReadResult(input.data(), 0, OK, GetParam());  // EOF
 
   MockSourceStream* mock_stream = source.get();
-  std::unique_ptr<PassThroughFilterSourceStream> pass_through_source(
-      new PassThroughFilterSourceStream(std::move(source)));
+  auto pass_through_source =
+      std::make_unique<PassThroughFilterSourceStream>(std::move(source));
   pass_through_source->set_type_string("FIRST_PASS_THROUGH");
-  std::unique_ptr<NeedsAllInputFilterSourceStream> needs_all_input_source(
-      new NeedsAllInputFilterSourceStream(std::move(pass_through_source),
-                                          input.length()));
+  auto needs_all_input_source =
+      std::make_unique<NeedsAllInputFilterSourceStream>(
+          std::move(pass_through_source), input.length());
   needs_all_input_source->set_type_string("NEEDS_ALL");
-  std::unique_ptr<PassThroughFilterSourceStream> second_pass_through_source(
-      new PassThroughFilterSourceStream(std::move(needs_all_input_source)));
+  auto second_pass_through_source =
+      std::make_unique<PassThroughFilterSourceStream>(
+          std::move(needs_all_input_source));
   second_pass_through_source->set_type_string("SECOND_PASS_THROUGH");
   scoped_refptr<IOBufferWithSize> output_buffer =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -500,7 +501,7 @@ TEST_P(FilterSourceStreamTest, FilterChaining) {
 // Tests that FilterData() returns multiple times for a single MockStream
 // read, because there is not enough output space.
 TEST_P(FilterSourceStreamTest, OutputSpaceForOneRead) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   source->AddReadResult(input.data(), input.length(), OK, GetParam());
   // Add a 0 byte read to signal EOF.
@@ -530,7 +531,7 @@ TEST_P(FilterSourceStreamTest, OutputSpaceForOneRead) {
 // Tests that FilterData() returns multiple times for a single MockStream
 // read, because the filter returns one byte at a time.
 TEST_P(FilterSourceStreamTest, ThrottleSourceStream) {
-  std::unique_ptr<MockSourceStream> source(new MockSourceStream);
+  auto source = std::make_unique<MockSourceStream>();
   std::string input = "hello, world!";
   source->AddReadResult(input.data(), input.length(), OK, GetParam());
   // Add a 0 byte read to signal EOF.

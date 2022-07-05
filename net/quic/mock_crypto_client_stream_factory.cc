@@ -15,7 +15,7 @@ namespace net {
 MockCryptoClientStreamFactory::~MockCryptoClientStreamFactory() = default;
 
 MockCryptoClientStreamFactory::MockCryptoClientStreamFactory()
-    : config_(new quic::QuicConfig()) {}
+    : config_(std::make_unique<quic::QuicConfig>()) {}
 
 void MockCryptoClientStreamFactory::SetConfig(const quic::QuicConfig& config) {
   config_ = std::make_unique<quic::QuicConfig>(config);

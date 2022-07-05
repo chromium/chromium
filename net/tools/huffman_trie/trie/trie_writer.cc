@@ -105,8 +105,8 @@ bool TrieWriter::WriteEntries(const TrieEntries& entries,
 
   ReversedEntries reversed_entries;
   for (auto* const entry : entries) {
-    std::unique_ptr<ReversedEntry> reversed_entry(
-        new ReversedEntry(ReverseName(entry->name()), entry));
+    auto reversed_entry =
+        std::make_unique<ReversedEntry>(ReverseName(entry->name()), entry);
     reversed_entries.push_back(std::move(reversed_entry));
   }
 

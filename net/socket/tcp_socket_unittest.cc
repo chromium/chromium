@@ -178,8 +178,8 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     TestCompletionCallback connect_callback;
 
-    std::unique_ptr<TestSocketPerformanceWatcher> watcher(
-        new TestSocketPerformanceWatcher(should_notify_updated_rtt));
+    auto watcher = std::make_unique<TestSocketPerformanceWatcher>(
+        should_notify_updated_rtt);
     TestSocketPerformanceWatcher* watcher_ptr = watcher.get();
 
     TCPSocket connecting_socket(std::move(watcher), nullptr, NetLogSource());

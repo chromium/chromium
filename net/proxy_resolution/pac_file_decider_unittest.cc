@@ -852,8 +852,7 @@ TEST(PacFileDeciderTest, DhcpCancelledByDestructor) {
   Rules rules;
   RuleBasedPacFileFetcher fetcher(&rules);
 
-  std::unique_ptr<AsyncFailDhcpFetcher> dhcp_fetcher(
-      new AsyncFailDhcpFetcher());
+  auto dhcp_fetcher = std::make_unique<AsyncFailDhcpFetcher>();
 
   ProxyConfig config;
   config.set_auto_detect(true);

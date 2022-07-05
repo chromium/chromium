@@ -4168,13 +4168,13 @@ TEST_F(DiskCacheBackendTest, BlockfileCacheOverSimpleCache) {
   cache_.reset();
 
   // Check that the |BackendImpl| does not favor this structure.
-  disk_cache::BackendImpl* cache = new disk_cache::BackendImpl(
+  auto cache = std::make_unique<disk_cache::BackendImpl>(
       cache_path_, nullptr, nullptr, net::DISK_CACHE, nullptr);
   cache->SetUnitTestMode();
   net::TestCompletionCallback cb;
   cache->Init(cb.callback());
   EXPECT_NE(net::OK, cb.WaitForResult());
-  delete cache;
+  cache.reset();
   DisableIntegrityCheck();
 }
 

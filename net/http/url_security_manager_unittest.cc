@@ -46,8 +46,8 @@ const TestData kTestDataList[] = {
 }  // namespace
 
 TEST(URLSecurityManager, UseDefaultCredentials) {
-  std::unique_ptr<HttpAuthFilter> auth_filter(
-      new HttpAuthFilterAllowlist(kTestAuthAllowlist));
+  auto auth_filter =
+      std::make_unique<HttpAuthFilterAllowlist>(kTestAuthAllowlist);
   ASSERT_TRUE(auth_filter);
   // The URL security manager takes ownership of |auth_filter|.
   std::unique_ptr<URLSecurityManager> url_security_manager(
@@ -68,8 +68,8 @@ TEST(URLSecurityManager, UseDefaultCredentials) {
 }
 
 TEST(URLSecurityManager, CanDelegate) {
-  std::unique_ptr<HttpAuthFilter> auth_filter(
-      new HttpAuthFilterAllowlist(kTestAuthAllowlist));
+  auto auth_filter =
+      std::make_unique<HttpAuthFilterAllowlist>(kTestAuthAllowlist);
   ASSERT_TRUE(auth_filter);
   // The URL security manager takes ownership of |auth_filter|.
   std::unique_ptr<URLSecurityManager> url_security_manager(

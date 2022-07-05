@@ -308,8 +308,7 @@ class MemBackendImpl::MemIterator final : public Backend::Iterator {
 };
 
 std::unique_ptr<Backend::Iterator> MemBackendImpl::CreateIterator() {
-  return std::unique_ptr<Backend::Iterator>(
-      new MemIterator(weak_factory_.GetWeakPtr()));
+  return std::make_unique<MemIterator>(weak_factory_.GetWeakPtr());
 }
 
 void MemBackendImpl::OnExternalCacheHit(const std::string& key) {

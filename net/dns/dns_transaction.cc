@@ -1744,8 +1744,7 @@ DnsTransactionFactory::~DnsTransactionFactory() = default;
 // static
 std::unique_ptr<DnsTransactionFactory> DnsTransactionFactory::CreateFactory(
     DnsSession* session) {
-  return std::unique_ptr<DnsTransactionFactory>(
-      new DnsTransactionFactoryImpl(session));
+  return std::make_unique<DnsTransactionFactoryImpl>(session);
 }
 
 }  // namespace net

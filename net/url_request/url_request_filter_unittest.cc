@@ -67,8 +67,7 @@ TEST(URLRequestFilter, BasicMatching) {
 
   // Check AddUrlInterceptor checks for invalid URLs.
   EXPECT_FALSE(filter->AddUrlInterceptor(
-      GURL(),
-      std::unique_ptr<URLRequestInterceptor>(new TestURLRequestInterceptor())));
+      GURL(), std::make_unique<TestURLRequestInterceptor>()));
 
   // Check URLRequestInterceptor URL matching.
   filter->ClearHandlers();

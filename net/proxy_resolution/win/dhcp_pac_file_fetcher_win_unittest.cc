@@ -53,7 +53,7 @@ class RealFetchTester {
  public:
   RealFetchTester()
       : context_(CreateTestURLRequestContextBuilder()->Build()),
-        fetcher_(new DhcpPacFileFetcherWin(context_.get())) {
+        fetcher_(std::make_unique<DhcpPacFileFetcherWin>(context_.get())) {
     // Make sure the test ends.
     timeout_.Start(FROM_HERE, base::Seconds(5), this,
                    &RealFetchTester::OnTimeout);
@@ -308,9 +308,8 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
                                    int result,
                                    std::u16string pac_script,
                                    base::TimeDelta fetch_delay) {
-    std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-        new DummyDhcpPacFileAdapterFetcher(url_request_context(),
-                                           GetTaskRunner()));
+    auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+        url_request_context(), GetTaskRunner());
     adapter_fetcher->Configure(
         did_finish, result, pac_script, fetch_delay.InMilliseconds());
     PushBackAdapter(adapter_name, adapter_fetcher.release());
@@ -434,9 +433,8 @@ class FetcherClient {
 // the ReuseFetcher test at the bottom.
 void TestNormalCaseURLConfiguredOneAdapter(FetcherClient* client) {
   auto context = CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-      new DummyDhcpPacFileAdapterFetcher(context.get(),
-                                         client->GetTaskRunner()));
+  auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+      context.get(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
   client->fetcher_.PushBackAdapter("a", adapter_fetcher.release());
   client->RunTest();
@@ -607,9 +605,8 @@ TEST(DhcpPacFileFetcherWin, ShortCircuitLessPreferredAdapters) {
 
 void TestImmediateCancel(FetcherClient* client) {
   auto context = CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-      new DummyDhcpPacFileAdapterFetcher(context.get(),
-                                         client->GetTaskRunner()));
+  auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+      context.get(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
   client->fetcher_.PushBackAdapter("a", adapter_fetcher.release());
   client->RunTest();
@@ -669,9 +666,8 @@ TEST(DhcpPacFileFetcherWin, OnShutdown) {
 
   FetcherClient client;
   auto context = CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-      new DummyDhcpPacFileAdapterFetcher(context.get(),
-                                         client.GetTaskRunner()));
+  auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+      context.get(), client.GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
   client.fetcher_.PushBackAdapter("a", adapter_fetcher.release());
   client.RunTest();

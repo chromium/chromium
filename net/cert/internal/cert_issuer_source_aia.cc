@@ -195,7 +195,7 @@ void CertIssuerSourceAia::AsyncGetIssuersOf(const ParsedCertificate* cert,
   if (urls.empty())
     return;
 
-  std::unique_ptr<AiaRequest> aia_request(new AiaRequest());
+  auto aia_request = std::make_unique<AiaRequest>();
 
   for (const auto& url : urls) {
     // TODO(mattm): add synchronous failure mode to FetchCaIssuers interface so

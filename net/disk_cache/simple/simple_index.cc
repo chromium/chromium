@@ -256,7 +256,7 @@ std::unique_ptr<SimpleIndex::HashList> SimpleIndex::GetEntriesBetween(
     end_time += EntryMetadata::GetUpperEpsilonForTimeComparisons();
   DCHECK(end_time >= initial_time);
 
-  std::unique_ptr<HashList> ret_hashes(new HashList());
+  auto ret_hashes = std::make_unique<HashList>();
   for (const auto& entry : entries_set_) {
     const EntryMetadata& metadata = entry.second;
     base::Time entry_time = metadata.GetLastUsedTime();

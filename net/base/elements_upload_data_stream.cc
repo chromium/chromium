@@ -28,8 +28,8 @@ std::unique_ptr<UploadDataStream> ElementsUploadDataStream::CreateWithReader(
     int64_t identifier) {
   std::vector<std::unique_ptr<UploadElementReader>> readers;
   readers.push_back(std::move(reader));
-  return std::unique_ptr<UploadDataStream>(
-      new ElementsUploadDataStream(std::move(readers), identifier));
+  return std::make_unique<ElementsUploadDataStream>(std::move(readers),
+                                                    identifier);
 }
 
 int ElementsUploadDataStream::InitInternal(const NetLogWithSource& net_log) {

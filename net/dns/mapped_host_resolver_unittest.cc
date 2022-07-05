@@ -40,15 +40,15 @@ TEST(MappedHostResolverTest, Inclusion) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddSimulatedFailure("*google.com");
   resolver_impl->rules()->AddRule("baz.com", "192.168.1.5");
   resolver_impl->rules()->AddRule("foo.com", "192.168.1.8");
   resolver_impl->rules()->AddRule("proxy", "192.168.1.11");
 
   // Create a remapped resolver that uses |resolver_impl|.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
 
   // Try resolving "www.google.com:80". There are no mappings yet, so this
   // hits |resolver_impl| and fails.
@@ -108,12 +108,12 @@ TEST(MappedHostResolverTest, MapsHostWithScheme) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("remapped.test", "192.168.1.22");
 
   // Create a remapped resolver that uses `resolver_impl`.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
   ASSERT_TRUE(resolver->AddRuleFromString("MAP to.map.test remapped.test"));
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -134,12 +134,12 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToIpLiteral) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("host.test", "192.168.1.22");
 
   // Create a remapped resolver that uses `resolver_impl`.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
   ASSERT_TRUE(resolver->AddRuleFromString("MAP host.test [1234:5678::000A]"));
 
   IPAddress expected_address;
@@ -163,12 +163,12 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToNonCanon) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("remapped.test", "192.168.1.23");
 
   // Create a remapped resolver that uses `resolver_impl`.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
   ASSERT_TRUE(resolver->AddRuleFromString("MAP host.test reMapped.TEST"));
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -189,12 +189,12 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToNameWithPort) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("remapped.test", "192.168.1.24");
 
   // Create a remapped resolver that uses `resolver_impl`.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
   ASSERT_TRUE(resolver->AddRuleFromString("MAP host.test remapped.test:258"));
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -215,12 +215,12 @@ TEST(MappedHostResolverTest, HandlesUnmappedHostWithScheme) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("unmapped.test", "192.168.1.23");
 
   // Create a remapped resolver that uses `resolver_impl`.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
@@ -241,13 +241,13 @@ TEST(MappedHostResolverTest, Exclusion) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("baz", "192.168.1.5");
   resolver_impl->rules()->AddRule("www.google.com", "192.168.1.3");
 
   // Create a remapped resolver that uses |resolver_impl|.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
 
   TestCompletionCallback callback;
 
@@ -284,13 +284,13 @@ TEST(MappedHostResolverTest, SetRulesFromString) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("baz", "192.168.1.7");
   resolver_impl->rules()->AddRule("bar", "192.168.1.9");
 
   // Create a remapped resolver that uses |resolver_impl|.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
 
   TestCompletionCallback callback;
 
@@ -324,8 +324,8 @@ TEST(MappedHostResolverTest, SetRulesFromString) {
 TEST(MappedHostResolverTest, ParseInvalidRules) {
   base::test::TaskEnvironment task_environment;
 
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::unique_ptr<HostResolver>()));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::unique_ptr<HostResolver>());
 
   EXPECT_FALSE(resolver->AddRuleFromString("xyz"));
   EXPECT_FALSE(resolver->AddRuleFromString(std::string()));
@@ -342,11 +342,11 @@ TEST(MappedHostResolverTest, MapToError) {
   base::test::TaskEnvironment task_environment;
 
   // Outstanding request.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("*", "192.168.1.5");
 
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
 
   // Remap *.google.com to resolving failures.
   EXPECT_TRUE(resolver->AddRuleFromString("MAP *.google.com ~NOTFOUND"));
@@ -377,12 +377,12 @@ TEST(MappedHostResolverTest, MapHostWithSchemeToError) {
   base::test::TaskEnvironment task_environment;
 
   // Create a mock host resolver, with specific hostname to IP mappings.
-  std::unique_ptr<MockHostResolver> resolver_impl(new MockHostResolver());
+  auto resolver_impl = std::make_unique<MockHostResolver>();
   resolver_impl->rules()->AddRule("host.test", "192.168.1.25");
 
   // Create a remapped resolver that uses `resolver_impl`.
-  std::unique_ptr<MappedHostResolver> resolver(
-      new MappedHostResolver(std::move(resolver_impl)));
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
   ASSERT_TRUE(resolver->AddRuleFromString("MAP host.test ~NOTFOUND"));
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =

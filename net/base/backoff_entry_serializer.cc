@@ -134,7 +134,7 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
     return nullptr;
   }
 
-  std::unique_ptr<BackoffEntry> entry(new BackoffEntry(policy, tick_clock));
+  auto entry = std::make_unique<BackoffEntry>(policy, tick_clock);
 
   for (int n = 0; n < failure_count; n++)
     entry->InformOfRequest(false);

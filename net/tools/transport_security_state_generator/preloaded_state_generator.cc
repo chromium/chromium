@@ -144,9 +144,8 @@ std::string PreloadedStateGenerator::Generate(
   std::vector<std::unique_ptr<TransportSecurityStateTrieEntry>> trie_entries;
   std::vector<huffman_trie::TrieEntry*> raw_trie_entries;
   for (const auto& entry : entries) {
-    std::unique_ptr<TransportSecurityStateTrieEntry> trie_entry(
-        new TransportSecurityStateTrieEntry(expect_ct_report_uri_map,
-                                            pinsets_map, entry.get()));
+    auto trie_entry = std::make_unique<TransportSecurityStateTrieEntry>(
+        expect_ct_report_uri_map, pinsets_map, entry.get());
     raw_trie_entries.push_back(trie_entry.get());
     trie_entries.push_back(std::move(trie_entry));
   }

@@ -194,7 +194,7 @@ TEST_F(UnixDomainClientSocketTest, ConnectWithSocketDescriptor) {
   // to be sure it hasn't gotten accidentally closed.
   SockaddrStorage addr;
   ASSERT_TRUE(FillUnixAddress(socket_path_, false, &addr));
-  std::unique_ptr<SocketPosix> adopter(new SocketPosix);
+  auto adopter = std::make_unique<SocketPosix>();
   adopter->AdoptConnectedSocket(client_socket_fd, addr);
   UnixDomainClientSocket rewrapped_socket(std::move(adopter));
   EXPECT_TRUE(rewrapped_socket.IsConnected());

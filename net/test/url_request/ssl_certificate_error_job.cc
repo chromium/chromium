@@ -51,9 +51,8 @@ void SSLCertificateErrorJob::Start() {
 
 void SSLCertificateErrorJob::AddUrlHandler() {
   URLRequestFilter* filter = URLRequestFilter::GetInstance();
-  filter->AddHostnameInterceptor(
-      "https", kMockHostname,
-      std::unique_ptr<URLRequestInterceptor>(new MockJobInterceptor()));
+  filter->AddHostnameInterceptor("https", kMockHostname,
+                                 std::make_unique<MockJobInterceptor>());
 }
 
 GURL SSLCertificateErrorJob::GetMockUrl() {

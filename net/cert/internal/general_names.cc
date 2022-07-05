@@ -85,7 +85,7 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
     CertErrors* errors) {
   DCHECK(errors);
 
-  std::unique_ptr<GeneralNames> general_names(new GeneralNames());
+  auto general_names = std::make_unique<GeneralNames>();
 
   der::Parser sequence_parser(general_names_value);
   // The GeneralNames sequence should have at least 1 element.

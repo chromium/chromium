@@ -53,7 +53,7 @@ URLRequestTestJobBackedByFile::URLRequestTestJobBackedByFile(
     const scoped_refptr<base::TaskRunner>& file_task_runner)
     : URLRequestJob(request),
       file_path_(file_path),
-      stream_(new FileStream(file_task_runner)),
+      stream_(std::make_unique<FileStream>(file_task_runner)),
       file_task_runner_(file_task_runner) {}
 
 void URLRequestTestJobBackedByFile::Start() {

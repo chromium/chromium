@@ -233,8 +233,7 @@ class SingleShotMultiThreadedProxyResolverFactory
 class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
  public:
   void Init(size_t num_threads) {
-    std::unique_ptr<BlockableProxyResolverFactory> factory_owner(
-        new BlockableProxyResolverFactory);
+    auto factory_owner = std::make_unique<BlockableProxyResolverFactory>();
     factory_ = factory_owner.get();
     resolver_factory_ =
         std::make_unique<SingleShotMultiThreadedProxyResolverFactory>(

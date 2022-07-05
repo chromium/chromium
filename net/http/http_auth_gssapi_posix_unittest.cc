@@ -92,7 +92,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup) {
   // TODO(ahendrickson): Manipulate the libraries and paths to test each of the
   // libraries we expect, and also whether or not they have the interface
   // functions we want.
-  std::unique_ptr<GSSAPILibrary> gssapi(new GSSAPISharedLibrary(std::string()));
+  auto gssapi = std::make_unique<GSSAPISharedLibrary>(std::string());
   DCHECK(gssapi.get());
   EXPECT_TRUE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
@@ -117,8 +117,8 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup) {
 TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMissing) {
   RecordingNetLogObserver net_log_observer;
 
-  std::unique_ptr<GSSAPILibrary> gssapi(
-      new GSSAPISharedLibrary("/this/library/does/not/exist"));
+  auto gssapi =
+      std::make_unique<GSSAPISharedLibrary>("/this/library/does/not/exist");
   EXPECT_FALSE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
 
@@ -182,8 +182,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMethodsMissing) {
 }
 
 TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
-  std::unique_ptr<test::MockGSSAPILibrary> mock_library(
-      new test::MockGSSAPILibrary);
+  auto mock_library = std::make_unique<test::MockGSSAPILibrary>();
   DCHECK(mock_library.get());
   mock_library->Init(NetLogWithSource());
   const char kAuthResponse[] = "Mary had a little lamb";

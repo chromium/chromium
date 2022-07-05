@@ -238,7 +238,8 @@ const char kProxyGSettingsSchema[] = "org.gnome.system.proxy";
 class SettingGetterImplGSettings
     : public ProxyConfigServiceLinux::SettingGetter {
  public:
-  SettingGetterImplGSettings() : debounce_timer_(new base::OneShotTimer()) {}
+  SettingGetterImplGSettings()
+      : debounce_timer_(std::make_unique<base::OneShotTimer>()) {}
 
   SettingGetterImplGSettings(const SettingGetterImplGSettings&) = delete;
   SettingGetterImplGSettings& operator=(const SettingGetterImplGSettings&) =
@@ -516,7 +517,7 @@ int StringToIntOrDefault(base::StringPiece value, int default_value) {
 class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
  public:
   explicit SettingGetterImplKDE(base::Environment* env_var_getter)
-      : debounce_timer_(new base::OneShotTimer()),
+      : debounce_timer_(std::make_unique<base::OneShotTimer>()),
         env_var_getter_(env_var_getter) {
     // This has to be called on the UI thread (http://crbug.com/69057).
     base::ThreadRestrictions::ScopedAllowIO allow_io;
@@ -1234,8 +1235,7 @@ ProxyConfigServiceLinux::Delegate::Delegate(
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
 #if defined(USE_GIO)
       {
-      std::unique_ptr<SettingGetterImplGSettings> gs_getter(
-          new SettingGetterImplGSettings());
+      auto gs_getter = std::make_unique<SettingGetterImplGSettings>();
       // We have to load symbols and check the GNOME version in use to decide
       // if we should use the gsettings getter. See CheckVersion().
       if (gs_getter->CheckVersion(env_var_getter_.get()))

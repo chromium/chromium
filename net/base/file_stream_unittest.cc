@@ -98,8 +98,8 @@ TEST_F(FileStreamTest, OpenExplicitClose) {
 
 TEST_F(FileStreamTest, OpenExplicitCloseOrphaned) {
   TestCompletionCallback callback;
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   int rv = stream->Open(temp_file_path(), flags, callback.callback());
@@ -124,11 +124,11 @@ TEST_F(FileStreamTest, UseFileHandle) {
             base::WriteFile(temp_file_path(), kTestData, kTestDataSize));
   int flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
-  base::File file(temp_file_path(), flags);
+  base::File file1(temp_file_path(), flags);
 
   // Seek to the beginning of the file and read.
-  std::unique_ptr<FileStream> read_stream(
-      new FileStream(std::move(file), base::ThreadTaskRunnerHandle::Get()));
+  auto read_stream = std::make_unique<FileStream>(
+      std::move(file1), base::ThreadTaskRunnerHandle::Get());
   ASSERT_THAT(read_stream->Seek(0, callback64.callback()),
               IsError(ERR_IO_PENDING));
   ASSERT_EQ(0, callback64.WaitForResult());
@@ -144,10 +144,10 @@ TEST_F(FileStreamTest, UseFileHandle) {
   base::DeleteFile(temp_file_path());
   flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
           base::File::FLAG_ASYNC;
-  file.Initialize(temp_file_path(), flags);
+  base::File file2(temp_file_path(), flags);
 
-  std::unique_ptr<FileStream> write_stream(
-      new FileStream(std::move(file), base::ThreadTaskRunnerHandle::Get()));
+  auto write_stream = std::make_unique<FileStream>(
+      std::move(file2), base::ThreadTaskRunnerHandle::Get());
   ASSERT_THAT(write_stream->Seek(0, callback64.callback()),
               IsError(ERR_IO_PENDING));
   ASSERT_EQ(0, callback64.WaitForResult());
@@ -217,8 +217,8 @@ TEST_F(FileStreamTest, Read_EarlyDelete) {
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(temp_file_path(), &file_size));
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
@@ -304,8 +304,8 @@ TEST_F(FileStreamTest, Write) {
 }
 
 TEST_F(FileStreamTest, Write_EarlyDelete) {
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
               base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
@@ -375,8 +375,8 @@ TEST_F(FileStreamTest, BasicReadWrite) {
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(temp_file_path(), &file_size));
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
@@ -430,8 +430,8 @@ TEST_F(FileStreamTest, BasicWriteRead) {
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(temp_file_path(), &file_size));
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback callback;
@@ -599,8 +599,8 @@ TEST_F(FileStreamTest, WriteRead) {
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(temp_file_path(), &file_size));
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback open_callback;
@@ -705,8 +705,8 @@ TEST_F(FileStreamTest, WriteClose) {
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(temp_file_path(), &file_size));
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(base::ThreadTaskRunnerHandle::Get()));
+  auto stream =
+      std::make_unique<FileStream>(base::ThreadTaskRunnerHandle::Get());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
               base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
   TestCompletionCallback open_callback;
@@ -740,8 +740,7 @@ TEST_F(FileStreamTest, OpenAndDelete) {
   ASSERT_TRUE(worker_thread.Start());
 
   base::ScopedDisallowBlocking disallow_blocking;
-  std::unique_ptr<FileStream> stream(
-      new FileStream(worker_thread.task_runner()));
+  auto stream = std::make_unique<FileStream>(worker_thread.task_runner());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_WRITE |
               base::File::FLAG_ASYNC;
   TestCompletionCallback open_callback;
@@ -753,8 +752,7 @@ TEST_F(FileStreamTest, OpenAndDelete) {
   stream.reset();
 
   // Force an operation through the worker.
-  std::unique_ptr<FileStream> stream2(
-      new FileStream(worker_thread.task_runner()));
+  auto stream2 = std::make_unique<FileStream>(worker_thread.task_runner());
   TestCompletionCallback open_callback2;
   rv = stream2->Open(temp_file_path(), flags, open_callback2.callback());
   EXPECT_THAT(open_callback2.GetResult(rv), IsOk());
@@ -774,8 +772,8 @@ TEST_F(FileStreamTest, WriteError) {
   base::File file(temp_file_path(), flags);
   ASSERT_TRUE(file.IsValid());
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(std::move(file), base::ThreadTaskRunnerHandle::Get()));
+  auto stream = std::make_unique<FileStream>(
+      std::move(file), base::ThreadTaskRunnerHandle::Get());
 
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(1);
   buf->data()[0] = 0;
@@ -799,8 +797,8 @@ TEST_F(FileStreamTest, ReadError) {
   base::File file(temp_file_path(), flags);
   ASSERT_TRUE(file.IsValid());
 
-  std::unique_ptr<FileStream> stream(
-      new FileStream(std::move(file), base::ThreadTaskRunnerHandle::Get()));
+  auto stream = std::make_unique<FileStream>(
+      std::move(file), base::ThreadTaskRunnerHandle::Get());
 
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(1);
   TestCompletionCallback callback;

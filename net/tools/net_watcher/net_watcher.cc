@@ -180,8 +180,8 @@ int main(int argc, char* argv[]) {
       ignored_interfaces.insert(ignored_netif);
     }
   }
-  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
-      new net::NetworkChangeNotifierLinux(ignored_interfaces));
+  auto network_change_notifier =
+      std::make_unique<net::NetworkChangeNotifierLinux>(ignored_interfaces);
 #else
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
       net::NetworkChangeNotifier::CreateIfNeeded());

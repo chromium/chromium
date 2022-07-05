@@ -72,7 +72,7 @@ int UnixDomainServerSocket::BindAndListen(const std::string& socket_path,
     return ERR_ADDRESS_INVALID;
   }
 
-  std::unique_ptr<SocketPosix> socket(new SocketPosix);
+  auto socket = std::make_unique<SocketPosix>();
   int rv = socket->Open(AF_UNIX);
   DCHECK_NE(ERR_IO_PENDING, rv);
   if (rv != OK)

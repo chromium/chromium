@@ -181,8 +181,8 @@ class HttpServerTest : public TestWithTaskEnvironment,
   HttpServerTest() = default;
 
   void SetUp() override {
-    std::unique_ptr<ServerSocket> server_socket(
-        new TCPServerSocket(nullptr, NetLogSource()));
+    auto server_socket =
+        std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
     server_socket->ListenWithAddressAndPort("127.0.0.1", 0, 1);
     server_ = std::make_unique<HttpServer>(std::move(server_socket), this);
     ASSERT_THAT(server_->GetLocalAddress(&server_address_), IsOk());

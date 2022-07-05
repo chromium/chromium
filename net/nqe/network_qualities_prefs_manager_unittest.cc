@@ -82,7 +82,7 @@ TEST_F(NetworkQualitiesPrefManager, Write) {
   variation_params["force_effective_connection_type"] = "Slow-2G";
   TestNetworkQualityEstimator estimator(variation_params);
 
-  std::unique_ptr<TestPrefDelegate> prefs_delegate(new TestPrefDelegate());
+  auto prefs_delegate = std::make_unique<TestPrefDelegate>();
   TestPrefDelegate* prefs_delegate_ptr = prefs_delegate.get();
 
   NetworkQualitiesPrefsManager manager(std::move(prefs_delegate));
@@ -127,7 +127,7 @@ TEST_F(NetworkQualitiesPrefManager, WriteWhenMatchingExpectedECT) {
   variation_params["force_effective_connection_type"] = "Slow-2G";
   TestNetworkQualityEstimator estimator(variation_params);
 
-  std::unique_ptr<TestPrefDelegate> prefs_delegate(new TestPrefDelegate());
+  auto prefs_delegate = std::make_unique<TestPrefDelegate>();
   TestPrefDelegate* prefs_delegate_ptr = prefs_delegate.get();
 
   NetworkQualitiesPrefsManager manager(std::move(prefs_delegate));
@@ -192,7 +192,7 @@ TEST_F(NetworkQualitiesPrefManager, WriteAndReadWithMultipleNetworkIDs) {
   variation_params["force_effective_connection_type"] = "Slow-2G";
   TestNetworkQualityEstimator estimator(variation_params);
 
-  std::unique_ptr<TestPrefDelegate> prefs_delegate(new TestPrefDelegate());
+  auto prefs_delegate = std::make_unique<TestPrefDelegate>();
 
   NetworkQualitiesPrefsManager manager(std::move(prefs_delegate));
   manager.InitializeOnNetworkThread(&estimator);
@@ -267,7 +267,7 @@ TEST_F(NetworkQualitiesPrefManager, ClearPrefs) {
   variation_params["force_effective_connection_type"] = "Slow-2G";
   TestNetworkQualityEstimator estimator(variation_params);
 
-  std::unique_ptr<TestPrefDelegate> prefs_delegate(new TestPrefDelegate());
+  auto prefs_delegate = std::make_unique<TestPrefDelegate>();
 
   NetworkQualitiesPrefsManager manager(std::move(prefs_delegate));
   manager.InitializeOnNetworkThread(&estimator);

@@ -1151,8 +1151,9 @@ void DiskCacheLPMFuzzer::CreateBackend(
     bool simple_cache_wait_for_index) {
   if (cache_backend == disk_cache_fuzzer::FuzzCommands::IN_MEMORY) {
     MAYBE_PRINT << "Using in-memory cache." << std::endl;
-    mem_cache_ = new disk_cache::MemBackendImpl(nullptr);
-    cache_.reset(mem_cache_);
+    auto cache = std::make_unique<disk_cache::MemBackendImpl>(nullptr);
+    mem_cache_ = cache.get();
+    cache_ = std::move(cache);
     CHECK(cache_);
   } else if (cache_backend == disk_cache_fuzzer::FuzzCommands::SIMPLE) {
     MAYBE_PRINT << "Using simple cache." << std::endl;
@@ -1162,11 +1163,10 @@ void DiskCacheLPMFuzzer::CreateBackend(
     if (!simple_file_tracker_)
       simple_file_tracker_ =
           std::make_unique<disk_cache::SimpleFileTracker>(kMaxFdsSimpleCache);
-    std::unique_ptr<disk_cache::SimpleBackendImpl> simple_backend =
-        std::make_unique<disk_cache::SimpleBackendImpl>(
-            /*file_operations=*/nullptr, cache_path_,
-            /*cleanup_tracker=*/nullptr, simple_file_tracker_.get(), max_size_,
-            type, /*net_log=*/nullptr);
+    auto simple_backend = std::make_unique<disk_cache::SimpleBackendImpl>(
+        /*file_operations=*/nullptr, cache_path_,
+        /*cleanup_tracker=*/nullptr, simple_file_tracker_.get(), max_size_,
+        type, /*net_log=*/nullptr);
     simple_backend->Init(cb.callback());
     CHECK_EQ(cb.WaitForResult(), net::OK);
     simple_cache_impl_ = simple_backend.get();
@@ -1183,20 +1183,23 @@ void DiskCacheLPMFuzzer::CreateBackend(
     }
   } else {
     MAYBE_PRINT << "Using blockfile cache";
-
+    std::unique_ptr<disk_cache::BackendImpl> cache;
     if (mask) {
       MAYBE_PRINT << ", mask = " << mask << std::endl;
-      block_impl_ = new disk_cache::BackendImpl(cache_path_, mask,
-                                                /* runner = */ nullptr, type,
-                                                /* net_log = */ nullptr);
+      cache = std::make_unique<disk_cache::BackendImpl>(
+          cache_path_, mask,
+          /* runner = */ nullptr, type,
+          /* net_log = */ nullptr);
     } else {
       MAYBE_PRINT << "." << std::endl;
-      block_impl_ = new disk_cache::BackendImpl(cache_path_,
-                                                /* cleanup_tracker = */ nullptr,
-                                                /* runner = */ nullptr, type,
-                                                /* net_log = */ nullptr);
+      cache = std::make_unique<disk_cache::BackendImpl>(
+          cache_path_,
+          /* cleanup_tracker = */ nullptr,
+          /* runner = */ nullptr, type,
+          /* net_log = */ nullptr);
     }
-    cache_.reset(block_impl_);
+    block_impl_ = cache.get();
+    cache_ = std::move(cache);
     CHECK(cache_);
     // TODO(mpdenton) kNoRandom or not? It does a lot of waiting for IO. May be
     // good for avoiding leaks but tests a less realistic cache.

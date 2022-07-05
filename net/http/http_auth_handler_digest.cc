@@ -78,8 +78,7 @@ std::string HttpAuthHandlerDigest::FixedNonceGenerator::GenerateNonce() const {
 }
 
 HttpAuthHandlerDigest::Factory::Factory()
-    : nonce_generator_(new DynamicNonceGenerator()) {
-}
+    : nonce_generator_(std::make_unique<DynamicNonceGenerator>()) {}
 
 HttpAuthHandlerDigest::Factory::~Factory() = default;
 

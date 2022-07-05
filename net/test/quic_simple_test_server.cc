@@ -167,7 +167,7 @@ void StartQuicServerOnServerThread(const base::FilePath& test_files_root,
   // Set up server certs.
   base::FilePath directory;
   directory = test_files_root;
-  std::unique_ptr<ProofSourceChromium> proof_source(new ProofSourceChromium());
+  auto proof_source = std::make_unique<ProofSourceChromium>();
   CHECK(proof_source->Initialize(directory.AppendASCII("quic-chain.pem"),
                                  directory.AppendASCII("quic-leaf-cert.key"),
                                  base::FilePath()));

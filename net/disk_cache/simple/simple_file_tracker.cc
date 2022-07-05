@@ -63,7 +63,7 @@ void SimpleFileTracker::Register(const SimpleSynchronousEntry* owner,
     }
 
     if (!owners_files) {
-      candidates.emplace_back(new TrackedFiles());
+      candidates.emplace_back(std::make_unique<TrackedFiles>());
       owners_files = candidates.back().get();
       owners_files->owner = owner;
       owners_files->key = owner->entry_file_key();

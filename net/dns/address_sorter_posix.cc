@@ -276,7 +276,7 @@ void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
   std::vector<std::unique_ptr<DestinationInfo>> sort_list;
 
   for (const IPEndPoint& endpoint : endpoints) {
-    std::unique_ptr<DestinationInfo> info(new DestinationInfo());
+    auto info = std::make_unique<DestinationInfo>();
     info->endpoint = endpoint;
     info->scope = GetScope(ipv4_scope_table_, info->endpoint.address());
     info->precedence =
@@ -411,8 +411,8 @@ void AddressSorterPosix::FillPolicy(const IPAddress& address,
 
 // static
 std::unique_ptr<AddressSorter> AddressSorter::CreateAddressSorter() {
-  return std::unique_ptr<AddressSorter>(
-      new AddressSorterPosix(ClientSocketFactory::GetDefaultFactory()));
+  return std::make_unique<AddressSorterPosix>(
+      ClientSocketFactory::GetDefaultFactory());
 }
 
 }  // namespace net

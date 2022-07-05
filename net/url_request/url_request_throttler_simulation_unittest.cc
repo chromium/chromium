@@ -225,7 +225,7 @@ class Server : public DiscreteTimeSimulation::Actor {
     if (num_ticks % ticks_per_column)
       ++num_columns;
     DCHECK_LE(num_columns, terminal_width);
-    std::unique_ptr<int[]> columns(new int[num_columns]);
+    auto columns = std::make_unique<int[]>(num_columns);
     for (int tx = 0; tx < num_ticks; ++tx) {
       int cx = tx / ticks_per_column;
       if (tx % ticks_per_column == 0)
@@ -493,9 +493,8 @@ void SimulateAttack(Server* server,
     if (!enable_throttling)
       throttler_entry->DisableBackoffThrottling();
 
-    std::unique_ptr<Requester> attacker(
-        new Requester(throttler_entry.get(), base::Milliseconds(1), server,
-                      attacker_results));
+    auto attacker = std::make_unique<Requester>(
+        throttler_entry.get(), base::Milliseconds(1), server, attacker_results);
     attacker->SetStartupJitter(base::Seconds(120));
     simulation.AddActor(attacker.get());
     requesters.push_back(std::move(attacker));
@@ -507,8 +506,8 @@ void SimulateAttack(Server* server,
     if (!enable_throttling)
       throttler_entry->DisableBackoffThrottling();
 
-    std::unique_ptr<Requester> client(new Requester(
-        throttler_entry.get(), base::Minutes(2), server, client_results));
+    auto client = std::make_unique<Requester>(
+        throttler_entry.get(), base::Minutes(2), server, client_results);
     client->SetStartupJitter(base::Seconds(120));
     client->SetRequestJitter(base::Minutes(1));
     simulation.AddActor(client.get());

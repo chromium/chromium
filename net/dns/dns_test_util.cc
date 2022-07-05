@@ -668,8 +668,8 @@ bool MockDnsTransactionFactory::CompleteOneDelayedTransactionOfType(
 
 MockDnsClient::MockDnsClient(DnsConfig config, MockDnsClientRuleList rules)
     : config_(std::move(config)),
-      factory_(new MockDnsTransactionFactory(std::move(rules))),
-      address_sorter_(new MockAddressSorter()) {
+      factory_(std::make_unique<MockDnsTransactionFactory>(std::move(rules))),
+      address_sorter_(std::make_unique<MockAddressSorter>()) {
   effective_config_ = BuildEffectiveConfig();
   session_ = BuildSession();
 }

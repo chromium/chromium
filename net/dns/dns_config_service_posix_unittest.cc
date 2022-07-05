@@ -196,8 +196,7 @@ TEST(DnsConfigServicePosixTest, DestroyWhileJobsWorking) {
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  std::unique_ptr<internal::DnsConfigServicePosix> service(
-      new internal::DnsConfigServicePosix());
+  auto service = std::make_unique<internal::DnsConfigServicePosix>();
   // Call WatchConfig() which also tests ReadConfig().
   service->WatchConfig(base::BindRepeating(&DummyConfigCallback));
   service.reset();

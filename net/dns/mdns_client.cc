@@ -36,12 +36,12 @@ const base::TimeDelta MDnsTransaction::kTransactionTimeout = base::Seconds(3);
 
 // static
 std::unique_ptr<MDnsSocketFactory> MDnsSocketFactory::CreateDefault() {
-  return std::unique_ptr<MDnsSocketFactory>(new MDnsSocketFactoryImpl);
+  return std::make_unique<MDnsSocketFactoryImpl>();
 }
 
 // static
 std::unique_ptr<MDnsClient> MDnsClient::CreateDefault() {
-  return std::unique_ptr<MDnsClient>(new MDnsClientImpl());
+  return std::make_unique<MDnsClientImpl>();
 }
 
 InterfaceIndexFamilyList GetMDnsInterfacesToBind() {
@@ -67,8 +67,7 @@ std::unique_ptr<DatagramServerSocket> CreateAndBindMDnsSocket(
     AddressFamily address_family,
     uint32_t interface_index,
     NetLog* net_log) {
-  std::unique_ptr<DatagramServerSocket> socket(
-      new UDPServerSocket(net_log, NetLogSource()));
+  auto socket = std::make_unique<UDPServerSocket>(net_log, NetLogSource());
 
   int rv = Bind(address_family, interface_index, socket.get());
   if (rv != OK) {

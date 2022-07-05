@@ -55,8 +55,7 @@ bool RespondToChallenge(HttpAuth::Target target,
   EXPECT_FALSE(challenge.empty());
 
   token->clear();
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
   HttpAuthHandlerDigest::NonceGenerator* nonce_generator =
       new HttpAuthHandlerDigest::FixedNonceGenerator("client_nonce");
   factory->set_nonce_generator(nonce_generator);
@@ -80,7 +79,7 @@ bool RespondToChallenge(HttpAuth::Target target,
   // completes synchronously. That's why this test can get away with a
   // TestCompletionCallback without an IO thread.
   TestCompletionCallback callback;
-  std::unique_ptr<HttpRequestInfo> request(new HttpRequestInfo());
+  auto request = std::make_unique<HttpRequestInfo>();
   request->url = GURL(request_url);
   AuthCredentials credentials(u"foo", u"bar");
   int rv_generate = handler->GenerateAuthToken(
@@ -362,8 +361,7 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
   };
 
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
   for (const auto& test : tests) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
@@ -528,8 +526,7 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
     }
   };
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
   for (const auto& test : tests) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
@@ -554,8 +551,7 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
 }
 
 TEST(HttpAuthHandlerDigest, HandleAnotherChallenge) {
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
   auto host_resolver = std::make_unique<MockHostResolver>();
   std::unique_ptr<HttpAuthHandler> handler;
   std::string default_challenge =

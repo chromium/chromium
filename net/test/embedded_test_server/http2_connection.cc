@@ -373,7 +373,7 @@ Http2Connection::OnHeaderForStream(http2::adapter::Http2StreamId stream_id,
 bool Http2Connection::OnEndHeadersForStream(
     http2::adapter::Http2StreamId stream_id) {
   HttpRequest::HeaderMap header_map = header_map_[stream_id];
-  std::unique_ptr<HttpRequest> request(new HttpRequest());
+  auto request = std::make_unique<HttpRequest>();
   request->relative_url = header_map[":path"];
   request->base_url = GURL(header_map[":authority"]);
   request->method_string = header_map[":method"];

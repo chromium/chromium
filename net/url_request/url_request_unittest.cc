@@ -335,8 +335,7 @@ bool ContainsString(const std::string& haystack, const char* needle) {
 }
 
 std::unique_ptr<UploadDataStream> CreateSimpleUploadData(const char* data) {
-  std::unique_ptr<UploadElementReader> reader(
-      new UploadBytesElementReader(data, strlen(data)));
+  auto reader = std::make_unique<UploadBytesElementReader>(data, strlen(data));
   return ElementsUploadDataStream::CreateWithReader(std::move(reader), 0);
 }
 
@@ -4044,8 +4043,7 @@ std::unique_ptr<test_server::HttpResponse> HandleRedirectConnect(
     return nullptr;
   }
 
-  std::unique_ptr<test_server::BasicHttpResponse> http_response(
-      new test_server::BasicHttpResponse);
+  auto http_response = std::make_unique<test_server::BasicHttpResponse>();
   http_response->set_code(HTTP_FOUND);
   http_response->AddCustomHeader("Location",
                                  "http://www.destination.com/foo.js");
@@ -4676,12 +4674,11 @@ std::unique_ptr<test_server::HttpResponse> HandleServerAuthConnect(
     return nullptr;
   }
 
-  std::unique_ptr<test_server::BasicHttpResponse> http_response(
-      new test_server::BasicHttpResponse);
+  auto http_response = std::make_unique<test_server::BasicHttpResponse>();
   http_response->set_code(HTTP_UNAUTHORIZED);
   http_response->AddCustomHeader("WWW-Authenticate",
                                  "Basic realm=\"WallyWorld\"");
-  return std::move(http_response);
+  return http_response;
 }
 
 }  // namespace
@@ -5919,7 +5916,7 @@ TEST_F(URLRequestTestHTTP, PostFileTest) {
     ASSERT_EQ(true, base::GetFileSize(path, &size64));
     ASSERT_LE(size64, std::numeric_limits<int>::max());
     int size = static_cast<int>(size64);
-    std::unique_ptr<char[]> buf(new char[size]);
+    auto buf = std::make_unique<char[]>(size);
 
     ASSERT_EQ(size, base::ReadFile(path, buf.get(), size));
 
@@ -6004,8 +6001,7 @@ TEST_F(URLRequestTestHTTP, TestPostChunkedDataBeforeStart) {
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         http_test_server()->GetURL("/echo"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    std::unique_ptr<ChunkedUploadDataStream> upload_data_stream(
-        new ChunkedUploadDataStream(0));
+    auto upload_data_stream = std::make_unique<ChunkedUploadDataStream>(0);
     std::unique_ptr<ChunkedUploadDataStream::Writer> writer =
         upload_data_stream->CreateWriter();
     r->set_upload(std::move(upload_data_stream));
@@ -6028,8 +6024,7 @@ TEST_F(URLRequestTestHTTP, TestPostChunkedDataJustAfterStart) {
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         http_test_server()->GetURL("/echo"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    std::unique_ptr<ChunkedUploadDataStream> upload_data_stream(
-        new ChunkedUploadDataStream(0));
+    auto upload_data_stream = std::make_unique<ChunkedUploadDataStream>(0);
     std::unique_ptr<ChunkedUploadDataStream::Writer> writer =
         upload_data_stream->CreateWriter();
     r->set_upload(std::move(upload_data_stream));
@@ -6051,8 +6046,7 @@ TEST_F(URLRequestTestHTTP, TestPostChunkedDataAfterStart) {
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         http_test_server()->GetURL("/echo"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    std::unique_ptr<ChunkedUploadDataStream> upload_data_stream(
-        new ChunkedUploadDataStream(0));
+    auto upload_data_stream = std::make_unique<ChunkedUploadDataStream>(0);
     std::unique_ptr<ChunkedUploadDataStream::Writer> writer =
         upload_data_stream->CreateWriter();
     r->set_upload(std::move(upload_data_stream));

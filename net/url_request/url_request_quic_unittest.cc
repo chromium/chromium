@@ -247,7 +247,7 @@ class URLRequestQuicTest
         server_->Listen(net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0));
     EXPECT_GE(rv, 0) << "Quic server fails to start";
 
-    std::unique_ptr<MockHostResolver> resolver(new MockHostResolver());
+    auto resolver = std::make_unique<MockHostResolver>();
     resolver->rules()->AddRule("test.example.com", "127.0.0.1");
     host_resolver_ = std::make_unique<MappedHostResolver>(std::move(resolver));
     // Use a mapped host resolver so that request for test.example.com

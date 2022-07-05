@@ -315,8 +315,7 @@ std::unique_ptr<DnsConfigService> DnsConfigService::CreateSystemService() {
 #if BUILDFLAG(IS_IOS)
   return nullptr;
 #else   // BUILDFLAG(IS_IOS)
-  return std::unique_ptr<DnsConfigService>(
-      new internal::DnsConfigServicePosix());
+  return std::make_unique<internal::DnsConfigServicePosix>();
 #endif  // BUILDFLAG(IS_IOS)
 }
 

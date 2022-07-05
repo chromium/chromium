@@ -135,12 +135,10 @@ void URLRequestFailedJob::AddUrlHandlerForHostname(
     const std::string& hostname) {
   URLRequestFilter* filter = URLRequestFilter::GetInstance();
   // Add |hostname| to URLRequestFilter for HTTP and HTTPS.
-  filter->AddHostnameInterceptor(
-      "http", hostname,
-      std::unique_ptr<URLRequestInterceptor>(new MockJobInterceptor()));
-  filter->AddHostnameInterceptor(
-      "https", hostname,
-      std::unique_ptr<URLRequestInterceptor>(new MockJobInterceptor()));
+  filter->AddHostnameInterceptor("http", hostname,
+                                 std::make_unique<MockJobInterceptor>());
+  filter->AddHostnameInterceptor("https", hostname,
+                                 std::make_unique<MockJobInterceptor>());
 }
 
 // static

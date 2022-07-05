@@ -215,8 +215,7 @@ class ReportSenderTest : public TestWithTaskEnvironment {
     URLRequestMockDataJob::AddUrlHandler();
     URLRequestFilter::GetInstance()->AddHostnameInterceptor(
         "http", kServerErrorHostname,
-        std::unique_ptr<URLRequestInterceptor>(
-            new MockServerErrorJobInterceptor()));
+        std::make_unique<MockServerErrorJobInterceptor>());
   }
 
   void TearDown() override { URLRequestFilter::GetInstance()->ClearHandlers(); }
@@ -334,8 +333,8 @@ TEST_F(ReportSenderTest, PendingRequestGetsDeleted) {
 
   EXPECT_EQ(0u, network_delegate().num_requests());
 
-  std::unique_ptr<ReportSender> reporter(
-      new ReportSender(context(), TRAFFIC_ANNOTATION_FOR_TESTS));
+  auto reporter =
+      std::make_unique<ReportSender>(context(), TRAFFIC_ANNOTATION_FOR_TESTS);
   reporter->Send(url, "application/foobar", kDummyReport, NetworkIsolationKey(),
                  base::OnceCallback<void()>(),
                  base::OnceCallback<void(const GURL&, int, int)>());

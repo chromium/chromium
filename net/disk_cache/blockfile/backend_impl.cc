@@ -411,7 +411,7 @@ int BackendImpl::SyncDoomEntriesBetween(const base::Time initial_time,
     return net::ERR_FAILED;
 
   scoped_refptr<EntryImpl> node;
-  std::unique_ptr<Rankings::Iterator> iterator(new Rankings::Iterator());
+  auto iterator = std::make_unique<Rankings::Iterator>();
   scoped_refptr<EntryImpl> next = OpenNextEntryImpl(iterator.get());
   if (!next)
     return net::OK;
@@ -453,7 +453,7 @@ int BackendImpl::SyncDoomEntriesSince(const base::Time initial_time) {
 
   stats_.OnEvent(Stats::DOOM_RECENT);
   for (;;) {
-    std::unique_ptr<Rankings::Iterator> iterator(new Rankings::Iterator());
+    auto iterator = std::make_unique<Rankings::Iterator>();
     scoped_refptr<EntryImpl> entry = OpenNextEntryImpl(iterator.get());
     if (!entry)
       return net::OK;
@@ -1296,8 +1296,7 @@ class BackendImpl::IteratorImpl : public Backend::Iterator {
  public:
   explicit IteratorImpl(base::WeakPtr<InFlightBackendIO> background_queue)
       : background_queue_(background_queue),
-        iterator_(new Rankings::Iterator()) {
-  }
+        iterator_(std::make_unique<Rankings::Iterator>()) {}
 
   ~IteratorImpl() override {
     if (background_queue_)
@@ -1317,8 +1316,7 @@ class BackendImpl::IteratorImpl : public Backend::Iterator {
 };
 
 std::unique_ptr<Backend::Iterator> BackendImpl::CreateIterator() {
-  return std::unique_ptr<Backend::Iterator>(
-      new IteratorImpl(GetBackgroundQueue()));
+  return std::make_unique<IteratorImpl>(GetBackgroundQueue());
 }
 
 void BackendImpl::GetStats(StatsItems* stats) {
@@ -1389,7 +1387,7 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   static_assert(sizeof(disk_cache::IndexHeader) < kPageSize,
                 "Code below assumes it wouldn't overwrite header by starting "
                 "at kPageSize");
-  std::unique_ptr<char[]> page(new char[kPageSize]);
+  auto page = std::make_unique<char[]>(kPageSize);
   memset(page.get(), 0, kPageSize);
 
   for (size_t offset = kPageSize; offset < size; offset += kPageSize) {
@@ -1497,7 +1495,7 @@ bool BackendImpl::InitStats() {
   if (!file)
     return false;
 
-  std::unique_ptr<char[]> data(new char[size]);
+  auto data = std::make_unique<char[]>(size);
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
   if (!file->Read(data.get(), size, offset))
@@ -1512,7 +1510,7 @@ bool BackendImpl::InitStats() {
 
 void BackendImpl::StoreStats() {
   int size = stats_.StorageSize();
-  std::unique_ptr<char[]> data(new char[size]);
+  auto data = std::make_unique<char[]>(size);
   Addr address;
   size = stats_.SerializeStats(data.get(), size, &address);
   DCHECK(size);

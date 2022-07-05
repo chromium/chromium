@@ -715,9 +715,10 @@ CertPathBuilder::CertPathBuilder(
     const std::set<der::Input>& user_initial_policy_set,
     InitialPolicyMappingInhibit initial_policy_mapping_inhibit,
     InitialAnyPolicyInhibit initial_any_policy_inhibit)
-    : cert_path_iter_(new CertPathIter(std::move(cert),
-                                       trust_store,
-                                       /*debug_data=*/&out_result_)),
+    : cert_path_iter_(
+          std::make_unique<CertPathIter>(std::move(cert),
+                                         trust_store,
+                                         /*debug_data=*/&out_result_)),
       delegate_(delegate),
       time_(time),
       key_purpose_(key_purpose),

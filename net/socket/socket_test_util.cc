@@ -766,8 +766,7 @@ MockClientSocketFactory::CreateDatagramClientSocket(
     NetLog* net_log,
     const NetLogSource& source) {
   SocketDataProvider* data_provider = mock_data_.GetNext();
-  std::unique_ptr<MockUDPClientSocket> socket(
-      new MockUDPClientSocket(data_provider, net_log));
+  auto socket = std::make_unique<MockUDPClientSocket>(data_provider, net_log);
   if (bind_type == DatagramSocket::RANDOM_BIND)
     socket->set_source_port(static_cast<uint16_t>(base::RandInt(1025, 65535)));
   udp_client_socket_ports_.push_back(socket->source_port());
@@ -847,8 +846,8 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
     EXPECT_EQ(*next_ssl_data->expected_ech_config_list,
               ssl_config.ech_config_list);
   }
-  return std::unique_ptr<SSLClientSocket>(new MockSSLClientSocket(
-      std::move(stream_socket), host_and_port, ssl_config, next_ssl_data));
+  return std::make_unique<MockSSLClientSocket>(
+      std::move(stream_socket), host_and_port, ssl_config, next_ssl_data);
 }
 
 MockClientSocket::MockClientSocket(const NetLogWithSource& net_log)
@@ -2128,10 +2127,10 @@ MockTaggingClientSocketFactory::CreateTransportClientSocket(
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
     const NetLogSource& source) {
-  std::unique_ptr<MockTaggingStreamSocket> socket(new MockTaggingStreamSocket(
+  auto socket = std::make_unique<MockTaggingStreamSocket>(
       MockClientSocketFactory::CreateTransportClientSocket(
           addresses, std::move(socket_performance_watcher),
-          network_quality_estimator, net_log, source)));
+          network_quality_estimator, net_log, source));
   tcp_socket_ = socket.get();
   return std::move(socket);
 }

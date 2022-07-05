@@ -206,8 +206,7 @@ class HttpsWithDnsOverHttpsTest : public DnsOverHttpsIntegrationTest {
 
   std::unique_ptr<test_server::HttpResponse> HandleDefaultRequest(
       const test_server::HttpRequest& request) {
-    std::unique_ptr<test_server::BasicHttpResponse> http_response(
-        new test_server::BasicHttpResponse);
+    auto http_response = std::make_unique<test_server::BasicHttpResponse>();
     test_https_requests_served_++;
     http_response->set_content(kTestBody);
     http_response->set_content_type("text/html");

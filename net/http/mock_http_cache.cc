@@ -581,7 +581,7 @@ class MockDiskCache::NotImplementedIterator : public Iterator {
 };
 
 std::unique_ptr<disk_cache::Backend::Iterator> MockDiskCache::CreateIterator() {
-  return std::unique_ptr<Iterator>(new NotImplementedIterator());
+  return std::make_unique<NotImplementedIterator>();
 }
 
 void MockDiskCache::GetStats(base::StringPairs* stats) {

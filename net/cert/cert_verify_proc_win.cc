@@ -453,7 +453,7 @@ CRLSetResult CheckRevocationWithCRLSet(CRLSet* crl_set,
   // Compute the subject's serial.
   const CRYPT_INTEGER_BLOB* serial_blob =
       &subject_cert->pCertInfo->SerialNumber;
-  std::unique_ptr<uint8_t[]> serial_bytes(new uint8_t[serial_blob->cbData]);
+  auto serial_bytes = std::make_unique<uint8_t[]>(serial_blob->cbData);
   // The bytes of the serial number are stored little-endian.
   // Note: While MSDN implies that bytes are stripped from this serial,
   // they are not - only CertCompareIntegerBlob actually removes bytes.

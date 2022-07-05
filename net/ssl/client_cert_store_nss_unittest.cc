@@ -91,8 +91,8 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
   ASSERT_TRUE(base::ReadFileToString(
       GetTestCertsDirectory().AppendASCII("client_1.pk8"), &pkcs8_key));
 
-  std::unique_ptr<ClientCertStoreNSS> store(
-      new ClientCertStoreNSS(ClientCertStoreNSS::PasswordDelegateFactory()));
+  auto store = std::make_unique<ClientCertStoreNSS>(
+      ClientCertStoreNSS::PasswordDelegateFactory());
 
   // These test keys are RSA keys.
   std::vector<uint16_t> expected = SSLPrivateKey::DefaultAlgorithmPreferences(
@@ -200,8 +200,8 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
 
   ASSERT_TRUE(ImportClientCertToSlot(cert.get(), test_db.slot()));
 
-  std::unique_ptr<ClientCertStoreNSS> store(
-      new ClientCertStoreNSS(ClientCertStoreNSS::PasswordDelegateFactory()));
+  auto store = std::make_unique<ClientCertStoreNSS>(
+      ClientCertStoreNSS::PasswordDelegateFactory());
 
   // These test keys are RSA keys.
   std::vector<uint16_t> expected = SSLPrivateKey::DefaultAlgorithmPreferences(

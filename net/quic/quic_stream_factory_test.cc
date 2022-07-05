@@ -162,8 +162,7 @@ class TestConnectionMigrationSocketFactory : public MockClientSocketFactory {
       NetLog* net_log,
       const NetLogSource& source) override {
     SocketDataProvider* data_provider = mock_data().GetNext();
-    std::unique_ptr<MockUDPClientSocket> socket(
-        new MockUDPClientSocket(data_provider, net_log));
+    auto socket = std::make_unique<MockUDPClientSocket>(data_provider, net_log);
     socket->set_source_host(IPAddress(192, 0, 2, next_source_host_num_++));
     return std::move(socket);
   }
@@ -190,8 +189,7 @@ class TestPortMigrationSocketFactory : public MockClientSocketFactory {
       NetLog* net_log,
       const NetLogSource& source) override {
     SocketDataProvider* data_provider = mock_data().GetNext();
-    std::unique_ptr<MockUDPClientSocket> socket(
-        new MockUDPClientSocket(data_provider, net_log));
+    auto socket = std::make_unique<MockUDPClientSocket>(data_provider, net_log);
     socket->set_source_port(next_source_port_num_++);
     return std::move(socket);
   }
@@ -204,11 +202,11 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
   QuicStreamFactoryTestBase(quic::ParsedQuicVersion version,
                             bool client_headers_include_h2_stream_dependency)
-      : host_resolver_(
-            new MockHostResolver(/*default_result=*/MockHostResolverBase::
-                                     RuleResolver::GetLocalhostResult())),
-        ssl_config_service_(new SSLConfigServiceDefaults),
-        socket_factory_(new MockClientSocketFactory),
+      : host_resolver_(std::make_unique<MockHostResolver>(
+            /*default_result=*/MockHostResolverBase::RuleResolver::
+                GetLocalhostResult())),
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
+        socket_factory_(std::make_unique<MockClientSocketFactory>()),
         runner_(new TestTaskRunner(context_.mock_clock())),
         version_(version),
         client_maker_(version_,

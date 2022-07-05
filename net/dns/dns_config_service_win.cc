@@ -679,7 +679,7 @@ bool DnsConfigServiceWin::StartWatching() {
 
 // static
 std::unique_ptr<DnsConfigService> DnsConfigService::CreateSystemService() {
-  return std::unique_ptr<DnsConfigService>(new internal::DnsConfigServiceWin());
+  return std::make_unique<internal::DnsConfigServiceWin>();
 }
 
 }  // namespace net

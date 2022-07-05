@@ -80,8 +80,7 @@ void ReportSender::Send(const GURL& report_uri,
   url_request->set_method("POST");
 
   std::vector<char> report_data(report.begin(), report.end());
-  std::unique_ptr<UploadElementReader> reader(
-      new UploadOwnedBytesElementReader(&report_data));
+  auto reader = std::make_unique<UploadOwnedBytesElementReader>(&report_data);
   url_request->set_upload(
       ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
 

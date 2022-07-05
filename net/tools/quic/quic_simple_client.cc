@@ -45,8 +45,7 @@ QuicSimpleClient::QuicSimpleClient(
           config,
           CreateQuicConnectionHelper(),
           CreateQuicAlarmFactory(),
-          base::WrapUnique(
-              new QuicClientMessageLooplNetworkHelper(&clock_, this)),
+          std::make_unique<QuicClientMessageLooplNetworkHelper>(&clock_, this),
           std::move(proof_verifier),
           nullptr) {
   set_server_address(server_address);

@@ -93,8 +93,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
     num_async_gets_++;
     ParsedCertificateList issuers;
     static_cert_issuer_source_.SyncGetIssuersOf(cert, &issuers);
-    std::unique_ptr<StaticAsyncRequest> req(
-        new StaticAsyncRequest(std::move(issuers)));
+    auto req = std::make_unique<StaticAsyncRequest>(std::move(issuers));
     *out_req = std::move(req);
     if (!async_get_callback_.is_null())
       async_get_callback_.Run();
@@ -1662,8 +1661,8 @@ TEST_F(PathBuilderKeyRolloverTest, TestMultipleAsyncIssuersFromSingleSource) {
   path_builder.AddCertIssuerSource(&cert_issuer_source);
 
   // Create the mock CertIssuerSource::Request...
-  std::unique_ptr<StrictMock<MockCertIssuerSourceRequest>>
-      target_issuers_req_owner(new StrictMock<MockCertIssuerSourceRequest>());
+  auto target_issuers_req_owner =
+      std::make_unique<StrictMock<MockCertIssuerSourceRequest>>();
   // Keep a raw pointer to the Request...
   StrictMock<MockCertIssuerSourceRequest>* target_issuers_req =
       target_issuers_req_owner.get();
@@ -1742,8 +1741,8 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateAsyncIntermediates) {
   path_builder.AddCertIssuerSource(&cert_issuer_source);
 
   // Create the mock CertIssuerSource::Request...
-  std::unique_ptr<StrictMock<MockCertIssuerSourceRequest>>
-      target_issuers_req_owner(new StrictMock<MockCertIssuerSourceRequest>());
+  auto target_issuers_req_owner =
+      std::make_unique<StrictMock<MockCertIssuerSourceRequest>>();
   // Keep a raw pointer to the Request...
   StrictMock<MockCertIssuerSourceRequest>* target_issuers_req =
       target_issuers_req_owner.get();

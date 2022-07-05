@@ -259,7 +259,8 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
 }
 
 NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
-    : notifier_thread_(new NetworkConfigWatcherMacThread(delegate)) {
+    : notifier_thread_(
+          std::make_unique<NetworkConfigWatcherMacThread>(delegate)) {
   // We create this notifier thread because the notification implementation
   // needs a thread with a CFRunLoop, and there's no guarantee that
   // CurrentThread::Get() meets that criterion.

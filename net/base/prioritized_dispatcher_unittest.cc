@@ -141,15 +141,15 @@ class PrioritizedDispatcherTest : public testing::Test {
   }
 
   std::unique_ptr<TestJob> AddJob(char data, Priority priority) {
-    std::unique_ptr<TestJob> job(
-        new TestJob(dispatcher_.get(), data, priority, &log_));
+    auto job =
+        std::make_unique<TestJob>(dispatcher_.get(), data, priority, &log_);
     job->Add(false);
     return job;
   }
 
   std::unique_ptr<TestJob> AddJobAtHead(char data, Priority priority) {
-    std::unique_ptr<TestJob> job(
-        new TestJob(dispatcher_.get(), data, priority, &log_));
+    auto job =
+        std::make_unique<TestJob>(dispatcher_.get(), data, priority, &log_);
     job->Add(true);
     return job;
   }

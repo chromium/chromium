@@ -147,8 +147,8 @@ std::unique_ptr<HuffmanNode> HuffmanBuilder::BuildTree() {
     uint32_t count_a = a->count();
     uint32_t count_b = b->count();
 
-    std::unique_ptr<HuffmanNode> parent(
-        new HuffmanNode(0, count_a + count_b, std::move(a), std::move(b)));
+    auto parent = std::make_unique<HuffmanNode>(0, count_a + count_b,
+                                                std::move(a), std::move(b));
 
     nodes.erase(nodes.begin());
     nodes[0] = std::move(parent);

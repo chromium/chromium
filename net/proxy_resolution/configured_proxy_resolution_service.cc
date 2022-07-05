@@ -914,11 +914,10 @@ ConfiguredProxyResolutionService::CreateFixedFromPacResult(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   // We need the settings to contain an "automatic" setting, otherwise the
   // ProxyResolver dependency we give it will never be used.
-  std::unique_ptr<ProxyConfigService> proxy_config_service(
-      new ProxyConfigServiceFixed(ProxyConfigWithAnnotation(
-          ProxyConfig::CreateFromCustomPacURL(
-              GURL("https://my-pac-script.invalid/wpad.dat")),
-          traffic_annotation)));
+  auto proxy_config_service = std::make_unique<ProxyConfigServiceFixed>(
+      ProxyConfigWithAnnotation(ProxyConfig::CreateFromCustomPacURL(GURL(
+                                    "https://my-pac-script.invalid/wpad.dat")),
+                                traffic_annotation));
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
@@ -931,9 +930,9 @@ std::unique_ptr<ConfiguredProxyResolutionService>
 ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResult(
     const std::string& pac_string,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
-  std::unique_ptr<ProxyConfigService> proxy_config_service(
-      new ProxyConfigServiceFixed(ProxyConfigWithAnnotation(
-          ProxyConfig::CreateAutoDetect(), traffic_annotation)));
+  auto proxy_config_service =
+      std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
+          ProxyConfig::CreateAutoDetect(), traffic_annotation));
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
@@ -1418,8 +1417,7 @@ ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
              << "be used only for examples.";
   return std::make_unique<UnsetProxyConfigService>();
 #elif BUILDFLAG(IS_LINUX)
-  std::unique_ptr<ProxyConfigServiceLinux> linux_config_service(
-      new ProxyConfigServiceLinux());
+  auto linux_config_service = std::make_unique<ProxyConfigServiceLinux>();
 
   // Assume we got called on the thread that runs the default glib
   // main loop, so the current thread is where we should be running

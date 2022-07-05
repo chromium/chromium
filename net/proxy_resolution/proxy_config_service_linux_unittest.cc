@@ -768,7 +768,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicGSettingsTest) {
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     MockSettingGetter* setting_getter = new MockSettingGetter;
     SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
         std::move(env), setting_getter, TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -1097,7 +1097,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicEnvTest) {
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values = tests[i].values;
     MockSettingGetter* setting_getter = new MockSettingGetter;
     SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
@@ -1117,7 +1117,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicEnvTest) {
 }
 
 TEST_F(ProxyConfigServiceLinuxTest, GSettingsNotification) {
-  std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+  auto env = std::make_unique<MockEnvironment>();
   MockSettingGetter* setting_getter = new MockSettingGetter;
   ProxyConfigServiceLinux* service = new ProxyConfigServiceLinux(
       std::move(env), setting_getter, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -1708,7 +1708,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEConfigParser) {
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values = tests[i].env_values;
     // Force the KDE getter to be used and tell it where the test is.
     env->values.DESKTOP_SESSION = "kde4";
@@ -1758,7 +1758,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   {
     SCOPED_TRACE("KDE4, no .kde4 directory, verify fallback");
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.DESKTOP_SESSION = "kde4";
     env->values.HOME = user_home_.value().c_str();
     SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
@@ -1779,7 +1779,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   {
     SCOPED_TRACE("KDE4, .kde4 directory present, use it");
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.DESKTOP_SESSION = "kde4";
     env->values.HOME = user_home_.value().c_str();
     SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
@@ -1794,7 +1794,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   {
     SCOPED_TRACE("KDE3, .kde4 directory present, ignore it");
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.DESKTOP_SESSION = "kde";
     env->values.HOME = user_home_.value().c_str();
     SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
@@ -1809,7 +1809,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   {
     SCOPED_TRACE("KDE4, .kde4 directory present, KDEHOME set to .kde");
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.DESKTOP_SESSION = "kde4";
     env->values.HOME = user_home_.value().c_str();
     env->values.KDEHOME = kde_home_.value().c_str();
@@ -1829,7 +1829,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   {
     SCOPED_TRACE("KDE4, very old .kde4 directory present, use .kde");
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.DESKTOP_SESSION = "kde4";
     env->values.HOME = user_home_.value().c_str();
     SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
@@ -1849,7 +1849,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   {
     SCOPED_TRACE("KDE5, .kde and .kde4 present, use .config");
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.XDG_CURRENT_DESKTOP = "KDE";
     env->values.KDE_SESSION_VERSION = "5";
     env->values.HOME = user_home_.value().c_str();
@@ -1874,7 +1874,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
                       "Proxy Config Script=http://version1/wpad.dat\n"));
 
   // Initialize the config service using kioslaverc.
-  std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+  auto env = std::make_unique<MockEnvironment>();
   env->values.DESKTOP_SESSION = "kde4";
   env->values.HOME = user_home_.value().c_str();
   SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
@@ -2009,7 +2009,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEMultipleKioslaverc) {
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
-    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    auto env = std::make_unique<MockEnvironment>();
     env->values.XDG_CURRENT_DESKTOP = "KDE";
     env->values.KDE_SESSION_VERSION = "5";
     env->values.HOME = user_home_.value().c_str();

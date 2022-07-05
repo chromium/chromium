@@ -230,7 +230,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     for (int tries = 1; result == ERROR_BUFFER_OVERFLOW &&
                         tries < MAX_GETADAPTERSADDRESSES_TRIES;
          ++tries) {
-      buf.reset(new char[len]);
+      buf = std::make_unique<char[]>(len);
       adapters = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(buf.get());
       result = GetAdaptersAddresses(AF_UNSPEC, flags, nullptr, adapters, &len);
     }
@@ -326,7 +326,7 @@ class WifiOptionSetter : public ScopedWifiOptions {
 };
 
 std::unique_ptr<ScopedWifiOptions> SetWifiOptions(int options) {
-  return std::unique_ptr<ScopedWifiOptions>(new WifiOptionSetter(options));
+  return std::make_unique<WifiOptionSetter>(options);
 }
 
 std::string GetWifiSSID() {

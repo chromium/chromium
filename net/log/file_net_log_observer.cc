@@ -409,7 +409,7 @@ void FileNetLogObserver::StopObserving(std::unique_ptr<base::Value> polled_data,
 }
 
 void FileNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
-  std::unique_ptr<std::string> json(new std::string);
+  auto json = std::make_unique<std::string>();
 
   *json = SerializeNetLogValueToJson(entry.ToValue());
 
@@ -467,9 +467,9 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateInternal(
   // TODO(dconnol): Handle the case when the WriteQueue  still doesn't
   // contain enough events to fill all files, because of very large events
   // relative to file size.
-  std::unique_ptr<FileWriter> file_writer(new FileWriter(
+  auto file_writer = std::make_unique<FileWriter>(
       log_path, inprogress_dir_path, std::move(pre_existing_log_file),
-      max_event_file_size, total_num_event_files, file_task_runner));
+      max_event_file_size, total_num_event_files, file_task_runner);
 
   uint64_t write_queue_memory_max =
       base::MakeClampedNum<uint64_t>(max_total_size) * 2;
@@ -752,7 +752,7 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
   // Allocate a 64K buffer used for reading the files. At most kReadBufferSize
   // bytes will be in memory at a time.
   const size_t kReadBufferSize = 1 << 16;  // 64KiB
-  std::unique_ptr<char[]> read_buffer(new char[kReadBufferSize]);
+  auto read_buffer = std::make_unique<char[]>(kReadBufferSize);
 
   if (final_log_file_.IsValid()) {
     // Truncate the final log file.

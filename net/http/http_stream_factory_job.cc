@@ -137,7 +137,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
           NetLogWithSource::Make(net_log, NetLogSourceType::HTTP_STREAM_JOB)),
       io_callback_(
           base::BindRepeating(&Job::OnIOComplete, base::Unretained(this))),
-      connection_(new ClientSocketHandle),
+      connection_(std::make_unique<ClientSocketHandle>()),
       session_(session),
       destination_(std::move(destination)),
       origin_url_(origin_url),

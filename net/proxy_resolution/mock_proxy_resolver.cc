@@ -54,7 +54,7 @@ int MockAsyncProxyResolver::GetProxyForURL(
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request,
     const NetLogWithSource& /*net_log*/) {
-  std::unique_ptr<Job> job(new Job(this, url, results, std::move(callback)));
+  auto job = std::make_unique<Job>(this, url, results, std::move(callback));
 
   pending_jobs_.push_back(job.get());
   *request = std::make_unique<RequestImpl>(std::move(job));

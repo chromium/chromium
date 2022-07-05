@@ -101,10 +101,11 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     return ERR_UNSUPPORTED_AUTH_SCHEME;
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerNegotiate(
-      CreateAuthSystem(auth_library_.get(), http_auth_preferences(),
-                       negotiate_auth_system_factory_),
-      http_auth_preferences(), host_resolver));
+  std::unique_ptr<HttpAuthHandler> tmp_handler(
+      std::make_unique<HttpAuthHandlerNegotiate>(
+          CreateAuthSystem(auth_library_.get(), http_auth_preferences(),
+                           negotiate_auth_system_factory_),
+          http_auth_preferences(), host_resolver));
 #elif BUILDFLAG(IS_ANDROID)
   if (is_unsupported_ || !http_auth_preferences() ||
       http_auth_preferences()->AuthAndroidNegotiateAccountType().empty() ||
@@ -112,9 +113,11 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     return ERR_UNSUPPORTED_AUTH_SCHEME;
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerNegotiate(
-      CreateAuthSystem(http_auth_preferences(), negotiate_auth_system_factory_),
-      http_auth_preferences(), host_resolver));
+  std::unique_ptr<HttpAuthHandler> tmp_handler(
+      std::make_unique<HttpAuthHandlerNegotiate>(
+          CreateAuthSystem(http_auth_preferences(),
+                           negotiate_auth_system_factory_),
+          http_auth_preferences(), host_resolver));
 #elif BUILDFLAG(IS_POSIX)
   if (is_unsupported_)
     return ERR_UNSUPPORTED_AUTH_SCHEME;
@@ -130,10 +133,11 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
   }
   // TODO(ahendrickson): Move towards model of parsing in the factory
   //                     method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerNegotiate(
-      CreateAuthSystem(auth_library_.get(), http_auth_preferences(),
-                       negotiate_auth_system_factory_),
-      http_auth_preferences(), host_resolver));
+  std::unique_ptr<HttpAuthHandler> tmp_handler(
+      std::make_unique<HttpAuthHandlerNegotiate>(
+          CreateAuthSystem(auth_library_.get(), http_auth_preferences(),
+                           negotiate_auth_system_factory_),
+          http_auth_preferences(), host_resolver));
 #endif
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
                                       network_isolation_key, scheme_host_port,

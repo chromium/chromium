@@ -300,8 +300,7 @@ scoped_refptr<SimplePostDoomWaiterTable> SimpleBackendImpl::OnDoomStart(
 
 void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
                                     net::CompletionOnceCallback callback) {
-  std::unique_ptr<std::vector<uint64_t>> mass_doom_entry_hashes(
-      new std::vector<uint64_t>());
+  auto mass_doom_entry_hashes = std::make_unique<std::vector<uint64_t>>();
   mass_doom_entry_hashes->swap(*entry_hashes);
 
   std::vector<uint64_t> to_doom_individually_hashes;
@@ -628,7 +627,7 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
 };
 
 std::unique_ptr<Backend::Iterator> SimpleBackendImpl::CreateIterator() {
-  return std::unique_ptr<Iterator>(new SimpleIterator(AsWeakPtr()));
+  return std::make_unique<SimpleIterator>(AsWeakPtr());
 }
 
 void SimpleBackendImpl::GetStats(base::StringPairs* stats) {

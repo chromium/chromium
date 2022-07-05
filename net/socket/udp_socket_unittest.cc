@@ -177,8 +177,8 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
   RecordingNetLogObserver net_log_observer;
   // Setup the server to listen.
   IPEndPoint server_address(IPAddress::IPv4Localhost(), 0 /* port */);
-  std::unique_ptr<UDPServerSocket> server(
-      new UDPServerSocket(NetLog::Get(), NetLogSource()));
+  auto server =
+      std::make_unique<UDPServerSocket>(NetLog::Get(), NetLogSource());
   if (use_nonblocking_io)
     server->UseNonBlockingIO();
   server->AllowAddressReuse();
@@ -343,10 +343,10 @@ TEST_F(UDPSocketTest, MAYBE_LocalBroadcast) {
   IPEndPoint listen_address;
   ASSERT_TRUE(CreateUDPAddress("0.0.0.0", 0 /* port */, &listen_address));
 
-  std::unique_ptr<UDPServerSocket> server1(
-      new UDPServerSocket(NetLog::Get(), NetLogSource()));
-  std::unique_ptr<UDPServerSocket> server2(
-      new UDPServerSocket(NetLog::Get(), NetLogSource()));
+  auto server1 =
+      std::make_unique<UDPServerSocket>(NetLog::Get(), NetLogSource());
+  auto server2 =
+      std::make_unique<UDPServerSocket>(NetLog::Get(), NetLogSource());
   server1->AllowAddressReuse();
   server1->AllowBroadcast();
   server2->AllowAddressReuse();

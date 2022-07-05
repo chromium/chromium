@@ -29,7 +29,7 @@ HttpCacheLookupManager::LookupTransaction::LookupTransaction(
     std::unique_ptr<ServerPushHelper> server_push_helper,
     NetLog* net_log)
     : push_helper_(std::move(server_push_helper)),
-      request_(new HttpRequestInfo()),
+      request_(std::make_unique<HttpRequestInfo>()),
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::SERVER_PUSH_LOOKUP_TRANSACTION)) {}

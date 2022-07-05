@@ -23,7 +23,7 @@ bool MappedFile::Store(const FileBlock* block) {
 
 bool MappedFile::Preload() {
   size_t file_len = GetLength();
-  std::unique_ptr<char[]> buf(new char[file_len]);
+  auto buf = std::make_unique<char[]>(file_len);
   if (!Read(buf.get(), file_len, 0))
     return false;
   return true;

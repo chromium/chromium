@@ -114,7 +114,7 @@ void DirectoryLister::Core::CancelOnOriginSequence() {
 }
 
 void DirectoryLister::Core::Start() {
-  std::unique_ptr<DirectoryList> directory_list(new DirectoryList());
+  auto directory_list = std::make_unique<DirectoryList>();
 
   if (!base::DirectoryExists(dir_)) {
     origin_task_runner_->PostTask(

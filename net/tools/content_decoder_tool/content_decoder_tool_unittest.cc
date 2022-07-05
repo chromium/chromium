@@ -88,7 +88,7 @@ TEST_F(ContentDecoderToolTest, TestGzip) {
 TEST_F(ContentDecoderToolTest, TestBrotli) {
   // In Cronet build, brotli sources are excluded due to binary size concern.
   // In such cases, skip the test.
-  std::unique_ptr<MockSourceStream> mock_source_stream(new MockSourceStream());
+  auto mock_source_stream = std::make_unique<MockSourceStream>();
   bool brotli_disabled =
       CreateBrotliSourceStream(std::move(mock_source_stream)) == nullptr;
   if (brotli_disabled)

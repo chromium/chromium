@@ -133,10 +133,11 @@ class QuicChromiumClientSessionTest
         config_(quic::test::DefaultQuicConfig()),
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
-        default_read_(new MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)),
-        socket_data_(
-            new SequencedSocketData(base::make_span(default_read_.get(), 1),
-                                    base::span<MockWrite>())),
+        default_read_(
+            std::make_unique<MockRead>(SYNCHRONOUS, ERR_IO_PENDING, 0)),
+        socket_data_(std::make_unique<SequencedSocketData>(
+            base::make_span(default_read_.get(), 1),
+            base::span<MockWrite>())),
         helper_(&clock_, &random_),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
         session_key_(kServerHostname,
@@ -253,9 +254,8 @@ class QuicChromiumClientSessionTest
   QuicChromiumPacketWriter* CreateQuicChromiumPacketWriter(
       DatagramClientSocket* socket,
       QuicChromiumClientSession* session) const {
-    std::unique_ptr<QuicChromiumPacketWriter> writer(
-        new QuicChromiumPacketWriter(
-            socket, base::ThreadTaskRunnerHandle::Get().get()));
+    auto writer = std::make_unique<QuicChromiumPacketWriter>(
+        socket, base::ThreadTaskRunnerHandle::Get().get());
     writer->set_delegate(session);
     return writer.release();
   }
@@ -2025,12 +2025,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
   // Create reader and writer.
-  std::unique_ptr<QuicChromiumPacketReader> new_reader(
-      new QuicChromiumPacketReader(new_socket.get(), &clock_, session_.get(),
-                                   kQuicYieldAfterPacketsRead,
-                                   quic::QuicTime::Delta::FromMilliseconds(
-                                       kQuicYieldAfterDurationMilliseconds),
-                                   net_log_with_source_));
+  auto new_reader = std::make_unique<QuicChromiumPacketReader>(
+      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      quic::QuicTime::Delta::FromMilliseconds(
+          kQuicYieldAfterDurationMilliseconds),
+      net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
@@ -2132,12 +2131,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
     // Create reader and writer.
-    std::unique_ptr<QuicChromiumPacketReader> new_reader(
-        new QuicChromiumPacketReader(new_socket.get(), &clock_, session_.get(),
-                                     kQuicYieldAfterPacketsRead,
-                                     quic::QuicTime::Delta::FromMilliseconds(
-                                         kQuicYieldAfterDurationMilliseconds),
-                                     net_log_with_source_));
+    auto new_reader = std::make_unique<QuicChromiumPacketReader>(
+        new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kQuicYieldAfterDurationMilliseconds),
+        net_log_with_source_);
     new_reader->StartReading();
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
         CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
@@ -2175,12 +2173,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
   EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
   // Create reader and writer.
-  std::unique_ptr<QuicChromiumPacketReader> new_reader(
-      new QuicChromiumPacketReader(new_socket.get(), &clock_, session_.get(),
-                                   kQuicYieldAfterPacketsRead,
-                                   quic::QuicTime::Delta::FromMilliseconds(
-                                       kQuicYieldAfterDurationMilliseconds),
-                                   net_log_with_source_));
+  auto new_reader = std::make_unique<QuicChromiumPacketReader>(
+      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      quic::QuicTime::Delta::FromMilliseconds(
+          kQuicYieldAfterDurationMilliseconds),
+      net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
@@ -2265,12 +2262,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
   // Create reader and writer.
-  std::unique_ptr<QuicChromiumPacketReader> new_reader(
-      new QuicChromiumPacketReader(new_socket.get(), &clock_, session_.get(),
-                                   kQuicYieldAfterPacketsRead,
-                                   quic::QuicTime::Delta::FromMilliseconds(
-                                       kQuicYieldAfterDurationMilliseconds),
-                                   net_log_with_source_));
+  auto new_reader = std::make_unique<QuicChromiumPacketReader>(
+      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      quic::QuicTime::Delta::FromMilliseconds(
+          kQuicYieldAfterDurationMilliseconds),
+      net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));

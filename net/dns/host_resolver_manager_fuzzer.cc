@@ -55,8 +55,8 @@ class DnsRequest {
       net::HostResolver* host_resolver,
       FuzzedDataProvider* data_provider,
       std::vector<std::unique_ptr<DnsRequest>>* dns_requests) {
-    std::unique_ptr<DnsRequest> dns_request(
-        new DnsRequest(host_resolver, data_provider, dns_requests));
+    auto dns_request = std::make_unique<DnsRequest>(
+        host_resolver, data_provider, dns_requests);
 
     if (dns_request->Start() == net::ERR_IO_PENDING)
       dns_requests->push_back(std::move(dns_request));
@@ -191,7 +191,7 @@ class DnsRequest {
   void WaitUntilDone() {
     CHECK(!run_loop_);
     if (request_) {
-      run_loop_.reset(new base::RunLoop());
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
       run_loop_.reset();
     }

@@ -269,9 +269,8 @@ class TestSocketPerformanceWatcherFactory
       return nullptr;
     }
     ++watcher_count_;
-    return std::unique_ptr<SocketPerformanceWatcher>(
-        new TestSocketPerformanceWatcher(&should_notify_updated_rtt_,
-                                         &rtt_notification_received_));
+    return std::make_unique<TestSocketPerformanceWatcher>(
+        &should_notify_updated_rtt_, &rtt_notification_received_);
   }
 
   size_t watcher_count() const { return watcher_count_; }
@@ -298,7 +297,7 @@ class QuicNetworkTransactionTest
         client_headers_include_h2_stream_dependency_(
             GetParam().client_headers_include_h2_stream_dependency),
         supported_versions_(quic::test::SupportedVersions(version_)),
-        client_maker_(new QuicTestPacketMaker(
+        client_maker_(std::make_unique<QuicTestPacketMaker>(
             version_,
             quic::QuicUtils::CreateRandomConnectionId(
                 context_.random_generator()),
@@ -314,7 +313,7 @@ class QuicNetworkTransactionTest
                       quic::Perspective::IS_SERVER,
                       false),
         quic_task_runner_(new TestTaskRunner(context_.mock_clock())),
-        ssl_config_service_(new SSLConfigServiceDefaults),
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
@@ -6252,8 +6251,8 @@ TEST_P(QuicNetworkTransactionTest, QuicUploadWriteError) {
 
   request_.upload_data_stream = &upload_data;
 
-  std::unique_ptr<HttpNetworkTransaction> trans(
-      new HttpNetworkTransaction(DEFAULT_PRIORITY, session_.get()));
+  auto trans = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
+                                                        session_.get());
   TestCompletionCallback callback;
   int rv = trans->Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -7021,7 +7020,7 @@ class QuicNetworkTransactionWithDestinationTest
             GetParam().client_headers_include_h2_stream_dependency),
         supported_versions_(quic::test::SupportedVersions(version_)),
         destination_type_(GetParam().destination_type),
-        ssl_config_service_(new SSLConfigServiceDefaults),
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
@@ -7156,8 +7155,7 @@ class QuicNetworkTransactionWithDestinationTest
   }
 
   void AddRefusedSocketData() {
-    std::unique_ptr<StaticSocketDataProvider> refused_data(
-        new StaticSocketDataProvider());
+    auto refused_data = std::make_unique<StaticSocketDataProvider>();
     MockConnect refused_connect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
     refused_data->set_connect_data(refused_connect);
     socket_factory_.AddSocketDataProvider(refused_data.get());
@@ -7165,8 +7163,7 @@ class QuicNetworkTransactionWithDestinationTest
   }
 
   void AddHangingSocketData() {
-    std::unique_ptr<StaticSocketDataProvider> hanging_data(
-        new StaticSocketDataProvider());
+    auto hanging_data = std::make_unique<StaticSocketDataProvider>();
     MockConnect hanging_connect(SYNCHRONOUS, ERR_IO_PENDING);
     hanging_data->set_connect_data(hanging_connect);
     socket_factory_.AddSocketDataProvider(hanging_data.get());

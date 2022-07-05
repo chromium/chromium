@@ -394,8 +394,8 @@ bool BlockFiles::IsValid(Addr address) {
 
   static bool read_contents = false;
   if (read_contents) {
-    std::unique_ptr<char[]> buffer;
-    buffer.reset(new char[Addr::BlockSizeForFileType(BLOCK_4K) * 4]);
+    auto buffer =
+        std::make_unique<char[]>(Addr::BlockSizeForFileType(BLOCK_4K) * 4);
     size_t size = address.BlockSize() * address.num_blocks();
     size_t offset = address.start_block() * address.BlockSize() +
                     kBlockHeaderSize;

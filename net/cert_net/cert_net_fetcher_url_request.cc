@@ -803,7 +803,7 @@ std::unique_ptr<CertNetFetcher::Request>
 CertNetFetcherURLRequest::FetchCaIssuers(const GURL& url,
                                          int timeout_milliseconds,
                                          int max_response_bytes) {
-  std::unique_ptr<RequestParams> request_params(new RequestParams);
+  auto request_params = std::make_unique<RequestParams>();
 
   request_params->url = url;
   request_params->http_method = HTTP_METHOD_GET;
@@ -818,7 +818,7 @@ std::unique_ptr<CertNetFetcher::Request> CertNetFetcherURLRequest::FetchCrl(
     const GURL& url,
     int timeout_milliseconds,
     int max_response_bytes) {
-  std::unique_ptr<RequestParams> request_params(new RequestParams);
+  auto request_params = std::make_unique<RequestParams>();
 
   request_params->url = url;
   request_params->http_method = HTTP_METHOD_GET;
@@ -833,7 +833,7 @@ std::unique_ptr<CertNetFetcher::Request> CertNetFetcherURLRequest::FetchOcsp(
     const GURL& url,
     int timeout_milliseconds,
     int max_response_bytes) {
-  std::unique_ptr<RequestParams> request_params(new RequestParams);
+  auto request_params = std::make_unique<RequestParams>();
 
   request_params->url = url;
   request_params->http_method = HTTP_METHOD_GET;

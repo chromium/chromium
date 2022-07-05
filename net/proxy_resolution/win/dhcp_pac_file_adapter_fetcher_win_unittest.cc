@@ -150,7 +150,7 @@ class FetcherClient {
  public:
   FetcherClient()
       : url_request_context_(CreateTestURLRequestContextBuilder()->Build()),
-        fetcher_(new MockDhcpPacFileAdapterFetcher(
+        fetcher_(std::make_unique<MockDhcpPacFileAdapterFetcher>(
             url_request_context_.get(),
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(),

@@ -58,8 +58,8 @@ const size_t kMaxPayloadSize =
 std::unique_ptr<StreamSocket> CreateConnectedSocket(SequencedSocketData* data) {
   data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
 
-  std::unique_ptr<MockTCPClientSocket> socket(
-      new MockTCPClientSocket(net::AddressList(), nullptr, data));
+  auto socket =
+      std::make_unique<MockTCPClientSocket>(net::AddressList(), nullptr, data);
 
   TestCompletionCallback callback;
   EXPECT_THAT(socket->Connect(callback.callback()), IsOk());
@@ -363,7 +363,7 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_EmptyBody) {
 
 TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_ChunkedBody) {
   const std::string payload = "123";
-  std::unique_ptr<ChunkedUploadDataStream> body(new ChunkedUploadDataStream(0));
+  auto body = std::make_unique<ChunkedUploadDataStream>(0);
   body->AppendData(payload.data(), payload.size(), true);
   ASSERT_THAT(
       body->Init(TestCompletionCallback().callback(), NetLogWithSource()),
@@ -392,7 +392,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_FileBody) {
         base::Time()));
 
     std::unique_ptr<UploadDataStream> body(
-        new ElementsUploadDataStream(std::move(element_readers), 0));
+        std::make_unique<ElementsUploadDataStream>(std::move(element_readers),
+                                                   0));
     TestCompletionCallback callback;
     ASSERT_THAT(body->Init(callback.callback(), NetLogWithSource()),
                 IsError(ERR_IO_PENDING));
@@ -413,7 +414,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_SmallBodyInMemory) {
       payload.data(), payload.size()));
 
   std::unique_ptr<UploadDataStream> body(
-      new ElementsUploadDataStream(std::move(element_readers), 0));
+      std::make_unique<ElementsUploadDataStream>(std::move(element_readers),
+                                                 0));
   ASSERT_THAT(body->Init(CompletionOnceCallback(), NetLogWithSource()), IsOk());
   // Yes, should be merged if the in-memory body is small here.
   ASSERT_TRUE(HttpStreamParser::ShouldMergeRequestHeadersAndBody(
@@ -427,7 +429,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_LargeBodyInMemory) {
       payload.data(), payload.size()));
 
   std::unique_ptr<UploadDataStream> body(
-      new ElementsUploadDataStream(std::move(element_readers), 0));
+      std::make_unique<ElementsUploadDataStream>(std::move(element_readers),
+                                                 0));
   ASSERT_THAT(body->Init(CompletionOnceCallback(), NetLogWithSource()), IsOk());
   // Shouldn't be merged if the in-memory body is large here.
   ASSERT_FALSE(HttpStreamParser::ShouldMergeRequestHeadersAndBody(
@@ -2158,7 +2161,7 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
   SequencedSocketData data(reads, writes);
   std::unique_ptr<StreamSocket> stream_socket = CreateConnectedSocket(&data);
 
-  std::unique_ptr<HttpRequestInfo> request_info(new HttpRequestInfo());
+  auto request_info = std::make_unique<HttpRequestInfo>();
   request_info->method = "GET";
   request_info->url = GURL("http://somewhere/foo.html");
 
@@ -2168,8 +2171,8 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
                           request_info.get(), read_buffer.get(),
                           NetLogWithSource());
 
-  std::unique_ptr<HttpRequestHeaders> request_headers(new HttpRequestHeaders());
-  std::unique_ptr<HttpResponseInfo> response_info(new HttpResponseInfo());
+  auto request_headers = std::make_unique<HttpRequestHeaders>();
+  auto response_info = std::make_unique<HttpResponseInfo>();
   TestCompletionCallback callback;
   ASSERT_EQ(
       OK, parser.SendRequest("GET /foo.html HTTP/1.1\r\n", *request_headers,

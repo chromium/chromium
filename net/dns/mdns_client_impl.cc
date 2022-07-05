@@ -440,7 +440,7 @@ void MDnsClientImpl::Core::QueryCache(
 
 MDnsClientImpl::MDnsClientImpl()
     : clock_(base::DefaultClock::GetInstance()),
-      cleanup_timer_(new base::OneShotTimer()) {}
+      cleanup_timer_(std::make_unique<base::OneShotTimer>()) {}
 
 MDnsClientImpl::MDnsClientImpl(base::Clock* clock,
                                std::unique_ptr<base::OneShotTimer> timer)
@@ -473,8 +473,8 @@ std::unique_ptr<MDnsListener> MDnsClientImpl::CreateListener(
     uint16_t rrtype,
     const std::string& name,
     MDnsListener::Delegate* delegate) {
-  return std::unique_ptr<MDnsListener>(
-      new MDnsListenerImpl(rrtype, name, clock_, delegate, this));
+  return std::make_unique<MDnsListenerImpl>(rrtype, name, clock_, delegate,
+                                            this);
 }
 
 std::unique_ptr<MDnsTransaction> MDnsClientImpl::CreateTransaction(
@@ -482,8 +482,8 @@ std::unique_ptr<MDnsTransaction> MDnsClientImpl::CreateTransaction(
     const std::string& name,
     int flags,
     const MDnsTransaction::ResultCallback& callback) {
-  return std::unique_ptr<MDnsTransaction>(
-      new MDnsTransactionImpl(rrtype, name, flags, callback, this));
+  return std::make_unique<MDnsTransactionImpl>(rrtype, name, flags, callback,
+                                               this);
 }
 
 MDnsListenerImpl::MDnsListenerImpl(uint16_t rrtype,

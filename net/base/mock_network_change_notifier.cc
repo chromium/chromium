@@ -107,7 +107,7 @@ MockNetworkChangeNotifier::MockNetworkChangeNotifier(
 
 ScopedMockNetworkChangeNotifier::ScopedMockNetworkChangeNotifier()
     : disable_network_change_notifier_for_tests_(
-          new NetworkChangeNotifier::DisableForTest()),
+          std::make_unique<NetworkChangeNotifier::DisableForTest>()),
       mock_network_change_notifier_(MockNetworkChangeNotifier::Create()) {}
 
 ScopedMockNetworkChangeNotifier::~ScopedMockNetworkChangeNotifier() = default;

@@ -842,7 +842,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OneMegFrame) {
   const size_t kWireSize = kPayloadSize + kLargeFrameHeaderSize;
   const size_t kExpectedFrameCount =
       (kWireSize + kReadBufferSize - 1) / kReadBufferSize;
-  std::unique_ptr<char[]> big_frame(new char[kWireSize]);
+  auto big_frame = std::make_unique<char[]>(kWireSize);
   memcpy(big_frame.get(), "\x81\x7F", 2);
   base::WriteBigEndian(big_frame.get() + 2, kPayloadSize);
   memset(big_frame.get() + kLargeFrameHeaderSize, 'A', kPayloadSize);

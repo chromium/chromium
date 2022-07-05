@@ -136,11 +136,11 @@ net::Error CacheCreator::Run() {
   if (backend_type_ == net::CACHE_BACKEND_SIMPLE ||
       (backend_type_ == net::CACHE_BACKEND_DEFAULT &&
        kSimpleBackendIsDefault)) {
-    disk_cache::SimpleBackendImpl* simple_cache =
-        new disk_cache::SimpleBackendImpl(
-            file_operations_factory_, path_, cleanup_tracker_.get(),
-            /* file_tracker = */ nullptr, max_bytes_, type_, net_log_);
-    created_cache_.reset(simple_cache);
+    auto cache = std::make_unique<disk_cache::SimpleBackendImpl>(
+        file_operations_factory_, path_, cleanup_tracker_.get(),
+        /* file_tracker = */ nullptr, max_bytes_, type_, net_log_);
+    disk_cache::SimpleBackendImpl* simple_cache = cache.get();
+    created_cache_ = std::move(cache);
 #if BUILDFLAG(IS_ANDROID)
     if (app_status_listener_)
       simple_cache->set_app_status_listener(app_status_listener_);
@@ -154,10 +154,11 @@ net::Error CacheCreator::Run() {
 #if BUILDFLAG(IS_ANDROID)
   return net::ERR_FAILED;
 #else
-  disk_cache::BackendImpl* new_cache =
-      new disk_cache::BackendImpl(path_, cleanup_tracker_.get(),
-                                  /*cache_thread = */ nullptr, type_, net_log_);
-  created_cache_.reset(new_cache);
+  auto cache = std::make_unique<disk_cache::BackendImpl>(
+      path_, cleanup_tracker_.get(),
+      /*cache_thread = */ nullptr, type_, net_log_);
+  disk_cache::BackendImpl* new_cache = cache.get();
+  created_cache_ = std::move(cache);
   new_cache->SetMaxSize(max_bytes_);
   new_cache->Init(
       base::BindOnce(&CacheCreator::OnIOComplete, base::Unretained(this)));
