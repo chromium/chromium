@@ -110,6 +110,12 @@ class SigninHelper : public GaiaAuthConsumer {
   scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory();
 
  private:
+  // Returns the account that must be auto-signed-in to the Main Profile in
+  // Lacros. This is, when available, the account used to sign into the Chrome
+  // OS session. This may be a Gaia account or a Microsoft Active Directory
+  // account. This field will be null for Guest sessions, Managed Guest
+  // sessions, Demo mode, and Kiosks.
+  bool IsInitialPrimaryAccount();
   // Fetcher to get SecondaryGoogleAccountUsage policy value.
   std::unique_ptr<ash::UserCloudSigninRestrictionPolicyFetcherChromeOS>
       restriction_fetcher_;
