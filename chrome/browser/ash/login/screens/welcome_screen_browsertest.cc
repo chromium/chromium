@@ -675,7 +675,8 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
 
 // Assert that the ChromeVox hint gives speech output and shows a dialog.
 // Clicking the 'activate' button in the dialog should activate ChromeVox.
-IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
+// crbug.com/1341515 Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_LaptopClick) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   // A consistency check to ensure the ChromeVox hint idle detector is disabled
   // for this and similar tests.
