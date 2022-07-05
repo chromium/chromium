@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_portal_activate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window_post_message_options.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -66,6 +67,9 @@ HTMLPortalElement::HTMLPortalElement(
                     {SchedulingPolicy::DisableBackForwardCache()})
               : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()) {
   if (remote_portal) {
+    // For adoption we must have a populated Portal with contents, which is
+    // created post-prerendering.
+    DCHECK(!GetDocument().IsPrerendering());
     DCHECK(portal_token);
     was_just_adopted_ = true;
     DCHECK(CanHaveGuestContents())
@@ -78,7 +82,7 @@ HTMLPortalElement::HTMLPortalElement(
   UseCounter::Count(document, WebFeature::kHTMLPortalElement);
 }
 
-HTMLPortalElement::~HTMLPortalElement() {}
+HTMLPortalElement::~HTMLPortalElement() = default;
 
 void HTMLPortalElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
@@ -375,77 +379,17 @@ Node::InsertionNotificationRequest HTMLPortalElement::InsertedInto(
     ContainerNode& node) {
   auto result = HTMLFrameOwnerElement::InsertedInto(node);
 
-  if (!CheckPortalsEnabledOrWarn())
-    return result;
-
-  if (!CheckWithinFrameLimitOrWarn())
-    return result;
-
-  if (!SubframeLoadingDisabler::CanLoadFrame(*this))
-    return result;
-
-  switch (GetGuestContentsEligibility()) {
-    case GuestContentsEligibility::kIneligible:
-      return result;
-
-    case GuestContentsEligibility::kNotTopLevel:
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kRendering,
-          mojom::ConsoleMessageLevel::kWarning,
-          "Cannot use <portal> in a nested browsing context."));
-      return result;
-
-    case GuestContentsEligibility::kSandboxed:
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kRendering,
-          mojom::ConsoleMessageLevel::kWarning,
-          "Cannot use <portal> in a sandboxed browsing context."));
-      return result;
-
-    case GuestContentsEligibility::kNotHTTPFamily:
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kRendering,
-          mojom::ConsoleMessageLevel::kWarning,
-          "<portal> use is restricted to the HTTP family."));
-      return result;
-
-    case GuestContentsEligibility::kEligible:
-      break;
-  };
-
-  // When adopting a predecessor, it is possible to insert a portal that's
-  // eligible to have a guest contents to a node that's not connected. In this
-  // case, do not create the portal frame yet.
-  if (!node.isConnected()) {
-    return result;
-  }
-
   if (portal_) {
-    // The interface is already bound if the HTMLPortalElement is adopting the
-    // predecessor.
-    GetDocument().GetFrame()->Client()->AdoptPortal(this);
+    DCHECK(!GetDocument().IsPrerendering());
+    if (IsPortalCreationOrAdoptionAllowed(&node)) {
+      // The interface is already bound if the HTMLPortalElement is adopting the
+      // predecessor.
+      GetDocument().GetFrame()->Client()->AdoptPortal(this);
+      probe::PortalRemoteFrameCreated(&GetDocument(), this);
+    }
   } else {
-    mojo::PendingAssociatedRemote<mojom::blink::Portal> portal;
-    mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver =
-        portal.InitWithNewEndpointAndPassReceiver();
-
-    mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client;
-    mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
-        client_receiver = client.InitWithNewEndpointAndPassReceiver();
-
-    RemoteFrame* portal_frame;
-    PortalToken portal_token;
-    std::tie(portal_frame, portal_token) =
-        GetDocument().GetFrame()->Client()->CreatePortal(
-            this, std::move(portal_receiver), std::move(client));
-    DCHECK(portal_frame);
-
-    portal_ = MakeGarbageCollected<PortalContents>(
-        *this, portal_token, std::move(portal), std::move(client_receiver));
-
-    Navigate();
+    CreatePortalAndNavigate(&node);
   }
-  probe::PortalRemoteFrameCreated(&GetDocument(), this);
   return result;
 }
 
@@ -533,6 +477,95 @@ void HTMLPortalElement::AttachLayoutTree(AttachContext& context) {
 
 network::mojom::ReferrerPolicy HTMLPortalElement::ReferrerPolicyAttribute() {
   return referrer_policy_;
+}
+
+bool HTMLPortalElement::IsPortalCreationOrAdoptionAllowed(
+    const ContainerNode* node) {
+  if (!node) {
+    return false;
+  }
+  // When adopting a predecessor, it is possible to insert a portal that's
+  // eligible to have a guest contents to a node that's not connected. In this
+  // case, do not create the portal frame yet.
+  if (!node->isConnected()) {
+    return false;
+  }
+  if (!CheckPortalsEnabledOrWarn()) {
+    return false;
+  }
+  if (!CheckWithinFrameLimitOrWarn()) {
+    return false;
+  }
+  if (!SubframeLoadingDisabler::CanLoadFrame(*this)) {
+    return false;
+  }
+  switch (GetGuestContentsEligibility()) {
+    case GuestContentsEligibility::kIneligible:
+      return false;
+
+    case GuestContentsEligibility::kNotTopLevel:
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Cannot use <portal> in a nested browsing context."));
+      return false;
+
+    case GuestContentsEligibility::kSandboxed:
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Cannot use <portal> in a sandboxed browsing context."));
+      return false;
+
+    case GuestContentsEligibility::kNotHTTPFamily:
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "<portal> use is restricted to the HTTP family."));
+      return false;
+
+    case GuestContentsEligibility::kEligible:
+      break;
+  };
+
+  return true;
+}
+
+void HTMLPortalElement::CreatePortalAndNavigate(const ContainerNode* node) {
+  if (GetDocument().IsPrerendering()) {
+    GetDocument().AddPostPrerenderingActivationStep(
+        WTF::Bind(&HTMLPortalElement::CreatePortalAndNavigate,
+                  WrapWeakPersistent(this), WrapWeakPersistent(node)));
+    return;
+  }
+
+  if (!IsPortalCreationOrAdoptionAllowed(node)) {
+    return;
+  }
+
+  mojo::PendingAssociatedRemote<mojom::blink::Portal> portal;
+  mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver =
+      portal.InitWithNewEndpointAndPassReceiver();
+
+  mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client;
+  mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> client_receiver =
+      client.InitWithNewEndpointAndPassReceiver();
+
+  RemoteFrame* portal_frame;
+  PortalToken portal_token;
+
+  std::tie(portal_frame, portal_token) =
+      GetDocument().GetFrame()->Client()->CreatePortal(
+          this, std::move(portal_receiver), std::move(client));
+  DCHECK(portal_frame);
+
+  DCHECK(!portal_);
+  portal_ = MakeGarbageCollected<PortalContents>(
+      *this, portal_token, std::move(portal), std::move(client_receiver));
+
+  Navigate();
+
+  probe::PortalRemoteFrameCreated(&GetDocument(), this);
 }
 
 }  // namespace blink

@@ -7387,6 +7387,16 @@ void RenderFrameHostImpl::CreatePortal(
     return;
   }
 
+  // If a Portal is nested inside a prerendered page, its owning RFH is also
+  // |kPrerendering|. In this case the creation of the Portal is deferred from
+  // the renderer.
+  if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
+    frame_host_associated_receiver_.ReportBadMessage(
+        "RenderFrameHostImpl::CreatePortal cannot be called when the RFH is "
+        "being prerendered.");
+    return;
+  }
+
   // We don't support attaching a portal inside a nested browsing context or
   // inside a fenced frame.
   if (!is_main_frame() || IsFencedFrameRoot()) {

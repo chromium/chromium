@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -226,6 +227,11 @@ void Portal::Close() {
 void Portal::Navigate(const GURL& url,
                       blink::mojom::ReferrerPtr referrer,
                       NavigateCallback callback) {
+  // |RenderFrameHostImpl::CreatePortal| doesn't allow portals to be created in
+  // a prerender page.
+  DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
+            owner_render_frame_host_->GetLifecycleState());
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     mojo::ReportBadMessage("Portal::Navigate tried to use non-HTTP protocol.");
     DestroySelf();  // Also deletes |this|.

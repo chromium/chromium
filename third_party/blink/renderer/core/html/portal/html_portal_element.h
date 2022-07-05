@@ -141,6 +141,11 @@ class CORE_EXPORT HTMLPortalElement : public HTMLFrameOwnerElement {
   void AttachLayoutTree(AttachContext& context) override;
   network::mojom::ReferrerPolicy ReferrerPolicyAttribute() override;
 
+  bool IsPortalCreationOrAdoptionAllowed(const ContainerNode* node);
+
+  // Defers the portal creation if the current document is being prerendered.
+  void CreatePortalAndNavigate(const ContainerNode* node);
+
   Member<PortalContents> portal_;
 
   network::mojom::ReferrerPolicy referrer_policy_ =
