@@ -5,9 +5,9 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -63,6 +63,11 @@ wm::ActivationClient* GetActivationClientWithTabStripModel(
 
 namespace apps {
 
+constexpr char kWebsiteUsageTime[] = "app_platform_metrics.website_usage_time";
+constexpr char kRunningTimeKey[] = "time";
+constexpr char kUrlContentKey[] = "url_content";
+constexpr char kPromotableKey[] = "promotable";
+
 WebsiteMetrics::ActiveTabWebContentsObserver::ActiveTabWebContentsObserver(
     content::WebContents* contents,
     WebsiteMetrics* owner)
@@ -96,8 +101,17 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::
   owner_->OnInstallableWebAppStatusUpdated(web_contents());
 }
 
+base::Value WebsiteMetrics::UrlInfo::ConvertToValue() const {
+  base::Value usage_time_dict(base::Value::Type::DICTIONARY);
+  usage_time_dict.SetPath(kRunningTimeKey,
+                          base::TimeDeltaToValue(running_time));
+  usage_time_dict.SetIntKey(kUrlContentKey, static_cast<int>(url_content));
+  usage_time_dict.SetBoolKey(kPromotableKey, promotable);
+  return usage_time_dict;
+}
+
 WebsiteMetrics::WebsiteMetrics(Profile* profile)
-    : browser_tab_strip_tracker_(this, nullptr) {
+    : profile_(profile), browser_tab_strip_tracker_(this, nullptr) {
   BrowserList::GetInstance()->AddObserver(this);
   browser_tab_strip_tracker_.Init();
   history::HistoryService* history_service =
@@ -177,8 +191,7 @@ void WebsiteMetrics::HistoryServiceBeingDeleted(
 }
 
 void WebsiteMetrics::OnFiveMinutes() {
-  // TODO(crbug.com/1334173): Save the usage time records to the local user
-  // perf.
+  SaveUsageTime();
 }
 
 void WebsiteMetrics::OnTwoHours() {
@@ -410,6 +423,16 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
   DCHECK_GE(base::TimeTicks::Now(), it->second.start_time);
   it->second.running_time += base::TimeTicks::Now() - it->second.start_time;
   it->second.is_activated = false;
+}
+
+void WebsiteMetrics::SaveUsageTime() {
+  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
+                                         kWebsiteUsageTime);
+  auto& dict = usage_time_update->GetDict();
+  dict.clear();
+  for (auto it : url_infos_) {
+    dict.Set(it.first.spec(), it.second.ConvertToValue());
+  }
 }
 
 }  // namespace apps

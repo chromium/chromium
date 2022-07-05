@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "services/preferences/public/cpp/dictionary_value_update.h"
 
 namespace apps {
 
@@ -170,6 +172,24 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(promotable, url_infos()[url].promotable);
   }
 
+  void VerifyUrlInfoInPref(const GURL& url,
+                           UrlContent url_content,
+                           bool promotable) {
+    DictionaryPrefUpdate update(
+        ProfileManager::GetPrimaryUserProfile()->GetPrefs(), kWebsiteUsageTime);
+    auto& dict = update->GetDict();
+
+    const auto* url_info = dict.FindDict(url.spec());
+    ASSERT_TRUE(url_info);
+    auto url_content_value = url_info->FindInt(kUrlContentKey);
+    ASSERT_TRUE(url_content_value.has_value());
+    EXPECT_EQ(static_cast<int>(url_content), url_content_value.value());
+
+    auto promotable_value = url_info->FindBool(kPromotableKey);
+    ASSERT_TRUE(promotable_value.has_value());
+    EXPECT_EQ(promotable, promotable_value.value());
+  }
+
   WebsiteMetrics* website_metrics() {
     DCHECK(app_platform_metrics_service_);
     return app_platform_metrics_service_->website_metrics_.get();
@@ -274,6 +294,13 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   EXPECT_EQ(3u, url_infos().size());
   VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/false, /*promotable=*/false);
+  website_metrics()->OnFiveMinutes();
+  VerifyUrlInfoInPref(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
 
   // Simulate recording the UKMs to clear the local usage time records.
   website_metrics()->OnTwoHours();
@@ -321,6 +348,11 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/false, /*promotable=*/false);
+  website_metrics()->OnFiveMinutes();
+  VerifyUrlInfoInPref(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
 
   // Simulate recording the UKMs to clear the local usage time records.
   website_metrics()->OnTwoHours();
@@ -377,6 +409,11 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(ukm_key, UrlContent::kScope,
                 /*is_activated=*/false, /*promotable=*/true);
+  website_metrics()->OnFiveMinutes();
+  VerifyUrlInfoInPref(url1, UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(ukm_key, UrlContent::kScope,
+                      /*promotable=*/true);
 
   // Simulate recording the UKMs to clear the local usage time records.
   website_metrics()->OnTwoHours();
@@ -483,6 +520,16 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
 
+  website_metrics()->OnFiveMinutes();
+  VerifyUrlInfoInPref(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+
   // Simulate recording the UKMs to clear the local usage time records.
   website_metrics()->OnTwoHours();
   EXPECT_TRUE(url_infos().empty());
@@ -536,6 +583,11 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/true, /*promotable=*/false);
+  website_metrics()->OnFiveMinutes();
+  VerifyUrlInfoInPref(GURL("https://a.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://b.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
 
   // Simulate OnURLsDeleted is called.
   website_metrics()->OnURLsDeleted(nullptr,
@@ -562,6 +614,11 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/true, /*promotable=*/false);
+  website_metrics()->OnFiveMinutes();
+  VerifyUrlInfoInPref(GURL("https://c.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://d.example.org"), UrlContent::kFullUrl,
+                      /*promotable=*/false);
 
   // Close the browsers.
   browser1->tab_strip_model()->CloseAllTabs();

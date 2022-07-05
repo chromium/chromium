@@ -49,6 +49,7 @@ void AppPlatformMetricsService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kAppActivatedCount);
   registry->RegisterDictionaryPref(kAppUsageTime);
   registry->RegisterDictionaryPref(kAppInputEventsKey);
+  registry->RegisterDictionaryPref(kWebsiteUsageTime);
 }
 
 // static

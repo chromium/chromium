@@ -12,6 +12,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -43,6 +44,11 @@ enum class UrlContent {
   // enumerator value.
   kMaxValue = kScope,
 };
+
+extern const char kWebsiteUsageTime[];
+extern const char kRunningTimeKey[];
+extern const char kUrlContentKey[];
+extern const char kPromotableKey[];
 
 // WebsiteMetrics monitors creation/deletion of Browser and its
 // TabStripModel to record the website usage time metrics.
@@ -123,6 +129,14 @@ class WebsiteMetrics : public BrowserListObserver,
     UrlContent url_content = UrlContent::kUnknown;
     bool is_activated = false;
     bool promotable = false;
+
+    // Converts the struct UsageTime to base::Value, e.g.:
+    // {
+    //    "time": "3600",
+    //    "url_content": "scope",
+    //    "promotable": "false",
+    // }
+    base::Value ConvertToValue() const;
   };
 
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
@@ -166,6 +180,12 @@ class WebsiteMetrics : public BrowserListObserver,
   void SetTabActivated(content::WebContents* web_contents);
 
   void SetTabInActivated(content::WebContents* web_contents);
+
+  // Saves the website usage time in `url_infos_` to the user pref each 5
+  // minutes.
+  void SaveUsageTime();
+
+  const raw_ptr<Profile> profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
