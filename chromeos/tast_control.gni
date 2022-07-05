@@ -266,6 +266,7 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.BasicLxdNext.stable",
   "crostini.RestartApp",
   "crostini.RestartApp.stable",
+  "crostini.RestartApp.clamshell_stable",
 
   # http://crbug.com/1335213
   "arc.WindowState.clamshell",
