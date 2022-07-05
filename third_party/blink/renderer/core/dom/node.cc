@@ -2336,10 +2336,16 @@ String Node::ToString() const {
     builder.Append(" ");
     builder.Append(nodeValue().EncodeForDebugging());
     return builder.ReleaseString();
+  } else if (const auto* element = DynamicTo<Element>(this)) {
+    const AtomicString& pseudo = element->ShadowPseudoId();
+    if (!pseudo.IsEmpty()) {
+      builder.Append(" ::");
+      builder.Append(pseudo);
+    }
+    DumpAttributeDesc(*this, html_names::kIdAttr, builder);
+    DumpAttributeDesc(*this, html_names::kClassAttr, builder);
+    DumpAttributeDesc(*this, html_names::kStyleAttr, builder);
   }
-  DumpAttributeDesc(*this, html_names::kIdAttr, builder);
-  DumpAttributeDesc(*this, html_names::kClassAttr, builder);
-  DumpAttributeDesc(*this, html_names::kStyleAttr, builder);
   if (IsEditable(*this))
     builder.Append(" (editable)");
   if (GetDocument().FocusedElement() == this)

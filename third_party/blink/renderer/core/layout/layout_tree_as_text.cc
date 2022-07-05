@@ -78,6 +78,11 @@ static String GetTagName(Node* n) {
     return "";
   if (n->getNodeType() == Node::kCommentNode)
     return "COMMENT";
+  if (const auto* element = DynamicTo<Element>(n)) {
+    const AtomicString& pseudo = element->ShadowPseudoId();
+    if (!pseudo.IsEmpty())
+      return "::" + pseudo;
+  }
   return n->nodeName();
 }
 
