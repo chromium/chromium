@@ -69,6 +69,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
                      DragOperationsMask operations_allowed,
                      const SkBitmap& drag_image,
                      const gfx::Point& drag_image_offset) override;
+  void DidAutoResize(const gfx::Size& size) override;
 
   // WidgetBaseClient overrides:
   void ScheduleAnimation() override;

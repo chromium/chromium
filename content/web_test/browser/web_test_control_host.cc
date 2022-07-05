@@ -579,6 +579,8 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     // size. See http://crbug.com/1011191 for more details.
     // TODO(crbug.com/309760): This resize to half-size could go away if
     // testRunner.useUnfortunateSynchronousResizeMode() goes away.
+    main_window_->web_contents()->GetRenderWidgetHostView()->DisableAutoResize(
+        gfx::Size());
     main_window_->ResizeWebContentForTests(
         gfx::ScaleToCeiledSize(window_size, 0.5f, 1));
     main_window_->ResizeWebContentForTests(window_size);
@@ -1765,6 +1767,17 @@ void WebTestControlHost::SetAcceptLanguages(
   web_contents()->GetMutableRendererPrefs()->accept_languages =
       accept_languages;
   web_contents()->SyncRendererPrefs();
+}
+
+void WebTestControlHost::EnableAutoResize(const gfx::Size& min_size,
+                                          const gfx::Size& max_size) {
+  web_contents()->GetRenderWidgetHostView()->EnableAutoResize(min_size,
+                                                              max_size);
+}
+
+void WebTestControlHost::DisableAutoResize(const gfx::Size& new_size) {
+  web_contents()->GetRenderWidgetHostView()->DisableAutoResize(new_size);
+  main_window_->ResizeWebContentForTests(new_size);
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

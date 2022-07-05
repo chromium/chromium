@@ -257,6 +257,9 @@ class WebTestControlHost : public WebContentsObserver,
   void WorkQueueStatesChanged(
       base::Value::Dict changed_work_queue_states) override;
   void SetAcceptLanguages(const std::string& accept_languages) override;
+  void EnableAutoResize(const gfx::Size& min_size,
+                        const gfx::Size& max_size) override;
+  void DisableAutoResize(const gfx::Size& new_size) override;
 
   void DiscardMainWindow();
   // Closes all windows opened by the test. This is every window but the main

@@ -325,4 +325,12 @@ interface WebTestControlHost {
 
   // Set Accept Languages via RendererPreferences on the WebContents.
   SetAcceptLanguages(string accept_languages);
+
+  // Enable Auto Resize mode. This will cause a layout of the content and
+  // the new size will be determined by the renderer after it dispatches
+  // the resize event.
+  EnableAutoResize(gfx.mojom.Size min_size, gfx.mojom.Size max_size);
+
+  // Disable Auto Resize mode, resizing the contents to `new_size`.
+  DisableAutoResize(gfx.mojom.Size new_size);
 };

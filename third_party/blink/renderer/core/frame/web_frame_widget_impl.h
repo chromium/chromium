@@ -447,7 +447,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetZoomLevel(double zoom_level);
 
   // Called when the View has auto resized.
-  void DidAutoResize(const gfx::Size& size);
+  virtual void DidAutoResize(const gfx::Size& size);
 
   // This method returns the focused frame belonging to this WebWidget, that
   // is, a focused frame with the same local root as the one corresponding

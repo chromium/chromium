@@ -1284,11 +1284,9 @@ void TestRunnerBindings::EnableAutoResizeMode(int min_width,
   if (max_width <= 0 || max_height <= 0)
     return;
 
-  blink::WebView* web_view = GetWebFrame()->View();
-
   gfx::Size min_size(min_width, min_height);
   gfx::Size max_size(max_width, max_height);
-  web_view->EnableAutoResizeForTesting(min_size, max_size);
+  runner_->GetWebTestControlHostRemote()->EnableAutoResize(min_size, max_size);
 }
 
 void TestRunnerBindings::DisableAutoResizeMode(int new_width, int new_height) {
@@ -1300,14 +1298,8 @@ void TestRunnerBindings::DisableAutoResizeMode(int new_width, int new_height) {
   if (new_width <= 0 || new_height <= 0)
     return;
 
-  blink::WebFrameWidget* widget = frame_->GetLocalRootWebFrameWidget();
-
   gfx::Size new_size(new_width, new_height);
-  blink::WebView* web_view = GetWebFrame()->View();
-  web_view->DisableAutoResizeForTesting(new_size);
-
-  gfx::Rect window_rect(widget->WindowRect().origin(), new_size);
-  web_view->SetWindowRectSynchronouslyForTesting(window_rect);
+  runner_->GetWebTestControlHostRemote()->DisableAutoResize(new_size);
 }
 
 void TestRunnerBindings::SetMockScreenOrientation(

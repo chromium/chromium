@@ -289,4 +289,18 @@ void WebTestWebFrameWidgetImpl::RequestDecode(
   ScheduleAnimationForWebTests();
 }
 
+void WebTestWebFrameWidgetImpl::DidAutoResize(const gfx::Size& size) {
+  WebFrameWidgetImpl::DidAutoResize(size);
+
+  // Window rect resize for threaded compositing is delivered via requesting a
+  // new surface. The browser then reacts to the bounds of the surface changing
+  // and adjusts the WindowRect. For single threaded compositing the
+  // surface size is never processed so we force the WindowRect to be the
+  // same size as the WidgetSize when AutoResize is applied.
+  if (LayerTreeHost()->IsSingleThreaded()) {
+    gfx::Rect new_pos(Size());
+    SetWindowRect(new_pos, new_pos);
+  }
+}
+
 }  // namespace blink
