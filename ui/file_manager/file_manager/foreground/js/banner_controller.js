@@ -820,11 +820,15 @@ export class BannerController extends EventTarget {
       return;
     }
     for (const volumeId of this.pendingVolumeSizeUpdates_) {
-      const sizeStats = await getSizeStats(volumeId);
-      if (!sizeStats || sizeStats.totalSize === 0) {
-        continue;
+      try {
+        const sizeStats = await getSizeStats(volumeId);
+        if (!sizeStats || sizeStats.totalSize === 0) {
+          continue;
+        }
+        this.volumeSizeStats_[volumeId] = sizeStats;
+      } catch (e) {
+        console.warn('Error getting size stats', e);
       }
-      this.volumeSizeStats_[volumeId] = sizeStats;
     }
     this.pendingVolumeSizeUpdates_.clear();
     await this.reconcile();
