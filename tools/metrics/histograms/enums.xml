@@ -75219,6 +75219,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="API was successfully called, but result is unknown."/>
 </enum>
 
+<enum name="PasswordStoreAndroidBackendRequestStatus">
+  <int value="0" label="Requested"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Completed"/>
+</enum>
+
 <enum name="PasswordStoreChange">
   <int value="0" label="Add - If the PasswordForm login was added."/>
   <int value="1" label="Update - If the PasswordForm login was updated."/>

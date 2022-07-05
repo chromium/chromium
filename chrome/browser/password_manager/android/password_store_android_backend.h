@@ -111,7 +111,7 @@ class PasswordStoreAndroidBackend
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
 
   // Implements PasswordStoreBackend interface.
-  void InitBackend(RemoteChangesReceived stored_passwords_changed,
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;

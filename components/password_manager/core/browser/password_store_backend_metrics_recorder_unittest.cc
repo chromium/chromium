@@ -22,6 +22,8 @@ constexpr auto kLatencyDelta = base::Milliseconds(123u);
 
 constexpr char kSomeBackend[] = "SomeBackend";
 constexpr char kSomeMethod[] = "MethodName";
+constexpr char kSpecificMetric[] =
+    "PasswordManager.PasswordStoreSomeBackend.MethodName";
 constexpr char kDurationMetric[] =
     "PasswordManager.PasswordStoreSomeBackend.MethodName.Latency";
 constexpr char kSuccessMetric[] =
@@ -30,6 +32,8 @@ constexpr char kErrorCodeMetric[] =
     "PasswordManager.PasswordStoreSomeBackend.MethodName.ErrorCode";
 constexpr char kApiErrorMetric[] =
     "PasswordManager.PasswordStoreSomeBackend.MethodName.APIError";
+constexpr char kOverallMetric[] =
+    "PasswordManager.PasswordStoreBackend.MethodName";
 constexpr char kDurationOverallMetric[] =
     "PasswordManager.PasswordStoreBackend.MethodName.Latency";
 constexpr char kSuccessOverallMetric[] =
@@ -64,6 +68,12 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
       PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
                                           MetricInfix(kSomeMethod));
 
+  // Checking started requests in the overall and backend-specific histogram.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSpecificMetric),
+              ElementsAre(Bucket(/* Requested */ 0, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kOverallMetric),
+              ElementsAre(Bucket(/* Requested */ 0, 1)));
+
   AdvanceClock(kLatencyDelta);
 
   metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
@@ -81,6 +91,14 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
                                          1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessOverallMetric),
               ElementsAre(Bucket(true, 1)));
+
+  // Checking completed requests in the overall and backend-specific histogram.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSpecificMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kOverallMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
 }
 
 TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
@@ -117,6 +135,14 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
               ElementsAre(Bucket(7, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorOverallMetric),
               ElementsAre(Bucket(11010, 1)));
+
+  // Checking completed requests in the overall and backend-specific histogram.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSpecificMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kOverallMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
 }
 
 TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Cancelled) {
@@ -132,15 +158,23 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Cancelled) {
   metrics_recorder.RecordMetrics(SuccessStatus::kCancelled,
                                  /*error=*/absl::nullopt);
 
-  // Checking records in the backend-specific histogram
+  // Checking records in the backend-specific histogram.
   histogram_tester.ExpectTotalCount(kDurationMetric, 0);
   EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetric),
               ElementsAre(Bucket(false, 1)));
 
-  // Checking records in the overall histogram
+  // Checking records in the overall histogram.
   histogram_tester.ExpectTotalCount(kDurationOverallMetric, 0);
   EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessOverallMetric),
               ElementsAre(Bucket(false, 1)));
+
+  // Checking timed-out requests in the overall and backend-specific histogram.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSpecificMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Timeout */ 1, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kOverallMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Timeout */ 1, 1)));
 }
 
 }  // namespace password_manager

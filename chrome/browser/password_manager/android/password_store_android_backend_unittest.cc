@@ -969,7 +969,7 @@ TEST_F(PasswordStoreAndroidBackendTest, NotifyStoreOnForegroundSessionStart) {
   base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
       store_notification_trigger;
   backend().InitBackend(
-      /*stored_passwords_changed=*/store_notification_trigger.Get(),
+      /*remote_form_changes_received=*/store_notification_trigger.Get(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/base::DoNothing());
 
@@ -989,6 +989,8 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
   constexpr JobId kJobId{1337};
+  const char kStartedMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync";
   const char kDurationMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency";
   const char kSuccessMetric[] =
@@ -996,7 +998,7 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
   base::HistogramTester histogram_tester;
-  backend().InitBackend(/*stored_passwords_changed=*/base::DoNothing(),
+  backend().InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
                         /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
                         /*completion=*/base::DoNothing());
 
@@ -1033,6 +1035,39 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
               ElementsAre(base::Bucket(false, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
               ElementsAre(base::Bucket(8, 1)));  // Record only once.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kStartedMetric),
+              ElementsAre(base::Bucket(/* Requested */ 0, 1),
+                          base::Bucket(/* Timeout */ 1, 1)));
+}
+TEST_F(PasswordStoreAndroidBackendTest, RecordsRequestStartAndEndMetric) {
+  constexpr JobId kJobId{1337};
+  const char kStartedMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync";
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
+                        /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+                        /*completion=*/base::DoNothing());
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), AddLogin).WillOnce(Return(kJobId));
+  // Since tasks are never run, the reply should never be called.
+  EXPECT_CALL(mock_reply, Run).Times(0);
+
+  backend().AddLoginAsync(
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated),
+      mock_reply.Get());
+
+  // Don't wait for execution, check that request start is already logged.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kStartedMetric),
+              ElementsAre(base::Bucket(/* Requested */ 0, 1)));
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+  consumer().OnLoginsChanged(kJobId, absl::nullopt);
+
+  // After execution, check that request is logged again.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kStartedMetric),
+              ElementsAre(base::Bucket(/* Requested */ 0, 1),
+                          base::Bucket(/* Completed */ 2, 1)));
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,

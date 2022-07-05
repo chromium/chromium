@@ -361,11 +361,11 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
 PasswordStoreAndroidBackend::~PasswordStoreAndroidBackend() = default;
 
 void PasswordStoreAndroidBackend::InitBackend(
-    RemoteChangesReceived stored_passwords_changed,
+    RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
-  stored_passwords_changed_ = std::move(stored_passwords_changed);
+  stored_passwords_changed_ = std::move(remote_form_changes_received);
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,
       base::Unretained(this)));

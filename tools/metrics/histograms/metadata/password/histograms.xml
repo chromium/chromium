@@ -2488,6 +2488,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStore{Backend}{Function}"
+    enum="PasswordStoreAndroidBackendRequestStatus" expires_after="M108">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records each {Function} call by the PasswordStore {Backend}. Recorded twice:
+    1) when the store issues the request, and 2) as the asynchronous job has
+    finished or times out. The first bucket may exceed others if Chrome closes
+    before the request finishes.
+  </summary>
+  <token key="Backend">
+    <variant name="AndroidBackend" summary="Android backend"/>
+    <variant name="Backend" summary="backend"/>
+    <variant name="BuiltInBackend" summary="built-in backend"/>
+  </token>
+  <token key="Function">
+    <variant name=".AddLoginAsync" summary="AddLoginAsync()"/>
+    <variant name=".ClearAllLocalPasswords" summary="ClearAllLocalPasswords()"/>
+    <variant name=".DisableAutoSignInForOriginsAsync"
+        summary="DisableAutoSignInForOriginsAsync()"/>
+    <variant name=".FillMatchingLoginsAsync"
+        summary="FillMatchingLoginsAsync()"/>
+    <variant name=".GetAllLoginsAsync" summary="GetAllLoginsAsync()"/>
+    <variant name=".GetAutofillableLoginsAsync"
+        summary="GetAutofillableLoginsAsync()"/>
+    <variant name=".GetLoginsAsync" summary="GetLoginsAsync()"/>
+    <variant name=".RemoveLoginAsync" summary="RemoveLoginAsync()"/>
+    <variant name=".RemoveLoginsByURLAndTimeAsync"
+        summary="RemoveLoginsByURLAndTimeAsync()"/>
+    <variant name=".RemoveLoginsCreatedBetweenAsync"
+        summary="RemoveLoginsCreatedBetweenAsync()"/>
+    <variant name=".UpdateLoginAsync" summary="UpdateLoginAsync()"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}.Latency"
     units="ms" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
