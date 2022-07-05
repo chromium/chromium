@@ -926,6 +926,7 @@ if (!is_component_build) {
   android_library("cronet_common_javatests") {
     testonly = true
     sources = [
+      "test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
       "test/javatests/src/org/chromium/net/CronetTestRule.java",
       "test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
       "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
@@ -938,6 +939,7 @@ if (!is_component_build) {
       "//build/android:build_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit",
     ]
   }

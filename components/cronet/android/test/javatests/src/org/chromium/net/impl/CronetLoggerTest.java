@@ -27,11 +27,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetEngine;
+import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
@@ -61,15 +63,22 @@ import java.util.concurrent.atomic.AtomicReference;
  * Test logging functionalities.
  */
 @RunWith(JUnit4.class)
+@RequiresMinAndroidApi(Build.VERSION_CODES.O)
 public final class CronetLoggerTest {
+    private final CronetTestRule mTestRule = new CronetTestRule();
+    private final CronetLoggerTestRule mLoggerTestRule = new CronetLoggerTestRule(TestLogger.class);
+
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final RuleChain chain = RuleChain.outerRule(mTestRule).around(mLoggerTestRule);
 
     private TestLogger mTestLogger;
     private Context mContext;
     private CronetTestFramework mTestFramework;
 
-    final class TestLogger extends CronetLogger {
+    /**
+     * Records the last engine creation (and traffic info) call it has received.
+     */
+    public static final class TestLogger extends CronetLogger {
         private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
         private AtomicInteger mCronetEngineId = new AtomicInteger();
@@ -135,15 +144,13 @@ public final class CronetLoggerTest {
     public void setUp() {
         mContext = CronetTestRule.getContext();
         mTestFramework = mTestRule.buildCronetTestFramework();
-        mTestLogger = new TestLogger();
-        CronetLoggerFactory.setLoggerForTesting(mTestLogger);
+        mTestLogger = (TestLogger) mLoggerTestRule.mTestLogger;
         assertTrue(NativeTestServer.startNativeTestServer(mContext));
     }
 
     @After
     public void tearDown() {
         mTestLogger = null;
-        CronetLoggerFactory.setLoggerForTesting(null);
         NativeTestServer.shutdownNativeTestServer();
         mTestFramework.shutdownEngine();
     }
@@ -219,7 +226,6 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns = new JSONObject()
                                       .put("enable", true)
@@ -279,7 +285,6 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testEngineCreationAndTrafficInfoEngineId() {
         final String url = "www.example.com";
         CronetEngine engine = mTestFramework.startEngine();
@@ -314,7 +319,6 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testMultipleEngineCreationAndTrafficInfoEngineId() {
         final String url = "www.example.com";
         final CronetEngine.Builder engineBuilder = mTestFramework.mBuilder;
@@ -354,7 +358,6 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testSuccessfulRequestNative() {
         final String url = NativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestFramework.startEngine();
@@ -389,7 +392,6 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testFailedRequestNative() {
         final String url = "www.unreachable-url.com";
         CronetEngine engine = mTestFramework.startEngine();
@@ -409,8 +411,9 @@ public final class CronetLoggerTest {
         assertEquals(0, trafficInfo.getRequestBodySizeInBytes());
         assertEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
         assertEquals(0, trafficInfo.getResponseBodySizeInBytes());
-        // When a request fails before hitting the server all these values won't be populated in the
-        // actual code. Check that the logger sets them to some known defaults before logging.
+        // When a request fails before hitting the server all these values won't be populated in
+        // the actual code. Check that the logger sets them to some known defaults before
+        // logging.
         assertEquals(0, trafficInfo.getResponseStatusCode());
         assertEquals("", trafficInfo.getNegotiatedProtocol());
         assertFalse(trafficInfo.wasConnectionMigrationAttempted());
@@ -424,7 +427,6 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testCanceledRequestNative() {
         final String url = NativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestFramework.startEngine();
@@ -446,8 +448,9 @@ public final class CronetLoggerTest {
         assertEquals(0, trafficInfo.getRequestBodySizeInBytes());
         assertEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
         assertEquals(0, trafficInfo.getResponseBodySizeInBytes());
-        // When a request fails before hitting the server all these values won't be populated in the
-        // actual code. Check that the logger sets them to some known defaults before logging.
+        // When a request fails before hitting the server all these values won't be populated in
+        // the actual code. Check that the logger sets them to some known defaults before
+        // logging.
         assertEquals(0, trafficInfo.getResponseStatusCode());
         assertEquals("", trafficInfo.getNegotiatedProtocol());
         assertFalse(trafficInfo.wasConnectionMigrationAttempted());
@@ -508,7 +511,6 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunJavaCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testSuccessfulRequestJava() {
         final String url = NativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestFramework.startEngine();
@@ -543,7 +545,6 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunJavaCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testFailedRequestJava() {
         final String url = "www.unreachable-url.com";
         CronetEngine engine = mTestFramework.startEngine();
@@ -562,8 +563,9 @@ public final class CronetLoggerTest {
         assertEquals(0, trafficInfo.getRequestHeaderSizeInBytes());
         assertEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
         assertEquals(0, trafficInfo.getResponseStatusCode());
-        // When a request fails before hitting the server all these values won't be populated in the
-        // actual code. Check that the logger sets them to some known defaults before logging.
+        // When a request fails before hitting the server all these values won't be populated in
+        // the actual code. Check that the logger sets them to some known defaults before
+        // logging.
         assertEquals(-1, trafficInfo.getRequestBodySizeInBytes());
         assertEquals(-1, trafficInfo.getResponseBodySizeInBytes());
         assertEquals("", trafficInfo.getNegotiatedProtocol());
@@ -578,7 +580,6 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunJavaCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
     public void testCanceledRequestJava() {
         final String url = NativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestFramework.startEngine();
@@ -599,8 +600,9 @@ public final class CronetLoggerTest {
         assertEquals(0, trafficInfo.getRequestHeaderSizeInBytes());
         assertEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
         assertEquals(0, trafficInfo.getResponseStatusCode());
-        // When a request fails before hitting the server all these values won't be populated in the
-        // actual code. Check that the logger sets them to some known defaults before logging.
+        // When a request fails before hitting the server all these values won't be populated in
+        // the actual code. Check that the logger sets them to some known defaults before
+        // logging.
         assertEquals(-1, trafficInfo.getRequestBodySizeInBytes());
         assertEquals(-1, trafficInfo.getResponseBodySizeInBytes());
         assertEquals("", trafficInfo.getNegotiatedProtocol());

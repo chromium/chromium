@@ -5,12 +5,12 @@
 package org.chromium.net.impl;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 /**
- * Takes care of instantiating the correct CronetLogger
+ * Takes care of instantiating the correct CronetLogger.
  */
 public final class CronetLoggerFactory {
+    private CronetLoggerFactory() {}
     private static final CronetLogger sDefaultLogger = new NoOpLogger();
     private static CronetLogger sTestingLogger;
 
@@ -23,8 +23,29 @@ public final class CronetLoggerFactory {
         return sDefaultLogger;
     }
 
-    @VisibleForTesting
-    public static void setLoggerForTesting(@Nullable CronetLogger testingLogger) {
+    private static void setLoggerForTesting(@Nullable CronetLogger testingLogger) {
         sTestingLogger = testingLogger;
+    }
+
+    /**
+     * Utility class to safely use a custom CronetLogger for the duration of a test.
+     * To be used within a try-with-resources statement within the test.
+     */
+    public static class SwapLoggerForTesting implements AutoCloseable {
+        /**
+         * Forces {@code CronetLoggerFactory#createLogger} to return @param testLogger instead of
+         * what it would have normally returned.
+         */
+        public SwapLoggerForTesting(CronetLogger testLogger) {
+            CronetLoggerFactory.setLoggerForTesting(testLogger);
+        }
+
+        /**
+         * Restores CronetLoggerFactory to its original state.
+         */
+        @Override
+        public void close() {
+            CronetLoggerFactory.setLoggerForTesting(null);
+        }
     }
 }
