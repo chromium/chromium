@@ -8,6 +8,8 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <tuple>
+#include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,20 +20,25 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -44,29 +51,42 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/content_settings/core/browser/content_settings_type_set.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
+#include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -77,7 +97,6 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -86,6 +105,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -503,6 +523,8 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
 }
 
 apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
+  DCHECK(!IsShuttingDown());
+
   apps::Readiness readiness =
       web_app->is_locally_installed()
           ? (web_app->is_uninstalling() ? apps::Readiness::kUninstalledByUser
@@ -623,123 +645,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
-  DCHECK(!IsShuttingDown());
-  apps::mojom::Readiness readiness =
-      web_app->is_locally_installed()
-          ? (web_app->is_uninstalling()
-                 ? apps::mojom::Readiness::kUninstalledByUser
-                 : apps::mojom::Readiness::kReady)
-          : apps::mojom::Readiness::kDisabledByUser;
-#if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(web_app->chromeos_data().has_value());
-  if (web_app->chromeos_data()->is_disabled)
-    readiness = apps::mojom::Readiness::kDisabledByPolicy;
-#endif
-
-  auto install_reason = GetHighestPriorityInstallReason(web_app);
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      apps::ConvertAppTypeToMojomAppType(app_type()), web_app->app_id(),
-      readiness, provider_->registrar().GetAppShortName(web_app->app_id()),
-      install_reason);
-
-  app->install_source = ConvertInstallSourceToMojom(
-      provider_->registrar().GetAppInstallSourceForMetrics(web_app->app_id()));
-
-  app->policy_id = GetPolicyId(*web_app);
-
-  // For system web apps (only), the install source is |kSystem|.
-  DCHECK_EQ(web_app->IsSystemApp(),
-            app->install_reason == apps::mojom::InstallReason::kSystem);
-
-  app->description =
-      provider_->registrar().GetAppDescription(web_app->app_id());
-  app->additional_search_terms = web_app->additional_search_terms();
-  app->last_launch_time = web_app->last_launch_time();
-  app->install_time = web_app->install_time();
-
-  // Web App's publisher_id the start url.
-  app->publisher_id = web_app->start_url().spec();
-
-  auto display_mode = registrar().GetAppEffectiveDisplayMode(web_app->app_id());
-  app->window_mode = apps::ConvertWindowModeToMojomWindowMode(
-      ConvertDisplayModeToWindowMode(display_mode));
-
-  // app->version is left empty here.
-  PopulateWebAppPermissions(web_app, &app->permissions);
-
-  SetWebAppShowInFields(app, web_app);
-
-  app->allow_uninstall = web_app->CanUserUninstallWebApp()
-                             ? apps::mojom::OptionalBool::kTrue
-                             : apps::mojom::OptionalBool::kFalse;
-
-  // Add the intent filters for PWAs.
-  base::Extend(
-      app->intent_filters,
-      apps_util::CreateWebAppIntentFilters(
-          web_app->app_id(), registrar().GetAppScope(web_app->app_id()),
-          registrar().GetAppShareTarget(web_app->app_id()),
-          provider_->os_integration_manager().GetEnabledFileHandlers(
-              web_app->app_id())));
-
-  // These filters are used by the settings page to display would-be-handled
-  // extensions even when the feature is not enabled for the app, whereas
-  // `GetEnabledFileHandlers` above only returns the ones that currently are
-  // enabled.
-  const apps::FileHandlers* all_file_handlers =
-      registrar().GetAppFileHandlers(web_app->app_id());
-  if (all_file_handlers && !all_file_handlers->empty()) {
-    std::set<std::string> extensions_set =
-        apps::GetFileExtensionsFromFileHandlers(*all_file_handlers);
-    app->intent_filters.push_back(apps_util::CreateFileFilter(
-        {apps_util::kIntentActionPotentialFileHandler},
-        /*mime_types=*/{},
-        /*file_extensions=*/
-        {extensions_set.begin(), extensions_set.end()}));
-  }
-
-  if (IsNoteTakingWebApp(*web_app))
-    app->intent_filters.push_back(apps_util::CreateNoteTakingFilterMojom());
-
-  if (IsLockScreenCapable(*web_app))
-    app->intent_filters.push_back(apps_util::CreateLockScreenFilterMojom());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {
-    app->intent_filters.push_back(apps_util::CreateFileFilter(
-        {apps_util::kIntentActionView},
-        /*mime_types=*/
-        {extensions::app_file_handler_util::kMimeTypeInodeDirectory},
-        /*file_extensions=*/{}));
-  }
-#endif
-
-  app->icon_key = MakeIconKey(web_app);
-
-  bool paused = IsPaused(web_app->app_id());
-  app->paused = paused ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (readiness != apps::mojom::Readiness::kReady) {
-    UpdateAppDisabledMode(app);
-  }
-
-  app->has_badge =
-      ShouldShowBadge(web_app->app_id(),
-                      app_notifications_.HasNotification(web_app->app_id()))
-          ? apps::mojom::OptionalBool::kTrue
-          : apps::mojom::OptionalBool::kFalse;
-#else
-  app->has_badge = apps::mojom::OptionalBool::kFalse;
-#endif
-  const auto login_mode = registrar().GetAppRunOnOsLoginMode(web_app->app_id());
-  app->run_on_os_login = apps::mojom::RunOnOsLogin::New(
-      apps::ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
-          ConvertOsLoginMode(login_mode.value)),
-      !login_mode.user_controllable);
-
-  return app;
+  return apps::ConvertAppToMojomApp(CreateWebApp(web_app));
 }
 
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
@@ -1124,11 +1030,9 @@ void WebAppPublisherHelper::StopApp(const std::string& app_id) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (!IsWebAppsCrosapiEnabled()) {
     return;
   }
-#endif
 
   apps::BrowserAppInstanceTracker* instance_tracker =
       apps::AppServiceProxyFactory::GetForProfile(profile_)
