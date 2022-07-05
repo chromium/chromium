@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
@@ -18,8 +19,8 @@ namespace chromeos {
 // DiagnosticsApiFunctionBase --------------------------------------------------
 
 DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
-    : diagnostics_service_(
-          remote_diagnostics_service_.BindNewPipeAndPassReceiver()) {}
+    : diagnostics_service_(ash::DiagnosticsService::Factory::Create(
+          remote_diagnostics_service_.BindNewPipeAndPassReceiver())) {}
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
