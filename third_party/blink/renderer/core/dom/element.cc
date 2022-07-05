@@ -594,10 +594,6 @@ void EnqueueAutofocus(Element& element) {
   // contexts: if ancestorBC's active document's origin is not same origin with
   // target's origin, then return.
   for (Frame* frame = doc.GetFrame(); frame; frame = frame->Parent()) {
-    // TODO(crbug.com/1318055): With MPArch there may be multiple main frames so
-    // we should use IsCrossOriginToOutermostMainFrame when we intend to check
-    // if any embedded frame (eg, iframe or fenced frame) is cross-origin with
-    // respect to the outermost main frame. Follow up to confirm correctness.
     if (!frame->IsCrossOriginToOutermostMainFrame())
       continue;
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
