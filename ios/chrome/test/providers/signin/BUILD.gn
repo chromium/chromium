@@ -8,6 +8,7 @@ group("signin") {
     ":signin_error",
     ":signin_resources",
     ":signin_sso",
+    ":trusted_vault",
   ]
 }
 
@@ -39,4 +40,20 @@ source_set("signin_sso") {
   sources = [ "test_signin_sso.mm" ]
   deps = [ "//ios/public/provider/chrome/browser/signin:signin_sso_api" ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("trusted_vault") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "fake_trusted_vault_client_backend.h",
+    "fake_trusted_vault_client_backend.mm",
+    "test_trusted_vault.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/signin:trusted_vault",
+    "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

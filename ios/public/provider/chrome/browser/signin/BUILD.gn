@@ -43,6 +43,12 @@ source_set("signin_sso_api") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("trusted_vault_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "trusted_vault_api.h" ]
+  deps = [ "//ios/chrome/browser/signin:trusted_vault" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

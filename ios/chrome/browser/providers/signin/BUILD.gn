@@ -28,3 +28,12 @@ source_set("chromium_signin_sso") {
   deps = [ "//ios/public/provider/chrome/browser/signin:signin_sso_api" ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("chromium_trusted_vault") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_trusted_vault.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
+  ]
+}
