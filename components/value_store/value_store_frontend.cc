@@ -42,7 +42,7 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
     // callback.
     absl::optional<base::Value> value;
     if (result.status().ok()) {
-      value = result.settings().ExtractKey(key);
+      value = result.settings().Extract(key);
     } else {
       LOG(WARNING) << "Reading " << key << " from " << db_path_.value()
                    << " failed: " << result.status().message;

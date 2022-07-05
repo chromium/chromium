@@ -94,15 +94,15 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreKeyTest) {
   result = store()->Get(kCorruptKey);
   EXPECT_TRUE(result.status().ok())
       << "Get result not OK: " << result.status().message;
-  EXPECT_TRUE(result.settings().DictEmpty());
+  EXPECT_TRUE(result.settings().empty());
 
   // Verify that the valid pair is still present.
   result = store()->Get(kNotCorruptKey);
   EXPECT_TRUE(result.status().ok());
-  EXPECT_TRUE(result.settings().FindKey(kNotCorruptKey));
-  std::string value_string;
-  EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
-  EXPECT_EQ(kValue, value_string);
+  const std::string* value_string =
+      result.settings().FindString(kNotCorruptKey);
+  ASSERT_TRUE(value_string);
+  EXPECT_EQ(kValue, *value_string);
 }
 
 // Test that the Restore() method does not just delete the entire database
@@ -137,14 +137,14 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
             result.status().restore_status);
 
   // We should still have all valid pairs present in the database.
-  std::string value_string;
+  std::string* value_string;
   for (auto* kNotCorruptKey : kNotCorruptKeys) {
     result = store()->Get(kNotCorruptKey);
     EXPECT_TRUE(result.status().ok());
     ASSERT_EQ(ValueStore::RESTORE_NONE, result.status().restore_status);
-    EXPECT_TRUE(result.settings().FindKey(kNotCorruptKey));
-    EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
-    EXPECT_EQ(kValue, value_string);
+    value_string = result.settings().FindString(kNotCorruptKey);
+    ASSERT_TRUE(value_string);
+    EXPECT_EQ(kValue, *value_string);
   }
 }
 
@@ -184,7 +184,7 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
   ASSERT_EQ(ValueStore::DB_RESTORE_REPAIR_SUCCESS,
             result.status().restore_status);
   EXPECT_TRUE(result.status().ok());
-  EXPECT_EQ(0u, result.settings().DictSize());
+  EXPECT_EQ(0u, result.settings().size());
 }
 
 }  // namespace value_store

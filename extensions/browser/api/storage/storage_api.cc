@@ -190,7 +190,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
   if (!result.status().ok())
     return Error(result.status().message);
 
-  return OneArgument(std::move(result.settings()));
+  return OneArgument(base::Value(result.PassSettings()));
 }
 
 ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
@@ -263,9 +263,8 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
       if (!result.status().ok()) {
         return UseReadResult(std::move(result));
       }
-      std::unique_ptr<base::DictionaryValue> with_default_values =
-          base::Value::AsDictionaryValue(input).CreateDeepCopy();
-      with_default_values->MergeDictionary(&result.settings());
+      base::Value::Dict with_default_values = input.GetDict().Clone();
+      with_default_values.Merge(result.PassSettings());
       return UseReadResult(ValueStore::ReadResult(
           std::move(with_default_values), result.PassStatus()));
     }

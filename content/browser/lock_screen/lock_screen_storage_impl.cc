@@ -74,7 +74,7 @@ std::vector<std::string> LockScreenStorageHelper::GetKeys(
   std::vector<std::string> result;
   if (!read.status().ok())
     return result;
-  for (auto kv : read.settings().DictItems()) {
+  for (auto kv : read.settings()) {
     result.push_back(kv.first);
   }
 

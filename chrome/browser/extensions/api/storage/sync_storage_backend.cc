@@ -22,10 +22,10 @@ namespace extensions {
 namespace {
 
 void AddAllSyncData(const std::string& extension_id,
-                    const base::DictionaryValue& src,
+                    const base::Value::Dict& src,
                     syncer::ModelType type,
                     syncer::SyncDataList* dst) {
-  for (auto it : src.DictItems()) {
+  for (auto it : src) {
     dst->push_back(settings_sync_util::CreateData(extension_id, it.first,
                                                   it.second, type));
   }

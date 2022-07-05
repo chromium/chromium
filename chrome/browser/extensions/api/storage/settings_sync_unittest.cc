@@ -98,7 +98,8 @@ testing::AssertionResult SettingsEq(const char* _1,
            << "Expected: " << expected
            << ", actual has error: " << actual.status().message;
   }
-  return ValuesEq(_1, _2, &expected, &actual.settings());
+  base::Value settings(actual.PassSettings());
+  return ValuesEq(_1, _2, &expected, &settings);
 }
 
 // SyncChangeProcessor which just records the changes made, accessed after

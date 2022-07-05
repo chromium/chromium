@@ -84,9 +84,9 @@ bool IsItemRegistered(ValueStore* store, const std::string& item_id) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
   if (!read.status().ok())
     return false;
-  const base::Value* registered_items =
-      read.settings().FindDictKey(kStoreKeyRegisteredItems);
-  return registered_items && registered_items->FindKey(item_id);
+  const base::Value::Dict* registered_items =
+      read.settings().FindDict(kStoreKeyRegisteredItems);
+  return registered_items && registered_items->Find(item_id);
 }
 
 // Gets a dictionary value that contains set of all registered data items from
@@ -110,7 +110,7 @@ void GetRegisteredItems(OperationResult* result,
   // |registered_items| (and avoid doing a copy |read.settings()|
   // sub-dictionary).
   absl::optional<base::Value> registered_items =
-      read.settings().ExtractKey(kStoreKeyRegisteredItems);
+      read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items) {
     // If the registered items dictionary cannot be found, assume no items have
     // yet been registered, and return empty result.
@@ -139,7 +139,7 @@ void RegisterItem(OperationResult* result,
     return;
   }
   absl::optional<base::Value> registered_items =
-      read.settings().ExtractKey(kStoreKeyRegisteredItems);
+      read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items)
     registered_items = base::Value(base::Value::Type::DICTIONARY);
 
@@ -216,8 +216,8 @@ void ReadImpl(OperationResult* result,
     return;
   }
 
-  const base::Value* item;
-  if (!read.settings().Get(item_id, &item)) {
+  const base::Value* item = read.settings().Find(item_id);
+  if (!item) {
     *result = OperationResult::kSuccess;
     *data = std::vector<char>();
     return;
@@ -250,15 +250,16 @@ void DeleteImpl(OperationResult* result,
     return;
   }
 
-  base::Value* registered_items =
-      read.settings().FindDictKey(kStoreKeyRegisteredItems);
-  if (!registered_items || !registered_items->RemoveKey(item_id)) {
+  base::Value::Dict* registered_items =
+      read.settings().FindDict(kStoreKeyRegisteredItems);
+  if (!registered_items || !registered_items->Remove(item_id)) {
     *result = OperationResult::kNotFound;
     return;
   }
 
-  ValueStore::WriteResult write = store->Set(
-      ValueStore::DEFAULTS, kStoreKeyRegisteredItems, *registered_items);
+  ValueStore::WriteResult write =
+      store->Set(ValueStore::DEFAULTS, kStoreKeyRegisteredItems,
+                 base::Value(std::move(*registered_items)));
   *result = write.status().ok() ? OperationResult::kSuccess
                                 : OperationResult::kFailed;
 }

@@ -232,9 +232,8 @@ void SettingsStorageQuotaEnforcer::LazyCalculateUsage() {
     return;
   }
 
-  for (base::DictionaryValue::Iterator it(maybe_settings.settings());
-       !it.IsAtEnd(); it.Advance()) {
-    Allocate(it.key(), it.value(), &used_total_, &used_per_setting_);
+  for (const auto [key, value] : maybe_settings.settings()) {
+    Allocate(key, value, &used_total_, &used_per_setting_);
   }
 
   usage_calculated_ = true;

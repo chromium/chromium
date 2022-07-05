@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/storage/policy_value_store.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
@@ -52,7 +53,7 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   // TODO(joaodasilva): it'd be better to have a less expensive way of
   // determining which keys are currently stored, or of determining which keys
   // must be removed.
-  base::DictionaryValue previous_policy;
+  base::Value::Dict previous_policy;
   ValueStore::ReadResult read_result = delegate_->Get();
 
   if (!read_result.status().ok()) {
@@ -61,14 +62,14 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
     // Leave |previous_policy| empty, so that events are generated for every
     // policy in |current_policy|.
   } else {
-    read_result.settings().Swap(&previous_policy);
+    std::swap(read_result.settings(), previous_policy);
   }
 
   // Now get two lists of changes: changes after setting the current policies,
   // and changes after removing old policies that aren't in |current_policy|
   // anymore.
   std::vector<std::string> removed_keys;
-  for (auto kv : previous_policy.DictItems()) {
+  for (auto kv : previous_policy) {
     if (!current_policy.FindKey(kv.first))
       removed_keys.push_back(kv.first);
   }

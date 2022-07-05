@@ -166,10 +166,11 @@ TEST_F(PolicyValueStoreTest, DontProvideRecommendedPolicies) {
 
   ValueStore::ReadResult result = store_->Get();
   ASSERT_TRUE(result.status().ok());
-  EXPECT_EQ(1u, result.settings().DictSize());
-  base::Value* value = NULL;
-  EXPECT_FALSE(result.settings().Get("may", &value));
-  EXPECT_TRUE(result.settings().Get("must", &value));
+  EXPECT_EQ(1u, result.settings().size());
+  base::Value* value = result.settings().Find("may");
+  EXPECT_FALSE(value);
+  value = result.settings().Find("must");
+  ASSERT_TRUE(value);
   EXPECT_EQ(expected, *value);
 }
 

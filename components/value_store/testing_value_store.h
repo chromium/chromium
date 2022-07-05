@@ -53,7 +53,7 @@ class TestingValueStore : public ValueStore {
   WriteResult Clear() override;
 
  private:
-  base::DictionaryValue storage_;
+  base::Value::Dict storage_;
   int read_count_ = 0;
   int write_count_ = 0;
   ValueStore::Status status_;

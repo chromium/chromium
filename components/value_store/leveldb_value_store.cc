@@ -81,7 +81,7 @@ ValueStore::ReadResult LeveldbValueStore::Get(
   if (!status.ok())
     return ReadResult(std::move(status));
 
-  std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue());
+  base::Value::Dict settings;
 
   for (const std::string& key : keys) {
     absl::optional<base::Value> setting;
@@ -89,7 +89,7 @@ ValueStore::ReadResult LeveldbValueStore::Get(
     if (!status.ok())
       return ReadResult(std::move(status));
     if (setting)
-      settings->SetKey(key, std::move(*setting));
+      settings.Set(key, std::move(*setting));
   }
 
   return ReadResult(std::move(settings), std::move(status));
@@ -100,7 +100,7 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
   if (!status.ok())
     return ReadResult(std::move(status));
 
-  std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue());
+  base::Value::Dict settings;
 
   std::unique_ptr<leveldb::Iterator> it(db()->NewIterator(read_options()));
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
@@ -113,7 +113,7 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
                                                 : VALUE_RESTORE_DELETE_FAILURE,
                                kInvalidJson));
     }
-    settings->SetKey(key, std::move(*value));
+    settings.Set(key, std::move(*value));
   }
 
   if (!it->status().ok()) {
@@ -212,10 +212,10 @@ ValueStore::WriteResult LeveldbValueStore::Clear() {
   if (!read_result.status().ok())
     return WriteResult(read_result.PassStatus());
 
-  base::DictionaryValue& whole_db = read_result.settings();
-  while (!whole_db.DictEmpty()) {
-    std::string next_key = base::DictionaryValue::Iterator(whole_db).key();
-    absl::optional<base::Value> next_value = whole_db.ExtractKey(next_key);
+  base::Value::Dict& whole_db = read_result.settings();
+  while (!whole_db.empty()) {
+    std::string next_key = whole_db.begin()->first;
+    absl::optional<base::Value> next_value = whole_db.Extract(next_key);
     changes.emplace_back(next_key, std::move(*next_value), absl::nullopt);
   }
 

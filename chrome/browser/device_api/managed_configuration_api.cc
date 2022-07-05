@@ -26,6 +26,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace {
@@ -143,13 +144,13 @@ void ManagedConfigurationAPI::RegisterProfilePrefs(
 void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     const url::Origin& origin,
     const std::vector<std::string>& keys,
-    base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)> callback) {
+    base::OnceCallback<void(absl::optional<base::Value::Dict>)> callback) {
   if (!CanHaveManagedStore(origin)) {
-    return std::move(callback).Run(nullptr);
+    return std::move(callback).Run(absl::nullopt);
   }
 
   if (!base::Contains(store_map_, origin))
-    return std::move(callback).Run(nullptr);
+    return std::move(callback).Run(absl::nullopt);
 
   store_map_[origin]
       .AsyncCall(&ManagedConfigurationStore::Get)

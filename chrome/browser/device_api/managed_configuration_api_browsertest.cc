@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -91,10 +92,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return http_response;
 }
 
-bool DictValueEquals(std::unique_ptr<base::DictionaryValue> value,
+bool DictValueEquals(absl::optional<base::Value::Dict> value,
                      std::map<std::string, std::string> expected) {
+  DCHECK(value);
   std::map<std::string, std::string> actual;
-  for (auto entry : value->DictItems()) {
+  for (auto entry : *value) {
     if (!entry.second.is_string())
       return false;
     actual.insert({entry.first, entry.second.GetString()});
@@ -130,9 +132,9 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
                                base::ListValue());
   }
 
-  std::unique_ptr<base::DictionaryValue> GetValues(
+  absl::optional<base::Value::Dict> GetValues(
       const std::vector<std::string>& keys) {
-    base::test::TestFuture<std::unique_ptr<base::DictionaryValue>> value_future;
+    base::test::TestFuture<absl::optional<base::Value::Dict>> value_future;
     api()->GetOriginPolicyConfiguration(origin_, keys,
                                         value_future.GetCallback());
     return value_future.Take();
@@ -218,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, AppRemovedFromPolicyList) {
 
   ClearConfiguration();
   WaitForUpdate();
-  ASSERT_EQ(GetValues({kKey1, kKey2}), nullptr);
+  ASSERT_EQ(GetValues({kKey1, kKey2}), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, UnknownKeys) {

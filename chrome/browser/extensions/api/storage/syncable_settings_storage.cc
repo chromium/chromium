@@ -172,8 +172,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
                                       maybe_settings.status().message.c_str()));
   }
 
-  std::unique_ptr<base::DictionaryValue> current_settings =
-      maybe_settings.PassSettings();
+  base::Value::Dict current_settings = maybe_settings.PassSettings();
   return sync_state->DictEmpty()
              ? SendLocalSettingsToSync(std::move(current_settings))
              : OverwriteLocalSettingsWithSync(std::move(sync_state),
@@ -182,15 +181,15 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
 
 absl::optional<syncer::ModelError>
 SyncableSettingsStorage::SendLocalSettingsToSync(
-    std::unique_ptr<base::DictionaryValue> local_state) {
+    base::Value::Dict local_state) {
   DCHECK(IsOnBackendSequence());
 
-  if (local_state->DictEmpty())
+  if (local_state.empty())
     return absl::nullopt;
 
   // Transform the current settings into a list of sync changes.
   value_store::ValueStoreChangeList changes;
-  for (auto pair : local_state->DictItems()) {
+  for (auto pair : local_state) {
     changes.push_back(value_store::ValueStoreChange(pair.first, absl::nullopt,
                                                     std::move(pair.second)));
   }
@@ -205,13 +204,13 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
 absl::optional<syncer::ModelError>
 SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
     std::unique_ptr<base::DictionaryValue> sync_state,
-    std::unique_ptr<base::DictionaryValue> local_state) {
+    base::Value::Dict local_state) {
   DCHECK(IsOnBackendSequence());
   // This is implemented by building up a list of sync changes then sending
   // those to ProcessSyncChanges. This generates events like onStorageChanged.
   std::unique_ptr<SettingSyncDataList> changes(new SettingSyncDataList());
 
-  for (auto it : local_state->DictItems()) {
+  for (auto it : local_state) {
     absl::optional<base::Value> sync_value = sync_state->ExtractKey(it.first);
     if (sync_value.has_value()) {
       if (*sync_value == it.second) {
@@ -277,7 +276,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
             sync_processor_->type()));
         continue;
       }
-      current_value = maybe_settings.settings().ExtractKey(key);
+      current_value = maybe_settings.settings().Extract(key);
     }
 
     syncer::SyncError error;

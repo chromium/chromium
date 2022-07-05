@@ -52,11 +52,11 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
       origin(), keys,
       base::BindOnce(
           [](GetManagedConfigurationCallback callback,
-             std::unique_ptr<base::DictionaryValue> result) {
+             absl::optional<base::Value::Dict> result) {
             if (!result)
               return std::move(callback).Run(absl::nullopt);
             std::move(callback).Run(base::MakeFlatMap<std::string, std::string>(
-                result->DictItems(), {},
+                *result, {},
                 [](const auto& it) -> std::pair<std::string, std::string> {
                   return {it.first, it.second.GetString()};
                 }));

@@ -39,12 +39,8 @@ void ValueStore::Status::Merge(const Status& status) {
 
 // Implementation of ReadResult.
 
-ValueStore::ReadResult::ReadResult(
-    std::unique_ptr<base::DictionaryValue> settings,
-    Status status)
-    : settings_(std::move(settings)), status_(std::move(status)) {
-  CHECK(settings_);
-}
+ValueStore::ReadResult::ReadResult(base::Value::Dict settings, Status status)
+    : settings_(std::move(settings)), status_(std::move(status)) {}
 
 ValueStore::ReadResult::ReadResult(Status status)
     : status_(std::move(status)) {}
