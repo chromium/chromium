@@ -4815,7 +4815,6 @@ crbug.com/945665 http/tests/devtools/elements/styles-3/styles-change-node-while-
 # but the test coverage is still good.
 crbug.com/919789 fast/dom/viewport/resize-event-fired-window-resized.html [ Pass Timeout ]
 crbug.com/919789 fast/dom/Window/window-resize-contents.html [ Pass Timeout ]
-crbug.com/919789 media/controls/overflow-menu-hide-on-resize.html [ Pass Timeout ]
 crbug.com/919789 [ Linux ] paint/invalidation/resize-iframe-text.html [ Pass Timeout ]
 crbug.com/919789 paint/invalidation/scroll/scrollbar-damage-and-full-viewport-repaint.html [ Pass Timeout ]
 crbug.com/919789 paint/invalidation/window-resize/* [ Pass Timeout ]
