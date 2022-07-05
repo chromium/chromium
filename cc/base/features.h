@@ -64,6 +64,11 @@ CC_BASE_EXPORT extern const base::Feature kNonBlockingCommit;
 // When enabled, DroppedFrameCounter will use an adjusted sliding window
 // interval specified by field trial params.
 CC_BASE_EXPORT extern const base::Feature kSlidingWindowForDroppedFrameCounter;
+
+// When enabled, SupportsBackgroundThreadPriority is set to kNo for
+// GpuImageDecodeTaskImpl and SoftwareImageDecodeTaskImpl.
+// Introduced to fix https://crbug.com/1116624
+CC_BASE_EXPORT extern const base::Feature kNormalPriorityImageDecoding;
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

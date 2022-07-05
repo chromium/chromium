@@ -71,4 +71,7 @@ const base::Feature kNonBlockingCommit{"NonBlockingCommit",
 
 const base::Feature kSlidingWindowForDroppedFrameCounter{
     "SlidingWindowForDroppedFrameCounter", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kNormalPriorityImageDecoding{
+    "NormalPriorityImageDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
