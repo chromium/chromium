@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -282,7 +283,12 @@ TEST_F(WebDocumentFirstPartyTest, EmptySandbox) {
   WebLocalFrameImpl* frame = web_view_helper_.GetWebView()->MainFrameImpl();
   auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
       /*html=*/"", KURL("https://a.com"));
-  params->sandbox_flags = network::mojom::blink::WebSandboxFlags::kAll;
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<blink::WebPolicyContainer>(
+      blink::WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+  params->policy_container->policies.sandbox_flags =
+      network::mojom::blink::WebSandboxFlags::kAll;
   frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
 

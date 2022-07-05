@@ -1181,8 +1181,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           absl::nullopt,
           // The correct storage key will be computed before committing the
           // navigation.
-          blink::StorageKey(), network::mojom::WebSandboxFlags(),
-          override_user_agent,
+          blink::StorageKey(), override_user_agent,
           /*redirects=*/std::vector<GURL>(),
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
@@ -1314,8 +1313,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           origin,
           // The correct storage key is computed right after creating the
           // NavigationRequest below.
-          blink::StorageKey(), network::mojom::WebSandboxFlags(),
-          is_overriding_user_agent, redirects,
+          blink::StorageKey(), is_overriding_user_agent, redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
           std::string() /* redirect_response */, original_url,
@@ -7452,16 +7450,11 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_builder_->ComputePolicies(
       url, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags,
       is_anonymous());
-
-  commit_params_->sandbox_flags =
-      policy_container_builder_->FinalPolicies().sandbox_flags;
 }
 
 void NavigationRequest::ComputePoliciesToCommitForError() {
   policy_container_builder_->ComputePoliciesForError(
       IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags);
-  commit_params_->sandbox_flags =
-      policy_container_builder_->FinalPolicies().sandbox_flags;
 }
 
 void NavigationRequest::CheckStateTransition(NavigationState state) const {

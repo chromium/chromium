@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -114,7 +115,12 @@ class DocumentTest : public PageTestBase {
   void NavigateWithSandbox(const KURL& url) {
     auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
         /*html=*/"", url);
-    params->sandbox_flags = network::mojom::blink::WebSandboxFlags::kAll;
+    MockPolicyContainerHost mock_policy_container_host;
+    params->policy_container = std::make_unique<blink::WebPolicyContainer>(
+        blink::WebPolicyContainerPolicies(),
+        mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+    params->policy_container->policies.sandbox_flags =
+        network::mojom::blink::WebSandboxFlags::kAll;
     GetFrame().Loader().CommitNavigation(std::move(params),
                                          /*extra_data=*/nullptr);
     test::RunPendingTasks();

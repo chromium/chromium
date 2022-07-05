@@ -42,6 +42,7 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
@@ -175,7 +176,7 @@ void LoadFrameDontWait(WebLocalFrame* frame, const WebURL& url) {
     params->policy_container = std::make_unique<WebPolicyContainer>(
         WebPolicyContainerPolicies(),
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
-    params->sandbox_flags =
+    params->policy_container->policies.sandbox_flags =
         static_cast<TestWebFrameClient*>(frame->Client())->sandbox_flags();
     FillNavigationParamsResponse(params.get());
     impl->CommitNavigation(std::move(params), nullptr /* extra_data */);
@@ -195,7 +196,6 @@ void LoadHTMLString(WebLocalFrame* frame,
   std::unique_ptr<WebNavigationParams> navigation_params =
       WebNavigationParams::CreateWithHTMLStringForTesting(html, base_url);
   navigation_params->tick_clock = clock;
-  navigation_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   impl->CommitNavigation(std::move(navigation_params),
                          nullptr /* extra_data */);
   PumpPendingRequestsForFrameToLoad(frame);
@@ -212,8 +212,6 @@ void LoadHistoryItem(WebLocalFrame* frame,
   params->history_item = item;
   params->navigation_timings.navigation_start = base::TimeTicks::Now();
   params->navigation_timings.fetch_start = base::TimeTicks::Now();
-  params->sandbox_flags =
-      static_cast<TestWebFrameClient*>(frame->Client())->sandbox_flags();
   FillNavigationParamsResponse(params.get());
   impl->CommitNavigation(std::move(params), nullptr /* extra_data */);
   PumpPendingRequestsForFrameToLoad(frame);
@@ -252,6 +250,7 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
            network::mojom::blink::ContentSecurityPolicyType::kEnforce,
            network::mojom::blink::ContentSecurityPolicySource::kHTTP,
            params->response.ResponseUrl())) {
+    params->policy_container->policies.sandbox_flags |= csp->sandbox;
     params->policy_container->policies.content_security_policies.emplace_back(
         ConvertToPublic(std::move(csp)));
   }
@@ -764,6 +763,13 @@ void TestWebFrameClient::CommitNavigation(
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   if (info->archive_status != WebNavigationInfo::ArchiveStatus::Present)
     FillNavigationParamsResponse(params.get());
+  // Merge frame policy sandbox flags in the policy container's sandbox flags.
+  // This is required since we are initializing policy container above and it
+  // must contain the frame's sandbox flags. This is normally done by the
+  // browser process during the navigation when computing the policy container
+  // and the included sandbox flags to commit, and then passed on within the
+  // WebNavigationParams.
+  params->policy_container->policies.sandbox_flags |= sandbox_flags();
   frame_->CommitNavigation(std::move(params), nullptr /* extra_data */);
 }
 

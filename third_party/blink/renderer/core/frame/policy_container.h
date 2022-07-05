@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/renderer/core/core_export.h"

@@ -533,6 +533,8 @@ void ExecutionContext::SetReferrerPolicy(
 void ExecutionContext::SetPolicyContainer(
     std::unique_ptr<PolicyContainer> container) {
   policy_container_ = std::move(container);
+  security_context_.SetSandboxFlags(
+      policy_container_->GetPolicies().sandbox_flags);
 }
 
 std::unique_ptr<PolicyContainer> ExecutionContext::TakePolicyContainer() {

@@ -70,6 +70,7 @@ include_rules = [
     "+services/network/public/mojom/url_loader_factory.mojom-shared.h",
     "+services/network/public/mojom/url_response_head.mojom-forward.h",
     "+services/network/public/mojom/web_client_hints_types.mojom-shared.h",
+    "+services/network/public/mojom/web_sandbox_flags.mojom-shared.h",
 
     "+services/service_manager/public/mojom",
     "+third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h",

@@ -283,15 +283,6 @@ struct CommitNavigationParams {
   // taking into account the origin computed by the renderer.
   blink.mojom.StorageKey storage_key;
 
-  // The sandbox flags to apply to the new document. This is the union of:
-  // - the frame's current sandbox, taken when the navigation started.
-  // - the navigation response's CSP sandbox flags.
-  // - the result of CSP embedded enforcement required CSP sandbox flags.
-  // - Various edge cases: MHTML document, error pages, ...
-  // See content/browser/renderer_host/sandbox_flags.md
-  network.mojom.WebSandboxFlags sandbox_flags =
-    network.mojom.WebSandboxFlags.kAll;
-
   // Whether or not the user agent override string should be used.
   bool is_overriding_user_agent = false;
 

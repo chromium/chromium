@@ -3769,8 +3769,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           frame_entry->committed_origin(),
           // The correct storage key will be computed before committing the
           // navigation.
-          blink::StorageKey(), network::mojom::WebSandboxFlags(),
-          override_user_agent, params.redirect_chain,
+          blink::StorageKey(), override_user_agent, params.redirect_chain,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), params.post_content_type,
           common_params->url, common_params->method,

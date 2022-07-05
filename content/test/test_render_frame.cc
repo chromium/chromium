@@ -359,6 +359,10 @@ void TestRenderFrame::BeginNavigation(
           navigation_params.get(), blink::WebString::FromUTF8(mime_type),
           blink::WebString::FromUTF8(charset), data);
     }
+
+    navigation_params->policy_container->policies.sandbox_flags =
+        navigation_params->frame_policy->sandbox_flags;
+
     frame_->CommitNavigation(std::move(navigation_params),
                              nullptr /* extra_data */);
     return;

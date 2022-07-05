@@ -260,7 +260,6 @@ class MockedLocalFrameHostInterceptorTestRenderFrame : public TestRenderFrame {
 blink::mojom::CommitNavigationParamsPtr DummyCommitNavigationParams() {
   blink::mojom::CommitNavigationParamsPtr params =
       blink::CreateCommitNavigationParams();
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   return params;
 }
 

@@ -7,6 +7,7 @@
 
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
@@ -17,15 +18,21 @@ namespace blink {
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled
 // directly in blink.
 struct WebPolicyContainerPolicies {
-  network::mojom::CrossOriginEmbedderPolicyValue cross_origin_embedder_policy;
-  network::mojom::ReferrerPolicy referrer_policy;
+  network::mojom::CrossOriginEmbedderPolicyValue cross_origin_embedder_policy =
+      network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+  network::mojom::ReferrerPolicy referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
   WebVector<WebContentSecurityPolicy> content_security_policies;
-  bool is_anonymous;
+  bool is_anonymous = false;
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kNone;
 };
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled
 // directly in blink.
 struct WebPolicyContainer {
+  WebPolicyContainer() = default;
+
   WebPolicyContainer(
       WebPolicyContainerPolicies policies,
       CrossVariantMojoAssociatedRemote<mojom::PolicyContainerHostInterfaceBase>

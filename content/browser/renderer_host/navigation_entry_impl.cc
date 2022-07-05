@@ -890,8 +890,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           origin_to_commit,
           // The correct storage key will be computed before committing the
           // navigation.
-          blink::StorageKey(), network::mojom::WebSandboxFlags(),
-          GetIsOverridingUserAgent(), redirects,
+          blink::StorageKey(), GetIsOverridingUserAgent(), redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), std::string(), original_url,
           original_method, GetCanLoadLocalResources(),

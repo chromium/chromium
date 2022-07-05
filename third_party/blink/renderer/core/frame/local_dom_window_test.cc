@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -64,7 +65,11 @@ class LocalDOMWindowTest : public PageTestBase {
       WebSandboxFlags sandbox_flags = WebSandboxFlags::kAll) {
     auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
         /*html=*/"", url);
-    params->sandbox_flags = sandbox_flags;
+    MockPolicyContainerHost mock_policy_container_host;
+    params->policy_container = std::make_unique<blink::WebPolicyContainer>(
+        blink::WebPolicyContainerPolicies(),
+        mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+    params->policy_container->policies.sandbox_flags = sandbox_flags;
     GetFrame().Loader().CommitNavigation(std::move(params),
                                          /*extra_data=*/nullptr);
     test::RunPendingTasks();

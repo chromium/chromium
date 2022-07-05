@@ -240,7 +240,6 @@ struct SameSizeAsDocumentLoader
   mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
   scoped_refptr<SecurityOrigin> origin_to_commit;
   BlinkStorageKey storage_key;
-  network::mojom::WebSandboxFlags sandbox_flags;
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
   base::TimeTicks time_of_last_data_received;
@@ -360,7 +359,6 @@ DocumentLoader::DocumentLoader(
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
       storage_key_(std::move(params_->storage_key)),
-      sandbox_flags_(params_->sandbox_flags),
       navigation_type_(navigation_type),
       document_load_timing_(*this),
       service_worker_network_provider_(
@@ -511,7 +509,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // the origin to no longer be aliased).
   params->origin_to_commit = window->GetSecurityOrigin();
   params->storage_key = window->GetStorageKey();
-  params->sandbox_flags = sandbox_flags_;
   params->origin_agent_cluster = origin_agent_cluster_;
   params->origin_agent_cluster_left_as_default =
       origin_agent_cluster_left_as_default_;
@@ -1918,7 +1915,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
     // and used directly. It is currently supplied only for session history
-    // navigations, where the origin was already calcuated previously and
+    // navigations, where the origin was already calculated previously and
     // stored on the session history entry.
     origin = origin_to_commit_;
   } else if (IsPagePopupRunningInWebTest(frame_)) {
@@ -1959,7 +1956,8 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     origin = SecurityOrigin::CreateWithReferenceOrigin(url_, precursor.get());
   }
 
-  if ((sandbox_flags_ & network::mojom::blink::WebSandboxFlags::kOrigin) !=
+  if ((policy_container_->GetPolicies().sandbox_flags &
+       network::mojom::blink::WebSandboxFlags::kOrigin) !=
       network::mojom::blink::WebSandboxFlags::kNone) {
     auto sandbox_origin = origin->DeriveNewOpaqueOrigin();
 
@@ -2209,9 +2207,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   security_origin = security_origin->GetOriginForAgentCluster(
       frame_->DomWindow()->GetAgent()->cluster_id());
 
-  SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
-  security_context.SetSandboxFlags(sandbox_flags_);
-
   // TODO(https://crbug.com/888079): Just use the storage key sent by the
   // browser once the browser will be able to compute the origin in all cases.
   // TODO(https://crbug.com/1271402): Make sure we have the intended behavior
@@ -2223,6 +2218,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
   // wants to inspect sandbox flags.
+  SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
   security_context.SetSecurityOrigin(std::move(security_origin));
   // Requires SecurityOrigin to be initialized.
   OriginTrialContext::AddTokensFromHeader(

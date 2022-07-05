@@ -7,7 +7,12 @@ module blink.mojom;
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
 
+// This are the document policies contained within PolicyContainer. These are
+// owned by the browser, and remain constant for the lifetime of the document
+// except for referrer_policy and content_security_policies which might be
+// updated through meta tags (see PolicyContainerHost).
 struct PolicyContainerPolicies {
   network.mojom.CrossOriginEmbedderPolicyValue cross_origin_embedder_policy =
     network.mojom.CrossOriginEmbedderPolicyValue.kNone;
@@ -15,6 +20,8 @@ struct PolicyContainerPolicies {
     network.mojom.ReferrerPolicy.kDefault;
   array<network.mojom.ContentSecurityPolicy> content_security_policies;
   bool is_anonymous = false;
+  network.mojom.WebSandboxFlags sandbox_flags =
+    network.mojom.WebSandboxFlags.kNone;
 };
 
 // This interface is implemented in the browser process. It defines methods to

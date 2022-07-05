@@ -223,7 +223,7 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
           policies_.cross_origin_embedder_policy.value,
           policies_.referrer_policy,
           mojo::Clone(policies_.content_security_policies),
-          policies_.is_anonymous),
+          policies_.is_anonymous, policies_.sandbox_flags),
       std::move(remote));
 }
 

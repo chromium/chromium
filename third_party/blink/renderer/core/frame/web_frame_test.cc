@@ -7959,10 +7959,8 @@ TEST_F(WebFrameTest,
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies(),
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   params->is_synchronous_commit_for_bug_778318 = true;
 
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   child_frame->CommitNavigation(std::move(params), nullptr);
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(child_frame);
 

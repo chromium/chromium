@@ -258,18 +258,6 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
 
-  // An interesting edge case to consider: A document has:
-  // CSP: sandbox allow-popups allow-popups-to-escape-sandbox
-  // It opens a blank popup.
-  //
-  // The popup's main frame doesn't inherit sandbox. However the initial empty
-  // document inherits sandbox from the opener, through inherited CSP.
-  navigation_params->sandbox_flags = PendingEffectiveSandboxFlags();
-  for (const auto& csp :
-       policy_container->GetPolicies().content_security_policies) {
-    navigation_params->sandbox_flags |= csp->sandbox;
-  }
-
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
       frame_, kWebNavigationTypeOther, std::move(navigation_params),
       std::move(policy_container), nullptr /* extra_data */);

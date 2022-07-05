@@ -780,7 +780,6 @@ void RenderViewTest::Reload(const GURL& url) {
       base::TimeTicks() /* input_start */,
       network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
-  commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);
   frame->Navigate(std::move(common_params), std::move(commit_params));
@@ -917,7 +916,6 @@ void RenderViewTest::GoToOffset(int offset,
   commit_params->pending_history_list_offset = pending_offset;
   commit_params->current_history_list_offset = webview->HistoryBackListCount();
   commit_params->current_history_list_length = history_list_length;
-  commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
   auto* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);

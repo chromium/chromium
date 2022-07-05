@@ -150,7 +150,6 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   auto params = std::make_unique<WebNavigationParams>();
   params->url = is_animated ? KURL("http://www.example.com/image.webp")
                             : KURL("http://www.example.com/image.jpg");
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
   const Vector<unsigned char>& data =
       is_animated ? AnimatedWebpImage() : JpegImage();

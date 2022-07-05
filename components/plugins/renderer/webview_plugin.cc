@@ -26,6 +26,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -411,14 +412,17 @@ void WebViewPlugin::OnZoomLevelChanged() {
 void WebViewPlugin::LoadHTML(const std::string& html_data, const GURL& url) {
   auto params = std::make_unique<blink::WebNavigationParams>();
   params->url = url;
+  params->policy_container = std::make_unique<blink::WebPolicyContainer>();
+
   // The |html_data| comes from files in: chrome/renderer/resources/plugins/
   // Executing scripts is the only capability required.
   //
   // WebSandboxFlags is a bit field. This removes all the capabilities, except
   // script execution.
   using network::mojom::WebSandboxFlags;
-  params->sandbox_flags = static_cast<WebSandboxFlags>(
-      ~static_cast<int>(WebSandboxFlags::kScripts));
+  params->policy_container->policies.sandbox_flags =
+      static_cast<WebSandboxFlags>(
+          ~static_cast<int>(WebSandboxFlags::kScripts));
   blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
                                                  "UTF-8", html_data);
   web_view_helper_.main_frame()->CommitNavigation(std::move(params),

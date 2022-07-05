@@ -442,7 +442,6 @@ TEST_F(DocumentLoaderTest, NavigationToAboutBlank) {
   std::unique_ptr<WebNavigationParams> params =
       std::make_unique<WebNavigationParams>();
   params->url = about_blank_url;
-  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());

@@ -987,7 +987,6 @@ void FillMiscNavigationParams(
         commit_params.origin_to_commit.value();
   }
   navigation_params->storage_key = std::move(commit_params.storage_key);
-  navigation_params->sandbox_flags = commit_params.sandbox_flags;
   navigation_params->frame_policy = commit_params.frame_policy;
 
   if (common_params.navigation_type == blink::mojom::NavigationType::RESTORE) {
@@ -1070,6 +1069,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
           ToWebContentSecurityPolicies(
               std::move(in->policies->content_security_policies)),
           in->policies->is_anonymous,
+          in->policies->sandbox_flags,
       },
       std::move(in->remote));
 }
@@ -5993,7 +5993,6 @@ void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
 
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = base_url;
-  navigation_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   WebNavigationParams::FillStaticResponse(navigation_params.get(), "text/html",
                                           WebString::FromUTF8(text_encoding),
                                           html);

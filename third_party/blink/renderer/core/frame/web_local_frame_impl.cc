@@ -2233,14 +2233,21 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
           policy_container_remote.InitWithNewEndpointAndPassReceiver();
 
   FramePolicy frame_policy = owner_element->GetFramePolicy();
-  // Documents create iframes, iframes host new documents. Both are associated
-  // with sandbox flags. They are required to be stricter or equal as we go
-  // down. The iframe owner element only returns the additional restrictions
-  // defined in the HTMLIFrameElement's sanbox attribute. It needs to be
-  // combined with the document's sandbox flags to get the frame's sandbox
-  // policy right.
-  frame_policy.sandbox_flags |=
-      GetFrame()->GetDocument()->GetExecutionContext()->GetSandboxFlags();
+
+  // The initial empty document's policy container is inherited from its parent.
+  mojom::blink::PolicyContainerPoliciesPtr policy_container_data =
+      GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies().Clone();
+
+  // The frame sandbox flags and the initial empty document's sandbox flags
+  // are restricted by the parent document's sandbox flags and the iframe's
+  // sandbox attribute. It is the union of:
+  //  - The parent's sandbox flags which are contained in
+  //    policy_container_data and were cloned from the parent's document policy
+  //    container above.
+  //  - The iframe's sandbox attribute which is contained in frame_policy, from
+  //    the owner element's frame policy.
+  policy_container_data->sandbox_flags |= frame_policy.sandbox_flags;
+  frame_policy.sandbox_flags = policy_container_data->sandbox_flags;
 
   // FIXME: Using subResourceAttributeName as fallback is not a perfect
   // solution. subResourceAttributeName returns just one attribute name. The
@@ -2255,10 +2262,6 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
           WebPolicyContainerBindParams{std::move(policy_container_receiver)}));
   if (!webframe_child)
     return nullptr;
-
-  // Inherit policy container from parent.
-  mojom::blink::PolicyContainerPoliciesPtr policy_container_data =
-      GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies().Clone();
 
   // The initial empty document's anonymous bit is the union of:
   // - its parent's anonymous bit.

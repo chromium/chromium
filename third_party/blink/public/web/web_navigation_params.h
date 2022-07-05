@@ -324,15 +324,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // taking into account the origin computed by the renderer.
   StorageKey storage_key;
 
-  // The sandbox flags to apply to the new document. This is the union of:
-  // - the frame's current sandbox attribute, taken when the navigation started.
-  // - the navigation response's CSP sandbox flags.
-  // - the result of CSP embedded enforcement required CSP sandbox flags.
-  // - Various edge cases: MHTML document, error pages, ...
-  // See content/browser/renderer_host/sandbox_flags.md
-  network::mojom::WebSandboxFlags sandbox_flags =
-      network::mojom::WebSandboxFlags::kAll;
-
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;

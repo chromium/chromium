@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 
 namespace blink {
@@ -38,7 +39,8 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
           container->policies.referrer_policy,
           ConvertToMojoBlink(
               std::move(container->policies.content_security_policies)),
-          container->policies.is_anonymous);
+          container->policies.is_anonymous, container->policies.sandbox_flags);
+
   return std::make_unique<PolicyContainer>(std::move(container->remote),
                                            std::move(policies));
 }
