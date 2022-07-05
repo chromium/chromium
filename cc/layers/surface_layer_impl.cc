@@ -219,9 +219,11 @@ gfx::Rect SurfaceLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
 
 void SurfaceLayerImpl::GetDebugBorderProperties(SkColor4f* color,
                                                 float* width) const {
-  *color = DebugColors::SurfaceLayerBorderColor();
-  *width = DebugColors::SurfaceLayerBorderWidth(
-      layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
+  if (color)
+    *color = DebugColors::SurfaceLayerBorderColor();
+  if (width)
+    *width = DebugColors::SurfaceLayerBorderWidth(
+        layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
 }
 
 void SurfaceLayerImpl::AppendRainbowDebugBorder(
@@ -233,8 +235,8 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       render_pass->CreateAndAppendSharedQuadState();
   PopulateSharedQuadState(shared_quad_state, contents_opaque());
 
-  float border_width;
-  GetDebugBorderProperties(nullptr, &border_width);
+  float border_width = DebugColors::SurfaceLayerBorderWidth(
+      layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
 
   // TODO(crbug.com/1308932) Make these SkColor4fs
   SkColor colors[] = {
