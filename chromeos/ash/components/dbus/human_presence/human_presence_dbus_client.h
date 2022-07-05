@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
-#define CHROMEOS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
 #include "dbus/object_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -16,7 +16,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // D-Bus client for human presence sensing. Communicates with the Chrome OS
 // presence daemon to allow for features that depend on user presence.
@@ -91,6 +91,6 @@ class COMPONENT_EXPORT(HPS) HumanPresenceDBusClient {
   virtual ~HumanPresenceDBusClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_

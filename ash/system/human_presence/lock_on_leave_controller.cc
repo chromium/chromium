@@ -6,8 +6,8 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/ash/components/human_presence/human_presence_configuration.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -17,21 +17,21 @@ namespace {
 void EnableLockOnLeaveViaDBus() {
   const auto config = hps::GetEnableLockOnLeaveConfig();
   if (config.has_value()) {
-    chromeos::HumanPresenceDBusClient::Get()->EnableHpsSense(config.value());
+    HumanPresenceDBusClient::Get()->EnableHpsSense(config.value());
   }
 }
 
 // Helper for DisableHpsSense.
 void DisableLockOnLeaveViaDBus() {
-  chromeos::HumanPresenceDBusClient::Get()->DisableHpsSense();
+  HumanPresenceDBusClient::Get()->DisableHpsSense();
 }
 
 }  // namespace
 
 LockOnLeaveController::LockOnLeaveController() {
-  human_presence_observation_.Observe(chromeos::HumanPresenceDBusClient::Get());
+  human_presence_observation_.Observe(HumanPresenceDBusClient::Get());
 
-  chromeos::HumanPresenceDBusClient::Get()->WaitForServiceToBeAvailable(
+  HumanPresenceDBusClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&LockOnLeaveController::OnServiceAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 

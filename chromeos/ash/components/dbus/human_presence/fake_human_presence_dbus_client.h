@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
-#define CHROMEOS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
 
 #include "base/observer_list.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of HumanPresenceDBusClient. Allows callers to set a
 // response value and count the number of calls to GetResultHpsNotify.
@@ -86,6 +86,6 @@ class COMPONENT_EXPORT(HPS) FakeHumanPresenceDBusClient
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_FAKE_HUMAN_PRESENCE_DBUS_CLIENT_H_

@@ -9,17 +9,17 @@
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 
 namespace ash {
 
-// Helper class for chromeos::HumanPresenceDBusClient, responsible for
+// Helper class for HumanPresenceDBusClient, responsible for
 // enabling/disabling the DBus service via the client and is responsible for
 // maintaining state between restarts.
 class ASH_EXPORT LockOnLeaveController
     : public HumanPresenceOrientationController::Observer,
-      chromeos::HumanPresenceDBusClient::Observer {
+      HumanPresenceDBusClient::Observer {
  public:
   // The state of lock on leave inside DBus service that is configured. It is
   // set as kUnknown in this class on initialization. And is set to either
@@ -47,7 +47,7 @@ class ASH_EXPORT LockOnLeaveController
   // HumanPresenceOrientationObserver:
   void OnOrientationChanged(bool suitable_for_human_presence) override;
 
-  // chromeos::HumanPresenceDBusClient::Observer:
+  // HumanPresenceDBusClient::Observer:
   void OnHpsSenseChanged(const hps::HpsResultProto&) override;
   void OnHpsNotifyChanged(const hps::HpsResultProto&) override;
   // Re-enables LockOnLeave on human presence service restart if it was enabled
@@ -77,8 +77,8 @@ class ASH_EXPORT LockOnLeaveController
   ConfiguredLockOnLeaveState configured_state_ =
       ConfiguredLockOnLeaveState::kUnknown;
 
-  base::ScopedObservation<chromeos::HumanPresenceDBusClient,
-                          chromeos::HumanPresenceDBusClient::Observer>
+  base::ScopedObservation<HumanPresenceDBusClient,
+                          HumanPresenceDBusClient::Observer>
       human_presence_observation_{this};
   base::ScopedObservation<HumanPresenceOrientationController,
                           HumanPresenceOrientationController::Observer>

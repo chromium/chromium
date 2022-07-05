@@ -20,8 +20,8 @@ static_library("human_presence") {
 
   public_deps = [
     "//base",
-    "//chromeos/dbus/human_presence",
-    "//chromeos/dbus/human_presence:hps_proto",
+    "//chromeos/ash/components/dbus/human_presence",
+    "//chromeos/ash/components/dbus/human_presence:hps_proto",
   ]
 }
 

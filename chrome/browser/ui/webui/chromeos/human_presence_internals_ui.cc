@@ -15,11 +15,11 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/ash/components/human_presence/human_presence_internals.h"
 #include "chromeos/ash/grit/ash_resources.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -30,7 +30,7 @@ namespace {
 // Class acting as a controller of the chrome://hps-internals WebUI.
 class HumanPresenceInternalsUIMessageHandler
     : public content::WebUIMessageHandler,
-      public chromeos::HumanPresenceDBusClient::Observer {
+      public ash::HumanPresenceDBusClient::Observer {
  public:
   HumanPresenceInternalsUIMessageHandler();
 
@@ -46,7 +46,7 @@ class HumanPresenceInternalsUIMessageHandler
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::HumanPresenceDBusClient::Observer implementation.
+  // ash::HumanPresenceDBusClient::Observer implementation.
   void OnHpsSenseChanged(const hps::HpsResultProto&) override;
   void OnHpsNotifyChanged(const hps::HpsResultProto&) override;
   void OnRestart() override;
@@ -67,8 +67,8 @@ class HumanPresenceInternalsUIMessageHandler
   static absl::optional<std::string> ReadManifest();
   void UpdateManifest(absl::optional<std::string> manifest);
 
-  base::ScopedObservation<chromeos::HumanPresenceDBusClient,
-                          chromeos::HumanPresenceDBusClient::Observer>
+  base::ScopedObservation<ash::HumanPresenceDBusClient,
+                          ash::HumanPresenceDBusClient::Observer>
       human_presence_observation_{this};
   base::WeakPtrFactory<HumanPresenceInternalsUIMessageHandler>
       msg_weak_ptr_factory_{this};
@@ -129,12 +129,12 @@ void HumanPresenceInternalsUIMessageHandler::OnShutdown() {
 
 void HumanPresenceInternalsUIMessageHandler::Connect(
     const base::Value::List& args) {
-  if (!chromeos::HumanPresenceDBusClient::Get()) {
+  if (!ash::HumanPresenceDBusClient::Get()) {
     LOG(ERROR) << "HPS dbus client not available";
     return;
   }
   AllowJavascript();
-  chromeos::HumanPresenceDBusClient::Get()->WaitForServiceToBeAvailable(
+  ash::HumanPresenceDBusClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&HumanPresenceInternalsUIMessageHandler::OnConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -177,54 +177,54 @@ void HumanPresenceInternalsUIMessageHandler::UpdateManifest(
 
 void HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave(
     const base::Value::List& args) {
-  if (!chromeos::HumanPresenceDBusClient::Get() ||
+  if (!ash::HumanPresenceDBusClient::Get() ||
       !hps::GetEnableLockOnLeaveConfig().has_value()) {
     FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
     return;
   }
   hps::FeatureConfig config(*hps::GetEnableLockOnLeaveConfig());
   config.set_report_raw_results(true);
-  chromeos::HumanPresenceDBusClient::Get()->EnableHpsSense(config);
+  ash::HumanPresenceDBusClient::Get()->EnableHpsSense(config);
 }
 
 void HumanPresenceInternalsUIMessageHandler::DisableLockOnLeave(
     const base::Value::List& args) {
-  if (chromeos::HumanPresenceDBusClient::Get())
-    chromeos::HumanPresenceDBusClient::Get()->DisableHpsSense();
+  if (ash::HumanPresenceDBusClient::Get())
+    ash::HumanPresenceDBusClient::Get()->DisableHpsSense();
 }
 
 void HumanPresenceInternalsUIMessageHandler::QueryLockOnLeave(
     const base::Value::List& args) {
-  if (!chromeos::HumanPresenceDBusClient::Get())
+  if (!ash::HumanPresenceDBusClient::Get())
     return;
-  chromeos::HumanPresenceDBusClient::Get()->GetResultHpsSense(base::BindOnce(
+  ash::HumanPresenceDBusClient::Get()->GetResultHpsSense(base::BindOnce(
       &HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult,
       weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HumanPresenceInternalsUIMessageHandler::EnableSnoopingProtection(
     const base::Value::List& args) {
-  if (!chromeos::HumanPresenceDBusClient::Get() ||
+  if (!ash::HumanPresenceDBusClient::Get() ||
       !hps::GetEnableSnoopingProtectionConfig().has_value()) {
     FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
     return;
   }
   hps::FeatureConfig config(*hps::GetEnableSnoopingProtectionConfig());
   config.set_report_raw_results(true);
-  chromeos::HumanPresenceDBusClient::Get()->EnableHpsNotify(config);
+  ash::HumanPresenceDBusClient::Get()->EnableHpsNotify(config);
 }
 
 void HumanPresenceInternalsUIMessageHandler::DisableSnoopingProtection(
     const base::Value::List& args) {
-  if (chromeos::HumanPresenceDBusClient::Get())
-    chromeos::HumanPresenceDBusClient::Get()->DisableHpsNotify();
+  if (ash::HumanPresenceDBusClient::Get())
+    ash::HumanPresenceDBusClient::Get()->DisableHpsNotify();
 }
 
 void HumanPresenceInternalsUIMessageHandler::QuerySnoopingProtection(
     const base::Value::List& args) {
-  if (!chromeos::HumanPresenceDBusClient::Get())
+  if (!ash::HumanPresenceDBusClient::Get())
     return;
-  chromeos::HumanPresenceDBusClient::Get()->GetResultHpsNotify(base::BindOnce(
+  ash::HumanPresenceDBusClient::Get()->GetResultHpsNotify(base::BindOnce(
       &HumanPresenceInternalsUIMessageHandler::OnSnoopingProtectionResult,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -267,9 +267,8 @@ void HumanPresenceInternalsUIMessageHandler::RegisterMessages() {
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnJavascriptAllowed() {
-  if (chromeos::HumanPresenceDBusClient::Get())
-    human_presence_observation_.Observe(
-        chromeos::HumanPresenceDBusClient::Get());
+  if (ash::HumanPresenceDBusClient::Get())
+    human_presence_observation_.Observe(ash::HumanPresenceDBusClient::Get());
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnJavascriptDisallowed() {

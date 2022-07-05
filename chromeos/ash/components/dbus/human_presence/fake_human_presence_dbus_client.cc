@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -102,4 +102,4 @@ void FakeHumanPresenceDBusClient::Reset() {
   observers_.Clear();
 }
 
-}  // namespace chromeos
+}  // namespace ash

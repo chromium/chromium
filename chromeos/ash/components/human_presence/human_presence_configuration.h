@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

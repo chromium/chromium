@@ -29,9 +29,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
-#include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -198,8 +198,8 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   // AshTestBase overrides:
   void SetUp() override {
     // Simulate a working DBus client.
-    chromeos::HumanPresenceDBusClient::InitializeFake();
-    auto* dbus_client = chromeos::FakeHumanPresenceDBusClient::Get();
+    HumanPresenceDBusClient::InitializeFake();
+    auto* dbus_client = FakeHumanPresenceDBusClient::Get();
     dbus_client->set_hps_service_is_available(true);
     hps::HpsResultProto state;
     state.set_value(hps::HpsResult::NEGATIVE);

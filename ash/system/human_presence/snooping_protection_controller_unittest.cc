@@ -18,9 +18,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
-#include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 
@@ -71,8 +71,8 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
   ~SnoopingProtectionControllerTestBase() override = default;
 
   void SetUp() override {
-    chromeos::HumanPresenceDBusClient::InitializeFake();
-    dbus_client_ = chromeos::FakeHumanPresenceDBusClient::Get();
+    HumanPresenceDBusClient::InitializeFake();
+    dbus_client_ = FakeHumanPresenceDBusClient::Get();
     dbus_client_->set_hps_service_is_available(service_available_);
     hps::HpsResultProto state;
     state.set_value(service_state_ ? hps::HpsResult::POSITIVE
@@ -91,7 +91,7 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
 
   void TearDown() override {
     AshTestBase::TearDown();
-    chromeos::HumanPresenceDBusClient::Shutdown();
+    HumanPresenceDBusClient::Shutdown();
   }
 
  protected:
@@ -102,7 +102,7 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
   const bool service_state_;
   const std::map<std::string, std::string> params_;
 
-  chromeos::FakeHumanPresenceDBusClient* dbus_client_ = nullptr;
+  FakeHumanPresenceDBusClient* dbus_client_ = nullptr;
   SnoopingProtectionController* controller_ = nullptr;
 
   // Simulates a login. This will trigger a DBus call if and only if logging in

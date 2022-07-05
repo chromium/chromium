@@ -13,8 +13,8 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -28,15 +28,15 @@ class LockOnLeaveControllerTest : public AshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
 
     // Initialize FakeHumanPresenceDBusClient.
-    chromeos::HumanPresenceDBusClient::InitializeFake();
-    human_presence_client_ = chromeos::FakeHumanPresenceDBusClient::Get();
+    HumanPresenceDBusClient::InitializeFake();
+    human_presence_client_ = FakeHumanPresenceDBusClient::Get();
     human_presence_client_->Reset();
 
     AshTestBase::SetUp();
   }
 
  protected:
-  chromeos::FakeHumanPresenceDBusClient* human_presence_client_ = nullptr;
+  FakeHumanPresenceDBusClient* human_presence_client_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -16,8 +16,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,7 +33,7 @@ class SnoopingProtectionNotificationBlocker;
 class ASH_EXPORT SnoopingProtectionController
     : public SessionObserver,
       public HumanPresenceOrientationController::Observer,
-      public chromeos::HumanPresenceDBusClient::Observer {
+      public HumanPresenceDBusClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -62,7 +62,7 @@ class ASH_EXPORT SnoopingProtectionController
   // HumanPresenceOrientationObserver:
   void OnOrientationChanged(bool suitable_for_human_presence) override;
 
-  // chromeos::HumanPresenceDBusClient::Observer:
+  // HumanPresenceDBusClient::Observer:
   void OnHpsSenseChanged(const hps::HpsResultProto&) override;
   void OnHpsNotifyChanged(const hps::HpsResultProto&) override;
   void OnRestart() override;
@@ -143,8 +143,8 @@ class ASH_EXPORT SnoopingProtectionController
   base::ScopedObservation<HumanPresenceOrientationController,
                           HumanPresenceOrientationController::Observer>
       orientation_observation_{this};
-  base::ScopedObservation<chromeos::HumanPresenceDBusClient,
-                          chromeos::HumanPresenceDBusClient::Observer>
+  base::ScopedObservation<HumanPresenceDBusClient,
+                          HumanPresenceDBusClient::Observer>
       human_presence_dbus_observation_{this};
 
   // Used to notify ourselves of changes to the pref that enables / disables

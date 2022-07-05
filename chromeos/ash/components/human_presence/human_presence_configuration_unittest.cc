@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

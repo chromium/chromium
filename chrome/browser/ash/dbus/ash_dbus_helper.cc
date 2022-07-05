@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
@@ -63,7 +64,6 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -208,7 +208,7 @@ void InitializeFeatureListDependentDBus() {
 
   if (ash::features::IsSnoopingProtectionEnabled() ||
       ash::features::IsQuickDimEnabled()) {
-    InitializeDBusClient<chromeos::HumanPresenceDBusClient>(bus);
+    InitializeDBusClient<HumanPresenceDBusClient>(bus);
   }
 }
 
@@ -217,7 +217,7 @@ void ShutdownDBus() {
   // shut down in reverse order of initialization (in case of dependencies).
   if (ash::features::IsSnoopingProtectionEnabled() ||
       ash::features::IsQuickDimEnabled()) {
-    chromeos::HumanPresenceDBusClient::Shutdown();
+    HumanPresenceDBusClient::Shutdown();
   }
   chromeos::WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)

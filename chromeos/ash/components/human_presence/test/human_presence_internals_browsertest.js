@@ -7,8 +7,8 @@
  */
 
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"');
-GEN('#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"');
+GEN('#include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"');
+GEN('#include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"');
 
 const HOST_ORIGIN = 'chrome://hps-internals';
 
@@ -30,16 +30,16 @@ var HumanPresenceInternalsUIBrowserTest = class extends testing.Test {
   /** @override */
   testGenPreamble() {
     GEN(`
-        chromeos::HumanPresenceDBusClient::InitializeFake();
-        chromeos::FakeHumanPresenceDBusClient::Get()->Reset();
-        chromeos::FakeHumanPresenceDBusClient::Get()->
+        ash::HumanPresenceDBusClient::InitializeFake();
+        ash::FakeHumanPresenceDBusClient::Get()->Reset();
+        ash::FakeHumanPresenceDBusClient::Get()->
             set_hps_service_is_available(true);
         hps::HpsResultProto result_proto;
         result_proto.set_value(hps::HpsResult::POSITIVE);
-        chromeos::FakeHumanPresenceDBusClient::Get()->set_hps_sense_result(
+        ash::FakeHumanPresenceDBusClient::Get()->set_hps_sense_result(
             result_proto);
         result_proto.set_value(hps::HpsResult::NEGATIVE);
-        chromeos::FakeHumanPresenceDBusClient::Get()->set_hps_notify_result(
+        ash::FakeHumanPresenceDBusClient::Get()->set_hps_notify_result(
             result_proto);
     `);
   }

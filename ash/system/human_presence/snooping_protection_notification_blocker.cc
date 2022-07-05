@@ -28,7 +28,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "chromeos/dbus/hps/hps_service.pb.h"
+#include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"

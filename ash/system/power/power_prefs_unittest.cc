@@ -23,8 +23,8 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
 #include "chromeos/ash/components/human_presence/human_presence_configuration.h"
-#include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -218,10 +218,9 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     feature_list_.InitWithFeatures(
         {features::kQuickDim, features::kAdaptiveCharging}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
-    chromeos::HumanPresenceDBusClient::InitializeFake();
-    chromeos::FakeHumanPresenceDBusClient::Get()->Reset();
-    chromeos::FakeHumanPresenceDBusClient::Get()->set_hps_service_is_available(
-        true);
+    HumanPresenceDBusClient::InitializeFake();
+    FakeHumanPresenceDBusClient::Get()->Reset();
+    FakeHumanPresenceDBusClient::Get()->set_hps_service_is_available(true);
     NoSessionAshTestBase::SetUp();
 
     power_policy_controller_ = chromeos::PowerPolicyController::Get();
@@ -576,12 +575,8 @@ TEST_F(PowerPrefsTest, AlsLoggingEnabled) {
 TEST_F(PowerPrefsTest, SetQuickDimParams) {
   // Check that DisableHpsSense is called on initialization.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      chromeos::FakeHumanPresenceDBusClient::Get()->disable_hps_sense_count(),
-      1);
-  EXPECT_EQ(
-      chromeos::FakeHumanPresenceDBusClient::Get()->enable_hps_sense_count(),
-      0);
+  EXPECT_EQ(FakeHumanPresenceDBusClient::Get()->disable_hps_sense_count(), 1);
+  EXPECT_EQ(FakeHumanPresenceDBusClient::Get()->enable_hps_sense_count(), 0);
 
   // This will trigger UpdatePowerPolicyFromPrefs and set correct parameters.
   SetQuickDimPreference(true);
@@ -602,16 +597,12 @@ TEST_F(PowerPrefsTest, SetQuickDimParams) {
 
   // EnableHpsSense should be called when kPowerQuickDimEnabled becomes true.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      chromeos::FakeHumanPresenceDBusClient::Get()->enable_hps_sense_count(),
-      1);
+  EXPECT_EQ(FakeHumanPresenceDBusClient::Get()->enable_hps_sense_count(), 1);
 
   // DisableHpsSense should be called when kPowerQuickDimEnabled becomes false.
   SetQuickDimPreference(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      chromeos::FakeHumanPresenceDBusClient::Get()->disable_hps_sense_count(),
-      2);
+  EXPECT_EQ(FakeHumanPresenceDBusClient::Get()->disable_hps_sense_count(), 2);
 }
 
 TEST_F(PowerPrefsTest, QuickDimMetrics) {
