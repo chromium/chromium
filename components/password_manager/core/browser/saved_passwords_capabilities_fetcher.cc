@@ -280,6 +280,10 @@ SavedPasswordsCapabilitiesFetcher::GetCacheState() const {
              : CacheState::kReady;
 }
 
+bool SavedPasswordsCapabilitiesFetcher::IsCacheStale() const {
+  return GetCacheState() != CacheState::kReady;
+}
+
 SavedPasswordsCapabilitiesFetcher::CapabilitiesFetchResult::
     CapabilitiesFetchResult() = default;
 SavedPasswordsCapabilitiesFetcher::CapabilitiesFetchResult::

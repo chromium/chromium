@@ -204,7 +204,9 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, ServerError) {
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
   base::HistogramTester histogram_tester;
   ExpectCacheRefresh();
+  EXPECT_TRUE(fetcher_->IsCacheStale());
   fetcher_->PrewarmCache();
+  EXPECT_FALSE(fetcher_->IsCacheStale());
 
   // The cache is not stale yet. No new request is expected.
   EXPECT_CALL(*mock_capabilities_service_,
@@ -212,11 +214,13 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
       .Times(0);
 
   fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
+  EXPECT_FALSE(fetcher_->IsCacheStale());
   CheckScriptAvailabilityDefaultResults();
 
   // Make cache stale again.
   RunUntilIdle();
   task_env_.AdvanceClock(base::Minutes(10));
+  EXPECT_TRUE(fetcher_->IsCacheStale());
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability(
                   UnorderedElementsAre(
@@ -225,6 +229,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
                   _))
       .WillOnce(RunOnceCallback<1>(std::set<url::Origin>()));
   fetcher_->PrewarmCache();
+  EXPECT_FALSE(fetcher_->IsCacheStale());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",

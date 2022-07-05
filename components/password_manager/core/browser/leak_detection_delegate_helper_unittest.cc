@@ -337,6 +337,8 @@ class FakePasswordScriptsFetcher : public PasswordScriptsFetcher {
     std::move(callback_).Run(is_script_available);
   }
 
+  bool IsCacheStale() const override { return true; }
+
   base::Value::Dict GetDebugInformationForInternals() const override {
     return base::Value::Dict();
   }

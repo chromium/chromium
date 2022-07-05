@@ -59,6 +59,10 @@ class PasswordScriptsFetcher : public KeyedService {
   // return stale data.
   virtual bool IsScriptAvailable(const url::Origin& origin) const = 0;
 
+  // Returns if the cache is not currently ready and a refresh is needed (and
+  // possibly currently ongoing).
+  virtual bool IsCacheStale() const = 0;
+
   // Return high-level state summary of the PasswordScriptsFetcher in form
   // of a `base::Value::Dict` for display on chrome://apc-internals.
   virtual base::Value::Dict GetDebugInformationForInternals() const = 0;

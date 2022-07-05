@@ -69,6 +69,7 @@ class PasswordScriptsFetcherImpl
   void FetchScriptAvailability(const url::Origin& origin,
                                ResponseCallback callback) override;
   bool IsScriptAvailable(const url::Origin& origin) const override;
+  bool IsCacheStale() const override;
   base::Value::Dict GetDebugInformationForInternals() const override;
   base::Value::List GetCacheEntries() const override;
 
@@ -79,22 +80,22 @@ class PasswordScriptsFetcherImpl
 #endif
 
  private:
-  using CacheState = PasswordScriptsFetcher::CacheState;
   // Sends new request to gstatic.
   void StartFetch();
+
   // Callback for the request to gstatic.
   void OnFetchComplete(base::TimeTicks request_start_timestamp,
                        std::unique_ptr<std::string> response_body);
-  // Parses |response_body| and stores the result in |password_change_domains_|
-  // (always overwrites the old list). Sets an empty list if |response_body| is
+
+  // Parses |response_body| and stores the result in `password_change_domains_`
+  // (always overwrites the old list). Sets an empty list if `response_body` is
   // invalid. Returns a parsing result for a histogram. The function tries to be
   // forgiving and rather return warnings and skip an entry than cancel the
   // parsing.
   base::flat_set<ParsingResult> ParseResponse(
       std::unique_ptr<std::string> response_body);
-  // Returns whether a re-fetch is needed.
-  bool IsCacheStale() const;
-  // Runs |callback| immediately with the script availability for |origin|.
+
+  // Runs `callback` immediately with the script availability for `origin`.
   void RunResponseCallback(url::Origin origin, ResponseCallback callback);
 
   // Indicates whether the user has a supervised account - for those, script

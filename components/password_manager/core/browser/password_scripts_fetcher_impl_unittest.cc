@@ -160,9 +160,12 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
 TEST_F(PasswordScriptsFetcherImplTest, PrewarmCache) {
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
+  EXPECT_TRUE(fetcher()->IsCacheStale());
   fetcher()->PrewarmCache();
   EXPECT_EQ(1, GetNumberOfPendingRequests());
+  EXPECT_TRUE(fetcher()->IsCacheStale());
   SimulateResponse();
+  EXPECT_FALSE(fetcher()->IsCacheStale());
   EXPECT_EQ(0, GetNumberOfPendingRequests());
 
   // The cache is not stale yet. So, no new request is expected.
@@ -183,11 +186,13 @@ TEST_F(PasswordScriptsFetcherImplTest, PrewarmCache) {
   // Make cache stale and re-fetch the map.
   histogram_tester = std::make_unique<base::HistogramTester>();
   fetcher()->make_cache_stale_for_testing();
+  EXPECT_TRUE(fetcher()->IsCacheStale());
   recorded_responses().clear();
 
   StartBulkCheck();
   EXPECT_EQ(1, GetNumberOfPendingRequests());
   // OriginWithScript2 (test.com) is not available anymore.
+  EXPECT_TRUE(fetcher()->IsCacheStale());
   SimulateResponseWithContent(
       R"({
         "example.com":
@@ -197,6 +202,7 @@ TEST_F(PasswordScriptsFetcherImplTest, PrewarmCache) {
           }
         })");
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(fetcher()->IsCacheStale());
 
   EXPECT_THAT(recorded_responses(),
               UnorderedElementsAre(Pair(GetOriginWithScript1(), true),

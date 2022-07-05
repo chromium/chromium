@@ -30,6 +30,8 @@ class MockPasswordScriptsFetcher : public PasswordScriptsFetcher {
 
   MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
 
+  MOCK_METHOD(bool, IsCacheStale, (), (const override));
+
   MOCK_METHOD(base::Value::Dict,
               GetDebugInformationForInternals,
               (),
