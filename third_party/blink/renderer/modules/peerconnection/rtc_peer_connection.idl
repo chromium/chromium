@@ -60,16 +60,14 @@ enum RTCPeerConnectionState {
 
 // https://w3c.github.io/webrtc-pc/#interface-definition
 
-// TODO(guidou): Many types are of the wrong type in this interface:
-//  * any -> specific dictionary types like RTCConfiguration
 [
     ActiveScriptWrappable,
     Exposed=Window,
     LegacyWindowAlias=webkitRTCPeerConnection,
     LegacyWindowAlias_Measure
 ] interface RTCPeerConnection : EventTarget {
-    // TODO(guidou): There should only be one constructor argument.
-    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {}, optional any mediaConstraints);
+    // TODO(https://crbug.com/1318448): Deprecated `mediaConstraints` should be removed.
+    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {}, optional GoogMediaConstraints mediaConstraints);
     [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createOffer(optional RTCOfferOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createAnswer(optional RTCAnswerOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<void> setLocalDescription(optional RTCSessionDescriptionInit description = {});

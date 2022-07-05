@@ -28,11 +28,10 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
             /*force_encoded_audio_insertable_streams=*/false,
             /*force_encoded_video_insertable_streams=*/false);
-    MediaConstraints constraints;
     DummyExceptionStateForTesting exception_state;
     webrtc::PeerConnectionInterface::RTCConfiguration config;
     config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
-    handler->InitializeForTest(config, constraints,
+    handler->InitializeForTest(config,
                                /*peer_connection_tracker=*/nullptr,
                                exception_state);
     return handler;

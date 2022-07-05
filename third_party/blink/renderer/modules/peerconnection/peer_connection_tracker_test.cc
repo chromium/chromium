@@ -168,7 +168,7 @@ class PeerConnectionTrackerTest : public ::testing::Test {
     mock_handler_ = std::make_unique<MockPeerConnectionHandler>();
     EXPECT_CALL(*mock_host_, AddPeerConnection(_));
     tracker_->RegisterPeerConnection(mock_handler_.get(), DefaultConfig(),
-                                     MediaConstraints(), nullptr);
+                                     nullptr);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -251,8 +251,7 @@ TEST_F(PeerConnectionTrackerTest, ReportInitialThermalState) {
   // Nothing is reported by default.
   EXPECT_CALL(handler0, OnThermalStateChange(_)).Times(0);
   EXPECT_CALL(*mock_host_, AddPeerConnection(_)).Times(1);
-  tracker_->RegisterPeerConnection(&handler0, DefaultConfig(),
-                                   MediaConstraints(), nullptr);
+  tracker_->RegisterPeerConnection(&handler0, DefaultConfig(), nullptr);
   base::RunLoop().RunUntilIdle();
 
   // Report a known thermal state.
@@ -266,8 +265,7 @@ TEST_F(PeerConnectionTrackerTest, ReportInitialThermalState) {
               OnThermalStateChange(mojom::blink::DeviceThermalState::kNominal))
       .Times(1);
   EXPECT_CALL(*mock_host_, AddPeerConnection(_)).Times(1);
-  tracker_->RegisterPeerConnection(&handler1, DefaultConfig(),
-                                   MediaConstraints(), nullptr);
+  tracker_->RegisterPeerConnection(&handler1, DefaultConfig(), nullptr);
   base::RunLoop().RunUntilIdle();
 
   // Report the unknown thermal state.
@@ -282,8 +280,7 @@ TEST_F(PeerConnectionTrackerTest, ReportInitialThermalState) {
   // Handlers registered late get no event.
   EXPECT_CALL(handler2, OnThermalStateChange(_)).Times(0);
   EXPECT_CALL(*mock_host_, AddPeerConnection(_)).Times(1);
-  tracker_->RegisterPeerConnection(&handler2, DefaultConfig(),
-                                   MediaConstraints(), nullptr);
+  tracker_->RegisterPeerConnection(&handler2, DefaultConfig(), nullptr);
   base::RunLoop().RunUntilIdle();
 }
 

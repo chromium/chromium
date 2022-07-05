@@ -66,13 +66,13 @@
 
 namespace blink {
 
-class Dictionary;
 class ExceptionState;
+class GoogMediaConstraints;
 class MediaStreamTrack;
 class RTCAnswerOptions;
 class RTCConfiguration;
-class RTCDTMFSender;
 class RTCDataChannel;
+class RTCDTMFSender;
 class RTCDataChannelInit;
 class RTCDtlsTransport;
 class RTCIceCandidateInit;
@@ -106,11 +106,7 @@ class MODULES_EXPORT RTCPeerConnection final
  public:
   static RTCPeerConnection* Create(ExecutionContext*,
                                    const RTCConfiguration*,
-                                   const Dictionary&,
-                                   ExceptionState&);
-  static RTCPeerConnection* Create(ExecutionContext*,
-                                   const RTCConfiguration*,
-                                   const ScriptValue&,
+                                   GoogMediaConstraints*,
                                    ExceptionState&);
   static RTCPeerConnection* Create(ExecutionContext*,
                                    const RTCConfiguration*,
@@ -121,7 +117,7 @@ class MODULES_EXPORT RTCPeerConnection final
                     bool sdp_semantics_specified,
                     bool force_encoded_audio_insertable_streams,
                     bool force_encoded_video_insertable_streams,
-                    MediaConstraints,
+                    GoogMediaConstraints*,
                     ExceptionState&);
   ~RTCPeerConnection() override;
 

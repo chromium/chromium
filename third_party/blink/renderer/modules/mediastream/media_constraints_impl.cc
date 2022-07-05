@@ -111,15 +111,6 @@ const char kDAEchoCancellation[] = "googDAEchoCancellation";
 // Google-specific constraint keys for a local video source (getUserMedia).
 const char kNoiseReduction[] = "googNoiseReduction";
 
-// Legacy RTCPeerConnection constructor constraints.
-
-// DtlsSrtpKeyAgreement is already ignored, except when building Fuchsia.
-// TODO(crbug.com/804275): Ignore on all platforms when Fuchsia dependency is
-// gone to unblock mediaConstraints removal.
-const char kEnableDtlsSrtp[] = "DtlsSrtpKeyAgreement";
-// TODO(https://crbug.com/1315576): Deprecate and ignore.
-const char kEnableIPv6[] = "googIPv6";
-
 // Names used for testing.
 const char kTestConstraint1[] = "valid_and_supported_1";
 const char kTestConstraint2[] = "valid_and_supported_2";
@@ -312,29 +303,6 @@ static void ParseOldStyleNames(
       result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kNoiseReduction)) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kEnableDtlsSrtp)) {
-      bool value = ToBoolean(constraint.value_);
-      if (value) {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableDtlsSrtpTrue);
-      } else {
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
-      }
-#if BUILDFLAG(IS_FUCHSIA)
-      // Special dispensation for Fuchsia to run SDES in 2022
-      // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
-      result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
-#endif
-    } else if (constraint.name_.Equals(kEnableIPv6)) {
-      result.enable_i_pv6.SetExact(ToBoolean(constraint.value_));
-      // Count deprecated usage of googIPv6, when it is set to false. Setting it
-      // to true is a NO-OP and apps doing this will not be affected when this
-      // constraint is ignored.
-      if (!result.enable_i_pv6.Exact()) {
-        Deprecation::CountDeprecation(context,
-                                      WebFeature::kLegacyConstraintGoogIPv6);
-      }
     } else if (constraint.name_.Equals(kTestConstraint1) ||
                constraint.name_.Equals(kTestConstraint2)) {
       // These constraints are only for testing parsing.

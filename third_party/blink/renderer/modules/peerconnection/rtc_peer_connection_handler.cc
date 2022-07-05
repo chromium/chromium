@@ -29,7 +29,13 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
@@ -157,40 +163,90 @@ void RunSynchronousOnceClosure(base::OnceClosure closure,
 
 // Converter functions from Blink types to WebRTC types.
 
-#if BUILDFLAG(IS_FUCHSIA)
-absl::optional<bool> ConstraintToOptional(
-    const MediaConstraints& constraints,
-    const blink::BooleanConstraint MediaTrackConstraintSetPlatform::*picker) {
-  bool value;
-  if (GetConstraintValueAsBoolean(constraints, picker, &value)) {
-    return absl::optional<bool>(value);
+std::vector<const GoogMediaConstraintsSet*> AllMediaConstraintSets(
+    GoogMediaConstraints* media_constraints) {
+  std::vector<const GoogMediaConstraintsSet*> result;
+  if (media_constraints->hasMandatory()) {
+    result.push_back(media_constraints->mandatory());
   }
+  if (media_constraints->hasOptional()) {
+    for (const GoogMediaConstraintsSet* optional_constraints_set :
+         media_constraints->optional()) {
+      result.push_back(optional_constraints_set);
+    }
+  }
+  return result;
+}
+
+absl::optional<bool> BooleanOrConstrainBooleanToBool(
+    const V8UnionBooleanOrConstrainBooleanParameters& parameter) {
+  if (parameter.IsBoolean()) {
+    return parameter.GetAsBoolean();
+  }
+  RTC_DCHECK(parameter.IsConstrainBooleanParameters());
+  ConstrainBooleanParameters* constrain_boolean =
+      parameter.GetAsConstrainBooleanParameters();
+  if (constrain_boolean->hasExact()) {
+    return constrain_boolean->exact();
+  }
+  if (constrain_boolean->hasIdeal()) {
+    return constrain_boolean->ideal();
+  }
+  // If the parameter is not specified (or we pass in an empty dictionary),
+  // we'll neither have an exact or ideal value. In this case return nullopt.
   return absl::nullopt;
 }
-#endif
 
 void CopyConstraintsIntoRtcConfiguration(
-    const MediaConstraints constraints,
+    ExecutionContext* context,
+    GoogMediaConstraints* media_constraints,
     webrtc::PeerConnectionInterface::RTCConfiguration* configuration) {
-  // Copy info from constraints into configuration, if present.
-  if (constraints.IsUnconstrained()) {
+  if (!media_constraints) {
     return;
   }
 
-  bool the_value;
-  if (GetConstraintValueAsBoolean(
-          constraints, &MediaTrackConstraintSetPlatform::enable_i_pv6,
-          &the_value)) {
-    configuration->disable_ipv6 = !the_value;
-  } else {
-    // Note: IPv6 WebRTC value is "disable" while Blink is "enable".
-    configuration->disable_ipv6 = false;
-  }
+  // Legacy constraints parsing looks at both mandatory and optional constraints
+  // sets (similar to how ScanConstraintsForExactValue() looks at basic and
+  // advanced constraints). The sets are iterated until an exact or ideal value
+  // is found.
+  std::vector<const GoogMediaConstraintsSet*> all_constraints_sets =
+      AllMediaConstraintSets(media_constraints);
 
-#if BUILDFLAG(IS_FUCHSIA)
+  absl::optional<bool> goog_ipv6;
+  for (auto* constraints_set : all_constraints_sets) {
+    if (!constraints_set->hasGoogIPv6())
+      continue;
+    goog_ipv6 = BooleanOrConstrainBooleanToBool(*constraints_set->googIPv6());
+    break;
+  }
+  if (goog_ipv6.has_value() && !goog_ipv6.value()) {
+    // Setting googIPv6 to the non-default value triggers count deprecation.
+    Deprecation::CountDeprecation(context,
+                                  WebFeature::kLegacyConstraintGoogIPv6);
+  }
+  bool enable_ipv6 = goog_ipv6.value_or(true);  // googIPv6 is true by default.
+  configuration->disable_ipv6 = !enable_ipv6;
+
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
-  configuration->enable_dtls_srtp = ConstraintToOptional(
-      constraints, &MediaTrackConstraintSetPlatform::enable_dtls_srtp);
+  absl::optional<bool> dtls_srtp_key_agreement;
+  for (auto* constraints_set : all_constraints_sets) {
+    if (!constraints_set->hasDtlsSrtpKeyAgreement())
+      continue;
+    dtls_srtp_key_agreement = BooleanOrConstrainBooleanToBool(
+        *constraints_set->dtlsSrtpKeyAgreement());
+    break;
+  }
+  if (dtls_srtp_key_agreement.has_value()) {
+    if (dtls_srtp_key_agreement.value()) {
+      Deprecation::CountDeprecation(
+          context, WebFeature::kRTCConstraintEnableDtlsSrtpTrue);
+    } else {
+      Deprecation::CountDeprecation(
+          context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
+    }
+  }
+#if BUILDFLAG(IS_FUCHSIA)
+  configuration->enable_dtls_srtp = dtls_srtp_key_agreement;
 #endif
 }
 
@@ -1116,9 +1172,10 @@ void RTCPeerConnectionHandler::CloseAndUnregister() {
 }
 
 bool RTCPeerConnectionHandler::Initialize(
+    ExecutionContext* context,
     const webrtc::PeerConnectionInterface::RTCConfiguration&
         server_configuration,
-    const MediaConstraints& options,
+    GoogMediaConstraints* media_constraints,
     WebLocalFrame* frame,
     ExceptionState& exception_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1147,8 +1204,9 @@ bool RTCPeerConnectionHandler::Initialize(
       blink::Platform::Current()->IsWebRtcSrtpEncryptedHeadersEnabled();
   configuration_.enable_implicit_rollback = true;
 
-  // Copy all the relevant constraints into |config|.
-  CopyConstraintsIntoRtcConfiguration(options, &configuration_);
+  // Copy all the relevant constraints into `config`.
+  CopyConstraintsIntoRtcConfiguration(context, media_constraints,
+                                      &configuration_);
 
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
@@ -1164,7 +1222,7 @@ bool RTCPeerConnectionHandler::Initialize(
 
   if (peer_connection_tracker_) {
     peer_connection_tracker_->RegisterPeerConnection(this, configuration_,
-                                                     options, frame_);
+                                                     frame_);
   }
 
   return true;
@@ -1173,7 +1231,6 @@ bool RTCPeerConnectionHandler::Initialize(
 bool RTCPeerConnectionHandler::InitializeForTest(
     const webrtc::PeerConnectionInterface::RTCConfiguration&
         server_configuration,
-    const MediaConstraints& options,
     PeerConnectionTracker* peer_connection_tracker,
     ExceptionState& exception_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1186,7 +1243,6 @@ bool RTCPeerConnectionHandler::InitializeForTest(
 
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
-  CopyConstraintsIntoRtcConfiguration(options, &configuration_);
 
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(
       configuration_, nullptr, peer_connection_observer_, exception_state);

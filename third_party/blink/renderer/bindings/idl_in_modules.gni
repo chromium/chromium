@@ -527,6 +527,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/payments/payment_shipping_option.idl",
           "//third_party/blink/renderer/modules/payments/payment_validation_errors.idl",
           "//third_party/blink/renderer/modules/payments/secure_payment_confirmation_request.idl",
+          "//third_party/blink/renderer/modules/peerconnection/goog_media_constraints.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_answer_options.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_certificate.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_configuration.idl",

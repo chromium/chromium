@@ -262,12 +262,6 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint goog_audio_mirroring;
   BooleanConstraint goog_da_echo_cancellation;
   BooleanConstraint goog_noise_reduction;
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
-  BooleanConstraint enable_dtls_srtp;
-#endif
-  BooleanConstraint enable_rtp_data_channels;
-  BooleanConstraint enable_i_pv6;
 
   PLATFORM_EXPORT bool IsUnconstrained() const;
   PLATFORM_EXPORT bool HasMandatory() const;

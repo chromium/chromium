@@ -365,34 +365,41 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       goog_experimental_noise_suppression("googExperimentalNoiseSuppression"),
       goog_audio_mirroring("googAudioMirroring"),
       goog_da_echo_cancellation("googDAEchoCancellation"),
-      goog_noise_reduction("googNoiseReduction"),
-#if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
-      enable_dtls_srtp("enableDtlsSrtp"),
-#endif
-      enable_rtp_data_channels("enableRtpDataChannels"),
-      enable_i_pv6("enableIPv6") {
-}
+      goog_noise_reduction("googNoiseReduction") {}
 
 Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
     const {
-  return {
-    &width, &height, &aspect_ratio, &frame_rate, &facing_mode, &resize_mode,
-        &volume, &sample_rate, &sample_size, &echo_cancellation,
-        &echo_cancellation_type, &latency, &channel_count, &device_id,
-        &group_id, &media_stream_source, &disable_local_echo, &pan, &tilt,
-        &zoom, &render_to_associated_sink, &goog_echo_cancellation,
-        &goog_experimental_echo_cancellation, &goog_auto_gain_control,
-        &goog_experimental_auto_gain_control, &goog_noise_suppression,
-        &goog_highpass_filter, &goog_experimental_noise_suppression,
-        &goog_audio_mirroring, &goog_da_echo_cancellation,
-        &goog_noise_reduction,
-#if BUILDFLAG(IS_FUCHSIA)
-        // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
-        &enable_dtls_srtp,
-#endif
-        &enable_rtp_data_channels, &enable_i_pv6
-  };
+  return {&width,
+          &height,
+          &aspect_ratio,
+          &frame_rate,
+          &facing_mode,
+          &resize_mode,
+          &volume,
+          &sample_rate,
+          &sample_size,
+          &echo_cancellation,
+          &echo_cancellation_type,
+          &latency,
+          &channel_count,
+          &device_id,
+          &group_id,
+          &media_stream_source,
+          &disable_local_echo,
+          &pan,
+          &tilt,
+          &zoom,
+          &render_to_associated_sink,
+          &goog_echo_cancellation,
+          &goog_experimental_echo_cancellation,
+          &goog_auto_gain_control,
+          &goog_experimental_auto_gain_control,
+          &goog_noise_suppression,
+          &goog_highpass_filter,
+          &goog_experimental_noise_suppression,
+          &goog_audio_mirroring,
+          &goog_da_echo_cancellation,
+          &goog_noise_reduction};
 }
 
 bool MediaTrackConstraintSetPlatform::IsUnconstrained() const {
