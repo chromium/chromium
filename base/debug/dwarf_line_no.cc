@@ -32,7 +32,7 @@ constexpr uint64_t kMaxOffset = std::numeric_limits<uint64_t>::max();
 // numbers. We can't set these numbers too big because they affect the size of
 // ProgramInfo which is allocated in the stack.
 constexpr int kMaxDirectories = 128;
-constexpr int kMaxFilenames = 512;
+constexpr size_t kMaxFilenames = 512;
 
 // DWARF-4 line number program header, section 6.2.4
 struct ProgramInfo {
@@ -52,7 +52,7 @@ struct ProgramInfo {
   // Store the directories as offsets.
   int num_directories = 1;
   uint64_t directory_offsets[kMaxDirectories];
-  int directory_sizes[kMaxDirectories];
+  uint64_t directory_sizes[kMaxDirectories];
 
   // Store the file number table offsets.
   mutable unsigned int num_filenames = 1;
@@ -89,15 +89,15 @@ struct LineNumberRegisters {
 
   // Identifies the source file relating to the address in the DWARF File name
   // table.
-  unsigned int file = 0;
+  uint64_t file = 0;
 
   // Identifies the line number. Starts at 1. Can become 0 if instruction does
   // not match any line in the file.
-  unsigned int line = 1;
+  uint64_t line = 1;
 
   // Identifies the column within the source line. Starts at 1 though "0"
   // also means "left edge" of the line.
-  unsigned int column = 0;
+  uint64_t column = 0;
 
   // Boolean determining if this is a recommended spot for a breakpoint.
   // Should be initialized by the program header.
@@ -118,19 +118,19 @@ struct LineNumberRegisters {
   bool epilogue_begin = false;
 
   // Identifier for the instruction set of the current address.
-  unsigned int isa = 0;
+  uint64_t isa = 0;
 
   // Identifies which block the current instruction belongs to.
-  unsigned int discriminator = 0;
+  uint64_t discriminator = 0;
 
   // Values from the previously committed line. See OnCommit interface for more
   // details. This conceptually should be a copy of the whole
   // LineNumberRegisters but since only 4 pieces of data are needed, hacking
   // it inline was easier.
   uintptr_t last_address = 0;
-  unsigned int last_file = 0;
-  uintptr_t last_line = 0;
-  uintptr_t last_column = 0;
+  uint64_t last_file = 0;
+  uint64_t last_line = 0;
+  uint64_t last_column = 0;
 
   // This is the magical calculation for decompressing the line-number
   // information. The `program_info` provides the parameters for the formula
@@ -258,11 +258,18 @@ void EvaluateLineNumberProgram(const int fd,
     //
     // See DWARF-4 spec 6.2.5.1.
     if (opcode >= program_info.opcode_base) {
-      unsigned int adjusted_opcode = opcode - program_info.opcode_base;
+      uint8_t adjusted_opcode = opcode - program_info.opcode_base;
       registers.OpAdvance(&program_info,
                           program_info.OpcodeToAdvance(adjusted_opcode));
-      registers.line +=
+      const int line_adjust =
           program_info.line_base + (adjusted_opcode % program_info.line_range);
+      if (line_adjust < 0) {
+        if (static_cast<uint64_t>(-line_adjust) > registers.line)
+          return;
+        registers.line -= static_cast<uint64_t>(-line_adjust);
+      } else {
+        registers.line += static_cast<uint64_t>(line_adjust);
+      }
       registers.basic_block = false;
       registers.prologue_end = false;
       registers.epilogue_begin = false;
@@ -311,7 +318,7 @@ void EvaluateLineNumberProgram(const int fd,
               uint64_t value;
               if (!reader.ReadLeb128(value))
                 return;
-              int cur_filename = program_info.num_filenames;
+              size_t cur_filename = program_info.num_filenames;
               if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
                 ++program_info.num_filenames;
                 // Store the offset from the start of file and skip the data to
@@ -373,7 +380,13 @@ void EvaluateLineNumberProgram(const int fd,
           int64_t line_advance;
           if (!reader.ReadLeb128(line_advance))
             return;
-          registers.line += line_advance;
+          if (line_advance < 0) {
+            if (static_cast<uint64_t>(-line_advance) > registers.line)
+              return;
+            registers.line -= static_cast<uint64_t>(-line_advance);
+          } else {
+            registers.line += static_cast<uint64_t>(line_advance);
+          }
           break;
         }
 
@@ -529,7 +542,7 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
     // Dir index
     if (!reader->ReadLeb128(value))
       return false;
-    int cur_filename = program_info->num_filenames;
+    size_t cur_filename = program_info->num_filenames;
     if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
       ++program_info->num_filenames;
       program_info->filename_offsets[cur_filename] = filename_offset;
@@ -898,7 +911,7 @@ bool GetCompileUnitName(int fd,
           }
           if (attr == kDW_AT_high_pc) {
             high_pc_is_offset = true;
-            high_pc = data;
+            high_pc = static_cast<uint64_t>(data);
           }
         } break;
 
@@ -1099,11 +1112,12 @@ void SerializeLineNumberInfoToString(int fd,
   }
 
   out[out_pos - 1] = ':';
-  char* tmp =
-      google::itoa_r(info.line, out + out_pos, out_size - out_pos, 10, 0);
+  char* tmp = google::itoa_r(static_cast<intptr_t>(info.line), out + out_pos,
+                             out_size - out_pos, 10, 0);
   out_pos += strlen(tmp) + 1;
   out[out_pos - 1] = ':';
-  tmp = google::itoa_r(info.column, out + out_pos, out_size - out_pos, 10, 0);
+  tmp = google::itoa_r(static_cast<intptr_t>(info.column), out + out_pos,
+                       out_size - out_pos, 10, 0);
   out_pos += strlen(tmp) + 1;
 }
 

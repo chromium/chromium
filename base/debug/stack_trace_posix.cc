@@ -157,13 +157,13 @@ void OutputPointer(void* pointer, BacktraceOutputHandler* handler) {
 }
 
 #if defined(USE_SYMBOLIZE)
-void OutputFrameId(intptr_t frame_id, BacktraceOutputHandler* handler) {
+void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
   // Max unsigned 64-bit number in decimal has 20 digits (18446744073709551615).
   // Hence, 30 digits should be more than enough to represent it in decimal
   // (including the null-terminator).
   char buf[30] = { '\0' };
   handler->HandleOutput("#");
-  internal::itoa_r(frame_id, buf, sizeof(buf), 10, 1);
+  internal::itoa_r(static_cast<intptr_t>(frame_id), buf, sizeof(buf), 10, 1);
   handler->HandleOutput(buf);
 }
 #endif  // defined(USE_SYMBOLIZE)
@@ -271,7 +271,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
     // installed. Thus, we reinstall ourselves before returning.
     struct sigaction action;
     memset(&action, 0, sizeof(action));
-    action.sa_flags = SA_RESETHAND | SA_SIGINFO;
+    action.sa_flags = static_cast<int>(SA_RESETHAND | SA_SIGINFO);
     action.sa_sigaction = &StackDumpSignalHandler;
     sigemptyset(&action.sa_mask);
 
@@ -628,9 +628,10 @@ class SandboxSymbolizeHelper {
         start_address = region.start;
         base_address = region.base;
         if (file_path && file_path_size > 0) {
-          strncpy(file_path, region.path.c_str(), file_path_size);
+          const size_t size = static_cast<size_t>(file_path_size);
+          strncpy(file_path, region.path.c_str(), size);
           // Ensure null termination.
-          file_path[file_path_size - 1] = '\0';
+          file_path[size - 1] = '\0';
         }
         return instance->GetFileDescriptor(region.path.c_str());
       }
@@ -647,7 +648,8 @@ class SandboxSymbolizeHelper {
       return;
 
     auto safe_memcpy = [&mem_fd](void* dst, uintptr_t src, size_t size) {
-      return HANDLE_EINTR(pread(mem_fd.get(), dst, size, src)) == ssize_t(size);
+      return HANDLE_EINTR(pread(mem_fd.get(), dst, size,
+                                static_cast<off_t>(src))) == ssize_t(size);
     };
 
     uintptr_t cur_base = 0;
@@ -821,7 +823,7 @@ bool EnableInProcessStackDumping() {
 
   struct sigaction action;
   memset(&action, 0, sizeof(action));
-  action.sa_flags = SA_RESETHAND | SA_SIGINFO;
+  action.sa_flags = static_cast<int>(SA_RESETHAND | SA_SIGINFO);
   action.sa_sigaction = &StackDumpSignalHandler;
   sigemptyset(&action.sa_mask);
 
@@ -872,7 +874,8 @@ size_t CollectStackTrace(void** trace, size_t count) {
 #elif !defined(__UCLIBC__) && !defined(_AIX)
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.
-  return base::saturated_cast<size_t>(backtrace(trace, count));
+  return base::saturated_cast<size_t>(
+      backtrace(trace, base::saturated_cast<int>(count)));
 #else
   return 0;
 #endif
@@ -912,7 +915,7 @@ char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
 
   char* start = buf;
 
-  uintptr_t j = i;
+  uintptr_t j = static_cast<uintptr_t>(i);
 
   // Handle negative numbers (only for base 10).
   if (i < 0 && base == 10) {
@@ -938,8 +941,8 @@ char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
     }
 
     // Output the next digit.
-    *ptr++ = "0123456789abcdef"[j % base];
-    j /= base;
+    *ptr++ = "0123456789abcdef"[j % static_cast<uintptr_t>(base)];
+    j /= static_cast<uintptr_t>(base);
 
     if (padding > 0)
       padding--;

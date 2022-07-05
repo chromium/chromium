@@ -170,7 +170,7 @@ Process GetDebuggerProcess() {
   if (num_read <= 0)
     return Process();
 
-  StringPiece status(buf, num_read);
+  StringPiece status(buf, static_cast<size_t>(num_read));
   StringPiece tracer("TracerPid:\t");
 
   StringPiece::size_type pid_index = status.find(tracer);

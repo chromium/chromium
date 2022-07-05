@@ -31,12 +31,14 @@ using Dyn = Elf32_Dyn;
 using Half = Elf32_Half;
 using Nhdr = Elf32_Nhdr;
 using Word = Elf32_Word;
+using Xword = Elf32_Word;
 #else
 using Ehdr = Elf64_Ehdr;
 using Dyn = Elf64_Dyn;
 using Half = Elf64_Half;
 using Nhdr = Elf64_Nhdr;
 using Word = Elf64_Word;
+using Xword = Elf64_Xword;
 #endif
 
 constexpr char kGnuNoteName[] = "GNU";
@@ -139,7 +141,7 @@ absl::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
         reinterpret_cast<const Dyn*>(header.p_vaddr + relocation_offset);
     const Dyn* dynamic_end = reinterpret_cast<const Dyn*>(
         header.p_vaddr + relocation_offset + header.p_memsz);
-    Word soname_strtab_offset = 0;
+    Xword soname_strtab_offset = 0;
     const char* strtab_addr = 0;
     for (const Dyn* dynamic_iter = dynamic_start; dynamic_iter < dynamic_end;
          ++dynamic_iter) {
