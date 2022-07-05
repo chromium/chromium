@@ -26,7 +26,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 1, NextIndex: 20
+// NextMinVersion: 2, NextIndex: 21
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -49,6 +49,7 @@ enum ProbeCategoryEnum {
   kDisplay = 17,
   kNetworkInterface = 18,
   kInput = 19,
+  [MinVersion=1] kAudioHardware = 20,
 
   // TODO(b/190459636): Rename it to kSystem after migration.
   kSystem2 = 0x10000,
@@ -896,6 +897,50 @@ struct AudioInfo {
   uint32 severe_underruns@7;
 };
 
+// Audio hardware probe result.
+//
+// NextMinVersion: 1, NextIndex: 3
+union AudioHardwareResult {
+  // The required field for backwards compatibility. The unrecognized Mojo
+  // field will deserialize to this field. It should not be used.
+  [Default] bool unmapped_field0;
+  // Valid AudioHardwareInfo.
+  AudioHardwareInfo audio_hardware_info@1;
+  // The error that occurred.
+  ProbeError error@2;
+};
+
+// Audio hardware information.
+//
+// NextMinVersion: 1, NextIndex: 2
+struct AudioHardwareInfo {
+  // Audio cards information.
+  array<AudioCard> audio_cards@0;
+};
+
+// Audio card information.
+//
+// NextMinVersion: 1, NextIndex: 3
+struct AudioCard {
+  // The id used by ALSA(Advanced Linux Sound Architecture).
+  string alsa_id@0;
+  // The bus device. If omits, the card is belongs to a bus type which is not
+  // yet supported by Healthd.
+  BusDevice? bus_device@1;
+  // The hd-audio codecs.
+  array<HDAudioCodec> hd_audio_codecs@2;
+};
+
+// HD-Audio codec information.
+//
+// NextMinVersion: 1, NextIndex: 2
+struct HDAudioCodec {
+  // The name. E.g. "ATI R6xx HDMI".
+  string name@0;
+  // The address. E.g. "0".
+  uint8 address@1;
+};
+
 // Boot performance result.
 union BootPerformanceResult {
   // Valid BootPerformanceInfo.
@@ -934,7 +979,7 @@ union BusResult {
 // The classes of the bus devices. Can be used to group the devices by their
 // use.
 //
-// NextMinVersion: 1, NextIndex: 6
+// NextMinVersion: 1, NextIndex: 7
 [Extensible]
 enum BusDeviceClass {
   // For the devices which cannot be classified.
@@ -944,6 +989,7 @@ enum BusDeviceClass {
   kWirelessController = 3,
   kBluetoothAdapter = 4,
   kThunderboltController = 5,
+  kAudioCard = 6,
 };
 
 // The bus device info.
@@ -1438,7 +1484,7 @@ struct InputDevice {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// NextMinVersion: 4, NextIndex: 20
+// NextMinVersion: 5, NextIndex: 21
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
@@ -1505,4 +1551,7 @@ struct TelemetryInfo {
   // Information about the input software and hardware. Only present when
   // kInput was included in the categories input to ProbeTelemetryInfo.
   [MinVersion=3] InputResult? input_result@19;
+  // Information about audio hardware. Only present when kAudioHardware was
+  // included.
+  [MinVersion=4] AudioHardwareResult? audio_hardware_result@20;
 };
