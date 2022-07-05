@@ -56,7 +56,8 @@ class NET_EXPORT ChunkedUploadDataStream : public UploadDataStream {
     const base::WeakPtr<ChunkedUploadDataStream> upload_data_stream_;
   };
 
-  explicit ChunkedUploadDataStream(int64_t identifier);
+  explicit ChunkedUploadDataStream(int64_t identifier,
+                                   bool has_null_source = false);
 
   ChunkedUploadDataStream(const ChunkedUploadDataStream&) = delete;
   ChunkedUploadDataStream& operator=(const ChunkedUploadDataStream&) = delete;

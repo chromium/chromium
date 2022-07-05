@@ -39,7 +39,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
   ChunkedDataPipeUploadDataStream(
       scoped_refptr<ResourceRequestBody> resource_request_body,
       mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
-          chunked_data_pipe_getter);
+          chunked_data_pipe_getter,
+      bool has_null_source = false);
 
   ChunkedDataPipeUploadDataStream(const ChunkedDataPipeUploadDataStream&) =
       delete;

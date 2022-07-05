@@ -15,8 +15,10 @@ namespace network {
 
 ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
     scoped_refptr<ResourceRequestBody> resource_request_body,
-    mojo::PendingRemote<mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter)
-    : net::UploadDataStream(true /* is_chunked */,
+    mojo::PendingRemote<mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter,
+    bool has_null_source)
+    : net::UploadDataStream(/*is_chunked=*/true,
+                            /*has_null_source=*/has_null_source,
                             resource_request_body->identifier()),
       resource_request_body_(std::move(resource_request_body)),
       chunked_data_pipe_getter_(std::move(chunked_data_pipe_getter)),

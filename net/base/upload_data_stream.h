@@ -28,6 +28,7 @@ class NET_EXPORT UploadDataStream {
   // cache to formulate a cache key. This value should be unique across browser
   // sessions. A value of 0 is used to indicate an unspecified identifier.
   UploadDataStream(bool is_chunked, int64_t identifier);
+  UploadDataStream(bool is_chunked, bool has_null_source, int64_t identifier);
 
   UploadDataStream(const UploadDataStream&) = delete;
   UploadDataStream& operator=(const UploadDataStream&) = delete;
@@ -72,6 +73,10 @@ class NET_EXPORT UploadDataStream {
   int64_t identifier() const { return identifier_; }
 
   bool is_chunked() const { return is_chunked_; }
+
+  // Returns true if the stream has a null source which is defined at
+  // https://fetch.spec.whatwg.org/#concept-body-source.
+  bool has_null_source() const { return has_null_source_; }
 
   // Returns true if all data has been consumed from this upload data
   // stream. For chunked uploads, returns false until the first read attempt.
@@ -139,6 +144,7 @@ class NET_EXPORT UploadDataStream {
   const int64_t identifier_;
 
   const bool is_chunked_;
+  const bool has_null_source_;
 
   // True if the initialization was successful.
   bool initialized_successfully_ = false;

@@ -17625,6 +17625,164 @@ TEST_F(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
 }
 
 TEST_F(HttpNetworkTransactionTest,
+       Response421WithStreamingBodyWithNonNullSource) {
+  const std::string ip_addr = "1.2.3.4";
+  IPAddress ip;
+  ASSERT_TRUE(ip.AssignFromIPLiteral(ip_addr));
+  IPEndPoint peer_addr = IPEndPoint(ip, 443);
+
+  session_deps_.host_resolver = std::make_unique<MockCachingHostResolver>();
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", ip_addr);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  const std::string request_body = "hello";
+  spdy::SpdySerializedFrame req1 = spdy_util_.ConstructChunkedSpdyPost({}, 0);
+  spdy::SpdySerializedFrame req1_body =
+      spdy_util_.ConstructSpdyDataFrame(1, request_body, /*fin=*/true);
+  spdy::SpdySerializedFrame rst =
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL);
+  MockWrite writes1[] = {
+      CreateMockWrite(req1, 0),
+      CreateMockWrite(req1_body, 1),
+      CreateMockWrite(rst, 4),
+  };
+
+  spdy::Http2HeaderBlock response_headers;
+  response_headers[spdy::kHttp2StatusHeader] = "421";
+  spdy::SpdySerializedFrame resp1 =
+      spdy_util_.ConstructSpdyReply(1, std::move(response_headers));
+  MockRead reads1[] = {CreateMockRead(resp1, 2), MockRead(ASYNC, 0, 3)};
+
+  MockConnect connect1(ASYNC, OK, peer_addr);
+  SequencedSocketData data1(connect1, reads1, writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  AddSSLSocketData();
+
+  SpdyTestUtil spdy_util2;
+  spdy::SpdySerializedFrame req2 = spdy_util2.ConstructChunkedSpdyPost({}, 0);
+  spdy::SpdySerializedFrame req2_body =
+      spdy_util2.ConstructSpdyDataFrame(1, request_body, /*fin=*/true);
+  MockWrite writes2[] = {
+      CreateMockWrite(req2, 0),
+      CreateMockWrite(req2_body, 1),
+  };
+
+  spdy::Http2HeaderBlock resp2_headers;
+  resp2_headers[spdy::kHttp2StatusHeader] = "200";
+  spdy::SpdySerializedFrame resp2 =
+      spdy_util2.ConstructSpdyReply(1, std::move(resp2_headers));
+  spdy::SpdySerializedFrame resp2_body(
+      spdy_util2.ConstructSpdyDataFrame(1, true));
+  MockRead reads2[] = {CreateMockRead(resp2, 2), CreateMockRead(resp2_body, 3),
+                       MockRead(ASYNC, 0, 4)};
+
+  MockConnect connect2(ASYNC, OK, peer_addr);
+  SequencedSocketData data2(connect2, reads2, writes2);
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  AddSSLSocketData();
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request;
+  ChunkedUploadDataStream upload_data_stream(0, /*has_null_source=*/false);
+  upload_data_stream.AppendData(request_body.data(), request_body.size(),
+                                /*is_done=*/true);
+  request.method = "POST";
+  request.url = GURL("https://www.example.org");
+  request.load_flags = 0;
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  request.upload_data_stream = &upload_data_stream;
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  std::string response_data;
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+  EXPECT_TRUE(response->was_fetched_via_spdy);
+  EXPECT_TRUE(response->was_alpn_negotiated);
+  EXPECT_TRUE(response->ssl_info.cert);
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("hello!", response_data);
+}
+
+TEST_F(HttpNetworkTransactionTest, Response421WithStreamingBodyWithNullSource) {
+  const std::string ip_addr = "1.2.3.4";
+  IPAddress ip;
+  ASSERT_TRUE(ip.AssignFromIPLiteral(ip_addr));
+  IPEndPoint peer_addr = IPEndPoint(ip, 443);
+
+  session_deps_.host_resolver = std::make_unique<MockCachingHostResolver>();
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", ip_addr);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  const std::string request_body = "hello";
+  spdy::SpdySerializedFrame req1 = spdy_util_.ConstructChunkedSpdyPost({}, 0);
+  spdy::SpdySerializedFrame req1_body =
+      spdy_util_.ConstructSpdyDataFrame(1, request_body, /*fin=*/true);
+  spdy::SpdySerializedFrame rst =
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL);
+  MockWrite writes1[] = {
+      CreateMockWrite(req1, 0),
+      CreateMockWrite(req1_body, 1),
+      CreateMockWrite(rst, 5),
+  };
+
+  spdy::Http2HeaderBlock response_headers;
+  response_headers[spdy::kHttp2StatusHeader] = "421";
+  spdy::SpdySerializedFrame resp1 =
+      spdy_util_.ConstructSpdyReply(1, std::move(response_headers));
+  spdy::SpdySerializedFrame resp1_body(
+      spdy_util_.ConstructSpdyDataFrame(1, true));
+  MockRead reads1[] = {CreateMockRead(resp1, 2), CreateMockRead(resp1_body, 3),
+                       MockRead(ASYNC, 0, 4)};
+
+  MockConnect connect1(ASYNC, OK, peer_addr);
+  SequencedSocketData data1(connect1, reads1, writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  AddSSLSocketData();
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request;
+  ChunkedUploadDataStream upload_data_stream(0, /*has_null_source=*/true);
+  upload_data_stream.AppendData(request_body.data(), request_body.size(),
+                                /*is_done=*/true);
+  request.method = "POST";
+  request.url = GURL("https://www.example.org");
+  request.load_flags = 0;
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  request.upload_data_stream = &upload_data_stream;
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  std::string response_data;
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 421", response->headers->GetStatusLine());
+  EXPECT_TRUE(response->was_fetched_via_spdy);
+  EXPECT_TRUE(response->was_alpn_negotiated);
+  EXPECT_TRUE(response->ssl_info.cert);
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("hello!", response_data);
+}
+
+TEST_F(HttpNetworkTransactionTest,
        UseIPConnectionPoolingWithHostCacheExpiration) {
   // Set up HostResolver to invalidate cached entries after 1 cached resolve.
   session_deps_.host_resolver =

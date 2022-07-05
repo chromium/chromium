@@ -167,9 +167,10 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
         network::mojom::DataElementDataView::Tag::kChunkedDataPipe) {
       auto& element =
           body->elements_mutable()->at(0).As<DataElementChunkedDataPipe>();
+      const bool has_null_source = element.read_only_once().value();
       auto upload_data_stream =
           std::make_unique<ChunkedDataPipeUploadDataStream>(
-              body, element.ReleaseChunkedDataPipeGetter());
+              body, element.ReleaseChunkedDataPipeGetter(), has_null_source);
       if (element.read_only_once()) {
         upload_data_stream->EnableCache();
       }
