@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
@@ -195,7 +197,8 @@ void RegistrationRequest::Start() {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&RegistrationRequest::OnURLLoadComplete,
-                     base::Unretained(this), url_loader_.get()));
+                     base::Unretained(this), std::move(body),
+                     url_loader_.get()));
 }
 
 void RegistrationRequest::BuildRequestHeaders(
@@ -240,6 +243,7 @@ void RegistrationRequest::RetryWithBackoff() {
 }
 
 RegistrationRequest::Status RegistrationRequest::ParseResponse(
+    const std::string& request_body,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> body,
     std::string* token) {
@@ -262,7 +266,20 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
     std::string error =
         response.substr(error_pos + std::size(kErrorPrefix) - 1);
     LOG(ERROR) << "Registration response error message: " << error;
-    return GetStatusFromError(error);
+    RegistrationRequest::Status status = GetStatusFromError(error);
+
+    // TODO(crbug.com/1327973): Temporarily log additional information for
+    // INVALID_SENDER errors. Remove once the investigation is complete!
+    if (status == RegistrationRequest::Status::INVALID_SENDER) {
+      SCOPED_CRASH_KEY_STRING32("gcm_registration", "url",
+                                source->GetFinalURL().spec());
+      SCOPED_CRASH_KEY_STRING32("gcm_registration", "request_body",
+                                request_body);
+      SCOPED_CRASH_KEY_STRING32("gcm_registration", "response_body", response);
+      base::debug::DumpWithoutCrashing(FROM_HERE,
+                                       /*time_between_dumps=*/base::Hours(12));
+    }
+    return status;
   }
 
   // Can't even get any header info.
@@ -290,10 +307,11 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
 }
 
 void RegistrationRequest::OnURLLoadComplete(
+    const std::string& request_body,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> body) {
   std::string token;
-  Status status = ParseResponse(source, std::move(body), &token);
+  Status status = ParseResponse(request_body, source, std::move(body), &token);
   recorder_->RecordRegistrationResponse(request_info_.app_id(),
                                         source_to_record_, status);
 

@@ -133,7 +133,8 @@ class GCM_EXPORT RegistrationRequest {
   void Start();
 
   // Invoked from SimpleURLLoader.
-  void OnURLLoadComplete(const network::SimpleURLLoader* source,
+  void OnURLLoadComplete(const std::string& request_body,
+                         const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> body);
 
  private:
@@ -145,7 +146,8 @@ class GCM_EXPORT RegistrationRequest {
 
   // Parse the response returned by the URL loader into token, and returns the
   // status.
-  Status ParseResponse(const network::SimpleURLLoader* source,
+  Status ParseResponse(const std::string& request_body,
+                       const network::SimpleURLLoader* source,
                        std::unique_ptr<std::string> body,
                        std::string* token);
 
