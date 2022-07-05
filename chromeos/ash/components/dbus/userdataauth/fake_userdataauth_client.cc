@@ -90,6 +90,33 @@ OverloadedFunctor<Ts...> Overload(Ts&&... ts) {
   return OverloadedFunctor<Ts...>{std::forward<Ts>(ts)...};
 }
 
+absl::optional<cryptohome::KeyData> AuthFactorToKeyData(
+    std::string label,
+    const FakeAuthFactor& factor) {
+  absl::optional<cryptohome::KeyData> data;
+  absl::visit(Overload(
+                  [&](const PasswordFactor& password) {
+                    data = cryptohome::KeyData();
+                    data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+                    data->set_label(std::move(label));
+                  },
+                  [&](const PinFactor& pin) {
+                    data = cryptohome::KeyData();
+                    data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+                    data->set_label(std::move(label));
+                    data->mutable_policy()->set_low_entropy_credential(true);
+                    data->mutable_policy()->set_auth_locked(pin.locked);
+                  },
+                  [&](const RecoveryFactor& recovery) { data = absl::nullopt; },
+                  [&](const KioskFactor& kiosk) {
+                    data = cryptohome::KeyData();
+                    data->set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
+                    data->set_label(std::move(label));
+                  }),
+              factor);
+  return data;
+}
+
 // Helper that automatically sends a reply struct to a supplied callback when
 // it goes out of scope. Basically a specialized `absl::Cleanup` or
 // `std::scope_exit`.
@@ -330,30 +357,14 @@ void FakeUserDataAuthClient::GetKeyData(
     const std::string& label = factors_it->first;
     const FakeAuthFactor& factor = factors_it->second;
 
-    absl::visit(Overload(
-                    [&](const PasswordFactor& password) {
-                      cryptohome::KeyData* data = reply.add_key_data();
-                      data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-                      data->set_label(label);
-                    },
-                    [&](const PinFactor& pin) {
-                      cryptohome::KeyData* data = reply.add_key_data();
-                      data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-                      data->set_label(label);
-                      data->mutable_policy()->set_low_entropy_credential(true);
-                      data->mutable_policy()->set_auth_locked(pin.locked);
-                    },
-                    [&](const RecoveryFactor& recovery) {
-                      // Retrieving key data for recovery code via the legacy
-                      // API is not allowed.
-                      LOG(WARNING) << "Not reporting recovery key: " << label;
-                    },
-                    [&](const KioskFactor& kiosk) {
-                      cryptohome::KeyData* data = reply.add_key_data();
-                      data->set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-                      data->set_label(label);
-                    }),
-                factor);
+    absl::optional<cryptohome::KeyData> key_data =
+        AuthFactorToKeyData(label, factor);
+    if (key_data.has_value()) {
+      reply.mutable_key_data()->Add(std::move(*key_data));
+    } else {
+      LOG(WARNING) << "Ignoring auth factor incompatible with legacy API: "
+                   << label;
+    }
   }
 
   if (reply.key_data().empty()) {
@@ -584,6 +595,9 @@ void FakeUserDataAuthClient::GetAccountDiskUsage(
 void FakeUserDataAuthClient::StartAuthSession(
     const ::user_data_auth::StartAuthSessionRequest& request,
     StartAuthSessionCallback callback) {
+  ::user_data_auth::StartAuthSessionReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
   std::string auth_session_id =
       base::StringPrintf(kAuthSessionIdTemplate, next_auth_session_id_++);
 
@@ -592,37 +606,62 @@ void FakeUserDataAuthClient::StartAuthSession(
   session.id = auth_session_id;
   session.account = request.account_id();
 
-  std::string user_id = request.account_id().account_id();
-  // See device_local_account.h
-  bool is_kiosk = base::EndsWith(user_id, "kiosk-apps.device-local.localhost");
-
-  ::user_data_auth::StartAuthSessionReply reply;
   if (cryptohome_error_ !=
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
     reply.set_error(cryptohome_error_);
-  } else {
-    reply.set_auth_session_id(auth_session_id);
-    bool user_exists = UserExists(request.account_id());
-    reply.set_user_exists(user_exists);
-    if (user_exists) {
-      if (is_kiosk) {
-        // see kCryptohomePublicMountLabel
-        std::string kiosk_label = "publicmount";
-        cryptohome::KeyData kiosk_key;
-        kiosk_key.set_label(kiosk_label);
-        kiosk_key.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-        (*reply.mutable_key_label_data())[kiosk_label] = std::move(kiosk_key);
+    return;
+  }
+
+  reply.set_auth_session_id(auth_session_id);
+  bool user_exists = UserExists(request.account_id());
+  reply.set_user_exists(user_exists);
+
+  const auto user_it = users_.find(request.account_id());
+  if (user_it != std::end(users_)) {
+    const UserCryptohomeState& user_state = user_it->second;
+    for (const auto& [label, factor] : user_state.auth_factors) {
+      absl::optional<cryptohome::KeyData> key_data =
+          AuthFactorToKeyData(label, factor);
+      if (key_data) {
+        reply.mutable_key_label_data()->insert({label, std::move(*key_data)});
       } else {
-        // see kCryptohomeGaiaKeyLabel
-        std::string gaia_label = "gaia";
-        cryptohome::KeyData gaia_key;
-        gaia_key.set_label(gaia_label);
-        gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-        (*reply.mutable_key_label_data())[gaia_label] = std::move(gaia_key);
+        LOG(WARNING) << "Ignoring auth factor incompatible with legacy API: "
+                     << label;
       }
     }
   }
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+
+  // TODO(crbug.com/1334538): Some tests expect that kiosk or gaia keys exist
+  // for existing users, but don't set those keys up. Until those tests are
+  // fixed, we explicitly add keys here.
+  if (user_exists) {
+    const std::string& account_id = request.account_id().account_id();
+    // See device_local_account.h
+    const bool is_kiosk =
+        base::EndsWith(account_id, "kiosk-apps.device-local.localhost");
+
+    if (is_kiosk) {
+      // See kCryptohomePublicMountLabel.
+      std::string kiosk_label = "publicmount";
+      cryptohome::KeyData kiosk_key;
+      kiosk_key.set_label(kiosk_label);
+      kiosk_key.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
+      const auto [_, was_inserted] = reply.mutable_key_label_data()->insert(
+          {std::move(kiosk_label), std::move(kiosk_key)});
+      LOG_IF(ERROR, was_inserted)
+          << "Listing kiosk key even though it was not set up";
+    } else {
+      // See kCryptohomeGaiaKeyLabel.
+      std::string gaia_label = "gaia";
+      cryptohome::KeyData gaia_key;
+      gaia_key.set_label(gaia_label);
+      gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+      const auto [_, was_inserted] = reply.mutable_key_label_data()->insert(
+          {std::move(gaia_label), std::move(gaia_key)});
+      LOG_IF(ERROR, was_inserted)
+          << "Listing gaia key even though it was not set up";
+    }
+  }
 }
 
 void FakeUserDataAuthClient::AuthenticateAuthSession(
@@ -965,6 +1004,9 @@ bool FakeUserDataAuthClient::UserExists(
   if (users_.find(account_id) != std::end(users_)) {
     return true;
   }
+
+  if (user_data_dir_.empty())
+    return false;
 
   base::ScopedAllowBlockingForTesting allow_io;
   bool result = base::PathExists(GetUserProfileDir(account_id));
