@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 
+#include <list>
+
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
