@@ -604,8 +604,8 @@
   },
   {
     "name": "biometric-reauth-password-filling",
-    "owners": [ "ioanap" ],
-    "expiry_milestone": 104
+    "owners": [ "ioanap", "vsemeniuk@google.com" ],
+    "expiry_milestone": 108
   },
   {
     "name": "block-insecure-private-network-requests",
