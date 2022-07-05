@@ -17,6 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
@@ -42,6 +43,7 @@
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
@@ -69,6 +71,7 @@ using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordForm;
+using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using ui::TimeFormat;
 
 using InsecureCredentialsView =
@@ -76,6 +79,9 @@ using InsecureCredentialsView =
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckService::State;
+
+constexpr char kPasswordCheckScriptsCacheStateUmaKey[] =
+    "PasswordManager.BulkCheck.ScriptsCacheState";
 
 std::unique_ptr<std::string> GetChangePasswordUrl(const GURL& url) {
   return std::make_unique<std::string>(
@@ -412,15 +418,20 @@ void PasswordCheckDelegate::StartPasswordCheck(
   // we make sure that the cache is warm prior to analyzing passwords.
   is_check_running_ = true;
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChange) &&
-      GetPasswordScriptsFetcher()->IsCacheStale()) {
-    GetPasswordScriptsFetcher()->RefreshScriptsIfNecessary(
-        base::BindOnce(&PasswordCheckDelegate::OnPasswordScriptsFetched,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    // Otherwise, call directly.
-    StartPasswordAnalyses(std::move(callback));
+          password_manager::features::kPasswordChange)) {
+    if (GetPasswordScriptsFetcher()->IsCacheStale()) {
+      // The UMA metric for a stale cache is recorded on callback.
+      GetPasswordScriptsFetcher()->RefreshScriptsIfNecessary(
+          base::BindOnce(&PasswordCheckDelegate::OnPasswordScriptsFetched,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+    UMA_HISTOGRAM_ENUMERATION(kPasswordCheckScriptsCacheStateUmaKey,
+                              PasswordCheckScriptsCacheState::kCacheFresh);
   }
+
+  // Otherwise, call directly.
+  StartPasswordAnalyses(std::move(callback));
 }
 
 void PasswordCheckDelegate::OnPasswordScriptsFetched(
@@ -433,7 +444,14 @@ void PasswordCheckDelegate::OnPasswordScriptsFetched(
     if (base::ranges::any_of(credentials,
                              &api::passwords_private::InsecureCredential::
                                  has_startable_script)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kPasswordCheckScriptsCacheStateUmaKey,
+          PasswordCheckScriptsCacheState::kCacheStaleAndUiUpdate);
       event_router->OnCompromisedCredentialsChanged(std::move(credentials));
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          kPasswordCheckScriptsCacheStateUmaKey,
+          PasswordCheckScriptsCacheState::kCacheStaleAndNoUiUpdate);
     }
   }
   StartPasswordAnalyses(std::move(callback));

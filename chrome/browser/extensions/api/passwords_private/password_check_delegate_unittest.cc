@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -40,6 +41,7 @@
 #include "components/password_manager/core/browser/mock_password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -100,6 +102,7 @@ using password_manager::PasswordChangeSuccessTrackerFactory;
 using password_manager::PasswordForm;
 using password_manager::SavedPasswordsPresenter;
 using password_manager::TestPasswordStore;
+using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
 using signin::IdentityTestEnvironment;
 using ::testing::AllOf;
@@ -1415,6 +1418,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordChange);
+  base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
@@ -1477,11 +1481,16 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
                                kUsername1, /*has_startable_script=*/true),
                            ExpectCredentialWithScriptInfo(
                                kUsername2, /*has_startable_script=*/true)));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BulkCheck.ScriptsCacheState",
+      PasswordCheckScriptsCacheState::kCacheStaleAndUiUpdate, 1);
 }
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordChange);
+  base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Disable password sync.
@@ -1500,12 +1509,15 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
   EXPECT_THAT(delegate().GetCompromisedCredentials(),
               UnorderedElementsAre(ExpectCredentialWithScriptInfo(
                   kUsername1, /*has_startable_script=*/false)));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.BulkCheck.ScriptsCacheState", 0u);
 }
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       password_manager::features::kPasswordChange);
+  base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
@@ -1524,11 +1536,14 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
   EXPECT_THAT(delegate().GetCompromisedCredentials(),
               UnorderedElementsAre(ExpectCredentialWithScriptInfo(
                   kUsername1, /*has_startable_script=*/false)));
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.BulkCheck.ScriptsCacheState", 0u);
 }
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordChange);
+  base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
@@ -1555,12 +1570,17 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
   EXPECT_FALSE(base::Contains(
       event_router_observer().events(),
       api::passwords_private::OnCompromisedCredentialsChanged::kEventName));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BulkCheck.ScriptsCacheState",
+      PasswordCheckScriptsCacheState::kCacheFresh, 1);
 }
 
 TEST_F(PasswordCheckDelegateTest,
        HasStartableScript_CredentialListUpdateAfterScriptsFetched) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordChange);
+  base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
@@ -1596,6 +1616,9 @@ TEST_F(PasswordCheckDelegateTest,
                 .at(api::passwords_private::OnCompromisedCredentialsChanged::
                         kEventName)
                 ->histogram_value);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BulkCheck.ScriptsCacheState",
+      PasswordCheckScriptsCacheState::kCacheStaleAndUiUpdate, 1);
 }
 
 }  // namespace extensions

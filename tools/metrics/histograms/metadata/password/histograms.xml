@@ -1062,6 +1062,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.BulkCheck.ScriptsCacheState"
+    enum="PasswordCheckScriptsCacheState" expires_after="2023-07-04">
+  <owner>brunobraga@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    The state of the scripts cache for automatic password changed that is
+    encountered on opening the password check subpage on Desktop and the UI
+    reaction to it.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BulkCheck.Time" units="ms"
     expires_after="2023-01-01">
   <owner>vasilii@chromium.org</owner>

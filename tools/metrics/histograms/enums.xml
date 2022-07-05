@@ -73855,6 +73855,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Did nothing"/>
 </enum>
 
+<enum name="PasswordCheckScriptsCacheState">
+  <int value="0" label="Cache is fresh"/>
+  <int value="1" label="Cache is stale but no UI update is triggered"/>
+  <int value="2" label="Cache is stale and a UI update is triggered"/>
+</enum>
+
 <enum name="PasswordCheckUIUserActionAndroid">
   <int value="0" label="Start check automatically"/>
   <int value="1" label="Start check manually"/>
