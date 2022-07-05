@@ -46,6 +46,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
     private final String mUserAgent;
     private final ExecutorService mExecutorService;
     private final int mCronetEngineId;
+    private final CronetLogger mLogger;
 
     public JavaCronetEngine(CronetEngineBuilderImpl builder) {
         mCronetEngineId = hashCode();
@@ -72,18 +73,22 @@ public final class JavaCronetEngine extends CronetEngineBase {
                         });
                     }
                 });
-        CronetLogger logger = CronetLoggerFactory.createLogger();
+        mLogger = CronetLoggerFactory.createLogger();
         // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
         // about the "w.x.y.z" bit.
         String version = getVersionString();
         version = version.split("/")[1];
         version = version.split("@")[0];
-        logger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
+        mLogger.logCronetEngineCreation(mCronetEngineId, new CronetEngineBuilderInfo(builder),
                 new CronetVersion(version), CronetSource.CRONET_SOURCE_FALLBACK);
     }
 
     int getCronetEngineId() {
         return mCronetEngineId;
+    }
+
+    CronetLogger getCronetLogger() {
+        return mLogger;
     }
 
     @Override

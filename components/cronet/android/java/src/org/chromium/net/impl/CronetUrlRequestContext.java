@@ -164,9 +164,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     private @Nullable Network mNetwork;
 
     private final int mCronetEngineId;
+    private final CronetLogger mLogger;
 
     int getCronetEngineId() {
         return mCronetEngineId;
+    }
+
+    CronetLogger getCronetLogger() {
+        return mLogger;
     }
 
     @UsedByReflection("CronetEngine.java")
@@ -197,14 +202,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
         }
-        CronetLogger logger = CronetLoggerFactory.createLogger();
+        mLogger = CronetLoggerFactory.createLogger();
         // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
         // about the "w.x.y.z" bit.
         String version = getVersionString();
         version = version.split("/")[1];
         version = version.split("@")[0];
         // TODO(stefanoduo): Correctly generate the CronetSource parameter.
-        logger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
+        mLogger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
                 new CronetVersion(version), CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
 
         // Init native Chromium URLRequestContext on init thread.

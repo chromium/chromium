@@ -106,6 +106,7 @@ final class JavaUrlRequest extends UrlRequestBase {
     private HttpURLConnection mCurrentUrlConnection; // Only accessed on mExecutor.
     private OutputStreamDataSink mOutputStreamDataSink; // Only accessed on mExecutor.
     private final int mCronetEngineId;
+    private final CronetLogger mLogger;
 
     // Executor that runs one task at a time on an underlying Executor.
     // NOTE: Do not use to wrap user supplied Executor as lock is held while underlying execute()
@@ -223,6 +224,7 @@ final class JavaUrlRequest extends UrlRequestBase {
             }
         });
         mCronetEngineId = engine.getCronetEngineId();
+        mLogger = engine.getCronetLogger();
         mCurrentUrl = url;
         mUserAgent = userAgent;
     }
@@ -945,8 +947,7 @@ final class JavaUrlRequest extends UrlRequestBase {
         // after Callback's onSucceeded, onFailed and onCanceled.
         private void maybeReportMetrics() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CronetLogger logger = CronetLoggerFactory.createLogger();
-                logger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
             }
         }
 
