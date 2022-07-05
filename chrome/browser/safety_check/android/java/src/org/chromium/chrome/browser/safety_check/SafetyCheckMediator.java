@@ -590,12 +590,14 @@ class SafetyCheckMediator
                 mPasswordCheckupHelper, getSyncingAccount(),
                 count
                 -> {
-                    if (weakRef.get() == null) return;
-                    weakRef.get().onBreachedCredentialsObtained(count, false);
+                    SafetyCheckMediator mediator = weakRef.get();
+                    if (mediator == null) return;
+                    mediator.onBreachedCredentialsObtained(count, false);
                 },
                 error -> {
-                    if (weakRef.get() == null) return;
-                    weakRef.get().onPasswordCheckFailed(error);
+                    SafetyCheckMediator mediator = weakRef.get();
+                    if (mediator == null) return;
+                    mediator.onPasswordCheckFailed(error);
                 });
     }
 
@@ -616,12 +618,14 @@ class SafetyCheckMediator
                 mPasswordCheckupHelper, getSyncingAccount(),
                 unused
                 -> {
-                    if (weakRef.get() == null) return;
-                    weakRef.get().onPasswordCheckFinished();
+                    SafetyCheckMediator mediator = weakRef.get();
+                    if (mediator == null) return;
+                    mediator.onPasswordCheckFinished();
                 },
                 error -> {
-                    if (weakRef.get() == null) return;
-                    weakRef.get().onPasswordCheckFailed(error);
+                    SafetyCheckMediator mediator = weakRef.get();
+                    if (mediator == null) return;
+                    mediator.onPasswordCheckFailed(error);
                 });
     }
 
@@ -655,12 +659,14 @@ class SafetyCheckMediator
                 mPasswordCheckupHelper, getSyncingAccount(),
                 count
                 -> {
-                    if (weakRef.get() == null) return;
-                    weakRef.get().onBreachedCredentialsObtained(count, true);
+                    SafetyCheckMediator mediator = weakRef.get();
+                    if (mediator == null) return;
+                    mediator.onBreachedCredentialsObtained(count, true);
                 },
                 error -> {
-                    if (weakRef.get() == null) return;
-                    weakRef.get().onPasswordCheckFailed(error);
+                    SafetyCheckMediator mediator = weakRef.get();
+                    if (mediator == null) return;
+                    mediator.onPasswordCheckFailed(error);
                 });
     }
 
