@@ -7,7 +7,6 @@ package org.chromium.components.module_installer.builder;
 import com.google.auto.service.AutoService;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableSet;
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -20,7 +19,6 @@ import org.chromium.base.annotations.IdentifierNameString;
 
 import java.util.Set;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
@@ -145,15 +143,8 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
 
         MethodSpec constructor =
                 MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE).build();
-        AnnotationSpec generatedAnnotation =
-                AnnotationSpec.builder(Generated.class)
-                        .addMember("value",
-                                String.format("\"%s\"",
-                                        ModuleInterfaceProcessor.class.getCanonicalName()))
-                        .build();
 
         return TypeSpec.classBuilder(fooModuleClassName)
-                .addAnnotation(generatedAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addField(classNameString)
                 .addField(module)

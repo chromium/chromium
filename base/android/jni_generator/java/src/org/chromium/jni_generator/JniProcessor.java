@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
@@ -108,8 +107,6 @@ public class JniProcessor extends AbstractProcessor {
 
         // State of mNativesBuilder needs to be preserved between processing rounds.
         mNativesBuilder = TypeSpec.classBuilder(GEN_JNI_CLASS_NAME)
-                                  .addAnnotation(createAnnotationWithValue(
-                                          Generated.class, JniProcessor.class.getCanonicalName()))
                                   .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                                   .addField(testingFlagBuilder.build())
                                   .addField(throwFlagBuilder.build());
@@ -303,10 +300,8 @@ public class JniProcessor extends AbstractProcessor {
             TypeElement nativeInterface, Map<String, MethodSpec> methodMap) {
         // The wrapper class builder.
         TypeName nativeInterfaceType = TypeName.get(nativeInterface.asType());
-        TypeSpec.Builder builder = TypeSpec.classBuilder(name)
-                                           .addSuperinterface(nativeInterfaceType)
-                                           .addAnnotation(createAnnotationWithValue(Generated.class,
-                                                   JniProcessor.class.getCanonicalName()));
+        TypeSpec.Builder builder =
+                TypeSpec.classBuilder(name).addSuperinterface(nativeInterfaceType);
         if (isPublic) {
             builder.addModifiers(Modifier.PUBLIC);
         }

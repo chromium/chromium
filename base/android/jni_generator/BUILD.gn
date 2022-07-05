@@ -99,6 +99,5 @@ java_annotation_processor("jni_processor") {
     "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
     "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/android_deps:com_squareup_javapoet_java",
-    "//third_party/android_deps:javax_annotation_jsr250_api_java",
   ]
 }
