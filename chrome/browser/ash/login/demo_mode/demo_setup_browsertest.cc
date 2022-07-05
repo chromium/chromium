@@ -738,14 +738,10 @@ class OfflineDemoSetupTest : public DemoSetupArcSupportedTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_NextDisabledOnNetworkScreen DISABLED_NextDisabledOnNetworkScreen
-#else
-#define MAYBE_NextDisabledOnNetworkScreen NextDisabledOnNetworkScreen
-#endif
+// crbug.com/1340651 Disable the test due to flakiness. Note that the test is
+// also disabled for ASAN, see crbug.com/1150349 for more information.
 IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
-                       MAYBE_NextDisabledOnNetworkScreen) {
+                       DISABLED_NextDisabledOnNetworkScreen) {
   SimulateNetworkDisconnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -1081,15 +1077,10 @@ class DemoSetupVirtualSetRegionCodeTest : public DemoSetupArcSupportedTest {
   }
 };
 
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet \
-  DISABLED_VirtualSetCountryCodeRegionPlaceholderIsSet
-#else
-#define MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet \
-  VirtualSetCountryCodeRegionPlaceholderIsSet
-#endif
+// crbug.com/1340618 Disable the test due to flakiness. Note that the test is
+// also disabled for ASAN, see crrev.com/c/3227288 for more information.
 IN_PROC_BROWSER_TEST_F(DemoSetupVirtualSetRegionCodeTest,
-                       MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet) {
+                       DISABLED_VirtualSetCountryCodeRegionPlaceholderIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
