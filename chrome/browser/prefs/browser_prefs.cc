@@ -748,6 +748,12 @@ const char kStabilityRendererCrashCount[] =
     "user_experience_metrics.stability.renderer_crash_count";
 const char kStabilityExtensionRendererCrashCount[] =
     "user_experience_metrics.stability.extension_renderer_crash_count";
+
+// Deprecated 07/2022
+const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
+const char kPrivacySandboxFlocDataAccessibleSince[] =
+    "privacy_sandbox.floc_data_accessible_since";
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 #endif
@@ -1012,6 +1018,10 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kDownloadLaterPromptStatus, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 07/2022
+  registry->RegisterBooleanPref(kPrivacySandboxFlocEnabled, true);
+  registry->RegisterBooleanPref(kPrivacySandboxFlocDataAccessibleSince, false);
 }
 
 }  // namespace
@@ -1980,6 +1990,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 06/2022.
   profile_prefs->ClearPref(kPrivacySandboxPreferencesReconciled);
+
+  // Added 07/2022
+  profile_prefs->ClearPref(kPrivacySandboxFlocEnabled);
+  profile_prefs->ClearPref(kPrivacySandboxFlocDataAccessibleSince);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

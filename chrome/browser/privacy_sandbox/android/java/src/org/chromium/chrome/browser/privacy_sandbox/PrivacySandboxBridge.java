@@ -30,22 +30,6 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setPrivacySandboxEnabled(enabled);
     }
 
-    public static boolean isFlocEnabled() {
-        return PrivacySandboxBridgeJni.get().isFlocEnabled();
-    }
-
-    public static void setFlocEnabled(boolean enabled) {
-        PrivacySandboxBridgeJni.get().setFlocEnabled(enabled);
-    }
-
-    public static boolean isFlocIdResettable() {
-        return PrivacySandboxBridgeJni.get().isFlocIdResettable();
-    }
-
-    public static void resetFlocId() {
-        PrivacySandboxBridgeJni.get().resetFlocId();
-    }
-
     public static String getFlocStatusString() {
         return PrivacySandboxBridgeJni.get().getFlocStatusString();
     }
@@ -118,10 +102,6 @@ public class PrivacySandboxBridge {
         boolean isPrivacySandboxManaged();
         boolean isPrivacySandboxRestricted();
         void setPrivacySandboxEnabled(boolean enabled);
-        boolean isFlocEnabled();
-        void setFlocEnabled(boolean enabled);
-        boolean isFlocIdResettable();
-        void resetFlocId();
         String getFlocStatusString();
         String getFlocGroupString();
         String getFlocUpdateString();

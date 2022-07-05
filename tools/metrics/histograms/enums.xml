@@ -86338,9 +86338,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="PS disabled, block all cookies"/>
   <int value="6" label="PS disabled, policy block 3P cookies"/>
   <int value="7" label="PS disabled, policy block all cookies"/>
-  <int value="8" label="PS enabled, FLoC disabled, allow all cookies"/>
-  <int value="9" label="PS enabled, FLoC disabled, block 3P cookies"/>
-  <int value="10" label="PS enabled, FLoC disabled, block all cookies"/>
+  <int value="8"
+      label="PS enabled, FLoC disabled, allow all cookies (deprecated
+             07/2022)"/>
+  <int value="9"
+      label="PS enabled, FLoC disabled, block 3P cookies (deprecated 07/2022)"/>
+  <int value="10"
+      label="PS enabled, FLoC disabled, block all cookies (deprecated
+             07/2022)"/>
 </enum>
 
 <enum name="SettingsPrivacySandboxStartupStates">

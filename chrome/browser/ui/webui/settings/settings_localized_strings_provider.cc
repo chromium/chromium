@@ -1752,8 +1752,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   // one provided by the Privacy Sandbox service, and one with a URL
   // replacement based on a feature parameter.
   std::u16string floc_explanation =
-      PrivacySandboxServiceFactory::GetForProfile(profile)
-          ->GetFlocDescriptionForDisplay() +
+      l10n_util::GetPluralStringFUTF16(IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
+                                       7) +
       u" " +  // Whitespace is a valid separator w.r.t l10n.
       l10n_util::GetStringFUTF16(IDS_SETTINGS_PRIVACY_SANDBOX_FLOC_TRIAL_ACTIVE,
                                  u"https://privacysandbox.com/proposals/floc");
@@ -1763,8 +1763,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   // profile, and so the relevant string can be injected here, rather than
   // fetched dynamically from JS.
   html_source->AddString("privacySandboxPageFlocResetExplanation",
-                         PrivacySandboxServiceFactory::GetForProfile(profile)
-                             ->GetFlocResetExplanationForDisplay());
+                         l10n_util::GetPluralStringFUTF16(
+                             IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7));
 
   html_source->AddBoolean(
       "privacySandboxSettings3Enabled",

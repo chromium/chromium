@@ -46,21 +46,6 @@ constexpr char kBlockedTopicsTopicKey[] = "topic";
 
 bool g_dialog_diabled_for_tests = false;
 
-// Returns the number of days in |time|, rounded to the closest day by hour if
-// there is at least 1 day, but rounded to 0 if |time| is less than 1 day.
-int GetNumberOfDaysRoundedAboveOne(base::TimeDelta time) {
-  int number_of_days = time.InDays();
-  if (number_of_days == 0)
-    return 0;
-
-  int number_of_hours_past_day = (time - base::Days(number_of_days)).InHours();
-
-  if (number_of_hours_past_day >= 12)
-    number_of_days++;
-
-  return number_of_days;
-}
-
 // Returns whether 3P cookies are blocked by |cookie_settings|. This can be
 // either through blocking 3P cookies directly, or blocking all cookies.
 bool AreThirdPartyCookiesBlocked(
@@ -127,19 +112,11 @@ PrivacySandboxService::PrivacySandboxService(
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
 
-  // Register observers for the Privacy Sandbox & FLoC preferences.
+  // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
-  user_prefs_registrar_.Add(
-      prefs::kPrivacySandboxApisEnabled,
-      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV1PrefChanged,
-                          base::Unretained(this)));
   user_prefs_registrar_.Add(
       prefs::kPrivacySandboxApisEnabledV2,
       base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV2PrefChanged,
-                          base::Unretained(this)));
-  user_prefs_registrar_.Add(
-      prefs::kPrivacySandboxFlocEnabled,
-      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV1PrefChanged,
                           base::Unretained(this)));
 
   // When the user enters the Privacy Sandbox 3 experiment, the default value
@@ -285,62 +262,6 @@ void PrivacySandboxService::SetDialogDisabledForTests(bool disabled) {
   g_dialog_diabled_for_tests = disabled;
 }
 
-std::u16string PrivacySandboxService::GetFlocDescriptionForDisplay() const {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
-      GetNumberOfDaysRoundedAboveOne(base::Days(7)));
-}
-
-std::u16string PrivacySandboxService::GetFlocIdForDisplay() const {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
-}
-
-std::u16string PrivacySandboxService::GetFlocIdNextUpdateForDisplay(
-    const base::Time& current_time) {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return l10n_util::GetStringUTF16(
-      IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID);
-}
-
-std::u16string PrivacySandboxService::GetFlocResetExplanationForDisplay()
-    const {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION,
-      GetNumberOfDaysRoundedAboveOne(base::Days(7)));
-}
-
-std::u16string PrivacySandboxService::GetFlocStatusForDisplay() const {
-  // FLoC always disabled while OT not active.
-  // TODO(crbug.com/1299720): Perform cleanup / adjustment as required.
-  return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE);
-}
-
-bool PrivacySandboxService::IsFlocIdResettable() const {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return false;
-}
-
-void PrivacySandboxService::ResetFlocId(bool user_initiated) const {
-  // This function is left as a non-functional stub to support UI code for the
-  // removed FLoC feature. The UI should not allow the user to perform this
-  // action (see IsFlocIdResettable() definition)
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return;
-}
-
-bool PrivacySandboxService::IsFlocPrefEnabled() const {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return false;
-}
-
-void PrivacySandboxService::SetFlocPrefEnabled(bool enabled) const {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return;
-}
-
 bool PrivacySandboxService::IsPrivacySandboxEnabled() {
   return base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)
              ? pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
@@ -368,15 +289,6 @@ void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
           : prefs::kPrivacySandboxManuallyControlled,
       true);
   privacy_sandbox_settings_->SetPrivacySandboxEnabled(enabled);
-}
-
-void PrivacySandboxService::OnPrivacySandboxV1PrefChanged() {
-  // Any change of the two observed prefs should be accompanied by a
-  // reset of the FLoC cohort. Technically this only needs to occur on the
-  // transition from FLoC being effectively disabled to effectively enabled,
-  // but performing it on every pref change achieves the same user visible
-  // behavior, and is much simpler.
-  ResetFlocId(/*user_initiated=*/false);
 }
 
 void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
@@ -606,28 +518,19 @@ void PrivacySandboxService::LogPrivacySandboxState() {
   }
 
   if (privacy_sandbox_settings_->IsPrivacySandboxEnabled()) {
-    const bool floc_enabled =
-        pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled);
-
     if (default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
       RecordPrivacySandboxHistogram(
-          floc_enabled ? PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                             kPSEnabledBlockAll
-                       : PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                             kPSEnabledFlocDisabledBlockAll);
+          PrivacySandboxService::SettingsPrivacySandboxEnabled::
+              kPSEnabledBlockAll);
     } else if (cookie_controls_mode_value ==
                content_settings::CookieControlsMode::kBlockThirdParty) {
       RecordPrivacySandboxHistogram(
-          floc_enabled ? PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                             kPSEnabledBlock3P
-                       : PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                             kPSEnabledFlocDisabledBlock3P);
+          PrivacySandboxService::SettingsPrivacySandboxEnabled::
+              kPSEnabledBlock3P);
     } else {
       RecordPrivacySandboxHistogram(
-          floc_enabled ? PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                             kPSEnabledAllowAll
-                       : PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                             kPSEnabledFlocDisabledAllowAll);
+          PrivacySandboxService::SettingsPrivacySandboxEnabled::
+              kPSEnabledAllowAll);
     }
   } else {
     if (default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {

@@ -91,26 +91,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public boolean isFlocEnabled() {
-        return true;
-    }
-
-    @Override
-    public void setFlocEnabled(boolean enabled) {
-        assert false;
-    }
-
-    @Override
-    public boolean isFlocIdResettable() {
-        return true;
-    }
-
-    @Override
-    public void resetFlocId() {
-        assert false;
-    }
-
-    @Override
     public String getFlocStatusString() {
         return null;
     }

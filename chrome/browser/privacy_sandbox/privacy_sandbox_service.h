@@ -148,48 +148,6 @@ class PrivacySandboxService : public KeyedService,
   // ensure it is reset at the end of your test.
   static void SetDialogDisabledForTests(bool disabled);
 
-  // Returns a description of FLoC ready for display to the user. Correctly
-  // takes into account the FLoC feature parameters when determining the number
-  // of days between cohort calculations.
-  std::u16string GetFlocDescriptionForDisplay() const;
-
-  // Returns the current FLoC cohort identifier for the associated profile in
-  // string format suitable for direct display to the user. If the cohort is
-  // not valid, the appropriate descriptive string is returned instead.
-  std::u16string GetFlocIdForDisplay() const;
-
-  // Returns when the user's current FLoC cohort identifier will next be updated
-  // in a string format suitable for direct display to the user. If no compute
-  // is scheduled, the appropriate descriptive string is returned instead.
-  std::u16string GetFlocIdNextUpdateForDisplay(const base::Time& current_time);
-
-  // Returns the display ready string explaining what happens when the user
-  // resets the FLoC cohort identifier.
-  std::u16string GetFlocResetExplanationForDisplay() const;
-
-  // Returns a display ready string explaining the current status of FloC. E.g.
-  // the effective state of the Finch experiment, and the user's setting.
-  std::u16string GetFlocStatusForDisplay() const;
-
-  // Returns whether the user's current FLoC ID can be reset. This requires that
-  // the FLoC feature be enabled and FLoC be enabled in preferences. It does not
-  // require that the current ID is valid, as resetting the ID also resets the
-  // compute timer, it should be available whenever FLoC is active.
-  bool IsFlocIdResettable() const;
-
-  // Sets the time when history is accessible for FLoC calculation to the
-  // current time and resets the time to the next FLoC id calculation. If
-  // |user_initiated| is true, records the associated User Metrics Action.
-  void ResetFlocId(bool user_initiated) const;
-
-  // Returns whether the FLoC preference is enabled. This should only be used
-  // for displaying the preference state to the user, and should *not* be used
-  // for determining whether FLoC is allowed or not.
-  bool IsFlocPrefEnabled() const;
-
-  // Sets the FLoC preference to |enabled|.
-  void SetFlocPrefEnabled(bool enabled) const;
-
   // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
   // is true, context specific as well as restriction/confirmation checks
   // will still be performed to determine if specific APIs are available in
@@ -211,10 +169,6 @@ class PrivacySandboxService : public KeyedService,
   // profile. UI code should consult this to ensure that when restricted,
   // Privacy Sandbox related UI is updated appropriately.
   virtual bool IsPrivacySandboxRestricted();
-
-  // Called when a preference relevant to the the V1 Privacy Sandbox page is
-  // changed.
-  void OnPrivacySandboxV1PrefChanged();
 
   // Called when the V2 Privacy Sandbox preference is changed.
   void OnPrivacySandboxV2PrefChanged();
@@ -322,8 +276,11 @@ class PrivacySandboxService : public KeyedService,
     kPSDisabledBlockAll = 5,
     kPSDisabledPolicyBlock3P = 6,
     kPSDisabledPolicyBlockAll = 7,
+    // DEPRECATED
     kPSEnabledFlocDisabledAllowAll = 8,
+    // DEPRECATED
     kPSEnabledFlocDisabledBlock3P = 9,
+    // DEPRECATED
     kPSEnabledFlocDisabledBlockAll = 10,
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml

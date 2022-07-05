@@ -25,13 +25,8 @@ const char kPrivacySandboxManuallyControlledV2[] =
 
 const char kPrivacySandboxPageViewed[] = "privacy_sandbox.page_viewed";
 
-const char kPrivacySandboxFlocDataAccessibleSince[] =
-    "privacy_sandbox.floc_data_accessible_since";
-
 const char kPrivacySandboxTopicsDataAccessibleSince[] =
     "privacy_sandbox.topics_data_accessible_since";
-
-extern const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
 
 const char kPrivacySandboxBlockedTopics[] = "privacy_sandbox.blocked_topics";
 
@@ -78,13 +73,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPrivacySandboxManuallyControlledV2,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);
-  registry->RegisterTimePref(prefs::kPrivacySandboxFlocDataAccessibleSince,
-                             base::Time());
   registry->RegisterTimePref(prefs::kPrivacySandboxTopicsDataAccessibleSince,
                              base::Time());
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxFlocEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(prefs::kPrivacySandboxBlockedTopics);
   registry->RegisterDictionaryPref(prefs::kPrivacySandboxFledgeJoinBlocked);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxNoticeDisplayed, false);

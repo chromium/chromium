@@ -757,40 +757,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   std::unique_ptr<PrivacySandboxService> privacy_sandbox_service_;
 };
 
-TEST_F(PrivacySandboxServiceTest, GetFlocDescriptionForDisplay) {
-  EXPECT_EQ(
-      l10n_util::GetPluralStringFUTF16(IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 7),
-      privacy_sandbox_service()->GetFlocDescriptionForDisplay());
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFlocIdForDisplay) {
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
-            privacy_sandbox_service()->GetFlocIdForDisplay());
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFlocIdNextUpdateForDisplay) {
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID),
-            privacy_sandbox_service()->GetFlocIdNextUpdateForDisplay(
-                base::Time::Now()));
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFlocResetExplanationForDisplay) {
-  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
-                IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7),
-            privacy_sandbox_service()->GetFlocResetExplanationForDisplay());
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFlocStatusForDisplay) {
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE),
-      privacy_sandbox_service()->GetFlocStatusForDisplay());
-}
-
-TEST_F(PrivacySandboxServiceTest, IsFlocIdResettable) {
-  EXPECT_FALSE(privacy_sandbox_service()->IsFlocIdResettable());
-}
-
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
   // actions is correctly converted into a list of eTLD+1s.
@@ -1979,11 +1945,6 @@ TEST_F(PrivacySandboxServiceTest, MetricsLoggingOccursCorrectly) {
   // The histogram should start off empty.
   histograms.ExpectTotalCount(histogram_name, 0);
 
-  // For buckets that do not explicitly mention FLoC, it is assumed to be on,
-  // or its state is irrelevant, i.e. overridden by the Privacy Sandbox pref.
-  profile()->GetTestingPrefService()->SetBoolean(
-      prefs::kPrivacySandboxFlocEnabled, true);
-
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -2108,64 +2069,6 @@ TEST_F(PrivacySandboxServiceTest, MetricsLoggingOccursCorrectly) {
       histogram_name,
       static_cast<int>(PrivacySandboxService::SettingsPrivacySandboxEnabled::
                            kPSDisabledPolicyBlockAll),
-      1);
-
-  // Disable FLoC and test the buckets that reflect a disabled FLoC state.
-  profile()->GetTestingPrefService()->SetBoolean(
-      prefs::kPrivacySandboxFlocEnabled, false);
-
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
-      /*block_third_party_cookies=*/false,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
-
-  CreateService();
-
-  histograms.ExpectTotalCount(histogram_name, 8);
-  histograms.ExpectBucketCount(
-      histogram_name,
-      static_cast<int>(PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                           kPSEnabledFlocDisabledAllowAll),
-      1);
-
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
-      /*block_third_party_cookies=*/true,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
-
-  CreateService();
-
-  histograms.ExpectTotalCount(histogram_name, 9);
-  histograms.ExpectBucketCount(
-      histogram_name,
-      static_cast<int>(PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                           kPSEnabledFlocDisabledBlock3P),
-      1);
-
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
-      /*block_third_party_cookies=*/true,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
-
-  CreateService();
-
-  histograms.ExpectTotalCount(histogram_name, 10);
-  histograms.ExpectBucketCount(
-      histogram_name,
-      static_cast<int>(PrivacySandboxService::SettingsPrivacySandboxEnabled::
-                           kPSEnabledFlocDisabledBlockAll),
       1);
 }
 

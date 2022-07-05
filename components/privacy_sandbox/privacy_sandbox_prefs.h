@@ -43,18 +43,8 @@ extern const char kPrivacySandboxManuallyControlledV2[];
 extern const char kPrivacySandboxPageViewed[];
 
 // The point in time from which history is eligible to be used when calculating
-// a user's FLoC ID.
-// TODO(crbug.com/1292898): Deprecate this preference once Privacy Sandbox
-// Settings 3 has been launched.
-extern const char kPrivacySandboxFlocDataAccessibleSince[];
-
-// The point in time from which history is eligible to be used when calculating
 // a user's Topics API topics.
 extern const char kPrivacySandboxTopicsDataAccessibleSince[];
-
-// Synced boolean that controls whether FLoC is enabled. Requires that the
-// kPrivacySandboxApisEnabled preference be enabled to take effect.
-extern const char kPrivacySandboxFlocEnabled[];
 
 // List of entries representing Topics API topics which are blocked for
 // the profile. Blocked topics cannot be provided to site, or considered as

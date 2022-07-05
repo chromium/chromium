@@ -64,43 +64,11 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
         flocToggle.setEnabled(false);
         // Configure the reset button.
         Preference resetButton = findPreference(RESET_FLOC_BUTTON);
+        resetButton.setEnabled(false);
         resetButton.setOnPreferenceClickListener(this);
         resetButton.setTitle(R.string.privacy_sandbox_floc_reset_button);
 
         RecordUserAction.record("Settings.PrivacySandbox.FlocSubpageOpened");
-
-        updateInformation();
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        String key = preference.getKey();
-        if (!FLOC_TOGGLE.equals(key)) return true;
-        boolean enabled = (boolean) newValue;
-        PrivacySandboxBridge.setFlocEnabled(enabled);
-        updateInformation();
-        return true;
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        String key = preference.getKey();
-        if (!RESET_FLOC_BUTTON.equals(key)) return true;
-        PrivacySandboxBridge.resetFlocId();
-        updateInformation();
-        return true;
-    }
-
-    /**
-     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
-     * helpers are not modularized.
-     */
-    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
-        mCustomTabHelper = tabHelper;
-    }
-
-    private void updateInformation() {
-        findPreference(RESET_FLOC_BUTTON).setEnabled(PrivacySandboxBridge.isFlocIdResettable());
 
         findPreference(FLOC_STATUS)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_status_title)
@@ -111,6 +79,24 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
         findPreference(FLOC_UPDATE)
                 .setSummary(getContext().getString(R.string.privacy_sandbox_floc_update_title)
                         + "\n" + PrivacySandboxBridge.getFlocUpdateString());
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        return true;
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        return true;
+    }
+
+    /**
+     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
+     * helpers are not modularized.
+     */
+    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
+        mCustomTabHelper = tabHelper;
     }
 
     private String getFlocRegionsUrl() {
