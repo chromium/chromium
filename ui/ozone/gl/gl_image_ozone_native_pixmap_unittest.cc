@@ -89,15 +89,7 @@ using GLImageScanoutType = testing::Types<
     GLImageNativePixmapTestDelegate<gfx::BufferUsage::SCANOUT,
                                     gfx::BufferFormat::BGRA_8888>>;
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Disabled due to failures on ChromeOS MSan builder.
-// TODO(crbug.com/1314304) Reenable the test.
-#define MAYBE_GLImageNativePixmapScanoutBGRA \
-  DISABLED_GLImageNativePixmapScanoutBGRA
-#else
-#define MAYBE_GLImageNativePixmapScanoutBGRA GLImageNativePixmapScanoutBGRA
-#endif
-INSTANTIATE_TYPED_TEST_SUITE_P(MAYBE_GLImageNativePixmapScanoutBGRA,
+INSTANTIATE_TYPED_TEST_SUITE_P(GLImageNativePixmapScanoutBGRA,
                                GLImageTest,
                                GLImageScanoutType);
 
