@@ -37,7 +37,7 @@ SensorProviderProxyImpl::SensorProviderBinder& GetBinderOverride() {
 
 SensorProviderProxyImpl::SensorProviderProxyImpl(
     RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {
+    : DocumentUserData<SensorProviderProxyImpl>(render_frame_host) {
   DCHECK(render_frame_host);
 }
 
@@ -73,10 +73,11 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
       GetDeviceService().BindSensorProvider(std::move(receiver));
   }
 
-  render_frame_host_->GetBrowserContext()
+  render_frame_host()
+      .GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
-          blink::PermissionType::SENSORS, render_frame_host_, false,
+          blink::PermissionType::SENSORS, &render_frame_host(), false,
           base::BindOnce(&SensorProviderProxyImpl::OnPermissionRequestCompleted,
                          weak_factory_.GetWeakPtr(), type,
                          std::move(callback)));
@@ -102,7 +103,7 @@ void SensorProviderProxyImpl::OnPermissionRequestCompleted(
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
       break;
     default:
-      static_cast<RenderFrameHostImpl*>(render_frame_host_)
+      static_cast<RenderFrameHostImpl*>(&render_frame_host())
           ->OnBackForwardCacheDisablingStickyFeatureUsed(
               blink::scheduler::WebSchedulerTrackedFeature::
                   kRequestedBackForwardCacheBlockedSensors);
@@ -147,7 +148,7 @@ bool SensorProviderProxyImpl::CheckFeaturePolicies(SensorType type) const {
       SensorTypeToPermissionsPolicyFeatures(type);
   return std::all_of(features.begin(), features.end(),
                      [this](blink::mojom::PermissionsPolicyFeature feature) {
-                       return render_frame_host_->IsFeatureEnabled(feature);
+                       return render_frame_host().IsFeatureEnabled(feature);
                      });
 }
 
@@ -157,5 +158,7 @@ void SensorProviderProxyImpl::OnConnectionError() {
   receiver_set_.Clear();
   sensor_provider_.reset();
 }
+
+DOCUMENT_USER_DATA_KEY_IMPL(SensorProviderProxyImpl);
 
 }  // namespace content

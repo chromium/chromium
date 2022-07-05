@@ -9253,10 +9253,9 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
 }
 
 void RenderFrameHostImpl::TearDownMojoConnection() {
-  // While not directly Mojo endpoints, both `geolocation_service_` and
-  // `sensor_provider_proxy_` may attempt to cancel permission requests.
+  // While not directly a Mojo endpoint, |geolocation_service_| may attempt to
+  // cancel permission requests.
   geolocation_service_.reset();
-  sensor_provider_proxy_.reset();
 
   associated_registry_.reset();
 
@@ -10499,10 +10498,8 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
 
 void RenderFrameHostImpl::GetSensorProvider(
     mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
-  if (!sensor_provider_proxy_) {
-    sensor_provider_proxy_ = std::make_unique<SensorProviderProxyImpl>(this);
-  }
-  sensor_provider_proxy_->Bind(std::move(receiver));
+  SensorProviderProxyImpl::GetOrCreateForCurrentDocument(this)->Bind(
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindCacheStorage(

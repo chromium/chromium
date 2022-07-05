@@ -239,7 +239,6 @@ class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostView;
 class RenderWidgetHostViewBase;
-class SensorProviderProxyImpl;
 class ServiceWorkerContainerHost;
 class SiteInfo;
 class SpeechSynthesisImpl;
@@ -3651,9 +3650,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // IdleManager which provides Idle status.
   std::unique_ptr<IdleManagerImpl> idle_manager_;
-
-  // SensorProvider proxy which acts as a gatekeeper to the real SensorProvider.
-  std::unique_ptr<SensorProviderProxyImpl> sensor_provider_proxy_;
 
   std::unique_ptr<blink::AssociatedInterfaceRegistry> associated_registry_;
 

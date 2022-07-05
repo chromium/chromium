@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_GENERIC_SENSOR_SENSOR_PROVIDER_PROXY_IMPL_H_
 #define CONTENT_BROWSER_GENERIC_SENSOR_SENSOR_PROVIDER_PROXY_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -22,10 +22,10 @@ class RenderFrameHost;
 // This proxy acts as a gatekeeper to the real sensor provider so that this
 // proxy can intercept sensor requests and allow or deny them based on
 // the permission statuses retrieved from a permission controller.
-class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
+class SensorProviderProxyImpl final
+    : public device::mojom::SensorProvider,
+      public DocumentUserData<SensorProviderProxyImpl> {
  public:
-  explicit SensorProviderProxyImpl(RenderFrameHost* render_frame_host);
-
   SensorProviderProxyImpl(const SensorProviderProxyImpl&) = delete;
   SensorProviderProxyImpl& operator=(const SensorProviderProxyImpl&) = delete;
 
@@ -41,6 +41,8 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
       SensorProviderBinder binder);
 
  private:
+  explicit SensorProviderProxyImpl(RenderFrameHost* render_frame_host);
+
   // SensorProvider implementation.
   void GetSensor(device::mojom::SensorType type,
                  GetSensorCallback callback) override;
@@ -56,10 +58,11 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
   // invalidated before being discarded.
   mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
   mojo::ReceiverSet<device::mojom::SensorProvider> receiver_set_;
-  // Note: |render_frame_host_| owns |this| instance.
-  const raw_ptr<RenderFrameHost> render_frame_host_;
 
   base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_{this};
+
+  friend DocumentUserData;
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content
