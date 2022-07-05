@@ -7,6 +7,7 @@
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
@@ -21,7 +22,10 @@
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace chromeos {
 
@@ -36,6 +40,24 @@ const char kFakeDeviceId[] = "fake_device_id";
 const char kFakeRefreshToken[] = "fake_refresh_token";
 const char kFakeEnterpriseEmail[] = "fake_enterprise@example.com";
 const char kFakeEnterpriseDomain[] = "example.com";
+
+const char kSecureConnectApiGetSecondaryGoogleAccountUsageURL[] =
+    "https://secureconnect-pa.clients6.google.com/"
+    "v1:getManagedAccountsSigninRestriction?policy_name="
+    "SecondaryGoogleAccountUsage";
+;
+
+// Fake responses for the URL requests that are part of the sign-in flow.
+const char kOnClientOAuthSuccessBody[] =
+    R"({
+            "refresh_token": "refresh_token",
+            "access_token": "access_token",
+            "expires_in": 99999
+       })";
+const char kUserInfoURLBodyWithHostedDomain[] = R"({"hd": "%s"})";
+const char kUserInfoURLBodyWithoutHostedDomain[] = R"({})";
+const char kSecureConnectApiGetSecondaryGoogleAccountUsageURLBody[] =
+    R"({"policyValue": "%s"})";
 
 // Convenience helper to allow a `closure` to be used in a context which is
 // expecting a callback with arguments.
@@ -77,27 +99,6 @@ class TestSigninHelper : public SigninHelper {
 
   ~TestSigninHelper() override;
 
-  void OnClientOAuthSuccess(const ClientOAuthResult& result) override {
-    SigninHelper::OnClientOAuthSuccess(result);
-  }
-
-  void OnClientOAuthFailure(const GoogleServiceAuthError& error) override {
-    SigninHelper::OnClientOAuthFailure(error);
-  }
-
-  void OnGetSecondaryGoogleAccountUsage(
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
-      absl::optional<std::string> policy_result,
-      const std::string& hosted_domain) override {
-    SigninHelper::OnGetSecondaryGoogleAccountUsage(status, policy_result,
-                                                   hosted_domain);
-  }
-
-  void RevokeGaiaTokenOnServer() override {
-    SigninHelper::OnOAuth2RevokeTokenCompleted(
-        GaiaAuthConsumer::TokenRevocationStatus::kSuccess);
-  }
-
  private:
   SigninHelperChromeOSTest* test_fixture_;
 };
@@ -108,7 +109,10 @@ class SigninHelperChromeOSTest
     : public InProcessBrowserTest,
       public account_manager::AccountManager::Observer {
  public:
-  SigninHelperChromeOSTest() = default;
+  SigninHelperChromeOSTest()
+      : test_shared_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {}
 
   ~SigninHelperChromeOSTest() override {
     DCHECK_EQ(signin_helper_created_count_, signin_helper_deleted_count_);
@@ -127,7 +131,7 @@ class SigninHelperChromeOSTest
     // Setup the main account:
     account_manager::AccountKey kPrimaryAccountKey{
         "primary_account_gaia", account_manager::AccountType::kGaia};
-    account_manager()->UpsertAccount(kPrimaryAccountKey, "primary@gmai.com",
+    account_manager()->UpsertAccount(kPrimaryAccountKey, "primary@example.com",
                                      "access_token");
     base::RunLoop().RunUntilIdle();
     on_token_upserted_call_count_ = 0;
@@ -140,10 +144,9 @@ class SigninHelperChromeOSTest
     on_token_upserted_account_ = absl::nullopt;
   }
 
-  TestSigninHelper* CreateSigninHelper(
-      const base::RepeatingClosure& close_dialog_closure) {
+  void CreateSigninHelper(const base::RepeatingClosure& close_dialog_closure) {
     OnSigninHelperCreated();
-    return new TestSigninHelper(
+    new TestSigninHelper(
         this, account_manager(), account_manager_mojo_service(),
         close_dialog_closure,
         /*show_signin_blocked_by_policy_page=*/base::DoNothing(),
@@ -167,10 +170,7 @@ class SigninHelperChromeOSTest
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory() {
-    return browser()
-        ->profile()
-        ->GetDefaultStoragePartition()
-        ->GetURLLoaderFactoryForBrowserProcess();
+    return test_shared_loader_factory_;
   }
 
   account_manager::AccountManager* account_manager() {
@@ -179,6 +179,56 @@ class SigninHelperChromeOSTest
 
   crosapi::AccountManagerMojoService* account_manager_mojo_service() {
     return account_manager_mojo_service_;
+  }
+
+ protected:
+  void AddResponseClientOAuthSuccess() {
+    loader_factory().AddResponse(
+        GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+        /*content=*/kOnClientOAuthSuccessBody, net::HTTP_OK);
+  }
+
+  void AddResponseClientOAuthFailure() {
+    loader_factory().AddResponse(
+        GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+        /*content=*/R"({})", net::HTTP_BAD_REQUEST);
+  }
+
+  void AddResponseGetSecondaryGoogleAccountUsage(
+      const std::string& policy_value) {
+    loader_factory().AddResponse(
+        kSecureConnectApiGetSecondaryGoogleAccountUsageURL,
+        /*content=*/
+        base::StringPrintf(
+            kSecureConnectApiGetSecondaryGoogleAccountUsageURLBody,
+            policy_value.c_str()),
+        net::HTTP_OK);
+  }
+
+  void AddResponseGetUserInfoWithHostedDomain(
+      const std::string& hosted_domain) {
+    loader_factory().AddResponse(
+        GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
+        /*content=*/
+        base::StringPrintf(kUserInfoURLBodyWithHostedDomain,
+                           hosted_domain.c_str()),
+        net::HTTP_OK);
+  }
+
+  void AddResponseGetUserInfoWithoutHostedDomain() {
+    loader_factory().AddResponse(
+        GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
+        /*content=*/kUserInfoURLBodyWithoutHostedDomain, net::HTTP_OK);
+  }
+
+  void AddResponseRevokeGaiaTokenOnServer() {
+    loader_factory().AddResponse(
+        GaiaUrls::GetInstance()->oauth2_revoke_url().spec(),
+        /*content=*/std::string(), net::HTTP_OK);
+  }
+
+  network::TestURLLoaderFactory& loader_factory() {
+    return test_url_loader_factory_;
   }
 
  private:
@@ -196,6 +246,8 @@ class SigninHelperChromeOSTest
   int signin_helper_deleted_count_ = 0;
   int on_token_upserted_call_count_ = 0;
   absl::optional<account_manager::Account> on_token_upserted_account_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
 TestSigninHelper::~TestSigninHelper() {
@@ -205,13 +257,12 @@ TestSigninHelper::~TestSigninHelper() {
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
                        NoAccountAddedWhenAuthTokenFetchFails) {
   base::RunLoop close_dialog_closure_run_loop;
-  auto* helper = CreateSigninHelper(
+  // Set auth token fetch to fail.
+  AddResponseClientOAuthFailure();
+  CreateSigninHelper(
       base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
         close_dialog_closure_run_loop.Quit();
       }));
-  // Auth token fetch fails.
-  helper->OnClientOAuthFailure(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -223,10 +274,9 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
                        AccountAddedWhenAuthTokenFetchSucceeds) {
   base::RunLoop close_dialog_closure_run_loop;
-  auto* helper =
-      CreateSigninHelper(close_dialog_closure_run_loop.QuitClosure());
-  // Auth token fetch succeeds.
-  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
+  CreateSigninHelper(close_dialog_closure_run_loop.QuitClosure());
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -271,11 +321,10 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
     SigninHelperChromeOSTest::TearDownOnMainThread();
   }
 
-  TestSigninHelper* CreateSigninHelper(
-      std::unique_ptr<SigninHelper::ArcHelper> arc_helper,
-      const base::RepeatingClosure& close_dialog_closure) {
+  void CreateSigninHelper(std::unique_ptr<SigninHelper::ArcHelper> arc_helper,
+                          const base::RepeatingClosure& close_dialog_closure) {
     OnSigninHelperCreated();
-    return new TestSigninHelper(
+    new TestSigninHelper(
         this, account_manager(), account_manager_mojo_service(),
         close_dialog_closure,
         /*show_signin_blocked_by_policy_page=*/base::DoNothing(),
@@ -353,10 +402,10 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
           /*is_available_in_arc=*/true, /*is_account_addition=*/true,
           account_apps_availability());
   base::RunLoop close_dialog_closure_run_loop;
-  auto* helper = CreateSigninHelper(
-      std::move(arc_helper), close_dialog_closure_run_loop.QuitClosure());
-  // Auth token fetch succeeds.
-  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  CreateSigninHelper(std::move(arc_helper),
+                     close_dialog_closure_run_loop.QuitClosure());
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -388,13 +437,13 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
           /*is_available_in_arc=*/false, /*is_account_addition=*/true,
           account_apps_availability());
   base::RunLoop close_dialog_closure_run_loop;
-  auto* helper = CreateSigninHelper(
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  CreateSigninHelper(
       std::move(arc_helper),
       base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
         close_dialog_closure_run_loop.Quit();
       }));
-  // Auth token fetch succeeds.
-  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -430,13 +479,13 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
           /*is_available_in_arc=*/true, /*is_account_addition=*/false,
           account_apps_availability());
   base::RunLoop close_dialog_closure_run_loop;
-  auto* helper = CreateSigninHelper(
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  CreateSigninHelper(
       std::move(arc_helper),
       base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
         close_dialog_closure_run_loop.Quit();
       }));
-  // Auth token fetch succeeds.
-  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -466,20 +515,21 @@ class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
 
   ~SigninHelperChromeOSTestSecondaryGoogleAccountUsage() override = default;
 
-  TestSigninHelper* CreateSigninHelper(
+  void CreateSigninHelper(
       const base::RepeatingClosure& close_dialog_closure,
       const base::RepeatingClosure& show_signin_blocked_by_policy_page,
       const std::string& email) {
     OnSigninHelperCreated();
     // The `TestSigninHelper` deletes itself after its work is complete.
-    return new TestSigninHelper(
-        this, account_manager(), account_manager_mojo_service(),
-        /*close_dialog_closure=*/close_dialog_closure,
-        /*show_signin_blocked_by_policy_page=*/
-        IgnoreArgs<const std::string&, const std::string&>(
-            show_signin_blocked_by_policy_page),
-        shared_url_loader_factory(), /*arc_helper=*/nullptr, kFakeGaiaId, email,
-        kFakeAuthCode, kFakeDeviceId);
+
+    new TestSigninHelper(this, account_manager(),
+                         account_manager_mojo_service(),
+                         /*close_dialog_closure=*/close_dialog_closure,
+                         /*show_signin_blocked_by_policy_page=*/
+                         IgnoreArgs<const std::string&, const std::string&>(
+                             show_signin_blocked_by_policy_page),
+                         shared_url_loader_factory(), /*arc_helper=*/nullptr,
+                         kFakeGaiaId, email, kFakeAuthCode, kFakeDeviceId);
   }
 
  private:
@@ -489,14 +539,17 @@ class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
                        AccountAddedForNonEnterpriseAccount) {
   base::RunLoop close_dialog_closure_run_loop;
+
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  // Set no hosted domain for user info request.
+  AddResponseGetUserInfoWithoutHostedDomain();
   // Non Enterprise account tries to sign in.
-  auto* helper = CreateSigninHelper(
+  CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
       base::RepeatingClosure(), kFakeEmail);
 
-  // Auth token fetch succeeds.
-  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -513,15 +566,18 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
                        AccountAddedForEnterpriseAccountWithNoPolicySet) {
   base::RunLoop close_dialog_closure_run_loop;
+
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  // Set user info response with hosted domain (hd) value.
+  AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
+  // Set SecondaryGoogleAccountUsage policy fetch to unset.
+  AddResponseGetSecondaryGoogleAccountUsage("unset");
   // Enterprise account tries to sign in.
-  auto* helper = CreateSigninHelper(
+  CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
       base::RepeatingClosure(), kFakeEnterpriseEmail);
-  // `GetSecondaryGoogleAccountUsage` succeeds.
-  helper->OnGetSecondaryGoogleAccountUsage(
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
-      /*policy_value=*/absl::nullopt, kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -539,15 +595,18 @@ IN_PROC_BROWSER_TEST_F(
     SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
     AccountAddedForEnterpriseAccountWithPolicyValueAllUsages) {
   base::RunLoop close_dialog_closure_run_loop;
+
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  // Set user info response with hosted domain (hd) value.
+  AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
+  // Set SecondaryGoogleAccountUsage policy fetch to all.
+  AddResponseGetSecondaryGoogleAccountUsage("all");
   // Enterprise account tries to sign in.
-  auto* helper = CreateSigninHelper(
+  CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
       base::RepeatingClosure(), kFakeEnterpriseEmail);
-  // `GetSecondaryGoogleAccountUsage` succeeds.
-  helper->OnGetSecondaryGoogleAccountUsage(
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
-      /*policy_value=*/"all", kFakeEnterpriseDomain);
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -565,16 +624,21 @@ IN_PROC_BROWSER_TEST_F(
     SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
     NoAccountAddedForEnterpriseAccountWithPolicyValuePrimaryAccountSignin) {
   base::RunLoop show_signin_blocked_error_closure_run_loop;
+
+  // Set auth token fetch to succeed.
+  AddResponseClientOAuthSuccess();
+  // Set user info response with hosted domain (hd) value.
+  AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
+  // Set SecondaryGoogleAccountUsage policy fetch to primary_account_signin.
+  AddResponseGetSecondaryGoogleAccountUsage("primary_account_signin");
+  // Set response for token revokation.
+  AddResponseRevokeGaiaTokenOnServer();
   // Enterprise account tries to sign in.
-  auto* helper = CreateSigninHelper(
+  CreateSigninHelper(
       /*close_dialog_closure=*/base::RepeatingClosure(),
       /*show_signin_blocked_by_policy_page=*/
       show_signin_blocked_error_closure_run_loop.QuitClosure(),
       kFakeEnterpriseEmail);
-  // `GetSecondaryGoogleAccountUsage` succeeds.
-  helper->OnGetSecondaryGoogleAccountUsage(
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
-      /*policy_value=*/"primary_account_signin", kFakeEnterpriseEmail);
   // Make sure the show_signin_blocked_error_closure_run_loop was called.
   show_signin_blocked_error_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
