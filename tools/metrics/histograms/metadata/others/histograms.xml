@@ -5752,24 +5752,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.Duration.FetchSystemInformation" units="ms"
-    expires_after="2022-12-25">
+    expires_after="2023-03-25">
   <owner>xiangdongkong@google.com</owner>
+  <owner>fernandex@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
   <summary>
     Records the elapsed time from the start of fetching system information to
     when the data has been retrieved. Fires during the process of sending a
-    feedback report on Chrome or Chrome OS.
+    feedback report on Chrome (Desktop + Android) or Chrome OS.
   </summary>
 </histogram>
 
-<histogram name="Feedback.Duration.FormOpenToSubmit" units="s"
-    expires_after="2022-11-27">
+<histogram name="Feedback.Duration.FormOpenToSubmit" units="ms"
+    expires_after="2023-03-25">
   <owner>xiangdongkong@google.com</owner>
+  <owner>fernandex@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
   <summary>
     Records the elapsed time from when the feedback app window is opened to when
     the backend receives the send report request submitted by a user. Fires
-    during the process of sending a feedback report on Chrome or Chrome OS.
+    during the process of sending a feedback report on Chrome (Desktop +
+    Android) or Chrome OS.
   </summary>
 </histogram>
 

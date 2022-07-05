@@ -41,6 +41,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,7 +59,7 @@ import java.util.Map;
  * Test for {@link ChromeFeedbackCollector}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeFeedbackCollectorTest {
     @Rule
@@ -273,6 +274,7 @@ public class ChromeFeedbackCollectorTest {
 
     @Before
     public void setUp() {
+        ShadowRecordHistogram.reset();
         when(mAccountInfo.getEmail()).thenReturn(ACCOUNT_IN_USE);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
@@ -285,6 +287,23 @@ public class ChromeFeedbackCollectorTest {
     @After
     public void tearDown() {
         IdentityServicesProvider.setInstanceForTests(null);
+    }
+
+    @Test
+    @Feature({"Feedback"})
+    public void testRecordLatencyHistogram() {
+        @SuppressWarnings("unchecked")
+        Callback<FeedbackCollector> callback = mock(Callback.class);
+
+        ChromeFeedbackCollector collector = new EmptyChromeFeedbackCollector(mActivity, mProfile,
+                null, null, null, null, null, (result) -> callback.onResult(result));
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(callback, times(1)).onResult(any());
+
+        assertEquals(1,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                        "Feedback.Duration.FetchSystemInformation"));
     }
 
     @Test

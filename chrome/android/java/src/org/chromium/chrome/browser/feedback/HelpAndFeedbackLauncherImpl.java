@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
 
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
@@ -48,21 +50,6 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     }
 
     /**
-     * Starts an activity showing a help page for the specified context ID.
-     *
-     * @param activity The activity to use for starting the help activity and to take a
-     *                 screenshot of.
-     * @param helpContext One of the CONTEXT_* constants. This should describe the user's current
-     *                    context and will be used to show a more relevant help page.
-     * @param collector the {@link FeedbackCollector} to use for extra data. Must not be null.
-     */
-    protected void show(
-            Activity activity, String helpContext, @Nonnull FeedbackCollector collector) {
-        Log.d(TAG, "Feedback data: " + collector.getBundle());
-        launchFallbackSupportUri(activity);
-    }
-
-    /**
      * Starts an activity prompting the user to enter feedback.
      *
      * @param activity The activity to use for starting the feedback activity and to take a
@@ -88,10 +75,8 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public void show(final Activity activity, final String helpContext, Profile profile,
             @Nullable String url) {
         RecordUserAction.record("MobileHelpAndFeedback");
-        new ChromeFeedbackCollector(activity, null /* categoryTag */, null /* description */,
-                new ScreenshotTask(activity),
-                new ChromeFeedbackCollector.InitParams(profile, url, helpContext),
-                collector -> show(activity, helpContext, collector), profile);
+        showFeedback(activity, profile, url, /* categoryTag= */ null, ScreenshotMode.DEFAULT,
+                helpContext);
     }
 
     /**
@@ -109,10 +94,17 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public void showFeedback(final Activity activity, Profile profile, @Nullable String url,
             @Nullable final String categoryTag, @ScreenshotMode int screenshotMode,
             @Nullable final String feedbackContext) {
+        long startTime = SystemClock.elapsedRealtime();
         new ChromeFeedbackCollector(activity, categoryTag, null /* description */,
                 new ScreenshotTask(activity, screenshotMode),
                 new ChromeFeedbackCollector.InitParams(profile, url, feedbackContext),
-                collector -> showFeedback(activity, collector), profile);
+                (collector)
+                        -> {
+                    RecordHistogram.recordLongTimesHistogram("Feedback.Duration.FormOpenToSubmit",
+                            SystemClock.elapsedRealtime() - startTime);
+                    showFeedback(activity, collector);
+                },
+                profile);
     }
 
     /**
