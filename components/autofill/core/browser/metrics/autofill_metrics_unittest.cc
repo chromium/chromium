@@ -526,326 +526,132 @@ TEST_F(AutofillMetricsTest,
   }
 }
 
-// Test that we log the perfect filling metric correctly for an address form in
-// which every field is autofilled.
-TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_AllAutofillFilled) {
-  // Set up our form data with two autofilled fields.
+struct Field {
+  ServerFieldType field_type;
+  bool is_autofilled = true;
+  absl::optional<std::u16string> value = absl::nullopt;
+};
+
+struct PerfectFillingTestCase {
+  std::string description;
+  std::vector<Field> fields;
+  std::vector<Bucket> address_buckets;
+  std::vector<Bucket> credit_card_buckets;
+};
+
+class AutofillPerfectFillingMetricsTest
+    : public AutofillMetricsTest,
+      public ::testing::WithParamInterface<PerfectFillingTestCase> {
+ public:
+  std::vector<test::FieldDataDescription> GetFields(std::vector<Field> fields) {
+    std::vector<test::FieldDataDescription> fields_to_return;
+    for (const auto& field : fields) {
+      test::FieldDataDescription f;
+      if (field.value) {
+        f.value = field.value;
+      } else if (field.field_type == NAME_FULL ||
+                 field.field_type == CREDIT_CARD_NAME_FULL) {
+        f.value = u"Elvis Aaron Presley";
+      } else if (field.field_type == EMAIL_ADDRESS) {
+        f.value = u"buddy@gmail.com";
+      } else if (field.field_type == ADDRESS_HOME_CITY) {
+        f.value = u"Munich";
+      } else if (field.field_type == CREDIT_CARD_NUMBER) {
+        f.value = u"01230123012399";
+      } else {
+        NOTREACHED();
+      }
+      f.role = field.field_type;
+      f.is_autofilled = field.is_autofilled;
+      fields_to_return.push_back(f);
+    }
+    return fields_to_return;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillPerfectFillingMetricsTest,
+    AutofillPerfectFillingMetricsTest,
+    testing::Values(
+        // Test that we log the perfect filling metric correctly for an address
+        // form in which every field is autofilled.
+        PerfectFillingTestCase{
+            "PerfectFillingForAddresses_AllAutofillFilled",
+            {{NAME_FULL}, {EMAIL_ADDRESS}, {ADDRESS_HOME_CITY}},
+            {Bucket(false, 0), Bucket(true, 1)},
+            {Bucket(false, 0), Bucket(true, 0)}},
+        // Test that we log the perfect filling metric correctly for an address
+        // form in which every field is autofilled or empty.
+        PerfectFillingTestCase{
+            "PerfectFillingForAddresses_AllAutofillFilledOrEmpty",
+            {{NAME_FULL}, {EMAIL_ADDRESS}, {ADDRESS_HOME_CITY, false, u""}},
+            {Bucket(false, 0), Bucket(true, 1)},
+            {Bucket(false, 0), Bucket(true, 0)}},
+        // Test that we log the perfect filling metric correctly for an address
+        // form in which a non-empty field is not autofilled.
+        PerfectFillingTestCase{
+            "PerfectFillingForAddresses_NotAllAutofilled",
+            {{NAME_FULL}, {EMAIL_ADDRESS}, {ADDRESS_HOME_CITY, false}},
+            {Bucket(false, 1), Bucket(true, 0)},
+            {Bucket(false, 0), Bucket(true, 0)}},
+        // Test that we log the perfect filling metric correctly for a credit
+        // card form in which every field is autofilled.
+        PerfectFillingTestCase{"PerfectFillingForCreditCards_AllAutofilled",
+                               {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER}},
+                               {Bucket(false, 0), Bucket(true, 0)},
+                               {Bucket(false, 0), Bucket(true, 1)}},
+        // Test that we log the perfect filling metric correctly for a credit
+        // card form in which not every field is autofilled or empty.
+        PerfectFillingTestCase{
+            "PerfectFillingForCreditCards_NotAllAutofilled",
+            {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER, false}},
+            {Bucket(false, 0), Bucket(true, 0)},
+            {Bucket(false, 1), Bucket(true, 0)}},
+        // Test that we log the perfect filling metric correctly for a form that
+        // contains both credit card and address information. Here, the form is
+        // fully autofilled resulting in a perfect count for both addresses and
+        // credit cards.
+        PerfectFillingTestCase{"PerfectFillingForMixedForm_AllAutofilled",
+                               {{NAME_FULL}, {CREDIT_CARD_NUMBER}},
+                               {Bucket(false, 0), Bucket(true, 1)},
+                               {Bucket(false, 0), Bucket(true, 1)}},
+        // Test that we log the perfect filling metric correctly for a form that
+        // contains both credit card and address information.  Here, the form is
+        // not fully autofilled resulting in a non-perfect count for both
+        // addresses and credit cards.
+        PerfectFillingTestCase{"PerfectFillingForMixedForm_NotAllAutofilled",
+                               {{NAME_FULL}, {CREDIT_CARD_NUMBER, false}},
+                               {Bucket(false, 1), Bucket(true, 0)},
+                               {Bucket(false, 1), Bucket(true, 0)}}));
+
+TEST_P(AutofillPerfectFillingMetricsTest,
+       PerfectFilling_Addresses_CreditCards) {
+  auto test_case = GetParam();
   FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"Email",
-                                  .name = u"email",
-                                  .value = u"buddy@gmail.com",
-                                  .is_autofilled = true},
-                                 {.label = u"City",
-                                  .name = u"city",
-                                  .value = u"Munich",
-                                  .is_autofilled = true},
-                             },
+      test::GetFormData({.description_for_logging = test_case.description,
+                         .fields = GetFields(test_case.fields),
                          .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
                              autofill_client_->form_origin())});
 
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
-                                                  ADDRESS_HOME_CITY};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS,
-                                               ADDRESS_HOME_CITY};
+  std::vector<ServerFieldType> field_types;
+  for (const auto& f : test_case.fields)
+    field_types.push_back(f.field_type);
 
   // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(form, field_types, field_types);
 
   // Simulate form submission.
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  // Here, it is expected that there is a count for perfect filling for
-  // addresses.
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
+      BucketsAre(test_case.address_buckets));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
-}
-
-// Test that we log the perfect filling metric correctly for an address form in
-// which every field is autofilled or empty.
-TEST_F(AutofillMetricsTest,
-       PerfectFillingForAddresses_AllAutofillFilledOrEmpty) {
-  // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"Email",
-                                  .name = u"email",
-                                  .value = u"buddy@gmail.com",
-                                  .is_autofilled = true},
-                                 {.label = u"City",
-                                  .name = u"city",
-                                  .value = u"",
-                                  .is_autofilled = false},
-                             },
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
-                                                  ADDRESS_HOME_CITY};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS,
-                                               ADDRESS_HOME_CITY};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  // Here, it is expected that there is a count for perfect filling for
-  // addresses.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
-}
-
-// Test that we log the perfect filling metric correctly for an address form in
-// which a non-empty field is not autofilled.
-TEST_F(AutofillMetricsTest, PerfectFillingForAddresses_NotAllAutofilled) {
-  // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"Email",
-                                  .name = u"email",
-                                  .value = u"buddy@gmail.com",
-                                  .is_autofilled = true},
-                                 {.label = u"City",
-                                  .name = u"city",
-                                  .value = u"Munich",
-                                  .is_autofilled = false},
-                             },
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
-                                                  ADDRESS_HOME_CITY};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, EMAIL_ADDRESS,
-                                               ADDRESS_HOME_CITY};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  // Here, it is expected that there is a count for non-perfect filling for
-  // addresses.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
-}
-
-// Test that we log the perfect filling metric correctly for a credit card form
-// in which every field is autofilled.
-TEST_F(AutofillMetricsTest, PerfectFillingForCreditCards_AllAutofilled) {
-  // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"CCNumber",
-                                  .name = u"ccnumber",
-                                  .value = u"01230123012399",
-                                  .is_autofilled = true},
-                             },
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {CREDIT_CARD_NAME_FULL,
-                                                  CREDIT_CARD_NUMBER};
-  std::vector<ServerFieldType> server_types = {CREDIT_CARD_NAME_FULL,
-                                               CREDIT_CARD_NUMBER};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  // Here, it is expected that there is a count for perfect filling for credit
-  // cards.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
-}
-
-// Test that we log the perfect filling metric correctly for a credit card form
-// in which not every field is autofilled or empty.
-TEST_F(AutofillMetricsTest, PerfectFillingForCreditCards_NotAllAutofilled) {
-  // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"CCNumber",
-                                  .name = u"ccnumber",
-                                  .value = u"01230123012399",
-                                  .is_autofilled = false},
-                             },
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {CREDIT_CARD_NAME_FULL,
-                                                  CREDIT_CARD_NUMBER};
-  std::vector<ServerFieldType> server_types = {CREDIT_CARD_NAME_FULL,
-                                               CREDIT_CARD_NUMBER};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  // Here, it is expected that there is a count for non-perfect filling for
-  // credit cards.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
-}
-
-// Test that we log the perfect filling metric correctly for a form that
-// contains both credit card and address information. Here, the form is fully
-// autofilled resulting in a perfect count for both addresses and credit cards.
-TEST_F(AutofillMetricsTest, PerfectFillingForMixedForm_AllAutofilled) {
-  // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"CCNumber",
-                                  .name = u"ccnumber",
-                                  .value = u"01230123012399",
-                                  .is_autofilled = true},
-                             },
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
-                                                  CREDIT_CARD_NUMBER};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, CREDIT_CARD_NUMBER};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  // Here, it is expected that there is a count for perfect filling for credit
-  // cards and for addresses.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
-}
-
-// Test that we log the perfect filling metric correctly for a form that
-// contains both credit card and address information.  Here, the form is not
-// fully autofilled resulting in a non-perfect count for both addresses and
-// credit cards
-TEST_F(AutofillMetricsTest, PerfectFillingForMixedForm_NotAllAutofilled) {
-  // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "PerectFilling",
-                         .fields =
-                             {
-                                 {.label = u"Name",
-                                  .name = u"name",
-                                  .value = u"Elvis Aaron Presley",
-                                  .is_autofilled = true},
-                                 {.label = u"CCNumber",
-                                  .name = u"ccnumber",
-                                  .value = u"01230123012399",
-                                  .is_autofilled = false},
-                             },
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
-                                                  CREDIT_CARD_NUMBER};
-  std::vector<ServerFieldType> server_types = {NAME_FULL, CREDIT_CARD_NUMBER};
-
-  // Simulate having seen this form on page load.
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
-
-  // Simulate form submission.
-  base::HistogramTester histogram_tester;
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  // Here, it is expected that there is a count for non-perfect filling for
-  // credit cards and for addresses.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+      BucketsAre(test_case.credit_card_buckets));
 }
 
 // Test that we log quality metrics appropriately.
