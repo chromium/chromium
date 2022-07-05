@@ -897,7 +897,8 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting) {
   auto handle = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
       BindOnce(&TestTask, 1, &run_order),
-      sequence_manager()->NowTicks() + kDelay);
+      sequence_manager()->NowTicks() + kDelay,
+      subtle::DelayPolicy::kFlexibleNoSooner);
   EXPECT_EQ(FromStartAligned(kDelay), NextPendingTaskTime());
   EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
   EXPECT_TRUE(run_order.empty());
@@ -985,7 +986,8 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting_Immediate) {
   std::vector<EnqueueOrder> run_order;
   auto handle = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-      BindOnce(&TestTask, 1, &run_order), TimeTicks());
+      BindOnce(&TestTask, 1, &run_order), TimeTicks(),
+      subtle::DelayPolicy::kFlexibleNoSooner);
   EXPECT_TRUE(queue->GetTaskQueueImpl()->HasTaskToRunImmediately());
   EXPECT_TRUE(run_order.empty());
 
@@ -1044,7 +1046,8 @@ TEST_P(SequenceManagerTest,
   auto handle1 = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
       BindOnce(&TestTask, 1, &run_order),
-      sequence_manager()->NowTicks() + Milliseconds(10));
+      sequence_manager()->NowTicks() + Milliseconds(10),
+      subtle::DelayPolicy::kFlexibleNoSooner);
 
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(8));
@@ -1052,7 +1055,8 @@ TEST_P(SequenceManagerTest,
   auto handle2 = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
       BindOnce(&TestTask, 3, &run_order),
-      sequence_manager()->NowTicks() + Milliseconds(5));
+      sequence_manager()->NowTicks() + Milliseconds(5),
+      subtle::DelayPolicy::kFlexibleNoSooner);
 
   EXPECT_EQ(FromStartAligned(Milliseconds(5)), NextPendingTaskTime());
 
@@ -1102,7 +1106,8 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting_MultipleTasks_AscendingOrder) {
   auto handle1 = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
       BindOnce(&TestTask, 1, &run_order),
-      sequence_manager()->NowTicks() + Milliseconds(1));
+      sequence_manager()->NowTicks() + Milliseconds(1),
+      subtle::DelayPolicy::kFlexibleNoSooner);
 
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(5));
@@ -1110,7 +1115,8 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting_MultipleTasks_AscendingOrder) {
   auto handle2 = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
       BindOnce(&TestTask, 3, &run_order),
-      sequence_manager()->NowTicks() + Milliseconds(10));
+      sequence_manager()->NowTicks() + Milliseconds(10),
+      subtle::DelayPolicy::kFlexibleNoSooner);
 
   EXPECT_EQ(FromStartAligned(Milliseconds(1)), NextPendingTaskTime());
 

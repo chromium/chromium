@@ -199,8 +199,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
       const Location& from_here,
       OnceClosure task,
       TimeTicks delayed_run_time,
-      subtle::DelayPolicy delay_policy =
-          subtle::DelayPolicy::kFlexibleNoSooner);
+      subtle::DelayPolicy delay_policy);
 
   // Posts the given |task| to be run at |delayed_run_time| (or immediately if
   // in the past), following |delay_policy|. This is used by the default
@@ -213,8 +212,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
                                  const Location& from_here,
                                  OnceClosure task,
                                  TimeTicks delayed_run_time,
-                                 subtle::DelayPolicy delay_policy =
-                                     subtle::DelayPolicy::kFlexibleNoSooner);
+                                 subtle::DelayPolicy delay_policy);
 
   // Submits a non-nestable task to delete the given object.  Returns
   // true if the object may be deleted at some point in the future,

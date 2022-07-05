@@ -453,7 +453,8 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions,
                        GetGroupTypes(),
                        TimeTicks::Now() + TestTimeouts::tiny_timeout(),
                        Unretained(&task_ran)),
-              TimeTicks::Now() + TestTimeouts::tiny_timeout());
+              TimeTicks::Now() + TestTimeouts::tiny_timeout(),
+              subtle::DelayPolicy::kFlexibleNoSooner);
   task_ran.Wait();
 }
 
