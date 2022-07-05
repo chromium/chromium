@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
+
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
@@ -43,9 +45,14 @@ void ResizeObservation::SetObservationSize(const LayoutSize& observation_size) {
   observation_size_ = observation_size;
 }
 
+// https://drafts.csswg.org/resize-observer/#calculate-depth-for-node
+// 1. Let p be the parent-traversal path from node to a root Element of this
+//    element’s flattened DOM tree.
+// 2. Return number of nodes in p.
 size_t ResizeObservation::TargetDepth() {
   unsigned depth = 0;
-  for (Element* parent = target_; parent; parent = parent->parentElement())
+  for (Element* parent = target_; parent;
+       parent = FlatTreeTraversal::ParentElement(*parent))
     ++depth;
   return depth;
 }
