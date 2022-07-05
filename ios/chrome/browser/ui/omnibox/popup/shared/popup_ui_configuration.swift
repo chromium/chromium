@@ -66,6 +66,10 @@ protocol PublishedWrapper {
   /// where the text field starts.
   @PublishedOnChange var omniboxTextFieldLeadingSpace: CGFloat = 0
 
+  /// Enables keyboard dismissal. When set, the keyboard will be dismissed when popup is scrolled. The corresponding AutocompleteResultConsumer callback is then never called.
+  /// Ignored on iOS  < 16.
+  var shouldDismissKeyboardOnScroll: Bool = true
+
   /// The current toolbar configuration, used to color items that should match
   /// the toolbar's color.
   let toolbarConfiguration: ToolbarConfiguration

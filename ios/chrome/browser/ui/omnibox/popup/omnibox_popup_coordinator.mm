@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
@@ -105,6 +106,12 @@
         initWithStyle:isIncognito ? INCOGNITO : NORMAL];
     self.uiConfiguration = [[PopupUIConfiguration alloc]
         initWithToolbarConfiguration:toolbarConfiguration];
+    if (@available(iOS 16, *)) {
+      self.uiConfiguration.shouldDismissKeyboardOnScroll =
+          (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+           base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad));
+    }
+
     BOOL popupShouldSelfSize =
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
     self.mediator.model = self.model;

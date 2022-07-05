@@ -90,6 +90,7 @@ source_set("popup") {
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp:util",
+    "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/omnibox/resources:pedal_clear_browsing_data",
     "//ios/chrome/browser/ui/omnibox/resources:pedal_default_browser",

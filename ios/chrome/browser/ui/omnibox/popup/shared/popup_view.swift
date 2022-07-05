@@ -17,6 +17,16 @@ struct ScrollOnChangeModifier<V: Equatable>: ViewModifier {
   }
 }
 
+#if __IPHONE_16_0
+  @available(iOS 16, *)
+  struct ScrollDismissesKeyboardModifier: ViewModifier {
+    let mode: ScrollDismissesKeyboardMode
+    func body(content: Content) -> some View {
+      content.scrollDismissesKeyboard(mode)
+    }
+  }
+#endif  // __IPHONE_16_0
+
 /// Utility which provides a way to treat the `accessibilityIdentifier` view modifier as a value.
 struct AccessibilityIdentifierModifier: ViewModifier {
   let identifier: String
@@ -134,6 +144,11 @@ struct PopupView: View {
   /// The current height of the self-sizing list.
   @State private var selfSizingListHeight: CGFloat? = nil
 
+  /// This is an ugly workaround that is not necessary in iOS 16.
+  /// This flag is set on trailing button tap, and is reset a fraction of a second later. This
+  /// prevents the onScroll event from being dispatched to the delegate.
+  @State private var shouldIgnoreScrollEvents: Bool = false
+
   init(
     model: PopupModel, uiConfiguration: PopupUIConfiguration, shouldSelfSize: Bool = false,
     appearanceContainerType: UIAppearanceContainer.Type? = nil
@@ -186,6 +201,10 @@ struct PopupView: View {
           model.delegate?.autocompleteResultConsumer(
             model, didTapTrailingButtonForRow: UInt(matchIndex),
             inSection: UInt(sectionIndex))
+          shouldIgnoreScrollEvents = true
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            shouldIgnoreScrollEvents = false
+          }
         },
         uiConfiguration: uiConfiguration,
         shouldDisplayCustomSeparator: shouldDisplayCustomSeparators(
@@ -245,16 +264,29 @@ struct PopupView: View {
     }
   }
 
+  func scrollModifier() -> some ViewModifier {
+    #if __IPHONE_16_0
+      if #available(iOS 16.0, *) {
+        return ScrollDismissesKeyboardModifier(
+          mode: uiConfiguration.shouldDismissKeyboardOnScroll ? .immediately : .never)
+      } else {
+        return ListScrollDetectionModifier(onScroll: onScroll)
+      }
+    #else  // __IPHONE_16_0
+      return ListScrollDetectionModifier(onScroll: onScroll)
+    #endif  // __IPHONE_16_0
+  }
+
   @ViewBuilder
   var listView: some View {
     let commonListModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
-    .concat(ListScrollDetectionModifier(onScroll: onScroll))
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
     .concat(ListStyleModifier())
     .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
     .concat(omniboxPaddingModifier)
+    .concat(scrollModifier())
 
     GeometryReader { geometry in
       ZStack(alignment: .top) {
@@ -424,6 +456,9 @@ struct PopupView: View {
   }
 
   func onScroll() {
+    guard !shouldIgnoreScrollEvents else {
+      return
+    }
     model.highlightedMatchIndexPath = nil
     model.delegate?.autocompleteResultConsumerDidScroll(model)
   }
