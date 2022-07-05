@@ -10,18 +10,18 @@
         }
     </style>
     <script type="text/javascript">
-        function run()
+        async function run()
         {
             if (window.testRunner) {
-                testRunner.useUnfortunateSynchronousResizeMode();
                 testRunner.waitUntilDone();
-                window.setTimeout(notifyDone, 1200);
             }
+            var resizePromise = new Promise(resolve => window.onresize =
+                                            resolve);
             window.resizeTo(1600,1200);
-        }
-        function notifyDone()
-        {
-            testRunner.notifyDone();
+            await resizePromise;
+            if (window.testRunner) {
+                testRunner.notifyDone();
+            }
         }
     </script>
 </head>

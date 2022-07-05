@@ -27,22 +27,26 @@
         }
     </style>
     <script type="text/javascript">
-        function run()
+        async function run()
         {
             if (window.testRunner) {
-                testRunner.useUnfortunateSynchronousResizeMode();
                 testRunner.waitUntilDone();
-                window.setTimeout(notifyDone, 1200);
             }
-            window.onresize = function() {
-                var box = document.getElementById("box");
-                box.className = "end";
-            }
+            var resizePromise = new Promise(resolve => window.onresize =
+                function() {
+                    var box = document.getElementById("box");
+                    box.className = "end";
+                    resolve();
+                    // We need to wait >1s for the animation to complete.
+                    window.setTimeout(notifyDone, 1200);
+            });
             window.resizeTo(1600,1200);
+            await resizePromise;
         }
-        function notifyDone()
-        {
-            testRunner.notifyDone();
+        function notifyDone() {
+            if (window.testRunner) {
+                testRunner.notifyDone();
+            }
         }
     </script>
 </head>
