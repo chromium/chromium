@@ -50,6 +50,21 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     }
 
     /**
+     * Starts an activity showing a help page for the specified context ID.
+     *
+     * @param activity The activity to use for starting the help activity and to take a
+     *                 screenshot of.
+     * @param helpContext One of the CONTEXT_* constants. This should describe the user's current
+     *                    context and will be used to show a more relevant help page.
+     * @param collector the {@link FeedbackCollector} to use for extra data. Must not be null.
+     */
+    protected void show(
+            Activity activity, String helpContext, @Nonnull FeedbackCollector collector) {
+        Log.d(TAG, "Feedback data: " + collector.getBundle());
+        launchFallbackSupportUri(activity);
+    }
+
+    /**
      * Starts an activity prompting the user to enter feedback.
      *
      * @param activity The activity to use for starting the feedback activity and to take a
