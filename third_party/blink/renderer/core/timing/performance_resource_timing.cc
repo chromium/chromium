@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
@@ -73,6 +74,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       alpn_negotiated_protocol_(
           static_cast<String>(info.alpn_negotiated_protocol)),
       connection_info_(static_cast<String>(info.connection_info)),
+      render_blocking_status_(info.render_blocking_status ? "blocking"
+                                                          : "non-blocking"),
       time_origin_(time_origin),
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       timing_(ResourceLoadTiming::FromMojo(info.timing.get())),
@@ -163,6 +166,10 @@ uint64_t PerformanceResourceTiming::GetDecodedBodySize() const {
 
 AtomicString PerformanceResourceTiming::initiatorType() const {
   return initiator_type_;
+}
+
+AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
+  return render_blocking_status_;
 }
 
 AtomicString PerformanceResourceTiming::AlpnNegotiatedProtocol() const {
@@ -437,6 +444,9 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("initiatorType", initiatorType());
   builder.AddString("nextHopProtocol", nextHopProtocol());
+  if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
+    builder.AddString("renderBlockingStatus", renderBlockingStatus());
+  }
   builder.AddNumber("workerStart", workerStart());
   builder.AddNumber("redirectStart", redirectStart());
   builder.AddNumber("redirectEnd", redirectEnd());

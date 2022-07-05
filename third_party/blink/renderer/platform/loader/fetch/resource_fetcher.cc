@@ -636,6 +636,8 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     final_response.SetResourceLoadTiming(nullptr);
     info->SetFinalResponse(final_response);
     info->SetLoadResponseEnd(info->InitialTime());
+    if (render_blocking_behavior == RenderBlockingBehavior::kBlocking)
+      info->SetRenderBlockingStatus(/*render_blocking_status=*/true);
     scheduled_resource_timing_reports_.push_back(std::move(info));
     if (!resource_timing_report_timer_.IsActive())
       resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
@@ -1066,7 +1068,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   if (blocked_reason) {
     auto* resource = ResourceForBlockedRequest(params, factory,
                                                blocked_reason.value(), client);
-    StorePerformanceTimingInitiatorInformation(resource);
+    StorePerformanceTimingInitiatorInformation(
+        resource, params.GetRenderBlockingBehavior());
     if (auto info = resource_timing_info_map_.Take(resource)) {
       PopulateAndAddResourceTimingInfo(resource, info,
                                        /*response_end=*/base::TimeTicks::Now());
@@ -1342,7 +1345,8 @@ Resource* ResourceFetcher::CreateResourceForLoading(
 }
 
 void ResourceFetcher::StorePerformanceTimingInitiatorInformation(
-    Resource* resource) {
+    Resource* resource,
+    RenderBlockingBehavior render_blocking_behavior) {
   const AtomicString& fetch_initiator = resource->Options().initiator_info.name;
   if (fetch_initiator == fetch_initiator_type_names::kInternal)
     return;
@@ -1351,6 +1355,9 @@ void ResourceFetcher::StorePerformanceTimingInitiatorInformation(
       fetch_initiator, base::TimeTicks::Now(),
       resource->GetResourceRequest().GetRequestContext(),
       resource->GetResourceRequest().GetRequestDestination());
+
+  if (render_blocking_behavior == RenderBlockingBehavior::kBlocking)
+    info->SetRenderBlockingStatus(/*render_blocking_status=*/true);
 
   resource_timing_info_map_.insert(resource, std::move(info));
 }
@@ -2120,7 +2127,8 @@ bool ResourceFetcher::StartLoad(
     }
     resource->VirtualTimePauser().PauseVirtualTime();
 
-    StorePerformanceTimingInitiatorInformation(resource);
+    StorePerformanceTimingInitiatorInformation(resource,
+                                               render_blocking_behavior);
   }
 
   loader->Start();

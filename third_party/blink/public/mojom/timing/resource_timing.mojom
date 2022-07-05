@@ -118,4 +118,8 @@ struct ResourceTimingInfo {
   // PerformanceResourceTiming. See
   // https://w3c.github.io/server-timing/#extension-to-the-performanceresourcetiming-interface
   array<ServerTimingInfo> server_timing;
+
+  // Holds the boolean used to determine |renderBlockingStatus| in
+  // PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-2/).
+  bool render_blocking_status;
 };

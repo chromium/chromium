@@ -337,7 +337,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void AddToMemoryCacheIfNeeded(const FetchParameters&, Resource*);
   Resource* CreateResourceForLoading(const FetchParameters&,
                                      const ResourceFactory&);
-  void StorePerformanceTimingInitiatorInformation(Resource*);
+  void StorePerformanceTimingInitiatorInformation(Resource*,
+                                                  RenderBlockingBehavior);
   ResourceLoadPriority ComputeLoadPriority(
       ResourceType,
       const ResourceRequestHead&,

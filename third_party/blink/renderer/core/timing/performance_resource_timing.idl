@@ -50,5 +50,9 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [MeasureAs=PerformanceResourceTimingSizes] readonly attribute unsigned long long encodedBodySize;
     [MeasureAs=PerformanceResourceTimingSizes] readonly attribute unsigned long long decodedBodySize;
     readonly attribute FrozenArray<PerformanceServerTiming> serverTiming;
+    // PerformanceResourceTiming#renderBlockingStatus
+    // See: https://github.com/abinpaul1/resource-timing/blob/render-blocking-status-explainer/Explainer/Render_Blocking_Status.md
+    [RuntimeEnabled=RenderBlockingStatus]
+        readonly attribute DOMString renderBlockingStatus;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

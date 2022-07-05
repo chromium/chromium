@@ -76,6 +76,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   // Related doc: https://goo.gl/uNecAj.
   virtual AtomicString initiatorType() const;
   AtomicString nextHopProtocol() const;
+  virtual AtomicString renderBlockingStatus() const;
   DOMHighResTimeStamp workerStart() const;
   virtual DOMHighResTimeStamp redirectStart() const;
   virtual DOMHighResTimeStamp redirectEnd() const;
@@ -136,6 +137,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString initiator_type_;
   AtomicString alpn_negotiated_protocol_;
   AtomicString connection_info_;
+  AtomicString render_blocking_status_;
   base::TimeTicks time_origin_;
   bool cross_origin_isolated_capability_;
   scoped_refptr<ResourceLoadTiming> timing_;

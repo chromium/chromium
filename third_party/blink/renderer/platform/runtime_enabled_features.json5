@@ -2006,6 +2006,10 @@
       status: "stable"
     },
     {
+      name: "RenderBlockingStatus",
+      status: "experimental"
+    },
+    {
       // The renderpriority attribute feature.
       // https://github.com/WICG/display-locking/blob/main/explainers/update-rendering.md
       name: "RenderPriorityAttribute"

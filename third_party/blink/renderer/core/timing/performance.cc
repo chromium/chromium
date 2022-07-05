@@ -586,6 +586,8 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
                       WebFeature::kPerformanceServerTiming);
   }
 
+  result->render_blocking_status = info.RenderBlockingStatus();
+
   return result;
 }
 

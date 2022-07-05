@@ -63,6 +63,11 @@ class PLATFORM_EXPORT ResourceTimingInfo
   void SetInitiatorType(const AtomicString& type) { type_ = type; }
   const AtomicString& InitiatorType() const { return type_; }
 
+  void SetRenderBlockingStatus(bool render_blocking_status) {
+    render_blocking_status_ = render_blocking_status;
+  }
+  bool RenderBlockingStatus() const { return render_blocking_status_; }
+
   void SetLoadResponseEnd(base::TimeTicks time) { load_response_end_ = time; }
   base::TimeTicks LoadResponseEnd() const { return load_response_end_; }
 
@@ -110,6 +115,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
         request_destination_(request_destination) {}
 
   AtomicString type_;
+  bool render_blocking_status_ = false;
   base::TimeTicks initial_time_;
   mojom::blink::RequestContextType context_type_;
   network::mojom::RequestDestination request_destination_;
