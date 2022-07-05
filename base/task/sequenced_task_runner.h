@@ -188,10 +188,10 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
       OnceClosure task,
       TimeDelta delay);
 
-  // Posts the given |task| to be run at |delayed_run_time|, following
-  // |delay_policy|. Returns a handle that can be used to cancel the task.
-  // This should not be used directly. Consider using higher level timer
-  // primitives in base/timer/timer.h.
+  // Posts the given |task| to be run at |delayed_run_time| (or immediately if
+  // in the past), following |delay_policy|. Returns a handle that can be used
+  // to cancel the task. This should not be used directly. Consider using higher
+  // level timer primitives in base/timer/timer.h.
   [[nodiscard]] virtual DelayedTaskHandle PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKey,
       const Location& from_here,
@@ -200,11 +200,11 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
       subtle::DelayPolicy delay_policy =
           subtle::DelayPolicy::kFlexibleNoSooner);
 
-  // Posts the given |task| to be run at |delayed_run_time|, following
-  // |delay_policy|. This is used by the default implementation of
-  // PostCancelableDelayedTaskAt(). The default behavior subtracts
-  // TimeTicks::Now() from |delayed_run_time| to get a delay. See base::Timer to
-  // post precise/repeating timeouts.
+  // Posts the given |task| to be run at |delayed_run_time| (or immediately if
+  // in the past), following |delay_policy|. This is used by the default
+  // implementation of PostCancelableDelayedTaskAt(). The default behavior
+  // subtracts TimeTicks::Now() from |delayed_run_time| to get a delay. See
+  // base::Timer to post precise/repeating timeouts.
   // TODO(1153139): Make pure virtual once all SequencedTaskRunners implement
   // this.
   virtual bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
