@@ -26,6 +26,7 @@ class ThreadWrapper;
 }  // namespace webrtc
 namespace media {
 class AlsaPcmOutputStream;
+class AlsaPcmInputStream;
 class FakeAudioWorker;
 }  // namespace media
 
@@ -60,6 +61,7 @@ class PostDelayedTaskPassKey {
   friend class PostDelayedTaskPassKeyForTesting;
   friend class webrtc::ThreadWrapper;
   friend class media::AlsaPcmOutputStream;
+  friend class media::AlsaPcmInputStream;
   friend class media::FakeAudioWorker;
 };
 

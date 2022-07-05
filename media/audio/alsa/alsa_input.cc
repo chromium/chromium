@@ -120,10 +120,10 @@ void AlsaPcmInputStream::Start(AudioInputCallback* callback) {
     base::TimeDelta delay = buffer_duration_ + buffer_duration_ / 2;
     next_read_time_ = base::TimeTicks::Now() + delay;
     running_ = true;
-    capture_thread_.task_runner()->PostDelayedTask(
-        FROM_HERE,
+    capture_thread_.task_runner()->PostDelayedTaskAt(
+        base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
         base::BindOnce(&AlsaPcmInputStream::ReadAudio, base::Unretained(this)),
-        delay);
+        next_read_time_, base::subtle::DelayPolicy::kPrecise);
   }
 }
 
@@ -178,20 +178,21 @@ void AlsaPcmInputStream::ReadAudio() {
   }
 
   if (frames < params_.frames_per_buffer()) {
+    base::TimeTicks now = base::TimeTicks::Now();
     // Not enough data yet or error happened. In both cases wait for a very
     // small duration before checking again.
     // Even Though read callback was behind schedule, there is no data, so
     // reset the next_read_time_.
     if (read_callback_behind_schedule_) {
-      next_read_time_ = base::TimeTicks::Now();
+      next_read_time_ = now;
       read_callback_behind_schedule_ = false;
     }
 
-    base::TimeDelta next_check_time = buffer_duration_ / 2;
-    capture_thread_.task_runner()->PostDelayedTask(
-        FROM_HERE,
+    base::TimeTicks next_check_time = now + buffer_duration_ / 2;
+    capture_thread_.task_runner()->PostDelayedTaskAt(
+        base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
         base::BindOnce(&AlsaPcmInputStream::ReadAudio, base::Unretained(this)),
-        next_check_time);
+        next_check_time, base::subtle::DelayPolicy::kPrecise);
     return;
   }
 
@@ -239,21 +240,21 @@ void AlsaPcmInputStream::ReadAudio() {
   }
 
   next_read_time_ += buffer_duration_;
-  base::TimeDelta delay = next_read_time_ - base::TimeTicks::Now();
-  if (delay.is_negative()) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (next_read_time_ < now) {
+    base::TimeDelta delay = now - next_read_time_;
     DVLOG(1) << "Audio read callback behind schedule by "
-             << (buffer_duration_ - delay).InMicroseconds()
-             << " (us).";
+             << (buffer_duration_ + delay).InMicroseconds() << " (us).";
     // Read callback is behind schedule. Assuming there is data pending in
     // the soundcard, invoke the read callback immediate in order to catch up.
     read_callback_behind_schedule_ = true;
-    delay = base::TimeDelta();
   }
 
-  capture_thread_.task_runner()->PostDelayedTask(
-      FROM_HERE,
+  // If |next_read_time_| is in the past, it will be scheduled immediately.
+  capture_thread_.task_runner()->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&AlsaPcmInputStream::ReadAudio, base::Unretained(this)),
-      delay);
+      next_read_time_, base::subtle::DelayPolicy::kPrecise);
 }
 
 void AlsaPcmInputStream::Stop() {
