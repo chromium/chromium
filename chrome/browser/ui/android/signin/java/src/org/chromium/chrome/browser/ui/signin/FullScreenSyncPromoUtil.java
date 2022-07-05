@@ -30,11 +30,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Helper functions for promoting sign in.
+ * Helper class responsible of launching the full screen sync promo, i.e.
+ * {@link SyncConsentActivity}.
  */
-public final class SigninPromoUtil {
-    private SigninPromoUtil() {}
-
+public final class FullScreenSyncPromoUtil {
     /**
      * Launches the {@link SyncConsentActivity} if it needs to be displayed.
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
@@ -42,11 +41,11 @@ public final class SigninPromoUtil {
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
-    public static boolean launchSigninPromoIfNeeded(Context context,
+    public static boolean launchPromoIfNeeded(Context context,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
             final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
-        if (shouldLaunchSigninPromo(prefManager, currentMajorVersion)) {
+        if (shouldLaunchPromo(prefManager, currentMajorVersion)) {
             syncConsentActivityLauncher.launchActivityIfAllowed(
                     context, SigninAccessPoint.SIGNIN_PROMO);
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
@@ -59,7 +58,7 @@ public final class SigninPromoUtil {
         return false;
     }
 
-    private static boolean shouldLaunchSigninPromo(
+    private static boolean shouldLaunchPromo(
             SigninPreferencesManager prefManager, final int currentMajorVersion) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
             return true;
@@ -117,4 +116,6 @@ public final class SigninPromoUtil {
         return previousAccountNames == null
                 || !previousAccountNames.containsAll(currentAccountNames);
     }
+
+    private FullScreenSyncPromoUtil() {}
 }
