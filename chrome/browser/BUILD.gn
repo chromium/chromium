@@ -5434,8 +5434,6 @@ static_library("browser") {
       "lacros/lacros_url_handling.h",
       "lacros/launcher_search/search_controller_lacros.cc",
       "lacros/launcher_search/search_controller_lacros.h",
-      "lacros/launcher_search/search_util.cc",
-      "lacros/launcher_search/search_util.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
       "lacros/net/lacros_extension_proxy_tracker.cc",
@@ -5506,6 +5504,7 @@ static_library("browser") {
     deps += [
       ":dlp_policy_event_proto",
       "//chrome/browser/chromeos/extensions/vpn_provider",
+      "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",

@@ -7355,7 +7355,6 @@ test("unit_tests") {
       "../browser/lacros/force_installed_tracker_lacros_unittest.cc",
       "../browser/lacros/lacros_memory_pressure_evaluator_unittest.cc",
       "../browser/lacros/lacros_url_handling_unittest.cc",
-      "../browser/lacros/launcher_search/search_util_unittest.cc",
       "../browser/lacros/metrics_reporting_observer_unittest.cc",
       "../browser/lacros/net/network_settings_translation_unittest.cc",
       "../browser/lacros/prefs_ash_observer_unittest.cc",
@@ -7371,6 +7370,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser:dlp_policy_event_proto",
+      "//chrome/browser/chromeos/launcher_search:unit_tests",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
       "//chromeos/components/onc:onc",
