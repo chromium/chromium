@@ -193,25 +193,12 @@ MetricProvider::RecordAttemptStatus MetricProvider::AppSyncStateForUserProfile(
     return RecordAttemptStatus::kSyncServiceUnavailable;
   syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
 
-  // IsSyncFeatureEnabled should be checked regardless of
-  // SyncSettingsCategorization status.
   if (!sync_service->IsSyncFeatureEnabled())
     return RecordAttemptStatus::kChromeSyncFeatureDisabled;
 
-  // SyncSettingsCategorization splits the sync settings between Chrome and
-  // ChromeOS. The App Sync toggle is moved under the ChromeOS settings.
-  // If SyncSettingsCategorization is enabled, we will directly read from
-  // the OS settings.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (!sync_settings->GetSelectedOsTypes().Has(
-            syncer::UserSelectableOsType::kOsApps))
-      return RecordAttemptStatus::kOSAppSyncDisabled;
-    return RecordAttemptStatus::kAppSyncEnabled;
-  }
-
-  // Read chrome settings if SyncSettingsCategorization is disabled.
-  if (!sync_settings->GetSelectedTypes().Has(syncer::UserSelectableType::kApps))
-    return RecordAttemptStatus::kChromeAppSyncDisabled;
+  if (!sync_settings->GetSelectedOsTypes().Has(
+          syncer::UserSelectableOsType::kOsApps))
+    return RecordAttemptStatus::kOSAppSyncDisabled;
   return RecordAttemptStatus::kAppSyncEnabled;
 }
 

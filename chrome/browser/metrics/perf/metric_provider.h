@@ -80,7 +80,7 @@ class MetricProvider {
     kAppSyncEnabled = 4,
     kSyncServiceUnavailable = 5,
     kChromeSyncFeatureDisabled = 6,
-    kChromeAppSyncDisabled = 7,
+    // Deprecated: kChromeAppSyncDisabled = 7,
     // Deprecated: kOSSyncFeatureDisabled = 8,
     kOSAppSyncDisabled = 9,
     kMaxValue = kOSAppSyncDisabled,
