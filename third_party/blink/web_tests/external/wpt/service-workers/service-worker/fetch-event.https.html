@@ -446,7 +446,8 @@ promise_test(async t => {
     t.add_cleanup(() => { frame.remove(); });
     const res = await frame.contentWindow.fetch('simple.html?request-body', {
       method: 'POST',
-      body: rs.pipeThrough(new TextEncoderStream())
+      body: rs.pipeThrough(new TextEncoderStream()),
+      duplex: 'half',
     });
     assert_equals(await res.text(), 'i am the request body');
   }, 'FetchEvent#body is a ReadableStream');
@@ -503,7 +504,8 @@ promise_test(async t => {
     const echo_url = '/fetch/api/resources/echo-content.py?ignore';
     const response = await frame.contentWindow.fetch(echo_url, {
         method: 'POST',
-        body: rs.pipeThrough(new TextEncoderStream())
+        body: rs.pipeThrough(new TextEncoderStream()),
+        duplex: 'half',
     });
     const text = await response.text();
     assert_equals(text,

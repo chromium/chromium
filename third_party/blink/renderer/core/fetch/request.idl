@@ -14,6 +14,7 @@ enum RequestRedirect { "follow", "error", "manual" };
 enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache",
                     "only-if-cached" };
 enum FetchPriority {"low", "auto", "high"};
+enum RequestDuplex {"half"};
 
 // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
 

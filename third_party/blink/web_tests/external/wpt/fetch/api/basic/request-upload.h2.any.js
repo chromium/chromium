@@ -72,6 +72,7 @@ promise_test(async (test) => {
   const request = new Request('', {
     body: new ReadableStream(),
     method: 'POST',
+    duplex,
   });
 
   assert_equals(request.headers.get('Content-Type'), null, `Request should not have a content-type set`);
@@ -79,6 +80,7 @@ promise_test(async (test) => {
   const response = await fetch('data:a/a;charset=utf-8,test', {
     method: 'POST',
     body: new ReadableStream(),
+    duplex,
   });
 
   assert_equals(await response.text(), 'test', `Response has correct body`);
@@ -88,6 +90,7 @@ promise_test(async (test) => {
   const request = new Request('data:a/a;charset=utf-8,test', {
     body: new ReadableStream(),
     method: 'POST',
+    duplex,
  });
 
   assert_equals(request.headers.get('Content-Type'), null, `Request should not have a content-type set`);
@@ -112,22 +115,6 @@ promise_test(async (t) => {
   const method = "POST";
   await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
 }, "Streaming upload with body containing a number");
-
-promise_test(async (t) => {
-  const url = "/fetch/api/resources/redirect.h2.py?location=/common/blank.html";
-  const body = createStream([]);
-  const method = "POST";
-  await promise_rejects_js(t, TypeError, fetch(url, { method, body, duplex }));
-}, "Streaming upload should fail on redirect (302)");
-
-promise_test(async (t) => {
-  const url = "/fetch/api/resources/redirect.h2.py?" +
-              "redirect_status=303&location=/common/blank.html";
-  const body = createStream([]);
-  const method = "POST";
-  const resp = await fetch(url, { method, body, duplex });
-  assert_equals(resp.status, 200, 'status');
-}, "Streaming upload should work with 303");
 
 promise_test(async (t) => {
   const url = "/fetch/api/resources/authentication.py?realm=test";

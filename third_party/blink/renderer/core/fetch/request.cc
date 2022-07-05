@@ -119,7 +119,7 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasReferrer() || init->hasReferrerPolicy() || init->hasMode() ||
          init->hasCredentials() || init->hasCache() || init->hasRedirect() ||
          init->hasIntegrity() || init->hasKeepalive() || init->hasPriority() ||
-         init->hasSignal() || init->hasTrustToken();
+         init->hasSignal() || init->hasDuplex() || init->hasTrustToken();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -677,8 +677,18 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
   }
 
-  // "If |body| is non-null and |body|’s source is null, then:"
+  // "If `inputOrInitBody` is non-null and `inputOrInitBody`’s source is null,
+  // then:"
   if (body && body->IsMadeFromReadableStream()) {
+    // "If `initBody` is non-null and `init["duplex"]` does not exist, then
+    // throw a TypeError."
+    if (!init_body.IsEmpty() && !init_body->IsNull() && !init->hasDuplex()) {
+      exception_state.ThrowTypeError(
+          "The `duplex` member must be specified for a request with a "
+          "streaming body");
+      return nullptr;
+    }
+
     // "If |this|’s request’s mode is neither "same-origin" nor "cors", then
     // throw a TypeError."
     if (request->Mode() != network::mojom::RequestMode::kSameOrigin &&
