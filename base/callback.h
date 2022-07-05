@@ -17,6 +17,8 @@
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/types/always_false.h"
+#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -175,6 +177,25 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
             RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
   }
+
+  template <typename Signature>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator absl::FunctionRef<Signature>() & {
+    static_assert(
+        AlwaysFalse<Signature>,
+        "need to convert a base::OnceCallback to absl::FunctionRef? "
+        "Please bring up this use case on #cxx (Slack) or cxx@chromium.org.");
+  }
+
+  template <typename Signature>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator absl::FunctionRef<Signature>() && {
+    static_assert(
+        AlwaysFalse<Signature>,
+        "using base::BindOnce() is not necessary with absl::FunctionRef; is it "
+        "possible to use a capturing lambda directly? If not, please bring up "
+        "this use case on #cxx (Slack) or cxx@chromium.org.");
+  }
 };
 
 template <typename R, typename... Args>
@@ -285,6 +306,25 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
             RepeatingCallback,
             RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
+  }
+
+  template <typename Signature>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator absl::FunctionRef<Signature>() & {
+    static_assert(
+        AlwaysFalse<Signature>,
+        "need to convert a base::RepeatingCallback to absl::FunctionRef? "
+        "Please bring up this use case on #cxx (Slack) or cxx@chromium.org.");
+  }
+
+  template <typename Signature>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator absl::FunctionRef<Signature>() && {
+    static_assert(
+        AlwaysFalse<Signature>,
+        "using base::BindRepeating() is not necessary with absl::FunctionRef; "
+        "is it possible to use a capturing lambda directly? If not, please "
+        "bring up this use case on #cxx (Slack) or cxx@chromium.org.");
   }
 };
 

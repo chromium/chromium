@@ -37,9 +37,22 @@ _CONFIG = [
             'gfx::ICCProfile',
             'gfx::RadToDeg',
 
-            # absl optional constructs.
-            'absl::optional',
+            # absl
+            'absl::FunctionRef',
+            'absl::MakeInt128',
+            'absl::MakeUint128',
+            'absl::get',
+            'absl::get_if',
+            'absl::holds_alternative',
             'absl::in_place',
+            'absl::int128',
+            'absl::make_optional',
+            'absl::nullopt',
+            'absl::nullopt_t',
+            'absl::optional',
+            'absl::uint128',
+            'absl::variant',
+            'absl::visit',
 
             # //base constructs that are allowed everywhere
             'base::AdoptRef',
@@ -76,6 +89,7 @@ _CONFIG = [
             'base::Nanoseconds',
             'base::OptionalFromPtr',
             'base::OptionalOrNullptr',
+            'base::PassKey',
             'base::PlatformThread',
             'base::PlatformThreadId',
             'base::RefCountedData',
@@ -112,17 +126,12 @@ _CONFIG = [
             'base::WritableSharedMemoryMapping',
             'base::as_bytes',
             'base::bit_cast',
-            'absl::in_place',
-            'absl::make_optional',
             'base::make_span',
-            'absl::nullopt',
-            'absl::nullopt_t',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::span',
             'logging::GetVlogLevel',
             'logging::SetLogItems',
-            'base::PassKey',
 
             # //base/allocator/partition_allocator/partition_alloc_constants.h
             'partition_alloc::internal::kAlignment',
@@ -681,19 +690,6 @@ _CONFIG = [
             'base::mac::(CFToNSCast|NSToCFCast)',
             'base::mac::Is(AtMost|AtLeast)?OS.+',
             'base::(scoped_nsobject|ScopedCFTypeRef)',
-
-            # absl::variant and getters:
-            'absl::get',
-            'absl::get_if',
-            'absl::holds_alternative',
-            'absl::variant',
-            'absl::visit',
-
-            # 128-bit absl types
-            'absl::MakeInt128',
-            'absl::MakeUint128',
-            'absl::int128',
-            'absl::uint128',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',

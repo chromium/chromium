@@ -918,6 +918,7 @@ mixed_component("base") {
     "trace_event/trace_id_helper.h",
     "traits_bag.h",
     "tuple.h",
+    "types/always_false.h",
     "types/expected.h",
     "types/expected_internal.h",
     "types/id_type.h",

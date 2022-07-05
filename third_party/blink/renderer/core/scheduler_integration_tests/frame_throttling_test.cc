@@ -393,11 +393,10 @@ TEST_P(FrameThrottlingTest, ForAllThrottledLocalFrameViews) {
   // Main frame is not throttled.
   EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
 
+  LocalFrameView::AllowThrottlingScope allow_throttling(*GetDocument().View());
   unsigned throttled_count = 0;
-  auto throttled_callback = base::BindLambdaForTesting(
+  GetDocument().View()->ForAllThrottledLocalFrameViews(
       [&throttled_count](LocalFrameView&) { throttled_count++; });
-  GetDocument().View()->ForAllThrottledLocalFrameViewsForTesting(
-      throttled_callback);
   EXPECT_EQ(1u, throttled_count);
 }
 

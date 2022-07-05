@@ -33,6 +33,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
@@ -109,6 +110,7 @@ class PaintControllerCycleScope;
 class PaintLayer;
 class PaintLayerScrollableArea;
 class PaintTimingDetector;
+class RemoteFrameView;
 class RootFrameViewport;
 class ScrollableArea;
 class Scrollbar;
@@ -825,7 +827,7 @@ class CORE_EXPORT LocalFrameView final
   // throttling (e.g., during BeginMainFrame). If a script needs to run inside
   // this scope, DisallowThrottlingScope should be used to let the script
   // perform a synchronous layout if necessary.
-  class AllowThrottlingScope {
+  class CORE_EXPORT AllowThrottlingScope {
     STACK_ALLOCATED();
 
    public:
@@ -963,25 +965,17 @@ class CORE_EXPORT LocalFrameView final
   void CollectAnnotatedRegions(LayoutObject&,
                                Vector<AnnotatedRegionValue>&) const;
 
-  template <typename Function>
-  void ForAllChildViewsAndPlugins(const Function&);
-
-  template <typename Function>
-  void ForAllChildLocalFrameViews(const Function&);
+  void ForAllChildViewsAndPlugins(
+      absl::FunctionRef<void(EmbeddedContentView&)>);
+  void ForAllChildLocalFrameViews(absl::FunctionRef<void(LocalFrameView&)>);
 
   enum TraversalOrder { kPreOrder, kPostOrder };
-  template <typename Function>
-  void ForAllNonThrottledLocalFrameViews(const Function&,
-                                         TraversalOrder = kPreOrder);
+  void ForAllNonThrottledLocalFrameViews(
+      absl::FunctionRef<void(LocalFrameView&)>,
+      TraversalOrder = kPreOrder);
+  void ForAllThrottledLocalFrameViews(absl::FunctionRef<void(LocalFrameView&)>);
 
-  template <typename Function>
-  void ForAllThrottledLocalFrameViews(const Function&);
-
-  void ForAllThrottledLocalFrameViewsForTesting(
-      base::RepeatingCallback<void(LocalFrameView&)>);
-
-  template <typename Function>
-  void ForAllRemoteFrameViews(const Function&);
+  void ForAllRemoteFrameViews(absl::FunctionRef<void(RemoteFrameView&)>);
 
   bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
