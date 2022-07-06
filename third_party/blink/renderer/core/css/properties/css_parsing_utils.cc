@@ -3084,10 +3084,12 @@ bool IsContentPositionOrLeftOrRightKeyword(CSSValueID id) {
   return IsContentPositionKeyword(id) || IsLeftOrRightKeyword(id);
 }
 
+// https://drafts.csswg.org/css-values-4/#css-wide-keywords
 bool IsCSSWideKeyword(CSSValueID id) {
   return id == CSSValueID::kInherit || id == CSSValueID::kInitial ||
          id == CSSValueID::kUnset || id == CSSValueID::kRevert ||
          id == CSSValueID::kRevertLayer;
+  // This function should match the overload after it.
 }
 
 // https://drafts.csswg.org/css-values-4/#css-wide-keywords
@@ -3095,7 +3097,9 @@ bool IsCSSWideKeyword(StringView keyword) {
   return EqualIgnoringASCIICase(keyword, "initial") ||
          EqualIgnoringASCIICase(keyword, "inherit") ||
          EqualIgnoringASCIICase(keyword, "unset") ||
-         EqualIgnoringASCIICase(keyword, "revert");
+         EqualIgnoringASCIICase(keyword, "revert") ||
+         EqualIgnoringASCIICase(keyword, "revert-layer");
+  // This function should match the overload before it.
 }
 
 // https://drafts.csswg.org/css-cascade/#default
