@@ -199,9 +199,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // NativeWidgetNSWindowFullscreenController::Client:
   void FullscreenControllerTransitionStart(bool is_target_fullscreen) override;
   void FullscreenControllerTransitionComplete(bool is_fullscreen) override;
-  void FullscreenControllerSetFrame(const gfx::Rect& frame,
-                                    bool animate,
-                                    base::TimeDelta& transition_time) override;
+  void FullscreenControllerSetFrame(
+      const gfx::Rect& frame,
+      bool animate,
+      base::OnceCallback<void()> completion_callback) override;
   void FullscreenControllerToggleFullscreen() override;
   void FullscreenControllerCloseWindow() override;
   int64_t FullscreenControllerGetDisplayId() const override;
