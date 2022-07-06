@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -18,6 +19,7 @@
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1270,6 +1272,9 @@ namespace {
 class ScopedInstallDanglingRawPtrChecks {
  public:
   ScopedInstallDanglingRawPtrChecks() {
+    enabled_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPartitionAllocDanglingPtr, {{"mode", "crash"}}}},
+        {/* disabled_features */});
     old_detected_fn_ = partition_alloc::GetDanglingRawPtrDetectedFn();
     old_dereferenced_fn_ = partition_alloc::GetDanglingRawPtrReleasedFn();
     allocator::InstallDanglingRawPtrChecks();
@@ -1280,6 +1285,7 @@ class ScopedInstallDanglingRawPtrChecks {
   }
 
  private:
+  test::ScopedFeatureList enabled_feature_list_;
   partition_alloc::DanglingRawPtrDetectedFn* old_detected_fn_;
   partition_alloc::DanglingRawPtrReleasedFn* old_dereferenced_fn_;
 };

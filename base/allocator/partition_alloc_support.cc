@@ -422,7 +422,6 @@ absl::optional<debug::StackTrace> TakeStackTrace(uintptr_t id) {
 // This function is meant to be used only by Chromium developers, to list what
 // are all the dangling raw_ptr occurrences in a table.
 std::string ExtractDanglingPtrSignature(std::string stacktrace) {
-  LOG(ERROR) << stacktrace;
   std::vector<StringPiece> lines = SplitStringPiece(
       stacktrace, "\r\n", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
@@ -462,7 +461,7 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
   return std::string(caller.substr(function_start + 1));
 }
 
-void DanglingRawPtrReleased(uintptr_t id) {
+void DanglingRawPtrReleasedLogSignature(uintptr_t id) {
   // This is called from raw_ptr<>'s release operation. Making allocations is
   // allowed. In particular, symbolizing and printing the StackTraces may
   // allocate memory.
@@ -470,19 +469,24 @@ void DanglingRawPtrReleased(uintptr_t id) {
   debug::StackTrace stack_trace_release;
   absl::optional<debug::StackTrace> stack_trace_free = TakeStackTrace(id);
 
-  if (FeatureList::IsEnabled(features::kPartitionAllocDanglingPtrRecord)) {
-    if (stack_trace_free) {
-      LOG(ERROR) << StringPrintf(
-          "[DanglingSignature]\t%s\t%s",
-          ExtractDanglingPtrSignature(stack_trace_release.ToString()).c_str(),
-          ExtractDanglingPtrSignature(stack_trace_free->ToString()).c_str());
-    } else {
-      LOG(ERROR) << StringPrintf(
-          "[DanglingSignature]\t%s\tmissing-stacktrace",
-          ExtractDanglingPtrSignature(stack_trace_release.ToString()).c_str());
-    }
-    return;
+  if (stack_trace_free) {
+    LOG(ERROR) << StringPrintf(
+        "[DanglingSignature]\t%s\t%s",
+        ExtractDanglingPtrSignature(stack_trace_release.ToString()).c_str(),
+        ExtractDanglingPtrSignature(stack_trace_free->ToString()).c_str());
+  } else {
+    LOG(ERROR) << StringPrintf(
+        "[DanglingSignature]\t%s\tmissing-stacktrace",
+        ExtractDanglingPtrSignature(stack_trace_release.ToString()).c_str());
   }
+}
+
+void DanglingRawPtrReleasedCrash(uintptr_t id) {
+  // This is called from raw_ptr<>'s release operation. Making allocations is
+  // allowed. In particular, symbolizing and printing the StackTraces may
+  // allocate memory.
+  debug::StackTrace stack_trace_release;
+  absl::optional<debug::StackTrace> stack_trace_free = TakeStackTrace(id);
 
   if (stack_trace_free) {
     LOG(ERROR) << StringPrintf(
@@ -515,8 +519,24 @@ void InstallDanglingRawPtrChecks() {
   // restarting the test executable.
   ClearDanglingRawPtrBuffer();
 
-  partition_alloc::SetDanglingRawPtrDetectedFn(DanglingRawPtrDetected);
-  partition_alloc::SetDanglingRawPtrReleasedFn(DanglingRawPtrReleased);
+  if (!FeatureList::IsEnabled(features::kPartitionAllocDanglingPtr)) {
+    partition_alloc::SetDanglingRawPtrDetectedFn([](uintptr_t) {});
+    partition_alloc::SetDanglingRawPtrReleasedFn([](uintptr_t) {});
+    return;
+  }
+
+  switch (features::kDanglingPtrModeParam.Get()) {
+    case features::DanglingPtrMode::kCrash:
+      partition_alloc::SetDanglingRawPtrDetectedFn(DanglingRawPtrDetected);
+      partition_alloc::SetDanglingRawPtrReleasedFn(DanglingRawPtrReleasedCrash);
+      break;
+
+    case features::DanglingPtrMode::kLogSignature:
+      partition_alloc::SetDanglingRawPtrDetectedFn(DanglingRawPtrDetected);
+      partition_alloc::SetDanglingRawPtrReleasedFn(
+          DanglingRawPtrReleasedLogSignature);
+      break;
+  }
 }
 
 // TODO(arthursonzogni): There might exist long lived dangling raw_ptr. If there

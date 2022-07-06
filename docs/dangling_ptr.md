@@ -42,19 +42,30 @@ enable_dangling_raw_ptr_checks = true
 ## Runtime flags
 
 ```bash
-./out/dangling/content_shell --enable-features=PartitionAllocBackupRefPtr
+./out/dangling/content_shell \
+   --enable-features=PartitionAllocBackupRefPtr \
+   --enable-features=PartitionAllocDanglingPtr
 ```
 
-Chrome will crash on the first dangling raw_ptr detected.
+By default, Chrome will crash on the first dangling raw_ptr detected.
 
-# Record a list of signatures.
+# Runtime flags options:
 
-Instead of immediately crashing, you can list all the dangling raw_ptr
-occurrences. This is gated behind the `PartitionAllocDanglingPtrRecord` feature.
+### Crash (default)
 
-For instance:
 ```bash
-./out/dangling/content_shell --enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtrRecord |& tee output
+--enable-features=PartitionAllocBackupRefPtr \
+--enable-features=PartitionAllocDanglingPtr:mode/crash
+```
+
+### Record a list of signatures 
+
+Example usage:
+```bash
+./out/dangling/content_shell \
+   --enable-features=PartitionAllocBackupRefPtr \
+   --enable-features=PartitionAllocDanglingPtr:mode/log_signature \
+   |& tee output
 ```
 
 The logs can be filtered and transformed into a tab separated table:
@@ -69,3 +80,10 @@ cat output \
 ```
 
 This is used to list issues and track progresses.
+
+# DanglingUntriaged
+
+This raw_ptr option means it is allowed to dangle. Contrary to
+`DisableDanglingPtrDetection`, we don't know yet why it dangle. It is meant to
+be either refactored to avoid dangling, or turned into
+"DisableDanglingPtrDetection" with a comment explaining what happens.
