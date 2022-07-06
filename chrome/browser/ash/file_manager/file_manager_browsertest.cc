@@ -161,6 +161,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableUploadOfficeToCloud() {
+    options.enable_upload_office_to_cloud = true;
+    return *this;
+  }
+
   TestCase& EnableGuestOsFiles() {
     options.enable_guest_os_files = true;
     return *this;
@@ -2104,8 +2109,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("openOfficeWordFile").EnableWebDriveOffice(),
         TestCase("openOfficeWordFile").EnableWebDriveOffice().FilesSwa(),
-        TestCase("openOfficeWordFromMyFiles").EnableWebDriveOffice(),
-        TestCase("openOfficeWordFromMyFiles").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeWordFromMyFiles")
+            .EnableWebDriveOffice()
+            .EnableUploadOfficeToCloud(),
+        TestCase("openOfficeWordFromMyFiles")
+            .EnableWebDriveOffice()
+            .EnableUploadOfficeToCloud()
+            .FilesSwa(),
         TestCase("openMultipleOfficeWordFromDrive").EnableWebDriveOffice(),
         TestCase("openMultipleOfficeWordFromDrive")
             .EnableWebDriveOffice()
@@ -2121,6 +2131,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openOfficeWordFromDriveNotSynced").EnableWebDriveOffice(),
         TestCase("openOfficeWordFromDriveNotSynced")
             .EnableWebDriveOffice()
+            .FilesSwa(),
+        TestCase("openOfficeWordFromMyFilesOffline")
+            .EnableWebDriveOffice()
+            .EnableUploadOfficeToCloud()
+            .Offline(),
+        TestCase("openOfficeWordFromMyFilesOffline")
+            .EnableWebDriveOffice()
+            .EnableUploadOfficeToCloud()
+            .Offline()
             .FilesSwa(),
         TestCase("openOfficeWordFromDriveOffline")
             .EnableWebDriveOffice()

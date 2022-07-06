@@ -1941,6 +1941,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kDriveFsMirroring);
   }
 
+  if (options.enable_upload_office_to_cloud) {
+    enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
+  } else {
+    disabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
+  }
+
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =

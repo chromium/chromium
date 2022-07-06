@@ -127,6 +127,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should run with the Web Drive Office feature.
     bool enable_web_drive_office = false;
 
+    // Whether test should run with the Upload Office to Cloud feature.
+    bool enable_upload_office_to_cloud = false;
+
     // Whether test should run with the GuestOs <-> Files app integration.
     bool enable_guest_os_files = false;
 

@@ -120,9 +120,11 @@ namespace file_tasks {
 extern const char kActionIdView[];
 extern const char kActionIdSend[];
 extern const char kActionIdSendMultiple[];
+extern const char kActionIdHandleOffice[];
 extern const char kActionIdWebDriveOfficeWord[];
 extern const char kActionIdWebDriveOfficeExcel[];
 extern const char kActionIdWebDriveOfficePowerPoint[];
+extern const char kActionIdUploadOfficeToDrive[];
 
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {

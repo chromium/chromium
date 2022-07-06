@@ -443,6 +443,10 @@ export class FileTasks {
           task.iconType = 'gsheet';
           task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
           task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
+        } else if (parsedActionId === 'upload-office-to-drive') {
+          task.iconType = 'generic';
+          task.title = 'Upload to Drive';
+          task.verb = undefined;
         } else if (parsedActionId === 'open-web-drive-office-powerpoint') {
           task.iconType = 'gslides';
           task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
