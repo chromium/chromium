@@ -7,11 +7,11 @@
 
 dictionary GoogMediaConstraintsSet {
   // TODO(https://crbug.com/1315576): Target removal: M108.
-  (boolean or ConstrainBooleanParameters) googIPv6;
+  boolean googIPv6;
 
   // Already ignored on all platforms except for Fuchsia.
   // TODO(https://crbug.com/804275): Delete when Fuchsia dependency is gone.
-  (boolean or ConstrainBooleanParameters) DtlsSrtpKeyAgreement;
+  boolean DtlsSrtpKeyAgreement;
 };
 
 dictionary GoogMediaConstraints {

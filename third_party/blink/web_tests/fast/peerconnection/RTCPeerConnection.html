@@ -60,16 +60,16 @@ shouldThrow("new RTCPeerConnection({iceCandidatePoolSize:256});");
 shouldThrow("new RTCPeerConnection({iceCandidatePoolSize:'foo'});");
 
 // Neither valid or invalid constraints throw.
+shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:true}});");
 shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:false}});");
-shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:{ideal:false}}});");
-shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:{exact:false}}});");
-shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:{}}});");
 shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googInvalid:true}});");
+shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googInvalid:false}});");
+shouldNotThrow("new RTCPeerConnection(null, {optional:[{googIPv6:true}]});");
 shouldNotThrow("new RTCPeerConnection(null, {optional:[{googIPv6:false}]});");
-shouldNotThrow("new RTCPeerConnection(null, {optional:[{googIPv6:{ideal:false}}]});");
-shouldNotThrow("new RTCPeerConnection(null, {optional:[{googIPv6:{exact:false}}]});");
-shouldNotThrow("new RTCPeerConnection(null, {optional:[{googIPv6:{}}]});");
 shouldNotThrow("new RTCPeerConnection(null, {optional:[{googInvalid:true}]});");
+shouldNotThrow("new RTCPeerConnection(null, {optional:[{googInvalid:false}]});");
+shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:123}});");
+shouldNotThrow("new RTCPeerConnection(null, {optional:[{googIPv6:123}]});");
 
 // Construct with certificates.
 shouldThrow("new RTCPeerConnection({iceServers:[], certificates:null});");

@@ -44,16 +44,16 @@ PASS new RTCPeerConnection({iceCandidatePoolSize:-1}); threw exception TypeError
 PASS new RTCPeerConnection({iceCandidatePoolSize:99999999}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceCandidatePoolSize' property from 'RTCConfiguration': Value is outside the 'octet' value range..
 PASS new RTCPeerConnection({iceCandidatePoolSize:256}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceCandidatePoolSize' property from 'RTCConfiguration': Value is outside the 'octet' value range..
 PASS new RTCPeerConnection({iceCandidatePoolSize:'foo'}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceCandidatePoolSize' property from 'RTCConfiguration': Value is not of type 'octet'..
+PASS new RTCPeerConnection(null, {mandatory:{googIPv6:true}}); did not throw exception.
 PASS new RTCPeerConnection(null, {mandatory:{googIPv6:false}}); did not throw exception.
-PASS new RTCPeerConnection(null, {mandatory:{googIPv6:{ideal:false}}}); did not throw exception.
-PASS new RTCPeerConnection(null, {mandatory:{googIPv6:{exact:false}}}); did not throw exception.
-PASS new RTCPeerConnection(null, {mandatory:{googIPv6:{}}}); did not throw exception.
 PASS new RTCPeerConnection(null, {mandatory:{googInvalid:true}}); did not throw exception.
+PASS new RTCPeerConnection(null, {mandatory:{googInvalid:false}}); did not throw exception.
+PASS new RTCPeerConnection(null, {optional:[{googIPv6:true}]}); did not throw exception.
 PASS new RTCPeerConnection(null, {optional:[{googIPv6:false}]}); did not throw exception.
-PASS new RTCPeerConnection(null, {optional:[{googIPv6:{ideal:false}}]}); did not throw exception.
-PASS new RTCPeerConnection(null, {optional:[{googIPv6:{exact:false}}]}); did not throw exception.
-PASS new RTCPeerConnection(null, {optional:[{googIPv6:{}}]}); did not throw exception.
 PASS new RTCPeerConnection(null, {optional:[{googInvalid:true}]}); did not throw exception.
+PASS new RTCPeerConnection(null, {optional:[{googInvalid:false}]}); did not throw exception.
+PASS new RTCPeerConnection(null, {mandatory:{googIPv6:123}}); did not throw exception.
+PASS new RTCPeerConnection(null, {optional:[{googIPv6:123}]}); did not throw exception.
 PASS new RTCPeerConnection({iceServers:[], certificates:null}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'certificates' property from 'RTCConfiguration': The provided value cannot be converted to a sequence..
 PASS new RTCPeerConnection({iceServers:[], certificates:undefined}); did not throw exception.
 PASS new RTCPeerConnection({iceServers:[], certificates:[]}); did not throw exception.

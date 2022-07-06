@@ -29,7 +29,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
@@ -178,25 +177,6 @@ std::vector<const GoogMediaConstraintsSet*> AllMediaConstraintSets(
   return result;
 }
 
-absl::optional<bool> BooleanOrConstrainBooleanToBool(
-    const V8UnionBooleanOrConstrainBooleanParameters& parameter) {
-  if (parameter.IsBoolean()) {
-    return parameter.GetAsBoolean();
-  }
-  RTC_DCHECK(parameter.IsConstrainBooleanParameters());
-  ConstrainBooleanParameters* constrain_boolean =
-      parameter.GetAsConstrainBooleanParameters();
-  if (constrain_boolean->hasExact()) {
-    return constrain_boolean->exact();
-  }
-  if (constrain_boolean->hasIdeal()) {
-    return constrain_boolean->ideal();
-  }
-  // If the parameter is not specified (or we pass in an empty dictionary),
-  // we'll neither have an exact or ideal value. In this case return nullopt.
-  return absl::nullopt;
-}
-
 void CopyConstraintsIntoRtcConfiguration(
     ExecutionContext* context,
     GoogMediaConstraints* media_constraints,
@@ -207,34 +187,32 @@ void CopyConstraintsIntoRtcConfiguration(
 
   // Legacy constraints parsing looks at both mandatory and optional constraints
   // sets (similar to how ScanConstraintsForExactValue() looks at basic and
-  // advanced constraints). The sets are iterated until an exact or ideal value
-  // is found.
+  // advanced constraints). The sets are iterated until a value is found.
   std::vector<const GoogMediaConstraintsSet*> all_constraints_sets =
       AllMediaConstraintSets(media_constraints);
 
   absl::optional<bool> goog_ipv6;
   for (auto* constraints_set : all_constraints_sets) {
-    if (!constraints_set->hasGoogIPv6())
-      continue;
-    goog_ipv6 = BooleanOrConstrainBooleanToBool(*constraints_set->googIPv6());
-    break;
+    if (constraints_set->hasGoogIPv6()) {
+      goog_ipv6 = constraints_set->googIPv6();
+      break;
+    }
   }
-  if (goog_ipv6.has_value() && !goog_ipv6.value()) {
+  bool enable_ipv6 = goog_ipv6.value_or(true);  // googIPv6 is true by default.
+  if (!enable_ipv6) {
     // Setting googIPv6 to the non-default value triggers count deprecation.
     Deprecation::CountDeprecation(context,
                                   WebFeature::kLegacyConstraintGoogIPv6);
   }
-  bool enable_ipv6 = goog_ipv6.value_or(true);  // googIPv6 is true by default.
   configuration->disable_ipv6 = !enable_ipv6;
 
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   absl::optional<bool> dtls_srtp_key_agreement;
   for (auto* constraints_set : all_constraints_sets) {
-    if (!constraints_set->hasDtlsSrtpKeyAgreement())
-      continue;
-    dtls_srtp_key_agreement = BooleanOrConstrainBooleanToBool(
-        *constraints_set->dtlsSrtpKeyAgreement());
-    break;
+    if (constraints_set->hasDtlsSrtpKeyAgreement()) {
+      dtls_srtp_key_agreement = constraints_set->dtlsSrtpKeyAgreement();
+      break;
+    }
   }
   if (dtls_srtp_key_agreement.has_value()) {
     if (dtls_srtp_key_agreement.value()) {
