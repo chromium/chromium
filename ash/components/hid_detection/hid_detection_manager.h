@@ -51,7 +51,7 @@ class HidDetectionManager {
     InputMetadata keyboard_metadata;
 
     // Indicates the device has a touchscreen connected.
-    bool touchscreen_detected;
+    bool touchscreen_detected = false;
   };
 
   class Delegate {

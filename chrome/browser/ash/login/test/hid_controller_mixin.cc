@@ -70,6 +70,7 @@ void HIDControllerMixin::AddMouse(device::mojom::InputDeviceType type) {
   mouse->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
   mouse->type = type;
   mouse->is_mouse = true;
+  mouse->name = "pointer";
   fake_input_service_manager_->AddDevice(std::move(mouse));
   if (wait_until_idle_after_device_update_)
     base::RunLoop().RunUntilIdle();
@@ -81,6 +82,7 @@ void HIDControllerMixin::AddKeyboard(device::mojom::InputDeviceType type) {
   keyboard->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
   keyboard->type = type;
   keyboard->is_keyboard = true;
+  keyboard->name = "keyboard";
   fake_input_service_manager_->AddDevice(std::move(keyboard));
   if (wait_until_idle_after_device_update_)
     base::RunLoop().RunUntilIdle();

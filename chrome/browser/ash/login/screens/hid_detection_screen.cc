@@ -84,6 +84,30 @@ GetHidDetectionManagerOverrideForTesting() {
   return *hid_detection_manager;
 }
 
+std::string GetDeviceUiState(
+    const hid_detection::HidDetectionManager::InputState& state) {
+  switch (state) {
+    case hid_detection::HidDetectionManager::InputState::kSearching:
+      return kSearchingState;
+    case hid_detection::HidDetectionManager::InputState::kConnectedViaUsb:
+      return kUSBState;
+    case hid_detection::HidDetectionManager::InputState::kPairingViaBluetooth:
+      return kBTPairingState;
+    case hid_detection::HidDetectionManager::InputState::kPairedViaBluetooth:
+      return kBTPairedState;
+    case hid_detection::HidDetectionManager::InputState::kConnected:
+      return kConnectedState;
+  }
+}
+
+bool IsInputConnected(
+    const hid_detection::HidDetectionManager::InputMetadata& metadata) {
+  return metadata.state !=
+             hid_detection::HidDetectionManager::InputState::kSearching &&
+         metadata.state != hid_detection::HidDetectionManager::InputState::
+                               kPairingViaBluetooth;
+}
+
 }  // namespace
 
 // static
@@ -142,6 +166,12 @@ HIDDetectionScreen::HIDDetectionScreen(HIDDetectionView* view,
 }
 
 HIDDetectionScreen::~HIDDetectionScreen() {
+  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+    if (view_)
+      view_->Unbind();
+    return;
+  }
+
   adapter_initially_powered_.reset();
   if (view_)
     view_->Unbind();
@@ -164,8 +194,12 @@ void HIDDetectionScreen::OverrideHidDetectionManagerForTesting(
 }
 
 void HIDDetectionScreen::OnContinueButtonClicked() {
-  hid_detection::RecordBluetoothPairingAttempts(num_pairing_attempts_);
-  CleanupOnExit();
+  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+    hid_detection_manager_->StopHidDetection();
+  } else {
+    hid_detection::RecordBluetoothPairingAttempts(num_pairing_attempts_);
+    CleanupOnExit();
+  }
   Exit(Result::NEXT);
 }
 
@@ -217,9 +251,13 @@ void HIDDetectionScreen::ShowImpl() {
   if (!is_hidden())
     return;
 
-  // TODO(gordonseto): Implement UI with OOBE Revamp flag enabled.
-  if (ash::features::IsOobeHidDetectionRevampEnabled())
+  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+    if (view_)
+      view_->Show();
+
+    hid_detection_manager_->StartHidDetection(/*delegate=*/this);
     return;
+  }
 
   if (adapter_)
     adapter_->AddObserver(this);
@@ -244,11 +282,13 @@ void HIDDetectionScreen::HideImpl() {
   if (is_hidden())
     return;
 
-  if (discovery_session_.get())
-    discovery_session_->Stop();
+  if (!ash::features::IsOobeHidDetectionRevampEnabled()) {
+    if (discovery_session_.get())
+      discovery_session_->Stop();
 
-  if (adapter_)
-    adapter_->RemoveObserver(this);
+    if (adapter_)
+      adapter_->RemoveObserver(this);
+  }
 
   if (view_)
     view_->Hide();
@@ -544,6 +584,30 @@ void HIDDetectionScreen::InputDeviceRemoved(const std::string& id) {
     SendPointingDeviceNotification();
     UpdateDevices();
   }
+}
+
+void HIDDetectionScreen::OnHidDetectionStatusChanged(
+    hid_detection::HidDetectionManager::HidDetectionStatus status) {
+  if (!view_)
+    return;
+
+  view_->SetTouchscreenDetectedState(status.touchscreen_detected);
+  view_->SetMouseState(GetDeviceUiState(status.pointer_metadata.state));
+  view_->SetPointingDeviceName(status.pointer_metadata.detected_hid_name);
+
+  // TODO(b/232851163): Handle showing pairing dialog.
+
+  std::string keyboard_state = GetDeviceUiState(status.keyboard_metadata.state);
+
+  // Unlike pointing devices, which can be connected through serial IO or some
+  // other medium, keyboards only report USB and Bluetooth states.
+  if (keyboard_state == kConnectedState)
+    keyboard_state = kUSBState;
+  view_->SetKeyboardState(keyboard_state);
+  view_->SetKeyboardDeviceName(status.keyboard_metadata.detected_hid_name);
+  view_->SetContinueButtonEnabled(status.touchscreen_detected ||
+                                  IsInputConnected(status.pointer_metadata) ||
+                                  IsInputConnected(status.keyboard_metadata));
 }
 
 void HIDDetectionScreen::InitializeAdapter(

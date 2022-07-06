@@ -7,7 +7,7 @@
 namespace ash::hid_detection {
 namespace {
 
-bool IsInputMissing(HidDetectionManager::InputMetadata metadata) {
+bool IsInputMissing(const HidDetectionManager::InputMetadata& metadata) {
   return metadata.state == HidDetectionManager::InputState::kSearching ||
          metadata.state ==
              HidDetectionManager::InputState::kPairingViaBluetooth;
@@ -18,6 +18,15 @@ bool IsInputMissing(HidDetectionManager::InputMetadata metadata) {
 FakeHidDetectionManager::FakeHidDetectionManager() = default;
 
 FakeHidDetectionManager::~FakeHidDetectionManager() = default;
+
+void FakeHidDetectionManager::SetHidStatusTouchscreenDetected(
+    bool touchscreen_detected) {
+  hid_detection_status_.touchscreen_detected = touchscreen_detected;
+  if (!is_hid_detection_active_)
+    return;
+
+  NotifyHidDetectionStatusChanged();
+}
 
 void FakeHidDetectionManager::SetHidStatusPointerMetadata(
     InputMetadata metadata) {

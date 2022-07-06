@@ -74,7 +74,7 @@ void BluetoothHidDetectorImpl::SetInputDevicesStatus(
   //    same type has been detected as connected. Clear the current pairing
   //    state, which will cause the current pairing to cancel, and process the
   //    next device in the queue.
-  HID_LOG(EVENT) << "Device type of << "
+  HID_LOG(EVENT) << "Device type of "
                  << current_pairing_device_.value()->device_type << " for "
                  << current_pairing_device_.value()->id
                  << " is no longer missing";
@@ -293,8 +293,8 @@ void BluetoothHidDetectorImpl::HandleKeyEntered(uint8_t num_keys_entered) {
   DCHECK(current_pairing_state_)
       << "HandleKeyEntered() called with no |current_pairing_state_|";
 
-  HID_LOG(EVENT) << "HandleKeyEntered called with " << num_keys_entered
-                 << " keys entered";
+  HID_LOG(EVENT) << "HandleKeyEntered called with "
+                 << static_cast<unsigned>(num_keys_entered) << " keys entered";
   current_pairing_state_->num_keys_entered = num_keys_entered;
   NotifyBluetoothHidDetectionStatusChanged();
 }

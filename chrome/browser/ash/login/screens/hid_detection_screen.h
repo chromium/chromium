@@ -35,7 +35,8 @@ namespace ash {
 class HIDDetectionScreen : public BaseScreen,
                            public device::BluetoothAdapter::Observer,
                            public device::BluetoothDevice::PairingDelegate,
-                           public device::mojom::InputDeviceManagerClient {
+                           public device::mojom::InputDeviceManagerClient,
+                           public hid_detection::HidDetectionManager::Delegate {
  public:
   using TView = HIDDetectionView;
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
@@ -119,6 +120,10 @@ class HIDDetectionScreen : public BaseScreen,
   // device::mojom::InputDeviceManagerClient:
   void InputDeviceAdded(InputDeviceInfoPtr info) override;
   void InputDeviceRemoved(const std::string& id) override;
+
+  // hid_detection::HidDetectionManager::Delegate:
+  void OnHidDetectionStatusChanged(
+      hid_detection::HidDetectionManager::HidDetectionStatus status) override;
 
   // Called when continue button was clicked.
   void OnContinueButtonClicked();

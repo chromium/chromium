@@ -17,6 +17,7 @@ class FakeHidDetectionManager : public HidDetectionManager {
   ~FakeHidDetectionManager() override;
 
   // Mocks the HID detection status being updated.
+  void SetHidStatusTouchscreenDetected(bool touchscreen_detected);
   void SetHidStatusPointerMetadata(InputMetadata metadata);
   void SetHidStatusKeyboardMetadata(InputMetadata metadata);
 

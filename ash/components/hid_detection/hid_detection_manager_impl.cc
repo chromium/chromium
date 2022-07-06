@@ -6,6 +6,7 @@
 
 #include "ash/components/hid_detection/bluetooth_hid_detector_impl.h"
 #include "ash/components/hid_detection/hid_detection_utils.h"
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -93,9 +94,15 @@ void HidDetectionManagerImpl::InputDeviceAdded(
 }
 
 void HidDetectionManagerImpl::InputDeviceRemoved(const std::string& id) {
-  DCHECK(device_id_to_device_map_[id])
-      << " Input device removed was not found in "
-         "|device_id_to_device_map_|.";
+  if (!base::Contains(device_id_to_device_map_, id)) {
+    // Some devices may be removed that were not registered in
+    // InputDeviceAdded() or OnGetDevicesAndSetClient().
+    HID_LOG(EVENT)
+        << "Input device with id: " << id
+        << " was removed that was not in |device_id_to_device_map_|.";
+    return;
+  }
+
   HID_LOG(EVENT) << "Input device removed, id: " << id
                  << ", name: " << device_id_to_device_map_[id]->name;
   device_id_to_device_map_.erase(id);
