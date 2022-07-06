@@ -65,8 +65,7 @@ class FCMSyncNetworkChannel {
   // Subclass should implement RequestDetailedStatus to provide debugging
   // information.
   virtual void RequestDetailedStatus(
-      const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-          callback) = 0;
+      const base::RepeatingCallback<void(base::Value::Dict)>& callback) = 0;
 
  protected:
   // Subclass should notify about connection state through

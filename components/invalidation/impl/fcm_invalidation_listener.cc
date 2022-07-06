@@ -179,8 +179,7 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
 }
 
 void FCMInvalidationListener::RequestDetailedStatus(
-    const base::RepeatingCallback<void(const base::DictionaryValue&)>& callback)
-    const {
+    const base::RepeatingCallback<void(base::Value::Dict)>& callback) const {
   network_channel_->RequestDetailedStatus(callback);
   callback.Run(CollectDebugData());
 }
@@ -242,17 +241,17 @@ void FCMInvalidationListener::OnSubscriptionChannelStateChanged(
   EmitStateChange();
 }
 
-base::DictionaryValue FCMInvalidationListener::CollectDebugData() const {
-  base::DictionaryValue status =
+base::Value::Dict FCMInvalidationListener::CollectDebugData() const {
+  base::Value::Dict status =
       per_user_topic_subscription_manager_->CollectDebugData();
-  status.SetStringPath("InvalidationListener.FCM-channel-state",
-                       FcmChannelStateToString(fcm_network_state_));
-  status.SetStringPath(
+  status.SetByDottedPath("InvalidationListener.FCM-channel-state",
+                         FcmChannelStateToString(fcm_network_state_));
+  status.SetByDottedPath(
       "InvalidationListener.Subscription-channel-state",
       SubscriptionChannelStateToString(subscription_channel_state_));
   for (const auto& topic : interested_topics_) {
-    if (!status.FindKey(topic.first)) {
-      status.SetStringKey(topic.first, "Unsubscribed");
+    if (!status.Find(topic.first)) {
+      status.Set(topic.first, "Unsubscribed");
     }
   }
   return status;

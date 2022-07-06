@@ -4,6 +4,7 @@
 
 #include "components/invalidation/impl/invalidation_logger.h"
 
+#include "base/values.h"
 #include "components/invalidation/impl/invalidation_logger_observer.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -42,7 +43,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     updated_topics_replicated[handler] = topics_counts;
   }
 
-  void OnDebugMessage(const base::DictionaryValue& details) override {
+  void OnDebugMessage(const base::Value::Dict& details) override {
     debug_message_received = true;
   }
 
@@ -50,7 +51,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     invalidation_received = true;
   }
 
-  void OnDetailedStatus(const base::DictionaryValue& details) override {
+  void OnDetailedStatus(base::Value::Dict details) override {
     detailed_status_received = true;
   }
 
@@ -106,7 +107,7 @@ TEST(InvalidationLoggerTest, TestReleaseOfObserver) {
   log.OnStateChange(INVALIDATIONS_ENABLED);
   log.OnRegistration(std::string());
   log.OnUnregistration(std::string());
-  log.OnDebugMessage(base::DictionaryValue());
+  log.OnDebugMessage(base::Value::Dict());
   log.OnUpdatedTopics(std::map<std::string, Topics>());
   EXPECT_FALSE(observer_test.registration_change_received);
   EXPECT_FALSE(observer_test.update_id_received);

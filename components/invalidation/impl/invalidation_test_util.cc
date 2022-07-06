@@ -92,7 +92,7 @@ void InvalidationEqMatcher::DescribeNegationTo(::std::ostream* os) const {
 
 void PrintTo(const AckHandle& ack_handle, ::std::ostream* os) {
   std::string printable_ack_handle;
-  base::JSONWriter::Write(*ack_handle.ToValue(), &printable_ack_handle);
+  base::JSONWriter::Write(ack_handle.ToValue(), &printable_ack_handle);
   *os << "{ ack_handle: " << printable_ack_handle << " }";
 }
 

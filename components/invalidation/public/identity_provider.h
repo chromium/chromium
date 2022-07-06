@@ -92,7 +92,7 @@ class IdentityProvider {
   void RemoveObserver(Observer* observer);
 
   void RequestDetailedStatus(
-      base::RepeatingCallback<void(const base::DictionaryValue&)> caller) const;
+      base::RepeatingCallback<void(base::Value::Dict)> caller) const;
 
  protected:
   IdentityProvider();
@@ -116,7 +116,7 @@ class IdentityProvider {
     Diagnostics();
 
     // Collect all the internal variables in a single readable dictionary.
-    base::DictionaryValue CollectDebugData() const;
+    base::Value::Dict CollectDebugData() const;
 
     int token_removal_for_not_active_account_count = 0;
     int token_update_for_not_active_account_count = 0;

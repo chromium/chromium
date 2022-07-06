@@ -76,7 +76,7 @@ void InvalidationLogger::EmitUpdatedTopics() {
   }
 }
 
-void InvalidationLogger::OnDebugMessage(const base::DictionaryValue& details) {
+void InvalidationLogger::OnDebugMessage(const base::Value::Dict& details) {
   for (auto& observer : observer_list_)
     observer.OnDebugMessage(details);
 }

@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
@@ -77,8 +78,7 @@ class FCMInvalidationListener
       SubscriptionChannelState state) override;
 
   virtual void RequestDetailedStatus(
-      const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-          callback) const;
+      const base::RepeatingCallback<void(base::Value::Dict)>& callback) const;
 
   void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
@@ -123,7 +123,7 @@ class FCMInvalidationListener
   void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
 
   // Generate a Dictionary with all the debugging information.
-  base::DictionaryValue CollectDebugData() const;
+  base::Value::Dict CollectDebugData() const;
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
   UnackedInvalidationsMap unacked_invalidations_map_;

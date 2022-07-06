@@ -6,12 +6,9 @@
 #define COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
 
 #include "base/callback_forward.h"
+#include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace invalidation {
 
@@ -123,8 +120,7 @@ class InvalidationService {
 
   // Triggers requests of internal status.
   virtual void RequestDetailedStatus(
-      base::RepeatingCallback<void(const base::DictionaryValue&)> post_caller)
-      const = 0;
+      base::RepeatingCallback<void(base::Value::Dict)> post_caller) const = 0;
 };
 
 }  // namespace invalidation

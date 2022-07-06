@@ -150,11 +150,10 @@ class MockInvalidationService : public invalidation::InvalidationService {
               GetInvalidationLogger,
               (),
               (override));
-  MOCK_METHOD(
-      void,
-      RequestDetailedStatus,
-      (base::RepeatingCallback<void(const base::DictionaryValue&)> post_caller),
-      (const override));
+  MOCK_METHOD(void,
+              RequestDetailedStatus,
+              (base::RepeatingCallback<void(base::Value::Dict)> post_caller),
+              (const override));
 };
 
 class MockActiveDevicesProvider : public ActiveDevicesProvider {

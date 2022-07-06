@@ -8,11 +8,11 @@
 #include <set>
 #include <string>
 
+#include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
 namespace base {
-class DictionaryValue;
 class Time;
 }  // namespace base
 
@@ -32,9 +32,9 @@ class InvalidationLoggerObserver {
                              const base::Time& last_change_timestamp) = 0;
   virtual void OnUpdatedTopics(const std::string& handler_name,
                                const TopicCountMap& details) = 0;
-  virtual void OnDebugMessage(const base::DictionaryValue& details) = 0;
+  virtual void OnDebugMessage(const base::Value::Dict& details) = 0;
   virtual void OnInvalidation(const TopicInvalidationMap& details) = 0;
-  virtual void OnDetailedStatus(const base::DictionaryValue& details) = 0;
+  virtual void OnDetailedStatus(base::Value::Dict details) = 0;
 
  protected:
   virtual ~InvalidationLoggerObserver() = default;

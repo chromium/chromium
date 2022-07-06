@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/topic_data.h"
@@ -111,8 +112,7 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   std::map<std::string, Topics> GetHandlerNameToTopicsMap();
 
   void RequestDetailedStatus(
-      base::RepeatingCallback<void(const base::DictionaryValue&)> callback)
-      const;
+      base::RepeatingCallback<void(base::Value::Dict)> callback) const;
 
  private:
   // Checks if any of the |topics| is already registered for a *different*
@@ -121,7 +121,7 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
                                      const std::set<TopicData>& topics) const;
 
   // Generate a Dictionary with all the debugging information.
-  base::DictionaryValue CollectDebugData() const;
+  base::Value::Dict CollectDebugData() const;
 
   void RemoveSubscribedTopics(const InvalidationHandler* handler,
                               const std::set<TopicData>& topics_to_unsubscribe);

@@ -10,12 +10,9 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace invalidation {
 
@@ -48,7 +45,7 @@ class InvalidationLogger {
   void OnStateChange(const InvalidatorState& new_state);
   void OnUpdatedTopics(
       std::map<std::string, Topics> handler_updated_topics_map);
-  void OnDebugMessage(const base::DictionaryValue& details);
+  void OnDebugMessage(const base::Value::Dict& details);
   void OnInvalidation(const TopicInvalidationMap& invalidations);
 
   // Triggers messages to be sent to the Observers to provide them with

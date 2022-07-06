@@ -139,8 +139,7 @@ InvalidationLogger* FCMInvalidationServiceBase::GetInvalidationLogger() {
 }
 
 void FCMInvalidationServiceBase::RequestDetailedStatus(
-    base::RepeatingCallback<void(const base::DictionaryValue&)> return_callback)
-    const {
+    base::RepeatingCallback<void(base::Value::Dict)> return_callback) const {
   return_callback.Run(CollectDebugData());
   invalidator_registrar_.RequestDetailedStatus(return_callback);
 
@@ -176,22 +175,22 @@ void FCMInvalidationServiceBase::InitForTest(
   DoUpdateSubscribedTopicsIfNeeded();
 }
 
-base::DictionaryValue FCMInvalidationServiceBase::CollectDebugData() const {
-  base::DictionaryValue status;
+base::Value::Dict FCMInvalidationServiceBase::CollectDebugData() const {
+  base::Value::Dict status;
 
-  status.SetStringPath(
+  status.SetByDottedPath(
       "InvalidationService.IID-requested",
       base::TimeFormatShortDateAndTime(diagnostic_info_.instance_id_requested));
-  status.SetStringPath(
+  status.SetByDottedPath(
       "InvalidationService.IID-received",
       base::TimeFormatShortDateAndTime(diagnostic_info_.instance_id_received));
-  status.SetStringPath(
+  status.SetByDottedPath(
       "InvalidationService.IID-cleared",
       base::TimeFormatShortDateAndTime(diagnostic_info_.instance_id_cleared));
-  status.SetStringPath(
+  status.SetByDottedPath(
       "InvalidationService.Service-stopped",
       base::TimeFormatShortDateAndTime(diagnostic_info_.service_was_stopped));
-  status.SetStringPath(
+  status.SetByDottedPath(
       "InvalidationService.Service-started",
       base::TimeFormatShortDateAndTime(diagnostic_info_.service_was_started));
   return status;

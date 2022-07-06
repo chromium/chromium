@@ -328,38 +328,37 @@ void FCMNetworkHandler::SetTokenValidationTimerForTesting(
 }
 
 void FCMNetworkHandler::RequestDetailedStatus(
-    const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-        callback) {
+    const base::RepeatingCallback<void(base::Value::Dict)>& callback) {
   callback.Run(diagnostic_info_.CollectDebugData());
 }
 
 FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() =
     default;
 
-base::DictionaryValue
+base::Value::Dict
 FCMNetworkHandler::FCMNetworkHandlerDiagnostic::CollectDebugData() const {
-  base::DictionaryValue status;
-  status.SetStringPath("NetworkHandler.Registration-result-code",
-                       RegistrationResultToString(registration_result));
-  status.SetStringPath("NetworkHandler.Token", token);
-  status.SetStringPath(
+  base::Value::Dict status;
+  status.SetByDottedPath("NetworkHandler.Registration-result-code",
+                         RegistrationResultToString(registration_result));
+  status.SetByDottedPath("NetworkHandler.Token", token);
+  status.SetByDottedPath(
       "NetworkHandler.Token-was-requested",
       base::TimeFormatShortDateAndTime(instance_id_token_requested));
-  status.SetStringPath(
+  status.SetByDottedPath(
       "NetworkHandler.Token-was-received",
       base::TimeFormatShortDateAndTime(instance_id_token_was_received));
-  status.SetStringPath("NetworkHandler.Token-verification-started",
-                       base::TimeFormatShortDateAndTime(
-                           instance_id_token_verification_requested));
-  status.SetStringPath(
+  status.SetByDottedPath("NetworkHandler.Token-verification-started",
+                         base::TimeFormatShortDateAndTime(
+                             instance_id_token_verification_requested));
+  status.SetByDottedPath(
       "NetworkHandler.Token-was-verified",
       base::TimeFormatShortDateAndTime(instance_id_token_verified));
-  status.SetStringPath("NetworkHandler.Verification-result-code",
-                       RegistrationResultToString(token_verification_result));
-  status.SetBoolPath("NetworkHandler.Token-changed-when-verified",
-                     token_changed);
-  status.SetIntPath("NetworkHandler.Token-validation-requests",
-                    token_validation_requested_num);
+  status.SetByDottedPath("NetworkHandler.Verification-result-code",
+                         RegistrationResultToString(token_verification_result));
+  status.SetByDottedPath("NetworkHandler.Token-changed-when-verified",
+                         token_changed);
+  status.SetByDottedPath("NetworkHandler.Token-validation-requests",
+                         token_validation_requested_num);
   return status;
 }
 

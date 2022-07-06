@@ -34,22 +34,24 @@ bool AckHandle::Equals(const AckHandle& other) const {
   return state_ == other.state_ && timestamp_ == other.timestamp_;
 }
 
-std::unique_ptr<base::DictionaryValue> AckHandle::ToValue() const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetStringKey("state", state_);
-  value->SetStringKey("timestamp",
-                      base::NumberToString(timestamp_.ToInternalValue()));
+base::Value::Dict AckHandle::ToValue() const {
+  base::Value::Dict value;
+  value.Set("state", state_);
+  value.Set("timestamp", base::NumberToString(timestamp_.ToInternalValue()));
   return value;
 }
 
-bool AckHandle::ResetFromValue(const base::DictionaryValue& value) {
-  if (!value.GetString("state", &state_))
+bool AckHandle::ResetFromValue(const base::Value::Dict& value) {
+  const std::string* state = value.FindString("state");
+  if (!state)
     return false;
-  std::string timestamp_as_string;
-  if (!value.GetString("timestamp", &timestamp_as_string))
+  state_ = *state;
+
+  const std::string* timestamp_as_string = value.FindString("timestamp");
+  if (!timestamp_as_string)
     return false;
   int64_t timestamp_value;
-  if (!base::StringToInt64(timestamp_as_string, &timestamp_value))
+  if (!base::StringToInt64(*timestamp_as_string, &timestamp_value))
     return false;
   timestamp_ = base::Time::FromInternalValue(timestamp_value);
   return true;

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/invalidation_logger.h"
@@ -72,8 +73,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
   std::string GetInvalidatorClientId() const override;
   InvalidationLogger* GetInvalidationLogger() override;
   void RequestDetailedStatus(
-      base::RepeatingCallback<void(const base::DictionaryValue&)> caller)
-      const override;
+      base::RepeatingCallback<void(base::Value::Dict)> caller) const override;
 
   // FCMInvalidationListener::Delegate implementation.
   void OnInvalidate(const TopicInvalidationMap& invalidation_map) override;
@@ -84,7 +84,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
   void InitForTest(
       std::unique_ptr<FCMInvalidationListener> invalidation_listener);
 
-  virtual base::DictionaryValue CollectDebugData() const;
+  virtual base::Value::Dict CollectDebugData() const;
 
   // Returns true if the service is currently started and able to receive
   // invalidations.

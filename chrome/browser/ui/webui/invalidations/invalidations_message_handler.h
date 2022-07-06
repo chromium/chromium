@@ -39,10 +39,10 @@ class InvalidationsMessageHandler
   void OnUpdatedTopics(
       const std::string& handler_name,
       const invalidation::TopicCountMap& topics_counts) override;
-  void OnDebugMessage(const base::DictionaryValue& details) override;
+  void OnDebugMessage(const base::Value::Dict& details) override;
   void OnInvalidation(
       const invalidation::TopicInvalidationMap& new_invalidations) override;
-  void OnDetailedStatus(const base::DictionaryValue& network_details) override;
+  void OnDetailedStatus(base::Value::Dict network_details) override;
 
   // Implementation of WebUIMessageHandler.
   void RegisterMessages() override;

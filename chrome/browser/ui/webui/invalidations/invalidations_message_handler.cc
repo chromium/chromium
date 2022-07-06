@@ -121,7 +121,7 @@ void InvalidationsMessageHandler::OnUpdatedTopics(
                     base::Value(std::move(list_of_objects)));
 }
 void InvalidationsMessageHandler::OnDebugMessage(
-    const base::DictionaryValue& details) {}
+    const base::Value::Dict& details) {}
 
 void InvalidationsMessageHandler::OnInvalidation(
     const invalidation::TopicInvalidationMap& new_invalidations) {
@@ -131,6 +131,7 @@ void InvalidationsMessageHandler::OnInvalidation(
 }
 
 void InvalidationsMessageHandler::OnDetailedStatus(
-    const base::DictionaryValue& network_details) {
-  FireWebUIListener("detailed-status-updated", network_details);
+    base::Value::Dict network_details) {
+  FireWebUIListener("detailed-status-updated",
+                    base::Value(std::move(network_details)));
 }

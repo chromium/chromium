@@ -177,13 +177,12 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
       const std::string& private_topic = std::string(),
       const std::string& token = kFakeInstanceIdToken,
       int http_responce_code = net::HTTP_OK) {
-    std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-    value->SetStringKey("privateTopicName", private_topic.empty()
-                                                ? "test-pr"
-                                                : private_topic.c_str());
+    base::Value::Dict value;
+    value.Set("privateTopicName",
+              private_topic.empty() ? "test-pr" : private_topic.c_str());
     std::string serialized_response;
     JSONStringValueSerializer serializer(&serialized_response);
-    serializer.Serialize(*value);
+    serializer.Serialize(value);
     url_loader_factory()->AddResponse(
         FullSubscriptionUrl(token), CreateHeadersForTest(http_responce_code),
         serialized_response, CreateStatusForTest(net::OK, serialized_response));

@@ -211,10 +211,10 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
   for (const auto& topic : topics) {
     handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].insert(
         topic);
-    base::DictionaryValue handler_pref;
-    handler_pref.SetStringKey(kHandler, handler->GetOwnerName());
-    handler_pref.SetBoolKey(kIsPublic, topic.is_public);
-    pref_data->SetKey(topic.name, std::move(handler_pref));
+    base::Value::Dict handler_pref;
+    handler_pref.Set(kHandler, handler->GetOwnerName());
+    handler_pref.Set(kIsPublic, topic.is_public);
+    pref_data->SetKey(topic.name, base::Value(std::move(handler_pref)));
   }
   return true;
 }
@@ -301,8 +301,7 @@ InvalidatorRegistrarWithMemory::GetHandlerNameToTopicsMap() {
 }
 
 void InvalidatorRegistrarWithMemory::RequestDetailedStatus(
-    base::RepeatingCallback<void(const base::DictionaryValue&)> callback)
-    const {
+    base::RepeatingCallback<void(base::Value::Dict)> callback) const {
   callback.Run(CollectDebugData());
 }
 
@@ -326,15 +325,16 @@ bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
   return false;
 }
 
-base::DictionaryValue InvalidatorRegistrarWithMemory::CollectDebugData() const {
-  base::DictionaryValue return_value;
-  return_value.SetIntPath("InvalidatorRegistrarWithMemory.Handlers",
-                          handler_name_to_subscribed_topics_map_.size());
+base::Value::Dict InvalidatorRegistrarWithMemory::CollectDebugData() const {
+  base::Value::Dict return_value;
+  return_value.SetByDottedPath(
+      "InvalidatorRegistrarWithMemory.Handlers",
+      static_cast<int>(handler_name_to_subscribed_topics_map_.size()));
   for (const auto& handler_to_topics : handler_name_to_subscribed_topics_map_) {
     const std::string& handler = handler_to_topics.first;
     for (const auto& topic : handler_to_topics.second) {
-      return_value.SetStringPath("InvalidatorRegistrarWithMemory." + topic.name,
-                                 handler);
+      return_value.SetByDottedPath(
+          "InvalidatorRegistrarWithMemory." + topic.name, handler);
     }
   }
   return return_value;
