@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -267,6 +268,13 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
 
   curtain_local_user_session_ =
       root->FindBoolKey(kCurtainLocalUserSession).value_or(false);
+
+#if !defined(NDEBUG)
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kForceCrdAdminRemoteAccess)) {
+    curtain_local_user_session_ = true;
+  }
+#endif  // !defined(NDEBUG)
 
   if (curtain_local_user_session_ &&
       !base::FeatureList::IsEnabled(
