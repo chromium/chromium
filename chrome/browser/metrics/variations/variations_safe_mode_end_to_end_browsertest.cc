@@ -200,16 +200,8 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeModeEndToEnd) {
   sub_test.AppendSwitch(::switches::kSingleProcessTests);
   sub_test.AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
 
-  const std::string group_name = kEnabledGroup;
-  // Select the extended variations safe mode field trial group. The "*"
-  // prefix forces the experiment/trial state to "active" at startup.
-  sub_test.AppendSwitchASCII(
-      ::switches::kForceFieldTrials,
-      base::StrCat({"*", kExtendedSafeModeTrial, "/", group_name, "/"}));
-
-  // Assign the test environment to be on the "Canary" channel. This ensures
-  // compatibility with both the extended safe mode trial and the crashing
-  // study in the seed.
+  // Assign the test environment to be on the Canary channel. This ensures
+  // compatibility with the crashing study in the seed.
   sub_test.AppendSwitchASCII(switches::kFakeVariationsChannel, "canary");
 
   // Explicitly avoid any terminal control characters in the output.
@@ -228,8 +220,6 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeModeEndToEnd) {
     WriteSeedData(local_state.get(), kTestSeedData, kSafeSeedPrefKeys);
     WriteSeedData(local_state.get(), kCrashingSeedData, kRegularSeedPrefKeys);
   }
-
-  SetUpExtendedSafeModeExperiment(group_name);
 
   // The next run will be |kCrashStreakThreshold| crashing runs of the sub-test.
   {

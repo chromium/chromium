@@ -80,6 +80,18 @@ class MetricsStateManager final {
   // sampling, and this client isn't in the sample.
   bool IsMetricsReportingEnabled();
 
+  // Returns true if Extended Variations Safe Mode is supported on this
+  // platform. Variations Safe Mode is a mechanism that allows Chrome to fall
+  // back to a "safe" seed so that clients can recover from a problematic
+  // experiment, for example, one that causes browser crashes. See the design
+  // doc for more details:
+  // https://docs.google.com/document/d/17UN2pLSa5JZqk8f3LeYZIftXewxqcITotgalTrJvGSY.
+  //
+  // Extended Variations Safe Mode builds on this by allowing clients to recover
+  // from problematic experiments that cause browser crashes earlier on in
+  // startup.
+  bool IsExtendedSafeModeSupported() const;
+
   // Returns the client ID for this client, or the empty string if the user is
   // not opted in to metrics reporting.
   const std::string& client_id() const { return client_id_; }

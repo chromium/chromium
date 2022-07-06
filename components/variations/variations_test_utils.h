@@ -56,7 +56,7 @@ extern const SignedSeedData kTestSeedData;
 
 // The crashing seed data contains a CrashingStudy that enables the
 // variations::kForceFieldTrialSetupCrashForTesting feature at 100% on all
-// platforms and channels.
+// platforms and on all channels except Unknown.
 extern const SignedSeedData kCrashingSeedData;
 
 // The pref keys used to store safe signed variations seed data.
@@ -86,10 +86,6 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
     const std::string& default_group_name,
     IDCollectionKey key,
     VariationID id);
-
-// Sets up the extended safe mode experiment such that |group_name| is the
-// active group. Returns the numeric value that denotes the active group.
-int SetUpExtendedSafeModeExperiment(const std::string& group_name);
 
 // Simulates a crash by setting the clean exit pref to false and disabling
 // the steps to update the pref on clean shutdown.

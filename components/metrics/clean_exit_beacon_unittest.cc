@@ -35,8 +35,6 @@
 namespace metrics {
 namespace {
 
-using ::variations::SetUpExtendedSafeModeExperiment;
-
 const wchar_t kDummyWindowsRegistryKey[] = L"";
 
 // Creates and returns well-formed beacon file contents with the given values.
@@ -171,48 +169,12 @@ TEST_F(CleanExitBeaconTest,
                                        1);
 }
 
-// Verify that (a) the client is excluded from the Extended Variations Safe Mode
-// experiment and (b) no attempt is made to read the beacon file when no user
+// Verify that no attempt is made to read the beacon file when no user
 // data dir is provided.
 TEST_F(CleanExitBeaconTest, InitWithoutUserDataDir) {
   TestCleanExitBeacon beacon(&prefs_, base::FilePath());
-  EXPECT_FALSE(
-      base::FieldTrialList::IsTrialActive(variations::kExtendedSafeModeTrial));
-  histogram_tester_.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup", 0);
-}
-
-// Verify that the beacon file is not read when the client is not in the
-// SignalAndWriteViaFileUtil experiment group. It is possible for a client to
-// have the file and to not be in the SignalAndWriteViaFileUtil group when the
-// client was in the group in a previous session and then switched groups, e.g.
-// via kResetVariationState.
-TEST_F(CleanExitBeaconTest, FileIgnoredByControlGroup) {
-  // Deliberately set the prefs so that we can later verify that their values
-  // have not changed.
-  int expected_crash_streak = 0;
-  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak,
-                    expected_crash_streak);
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
-
-  // Prepare a well-formed beacon file, which we expect to be ignored. (If it
-  // were used, then the prefs' values would change.)
-  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
-  const base::FilePath temp_beacon_file_path =
-      user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
-  ASSERT_LT(0, base::WriteFile(temp_beacon_file_path,
-                               CreateWellFormedBeaconFileContents(
-                                   /*exited_cleanly=*/false, /*crash_streak=*/2)
-                                   .data()));
-  const std::string group_name = variations::kControlGroup;
-  SetUpExtendedSafeModeExperiment(group_name);
-  ASSERT_EQ(group_name, base::FieldTrialList::FindFullName(
-                            variations::kExtendedSafeModeTrial));
-  TestCleanExitBeacon beacon(&prefs_, user_data_dir_path);
-
-  EXPECT_TRUE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
-  EXPECT_EQ(prefs_.GetInteger(variations::prefs::kVariationsCrashStreak),
-            expected_crash_streak);
+  EXPECT_TRUE(beacon.GetUserDataDirForTesting().empty());
+  EXPECT_TRUE(beacon.GetBeaconFilePathForTesting().empty());
   histogram_tester_.ExpectTotalCount(
       "Variations.ExtendedSafeMode.BeaconFileStateAtStartup", 0);
 }
@@ -260,7 +222,6 @@ INSTANTIATE_TEST_SUITE_P(
 // reasons (a) doesn't crash and (b) correctly records the  BeaconFileState
 // metric.
 TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   BadBeaconTestParams params = GetParam();
 
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
@@ -281,7 +242,6 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session exited cleanly.
 TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
@@ -305,7 +265,6 @@ TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session did not exit cleanly.
 TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
@@ -332,7 +291,6 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenNotExitingCleanly) {
       user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
   ASSERT_FALSE(base::PathExists(beacon_file_path));
 
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
                                      /*is_extended_safe_mode=*/true);
@@ -376,7 +334,6 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenExitingCleanly) {
       user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
   ASSERT_FALSE(base::PathExists(beacon_file_path));
 
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/true,
                                      /*is_extended_safe_mode=*/false);
@@ -414,18 +371,10 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenExitingCleanly) {
       "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 }
 
-// Verify that there's a DCHECK when an Extended Variations Safe Mode client
-// attempts to write a clean beacon with |is_extended_safe_mode| set to true.
-// |is_extended_safe_mode| should only be set to true in one call site:
-// VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode().
-//
-// TODO(crbug/1241702): Re-enable this test once the FieldTrial is cleaned up.
-TEST_F(CleanExitBeaconTest,
-       DISABLED_WriteBeaconValue_SynchronousWriteDcheck_ExperimentGroup) {
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
-  ASSERT_EQ(variations::kEnabledGroup, base::FieldTrialList::FindFullName(
-                                           variations::kExtendedSafeModeTrial));
-
+// Verify that there's a DCHECK when attempting to write a clean beacon with
+// |is_extended_safe_mode| set to true. When |is_extended_safe_mode| is true,
+// the only valid value for |exited_cleanly| is false.
+TEST_F(CleanExitBeaconTest, InvalidWriteBeaconValueArgsTriggerDcheck) {
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_.GetPath());
   EXPECT_DCHECK_DEATH(
       clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/true,
@@ -433,9 +382,7 @@ TEST_F(CleanExitBeaconTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-// Verify that the logic for recording UMA.CleanExitBeaconConsistency3 is
-// correct for clients in the Extended Variations Safe Mode experiment's enabled
-// group.
+// Verify the logic for recording UMA.CleanExitBeaconConsistency3.
 INSTANTIATE_TEST_SUITE_P(
     All,
     BeaconFileAndPlatformBeaconConsistencyTest,
@@ -509,10 +456,6 @@ TEST_P(BeaconFileAndPlatformBeaconConsistencyTest, BeaconConsistency) {
     CleanExitBeacon::SetUserDefaultsBeacon(
         /*exited_cleanly=*/params.platform_specific_beacon_value.value());
   }
-
-  SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
-  ASSERT_EQ(variations::kEnabledGroup, base::FieldTrialList::FindFullName(
-                                           variations::kExtendedSafeModeTrial));
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample("UMA.CleanExitBeaconConsistency3",

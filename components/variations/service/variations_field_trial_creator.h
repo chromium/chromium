@@ -180,13 +180,6 @@ class VariationsFieldTrialCreator {
   const std::string& application_locale() const { return application_locale_; }
 
  protected:
-  // If the client is in an Extended Variations Safe Mode experiment group,
-  // applies group-specific behavior. Does nothing if the client is not in the
-  // experiment. See CleanExitBeacon::Initialize() for group assignment details.
-  // Protected and virtual for testing.
-  virtual void MaybeExtendVariationsSafeMode(
-      metrics::MetricsStateManager* metrics_state_manager);
-
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   // Protected for testing.
   Study::Platform GetPlatform();

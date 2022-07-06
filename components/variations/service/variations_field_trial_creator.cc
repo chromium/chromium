@@ -36,7 +36,6 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/safe_seed_manager.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_ids_provider.h"
@@ -171,6 +170,27 @@ bool ShouldUseFieldTrialTestingConfig(const base::CommandLine* command_line) {
 }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
+// Causes Chrome to start watching for browser crashes if the following
+// conditions are met:
+// 1. This is not a background session.
+// 2. Extended Variations Safe Mode is supported on this platform.
+void MaybeExtendVariationsSafeMode(
+    metrics::MetricsStateManager* metrics_state_manager) {
+  if (metrics_state_manager->is_background_session()) {
+    // If the session is expected to be a background session, then do not start
+    // watching for browser crashes here. This monitoring is not desired in
+    // background sessions, whose terminations should never be considered
+    // crashes.
+    return;
+  }
+  if (!metrics_state_manager->IsExtendedSafeModeSupported())
+    return;
+
+  metrics_state_manager->LogHasSessionShutdownCleanly(
+      /*has_session_shutdown_cleanly=*/false,
+      /*is_extended_safe_mode=*/true);
+}
+
 }  // namespace
 
 const base::Feature kForceFieldTrialSetupCrashForTesting{
@@ -216,15 +236,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   DCHECK(platform_field_trials);
   DCHECK(safe_seed_manager);
 
-  if (base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial) &&
-      !metrics_state_manager->is_background_session()) {
-    // If the session is expected to be a background session, then do not extend
-    // Variations Safe Mode. Extending Safe Mode involves monitoring for crashes
-    // earlier on in startup; however, this monitoring is not desired in
-    // background sessions, whose terminations should never be considered
-    // crashes.
-    MaybeExtendVariationsSafeMode(metrics_state_manager);
-  }
+  MaybeExtendVariationsSafeMode(metrics_state_manager);
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
   // in MetricsStateManager::InstantiateFieldTrialList(). It's not ideal that
@@ -470,21 +482,6 @@ void VariationsFieldTrialCreator::OverrideCachedUIStrings() {
 
 bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
   return overridden_strings_map_.empty();
-}
-
-void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
-    metrics::MetricsStateManager* metrics_state_manager) {
-  const std::string group_name =
-      base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
-  DCHECK(!group_name.empty());
-
-  if (group_name == kDefaultGroup || group_name == kControlGroup)
-    return;
-
-  DCHECK_EQ(group_name, kEnabledGroup);
-  metrics_state_manager->LogHasSessionShutdownCleanly(
-      /*has_session_shutdown_cleanly=*/false,
-      /*is_extended_safe_mode=*/true);
 }
 
 Study::Platform VariationsFieldTrialCreator::GetPlatform() {

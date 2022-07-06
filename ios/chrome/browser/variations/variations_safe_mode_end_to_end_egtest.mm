@@ -16,7 +16,6 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/variations_test_utils.h"
 
 #import "ios/chrome/browser/variations/variations_app_interface.h"
@@ -42,21 +41,19 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 #pragma mark - Helpers
 
 // Returns an AppLaunchConfiguration that shuts down Chrome cleanly (if it is
-// already running) and relaunches it with the extended safe mode field trial
-// enabled. Disabling the testing config means that the only field trials after
-// the relaunch, if any, are client-side field trials.
+// already running) and relaunches it. Disabling the testing config means that
+// the only field trials after the relaunch, if any, are client-side field
+// trials.
 //
 // Change the |allow_crash_on_startup| field of the returned config to afford
 // the app an opportunity to crash on restart.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args = {
-      "--disable-field-trial-config", "--fake-variations-channel=canary",
-      base::StrCat({"--", ::switches::kForceFieldTrials,
-                    "=*",  // * -> Force active on startup.
-                    variations::kExtendedSafeModeTrial, "/",
-                    variations::kEnabledGroup, "/"})};
+  // Assign the test environment to be on the Canary channel. This ensures
+  // compatibility with the crashing study in the seed.
+  config.additional_args = {"--disable-field-trial-config",
+                            "--fake-variations-channel=canary"};
   return config;
 }
 
@@ -132,11 +129,8 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 
 // Tests that three seed-driven crashes trigger variations safe mode.
 //
-// Corresponds to FieldTrialTest.SafeModeEndToEndTest in
-// variations_safe_mode_browsertest.cc.
-//
-// TODO(crbug.com/1316325): Test not run or not finished.
-// Sheriffs, feel free to immediately re-disable if needed.
+// Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
+// in variations_safe_mode_browsertest.cc.
 - (void)testVariationsSafeModeEndToEnd {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {

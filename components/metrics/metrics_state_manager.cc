@@ -335,6 +335,10 @@ bool MetricsStateManager::IsMetricsReportingEnabled() {
   return enabled_state_provider_->IsReportingEnabled();
 }
 
+bool MetricsStateManager::IsExtendedSafeModeSupported() const {
+  return clean_exit_beacon_.IsExtendedSafeModeSupported();
+}
+
 int MetricsStateManager::GetLowEntropySource() {
   return entropy_state_.GetLowEntropySource();
 }

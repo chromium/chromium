@@ -215,20 +215,6 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
   return trial;
 }
 
-int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
-  int default_group;
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kExtendedSafeModeTrial, 100, kDefaultGroup,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
-
-  int active_group = default_group;
-  if (group_name != kDefaultGroup)
-    active_group = trial->AppendGroup(group_name, 100);
-  trial->SetForced();
-  return active_group;
-}
-
 void SimulateCrash(PrefService* local_state) {
   local_state->SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
   metrics::CleanExitBeacon::SkipCleanShutdownStepsForTesting();

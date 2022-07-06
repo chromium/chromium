@@ -37,10 +37,6 @@
 namespace metrics {
 namespace {
 
-using ::variations::kControlGroup;
-using ::variations::kDefaultGroup;
-using ::variations::kEnabledGroup;
-using ::variations::kExtendedSafeModeTrial;
 using ::variations::prefs::kVariationsCrashStreak;
 
 // Denotes whether Chrome should perform clean shutdown steps: signaling that
@@ -206,19 +202,6 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
   return beacon_file_contents;
 }
 
-std::string SetUpExtendedSafeModeTrial() {
-  int default_group;
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kExtendedSafeModeTrial, 100, kDefaultGroup,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
-
-  // The new behavior launched on desktop and iOS in M102 and on Android Chrome
-  // in M103.
-  trial->AppendGroup(kEnabledGroup, 100);
-  return trial->group_name();
-}
-
 }  // namespace
 
 CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
@@ -238,14 +221,9 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
 void CleanExitBeacon::Initialize() {
   DCHECK(!initialized_);
 
-  std::string group;
   if (!user_data_dir_.empty()) {
     // Platforms that pass an empty path do so deliberately. They should not
-    // participate in this experiment.
-    group = SetUpExtendedSafeModeTrial();
-  }
-
-  if (group == kEnabledGroup) {
+    // use the beacon file.
     beacon_file_path_ =
         user_data_dir_.Append(variations::kCleanExitBeaconFilename);
   }
@@ -263,32 +241,18 @@ void CleanExitBeacon::Initialize() {
 
 bool CleanExitBeacon::DidPreviousSessionExitCleanly(
     base::Value* beacon_file_contents) {
-  absl::optional<bool> local_state_beacon_value;
-  if (local_state_->HasPrefPath(prefs::kStabilityExitedCleanly)) {
-    local_state_beacon_value = absl::make_optional(
-        local_state_->GetBoolean(prefs::kStabilityExitedCleanly));
-  }
+  if (!IsBeaconFileSupported())
+    return local_state_->GetBoolean(prefs::kStabilityExitedCleanly);
+
+  absl::optional<bool> beacon_file_beacon_value =
+      beacon_file_contents ? beacon_file_contents->GetDict().FindBool(
+                                 prefs::kStabilityExitedCleanly)
+                           : absl::nullopt;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   absl::optional<bool> backup_beacon_value = ExitedCleanly();
-#endif
-  absl::optional<bool> beacon_file_beacon_value;
-  bool use_beacon_file = base::FieldTrialList::FindFullName(
-                             kExtendedSafeModeTrial) == kEnabledGroup;
-  if (use_beacon_file) {
-    if (beacon_file_contents) {
-      beacon_file_beacon_value = absl::make_optional(
-          beacon_file_contents->FindKey(prefs::kStabilityExitedCleanly)
-              ->GetBool());
-    }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-    RecordBeaconConsistency(beacon_file_beacon_value, backup_beacon_value);
+  RecordBeaconConsistency(beacon_file_beacon_value, backup_beacon_value);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-  }
-
-  bool did_previous_session_exit_cleanly =
-      use_beacon_file ? beacon_file_beacon_value.value_or(true)
-                      : local_state_beacon_value.value_or(true);
 
 #if BUILDFLAG(IS_IOS)
   // TODO(crbug/1231106): For the time being, this is a no-op; i.e.,
@@ -296,7 +260,14 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
   if (ShouldUseUserDefaultsBeacon())
     return backup_beacon_value.value_or(true);
 #endif  // BUILDFLAG(IS_IOS)
-  return did_previous_session_exit_cleanly;
+
+  return beacon_file_beacon_value.value_or(true);
+}
+
+bool CleanExitBeacon::IsExtendedSafeModeSupported() const {
+  // All platforms that support the beacon file mechanism also happen to support
+  // Extended Variations Safe Mode.
+  return IsBeaconFileSupported();
 }
 
 void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
@@ -316,12 +287,9 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     return;
   }
 
-  const std::string group_name =
-      base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
-
   if (is_extended_safe_mode) {
-    // Only enabled-group clients should extend Variations Safe Mode.
-    DCHECK_EQ(group_name, kEnabledGroup);
+    // |is_extended_safe_mode| can be true for only some platforms.
+    DCHECK(IsExtendedSafeModeSupported());
     // |has_exited_cleanly_| should always be unset before starting to watch for
     // browser crashes.
     DCHECK(!has_exited_cleanly_);
@@ -331,17 +299,15 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     DCHECK(!exited_cleanly);
     WriteBeaconFile(exited_cleanly);
   } else {
+    // TODO(crbug/1341864): Stop updating |kStabilityExitedCleanly| on platforms
+    // that support the beacon file.
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
-#if BUILDFLAG(IS_ANDROID)
-    // Schedule a Local State write on Android for WebLayer and WebView. Other
-    // platforms use the beacon file as the source of truth.
-    local_state_->CommitPendingWrite();
-#endif  // BUILDFLAG(IS_ANDROID)
-    if (group_name == kEnabledGroup) {
-      // Clients in this group write to the Variations Safe Mode file whenever
-      // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
-      // pref because the file is used in the next session.
+    if (IsBeaconFileSupported()) {
       WriteBeaconFile(exited_cleanly);
+    } else {
+      // Schedule a Local State write on platforms that back the beacon value
+      // using Local State rather than the beacon file.
+      local_state_->CommitPendingWrite();
     }
   }
 
@@ -438,9 +404,11 @@ void CleanExitBeacon::SkipCleanShutdownStepsForTesting() {
   g_skip_clean_shutdown_steps = true;
 }
 
+bool CleanExitBeacon::IsBeaconFileSupported() const {
+  return !beacon_file_path_.empty();
+}
+
 void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
-  DCHECK_EQ(base::FieldTrialList::FindFullName(kExtendedSafeModeTrial),
-            kEnabledGroup);
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetBoolKey(prefs::kStabilityExitedCleanly, exited_cleanly);
   dict.SetIntKey(kVariationsCrashStreak,
