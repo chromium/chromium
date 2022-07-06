@@ -6,5 +6,5 @@
 dictionary DirectoryPickerOptions {
   DOMString id;
   (WellKnownDirectory or FileSystemHandle) startIn;
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] FileSystemPermissionMode mode = "read";
+  FileSystemPermissionMode mode = "read";
 };
