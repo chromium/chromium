@@ -200,7 +200,9 @@ std::string BluetoothAdapterFloss::GetName() const {
 }
 
 std::string BluetoothAdapterFloss::GetSystemName() const {
-  return std::string();
+  // TODO(b/238230098): Floss should expose system information, i.e. stack name
+  // and version.
+  return "Floss";
 }
 
 void BluetoothAdapterFloss::SetName(const std::string& name,
