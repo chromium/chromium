@@ -14,14 +14,14 @@ nearby_share_closure_flags = [
   "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
 ]
 
-# TODO(crbug.com/1179821) This allows ChromeOS Settings mojom WebUI paths like
-# "../constants/setting.mojom-webui.js" or "../constants/routes.mojom-webui.js"
-# to resolve properly during closure compilation
-mojom_webui_root_path =
-    rebase_path(
-        "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos",
-        root_build_dir)
-mojom_webui_closure_flags = [ "js_module_root=" + mojom_webui_root_path ]
+# TODO(crbug.com/1179821) This allows WebUI mojom files listed under the
+# mojom-webui/ folder to be properly resolved during closure compilation.
+mojom_webui_closure_flags = [
+  "js_module_root=" + rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants",
+          root_build_dir),
+  "browser_resolver_prefix_replacements=\"../mojom-webui/=../\"",
+]
 
 # TODO(crbug.com/1315757) Remove once ChromeOS Settings is fully migrated to
 # TypeScript and no longer using Closure compilation
