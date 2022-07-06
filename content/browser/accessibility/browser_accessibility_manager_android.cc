@@ -268,6 +268,17 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       wcax->AnnounceLiveRegionText(text);
       break;
     }
+    case ui::AXEventGenerator::Event::NAME_CHANGED: {
+      // Clear node from cache whenever the name changes to ensure fresh data.
+      wcax->ClearNodeInfoCacheForGivenId(android_node->unique_id());
+
+      // If this is a simple text element, also send an event to the framework.
+      if (ui::IsText(android_node->GetRole()) ||
+          android_node->IsAndroidTextView()) {
+        wcax->HandleTextContentChanged(android_node->unique_id());
+      }
+      break;
+    }
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(android_node->GetData().IsRangeValueSupported());
       if (android_node->IsSlider())
@@ -341,7 +352,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::NAME_CHANGED:
     case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::PARENT_CHANGED:

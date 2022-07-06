@@ -449,6 +449,16 @@ void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
       env, obj, base::android::ConvertUTF16ToJavaString(env, text));
 }
 
+void WebContentsAccessibilityAndroid::HandleTextContentChanged(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null())
+    return;
+  Java_WebContentsAccessibilityImpl_handleTextContentChanged(env, obj,
+                                                             unique_id);
+}
+
 void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
