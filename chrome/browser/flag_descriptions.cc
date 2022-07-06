@@ -64,6 +64,11 @@ const char kLeakDetectionUnauthenticated[] =
 const char kLeakDetectionUnauthenticatedDescription[] =
     "Enables leak detection feature for signed out users.";
 
+const char kAlignWakeUpsName[] = "Align delayed wake ups at 125 Hz";
+const char kAlignWakeUpsDescription[] =
+    "Run most delayed tasks with a non-zero delay (including DOM Timers) on a "
+    "periodic 125Hz tick, instead of as soon as their delay has passed.";
+
 const char kAllowInsecureLocalhostName[] =
     "Allow invalid certificates for resources loaded from localhost.";
 const char kAllowInsecureLocalhostDescription[] =

@@ -27,6 +27,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_features.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -7818,6 +7819,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kThrottleForegroundTimersDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kThrottleForegroundTimers)},
+
+    {"align-wakeups", flag_descriptions::kAlignWakeUpsName,
+     flag_descriptions::kAlignWakeUpsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(base::kAlignWakeUps)},
 
     {"enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",
      flag_descriptions::

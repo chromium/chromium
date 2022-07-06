@@ -60015,6 +60015,7 @@ from previous Chrome versions.
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>
+  <int value="1030922819" label="AlignWakeUps:enabled"/>
   <int value="1031239808" label="ForceMajorVersion100InUserAgent:disabled"/>
   <int value="1031281564"
       label="DisablePeripheralDataAccessProtection:disabled"/>
@@ -60970,6 +60971,7 @@ from previous Chrome versions.
   <int value="1658656322" label="IncognitoDownloadsWarning:enabled"/>
   <int value="1659082220" label="EnableManualSaving:disabled"/>
   <int value="1659372520" label="WebXrRenderPath:disabled"/>
+  <int value="1659969202" label="AlignWakeUps:disabled"/>
   <int value="1660002388" label="FilesWebDriveOffice:disabled"/>
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
   <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
