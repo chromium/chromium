@@ -5395,6 +5395,7 @@ if (enable_java_templates) {
         forward_variables_from(invoker,
                                [
                                  "lint_baseline_file",
+                                 "lint_jar_path",
                                  "lint_suppressions_file",
                                  "min_sdk_version",
                                ])

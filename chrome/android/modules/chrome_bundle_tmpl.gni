@@ -176,6 +176,7 @@ template("chrome_bundle") {
                              "keystore_password",
                              "keystore_path",
                              "lint_baseline_file",
+                             "lint_jar_path",
                              "lint_min_sdk_version",
                              "lint_suppressions_file",
                              "lint_suppressions_dep",

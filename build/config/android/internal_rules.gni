@@ -94,7 +94,7 @@ _desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desug
 _desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.5.jar"
 _robolectric_jar_path =
     "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
-_lint_jar_path = "//third_party/android_build_tools/lint/lint.jar"
+_default_lint_jar_path = "//third_party/android_build_tools/lint/lint.jar"
 _custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/manifest-merger.jar"
@@ -1028,6 +1028,12 @@ if (enable_java_templates) {
         _min_sdk_version = invoker.min_sdk_version
       } else {
         _min_sdk_version = default_min_sdk_version
+      }
+
+      if (defined(invoker.lint_jar_path)) {
+        _lint_jar_path = invoker.lint_jar_path
+      } else {
+        _lint_jar_path = _default_lint_jar_path
       }
 
       _cache_dir = "$root_build_dir/android_lint_cache"
