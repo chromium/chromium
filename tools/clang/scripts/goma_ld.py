@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Copyright (c) 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,16 +9,11 @@
 # E.g. original: clang++ -o foo foo.o
 # Becomes: goma-ld clang++ -o foo foo.o
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-import goma_link
-
 import os
 import re
 import sys
+
+import goma_link
 
 
 class GomaLinkUnix(goma_link.GomaLinkBase):

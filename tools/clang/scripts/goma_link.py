@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Copyright (c) 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,11 +8,6 @@
 # Usage: Pass the original link command as parameters to this script.
 # E.g. original: lld-link -out:foo foo.obj
 # Becomes: goma_link.py lld-link -out:foo foo.obj
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import argparse
 import errno
@@ -25,14 +20,6 @@ import sys
 from collections import namedtuple
 from pipes import quote as shquote
 from tempfile import NamedTemporaryFile
-
-# Python 2 has int and long, and we want to use long.  Python 3 only has int,
-# which is like long in Python 2.  So we check if long is defined, and, if not,
-# define it to be the same as int.
-try:
-  long
-except NameError:
-  long = int
 
 # Type returned by analyze_args.
 AnalyzeArgsResult = namedtuple('AnalyzeArgsResult', [
@@ -124,13 +111,13 @@ def names_in_archive(path):
       f.seek(32, io.SEEK_CUR)
       m = re.match(b'/([0-9]+)', file_id)
       if long_names and m:
-        name_pos = long(m.group(1))
+        name_pos = int(m.group(1))
         name_end = long_names.find(b'/\n', name_pos)
         name = long_names[name_pos:name_end]
       else:
         name = file_id
       try:
-        size = long(f.read(10))
+        size = int(f.read(10))
       except:
         sys.stderr.write('While parsing %r, pos %r\n' % (path, f.tell()))
         raise
