@@ -31,6 +31,11 @@
 
 namespace updater {
 
+namespace {
+// Maximum string length for COM strings.
+constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
+}  // namespace
+
 STDMETHODIMP UpdateStateImpl::get_state(LONG* state) {
   DCHECK(state);
   *state = static_cast<LONG>(update_state_.state);
@@ -133,7 +138,6 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
        existence_checker_path]() -> decltype(request) {
     for (const auto* str :
          {app_id, brand_code, ap, version, existence_checker_path}) {
-      constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return absl::nullopt;
       }
@@ -379,6 +383,21 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
   return S_OK;
 }
 
+HRESULT UpdaterImpl::CancelInstalls(const wchar_t* app_id) {
+  std::string app_id_str;
+  if (wcsnlen_s(app_id, kMaxStringLen) >= kMaxStringLen || !app_id ||
+      !base::WideToUTF8(app_id, wcslen(app_id), &app_id_str)) {
+    return E_INVALIDARG;
+  }
+
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&UpdateService::CancelInstalls,
+                                com_server->update_service(), app_id_str));
+
+  return S_OK;
+}
+
 HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* installer_path,
                                   const wchar_t* install_args,
@@ -387,7 +406,6 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   IUpdaterObserver* observer) {
   for (const wchar_t* str :
        {app_id, installer_path, install_args, install_data, install_settings}) {
-    constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
     if (wcsnlen_s(str, kMaxStringLen) >= kMaxStringLen) {
       return E_INVALIDARG;
     }

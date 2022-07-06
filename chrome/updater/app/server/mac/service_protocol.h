@@ -50,6 +50,9 @@
                     updateState:(CRUUpdateStateObserver* _Nonnull)updateState
                           reply:(void (^_Nonnull)(int rc))reply;
 
+// Cancels any in-progress installations for the app ID.
+- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appID;
+
 // Registers app and returns the result in the reply block.
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode

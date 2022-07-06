@@ -398,6 +398,12 @@ void UpdateServiceImpl::Update(
           priority, policy_same_version_update));
 }
 
+void UpdateServiceImpl::CancelInstalls(const std::string& app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  // TODO(crbug.com/1290331): Implement.
+}
+
 void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                                      const base::FilePath& installer_path,
                                      const std::string& install_args,
@@ -405,8 +411,8 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                                      const std::string& install_settings,
                                      StateChangeCallback state_update,
                                      Callback callback) {
-  VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, Priority::kForeground,

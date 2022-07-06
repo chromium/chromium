@@ -96,6 +96,7 @@ interface IUpdater : IUnknown {
                  [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);
+  HRESULT CancelInstalls([in, string] const WCHAR* app_id);
   HRESULT RunInstaller(
       [in, string] const WCHAR* app_id,
       [in, string] const WCHAR* installer_path,

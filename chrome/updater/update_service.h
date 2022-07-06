@@ -272,6 +272,14 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                             StateChangeCallback state_update,
                             Callback callback) = 0;
 
+  // Cancels any ongoing installations of the specified product. This does not
+  // interrupt any product installers that are currently running, but does
+  // prevent them from being run if they are not yet downloaded.
+  //
+  // Args:
+  //   `app_id`: ID of the product to cancel installs of.
+  virtual void CancelInstalls(const std::string& app_id) = 0;
+
   // Provides a way to commit data or clean up resources before the task
   // scheduler is shutting down.
   virtual void Uninitialize() = 0;

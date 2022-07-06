@@ -406,9 +406,6 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                                    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
   VLOG(1) << __func__;
-
-  // Reposts the call to the COM task runner. Adapts `callback` so that
-  // the callback runs on the main sequence.
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -427,9 +424,6 @@ void UpdateServiceProxy::Update(
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
   VLOG(1) << __func__;
-
-  // Reposts the call to the COM task runner. Adapts `callback` so that
-  // the callback runs on the main sequence.
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -438,6 +432,16 @@ void UpdateServiceProxy::Update(
               install_data_index, policy_same_version_update,
               base::BindPostTask(main_task_runner_, state_update),
               base::BindPostTask(main_task_runner_, std::move(callback)))));
+}
+
+void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  VLOG(1) << __func__;
+  com_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
+          .Then(base::BindOnce(&UpdateServiceProxy::CancelInstallsOnSTA, this,
+                               app_id)));
 }
 
 void UpdateServiceProxy::RunInstaller(const std::string& app_id,
@@ -449,9 +453,6 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
   VLOG(1) << __func__;
-
-  // Reposts the call to the COM task runner. Adapts `callback` so that
-  // the callback runs on the main sequence.
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
@@ -664,6 +665,23 @@ void UpdateServiceProxy::UpdateOnSTA(
     DVLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
     observer->Disconnect().Run(Result::kServiceFailed);
     return;
+  }
+}
+
+void UpdateServiceProxy::CancelInstallsOnSTA(const std::string& app_id,
+                                             HRESULT prev_hr) {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  if (FAILED(prev_hr)) {
+    return;
+  }
+  Microsoft::WRL::ComPtr<IUpdater> updater;
+  if (HRESULT hr = CreateUpdater(scope_, updater); FAILED(hr)) {
+    return;
+  }
+  if (HRESULT hr = updater->CancelInstalls(base::UTF8ToWide(app_id).c_str());
+      FAILED(hr)) {
+    VLOG(2) << "Failed to call IUpdater::CancelInstalls: " << std::hex << hr;
   }
 }
 

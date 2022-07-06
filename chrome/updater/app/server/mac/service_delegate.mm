@@ -253,6 +253,12 @@
                                 std::move(cb)));
 }
 
+- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appID {
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(&updater::UpdateService::CancelInstalls,
+                                _service, base::SysNSStringToUTF8(appID)));
+}
+
 - (void)runInstallerWithAppId:(NSString* _Nonnull)appId
                 installerPath:(NSString* _Nonnull)installerPath
                   installArgs:(NSString* _Nullable)installArgs
@@ -389,6 +395,11 @@
 - (void)getAppStatesWithReply:(void (^_Nonnull)(CRUAppStatesWrapper*))reply {
   // Cross-user gets a restricted view of the app states.
   [_service getAppStatesWithReply:reply restrictedView:YES];
+}
+
+- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appId {
+  // This function may only be called by the same user.
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
 }
 
 - (void)runInstallerWithAppId:(NSString* _Nonnull)appId

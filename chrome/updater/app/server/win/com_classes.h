@@ -102,6 +102,7 @@ class UpdaterImpl
                         BOOL same_version_update_allowed,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;
+  IFACEMETHODIMP CancelInstalls(const wchar_t* app_id) override;
   IFACEMETHODIMP RunInstaller(const wchar_t* app_id,
                               const wchar_t* installer_path,
                               const wchar_t* install_args,

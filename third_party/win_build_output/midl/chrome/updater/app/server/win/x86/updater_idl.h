@@ -727,6 +727,9 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE UpdateAll( 
             /* [in] */ IUpdaterObserver *observer) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE CancelInstalls( 
+            /* [string][in] */ const WCHAR *app_id) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE RunInstaller( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *installer_path,
@@ -797,6 +800,11 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [in] */ IUpdaterObserver *observer);
         
+        DECLSPEC_XFGVIRT(IUpdater, CancelInstalls)
+        HRESULT ( STDMETHODCALLTYPE *CancelInstalls )( 
+            IUpdater * This,
+            /* [string][in] */ const WCHAR *app_id);
+        
         DECLSPEC_XFGVIRT(IUpdater, RunInstaller)
         HRESULT ( STDMETHODCALLTYPE *RunInstaller )( 
             IUpdater * This,
@@ -847,6 +855,9 @@ EXTERN_C const IID IID_IUpdater;
 
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
+
+#define IUpdater_CancelInstalls(This,app_id)	\
+    ( (This)->lpVtbl -> CancelInstalls(This,app_id) ) 
 
 #define IUpdater_RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer)	\
     ( (This)->lpVtbl -> RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer) ) 

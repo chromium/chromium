@@ -73,6 +73,10 @@ class UpdateServiceImplInactive : public UpdateService {
         base::BindOnce(std::move(callback), UpdateService::Result::kInactive));
   }
 
+  void CancelInstalls(const std::string& /*app_id*/) override {
+    VLOG(1) << __func__ << " (Inactive)";
+  }
+
   void RunInstaller(const std::string& /*app_id*/,
                     const base::FilePath& /*installer_path*/,
                     const std::string& /*install_args*/,

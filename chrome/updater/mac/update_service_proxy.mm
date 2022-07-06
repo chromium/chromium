@@ -174,6 +174,16 @@ using base::SysUTF8ToNSString;
                         reply:reply];
 }
 
+- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appID {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+  };
+
+  [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      cancelInstallsWithAppID:appID];
+}
+
 - (void)runInstallerWithAppId:(NSString* _Nonnull)appId
                 installerPath:(NSString* _Nonnull)installerPath
                   installArgs:(NSString* _Nullable)installArgs
@@ -344,6 +354,13 @@ void UpdateServiceProxy::Update(
            policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:stateObserver.get()
                              reply:reply];
+}
+
+void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  [client_ cancelInstallsWithAppID:SysUTF8ToNSString(app_id)];
 }
 
 void UpdateServiceProxy::RunInstaller(const std::string& app_id,
