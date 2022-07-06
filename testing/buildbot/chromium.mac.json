@@ -8897,9 +8897,9 @@
               "os": "Mac-12"
             }
           ],
-          "quickrun_shards": 26,
+          "quickrun_shards": 10,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 25
+          "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -8935,8 +8935,9 @@
               "os": "Mac-12"
             }
           ],
+          "quickrun_shards": 16,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 18
         },
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },

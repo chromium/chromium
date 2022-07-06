@@ -300,8 +300,8 @@
               'gpu': None,
             },
           ],
-          'shards': 25,
-          'quickrun_shards': 26,
+          'shards': 12,
+          'quickrun_shards': 10,
         },
       },
       'Mac12 Tests (dbg)': {
@@ -573,6 +573,17 @@
         },
       },
       'Mac11 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 18,
+          'quickrun_shards': 16,
+        },
+      },
+      'Mac12 Tests': {
         'swarming': {
           'dimension_sets': [
             {

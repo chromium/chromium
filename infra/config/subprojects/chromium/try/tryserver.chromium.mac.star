@@ -59,7 +59,7 @@ try_.builder(
     name = "mac-inverse-fieldtrials-fyi-rel",
     mirrors = [
         "ci/Mac Builder",
-        "ci/Mac11 Tests",
+        "ci/Mac12 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
         "ci/Mac Retina Release (AMD)",
@@ -86,7 +86,7 @@ try_.orchestrator_builder(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Mac Builder",
-        "ci/Mac11 Tests",
+        "ci/Mac12 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
         "ci/Mac Retina Release (AMD)",
