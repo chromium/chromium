@@ -135,13 +135,19 @@ void AwRenderViewHostExt::DidStartNavigation(
 void AwRenderViewHostExt::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!navigation_handle->HasCommitted() ||
-      (!navigation_handle->IsInMainFrame() &&
-       !navigation_handle->HasSubframeNavigationEntryCommitted()))
+
+  if (!navigation_handle->HasCommitted())
     return;
 
-  AwBrowserContext::FromWebContents(web_contents())
-      ->AddVisitedURLs(navigation_handle->GetRedirectChain());
+  // Only record a visit if the navigation affects user-facing session history
+  // (i.e. it occurs in the primary frame tree).
+  if (navigation_handle->IsInPrimaryMainFrame() ||
+      (navigation_handle->GetParentFrame() &&
+       navigation_handle->GetParentFrame()->GetPage().IsPrimary() &&
+       navigation_handle->HasSubframeNavigationEntryCommitted())) {
+    AwBrowserContext::FromWebContents(web_contents())
+        ->AddVisitedURLs(navigation_handle->GetRedirectChain());
+  }
 }
 
 void AwRenderViewHostExt::OnPageScaleFactorChanged(float page_scale_factor) {
