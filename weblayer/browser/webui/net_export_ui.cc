@@ -45,26 +45,26 @@ class NetExportMessageHandler
 
   // content::WebUIMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         net_log::kEnableNotifyUIWithStateHandler,
         base::BindRepeating(&NetExportMessageHandler::OnEnableNotifyUIWithState,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         net_log::kStartNetLogHandler,
         base::BindRepeating(&NetExportMessageHandler::OnStartNetLog,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         net_log::kStopNetLogHandler,
         base::BindRepeating(&NetExportMessageHandler::OnStopNetLog,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         net_log::kSendNetLogHandler,
         base::BindRepeating(&NetExportMessageHandler::OnSendNetLog,
                             base::Unretained(this)));
   }
 
   // Messages
-  void OnEnableNotifyUIWithState(const base::ListValue* list) {
+  void OnEnableNotifyUIWithState(const base::Value::List& list) {
     AllowJavascript();
     if (!state_observation_manager_.IsObserving()) {
       state_observation_manager_.Observe(file_writer_.get());
@@ -72,9 +72,7 @@ class NetExportMessageHandler
     NotifyUIWithState(file_writer_->GetState());
   }
 
-  void OnStartNetLog(const base::ListValue* list) {
-    base::Value::ConstListView params = list->GetListDeprecated();
-
+  void OnStartNetLog(const base::Value::List& params) {
     // Determine the capture mode.
     if (!params.empty() && params[0].is_string()) {
       capture_mode_ = net_log::NetExportFileWriter::CaptureModeFromString(
@@ -88,9 +86,11 @@ class NetExportMessageHandler
     StartNetLog(base::FilePath());
   }
 
-  void OnStopNetLog(const base::ListValue* list) { file_writer_->StopNetLog(); }
+  void OnStopNetLog(const base::Value::List& list) {
+    file_writer_->StopNetLog();
+  }
 
-  void OnSendNetLog(const base::ListValue* list) {
+  void OnSendNetLog(const base::Value::List& list) {
     file_writer_->GetFilePathToCompletedLog(
         base::BindOnce(&NetExportMessageHandler::SendEmail));
   }
