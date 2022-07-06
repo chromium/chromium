@@ -2828,12 +2828,13 @@ void InspectorCSSAgent::BuildRulesMap(
     }
     if (css_rule->GetType() == CSSRule::kImportRule) {
       CSSImportRule* css_import_rule = DynamicTo<CSSImportRule>(css_rule.Get());
+      if (!css_import_rule->styleSheet())
+        continue;
       auto it = css_style_sheet_to_inspector_style_sheet_.find(
           const_cast<CSSStyleSheet*>(css_import_rule->styleSheet()));
       if (it == css_style_sheet_to_inspector_style_sheet_.end())
         continue;
       InspectorStyleSheet* imported_style_sheet = it->value;
-      CHECK_NE(imported_style_sheet, nullptr);
       BuildRulesMap(imported_style_sheet, rule_to_css_rule);
     }
   }
