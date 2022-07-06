@@ -28,9 +28,9 @@
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_image.h"
 
 namespace gl {
+class GLImage;
 class ProgressReporter;
 }
 
