@@ -12,6 +12,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
@@ -411,6 +412,83 @@ GREYLayoutConstraint* RightConstraint() {
   // . . . Recent Tabs, Bookmarks . . .
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::BookmarksDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::RecentTabsDestinationButton())];
+}
+
+// Tests the last immediately visible carousel destination can be promoted.
+//
+// When the new overflow menu is opened, the last immediately visible
+// destination should be part of group (B)—the "below-the-fold" destinations
+// list. This test verifies that this destination is correctly part of group (B)
+// initially, and, with enough usage, is promoted to group (A)—the
+// "above-the-fold" destinations.
+- (void)testLastImmediatelyVisibleDestinationPromotes {
+  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+
+  // 1st Downloads tap (no promotion expected after this tap)
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::DownloadsDestinationButton()];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+
+  // 2nd Downloads tap (no promotion expected after this tap)
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::DownloadsDestinationButton()];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
+
+  // 3rd Downloads tap (promotion expected after this tap!)
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::DownloadsDestinationButton()];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+
+  // . . . Downloads, History . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HistoryDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraintWithOverlap() ],
+                            chrome_test_util::DownloadsDestinationButton())];
+
+  // . . . History, Reading List . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ReadingListDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::HistoryDestinationButton())];
+  // . . . Reading List, Password Manager . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PasswordsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::ReadingListDestinationButton())];
+  // . . . Password Manager, Downloads . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::BookmarksDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::PasswordsDestinationButton())];
+  // . . . Bookmarks, Recent Tabs . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::RecentTabsDestinationButton()]
+      assertWithMatcher:grey_layout(
+                            @[ RightConstraint() ],
+                            chrome_test_util::BookmarksDestinationButton())];
+  // . . . Recent Tabs, Bookmarks . . .
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsDestinationButton()]
       assertWithMatcher:grey_layout(
                             @[ RightConstraintWithOverlap() ],
                             chrome_test_util::RecentTabsDestinationButton())];
