@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "ui/gl/gl_image.h"
 
 #include <dawn/native/OpenGLBackend.h>
 
