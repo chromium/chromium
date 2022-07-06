@@ -655,7 +655,7 @@ FileSystemContext::QuotaManagedStorageTypes() {
     // to call GetQuotaUtil() on backends. Unfortunately, the method assumes the
     // backends are initialized.
     if (storage_type == blink::mojom::StorageType::kUnknown ||
-        storage_type == blink::mojom::StorageType::kQuotaNotManaged) {
+        storage_type == blink::mojom::StorageType::kDeprecatedQuotaNotManaged) {
       continue;
     }
 

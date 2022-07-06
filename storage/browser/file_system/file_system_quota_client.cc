@@ -77,7 +77,7 @@ base::span<const FileSystemType> QuotaStorageTypeToFileSystemTypes(
       return kPersistent;
     case StorageType::kSyncable:
       return kSyncable;
-    case StorageType::kQuotaNotManaged:
+    case StorageType::kDeprecatedQuotaNotManaged:
     case StorageType::kUnknown:
       NOTREACHED();
       return {};

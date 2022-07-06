@@ -103,7 +103,7 @@ std::string StorageTypeEnumToString(StorageType type) {
       return "persistent";
     case StorageType::kSyncable:
       return "syncable";
-    case StorageType::kQuotaNotManaged:
+    case StorageType::kDeprecatedQuotaNotManaged:
       return "quota-not-managed";
     case StorageType::kUnknown:
       return "unknown";
@@ -1751,7 +1751,7 @@ bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,
   // quota must be capped by the server limit).
   if (type == StorageType::kSyncable)
     return false;
-  if (type == StorageType::kQuotaNotManaged)
+  if (type == StorageType::kDeprecatedQuotaNotManaged)
     return true;
   return special_storage_policy_.get() &&
          special_storage_policy_->IsStorageUnlimited(
@@ -1959,7 +1959,7 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
       return persistent_usage_tracker_.get();
     case StorageType::kSyncable:
       return syncable_usage_tracker_.get();
-    case StorageType::kQuotaNotManaged:
+    case StorageType::kDeprecatedQuotaNotManaged:
       return nullptr;
     case StorageType::kUnknown:
       NOTREACHED();
