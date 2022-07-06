@@ -292,6 +292,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1177149")
     public void testTabGridDialogAnimation() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
