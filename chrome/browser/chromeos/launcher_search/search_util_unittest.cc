@@ -36,12 +36,13 @@ TEST(SearchUtilTest, CreateAnswerResult) {
 
   SuggestionAnswer answer;
   std::string json =
-      "{ \"l\": ["
-      "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }], "
-      "              \"at\": { \"t\": \"additional one\", \"tt\": 42 } } }, "
-      "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }], "
-      "              \"at\": { \"t\": \"additional two\", \"tt\": 6 } } } "
-      "] }";
+      R"({ "l": [)"
+      R"(  { "il": { "t": [{ "t": "text one", "tt": 8 }],)"
+      R"(            "at": { "t": "additional one", "tt": 42 } } },)"
+      R"(  { "il": { "t": [{ "t": "text two", "tt": 5 }],)"
+      R"(            "at": { "t": "additional two", "tt": 6 },)"
+      R"(            "al": "a11y label" } })"
+      R"(] })";
   absl::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
   ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", &answer));
@@ -103,6 +104,59 @@ TEST(SearchUtilTest, CreateResult) {
   // The URL text class should be retained, but MATCH should be ignored.
   EXPECT_EQ(result->contents_type, mojom::SearchResult::TextType::kUrl);
   EXPECT_EQ(result->description_type, mojom::SearchResult::TextType::kUnset);
+}
+
+// Tests result conversion for a weather Omnibox result.
+TEST(SearchUtilTest, CreateWeatherResult) {
+  AutocompleteMatch match;
+  match.relevance = 1200;
+  match.destination_url = GURL("https://www.example.com.au/weather");
+  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
+  match.contents = u"Weather in Perth";
+  match.contents_class = {
+      ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
+
+  SuggestionAnswer answer;
+  const std::string json =
+      R"({ "l": [)"
+      R"(  { "il": { "t": [ { "t": "weather in perth", "tt": 8 } ] } },)"
+      R"(  {)"
+      R"(    "il": {)"
+      R"(      "al": "Sunny",)"
+      R"(      "at": { "t": "Perth WA, Australia", "tt": 19 },)"
+      R"(      "i": { "d": "//www.weather.com.au/sunny.png", "t": 3 },)"
+      R"(      "t": [ { "t": "16°C", "tt": 18 } ])"
+      R"(    })"
+      R"(  })"
+      R"(] })";
+  const absl::optional<base::Value> value = base::JSONReader::Read(json);
+  ASSERT_TRUE(value && value->is_dict());
+  ASSERT_TRUE(SuggestionAnswer::ParseAnswer(
+      value->GetDict(), /* The answer type for 'weather'. */ u"8", &answer));
+  match.answer = answer;
+
+  const auto result = CreateAnswerResult(match, nullptr, AutocompleteInput());
+  EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
+  EXPECT_EQ(result->relevance, 1200);
+  ASSERT_TRUE(result->destination_url.has_value());
+  EXPECT_EQ(result->destination_url.value(),
+            GURL("https://www.example.com.au/weather"));
+  EXPECT_EQ(result->is_omnibox_search,
+            mojom::SearchResult::OptionalBool::kTrue);
+  EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+
+  ASSERT_TRUE(result->contents.has_value());
+  EXPECT_EQ(result->contents.value(), u"Weather in Perth");
+  EXPECT_FALSE(result->additional_contents.has_value());
+  ASSERT_TRUE(result->description.has_value());
+  EXPECT_EQ(result->description.value(), u"16°C");
+  ASSERT_TRUE(result->additional_description.has_value());
+  EXPECT_EQ(result->additional_description.value(), u"Perth WA, Australia");
+  ASSERT_TRUE(result->description_a11y_label.has_value());
+  EXPECT_EQ(result->description_a11y_label.value(), u"Sunny");
+  ASSERT_TRUE(result->image_url.has_value());
+  EXPECT_EQ(result->image_url.value(),
+            GURL("https://www.weather.com.au/sunny.png"));
 }
 
 }  // namespace

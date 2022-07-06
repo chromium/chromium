@@ -175,8 +175,14 @@ SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
   result->is_answer = SearchResult::OptionalBool::kTrue;
   result->answer_type = MatchTypeToAnswerType(match.answer->type());
 
-  if (result->answer_type == SearchResult::AnswerType::kWeather)
+  if (result->answer_type == SearchResult::AnswerType::kWeather) {
     result->image_url = match.answer->image_url();
+
+    const std::u16string* a11y_label =
+        match.answer->second_line().accessibility_label();
+    if (a11y_label)
+      result->description_a11y_label = *a11y_label;
+  }
 
   result->contents = match.contents;
 

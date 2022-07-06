@@ -36,7 +36,7 @@ enum SearchResultType {
 };
 
 // Struct represents search result.
-// Next min ID: 19
+// Next min ID: 20
 [Stable]
 struct SearchResult {
   // Type of the result. Used to distinguish between different types of result.
@@ -75,6 +75,9 @@ struct SearchResult {
   url.mojom.Url? image_url@7;
   // Favicon of the result.
   gfx.mojom.ImageSkia? favicon@8;
+
+  // The accessibility label to use for the second image line, if one exists.
+  [MinVersion=3] mojo_base.mojom.String16? description_a11y_label@19;
 
   // The contents of the result. Used to display the result.
   mojo_base.mojom.String16? contents@9;
