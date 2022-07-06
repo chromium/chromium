@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectWallpaper, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {cancelPreviewWallpaper, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectWallpaper, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -714,69 +714,42 @@ suite('local images available but no internet connection', () => {
     personalizationStore.setReducersEnabled(true);
   });
 
-  test(
-      'error displays when fetch collections failed but local images loaded',
-      async () => {
-        loadTimeData.overrideValues({['wallpaperNetworkError']: 'someError'});
+  test('error displays when fetch collections failed', async () => {
+    loadTimeData.overrideValues({['networkError']: 'someError'});
 
-        // Set collections to null to simulate collections failure.
-        wallpaperProvider.setCollectionsToFail();
+    // Set collections to null to simulate collections failure.
+    wallpaperProvider.setCollectionsToFail();
 
-        // Assume that collections are loaded before local images.
-        const collectionsPromise =
-            fetchCollections(wallpaperProvider, personalizationStore);
-        const localImagesPromise =
-            getLocalImages(wallpaperProvider, personalizationStore);
+    // Assume that collections are loaded before local images.
+    const collectionsPromise =
+        fetchCollections(wallpaperProvider, personalizationStore);
 
-        await collectionsPromise;
+    await collectionsPromise;
 
-        assertFalse(personalizationStore.data.wallpaper.loading.collections);
-        assertEquals(
-            null, personalizationStore.data.wallpaper.backdrop.collections);
+    assertFalse(personalizationStore.data.wallpaper.loading.collections);
+    assertEquals(
+        null, personalizationStore.data.wallpaper.backdrop.collections);
 
-        await localImagesPromise;
+    assertDeepEquals(
+        [
+          {
+            name: 'set_collections',
+            collections: null,
+          },
+        ],
+        personalizationStore.actions,
+    );
 
-        assertFalse(personalizationStore.data.wallpaper.loading.local.images);
-        assertDeepEquals(
-            wallpaperProvider.localImages,
-            personalizationStore.data.wallpaper.local.images);
-
-        assertDeepEquals(
-            [
-              {
-                name: 'begin_load_local_images',
-              },
-              {
-                name: 'set_collections',
-                collections: null,
-              },
-              {name: 'set_local_images', images: wallpaperProvider.localImages},
-            ],
-            personalizationStore.actions,
-        );
-
-
-        assertDeepEquals(
-            [
-              // Begin load local images
-              {
-                'error': null,
-              },
-              // Set collections.
-              // Collections are completed loading with null value
-              // but local images are not yet done, no error displays.
-              {
-                'error': null,
-              },
-              // Set local images.
-              // Error displays once local images are loaded.
-              {
-                'error':
-                    {message: loadTimeData.getString('wallpaperNetworkError')},
-              },
-            ],
-            personalizationStore.states.map(filterAndFlattenState(['error'])));
-      });
+    assertDeepEquals(
+        [
+          // Set collections.
+          // Collections are completed loading with null value. Error displays.
+          {
+            'error': {message: loadTimeData.getString('networkError')},
+          },
+        ],
+        personalizationStore.states.map(filterAndFlattenState(['error'])));
+  });
 });
 
 suite('does not respond to re-selecting the current wallpaper', () => {

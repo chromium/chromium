@@ -51,7 +51,7 @@ function combineReducers<T>(mapping: {[K in keyof T]: ReducerFunction<T[K]>}): (
 
 function errorReducer(
     state: PersonalizationState['error'], action: Actions,
-    globalState: PersonalizationState): PersonalizationState['error'] {
+    _: PersonalizationState): PersonalizationState['error'] {
   switch (action.name) {
     case WallpaperActionName.END_SELECT_IMAGE:
       const {success} = action;
@@ -66,25 +66,13 @@ function errorReducer(
       }
       return state || {message: loadTimeData.getString('loadWallpaperError')};
     // Show network error toast if local images are available but online
-    // collections are failed to load. As local images and online collections
-    // are loaded asynchronously, we need to check the above condition for both
-    // SET_LOCAL_IMAGES and SET_COLLECTIONS actions.
-    case WallpaperActionName.SET_LOCAL_IMAGES:
-      const {images} = action;
-      if (isNonEmptyArray(images) &&
-          !globalState.wallpaper.loading.collections &&
-          !isNonEmptyArray(globalState.wallpaper.backdrop.collections)) {
-        return state ||
-            {message: loadTimeData.getString('wallpaperNetworkError')};
-      }
-      return state;
+    // collections are failed to load. As local images include at least
+    // the default image, we only need to check the status of online
+    // collections.
     case WallpaperActionName.SET_COLLECTIONS:
       const {collections} = action;
-      if (!globalState.wallpaper.loading.local.images &&
-          isNonEmptyArray(globalState.wallpaper.local.images) &&
-          !isNonEmptyArray(collections)) {
-        return state ||
-            {message: loadTimeData.getString('wallpaperNetworkError')};
+      if (!isNonEmptyArray(collections)) {
+        return state || {message: loadTimeData.getString('networkError')};
       }
       return state;
     case PersonalizationActionName.SET_ERROR:
