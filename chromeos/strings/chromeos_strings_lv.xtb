@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Izslēgt tumšo režīmu</translation>
 <translation id="1881188606372070653">Apmeklējiet <ph name="BEGIN_LINK1" />juridiskās palīdzības lapu<ph name="END_LINK1" />, lai pieprasītu satura izmaiņas juridisku iemeslu dēļ. Noteikta konta un sistēmas informācija var tikt nosūtīta uzņēmumam Google. Mēs izmantosim jūsu sniegto informāciju, lai novērstu tehniskas problēmas un uzlabotu savus pakalpojumus. Jūsu informācija tiks izmantota saskaņā ar mūsu <ph name="BEGIN_LINK2" />konfidencialitātes politiku<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Aparatūras pārskatījums</translation>
+<translation id="1904932688895783618">Tālāk ir norādīti daži citi noderīgi resursi.</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1908234395526491708">UDP pieprasījumu kļūmes</translation>
 <translation id="1932611479324127242">Atvienot akumulatoru</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
 <translation id="2016848882344942759">--bez baltās etiķetes--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Lai skatītu ekrānsaudzētāju, izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu.</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2085089206770112532">Samazināt displeja spilgtumu</translation>
 <translation id="2105810540595158374">Ierīce ir spēļu vadāmierīce.</translation>
@@ -773,6 +775,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7763470514545477072">Domēna sufiksa atbilstība</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
 <translation id="7784116172884276937">Neviens DNS serveris nav iestatīts</translation>
+<translation id="779591286616261875">Sūtīt jaunu ziņojumu</translation>
 <translation id="7799817062559422778">Gaišais režīms</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7805768142964895445">Statuss</translation>
@@ -925,6 +928,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>
 <translation id="9087578468327036362">Ziņot par šo vaicājumu</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
+<translation id="9092255287806472980">Jūsu atsauksmes palīdz uzlabot Chrome OS. Mūsu komanda tās pārskatīs. Tā kā mēs saņemam ļoti daudz ziņojumu, nevarēsim atbildēt uz tiem visiem.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Jums būs jāizjauc ierīce</translation>
 <translation id="9098156406873149060">Saglabāt lietotāja datus</translation>

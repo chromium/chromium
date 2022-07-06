@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Nonaktifkan mode gelap</translation>
 <translation id="1881188606372070653">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten atas alasan hukum. Beberapa informasi akun dan sistem dapat dikirimkan ke Google. Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan meningkatkan layanan kami, sesuai dengan <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
 <translation id="1887850431809612466">Revisi hardware</translation>
+<translation id="1904932688895783618">Berikut beberapa referensi berguna lainnya:</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1932611479324127242">Penonaktifan baterai internal</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Coba langkah-langkah pemecahan masalah</translation>
 <translation id="2016848882344942759">--tanpa white-label--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Hubungkan ke jaringan dan muat ulang halaman untuk melihat screensaver.</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2085089206770112532">Kurangi kecerahan layar</translation>
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
@@ -773,6 +775,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7763470514545477072">Kecocokan suffix domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
 <translation id="7784116172884276937">Tidak ada server DNS yang disiapkan</translation>
+<translation id="779591286616261875">Kirim laporan baru</translation>
 <translation id="7799817062559422778">Mode terang</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -925,6 +928,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>
 <translation id="9087578468327036362">Laporkan kueri ini</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
+<translation id="9092255287806472980">Masukan Anda membantu meningkatkan Chrome OS dan akan ditinjau oleh tim kami. Karena banyaknya jumlah laporan, kami tidak dapat mengirim balasan.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Anda harus membongkar perangkat</translation>
 <translation id="9098156406873149060">Pertahankan data pengguna</translation>

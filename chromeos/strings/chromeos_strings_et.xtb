@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Tumeda režiim väljalülitamine</translation>
 <translation id="1881188606372070653">Õiguslikel põhjustel sisumuudatuste taotlemiseks avage <ph name="BEGIN_LINK1" />leht Juriidiline abi<ph name="END_LINK1" />. Osa konto ja süsteemi teabest võidakse saata Google'ile. Kasutame teilt saadud teavet tehniliste probleemide lahendamiseks ning oma teenuste täiustamiseks kooskõlas meie <ph name="BEGIN_LINK2" />privaatsuseeskirjade<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />teenusetingimustega<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
+<translation id="1904932688895783618">Allpool on veel kasulikke allikaid</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
 <translation id="1932611479324127242">Aku ühenduse katkestamine</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Proovige neid veaotsingu toiminguid</translation>
 <translation id="2016848882344942759">--eemalda tähistamata toote märgistus--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Ekraanisäästja vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2085089206770112532">Ekraanikuva ereduse vähendamine</translation>
 <translation id="2105810540595158374">Seade on mängupult.</translation>
@@ -773,6 +775,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7763470514545477072">Domeenisufiksi vaste</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
 <translation id="7784116172884276937">Seadistatud pole ühtegi DNS-serverit</translation>
+<translation id="779591286616261875">Saada uus aruanne</translation>
 <translation id="7799817062559422778">Hele režiim</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
 <translation id="7805768142964895445">Olek</translation>
@@ -925,6 +928,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="9082718469794970195">Kasuta seda videot</translation>
 <translation id="9087578468327036362">Teatage sellest päringust</translation>
 <translation id="9088306295921699330">Praegune kasutus</translation>
+<translation id="9092255287806472980">Teie tagasiside aitab Chrome OS-i täiustada ja meie tiim vaatab selle üle. Kuna saame rohkelt teavitusi, ei saa me vastust saata.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Peate seadme lahti võtma</translation>
 <translation id="9098156406873149060">Säilita kasutaja andmed</translation>

@@ -152,6 +152,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1771761307086386028">Sgrolio i'r dde</translation>
 <translation id="1774796056689732716">Calendr, <ph name="CURRENT_MONTH_YEAR" />, mae <ph name="DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
 <translation id="1787955149152357925">Diffodd</translation>
+<translation id="1797271123677381264">Wedi anghofio'ch cyfrinair</translation>
 <translation id="181103072419391116">Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="1812997170047690955">Beth sydd ar fy sgrîn?</translation>
 <translation id="1823873187264960516">Ether-rwyd: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4481530544597605423">Dyfeisiau heb eu paru</translation>
 <translation id="4505050298327493054">Desg weithredol.</translation>
+<translation id="450584155212756404">Sianel Datblygwr</translation>
 <translation id="4513946894732546136">Adborth</translation>
 <translation id="4518404433291145981">I ddatgloi eich Chromebook, datglowch eich ffôn yn gyntaf</translation>
 <translation id="4527045527269911712">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru.</translation>
@@ -876,6 +878,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6062360702481658777">Byddwch yn cael eich allgofnodi yn awtomatig <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Wedi gorffen defnyddio'r ffeil</translation>
 <translation id="6073451960410192870">Stopio recordio</translation>
+<translation id="6074087755403037157">Sianel Beta</translation>
 <translation id="6099678161144790572">Golygwyd yn y mis diwethaf</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Wedi lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
@@ -1226,6 +1229,7 @@ Gosodiad newydd</translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8203795194971602413">De-glicio</translation>
 <translation id="8209010265547628927">Ailosod</translation>
+<translation id="8214996719228530800">Sianel Canary</translation>
 <translation id="8219451629189078428">Mae angen cadw'ch Chromebook ymlaen ac wedi'i gysylltu i'r pŵer am y cyfnod hwn. Gwnewch yn siŵr bod yr gwefrydd neu geblau'r addasydd wedi'u plygio i mewn, i'ch Chromebook yn ogystal ag i'r cyflenwad pŵer. Peidiwch â diffodd eich Chromebook.</translation>
 <translation id="8236042855478648955">Amser am egwyl</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />, Batri'r Ffôn <ph name="BATTERY_STATUS" /></translation>

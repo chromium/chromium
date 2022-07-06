@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Enska (bandarísk) með Dvorak-forritunarlyklaborði</translation>
 <translation id="1134697384939541955">Enska (bandarísk) með stækkuðu lyklaborði</translation>
+<translation id="1138691154716715755">Fyrr í þessum mánuði</translation>
 <translation id="1148097584170732637">Fann <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Ekki er nægt pláss á staðbundinni geymslu. <ph name="FILE_SIZE" /> nauðsynlegt til viðbótar.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, stjórnað af kerfisstjóra, upplýsingar</translation>
 <translation id="4387004326333427325">Sannvottunarvottorði hafnað fjartengt</translation>
 <translation id="4394214039309501350">Ytri tengill</translation>
+<translation id="4394980935660306080">Fyrr í þessari viku</translation>
 <translation id="4401287888955153199">Draga allt út</translation>
 <translation id="4410695710508688828">Útdráttaraðgerð mistókst. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Búðu til flýtileið fyrir skrárnar þínar</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Opnar „<ph name="PATH" />“</translation>
 <translation id="4720185134442950733">Farsímagagnanet</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> myndir afritaðar</translation>
+<translation id="4725096204469550614">Fyrr á þessu ári</translation>
 <translation id="4725511304875193254">Corgi-hundur</translation>
 <translation id="4737050008115666127">Lending</translation>
 <translation id="4747271164117300400">Makedónska</translation>

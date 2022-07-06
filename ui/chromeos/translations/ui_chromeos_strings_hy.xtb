@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Հանգուլ Ռոմաջա</translation>
 <translation id="112387589102719461">անգլերեն (ԱՄՆ)՝ Programmer Dvorak ստեղնաշարով</translation>
 <translation id="1134697384939541955">անգլերեն (ԱՄՆ)՝ ընդլայնված ստեղնաշարով</translation>
+<translation id="1138691154716715755">Այս ամսվա սկզբին</translation>
 <translation id="1148097584170732637">Գտնվել է <ph name="FILE_COUNT" /> ֆայլ։
     <ph name="LINE_BREAK1" />
     Սարքում բավարար տարածք չկա: Անհրաժեշտ է ևս <ph name="FILE_SIZE" />։
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="4387004326333427325">Իսկորոշման վկայագիրը մերժվել է հեռակա կարգով</translation>
 <translation id="4394214039309501350">Արտաքին հղում</translation>
+<translation id="4394980935660306080">Այս շաբաթվա սկզբին</translation>
 <translation id="4401287888955153199">Դուրս բերել բոլորը</translation>
 <translation id="4410695710508688828">Չհաջողվեց կատարել արտահանումը։ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Ստեղծեք դյուրանցում ձեր ֆայլերի համար</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">«<ph name="PATH" />» արխիվը բացվում է</translation>
 <translation id="4720185134442950733">Բջջային ցանց</translation>
 <translation id="4724850507808590449">Կրկնօրինակվեց <ph name="FILE_COUNT" /> լուսանկար</translation>
+<translation id="4725096204469550614">Այս տարվա սկզբին</translation>
 <translation id="4725511304875193254">Կորգի</translation>
 <translation id="4737050008115666127">Վայրէջք</translation>
 <translation id="4747271164117300400">մակեդոներեն</translation>

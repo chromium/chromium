@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">नारंगी</translation>
 <translation id="1198865190323699001">टच जेस्चर</translation>
 <translation id="1201402288615127009">अगला</translation>
+<translation id="1202112913213080585">रद्द करें</translation>
 <translation id="1206619573307042055">मार्की</translation>
 <translation id="1207086294218137981">आगे कोई लेवल 4 का शीर्षक नहीं है</translation>
 <translation id="1212770441379271564">अगले कुछ शॉर्टकट ChromeVox निर्देश नहीं हैं, लेकिन Chrome का ज़्यादा से ज़्यादा फ़ायदा उठाने के लिए वे बहुत ज़रूरी हैं.
@@ -43,6 +44,7 @@
 Chrome ब्राउज़र मेन्यू खोलने के लिए, Alt+F दबाएं.</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome को ध्‍वनि देना</translation>
 <translation id="1225969361094801578">गहरा स्लेटी</translation>
+<translation id="122928249241119550">पिछले वाक्य पर जाएं</translation>
 <translation id="1230503547248836149">यहां से चुनना शुरू करें</translation>
 <translation id="1236794971743289975">एंड नोट</translation>
 <translation id="1237797094773582699">इसी तरह, पिछले सेक्शन पर जाने के लिए, चार उंगलियों से दाईं से बाईं ओर स्वाइप कर सकते हैं. इसे अभी आज़माएं!</translation>
@@ -213,6 +215,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2435422727584637732">चमकीला नीला</translation>
 <translation id="2438712309510062123">सुझाएं</translation>
 <translation id="2450814015951372393">चेक बॉक्स</translation>
+<translation id="2450992626945324272">अगले वाक्य पर जाएं</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
 <translation id="2462626033734746142">रेडियो बटन समूह</translation>
 <translation id="2467741090055146971">चुने हुए का निशान हटाएं</translation>
@@ -489,6 +492,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="42164919740161077">हल्का स्लेटी नीला</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{डैश}one{# डैश}other{# डैश}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> से <ph name="END_PHRASE" /> तक चुनें</translation>
 <translation id="4221012616705981690">पहले से कोई सूची नहीं है</translation>
 <translation id="4225355998815256469">फ़ॉर्म सेटिंग</translation>
 <translation id="4230834257931120629">हल्का स्लेटी</translation>
@@ -759,6 +763,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">सूची बॉक्स या कॉम्‍बो बॉक्‍स</translation>
+<translation id="613344593214611552">पिछला वाक्य मिटाएं</translation>
 <translation id="6142308968191113180">शीर्षक 4</translation>
 <translation id="6150023170003443621">पीला हरा</translation>
 <translation id="6158882249329863701">पंक्ति <ph name="TABLECELLROWINDEX" /> कॉलम <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6186305613600865047">पेज में नीचे जाएं</translation>
 <translation id="6187190722927752226">नीला हरा</translation>
 <translation id="6197361807490522975">गहरा नीला</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> को <ph name="INSERT_PHRASE" /> से बदलें</translation>
 <translation id="6236061028292614533">अगला शीर्षक</translation>
 <translation id="6254901459154107917">बदलाव करने लायक अगला लेख क्षेत्र</translation>
 <translation id="6259464875943891919">बाहर निकल गए <ph name="TYPE" />.</translation>
@@ -921,6 +927,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7356610683936413584">जानकारी वाली सूची का ब्यौरा</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ऐम्परसेंड}one{# ऐम्परसेंड}other{# ऐम्परसेंड}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">पिछला वर्ण मिटाएं</translation>
 <translation id="738899727977260036">स्लेटी नीला</translation>
 <translation id="7393979322571982935">आवाज़ और सेटिंग</translation>
 <translation id="739763518212184081">पिछली लाइन</translation>
@@ -940,6 +947,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7533226154149229506">गोल्डन रॉड जैसा हल्का पीला रंग</translation>
 <translation id="7543255924852002459">लेबल खारिज करें</translation>
 <translation id="7552432549459840808">उपयोगी Chrome शॉर्टकट</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> से पहले <ph name="INSERT_PHRASE" /> डालें</translation>
 <translation id="7569983096843329377">काला</translation>
 <translation id="7579911500627256166">बिंदु <ph name="DOT" /></translation>
 <translation id="7592060599656252486">कुछ</translation>
@@ -963,6 +971,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7684431668231950609">लेख, यूआरएल में बदलाव करें</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">पिछला रेडियो बटन</translation>
+<translation id="7696631298608145306">अगले शब्द पर जाएं</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">अच्छी क्वालिटी वाली आवाज़</translation>
@@ -1070,6 +1079,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8455868257606149352">अधिकतम <ph name="X" /></translation>
 <translation id="84575901236241018">एक्सेस कुंजी है, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">व्याकरण की गड़बड़ी छोड़ी जा रही है</translation>
+<translation id="8465573210279050749">पिछला शब्द मिटाएं</translation>
 <translation id="847040613207937740">आगे कोई चेकबॉक्स नहीं है</translation>
 <translation id="8473540203671727883">माउस के नीचे वाला टेक्स्ट बोलें</translation>
 <translation id="8476408756881832830">जब ChromeVox बोल रहा हो, तब प्लेबैक रोकें</translation>
@@ -1106,6 +1116,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}one{# लम्बवत पाइप}other{# लम्बवत पाइप}}</translation>
 <translation id="8741370088760768424">ध्यान दें: मौजूदा आइटम को चालू करने के लिए, खोज बटन और स्पेसबार दबाएं.</translation>
 <translation id="8743786158317878347">संरचित सामग्री, जैसे तालिकाएं डालें</translation>
+<translation id="8746846427395705317">पिछले शब्द पर जाएं</translation>
 <translation id="8747966237988593539">क्रमित सूची</translation>
 <translation id="8749988712346667988">चांदी जैसा रंग</translation>
 <translation id="875769700429317857">डाउनलोड पूरा हुआ <ph name="FILE_NAME" /></translation>
@@ -1133,6 +1144,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8970172509886453271">पहले से कोई सेक्शन नहीं है</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> मिटाएं</translation>
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8989104346085848538">ChromeVox को बोलने से रोकने के लिए, Control बटन दबाएं.</translation>
 <translation id="8993737615451556423">इनकी मदद से आप पढ़ने की आवाज़ को तेज़ और कम कर सकते हैं. साथ ही, रोक सकते हैं</translation>

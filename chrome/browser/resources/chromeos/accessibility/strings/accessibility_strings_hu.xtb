@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">Narancssárga</translation>
 <translation id="1198865190323699001">Érintéses kézmozdulatok</translation>
 <translation id="1201402288615127009">Tovább</translation>
+<translation id="1202112913213080585">mégse</translation>
 <translation id="1206619573307042055">fényújság</translation>
 <translation id="1207086294218137981">Nincs következő 4. szintű címsor</translation>
 <translation id="1212770441379271564">A következő néhány billentyűparancs nem ChromeVox-parancs, de nagyon hasznosak, ha a lehető legtöbbet szeretné kihozni a Chrome-ból.
@@ -43,6 +44,7 @@
     A Chrome böngésző menüjének megnyitásához nyomja le az Alt + F billentyűkombinációt.</translation>
 <translation id="1213216066620407844">ChromeVox – A Chrome megszólaltatása</translation>
 <translation id="1225969361094801578">Sötét palaszürke</translation>
+<translation id="122928249241119550">ugrás az előző mondathoz</translation>
 <translation id="1230503547248836149">Kijelölés kezdete</translation>
 <translation id="1236794971743289975">Záró jegyzet</translation>
 <translation id="1237797094773582699">Ehhez hasonlóan, ha jobbról balra csúsztat négy ujjal, az előző szakaszhoz léphet. Próbálja ki most!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">Dodger-kék</translation>
 <translation id="2438712309510062123">Javaslat</translation>
 <translation id="2450814015951372393">Jelölőnégyzet</translation>
+<translation id="2450992626945324272">ugrás a következő mondathoz</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2462626033734746142">Választógombcsoport</translation>
 <translation id="2467741090055146971">kijelölés megszüntetése</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">Kadétkék</translation>
 <translation id="4217571870635786043">Diktálás</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{kötőjel}other{# kötőjel}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> és <ph name="END_PHRASE" /> közötti választás</translation>
 <translation id="4221012616705981690">Nincs előző lista</translation>
 <translation id="4225355998815256469">Űrlapvezérlők</translation>
 <translation id="4230834257931120629">Világos palaszürke</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">felkeresett</translation>
 <translation id="6122013438240733403">gmb</translation>
 <translation id="6132506484792346370">Listamező vagy kombinált mező</translation>
+<translation id="613344593214611552">az előző mondat törlése</translation>
 <translation id="6142308968191113180">4-es címsor</translation>
 <translation id="6150023170003443621">Sárgászöld</translation>
 <translation id="6158882249329863701">sor <ph name="TABLECELLROWINDEX" /> oszlop <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">Ugrás az oldal aljára</translation>
 <translation id="6187190722927752226">Akvamarin</translation>
 <translation id="6197361807490522975">Sötétkék</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> cseréje a következőre: <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Következő fejléc</translation>
 <translation id="6254901459154107917">Következő szerkeszthető szövegterület</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> bezárva.</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">Leíráslista adatai</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ÉS jel}other{# ÉS jel}}</translation>
 <translation id="737396357417333429">kattintható</translation>
+<translation id="7388656272362719103">az előző karakter törlése</translation>
 <translation id="738899727977260036">Palakék</translation>
 <translation id="7393979322571982935">Hangok és beállítások</translation>
 <translation id="739763518212184081">Előző sor</translation>
@@ -940,6 +947,7 @@
 <translation id="7533226154149229506">Világos aranyvesszősárga</translation>
 <translation id="7543255924852002459">Címke elvetése</translation>
 <translation id="7552432549459840808">Hasznos Chrome-billentyűparancsok</translation>
+<translation id="7553679324939294712"><ph name="INSERT_PHRASE" /> beszúrása a következő elé: <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">Fekete</translation>
 <translation id="7579911500627256166"><ph name="DOT" /> pont</translation>
 <translation id="7592060599656252486">Néhány</translation>
@@ -963,6 +971,7 @@
 <translation id="7684431668231950609">Szövegszerkesztés, URL-bevitel</translation>
 <translation id="7685589220304187312">eszközsor</translation>
 <translation id="7693840228159394336">Előző választógomb</translation>
+<translation id="7696631298608145306">ugrás a következő szóhoz</translation>
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7701196182766842984">automatikus kiegészítés lista</translation>
 <translation id="7713139339518499741">Természetes hang</translation>
@@ -1070,6 +1079,7 @@
 <translation id="8455868257606149352">Max <ph name="X" /></translation>
 <translation id="84575901236241018">hozzáférési kulccsal rendelkezik: <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Nyelvhelyességi hiba elhagyása</translation>
+<translation id="8465573210279050749">az előző szó törlése</translation>
 <translation id="847040613207937740">Nincs következő jelölőnégyzet</translation>
 <translation id="8473540203671727883">Kurzor alatti szöveg felolvasása</translation>
 <translation id="8476408756881832830">Lejátszás szüneteltetése, amikor a ChromeVox beszél</translation>
@@ -1106,6 +1116,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{függőleges vonal}other{# függőleges vonal karakter}}</translation>
 <translation id="8741370088760768424">Tipp: Az aktuális elem aktiváláshoz nyomja le a Keresés + Szóköz billentyűparancsot.</translation>
 <translation id="8743786158317878347">belépés a strukturált tartalmakba, például táblázatokba</translation>
+<translation id="8746846427395705317">ugrás az előző szóhoz</translation>
 <translation id="8747966237988593539">Rendezett lista</translation>
 <translation id="8749988712346667988">Ezüst</translation>
 <translation id="875769700429317857">A következő letöltése befejeződött: <ph name="FILE_NAME" /></translation>
@@ -1133,6 +1144,7 @@
 <translation id="8970172509886453271">Nincs előző szakasz</translation>
 <translation id="89720367119469899">Vezérlő</translation>
 <translation id="8978496506222343566">helyi súgó</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> törlése</translation>
 <translation id="8986362086234534611">Elfelejt</translation>
 <translation id="8989104346085848538">Az aktuális ChromeVox-beszéd leállításához nyomja le a Control billentyűt.</translation>
 <translation id="8993737615451556423">Vezérlőket biztosít az olvasás hangjának gyorsításához, lassításához és szüneteltetéséhez</translation>

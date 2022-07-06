@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="1198865190323699001">Lietimo gestai</translation>
 <translation id="1201402288615127009">Kitas</translation>
+<translation id="1202112913213080585">atšaukti</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Nėra kitos 4 lygio antraštės</translation>
 <translation id="1212770441379271564">Toliau nurodyti keli spartieji klavišai nėra „ChromeVox“ komandos, bet jie vis tiek labai naudingi norint išnaudoti visas „Chrome“ galimybes.
@@ -43,6 +44,7 @@
     Jei norite atidaryti „Chrome“ naršyklės meniu, paspauskite „Alt“ ir F.</translation>
 <translation id="1213216066620407844">„ChromeVox“ suteikia „Chrome“ balsą</translation>
 <translation id="1225969361094801578">Tamsiai pilka spalva su melsvu atspalviu</translation>
+<translation id="122928249241119550">pereiti prie ankstesnio sakinio</translation>
 <translation id="1230503547248836149">Pasirinkimo pradžia</translation>
 <translation id="1236794971743289975">Išnaša</translation>
 <translation id="1237797094773582699">Panašiai, perbraukus keturiais pirštais iš dešinės į kairę, galima pereiti į ankstesnę skiltį. Išbandykite dabar!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">Sodri šviesiai mėlyna spalva</translation>
 <translation id="2438712309510062123">Siūlyti</translation>
 <translation id="2450814015951372393">Žymimasis laukelis</translation>
+<translation id="2450992626945324272">pereiti prie kito sakinio</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2462626033734746142">Akučių grupė</translation>
 <translation id="2467741090055146971">atšaukti pasirinkimą</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">Pilkšvai melsva spalva</translation>
 <translation id="4217571870635786043">Diktavimas</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{brūkšnys}one{# brūkšnys}few{# brūkšniai}many{# dashes}other{# brūkšnių}}</translation>
+<translation id="4220024144662591089">pasirinkti nuo „<ph name="START_PHRASE" />“ iki „<ph name="END_PHRASE" />“</translation>
 <translation id="4221012616705981690">Nėra ankstesnio sąrašo</translation>
 <translation id="4225355998815256469">Formos valdikliai</translation>
 <translation id="4230834257931120629">Šviesiai pilka spalva su melsvu atspalviu</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Sąrašo laukelis arba jungtinis laukelis</translation>
+<translation id="613344593214611552">ištrinti ankstesnį sakinį</translation>
 <translation id="6142308968191113180">4 antraštė</translation>
 <translation id="6150023170003443621">Gelsvai žalia spalva</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" /> eilutė, <ph name="TABLECELLCOLUMNINDEX" /> stulpelis</translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">Pereinama į puslapio apačią</translation>
 <translation id="6187190722927752226">Žalsvai melsva spalva</translation>
 <translation id="6197361807490522975">Tamsiai mėlyna spalva</translation>
+<translation id="6218813441317556731">pakeisti „<ph name="DELETE_PHRASE" />“ į „<ph name="INSERT_PHRASE" />“</translation>
 <translation id="6236061028292614533">Kita antraštė</translation>
 <translation id="6254901459154107917">Kita teksto sritis, kurią galima redaguoti</translation>
 <translation id="6259464875943891919">Išeita iš <ph name="TYPE" />.</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">Išsami aprašų sąrašo informacija</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersendas}one{# ampersendas}few{# ampersendai}many{# ampersands}other{# ampersendų}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">ištrinti ankstesnį simbolį</translation>
 <translation id="738899727977260036">Mėlyna spalva su pilkšvu atspalviu</translation>
 <translation id="7393979322571982935">Garsai ir nustatymai</translation>
 <translation id="739763518212184081">Ankstesnė linija</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">Blyški gelsva spalva</translation>
 <translation id="7543255924852002459">Atmesti etiketę</translation>
 <translation id="7552432549459840808">Naudingi „Chrome“ spartieji klavišai</translation>
+<translation id="7553679324939294712">įterpti „<ph name="INSERT_PHRASE" />“ prieš „<ph name="BEFORE_PHRASE" />“</translation>
 <translation id="7569983096843329377">Juoda</translation>
 <translation id="7579911500627256166">Taškas: <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Kai kurie</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">Teksto redagavimas, URL įrašas</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Ankstesnė akutė</translation>
+<translation id="7696631298608145306">pereiti prie kito žodžio</translation>
 <translation id="7701040980221191251">Nėra</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Natūralus balsas</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">Maks. <ph name="X" /></translation>
 <translation id="84575901236241018">turi prieigos klavišą, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Palikta gramatikos klaida</translation>
+<translation id="8465573210279050749">ištrinti ankstesnį žodį</translation>
 <translation id="847040613207937740">Nėra kito žymimojo laukelio</translation>
 <translation id="8473540203671727883">Įvesti sakomą tekstą ties pelės žymekliu</translation>
 <translation id="8476408756881832830">Pristabdyti atkūrimą, kai kalba „ChromeVox“</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{statusis brūkšnys}one{# statusis brūkšnys}few{# statieji brūkšniai}many{# vertical pipes}other{# stačiųjų brūkšnių}}</translation>
 <translation id="8741370088760768424">Užuomina: paspauskite paieškos ir tarpo klavišus, kad suaktyvintumėte dabartinį elementą.</translation>
 <translation id="8743786158317878347">įveskite struktūrinį turinį, pvz., lenteles</translation>
+<translation id="8746846427395705317">pereiti prie ankstesnio žodžio</translation>
 <translation id="8747966237988593539">Rūšiuotas sąrašas</translation>
 <translation id="8749988712346667988">Sidabrinė spalva</translation>
 <translation id="875769700429317857">„<ph name="FILE_NAME" />“ atsisiuntimas baigtas</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">Nėra ankstesnės skilties</translation>
 <translation id="89720367119469899">Grįžimo klavišas</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">ištrinti <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8989104346085848538">Jei norite sustabdyti bet kurią dabartinę „ChromeVox“ kalbą, paspauskite klavišą „Control“.</translation>
 <translation id="8993737615451556423">Teikiami skaitymo balsu spartinimo, lėtinimo ir pristabdymo valdikliai</translation>

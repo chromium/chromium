@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Programmer Dvorak klavye ile İngilizce (ABD)</translation>
 <translation id="1134697384939541955">Genişletilmiş klavye ile İngilizce (ABD)</translation>
+<translation id="1138691154716715755">Bu ayın başlarında</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> bulundu.
     <ph name="LINE_BREAK1" />
     Yerel depolama alanında yeterli boş alan yok. İlave <ph name="FILE_SIZE" /> boş alan gerek.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından Yönetiliyor, Ayrıntılar</translation>
 <translation id="4387004326333427325">Kimlik doğrulama sertifikası uzaktan reddedildi</translation>
 <translation id="4394214039309501350">Harici bağlantı</translation>
+<translation id="4394980935660306080">Bu haftanın başlarında</translation>
 <translation id="4401287888955153199">Tümünü çıkar</translation>
 <translation id="4410695710508688828">Çıkarma işlemi gerçekleştirilemedi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Dosyalarınız için kısayol oluşturun</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" açılıyor</translation>
 <translation id="4720185134442950733">Mobil veri ağı</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotoğraf yedeklendi</translation>
+<translation id="4725096204469550614">Bu yılın başlarında</translation>
 <translation id="4725511304875193254">Korgi</translation>
 <translation id="4737050008115666127">İniş</translation>
 <translation id="4747271164117300400">Makedonca</translation>

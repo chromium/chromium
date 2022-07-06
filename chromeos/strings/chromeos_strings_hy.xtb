@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
 <translation id="1881188606372070653">Իրավական հիմքերով բովանդակության փոփոխություն պահանջելու համար անցեք <ph name="BEGIN_LINK1" />Իրավական հարցերով օգնության էջ<ph name="END_LINK1" />։ Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Ձեր տրամադրած տեղեկությունները կօգտագործվեն տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ մեր <ph name="BEGIN_LINK2" />Գաղտնիության քաղաքականության<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Օգտագործման պայմանների<ph name="END_LINK3" /> համաձայն։</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
+<translation id="1904932688895783618">Ահա մի քանի այլ օգտակար ռեսուրսներ՝</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
 <translation id="1932611479324127242">Անջատել մարտկոցը</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Փորձել վերացնել անսարքությունները</translation>
 <translation id="2016848882344942759">--առանց վաճառողի ապրանքանիշի--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ էկրանապահը դիտելու համար։</translation>
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2085089206770112532">Էկրանի պայծառության նվազեցում</translation>
 <translation id="2105810540595158374">Սարքը խաղային վահանակ է։</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7784116172884276937">DNS սերվերներ կարգավորված չեն</translation>
+<translation id="779591286616261875">Ուղարկել նոր հաղորդում</translation>
 <translation id="7799817062559422778">Բաց ռեժիմ</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">Օգտագործել այս տեսանյութը</translation>
 <translation id="9087578468327036362">Հաղորդել այս հարցման մասին</translation>
 <translation id="9088306295921699330">Օգտագործված տարածքը</translation>
+<translation id="9092255287806472980">Ձեր կարծիքն օգնում է բարելավել Chrome OS-ը և հաշվի կառնվի մեր թիմի կողմից։ Հաղորդումների մեծ քանակի պատճառով մենք չենք կարողանա պատասխան ուղարկել։</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="90977145661420967">Հարկավոր է կազմատել սարքը</translation>
 <translation id="9098156406873149060">Պահպանել օգտատիրոջ տվյալները</translation>

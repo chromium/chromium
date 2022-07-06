@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">හැන්ගුල් රෝමජා</translation>
 <translation id="112387589102719461">ක්‍රමලේඛන Dvorak යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="1134697384939541955">පුළුල් කරන ලද යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ)</translation>
+<translation id="1138691154716715755">මෙම මාසයේ මුල</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> හමු විය.
     <ph name="LINE_BREAK1" />
     ස්ථානීය ගබඩාවේ ප්‍රමාණවත් ඉඩක් නොමැත. අතිරේක <ph name="FILE_SIZE" /> අවශ්‍යයි.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="4387004326333427325">අවසරදීම් සහතිකය දුරස්ථව පිළිකෙව් විය</translation>
 <translation id="4394214039309501350">බාහිර සබැඳිය</translation>
+<translation id="4394980935660306080">මෙම සතියේ මුල</translation>
 <translation id="4401287888955153199">සියල්ල උපුටා ගන්න</translation>
 <translation id="4410695710508688828">උපුටා ගැනීමේ මෙහෙයුම අසාර්ථක විය. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ඔබගේ ගොනු සඳහා කෙටි මඟක් තනන්න</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" විවෘත කරමින්</translation>
 <translation id="4720185134442950733">ජංගම දත්ත ජාලය</translation>
 <translation id="4724850507808590449">ඡායාරූප <ph name="FILE_COUNT" /> ක් උපස්ථ කරන ලදි</translation>
+<translation id="4725096204469550614">මෙම වසරේ මුල</translation>
 <translation id="4725511304875193254">කොර්ගි</translation>
 <translation id="4737050008115666127">ගොඩබෑම</translation>
 <translation id="4747271164117300400">මැසිඩෝනියානු</translation>

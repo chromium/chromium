@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ഹംഗുൽ റോമജ</translation>
 <translation id="112387589102719461">Programmer Dvorak കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="1134697384939541955">Extended കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
+<translation id="1138691154716715755">ഈ മാസത്തിന്റെ ആദ്യം</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> കണ്ടെത്തി.
     <ph name="LINE_BREAK1" />
     ലോക്കൽ സ്‌‌റ്റോറേജിൽ മതിയായ ഇടം ലഭ്യമല്ല. അധികമായി <ph name="FILE_SIZE" /> ആവശ്യമാണ്.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, വിശദാംശങ്ങൾ</translation>
 <translation id="4387004326333427325">പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് വിദൂരമായി നിരസിച്ചു</translation>
 <translation id="4394214039309501350">ബാഹ്യ ലിങ്ക്</translation>
+<translation id="4394980935660306080">ഈ ആഴ്‌ചയുടെ ആദ്യം</translation>
 <translation id="4401287888955153199">എല്ലാം എക്‌സ്ട്രാക്റ്റ് ചെയ്യുക</translation>
 <translation id="4410695710508688828">എക്സ്ട്രാക്റ്റ് ചെയ്യാനായില്ല. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">നിങ്ങളുടെ ഫയലുകൾക്കുള്ള കുറുക്കുവഴി സൃഷ്ടിക്കുക</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" തുറക്കുന്നു</translation>
 <translation id="4720185134442950733">മൊബൈൽ ഡാറ്റ നെറ്റ്‌വർക്ക്</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ഫോട്ടോകൾ ബാക്കപ്പുചെയ്‌തു</translation>
+<translation id="4725096204469550614">ഈ വർഷത്തിന്റെ ആദ്യം</translation>
 <translation id="4725511304875193254">പട്ടിക്കുട്ടി</translation>
 <translation id="4737050008115666127">ലാൻഡിംഗ്</translation>
 <translation id="4747271164117300400">മാസിഡോണിയൻ</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ നീക്കുന്നു</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5098629044894065541">ഹീബ്രു</translation>
+<translation id="5102922915594634436">സമന്വയിപ്പിച്ച ഫോൾഡറുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5109254780565519649">ഒരു പിശക് സംഭവിച്ചു. ചില ഇനങ്ങൾ പുനഃസ്ഥാപിച്ചിരിക്കാനിടയില്ല.</translation>
 <translation id="5110329002213341433">ഇംഗ്ലീഷ് (കാനഡ)</translation>
 <translation id="5123433949759960244">ബാസ്ക്കറ്റ്ബോൾ</translation>

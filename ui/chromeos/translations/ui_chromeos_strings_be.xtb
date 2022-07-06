@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Карэйскі алфавіт (хангыль), рэжым Romaja</translation>
 <translation id="112387589102719461">Англійская (ЗША) з раскладкай Дворака для праграмістаў</translation>
 <translation id="1134697384939541955">Англійская (ЗША) з пашыранай клавіятурай</translation>
+<translation id="1138691154716715755">Раней у гэтым месяцы</translation>
 <translation id="1148097584170732637">Знойдзена <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Не хапае месца ў лакальным сховішчы. Патрабуецца яшчэ <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="4387004326333427325">Сертыфікат аўтэнтыфікацыі адхілены аддалена</translation>
 <translation id="4394214039309501350">Знешняя спасылка</translation>
+<translation id="4394980935660306080">Раней на гэтым тыдні</translation>
 <translation id="4401287888955153199">Выняць усё</translation>
 <translation id="4410695710508688828">Збой вымання. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Стварайце ярлыкі для файлаў</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Ідзе адкрыццё архіва "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Сетка мабільнай перадачы даных</translation>
 <translation id="4724850507808590449">Створана рэзервовая копія фота ў колькасці <ph name="FILE_COUNT" /></translation>
+<translation id="4725096204469550614">Раней у гэтым годзе</translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4737050008115666127">Пасадачная паласа</translation>
 <translation id="4747271164117300400">Македонская</translation>
@@ -705,6 +708,7 @@
 <translation id="7075931588889865715">Тайская (раскладка TIS 820-2531)</translation>
 <translation id="708278670402572152">Каб уключыць пошук, адключыцеся</translation>
 <translation id="7086590977277044826">Тамільская (з раскладкай InScript)</translation>
+<translation id="7088615885725309056">Раней</translation>
 <translation id="7103992300314999525">Македонская</translation>
 <translation id="7106346894903675391">Купіце больш месца ў сховішчы...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;пошук на Дыску&lt;/em&gt;</translation>

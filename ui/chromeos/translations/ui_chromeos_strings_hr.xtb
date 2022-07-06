@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">hangul romaja</translation>
 <translation id="112387589102719461">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
 <translation id="1134697384939541955">engleski (US) s proširenom tipkovnicom</translation>
+<translation id="1138691154716715755">Prethodno ovog mjeseca</translation>
 <translation id="1148097584170732637">Pronađene su datoteke (ukupno <ph name="FILE_COUNT" />).
     <ph name="LINE_BREAK1" />
     U lokalnoj pohrani nema dovoljno prostora. Potrebno je još <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
 <translation id="4387004326333427325">Certifikat za autentifikaciju odbijen je daljinski</translation>
 <translation id="4394214039309501350">Vanjska veza</translation>
+<translation id="4394980935660306080">Prethodno ovog tjedna</translation>
 <translation id="4401287888955153199">Izdvoji sve</translation>
 <translation id="4410695710508688828">Operacija izdvajanja nije uspjela. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Izradite prečac za svoje datoteke</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Otvara se dokument "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Mobilna podatkovna mreža</translation>
 <translation id="4724850507808590449">Izrađene su sigurnosne kopije fotografija (ukupno <ph name="FILE_COUNT" />)</translation>
+<translation id="4725096204469550614">Prethodno ove godine</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Slijetanje</translation>
 <translation id="4747271164117300400">makedonski</translation>

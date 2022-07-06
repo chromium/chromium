@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">hangul romaja</translation>
 <translation id="112387589102719461">Angielski (USA) z klawiaturą programisty Dvoraka</translation>
 <translation id="1134697384939541955">Angielski (USA) z klawiaturą rozszerzoną</translation>
+<translation id="1138691154716715755">Wcześniej w tym miesiącu</translation>
 <translation id="1148097584170732637">Znaleziono <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     W pamięci lokalnej jest za mało miejsca. Potrzeba jeszcze <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="4387004326333427325">Certyfikat uwierzytelniania został odrzucony zdalnie</translation>
 <translation id="4394214039309501350">Link zewnętrzny</translation>
+<translation id="4394980935660306080">Wcześniej w tym tygodniu</translation>
 <translation id="4401287888955153199">Wyodrębnij wszystko</translation>
 <translation id="4410695710508688828">Operacja wyodrębnienia zakończona niepowodzeniem. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Utwórz skrót do swoich plików</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Otwieram plik „<ph name="PATH" />”</translation>
 <translation id="4720185134442950733">Sieć mobilnej transmisji danych</translation>
 <translation id="4724850507808590449">Kopie zapasowe <ph name="FILE_COUNT" /> zdjęć zostały utworzone</translation>
+<translation id="4725096204469550614">Wcześniej w tym roku</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Lądowanie</translation>
 <translation id="4747271164117300400">Macedoński</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">Przenoszę elementy (<ph name="NUMBER_OF_ITEMS" />) do folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
 <translation id="5098629044894065541">Hebrajski</translation>
+<translation id="5102922915594634436">Zarządzaj zsynchronizowanymi folderami</translation>
 <translation id="5109254780565519649">Wystąpił błąd. Niektóre elementy mogły nie zostać przywrócone.</translation>
 <translation id="5110329002213341433">Angielski (Kanada)</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>

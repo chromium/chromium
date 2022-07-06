@@ -123,6 +123,7 @@
 <translation id="188114911237521550">어두운 모드 사용 중지</translation>
 <translation id="1881188606372070653">법적인 이유로 콘텐츠 변경을 요청하려면 <ph name="BEGIN_LINK1" />법률 도움말 페이지<ph name="END_LINK1" />로 이동하세요. 일부 계정 및 시스템 정보가 Google로 전송될 수 있습니다. 제공하신 정보는 기술적인 문제를 해결하고 서비스를 개선하는 데 사용되며, <ph name="BEGIN_LINK2" />개인정보처리방침<ph name="END_LINK2" /> 및 <ph name="BEGIN_LINK3" />서비스 약관<ph name="END_LINK3" />이 적용됩니다.</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
+<translation id="1904932688895783618">다음은 몇 가지 유용한 리소스입니다.</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
 <translation id="1932611479324127242">배터리 사용 차단</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
 <translation id="2016848882344942759">--허용 목록 라벨 없음--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">화면 보호기를 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
 <translation id="2105810540595158374">게임 컨트롤러 기기입니다.</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
 <translation id="7784116172884276937">DNS 서버가 설정되어 있지 않습니다.</translation>
+<translation id="779591286616261875">신규 보고서 보내기</translation>
 <translation id="7799817062559422778">밝은 모드</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7805768142964895445">상태</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">이 동영상 사용</translation>
 <translation id="9087578468327036362">쿼리 보고</translation>
 <translation id="9088306295921699330">현재 사용량</translation>
+<translation id="9092255287806472980">여러분의 의견은 Google팀에서 검토한 후 Chrome OS를 개선하는 데 사용됩니다. 접수되는 의견이 많아 직접 답변해 드리기는 어렵습니다.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">기기를 분해해야 합니다</translation>
 <translation id="9098156406873149060">사용자 데이터 유지</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangils (Romaja)</translation>
 <translation id="112387589102719461">Angļu (ASV), ar Dvorak tastatūru programmētājiem</translation>
 <translation id="1134697384939541955">Angļu (ASV), ar paplašināto tastatūru</translation>
+<translation id="1138691154716715755">Iepriekš šajā mēnesī</translation>
 <translation id="1148097584170732637">Atrasts: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Vietējā krātuvē nav pietiekami daudz vietas. Nepieciešama papildu vieta: <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators, informācija</translation>
 <translation id="4387004326333427325">Autentifikācijas sertifikāts tika attāli noraidīts.</translation>
 <translation id="4394214039309501350">Ārējā saite</translation>
+<translation id="4394980935660306080">Iepriekš šajā nedēļā</translation>
 <translation id="4401287888955153199">Izgūt visu</translation>
 <translation id="4410695710508688828">Izgūšana neizdevās. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Izveidojiet saīsni uz saviem failiem</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Notiek dokumenta “<ph name="PATH" />” atvēršana</translation>
 <translation id="4720185134442950733">Mobilo datu tīkls</translation>
 <translation id="4724850507808590449">Dublēti <ph name="FILE_COUNT" /> fotoattēli</translation>
+<translation id="4725096204469550614">Iepriekš šajā gadā</translation>
 <translation id="4725511304875193254">Korgijs</translation>
 <translation id="4737050008115666127">Ielidošana</translation>
 <translation id="4747271164117300400">Maķedoniešu</translation>

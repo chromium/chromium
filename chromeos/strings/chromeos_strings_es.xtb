@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Desactivar modo Oscuro</translation>
 <translation id="1881188606372070653">Ve a la <ph name="BEGIN_LINK1" />página de ayuda jurídica<ph name="END_LINK1" /> para solicitar cambios en el contenido por motivos legales. Algunos datos de tu cuenta y tu sistema podrían enviarse a Google. Utilizaremos la información que nos facilites para solucionar problemas técnicos y mejorar nuestros servicios de acuerdo con lo especificado en nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y en los <ph name="BEGIN_LINK3" />Términos del Servicio<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
+<translation id="1904932688895783618">Aquí tienes otros recursos útiles:</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
 <translation id="1932611479324127242">Desconexión de batería</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Sigue los pasos para solucionar el problema</translation>
 <translation id="2016848882344942759">--sin marca blanca--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Conéctate a una red y vuelve a cargar la página para ver el salvapantallas.</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2085089206770112532">Reducir el brillo de la pantalla</translation>
 <translation id="2105810540595158374">El dispositivo es un mando de juegos.</translation>
@@ -772,6 +774,7 @@
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
 <translation id="7784116172884276937">No hay servidores DNS configurados</translation>
+<translation id="779591286616261875">Enviar nuevo informe</translation>
 <translation id="7799817062559422778">Modo Claro</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -924,6 +927,7 @@
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Uso actual</translation>
+<translation id="9092255287806472980">Tus comentarios ayudan a mejorar Chrome OS y nuestro equipo los revisará. Recibimos muchos informes, por lo que no podremos enviarte una respuesta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Tendrás que desmontar el dispositivo</translation>
 <translation id="9098156406873149060">Conservar datos de usuario</translation>

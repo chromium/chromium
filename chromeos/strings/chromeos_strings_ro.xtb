@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Dezactivează modul întunecat</translation>
 <translation id="1881188606372070653">Accesează <ph name="BEGIN_LINK1" />pagina Asistență juridică<ph name="END_LINK1" /> ca să soliciți modificări ale conținutului din motive juridice. Unele informații despre cont și sistem pot fi trimise la Google. Vom folosi informațiile trimise pentru a ajuta la remedierea problemelor tehnice sau pentru a îmbunătăți serviciile, conform <ph name="BEGIN_LINK2" />Politicii de confidențialitate<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />Termenilor și condițiilor<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
+<translation id="1904932688895783618">Iată alte resurse utile:</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1908234395526491708">Erori de solicitare UDP</translation>
 <translation id="1932611479324127242">Deconectarea bateriei</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Încearcă pașii pentru remedierea erorilor</translation>
 <translation id="2016848882344942759">--fără etichetă albă--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Conectează-te la o rețea și reîncarcă pagina pentru a vedea screensaverul.</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
 <translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
@@ -773,6 +775,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
+<translation id="779591286616261875">Trimite un raport nou</translation>
 <translation id="7799817062559422778">Modul Luminos</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7805768142964895445">Stare</translation>
@@ -925,6 +928,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9082718469794970195">Folosește videoclipul</translation>
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
+<translation id="9092255287806472980">Feedbackul tău ne ajută să îmbunătățim sistemul de operare Chrome și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Va trebui să dezasamblezi dispozitivul</translation>
 <translation id="9098156406873149060">Păstrează datele utilizatorului</translation>

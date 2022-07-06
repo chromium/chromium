@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hanguli romaja</translation>
 <translation id="112387589102719461">inglise (USA), programmeerijate Dvoraki klaviatuuriga</translation>
 <translation id="1134697384939541955">inglise (USA), laiendatud klaviatuuriga</translation>
+<translation id="1138691154716715755">Varem sellel kuul</translation>
 <translation id="1148097584170732637">Leiti <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Kohalikus salvestusruumis pole piisavalt ruumi. Vaja on veel <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
 <translation id="4387004326333427325">Autentimissertifikaat lükati kaugühenduse kaudu tagasi</translation>
 <translation id="4394214039309501350">Väline link</translation>
+<translation id="4394980935660306080">Varem sellel nädalal</translation>
 <translation id="4401287888955153199">Ekstrakti kõik</translation>
 <translation id="4410695710508688828">Ekstraktimistoiming nurjus. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Looge oma failide jaoks otsetee</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Faili „<ph name="PATH" />” avamine</translation>
 <translation id="4720185134442950733">Mobiilse andmeside võrk</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotot on varundatud</translation>
+<translation id="4725096204469550614">Varem sellel aastal</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Maandumine</translation>
 <translation id="4747271164117300400">Makedoonia</translation>

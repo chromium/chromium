@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Engleză (S.U.A.) cu tastatură pentru programatori Dvorak</translation>
 <translation id="1134697384939541955">Engleză (S.U.A.) cu tastatură extinsă</translation>
+<translation id="1138691154716715755">Mai devreme în decursul acestei luni</translation>
 <translation id="1148097584170732637">S-au găsit <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Spațiu insuficient în stocarea locală. Spațiu necesar: <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, detalii</translation>
 <translation id="4387004326333427325">Certificatul de autentificare a fost respins de la distanță</translation>
 <translation id="4394214039309501350">Link extern</translation>
+<translation id="4394980935660306080">Mai devreme în decursul acestei săptămâni</translation>
 <translation id="4401287888955153199">Extrage tot</translation>
 <translation id="4410695710508688828">Operațiunea de extragere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Se deschide „<ph name="PATH" />”</translation>
 <translation id="4720185134442950733">Rețea de date mobile</translation>
 <translation id="4724850507808590449">S-a făcut backup pentru <ph name="FILE_COUNT" /> fotografii</translation>
+<translation id="4725096204469550614">Mai devreme în decursul acestui an</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Aterizare</translation>
 <translation id="4747271164117300400">Macedoneană</translation>

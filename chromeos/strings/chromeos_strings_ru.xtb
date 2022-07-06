@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Выключить тёмную тему</translation>
 <translation id="1881188606372070653">Если контент нарушает закон, <ph name="BEGIN_LINK1" />отправьте запрос на исправление<ph name="END_LINK1" />. Некоторые сведения об аккаунте и системе могут быть отправлены в Google. Это помогает нам устранять технические неполадки и улучшать наши сервисы. Ваши данные будут обрабатываться в соответствии с <ph name="BEGIN_LINK2" />Политикой конфиденциальности<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Условиями использования<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Версия оборудования</translation>
+<translation id="1904932688895783618">Вот некоторые источники полезной информации:</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1908234395526491708">Невыполненные запросы UDP.</translation>
 <translation id="1932611479324127242">Отключить батарею</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Инструкции по устранению неполадок</translation>
 <translation id="2016848882344942759">Без бренда</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Чтобы просмотреть заставку, подключитесь к сети и обновите страницу.</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2085089206770112532">Уменьшение яркости дисплея</translation>
 <translation id="2105810540595158374">Это игровой контроллер.</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">Совпадение с доменным суффиксом</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
 <translation id="7784116172884276937">Нет настроенных DNS-серверов.</translation>
+<translation id="779591286616261875">Отправить новый отзыв</translation>
 <translation id="7799817062559422778">Светлая тема</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
 <translation id="7805768142964895445">Состояние</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">Использовать это видео</translation>
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
+<translation id="9092255287806472980">Ваш отзыв поможет улучшить Chrome OS и будет рассмотрен нашей командой. Мы получаем множество обращений, поэтому не сможем вам ответить.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Потребуется разобрать устройство</translation>
 <translation id="9098156406873149060">Сохранить пользовательские данные</translation>

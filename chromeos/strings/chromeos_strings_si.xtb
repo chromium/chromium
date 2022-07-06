@@ -123,6 +123,7 @@
 <translation id="188114911237521550">අඳුරු ප්‍රකාරය ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="1881188606372070653">නීතිමය හේතු නිසා අන්තර්ගත වෙනස් කිරීම් ඉල්ලා සිටීමට <ph name="BEGIN_LINK1" />නීති උදවු පිටුව<ph name="END_LINK1" /> වෙත යන්න. සමහර ගිණුම් සහ පද්ධති තොරතුරු Google වෙත යැවිය හැකිය. අප අපගේ <ph name="BEGIN_LINK2" />රහස්‍යතා ප්‍රතිපත්තිය<ph name="END_LINK2" /> සහ <ph name="BEGIN_LINK3" />සේවා නියමවලට<ph name="END_LINK3" /> යටත්ව, තාක්ෂණික ගැටලු විසඳීමට සහ අපගේ සේවාවන් වැඩි දියුණු කිරීමට උදවු වීමට ඔබ අපට දෙන තොරතුරු භාවිත කරනු ඇත.</translation>
 <translation id="1887850431809612466">දෘඨාංග සංශෝධනය</translation>
+<translation id="1904932688895783618">මෙන්න තවත් උපකාරී සම්පත් කිහිපයක්:</translation>
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
 <translation id="1908234395526491708">UDP ඉල්ලීම් අසාර්ථක වීම්</translation>
 <translation id="1932611479324127242">බැටරිය කපා හැරීම</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">දෝෂාවේක්ෂ පියවර උත්සාහ කරන්න</translation>
 <translation id="2016848882344942759">--සුදු ලේබලය-නැත--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">ජාලයකට සම්බන්ධ වී තිර සුරැකුම බැලීමට පිටුව නැවත පූරණ කරන්න.</translation>
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
 <translation id="2085089206770112532">සංදර්ශක දීප්තිය පහළට</translation>
 <translation id="2105810540595158374">උපාංගය ක්‍රීඩා පාලකයකි.</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">වසම් ප්‍රත්‍ය ගැළපීම</translation>
 <translation id="7769672763586021400">ආදර්ශ ID</translation>
 <translation id="7784116172884276937">DNS සේවාදායක පිහිටුවා නැත</translation>
+<translation id="779591286616261875">නව වාර්තාව යවන්න</translation>
 <translation id="7799817062559422778">ආලෝක ප්‍රකාරය</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7805768142964895445">තත්වය</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">මෙම වීඩියෝව භාවිත කරන්න</translation>
 <translation id="9087578468327036362">මෙම විමසුම වාර්තා කරන්න</translation>
 <translation id="9088306295921699330">වත්මන් භාවිතය</translation>
+<translation id="9092255287806472980">ඔබේ ප්‍රතිපෝෂණය Chrome OS වැඩිදියුණු කිරීමට උදවු වන අතර අපගේ කණ්ඩායම විසින් සමාලෝචනය කෙරේ. වාර්තා විශාල සංඛ්‍යාවක් නිසා, අපට පිළිතුරක් යැවිය නොහැක.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">ඔබට උපාංගය වෙන් කිරීමට අවශ්‍ය වනු ඇත</translation>
 <translation id="9098156406873149060">පරිශීලක දත්ත තබා ගන්න</translation>

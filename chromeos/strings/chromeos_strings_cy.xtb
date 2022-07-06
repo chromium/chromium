@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
 <translation id="1881188606372070653">Ewch i'r <ph name="BEGIN_LINK1" />dudalen Cymorth Cyfreithiol<ph name="END_LINK1" /> i ofyn i ni wneud newidiadau i'r cynnwys am resymau cyfreithiol. Mae'n bosib y byddwn yn anfon peth gwybodaeth system a chyfrif i Google. Byddwn yn defnyddio'r wybodaeth rydych yn ei rhoi i ni i helpu i fynd i'r afael â phroblemau technegol ac i wella ein gwasanaethau, yn amodol ar ein <ph name="BEGIN_LINK2" />Polisi Preifatrwydd <ph name="END_LINK2" /> a'n <ph name="BEGIN_LINK3" />Telerau Gwasanaeth<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
+<translation id="1904932688895783618">Dyma rai adnoddau defnyddiol eraill:</translation>
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
 <translation id="1932611479324127242">Toriad batri</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Rhowch gynnig ar gamau datrys problemau</translation>
 <translation id="2016848882344942759">--dim label gwyn--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld arbedwr sgrîn.</translation>
 <translation id="2080070583977670716">Rhagor o osodiadau</translation>
 <translation id="2085089206770112532">Disgleirdeb y sgrîn i lawr</translation>
 <translation id="2105810540595158374">Mae'r ddyfais yn rheolydd gêm.</translation>
@@ -773,6 +775,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7763470514545477072">Cyfateb ôl-ddodiad parth</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
 <translation id="7784116172884276937">Nid oes unrhyw weinyddion DNS wedi'u gosod</translation>
+<translation id="779591286616261875">Anfon adroddiad newydd</translation>
 <translation id="7799817062559422778">Modd golau</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7805768142964895445">Statws</translation>
@@ -925,6 +928,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="9082718469794970195">Defnyddio'r fideo hwn</translation>
 <translation id="9087578468327036362">Adrodd am yr ymholiad hwn</translation>
 <translation id="9088306295921699330">Defnydd presennol</translation>
+<translation id="9092255287806472980">Mae eich adborth yn helpu i wella Chrome OS a bydd yn cael ei adolygu gan ein tîm. Oherwydd y nifer fawr o adroddiadau, ni fyddwn yn gallu anfon ateb.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Bydd angen i chi ddatgymalu'r ddyfais</translation>
 <translation id="9098156406873149060">Cadw data'r defnyddiwr</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">I-Hangul Romaja</translation>
 <translation id="112387589102719461">English (US) enekhibhodi yomhleli we-Dvorak</translation>
 <translation id="1134697384939541955">English (US) enekhibhodi enwetshiwe</translation>
+<translation id="1138691154716715755">Ngaphambilini kule nyanga</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> itholakele.
     <ph name="LINE_BREAK1" />
     Asikho isikhala esanele esitholakalayo kusitoreji sendawo. U-<ph name="FILE_SIZE" /> ngaphezulu uyadingeka.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, kuphethwe umlawuli wakho, imininingwane</translation>
 <translation id="4387004326333427325">Isitifiketi sokuqinisekisa sinqatshelwe ngesilawuli kude</translation>
 <translation id="4394214039309501350">Isixhumanisi esingaphandle</translation>
+<translation id="4394980935660306080">Ngaphambilini kuleli viki</translation>
 <translation id="4401287888955153199">Khipha konke</translation>
 <translation id="4410695710508688828">Umsebenzi wokumonyula wehlulekile. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Dala isinqamuleli samafayela akho</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Ivula i-"<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Inethiwekhi yedatha yeselula</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> izithombe ezenziwe isipele</translation>
+<translation id="4725096204469550614">Ngaphambilini kulo nyaka</translation>
 <translation id="4725511304875193254">I-Corgi</translation>
 <translation id="4737050008115666127">Ukufika</translation>
 <translation id="4747271164117300400"> Macedonian</translation>

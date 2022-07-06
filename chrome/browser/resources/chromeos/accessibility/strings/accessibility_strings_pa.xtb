@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">ਸੰਤਰੀ</translation>
 <translation id="1198865190323699001">ਸਪਰਸ਼ ਇਸ਼ਾਰੇ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
+<translation id="1202112913213080585">ਰੱਦ ਕਰੋ</translation>
 <translation id="1206619573307042055">ਵੱਡਾ ਤੰਬੂ</translation>
 <translation id="1207086294218137981">ਕੋਈ ਹੋਰ ਪੱਧਰ 4 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="1212770441379271564">ਅਗਲੇ ਕੁਝ ਸ਼ਾਰਟਕੱਟ ChromeVox ਦੀਆਂ ਕਮਾਂਡਾਂ ਨਹੀਂ ਹਨ, ਪਰ ਫਿਰ ਵੀ Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ ਇਹ ਬਹੁਤ ਲਾਭਕਾਰੀ ਹਨ।
@@ -43,6 +44,7 @@
     Chrome ਬ੍ਰਾਊਜ਼ਰ ਮੀਨੂ ਖੋਲ੍ਹਣ ਲਈ, Alt+F ਦਬਾਓ।</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome ਨੂੰ ਵੌਇਸ ਦੇਣਾ</translation>
 <translation id="1225969361094801578">ਗੂੜ੍ਹਾ ਸਲੇਟੀ</translation>
+<translation id="122928249241119550">ਪਿਛਲੇ ਵਾਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="1230503547248836149">ਚੋਣ ਦੀ ਸ਼ੁਰੂਆਤ</translation>
 <translation id="1236794971743289975">ਵਿਸ਼ੇਸ਼ ਜਾਣਕਾਰੀ</translation>
 <translation id="1237797094773582699">ਇਸੇ ਤਰ੍ਹਾਂ, ਪਿਛਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਣ ਲਈ ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਸੱਜੇ ਤੋਂ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਹੁਣੇ ਵਰਤ ਕੇ ਦੇਖੋ!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">ਗੂੜ੍ਹਾ ਅਸਮਾਨੀ ਰੰਗਾ</translation>
 <translation id="2438712309510062123">ਸੁਝਾਓ</translation>
 <translation id="2450814015951372393">ਚੈੱਕ-ਬਾਕਸ</translation>
+<translation id="2450992626945324272">ਅਗਲੇ ਵਾਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="2461822463642141190">ਮੌਜੂਦਾ</translation>
 <translation id="2462626033734746142">ਰੇਡੀਓ ਬਟਨ ਗਰੁੱਪ</translation>
 <translation id="2467741090055146971">ਅਣਚੁਣਿਆ</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">ਗੂੜ੍ਹਾ ਸੁਰਮਈ</translation>
 <translation id="4217571870635786043">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ਡੈਸ਼}one{# ਡੈਸ਼ਾਂ}other{# ਡੈਸ਼ਾਂ}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> ਤੋਂ <ph name="END_PHRASE" /> ਤੱਕ ਚੁਣੋ</translation>
 <translation id="4221012616705981690">ਕੋਈ ਪਿਛਲੀ ਸੂਚੀ ਨਹੀਂ</translation>
 <translation id="4225355998815256469">ਫ਼ਾਰਮ ਕੰਟਰੋਲ</translation>
 <translation id="4230834257931120629">ਹਲਕਾ ਸਲੇਟੀ ਸੁਰਮਈ</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">ਇੱਕ ਸੂਚੀ-ਬਾਕਸ ਜਾਂ ਕੌਂਬੋ ਬਾਕਸ</translation>
+<translation id="613344593214611552">ਪਿਛਲਾ ਵਾਕ ਮਿਟਾਓ</translation>
 <translation id="6142308968191113180">ਸਿਰਲੇਖ 4</translation>
 <translation id="6150023170003443621">ਤੋਤੇਰੰਗਾ</translation>
 <translation id="6158882249329863701">ਕਤਾਰ <ph name="TABLECELLROWINDEX" /> ਕਾਲਮ <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">ਸਫ਼ੇ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਤੇ ਜਾਓ</translation>
 <translation id="6187190722927752226">ਕਾਸ਼ਣੀ</translation>
 <translation id="6197361807490522975">ਗੂੜ੍ਹਾ ਨੀਲਾ</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> ਨੂੰ <ph name="INSERT_PHRASE" /> ਨਾਲ ਬਦਲੋ</translation>
 <translation id="6236061028292614533">ਅਗਲਾ ਸਿਰਲੇਖ</translation>
 <translation id="6254901459154107917">ਅਗਲਾ ਸੰਪਾਦਨਯੋਗ ਲਿਖਤ ਖੇਤਰ</translation>
 <translation id="6259464875943891919">ਐਕਸਾਈਟਡ <ph name="TYPE" />।</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">ਵਰਣਨ ਸੂਚੀ ਵੇਰਵਾ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}one{# ampersands}other{# ampersands}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">ਪਿਛਲਾ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਮਿਟਾਓ</translation>
 <translation id="738899727977260036">ਸਲੇਟੀਆ ਨੀਲਾ</translation>
 <translation id="7393979322571982935">ਧੁਨੀਆਂ ਅਤੇ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="739763518212184081">ਪਿਛਲੀ ਲਾਈਨ</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">ਹਲਕਾ ਸੁਨਿਹਰੀ ਪੀਲਾ</translation>
 <translation id="7543255924852002459">ਲੇਬਲ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="7552432549459840808">ਲਾਭਕਾਰੀ Chrome ਸ਼ਾਰਟਕੱਟ</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> ਤੋਂ ਪਹਿਲਾਂ <ph name="INSERT_PHRASE" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7569983096843329377">ਕਾਲਾ</translation>
 <translation id="7579911500627256166"><ph name="DOT" /> ਬਿੰਦੂ</translation>
 <translation id="7592060599656252486">ਕੁਝ</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">ਲਿਖਤ, URL ਐਂਟਰੀ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ਪਿਛਲਾ ਰੇਡੀਓ ਬਟਨ</translation>
+<translation id="7696631298608145306">ਅਗਲੇ ਸ਼ਬਦ 'ਤੇ ਜਾਓ</translation>
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">ਕੁਦਰਤੀ ਆਵਾਜ਼</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">ਅਧਿਕਤਮ <ph name="X" /></translation>
 <translation id="84575901236241018">ਪਹੁੰਚ ਕੁੰਜੀ ਹੈ, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">ਵਿਆਕਰਨ ਗੜਬੜ ਨੂੰ ਛੱਡਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="8465573210279050749">ਪਿਛਲਾ ਸ਼ਬਦ ਮਿਟਾਓ</translation>
 <translation id="847040613207937740">ਕੋਈ ਅਗਲਾ ਚੈੱਕ-ਬਾਕਸ ਨਹੀਂ</translation>
 <translation id="8473540203671727883">ਮਾਊਸ ਦੇ ਕਰਸਰ ਹੇਠਲੀ ਲਿਖਤ ਬੋਲੋ</translation>
 <translation id="8476408756881832830">ChromeVox ਬੋਲ ਰਿਹਾ ਹੋਵੇ ਉਦੋਂ ਪਲੇਬੈਕ ਨੂੰ ਵਿਰਾਮ ਦਿਓ</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{ਪਾਈਪ}one{# ਖੜ੍ਹਵੀਆਂ ਪਾਈਪਾਂ}other{# ਖੜ੍ਹਵੀਆਂ ਪਾਈਪਾਂ}}</translation>
 <translation id="8741370088760768424">ਸੰਕੇਤ: ਮੌਜੂਦਾ ਆਈਟਮ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ Search + Space ਦਬਾਓ।</translation>
 <translation id="8743786158317878347">ਢਾਂਚਾਗਤ ਸਮੱਗਰੀ ਦਰਜ ਕੀਤੀ, ਜਿਵੇਂ ਕਿ ਸਾਰਨੀ</translation>
+<translation id="8746846427395705317">ਪਿਛਲੇ ਸ਼ਬਦ 'ਤੇ ਜਾਓ</translation>
 <translation id="8747966237988593539">ਕ੍ਰਮ ਦਿੱਤੀ ਸੂਚੀ</translation>
 <translation id="8749988712346667988">ਚਾਂਦੀ ਰੰਗਾ</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> ਦਾ ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">ਕੋਈ ਪਿਛਲਾ ਭਾਗ ਨਹੀਂ</translation>
 <translation id="89720367119469899">ਛੱਡੋ</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> ਮਿਟਾਓ</translation>
 <translation id="8986362086234534611">ਭੁੱਲਣਾ</translation>
 <translation id="8989104346085848538">ਕਿਸੇ ਮੌਜੂਦਾ ChromeVox ਬੋਲਚਾਲ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, Control ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="8993737615451556423">ਪੜ੍ਹਨ ਵਾਲੀ ਅਵਾਜ਼ ਦੀ ਗਤੀ ਵਧਾਉਣ, ਘੱਟ ਕਰਨ ਅਤੇ ਰੋਕਣ ਦੇ ਕੰਟਰੋਲ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦਾ ਹੈ</translation>

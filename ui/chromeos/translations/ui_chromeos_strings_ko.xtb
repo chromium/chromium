@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">한글 로마자</translation>
 <translation id="112387589102719461">영어(미국, 프로그래머 드보락 키보드)</translation>
 <translation id="1134697384939541955">영어(미국, 확장 키보드)</translation>
+<translation id="1138691154716715755">이달 초</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" />개가 있습니다.
     <ph name="LINE_BREAK1" />
     로컬 저장소에 공간이 부족합니다. <ph name="FILE_SIZE" />가 더 필요합니다.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
 <translation id="4387004326333427325">인증서가 원격으로 거부됨</translation>
 <translation id="4394214039309501350">외부 링크</translation>
+<translation id="4394980935660306080">이번 주 초</translation>
 <translation id="4401287888955153199">모두 추출</translation>
 <translation id="4410695710508688828">추출 작업에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">파일의 바로가기 만들기</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">‘<ph name="PATH" />’ 여는 중</translation>
 <translation id="4720185134442950733">모바일 데이터 네트워크</translation>
 <translation id="4724850507808590449">사진 <ph name="FILE_COUNT" />장을 백업했습니다.</translation>
+<translation id="4725096204469550614">올해 초</translation>
 <translation id="4725511304875193254">웰시 코기</translation>
 <translation id="4737050008115666127">착륙</translation>
 <translation id="4747271164117300400">마케도니아어</translation>
