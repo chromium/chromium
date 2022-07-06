@@ -60,8 +60,17 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
       # Not an Android browser.
       pass
 
-    self._symbols_directory = next(
-        util.GetBuildDirectories(finder_options.chrome_root), None)
+    build_directory = next(util.GetBuildDirectories(finder_options.chrome_root),
+                           None)
+
+    # Append the symbols directory to the provided build directory.
+    if build_directory is not None:
+      build_directory = build_directory.rstrip(os.path.sep)
+      _SYMBOLS_SUBDIRECTORY = "lib.unstripped"
+      if os.path.basename(build_directory) != _SYMBOLS_SUBDIRECTORY:
+        build_directory = os.path.join(build_directory, _SYMBOLS_SUBDIRECTORY)
+
+    self._symbols_directory = build_directory
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     """DO NOT OVERRIDE this method in your benchmark subclass.
