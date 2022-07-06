@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/accuracy_tips/features.h"
+#include "components/history_clusters/core/features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
@@ -39,6 +40,10 @@ constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerJourneysHistoryEntrypoint[] =
+    "journeys-history-entrypoint";
+constexpr char kHatsSurveyTriggerJourneysOmniboxEntrypoint[] =
+    "journeys-omnibox-entrypoint";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
@@ -140,6 +145,14 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCSP,
                               "devtools-issues-csp",
                               "c9fjDmwjb0ugnJ3q1cK0USeAJJ9C");
+
+  // Journeys surveys.
+  survey_configs.emplace_back(
+      &history_clusters::kJourneysSurveyForHistoryEntrypoint,
+      kHatsSurveyTriggerJourneysHistoryEntrypoint);
+  survey_configs.emplace_back(
+      &history_clusters::kJourneysSurveyForOmniboxEntrypoint,
+      kHatsSurveyTriggerJourneysOmniboxEntrypoint);
 
   // Settings surveys.
   survey_configs.emplace_back(

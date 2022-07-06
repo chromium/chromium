@@ -23,6 +23,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -402,6 +404,49 @@ Profile* HistoryClustersHandler::GetProfile() {
 void HistoryClustersHandler::OnClustersQueryResult(
     mojom::QueryResultPtr query_result) {
   page_->OnClustersQueryResult(std::move(query_result));
+
+  // The user loading their first set of clusters should start the timer for
+  // launching the Journeys survey.
+  LaunchJourneysSurvey();
+}
+
+void HistoryClustersHandler::LaunchJourneysSurvey() {
+  // All the below is to attempt launch a survey, after loading the first set of
+  // clusters.
+  if (survey_launch_attempted_) {
+    return;
+  }
+  survey_launch_attempted_ = true;
+
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(profile_, true);
+  if (!hats_service) {
+    return;
+  }
+
+  auto* logger =
+      history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+          web_contents_->GetPrimaryPage());
+  auto initial_state = logger->initial_state();
+  if (!initial_state) {
+    return;
+  }
+
+  if (*initial_state ==
+          history_clusters::HistoryClustersInitialState::kSameDocument &&
+      base::FeatureList::IsEnabled(kJourneysSurveyForHistoryEntrypoint)) {
+    // Same document navigation basically means clicking over from History.
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerJourneysHistoryEntrypoint, web_contents_,
+        kJourneysSurveyForHistoryEntrypointDelay.Get().InMilliseconds());
+  } else if (*initial_state == history_clusters::HistoryClustersInitialState::
+                                   kIndirectNavigation &&
+             base::FeatureList::IsEnabled(
+                 kJourneysSurveyForOmniboxEntrypoint)) {
+    // Indirect navigation basically means from the omnibox.
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerJourneysOmniboxEntrypoint, web_contents_,
+        kJourneysSurveyForOmniboxEntrypointDelay.Get().InMilliseconds());
+  }
 }
 
 void HistoryClustersHandler::RecordVisitAction(mojom::VisitAction visit_action,

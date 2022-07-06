@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "url/gurl.h"
 
 namespace history_clusters {
@@ -56,6 +57,21 @@ extern const base::Feature kHistoryClustersInternalsPage;
 extern const base::Feature kHistoryClustersUseContinueOnShutdown;
 
 }  // namespace internal
+
+// The below features are NOT internal and NOT encapsulated in the Config class.
+// These are different because the base::Feature instance needs to be directly
+// referred to outside of Journeys code. Moreover, they are not used inside an
+// inner loop, so they don't need to be high performance.
+
+// Enables the user survey when the user clicks over to Journeys from History.
+extern const base::Feature kJourneysSurveyForHistoryEntrypoint;
+extern const base::FeatureParam<base::TimeDelta>
+    kJourneysSurveyForHistoryEntrypointDelay;
+
+// Enables the user survey when the user uses the omnibox to access Journeys.
+extern const base::Feature kJourneysSurveyForOmniboxEntrypoint;
+extern const base::FeatureParam<base::TimeDelta>
+    kJourneysSurveyForOmniboxEntrypointDelay;
 
 }  // namespace history_clusters
 
