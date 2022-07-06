@@ -171,32 +171,15 @@ TEST_F(FindTextTest, SelectFindResult) {
 
   engine->StartFind("world", /*case_sensitive=*/true);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(1));
-    EXPECT_CALL(client,
-                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
-  }
+  EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(_, _)).Times(0);
+  EXPECT_CALL(client, NotifySelectedFindResultChanged(1));
 
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(2));
-    EXPECT_CALL(client,
-                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
-  }
+  EXPECT_CALL(client, NotifySelectedFindResultChanged(2));
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(1));
-    EXPECT_CALL(client,
-                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
-  }
+  EXPECT_CALL(client, NotifySelectedFindResultChanged(1));
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/false));
 }
 

@@ -1757,7 +1757,6 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
       character_to_start_searching_from = old_selection[0].char_index();
       last_page_to_search_ = next_page_to_search_;
     }
-    search_in_progress_ = true;
   }
 
   int current_page = next_page_to_search_;
@@ -1798,8 +1797,6 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
        (pages_.size() > 1 && current_page == next_page_to_search_));
 
   if (end_of_search) {
-    search_in_progress_ = false;
-
     // Send the final notification.
     client_->NotifyNumberOfFindResultsChanged(find_results_.size(), true);
     return;
@@ -2059,8 +2056,6 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
   }
 
   client_->NotifySelectedFindResultChanged(current_find_index_.value());
-  if (!search_in_progress_)
-    client_->NotifyNumberOfFindResultsChanged(find_results_.size(), true);
   return true;
 }
 
@@ -2070,7 +2065,6 @@ void PDFiumEngine::StopFind() {
   selecting_ = false;
 
   find_results_.clear();
-  search_in_progress_ = false;
   next_page_to_search_ = -1;
   last_page_to_search_ = -1;
   last_character_index_to_search_ = -1;

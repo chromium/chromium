@@ -319,6 +319,8 @@ void WebPluginContainerImpl::ReportFindInPageMatchCount(int identifier,
       WebLocalFrameImpl::FromFrame(element_->GetDocument().GetFrame());
   if (!frame)
     return;
+
+  final_find_update_ = final_update;
   frame->GetFindInPage()->ReportFindInPageMatchCount(identifier, total,
                                                      final_update);
 }
@@ -330,7 +332,7 @@ void WebPluginContainerImpl::ReportFindInPageSelection(int identifier,
   if (!frame)
     return;
   frame->GetFindInPage()->ReportFindInPageSelection(
-      identifier, index, gfx::Rect(), false /* final_update */);
+      identifier, index, gfx::Rect(), final_find_update_);
 }
 
 float WebPluginContainerImpl::PageScaleFactor() {
@@ -749,10 +751,7 @@ WebPluginContainerImpl::WebPluginContainerImpl(HTMLPlugInElement& element,
                                                WebPlugin* web_plugin)
     : EmbeddedContentView(gfx::Rect()),
       element_(element),
-      web_plugin_(web_plugin),
-      layer_(nullptr),
-      touch_event_request_type_(kTouchEventRequestTypeNone),
-      wants_wheel_events_(false) {}
+      web_plugin_(web_plugin) {}
 
 WebPluginContainerImpl::~WebPluginContainerImpl() {
   // The plugin container must have been disposed of by now.

@@ -231,9 +231,13 @@ class CORE_EXPORT WebPluginContainerImpl final
   Member<HTMLPlugInElement> element_;
   Member<MouseLockLostListener> mouse_lock_lost_listener_;
   WebPlugin* web_plugin_;
-  cc::Layer* layer_;
-  TouchEventRequestType touch_event_request_type_;
-  bool wants_wheel_events_;
+  cc::Layer* layer_ = nullptr;
+  TouchEventRequestType touch_event_request_type_ = kTouchEventRequestTypeNone;
+  bool wants_wheel_events_ = false;
+
+  // Whether the most recent `ReportFindInPageMatchCount()` call was the final
+  // update or not.
+  bool final_find_update_ = false;
 };
 
 template <>

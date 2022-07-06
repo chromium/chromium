@@ -726,8 +726,6 @@ class PDFiumEngine : public PDFEngine,
   std::string current_find_text_;
   // The results found.
   std::vector<PDFiumRange> find_results_;
-  // Whether a search is in progress.
-  bool search_in_progress_ = false;
   // Which page to search next.
   int next_page_to_search_ = -1;
   // Where to stop searching.
