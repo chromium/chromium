@@ -29,6 +29,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -267,6 +268,8 @@ TEST_F(TabManagerStatsCollectorPrerenderingTest,
        KeepingWebContentsMapInPrerendering) {
   std::unique_ptr<WebContents> tab1(CreateTestWebContents());
   std::unique_ptr<WebContents> tab2(CreateTestWebContents());
+  content::test::ScopedPrerenderWebContentsDelegate tab1_delegate(*tab1.get());
+  content::test::ScopedPrerenderWebContentsDelegate tab2_delegate(*tab2.get());
 
   GURL init_url("https://example1.test/");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(tab2.get(),

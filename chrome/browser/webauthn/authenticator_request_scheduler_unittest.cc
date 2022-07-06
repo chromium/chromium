@@ -8,6 +8,7 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -99,6 +100,9 @@ class AuthenticatorRequestSchedulerPrerenderTest
 
 TEST_F(AuthenticatorRequestSchedulerPrerenderTest,
        SingleWebContents_OneRequestInPrerendering) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   // Navigate to an initial page.
   NavigateAndCommit(GURL("https://example.com"));
 

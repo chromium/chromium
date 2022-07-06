@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/translate/core/browser/mock_translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -264,6 +265,9 @@ TEST_F(TranslatePageLoadMetricsObserverTest, RepeatedAppEntersBackground) {
 }
 
 TEST_F(TranslatePageLoadMetricsObserverTest, PrerenderAndActivation) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   PrepareMock(2);
 
   EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(true))

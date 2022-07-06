@@ -7,6 +7,7 @@
 #include "base/containers/flat_map.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -28,6 +29,8 @@ struct PageLoadMetricsObserverEvents final {
   bool was_prerendered_page_activated = false;
   size_t sub_frame_navigation_count = 0;
 };
+
+using content::test::ScopedPrerenderWebContentsDelegate;
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
  public:
@@ -134,6 +137,8 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
 };
 
 TEST_F(PageLoadTrackerTest, PrimaryPageType) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // Target URL to monitor the tracker via the test observer.
   SetTargetUrl(kTestUrl);
 
@@ -162,6 +167,8 @@ TEST_F(PageLoadTrackerTest, PrimaryPageType) {
 }
 
 TEST_F(PageLoadTrackerTest, EventForwarding) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // In the end, we'll construct frame trees as the following:
   //
   //   A     : primary main frame
@@ -282,6 +289,8 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
 }
 
 TEST_F(PageLoadTrackerTest, PrerenderPageType) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);
@@ -313,6 +322,8 @@ TEST_F(PageLoadTrackerTest, PrerenderPageType) {
 }
 
 TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // Target URL to monitor the tracker via the test observer.
   const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
   SetTargetUrl(kFencedFramesUrl);
@@ -364,6 +375,8 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
 }
 
 TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);
@@ -384,6 +397,8 @@ TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
 }
 
 TEST_F(PageLoadTrackerTest, StopObservingOnFencedFrames) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // Target URL to monitor the tracker via the test observer.
   const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
   SetTargetUrl(kFencedFramesUrl);
@@ -409,6 +424,8 @@ TEST_F(PageLoadTrackerTest, StopObservingOnFencedFrames) {
 }
 
 TEST_F(PageLoadTrackerTest, ResumeOnPrerenderActivation) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);

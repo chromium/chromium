@@ -35,6 +35,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -2104,6 +2105,8 @@ class StarterPrerenderTest : public StarterTest {
 
 TEST_F(StarterPrerenderTest, DoNotAffectRecordUkmDuringPrendering) {
   SetupPlatformDelegateForFirstTimeUser();
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
 
   fake_platform_delegate_.feature_module_installed_ = true;
   // Empty callback to keep the onboarding open indefinitely.

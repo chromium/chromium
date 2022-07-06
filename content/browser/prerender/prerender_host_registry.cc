@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -88,6 +89,14 @@ int PrerenderHostRegistry::CreateAndStartHost(
     base::ScopedClosureRunner notify_trigger(
         base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
                        base::Unretained(this), attributes.prerendering_url));
+
+    // Check whether preloading is enabled. If users disable this
+    // setting, it means users do not want to preload pages.
+    WebContentsDelegate* web_contents_delegate = web_contents.GetDelegate();
+    if (!web_contents_delegate ||
+        !web_contents_delegate->IsPrerender2Supported(web_contents)) {
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
 
     // Don't prerender when the trigger is in the background.
     if (web_contents.GetVisibility() == Visibility::HIDDEN) {

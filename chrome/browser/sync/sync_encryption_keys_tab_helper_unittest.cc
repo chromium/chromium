@@ -155,6 +155,9 @@ class SyncEncryptionKeysTabHelperPrerenderingTest
 // canceling prerendering.
 TEST_F(SyncEncryptionKeysTabHelperPrerenderingTest,
        CreateEncryptionKeysInPrerendering) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   // Load a page.
   ASSERT_FALSE(HasEncryptionKeysApiInMainFrame());
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());

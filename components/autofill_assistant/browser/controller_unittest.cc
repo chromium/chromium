@@ -41,6 +41,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -2219,6 +2220,9 @@ class ControllerPrerenderTest : public ControllerTest {
 };
 
 TEST_F(ControllerPrerenderTest, SuccessfulNavigation) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
   EXPECT_FALSE(controller_->HasNavigationError());
 

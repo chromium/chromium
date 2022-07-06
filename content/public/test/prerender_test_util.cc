@@ -493,6 +493,22 @@ std::string PrerenderTestHelper::GenerateHistogramName(
   NOTREACHED();
 }
 
+ScopedPrerenderWebContentsDelegate::ScopedPrerenderWebContentsDelegate(
+    WebContents& web_contents)
+    : web_contents_(web_contents.GetWeakPtr()) {
+  web_contents_->SetDelegate(this);
+}
+
+ScopedPrerenderWebContentsDelegate::~ScopedPrerenderWebContentsDelegate() {
+  if (web_contents_)
+    web_contents_.get()->SetDelegate(nullptr);
+}
+
+bool ScopedPrerenderWebContentsDelegate::IsPrerender2Supported(
+    WebContents& web_contents) {
+  return true;
+}
+
 }  // namespace test
 
 }  // namespace content

@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/canonical_cookie.h"
@@ -528,6 +529,9 @@ class PageSpecificContentSettingsWithPrerenderTest
   ~PageSpecificContentSettingsWithPrerenderTest() override = default;
 
   content::RenderFrameHost* AddPrerender(const GURL& prerender_url) {
+    web_contents_delegate_ =
+        std::make_unique<content::test::ScopedPrerenderWebContentsDelegate>(
+            *web_contents());
     content::RenderFrameHost* prerender_frame =
         content::WebContentsTester::For(web_contents())
             ->AddPrerenderAndCommitNavigation(prerender_url);
@@ -540,6 +544,8 @@ class PageSpecificContentSettingsWithPrerenderTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
 };
 
 TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {

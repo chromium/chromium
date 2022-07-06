@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -166,6 +167,9 @@ class ReauthTabHelperPrerenderTest : public ReauthTabHelperTest {
 
 TEST_F(ReauthTabHelperPrerenderTest,
        PrerenderDoesNotAffectLastCommittedErrorPage) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              reauth_url());
   EXPECT_FALSE(tab_helper()->has_last_committed_error_page());

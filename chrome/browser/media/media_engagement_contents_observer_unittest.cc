@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1383,6 +1384,9 @@ class MediaEngagementContentsObserverPrerenderTest
 
 TEST_F(MediaEngagementContentsObserverPrerenderTest,
        EnsureDoNotCleanupAfterNavigation_AudioContextInPrerendering) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   GURL url = GURL("https://example.com");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);

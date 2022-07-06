@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -429,6 +430,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          MPArchType::kPrerender));
 
 TEST_P(HistoryTabHelperMPArchTest, DoNotAffectToLimitTitleUpdates) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   web_contents_tester()->NavigateAndCommit(page_url_);
 
   content::NavigationEntry* entry =

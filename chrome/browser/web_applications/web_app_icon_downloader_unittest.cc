@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -420,6 +421,9 @@ class WebAppIconDownloaderPrerenderTest : public WebAppIconDownloaderTest {
 };
 
 TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   // Navigate to an initial page.
   NavigateAndCommit(GURL("http://foo.example"));
 

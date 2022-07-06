@@ -210,6 +210,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     const GURL kOriginalUrl("https://example.com/");
 
     TestWebContents* wc = static_cast<TestWebContents*>(web_contents());
+    web_contents()->SetDelegate(&web_contents_delegate_);
     wc->NavigateAndCommit(kOriginalUrl);
     RenderFrameHostImpl* render_frame_host = wc->GetPrimaryMainFrame();
     ASSERT_TRUE(render_frame_host);

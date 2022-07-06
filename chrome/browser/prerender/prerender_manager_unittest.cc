@@ -42,6 +42,9 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
     prerender_manager_ = PrerenderManager::FromWebContents(web_contents());
     ASSERT_TRUE(prerender_manager_);
     prerender_manager_->set_skip_template_url_service_for_testing();
+    web_contents_delegate_ =
+        std::make_unique<content::test::ScopedPrerenderWebContentsDelegate>(
+            *web_contents());
   }
 
   content::WebContents* GetActiveWebContents() { return web_contents(); }
@@ -84,6 +87,9 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<content::test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
+
   net::EmbeddedTestServer test_server_;
   raw_ptr<PrerenderManager> prerender_manager_;
 };

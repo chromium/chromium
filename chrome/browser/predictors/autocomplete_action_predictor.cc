@@ -194,17 +194,6 @@ void AutocompleteActionPredictor::StartPrerendering(
     const gfx::Size& size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
-    // Check whether preloading is enabled. If users disable this
-    // setting, it means users do not want to preload pages.
-    // TODO(https://crbug.com/1292422): Move this check into
-    // content::PrerenderHostRegistry::CreateAndStartHost().
-    content::WebContentsDelegate* web_contents_delegate =
-        web_contents.GetDelegate();
-    if (!web_contents_delegate ||
-        !web_contents_delegate->IsPrerender2Supported(web_contents)) {
-      return;
-    }
-
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
     direct_url_input_prerender_handle_ =

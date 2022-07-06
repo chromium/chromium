@@ -12,6 +12,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -230,6 +231,8 @@ class DiceTabHelperPrerenderTest : public DiceTabHelperTest {
 };
 
 TEST_F(DiceTabHelperPrerenderTest, SigninStatusAfterPrerendering) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
   base::UserActionTester ua_tester;
   DiceTabHelper::CreateForWebContents(web_contents());
   DiceTabHelper* dice_tab_helper =

@@ -15,7 +15,6 @@
 #include "content/browser/speculation_rules/prefetch/prefetch_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -134,16 +133,6 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     return;
   DCHECK(blink::features::IsPrerender2Enabled());
 
-  // TODO(https://crbug.com/1292422): Move this check into
-  // PrerenderHostRegistry::CreateAndStartHost().
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
-  WebContentsDelegate* web_contents_delegate = web_contents->GetDelegate();
-  if (!web_contents_delegate ||
-      !web_contents_delegate->IsPrerender2Supported(*web_contents)) {
-    return;
-  }
-
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.
   std::vector<blink::mojom::SpeculationCandidatePtr> prerender_candidates;
@@ -245,6 +234,8 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     }
 
     Referrer referrer(*(it->referrer));
+    WebContents* web_contents =
+        WebContents::FromRenderFrameHost(render_frame_host());
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(
             it->url, PrerenderTriggerType::kSpeculationRule,

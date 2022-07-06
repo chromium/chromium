@@ -28,6 +28,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -1649,6 +1650,9 @@ class TriggerScriptCoordinatorPrerenderTest
 };
 
 TEST_F(TriggerScriptCoordinatorPrerenderTest, DoNotRecordIfPrerenderingFailed) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+
   GetTriggerScriptsResponseProto response;
   response.add_trigger_scripts();
   std::string serialized_response;

@@ -178,6 +178,21 @@ class PrerenderTestHelper {
   WebContents::Getter get_web_contents_fn_;
 };
 
+// This test delegate is used for prerender-tests, in order to support
+// prerendering going through the WebContentsDelegate.
+class ScopedPrerenderWebContentsDelegate : public WebContentsDelegate {
+ public:
+  explicit ScopedPrerenderWebContentsDelegate(WebContents& web_contents);
+
+  ~ScopedPrerenderWebContentsDelegate() override;
+
+  // WebContentsDelegate override.
+  bool IsPrerender2Supported(content::WebContents& web_contents) override;
+
+ private:
+  base::WeakPtr<WebContents> web_contents_;
+};
+
 }  // namespace test
 
 }  // namespace content
