@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_STYLE_TRACKER_H_
 
 #include "components/viz/common/shared_element_resource_id.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -118,6 +119,10 @@ class DocumentTransitionStyleTracker
   }
 
   static bool IsReservedTransitionTag(const StringView& value);
+
+  // Returns whether styles applied to pseudo elements should be limited to UA
+  // rules based on the current phase of the transition.
+  StyleRequest::RulesToInclude StyleRulesToInclude() const;
 
  private:
   class ImageWrapperPseudoElement;

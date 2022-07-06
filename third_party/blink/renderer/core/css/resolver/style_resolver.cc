@@ -1214,7 +1214,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   }
 
   // TODO(obrufau): support styling nested pseudo-elements
-  if (style_request.IsPseudoStyleRequest() && element->IsPseudoElement()) {
+  if (style_request.rules_to_include == StyleRequest::kUAOnly ||
+      (style_request.IsPseudoStyleRequest() && element->IsPseudoElement())) {
     MatchUARules(*element, collector);
   } else {
     MatchAllRules(

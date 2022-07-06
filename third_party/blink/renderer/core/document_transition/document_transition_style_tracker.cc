@@ -128,15 +128,10 @@ class DocumentTransitionStyleTracker::ImageWrapperPseudoElement
                             const DocumentTransitionStyleTracker* style_tracker)
       : DocumentTransitionPseudoElementBase(parent,
                                             pseudo_id,
-                                            document_transition_tag),
-        style_tracker_(style_tracker) {}
+                                            document_transition_tag,
+                                            style_tracker) {}
 
   ~ImageWrapperPseudoElement() override = default;
-
-  void Trace(Visitor* visitor) const override {
-    PseudoElement::Trace(visitor);
-    visitor->Trace(style_tracker_);
-  }
 
  private:
   bool CanGeneratePseudoElement(PseudoId pseudo_id) const override {
@@ -160,8 +155,6 @@ class DocumentTransitionStyleTracker::ImageWrapperPseudoElement
     }
     return snapshot_id.IsValid();
   }
-
-  Member<const DocumentTransitionStyleTracker> style_tracker_;
 };
 
 DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
@@ -544,7 +537,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
     case kPseudoIdPageTransition:
     case kPseudoIdPageTransitionContainer:
       return MakeGarbageCollected<DocumentTransitionPseudoElementBase>(
-          parent, pseudo_id, document_transition_tag);
+          parent, pseudo_id, document_transition_tag, this);
     case kPseudoIdPageTransitionImageWrapper:
       return MakeGarbageCollected<ImageWrapperPseudoElement>(
           parent, pseudo_id, document_transition_tag, this);
@@ -577,7 +570,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
       auto* pseudo_element =
           MakeGarbageCollected<DocumentTransitionContentElement>(
               parent, pseudo_id, document_transition_tag, snapshot_id,
-              /*is_live_content_element=*/false);
+              /*is_live_content_element=*/false, this);
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
@@ -596,7 +589,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
       auto* pseudo_element =
           MakeGarbageCollected<DocumentTransitionContentElement>(
               parent, pseudo_id, document_transition_tag, snapshot_id,
-              /*is_live_content_element=*/true);
+              /*is_live_content_element=*/true, this);
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
@@ -815,6 +808,22 @@ bool DocumentTransitionStyleTracker::IsSharedElement(Element* element) const {
 bool DocumentTransitionStyleTracker::IsReservedTransitionTag(
     const StringView& value) {
   return value == RootTag();
+}
+
+StyleRequest::RulesToInclude
+DocumentTransitionStyleTracker::StyleRulesToInclude() const {
+  switch (state_) {
+    case State::kIdle:
+    case State::kCapturing:
+    case State::kCaptured:
+      return StyleRequest::kUAOnly;
+    case State::kStarted:
+    case State::kFinished:
+      return StyleRequest::kAll;
+  }
+
+  NOTREACHED();
+  return StyleRequest::kAll;
 }
 
 void DocumentTransitionStyleTracker::InvalidateStyle() {
