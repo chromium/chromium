@@ -23,6 +23,15 @@ def visit(window, url):
   time.sleep(10)
 
 
+def getElementFromShadowRoot(driver, element, selector):
+  if element is None:
+    return None
+  else:
+    return driver.execute_script(
+        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
+        selector)
+
+
 def main(argv):
   exclude_switches = ["disable-background-networking"]
   chrome_options = webdriver.ChromeOptions()
@@ -44,7 +53,12 @@ def main(argv):
     policy_url = "chrome://policy"
     driver.get(policy_url)
     driver.find_element_by_id('reload-policies').click
-    deviceId = driver.find_element_by_class_name(
+    # Give the page 2 seconds to render the legend
+    time.sleep(2)
+    status_box = driver.find_element_by_css_selector("status-box")
+    el = getElementFromShadowRoot(driver, status_box, "fieldset")
+
+    deviceId = el.find_element_by_class_name(
         'machine-enrollment-device-id').text
 
     visit(window, UnsafePageLink)
