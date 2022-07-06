@@ -116,24 +116,24 @@ void WebrtcVideoRendererAdapter::OnFrame(const webrtc::VideoFrame& frame) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebrtcVideoRendererAdapter::HandleFrameOnMainThread,
-                     weak_factory_.GetWeakPtr(), frame.transport_frame_id(),
+                     weak_factory_.GetWeakPtr(), frame.timestamp(),
                      base::TimeTicks::Now(),
                      scoped_refptr<webrtc::VideoFrameBuffer>(
                          frame.video_frame_buffer().get())));
 }
 
 void WebrtcVideoRendererAdapter::OnVideoFrameStats(
-    uint32_t frame_id,
+    uint32_t rtp_timestamp,
     const HostFrameStats& host_stats) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  // Drop all ClientFrameStats for frames before |frame_id|. Stats messages are
-  // expected to be received in the same order as the corresponding video
+  // Drop all ClientFrameStats for frames before |rtp_timestamp|. Stats messages
+  // are expected to be received in the same order as the corresponding video
   // frames, so we are not going to receive HostFrameStats for the frames before
-  // |frame_id|. This may happen only if for some reason the host doesn't
+  // |rtp_timestamp|. This may happen only if for some reason the host doesn't
   // generate stats message for all video frames.
   while (!client_stats_queue_.empty() &&
-         client_stats_queue_.front().first != frame_id) {
+         client_stats_queue_.front().first != rtp_timestamp) {
     client_stats_queue_.pop_front();
   }
 
@@ -146,13 +146,13 @@ void WebrtcVideoRendererAdapter::OnVideoFrameStats(
       video_stats_dispatcher_.reset();
       return;
     }
-    host_stats_queue_.push_back(std::make_pair(frame_id, host_stats));
+    host_stats_queue_.emplace_back(rtp_timestamp, host_stats);
     return;
   }
 
   // The correspond frame has been received and now we have both HostFrameStats
   // and ClientFrameStats. Report the stats to FrameStatsConsumer.
-  DCHECK_EQ(client_stats_queue_.front().first, frame_id);
+  DCHECK_EQ(client_stats_queue_.front().first, rtp_timestamp);
   FrameStats frame_stats;
   frame_stats.client_stats = client_stats_queue_.front().second;
   client_stats_queue_.pop_front();
@@ -172,7 +172,7 @@ void WebrtcVideoRendererAdapter::OnChannelClosed(
 }
 
 void WebrtcVideoRendererAdapter::HandleFrameOnMainThread(
-    uint32_t frame_id,
+    uint32_t rtp_timestamp,
     base::TimeTicks time_received,
     scoped_refptr<webrtc::VideoFrameBuffer> frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -191,11 +191,12 @@ void WebrtcVideoRendererAdapter::HandleFrameOnMainThread(
       base::BindOnce(&ConvertYuvToRgb, std::move(frame), std::move(rgb_frame),
                      video_renderer_->GetFrameConsumer()->GetPixelFormat()),
       base::BindOnce(&WebrtcVideoRendererAdapter::DrawFrame,
-                     weak_factory_.GetWeakPtr(), frame_id, std::move(stats)));
+                     weak_factory_.GetWeakPtr(), rtp_timestamp,
+                     std::move(stats)));
 }
 
 void WebrtcVideoRendererAdapter::DrawFrame(
-    uint32_t frame_id,
+    uint32_t rtp_timestamp,
     std::unique_ptr<ClientFrameStats> stats,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -203,11 +204,12 @@ void WebrtcVideoRendererAdapter::DrawFrame(
   video_renderer_->GetFrameConsumer()->DrawFrame(
       std::move(frame),
       base::BindOnce(&WebrtcVideoRendererAdapter::FrameRendered,
-                     weak_factory_.GetWeakPtr(), frame_id, std::move(stats)));
+                     weak_factory_.GetWeakPtr(), rtp_timestamp,
+                     std::move(stats)));
 }
 
 void WebrtcVideoRendererAdapter::FrameRendered(
-    uint32_t frame_id,
+    uint32_t rtp_timestamp,
     std::unique_ptr<ClientFrameStats> client_stats) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -216,18 +218,18 @@ void WebrtcVideoRendererAdapter::FrameRendered(
 
   client_stats->time_rendered = base::TimeTicks::Now();
 
-  // Drop all HostFrameStats for frames before |frame_id|. Stats messages are
-  // expected to be received in the same order as the corresponding video
+  // Drop all HostFrameStats for frames before |rtp_timestamp|. Stats messages
+  // are expected to be received in the same order as the corresponding video
   // frames. This may happen only if the host generates HostFrameStats without
   // the corresponding frame.
   while (!host_stats_queue_.empty() &&
-         host_stats_queue_.front().first != frame_id) {
+         host_stats_queue_.front().first != rtp_timestamp) {
     LOG(WARNING) << "Host sent VideoStats message for a frame that was never "
                     "received.";
     host_stats_queue_.pop_front();
   }
 
-  // If HostFrameStats hasn't been received for |frame_id| then queue
+  // If HostFrameStats hasn't been received for |rtp_timestamp| then queue
   // ClientFrameStats to be processed in OnVideoFrameStats().
   if (host_stats_queue_.empty()) {
     if (client_stats_queue_.size() > kMaxQueuedStats) {
@@ -236,14 +238,14 @@ void WebrtcVideoRendererAdapter::FrameRendered(
       video_stats_dispatcher_.reset();
       return;
     }
-    client_stats_queue_.push_back(std::make_pair(frame_id, *client_stats));
+    client_stats_queue_.emplace_back(rtp_timestamp, *client_stats);
     return;
   }
 
   // The correspond HostFrameStats has been received already and now we have
   // both HostFrameStats and ClientFrameStats. Report the stats to
   // FrameStatsConsumer.
-  DCHECK_EQ(host_stats_queue_.front().first, frame_id);
+  DCHECK_EQ(host_stats_queue_.front().first, rtp_timestamp);
   FrameStats frame_stats;
   frame_stats.host_stats = host_stats_queue_.front().second;
   frame_stats.client_stats = *client_stats;
