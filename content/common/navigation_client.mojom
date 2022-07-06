@@ -110,9 +110,14 @@ struct DidCommitProvisionalLoadParams {
   // successfully cleared.
   bool history_list_was_cleared;
 
-  // Origin of the frame.  This will be replicated to any associated
+  // Origin of the document.  This will be replicated to any associated
   // RenderFrameProxies.
   url.mojom.Origin origin;
+
+  // Information about how `origin` was calculated, to help debug if it differs
+  // from the origin calculated on the browser side.
+  // TODO(https://crbug.com/1220238): Remove this.
+  string origin_calculation_debug_info;
 
   // The 'Permissions-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field

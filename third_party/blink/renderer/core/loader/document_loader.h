@@ -192,6 +192,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   }
   void SetCodeCacheHost(
       mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) override;
+  WebString OriginCalculationDebugInfo() const override {
+    return origin_calculation_debug_info_;
+  }
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
@@ -575,6 +578,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       content_security_notifier_;
 
   const scoped_refptr<SecurityOrigin> origin_to_commit_;
+
+  // Information about how `origin_to_commit_` was calculated, to help debug if
+  // it differs from the origin calculated on the browser side.
+  // TODO(https://crbug.com/1220238): Remove this.
+  AtomicString origin_calculation_debug_info_;
+
   blink::BlinkStorageKey storage_key_;
   WebNavigationType navigation_type_;
 

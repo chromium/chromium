@@ -34,6 +34,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -239,6 +240,7 @@ struct SameSizeAsDocumentLoader
   bool is_error_page_for_failed_navigation;
   mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
   scoped_refptr<SecurityOrigin> origin_to_commit;
+  AtomicString origin_calculation_debug_info;
   BlinkStorageKey storage_key;
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
@@ -1918,12 +1920,14 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // navigations, where the origin was already calculated previously and
     // stored on the session history entry.
     origin = origin_to_commit_;
+    origin_calculation_debug_info_ = "use_origin_to_commit";
   } else if (IsPagePopupRunningInWebTest(frame_)) {
     // If we are a page popup in LayoutTests ensure we use the popup
     // owner's security origin so the tests can possibly access the
     // document via internals API.
     auto* owner_context = frame_->PagePopupOwner()->GetExecutionContext();
     origin = owner_context->GetSecurityOrigin()->IsolatedCopy();
+    origin_calculation_debug_info_ = "use_popup_owner_origin";
   } else if (owner_document && owner_document->domWindow()) {
     // Prefer taking `origin` from `owner_document` if one is available - this
     // will correctly inherit/alias `SecurityOrigin::domain_` from the
@@ -1942,7 +1946,9 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // But origin_to_commit_ is currently cloned with IsolatedCopy() which
     // breaks aliasing...
     origin = owner_document->domWindow()->GetMutableSecurityOrigin();
+    origin_calculation_debug_info_ = "use_owner_document_origin";
   } else {
+    origin_calculation_debug_info_ = "use_url_with_precursor";
     // Otherwise, create an origin that propagates precursor information
     // as needed. For non-opaque origins, this creates a standard tuple
     // origin, but for opaque origins, it creates an origin with the
@@ -1951,14 +1957,19 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // For uuid-in-package: resources served from WebBundles, use the Bundle's
     // origin as the precursor.
     if (url_.ProtocolIs("uuid-in-package") &&
-        response_.WebBundleURL().IsValid())
+        response_.WebBundleURL().IsValid()) {
       precursor = SecurityOrigin::Create(response_.WebBundleURL());
+      origin_calculation_debug_info_ =
+          origin_calculation_debug_info_ + "_web_bundle";
+    }
     origin = SecurityOrigin::CreateWithReferenceOrigin(url_, precursor.get());
   }
 
   if ((policy_container_->GetPolicies().sandbox_flags &
        network::mojom::blink::WebSandboxFlags::kOrigin) !=
       network::mojom::blink::WebSandboxFlags::kNone) {
+    origin_calculation_debug_info_ =
+        origin_calculation_debug_info_ + ", add_sandbox";
     auto sandbox_origin = origin->DeriveNewOpaqueOrigin();
 
     // If we're supposed to inherit our security origin from our
@@ -1971,10 +1982,16 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // Note: Sandboxed about:srcdoc iframe without "allow-same-origin" aren't
     // allowed to load user's file, even if its parent can.
     if (owner_document) {
-      if (origin->IsPotentiallyTrustworthy())
+      if (origin->IsPotentiallyTrustworthy()) {
         sandbox_origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
-      if (origin->CanLoadLocalResources() && !loading_srcdoc_)
+        origin_calculation_debug_info_ =
+            origin_calculation_debug_info_ + "_potentially_trustworthy";
+      }
+      if (origin->CanLoadLocalResources() && !loading_srcdoc_) {
         sandbox_origin->GrantLoadLocalResources();
+        origin_calculation_debug_info_ =
+            origin_calculation_debug_info_ + "_load_local";
+      }
     }
     origin = sandbox_origin;
   }
@@ -1988,31 +2005,46 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // navigated.
     CHECK(origin->IsOpaque());
     origin->GrantUniversalAccess();
+    origin_calculation_debug_info_ =
+        origin_calculation_debug_info_ + ", universal_access_webview";
   } else if (!frame_->GetSettings()->GetWebSecurityEnabled()) {
     // Web security is turned off. We should let this document access
     // every other document. This is used primary by testing harnesses for
     // web sites.
     origin->GrantUniversalAccess();
+    origin_calculation_debug_info_ =
+        origin_calculation_debug_info_ + ", universal_access_no_web_security";
   } else if (origin->IsLocal()) {
     if (frame_->GetSettings()->GetAllowUniversalAccessFromFileURLs()) {
       // Some clients want local URLs to have universal access, but that
       // setting is dangerous for other clients.
       origin->GrantUniversalAccess();
+      origin_calculation_debug_info_ =
+          origin_calculation_debug_info_ + ", universal_access_allow_file";
     } else if (!frame_->GetSettings()->GetAllowFileAccessFromFileURLs()) {
       // Some clients do not want local URLs to have access to other local
       // URLs.
       origin->BlockLocalAccessFromLocalOrigin();
+      origin_calculation_debug_info_ =
+          origin_calculation_debug_info_ + ", universal_access_block_file";
     }
   }
 
-  if (grant_load_local_resources_)
+  if (grant_load_local_resources_) {
     origin->GrantLoadLocalResources();
+    origin_calculation_debug_info_ =
+        origin_calculation_debug_info_ + ", grant_load_local_resources";
+  }
 
   if (origin->IsOpaque()) {
     KURL url = url_.IsEmpty() ? BlankURL() : url_;
-    if (SecurityOrigin::Create(url)->IsPotentiallyTrustworthy())
+    if (SecurityOrigin::Create(url)->IsPotentiallyTrustworthy()) {
       origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
+      origin_calculation_debug_info_ =
+          origin_calculation_debug_info_ + ", is_potentially_trustworthy";
+    }
   }
+
   return origin;
 }
 

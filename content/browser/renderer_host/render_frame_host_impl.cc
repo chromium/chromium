@@ -823,8 +823,9 @@ const char* LifecycleStateImplToString(
 }
 
 // Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
-// https://crbug.com/888079.
-void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
+// https://crbug.com/888079. Returns true if the origins match, and false
+// otherwise.
+bool VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     NavigationRequest* navigation_request,
     const mojom::DidCommitProvisionalLoadParams& params) {
   DCHECK(navigation_request);
@@ -839,7 +840,7 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // NavigationBrowserTest.OpenerNavigation_DownloadPolicy,
   // WebContentsImplBrowserTest.NewNamedWindow.
   if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
-    return;
+    return true;
 
   // Check if both the renderer and browser expect an opaque origin. This
   // effectively ignores the following:
@@ -849,14 +850,38 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // - blob urls with content scheme are opaque on browser side
   // (https://crbug.com/1295268)
   const url::Origin& renderer_side_origin = params.origin;
-  url::Origin browser_side_origin = navigation_request->GetOriginToCommit();
+  std::pair<url::Origin, std::string> browser_side_origin_and_debug_info =
+      navigation_request->GetOriginToCommitWithDebugInfo();
   if ((renderer_side_origin.opaque() ||
        renderer_side_origin.scheme() == url::kContentScheme) &&
-      browser_side_origin.opaque())
-    return;
+      browser_side_origin_and_debug_info.first.opaque()) {
+    return true;
+  }
 
-  DCHECK_EQ(browser_side_origin, renderer_side_origin)
+  // TODO(https://crbug.com/888079): Remove the DumpWithoutCrashing below, once
+  // we are sure that the `browser_side_origin` is always the same as the
+  // `renderer_side_origin`.
+  if (browser_side_origin_and_debug_info.first != renderer_side_origin) {
+    NavigationRequest::ScopedCrashKeys navigation_request_crash_keys(
+        *navigation_request);
+    SCOPED_CRASH_KEY_STRING256(
+        "", "browser_origin",
+        browser_side_origin_and_debug_info.first.GetDebugString());
+    SCOPED_CRASH_KEY_STRING256("", "browser_debug_info",
+                               browser_side_origin_and_debug_info.second);
+    SCOPED_CRASH_KEY_STRING256("", "renderer_origin",
+                               renderer_side_origin.GetDebugString());
+    SCOPED_CRASH_KEY_STRING256("", "renderer_debug_info",
+                               params.origin_calculation_debug_info);
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugBrowserVsRendererOriginToCommit);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+
+  DCHECK_EQ(browser_side_origin_and_debug_info.first, renderer_side_origin)
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
+  return true;
 }
 
 // Enum used for Navigation.VerifyDidCommitParams histogram, to indicate which
@@ -878,7 +903,8 @@ enum class VerifyDidCommitParamsDifference {
   kDidCreateNewEntry = 11,
   kTransition = 12,
   kHistoryListWasCleared = 13,
-  kMaxValue = kHistoryListWasCleared,
+  kOrigin = 14,
+  kMaxValue = kOrigin,
 };
 
 // A simplified version of Blink's WebFrameLoadType, used to simulate renderer
@@ -11664,11 +11690,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   renderer_reported_bfcache_disabling_features_.Clear();
   browser_reported_bfcache_disabling_features_counts_.clear();
 
-  // TODO(https://crbug.com/888079): The origin computed from the browser must
-  // match the one reported from the renderer process.
-  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(navigation_request,
-                                                             params);
-
   TakeNewDocumentPropertiesFromNavigation(navigation_request);
 
   // Set embedded documents' cross-origin-opener-policy from their top level:
@@ -12803,6 +12824,7 @@ void RenderFrameHostImpl::
   // - did_create_new_entry
   // - transition
   // - history_list_was_cleared
+  // - origin
   // TODO(crbug.com/1131832): Verify more params.
   // We can know if we're going to be in an error page after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
@@ -12868,27 +12890,37 @@ void RenderFrameHostImpl::
   const bool browser_history_list_was_cleared =
       request->commit_params().should_clear_history_list;
 
-  if ((!ShouldVerify("method") || browser_method == params.method) &&
-      (!ShouldVerify("url_is_unreachable") ||
-       browser_url_is_unreachable == params.url_is_unreachable) &&
-      (!ShouldVerify("post_id") || browser_post_id == params.post_id) &&
-      (!ShouldVerify("is_overriding_user_agent") ||
-       browser_is_overriding_user_agent == params.is_overriding_user_agent) &&
-      (!ShouldVerify("http_status_code") ||
-       browser_http_status_code == params.http_status_code) &&
-      (!ShouldVerify("should_update_history") ||
-       browser_should_update_history == params.should_update_history) &&
-      (!ShouldVerify("should_replace_current_entry") ||
-       browser_should_replace_current_entry ==
-           params.should_replace_current_entry) &&
-      (!ShouldVerify("url") || browser_url == params.url) &&
-      (!ShouldVerify("did_create_new_entry") ||
-       browser_did_create_new_entry == params.did_create_new_entry) &&
-      (!ShouldVerify("transition") ||
-       ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
-                                                   params.transition)) &&
-      (!ShouldVerify("history_list_was_cleared") ||
-       browser_history_list_was_cleared == params.history_list_was_cleared)) {
+  const bool everything_except_origin_matches =
+      ((!ShouldVerify("method") || browser_method == params.method) &&
+       (!ShouldVerify("url_is_unreachable") ||
+        browser_url_is_unreachable == params.url_is_unreachable) &&
+       (!ShouldVerify("post_id") || browser_post_id == params.post_id) &&
+       (!ShouldVerify("is_overriding_user_agent") ||
+        browser_is_overriding_user_agent == params.is_overriding_user_agent) &&
+       (!ShouldVerify("http_status_code") ||
+        browser_http_status_code == params.http_status_code) &&
+       (!ShouldVerify("should_update_history") ||
+        browser_should_update_history == params.should_update_history) &&
+       (!ShouldVerify("should_replace_current_entry") ||
+        browser_should_replace_current_entry ==
+            params.should_replace_current_entry) &&
+       (!ShouldVerify("url") || browser_url == params.url) &&
+       (!ShouldVerify("did_create_new_entry") ||
+        browser_did_create_new_entry == params.did_create_new_entry) &&
+       (!ShouldVerify("transition") ||
+        ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
+                                                    params.transition)) &&
+       (!ShouldVerify("history_list_was_cleared") ||
+        browser_history_list_was_cleared == params.history_list_was_cleared));
+  if (everything_except_origin_matches &&
+      (!ShouldVerify("origin") ||
+       request->state() < NavigationRequest::WILL_PROCESS_RESPONSE ||
+       request->GetOriginToCommit() == params.origin)) {
+    // Don't do a DumpWithoutCrashing if everything matches. Note that we save
+    // `everything_except_origin_matches` separately so that we can skip doing
+    // a DumpWithoutCrashing at the end of this function if the origin turns
+    // out to match (actual origin match checking is done below as it does its
+    // own DumpWithoutCrashing).
     return;
   }
 
@@ -13133,8 +13165,21 @@ void RenderFrameHostImpl::
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kHistoryListWasCleared);
   }
+  // TODO(https://crbug.com/888079): The origin computed from the browser must
+  // match the one reported from the renderer process.
+  if (!VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(request,
+                                                                  params)) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kOrigin);
+  }
 
-  base::debug::DumpWithoutCrashing();
+  if (!everything_except_origin_matches) {
+    // It's possible to get here when everything except the origin matches.
+    // If the origin doesn't match, we would do a DumpWithoutCrashing above.
+    // So, don't do a DumpWithoutCrashing unless there's another param that
+    // doesn't match.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {

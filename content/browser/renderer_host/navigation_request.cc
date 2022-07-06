@@ -778,7 +778,8 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
   }
 }
 
-url::Origin GetOriginForURLLoaderFactoryUnchecked(
+std::pair<url::Origin, std::string>
+GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
 
@@ -808,7 +809,9 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
     // opaque origin), but commits that URL as if it came from
     // |common_params.base_url_for_data_url|.  See also
     // https://crbug.com/976253.
-    return url::Origin::Create(common_params.base_url_for_data_url);
+    return std::make_pair(
+        url::Origin::Create(common_params.base_url_for_data_url),
+        "load_data_with_base_url");
   }
 
   // Srcdoc subframes need to inherit their origin from their parent frame.
@@ -823,23 +826,35 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
     //
     // See also NavigationBrowserTest.BlockedSrcDoc* tests.
     DCHECK(parent || navigation_request->GetNetErrorCode() != net::OK);
-    return parent ? parent->GetLastCommittedOrigin() : url::Origin();
+    return std::make_pair(
+        parent ? parent->GetLastCommittedOrigin() : url::Origin(),
+        "about_srcdoc");
   }
 
   // Uuid-in-package: subframes from WebBundles have opaque origins derived from
   // the Bundle's origin.
   if (common_params.url.SchemeIs(url::kUuidInPackageScheme) &&
       navigation_request->GetWebBundleURL().is_valid()) {
-    return url::Origin::Resolve(
-        common_params.url,
-        url::Origin::Create(navigation_request->GetWebBundleURL()));
+    return std::make_pair(
+        url::Origin::Resolve(
+            common_params.url,
+            url::Origin::Create(navigation_request->GetWebBundleURL())),
+        "web_bundle");
   }
 
   // In cases not covered above, URLLoaderFactory should be associated with the
   // origin of |common_params.url| and/or |common_params.initiator_origin|.
-  return url::Origin::Resolve(
-      common_params.url,
-      common_params.initiator_origin.value_or(url::Origin()));
+  return std::make_pair(
+      url::Origin::Resolve(
+          common_params.url,
+          common_params.initiator_origin.value_or(url::Origin())),
+      "url_or_initiator");
+}
+
+url::Origin GetOriginForURLLoaderFactoryUnchecked(
+    NavigationRequest* navigation_request) {
+  return GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(navigation_request)
+      .first;
 }
 
 // Returns true if the parent's COEP policy `parent_coep` should block a child
@@ -6308,11 +6323,25 @@ url::Origin NavigationRequest::GetOriginToCommit() {
   return GetOriginForURLLoaderFactoryWithFinalFrameHost();
 }
 
+std::pair<url::Origin, std::string>
+NavigationRequest::GetOriginToCommitWithDebugInfo() {
+  return GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo();
+}
+
 url::Origin
 NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
     network::mojom::WebSandboxFlags sandbox_flags) {
+  return GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
+             sandbox_flags)
+      .first;
+}
+
+std::pair<url::Origin, std::string> NavigationRequest::
+    GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
+        network::mojom::WebSandboxFlags sandbox_flags) {
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
-  url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+  std::pair<url::Origin, std::string> origin_and_debug_info =
+      GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(this);
 
   // Apply sandbox flags.
   // See https://html.spec.whatwg.org/#sandboxed-origin-browsing-context-flag
@@ -6327,35 +6356,51 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
   bool use_opaque_origin =
       (sandbox_flags & network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin;
+  if (use_opaque_origin) {
+    origin_and_debug_info.second += ", sandbox_flags";
+  }
   // TODO(https://crbug.com/1158370): Move special-casing error pages into
   // ComputeSandboxFlagsToCommit (and renderer-side origin calculations) so that
   // the most strict sandbox flags are applied.
-  if (GetNetErrorCode() != net::OK)
+  if (GetNetErrorCode() != net::OK) {
     use_opaque_origin = true;
-  if (use_opaque_origin)
-    origin = origin.DeriveNewOpaqueOrigin();
+    origin_and_debug_info.second += ", error";
+  }
 
-  return origin;
+  if (use_opaque_origin) {
+    origin_and_debug_info =
+        std::make_pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
+                       origin_and_debug_info.second);
+  }
+
+  return origin_and_debug_info;
 }
 
 url::Origin
 NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
+  return GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo().first;
+}
+
+std::pair<url::Origin, std::string> NavigationRequest::
+    GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo() {
   // The origin to commit is not known until we get the final network response.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
 
   if (IsSameDocument() || IsPageActivation())
-    return GetRenderFrameHost()->GetLastCommittedOrigin();
+    return std::make_pair(GetRenderFrameHost()->GetLastCommittedOrigin(),
+                          "same_doc_or_page_activation");
 
-  url::Origin origin =
-      GetOriginForURLLoaderFactoryWithoutFinalFrameHost(SandboxFlagsToCommit());
-
-  // MHTML documents should commit as an opaque origin. They should not be able
-  // to make network request on behalf of the real origin.
-  DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
+  std::pair<url::Origin, std::string> origin_with_debug_info =
+      GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
+          SandboxFlagsToCommit());
 
   // MHTML documents should commit as an opaque origin. They should not be able
   // to make network request on behalf of the real origin.
-  DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
+  DCHECK(!IsMhtmlOrSubframe() || origin_with_debug_info.first.opaque());
+
+  // MHTML documents should commit as an opaque origin. They should not be able
+  // to make network request on behalf of the real origin.
+  DCHECK(!IsMhtmlOrSubframe() || origin_with_debug_info.first.opaque());
 
   // Note that GetRenderFrameHost() only allows to retrieve the RenderFrameHost
   // once it has been set for this navigation.  This will happens either at
@@ -6364,19 +6409,20 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
   // Check that |origin| is allowed to be accessed from the process that is the
   // target of this navigation.
   if (GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this))
-    return origin;
+    return origin_with_debug_info;
 
   // MHTML iframes can load documents from any origin, no matter the current
   // policy of the process being used. This is because the content is loaded
   // from the MHTML archive within the process. There are no data loaded from
   // the network.
   if (IsForMhtmlSubframe())
-    return origin;
+    return origin_with_debug_info;
 
   int process_id = GetRenderFrameHost()->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  CHECK(policy->CanAccessDataForOrigin(process_id, origin));
-  return origin;
+  CHECK(
+      policy->CanAccessDataForOrigin(process_id, origin_with_debug_info.first));
+  return origin_with_debug_info;
 }
 
 void NavigationRequest::WriteIntoTrace(

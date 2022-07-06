@@ -137,6 +137,8 @@ class BLINK_EXPORT WebDocumentLoader {
   virtual void SetCodeCacheHost(
       mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) = 0;
 
+  virtual WebString OriginCalculationDebugInfo() const = 0;
+
  protected:
   ~WebDocumentLoader() = default;
 };

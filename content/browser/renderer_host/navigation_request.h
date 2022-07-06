@@ -770,6 +770,13 @@ class CONTENT_EXPORT NavigationRequest
   // navigation fails with an error page.
   url::Origin GetOriginToCommit();
 
+  // Same as `GetOriginToCommit()`, except that includes information about how
+  // the origin gets calculated, to help debug if the browser-side calculated
+  // origin for this navigation differs from the origin calculated on the
+  // renderer side.
+  // TODO(https://crbug.com/1220238): Remove this.
+  std::pair<url::Origin, std::string> GetOriginToCommitWithDebugInfo();
+
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.
   void SetSilentlyIgnoreBlockedByClient() {
@@ -1505,6 +1512,17 @@ class CONTENT_EXPORT NavigationRequest
   // the origin with information from the final frame host. Can be called only
   // after the final response is received or ready.
   url::Origin GetOriginForURLLoaderFactoryWithFinalFrameHost();
+
+  // These functions are the same as their non-WithDebugInfo counterparts,
+  // except that they include information about how the origin gets calculated,
+  // to help debug if the browser-side calculated origin for this navigation
+  // differs from the origin calculated on the renderer side.
+  // TODO(https://crbug.com/1220238): Remove this.
+  std::pair<url::Origin, std::string>
+  GetOriginForURLLoaderFactoryWithoutFinalFrameHostWithDebugInfo(
+      network::mojom::WebSandboxFlags sandbox_flags);
+  std::pair<url::Origin, std::string>
+  GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo();
 
   // Computes the web-exposed isolation information based on `coop_status_` and
   // current `frame_tree_node_` info.
