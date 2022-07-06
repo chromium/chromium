@@ -36,6 +36,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_fence.h"
+#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 
 namespace {
