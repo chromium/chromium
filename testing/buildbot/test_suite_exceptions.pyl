@@ -2864,6 +2864,12 @@
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
+      'android-nougat-x86-rel': {
+        'args': [
+          # TODO(crbug.com/1260440): Fix the failed test
+          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
+        ],
+      },
       'fuchsia-fyi-x64-asan': {
         'args': [
           # TODO(crbug.com/1199334): Error messages only show up in klog.
