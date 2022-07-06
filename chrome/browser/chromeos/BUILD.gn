@@ -3503,7 +3503,6 @@ source_set("unit_tests") {
     "policy/dlp/dlp_clipboard_notifier_unittest.cc",
     "policy/dlp/dlp_confidential_contents_unittest.cc",
     "policy/dlp/dlp_content_tab_helper_unittest.cc",
-    "policy/dlp/dlp_data_transfer_notifier_unittest.cc",
     "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
     "policy/dlp/dlp_reporting_manager_test_helper.cc",
     "policy/dlp/dlp_reporting_manager_test_helper.h",
