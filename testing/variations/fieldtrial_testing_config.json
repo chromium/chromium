@@ -6067,13 +6067,16 @@
                         "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
                         "OmniboxLocalZeroSuggestAgeThreshold": "60",
                         "OmniboxMaxURLMatches": "7",
+                        "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8",
                         "ZeroSuggestCacheCounterfactual": "true",
                         "ZeroSuggestCacheDurationSec": "0",
+                        "ZeroSuggestIgnoreDuplicateVisits": "false",
                         "ZeroSuggestPrefetchBypassCache": "true"
                     },
                     "enable_features": [
+                        "LocalHistorySuggestRevamp",
                         "OmniboxAggregateShortcuts",
                         "OmniboxBlurWithEscape",
                         "OmniboxBookmarkPaths",
