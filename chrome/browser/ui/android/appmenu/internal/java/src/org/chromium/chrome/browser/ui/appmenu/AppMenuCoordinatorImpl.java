@@ -11,6 +11,7 @@ import android.view.ViewConfiguration;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /** A UI coordinator the app menu. */
@@ -56,18 +57,20 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      *         activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
+     * @param windowY Vertical offset of the Window from the origin.
      */
     public AppMenuCoordinatorImpl(Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MenuButtonDelegate buttonDelegate, AppMenuDelegate appMenuDelegate, View decorView,
-            View hardwareButtonAnchorView) {
+            View hardwareButtonAnchorView, Supplier<Integer> windowY) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
         mAppMenuPropertiesDelegate = mAppMenuDelegate.createAppMenuPropertiesDelegate();
 
-        mAppMenuHandler = new AppMenuHandlerImpl(mContext, mAppMenuPropertiesDelegate,
-                mAppMenuDelegate, decorView, activityLifecycleDispatcher, hardwareButtonAnchorView);
+        mAppMenuHandler =
+                new AppMenuHandlerImpl(mContext, mAppMenuPropertiesDelegate, mAppMenuDelegate,
+                        decorView, activityLifecycleDispatcher, hardwareButtonAnchorView, windowY);
     }
 
     @Override

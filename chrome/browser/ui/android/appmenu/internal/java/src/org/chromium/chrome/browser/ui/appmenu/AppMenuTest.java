@@ -96,7 +96,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mTestMenuButtonDelegate = new TestMenuButtonDelegate();
         mAppMenuCoordinator = new AppMenuCoordinatorImpl(getActivity(), mLifecycleDispatcher,
                 mTestMenuButtonDelegate, mDelegate, getActivity().getWindow().getDecorView(),
-                getActivity().findViewById(R.id.menu_anchor_stub));
+                getActivity().findViewById(R.id.menu_anchor_stub), () -> 0);
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
