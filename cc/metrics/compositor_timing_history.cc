@@ -30,9 +30,6 @@ class CompositorTimingHistory::UMAReporter {
 
   // Latency measurements
   virtual void AddBeginImplFrameLatency(base::TimeDelta delta) = 0;
-  virtual void AddInvalidationToReadyToActivateDuration(
-      base::TimeDelta duration,
-      TreePriority priority) = 0;
   virtual void AddDrawDuration(base::TimeDelta duration) = 0;
 
   // crbug.com/758439: the following functions are used to report timing in
@@ -344,14 +341,6 @@ class RendererUMAReporter : public CompositorTimingHistory::UMAReporter {
         "Scheduling.Renderer.BeginImplFrameLatency", delta);
   }
 
-  void AddInvalidationToReadyToActivateDuration(
-      base::TimeDelta duration,
-      TreePriority priority) override {
-    UMA_HISTOGRAM_READY_TO_ACTIVATE(
-        "Scheduling.Renderer.InvalidationToReadyToActivateDuration", duration,
-        priority);
-  }
-
   void AddDrawDuration(base::TimeDelta duration) override {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Renderer.DrawDuration",
                                         duration);
@@ -380,14 +369,6 @@ class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
         "Scheduling.Browser.BeginImplFrameLatency", delta);
   }
 
-  void AddInvalidationToReadyToActivateDuration(
-      base::TimeDelta duration,
-      TreePriority priority) override {
-    UMA_HISTOGRAM_READY_TO_ACTIVATE(
-        "Scheduling.Browser.InvalidationToReadyToActivateDuration", duration,
-        priority);
-  }
-
   void AddDrawDuration(base::TimeDelta duration) override {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Browser.DrawDuration",
                                         duration);
@@ -407,9 +388,6 @@ class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
   void AddDrawIntervalWithCustomPropertyAnimations(
       base::TimeDelta inverval) override {}
   void AddBeginImplFrameLatency(base::TimeDelta delta) override {}
-  void AddInvalidationToReadyToActivateDuration(
-      base::TimeDelta duration,
-      TreePriority priority) override {}
   void AddDrawDuration(base::TimeDelta duration) override {}
   void AddImplFrameDeadlineType(
       CompositorTimingHistory::DeadlineMode deadline_mode) override {}
@@ -722,12 +700,7 @@ void CompositorTimingHistory::ReadyToActivate() {
   DCHECK_EQ(pending_tree_ready_to_activate_time_, base::TimeTicks());
 
   pending_tree_ready_to_activate_time_ = Now();
-  if (pending_tree_is_impl_side_) {
-    base::TimeDelta time_since_invalidation =
-        pending_tree_ready_to_activate_time_ - pending_tree_creation_time_;
-    uma_reporter_->AddInvalidationToReadyToActivateDuration(
-        time_since_invalidation, tree_priority_);
-  } else {
+  if (!pending_tree_is_impl_side_) {
     base::TimeDelta time_since_commit =
         pending_tree_ready_to_activate_time_ - pending_tree_creation_time_;
 

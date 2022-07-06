@@ -1360,16 +1360,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Scheduling.ImageInvalidationUpdateDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CompositorTreePriority" separator=".">
-  <suffix name="NewContent" label="New content/pending tree takes priority."/>
-  <suffix name="Same" label="Same priority for both trees."/>
-  <suffix name="Smoothness" label="Smoothness takes priority."/>
-  <affected-histogram
-      name="Scheduling.Browser.InvalidationToReadyToActivateDuration2"/>
-  <affected-histogram
-      name="Scheduling.Renderer.InvalidationToReadyToActivateDuration2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ConnCountImpact" separator="_">
   <suffix name="conn_count_4" label="with 4 persistent connections per host"/>
   <suffix name="conn_count_5" label="with 5 persistent connections per host"/>
