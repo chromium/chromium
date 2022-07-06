@@ -18,42 +18,60 @@
 
 namespace quarantine {
 
+// On macOS 12.4+ the LSQuarantineDataURL and LSQuarantineOriginURL keys are
+// ignored by LaunchServices. This function will ensure the file has quarantine
+// data set with kLSQuarantineAgentBundleIdentifierKey mapping to any string.
+// The LSQuarantineDataURL and LSQuarantineOriginURL are treated as optional. If
+// the file has them set, the function will try to match the expected values.
+// Otherwise the URL matching check will be skipped.
 bool IsFileQuarantined(const base::FilePath& file,
                        const GURL& expected_source_url_unsafe,
                        const GURL& expected_referrer_url_unsafe) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (!base::PathExists(file))
+  if (!base::PathExists(file)) {
     return false;
+  }
 
   base::scoped_nsobject<NSMutableDictionary> properties;
   bool success = GetQuarantineProperties(file, &properties);
 
-  if (!success || !properties)
-    return false;
-
-  GURL expected_source_url =
-      SanitizeUrlForQuarantine(expected_source_url_unsafe);
-  GURL expected_referrer_url =
-      SanitizeUrlForQuarantine(expected_referrer_url_unsafe);
-
-  NSString* source_url =
-      [[properties valueForKey:(NSString*)kLSQuarantineDataURLKey] description];
-
-  if (!expected_source_url.is_valid())
-    return [source_url length] > 0;
-
-  if (![source_url isEqualToString:base::SysUTF8ToNSString(
-                                       expected_source_url.spec())]) {
+  if (!success || !properties) {
     return false;
   }
 
-  return !expected_referrer_url.is_valid() ||
-         [[[properties valueForKey:(NSString*)kLSQuarantineOriginURLKey]
-             description]
-             isEqualToString:base::SysUTF8ToNSString(
-                                 expected_referrer_url.spec())];
+  // The agent bundle id must always be set.
+  NSString* bundle_id =
+      [properties valueForKey:(NSString*)kLSQuarantineAgentBundleIdentifierKey];
+  if (!bundle_id.length) {
+    return false;
+  }
+
+  // The source and referrer URLs are optional.
+  GURL expected_source_url =
+      SanitizeUrlForQuarantine(expected_source_url_unsafe);
+  NSString* source_url =
+      [[properties valueForKey:(NSString*)kLSQuarantineDataURLKey] description];
+  if (expected_source_url.is_valid() && source_url.length) {
+    if (![source_url isEqualToString:base::SysUTF8ToNSString(
+                                         expected_source_url.spec())]) {
+      return false;
+    }
+  }
+
+  GURL expected_referrer_url =
+      SanitizeUrlForQuarantine(expected_referrer_url_unsafe);
+  NSString* referrer_url = [[properties
+      valueForKey:(NSString*)kLSQuarantineOriginURLKey] description];
+  if (expected_referrer_url.is_valid() && referrer_url.length) {
+    if (![referrer_url isEqualToString:base::SysUTF8ToNSString(
+                                           expected_referrer_url.spec())]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace quarantine

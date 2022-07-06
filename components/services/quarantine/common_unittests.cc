@@ -42,6 +42,10 @@ TEST(QuarantineCommonTest, SanitizeUrlForQuarantine) {
       // data URL is dropped.
       {"data:text/plain,hello%20world!", ""},
 
+      // Trailing / added.
+      {"http://www.source.example.com", "http://www.source.example.com/"},
+      {"http://www.referrer.example.com", "http://www.referrer.example.com/"},
+
       // Invalid URL is dropped.
       {"1|\\|\\/4L||>", ""},
   };
