@@ -2017,6 +2017,14 @@ const FeatureEntry::FeatureVariation kFeedPositionAndroidVariations[] = {
      std::size(kFeedPositionAndroid_pull_up_feed), nullptr},
 };
 
+const FeatureEntry::FeatureParam kSearchResumption_use_new_service[] = {
+    {"use_new_service", "true"}};
+const FeatureEntry::FeatureVariation
+    kSearchResumptionModuleAndroidVariations[] = {
+        {"Use New Service", kSearchResumption_use_new_service,
+         std::size(kSearchResumption_use_new_service), nullptr},
+};
+
 const FeatureEntry::FeatureParam kFeatureNotificationGuide_low_engaged[] = {
     {"enable_feature_incognito_tab", "true"},
     {"enable_feature_ntp_suggestion_card", "true"},
@@ -5696,7 +5704,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-search-resumption-module",
      flag_descriptions::kSearchResumptionModuleAndroidName,
      flag_descriptions::kSearchResumptionModuleAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSearchResumptionModuleAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kSearchResumptionModuleAndroid,
+         kSearchResumptionModuleAndroidVariations,
+         "kSearchResumptionModuleAndroid")},
 
     {"enable-close-tab-suggestions",
      flag_descriptions::kCloseTabSuggestionsName,

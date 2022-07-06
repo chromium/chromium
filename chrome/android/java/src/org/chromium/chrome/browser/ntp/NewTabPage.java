@@ -63,6 +63,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
+import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
@@ -156,6 +158,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
+
+    private final SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
 
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
@@ -419,6 +423,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
                 shareDelegateSupplier, crowButtonDelegate, url);
+
+        mSearchResumptionModuleCoordinator =
+                SearchResumptionModuleUtils.mayCreateSearchResumptionModule(mNewTabPageLayout,
+                        mTabModelSelector.getCurrentModel(), mTab, profile,
+                        R.id.search_resumption_module_container_stub);
 
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -878,6 +887,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTab.getWindowAndroid().removeContextMenuCloseListener(mContextMenuManager);
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.removeObserver(this);
+        }
+        if (mSearchResumptionModuleCoordinator != null) {
+            mSearchResumptionModuleCoordinator.destroy();
         }
         mIsDestroyed = true;
     }
