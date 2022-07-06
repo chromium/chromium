@@ -13,6 +13,7 @@ extern const base::Feature kLinkCapturingUiUpdate;
 extern const base::Feature kLinkCapturingInfoBar;
 extern const base::Feature kIntentChipSkipsPicker;
 extern const base::Feature kIntentChipAppIcon;
+extern const base::Feature kLinkCapturingAutoDisplayIntentPicker;
 
 // Returns true if the overall link capturing UI update feature is enabled.
 bool LinkCapturingUiUpdateEnabled();
@@ -31,6 +32,11 @@ bool LinkCapturingInfoBarEnabled();
 // can handle the current URL. If false, a generic icon should always be used.
 // Only returns true if LinkCapturingUiUpdateEnabled() returns true.
 bool AppIconInIntentChipEnabled();
+
+// Returns true if the intent picker bubble should automatically display when
+// navigating through a link click to a page with installed link capturing apps.
+// Always returns true if LinkCapturingUiUpdateEnabled() returns false.
+bool IntentPickerAutoDisplayEnabled();
 
 }  // namespace apps::features
 

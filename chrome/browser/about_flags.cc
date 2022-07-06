@@ -8728,6 +8728,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncEnableHistoryDataTypeDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncEnableHistoryDataType)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"link-capturing-auto-display-intent-picker",
+     flag_descriptions::kLinkCapturingAutoDisplayIntentPickerName,
+     flag_descriptions::kLinkCapturingAutoDisplayIntentPickerDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(apps::features::kLinkCapturingAutoDisplayIntentPicker)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

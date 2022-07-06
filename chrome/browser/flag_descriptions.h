@@ -3349,6 +3349,9 @@ extern const char kIntentChipSkipsPickerDescription[];
 extern const char kIntentChipAppIconName[];
 extern const char kIntentChipAppIconDescription[];
 
+extern const char kLinkCapturingAutoDisplayIntentPickerName[];
+extern const char kLinkCapturingAutoDisplayIntentPickerDescription[];
+
 extern const char kLinkCapturingInfoBarName[];
 extern const char kLinkCapturingInfoBarDescription[];
 

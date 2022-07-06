@@ -54,8 +54,9 @@ bool ShouldAutoDisplayUi(
 
   const GURL& url = navigation_handle->GetURL();
 
-  // Disable Auto-display when the Intent Chip is enabled.
-  if (features::LinkCapturingUiUpdateEnabled())
+  // Disable Auto-display in the new Intent Picker UI unless it is specifically
+  // re-enabled.
+  if (!features::IntentPickerAutoDisplayEnabled())
     return false;
 
   if (apps_for_picker.empty())
