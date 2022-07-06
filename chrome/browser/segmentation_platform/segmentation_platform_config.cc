@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
@@ -159,14 +160,16 @@ bool IsEnabledContextualPageActions() {
     return false;
 
   return base::FeatureList::IsEnabled(
-      features::kContextualPageActionPriceTracking);
+             features::kContextualPageActionPriceTracking) &&
+         base::FeatureList::IsEnabled(commerce::kShoppingList);
 }
 
 std::unique_ptr<Config> GetConfigForContextualPageActions() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kContextualPageActionsKey;
   if (base::FeatureList::IsEnabled(
-          features::kContextualPageActionPriceTracking)) {
+          features::kContextualPageActionPriceTracking) &&
+      base::FeatureList::IsEnabled(commerce::kShoppingList)) {
     config->segment_ids.push_back(
         SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
   }
