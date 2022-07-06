@@ -97,7 +97,7 @@ class OmniboxRowView::HeaderView : public views::View {
 
     if (row_view_->pref_service_) {
       suggestion_group_hidden_ =
-          row_view_->model_->result().IsSuggestionGroupIdHidden(
+          row_view_->model_->result().IsSuggestionGroupHidden(
               row_view_->pref_service_, suggestion_group_id_);
 
       header_toggle_button_->SetToggled(suggestion_group_hidden_);
@@ -214,7 +214,7 @@ class OmniboxRowView::HeaderView : public views::View {
     DCHECK(row_view_->pref_service_);
     bool was_hidden = suggestion_group_hidden_;
     suggestion_group_hidden_ =
-        row_view_->model_->result().IsSuggestionGroupIdHidden(
+        row_view_->model_->result().IsSuggestionGroupHidden(
             row_view_->pref_service_, suggestion_group_id_);
 
     if (was_hidden != suggestion_group_hidden_) {

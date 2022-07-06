@@ -109,7 +109,7 @@ std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
 }  // namespace
 
 // Value chosen based on SuggestionGroupIds::INVALID in suggestion_config.proto.
-const int SearchSuggestionParser::kNoSuggestionGroupId = -1;
+const int SearchSuggestionParser::kInvalidSuggestionGroupId = -1;
 
 // SearchSuggestionParser::Result ----------------------------------------------
 

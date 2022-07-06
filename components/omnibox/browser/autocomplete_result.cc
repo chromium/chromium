@@ -393,7 +393,7 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
       // additional_info field for chrome://omnibox.
       int group_id = it->suggestion_group_id.value();
       it->RecordAdditionalInfo("suggestion_group_id", group_id);
-      const std::u16string header = GetHeaderForGroupId(group_id);
+      const std::u16string header = GetHeaderForSuggestionGroup(group_id);
       if (!header.empty()) {
         it->RecordAdditionalInfo("header string", header);
       } else {
@@ -945,7 +945,7 @@ AutocompleteResult::GetMatchDedupComparators() const {
   return comparators;
 }
 
-std::u16string AutocompleteResult::GetHeaderForGroupId(
+std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
     int suggestion_group_id) const {
   const auto& it = headers_map_.find(suggestion_group_id);
   if (it != headers_map_.end())
@@ -953,7 +953,7 @@ std::u16string AutocompleteResult::GetHeaderForGroupId(
   return std::u16string();
 }
 
-bool AutocompleteResult::IsSuggestionGroupIdHidden(
+bool AutocompleteResult::IsSuggestionGroupHidden(
     PrefService* prefs,
     int suggestion_group_id) const {
   omnibox::SuggestionGroupVisibility user_preference =

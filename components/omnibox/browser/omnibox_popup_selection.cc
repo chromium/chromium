@@ -45,8 +45,8 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
   // user is trying to focus the header itself (which is still shown).
   if (state != FOCUSED_BUTTON_HEADER && match.suggestion_group_id.has_value() &&
       pref_service &&
-      result.IsSuggestionGroupIdHidden(pref_service,
-                                       match.suggestion_group_id.value())) {
+      result.IsSuggestionGroupHidden(pref_service,
+                                     match.suggestion_group_id.value())) {
     return false;
   }
 

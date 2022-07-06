@@ -37,7 +37,7 @@ class SearchSuggestionParser {
   SearchSuggestionParser& operator=(const SearchSuggestionParser&) = delete;
 
   // Indicates a missing suggestion group Id.
-  static const int kNoSuggestionGroupId;
+  static const int kInvalidSuggestionGroupId;
 
   // The Result classes are intermediate representations of AutocompleteMatches,
   // simply containing relevance-ranked search and navigation suggestions.
@@ -215,8 +215,8 @@ class SearchSuggestionParser {
     // suggestion_config.proto
     // Used to look up the header this suggestion must appear under from the
     // server supplied map of suggestion group Ids to headers.
-    // Note: Use kNoSuggestionGroupId in place of a missing suggestion group Id
-    // when this is to be converted to a primitive type.
+    // Note: Use kInvalidSuggestionGroupId in place of a missing suggestion
+    // group Id when this is to be converted to a primitive type.
     absl::optional<int> suggestion_group_id_;
 
     // Optional short answer to the input that produced this suggestion.

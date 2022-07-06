@@ -1953,8 +1953,8 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
       DCHECK(match.suggestion_group_id.has_value());
 
       omnibox::SuggestionGroupVisibility new_value =
-          result().IsSuggestionGroupIdHidden(GetPrefService(),
-                                             match.suggestion_group_id.value())
+          result().IsSuggestionGroupHidden(GetPrefService(),
+                                           match.suggestion_group_id.value())
               ? omnibox::SuggestionGroupVisibility::SHOWN
               : omnibox::SuggestionGroupVisibility::HIDDEN;
       omnibox::SetSuggestionGroupVisibility(
@@ -2042,13 +2042,13 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   std::u16string additional_message;
   switch (popup_selection_.state) {
     case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
-      bool group_hidden = result().IsSuggestionGroupIdHidden(
+      bool group_hidden = result().IsSuggestionGroupHidden(
           GetPrefService(), match.suggestion_group_id.value());
       int message_id = group_hidden ? IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON
                                     : IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON;
-      return l10n_util::GetStringFUTF16(
-          message_id,
-          result().GetHeaderForGroupId(match.suggestion_group_id.value()));
+      return l10n_util::GetStringFUTF16(message_id,
+                                        result().GetHeaderForSuggestionGroup(
+                                            match.suggestion_group_id.value()));
     }
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;

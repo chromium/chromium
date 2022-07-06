@@ -231,13 +231,13 @@ class AutocompleteResult {
 
   // Gets the header string associated with |suggestion_group_id|. Returns an
   // empty string if no header is found.
-  std::u16string GetHeaderForGroupId(int suggestion_group_id) const;
+  std::u16string GetHeaderForSuggestionGroup(int suggestion_group_id) const;
 
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
   // This method takes into account both the user's stored |prefs| as well as
   // the server-provided visibility hint for |suggestion_group_id|.
-  bool IsSuggestionGroupIdHidden(PrefService* prefs,
-                                 int suggestion_group_id) const;
+  bool IsSuggestionGroupHidden(PrefService* prefs,
+                               int suggestion_group_id) const;
 
   void MergeHeadersMap(const SearchSuggestionParser::HeadersMap& headers_map);
 

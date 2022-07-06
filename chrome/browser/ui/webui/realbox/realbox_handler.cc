@@ -132,13 +132,11 @@ CreateSuggestionGroupsMap(
         realbox::mojom::SuggestionGroup::New();
     suggestion_group->header = pair.second;
     suggestion_group->hidden =
-        result.IsSuggestionGroupIdHidden(prefs, pair.first);
-    suggestion_group->show_group_a11y_label =
-        l10n_util::GetStringFUTF16(IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON,
-                                   result.GetHeaderForGroupId(pair.first));
-    suggestion_group->hide_group_a11y_label =
-        l10n_util::GetStringFUTF16(IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON,
-                                   result.GetHeaderForGroupId(pair.first));
+        result.IsSuggestionGroupHidden(prefs, pair.first);
+    suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(
+        IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON, suggestion_group->header);
+    suggestion_group->hide_group_a11y_label = l10n_util::GetStringFUTF16(
+        IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON, suggestion_group->header);
 
     result_map.emplace(pair.first, std::move(suggestion_group));
   }
@@ -216,7 +214,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     }
     mojom_match->destination_url = match.destination_url;
     mojom_match->suggestion_group_id = match.suggestion_group_id.value_or(
-        SearchSuggestionParser::kNoSuggestionGroupId);
+        SearchSuggestionParser::kInvalidSuggestionGroupId);
     const bool is_bookmarked =
         bookmark_model->IsBookmarked(match.destination_url);
     mojom_match->icon_url =
@@ -690,7 +688,7 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
     return;
 
   omnibox::SuggestionGroupVisibility new_value =
-      autocomplete_controller_->result().IsSuggestionGroupIdHidden(
+      autocomplete_controller_->result().IsSuggestionGroupHidden(
           profile_->GetPrefs(), suggestion_group_id)
           ? omnibox::SuggestionGroupVisibility::SHOWN
           : omnibox::SuggestionGroupVisibility::HIDDEN;
