@@ -165,7 +165,7 @@
   {
     "name": "android-picture-in-picture-api",
     "owners": [ "steimel", "jazzhsu", "media-dev" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "animated-image-resume",
