@@ -175,7 +175,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
 
   content::WebUIDataSource::Add(profile_, source);
 
-  web_ui->RegisterDeprecatedMessageCallback(
+  web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&CastFeedbackUI::OnCloseMessage,
                                    base::Unretained(this)));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -185,7 +185,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(CastFeedbackUI)
 
 CastFeedbackUI::~CastFeedbackUI() = default;
 
-void CastFeedbackUI::OnCloseMessage(const base::ListValue*) {
+void CastFeedbackUI::OnCloseMessage(const base::Value::List&) {
   web_contents_->GetDelegate()->CloseContents(web_contents_);
 }
 
