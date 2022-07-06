@@ -573,8 +573,7 @@ TEST_F(AutoEnrollmentClientImplTest, EmptyReply) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -592,8 +591,7 @@ TEST_F(AutoEnrollmentClientImplTest, EmptyAutoEnrollmentRespose) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/false);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -612,8 +610,7 @@ TEST_F(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -660,8 +657,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/false);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -686,8 +682,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForLess) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -716,8 +711,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForSame) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -742,8 +736,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForSameTwice) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/false);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -762,8 +755,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForTooMuch) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/false);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -775,10 +767,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForTooMuch) {
 TEST_F(AutoEnrollmentClientImplTest, ServerRepliesWithTooLargeModulus) {
   constexpr int64_t max_modulus =
       (UINT64_C(1) << (AutoEnrollmentClient::kMaximumPower + 1)) - 1;
-  ServerWillReply(
-      /*modulus=*/max_modulus,
-      /*with_hashes=*/false,
-      /*with_id_hash=*/false);
+  ServerWillReply(max_modulus, /*with_hashes=*/false, /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -786,8 +775,7 @@ TEST_F(AutoEnrollmentClientImplTest, ServerRepliesWithTooLargeModulus) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/false);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -809,8 +797,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -832,8 +819,7 @@ TEST_F(AutoEnrollmentClientImplTest, ConsumerDevice) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -863,8 +849,7 @@ TEST_F(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -961,8 +946,7 @@ TEST_F(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -995,8 +979,7 @@ TEST_F(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1022,8 +1005,7 @@ TEST_F(AutoEnrollmentClientImplTest, DeviceDisabled) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1048,8 +1030,7 @@ TEST_F(AutoEnrollmentClientImplTest, NoReEnrollment) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1077,8 +1058,7 @@ TEST_F(AutoEnrollmentClientImplTest, NoBitsUploaded) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1132,8 +1112,7 @@ TEST_F(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1194,8 +1173,7 @@ TEST_F(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1409,8 +1387,7 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  ExpectHashDanceSyncExecutionTimeHistogram(
-      /*success_time_recorded=*/true);
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
 
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
   EXPECT_TRUE(HasCachedDecision());
@@ -1442,6 +1419,163 @@ TEST_F(AutoEnrollmentClientImplTest,
   EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
   EXPECT_FALSE(HasServerBackedState());
+}
+
+TEST_F(AutoEnrollmentClientImplTest, RetryIsSameAsStart) {
+  // First, the server replies correctly to server state availability and
+  // server state retrieval requests.
+  {
+    // EXPECT_CALL for state availablility and state retrieval requests are
+    // indistinguishable for gMock as there is currently no way to check
+    // arguments of `MockJobCreationHandler::OnJobCreation`, and that the
+    // created job is correct and corresponds with the request. The InSequence
+    // below is still needed as it ensures that the order in which we return
+    // values matches the order in which they are added.
+    InSequence sequence;
+    ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true,
+                    /*with_id_hash=*/true);
+    ServerWillSendState(std::string(),
+                        em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
+                        std::string(), kNotWithLicense,
+                        em::DeviceInitialEnrollmentStateResponse::NOT_EXIST);
+  }
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/2);
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
+  EXPECT_EQ(auto_enrollment_job_type_,
+            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
+  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  VerifyCachedResult(/*should_enroll=*/true, kPowerLimit);
+  VerifyServerBackedState(std::string(), std::string(), std::string(),
+                          kNotWithLicense, kNoLicenseType);
+
+  // Finally, the client does not request the server on connection change and
+  // uses its cached values.
+  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+
+  client()->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+}
+
+TEST_F(AutoEnrollmentClientImplTest,
+       RetryStateAvailabilityAfterConnectionErrorAndServerError) {
+  // First, the server fails with a connection error.
+  ServerWillFail(net::ERR_FAILED, DeviceManagementService::kSuccess);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceNetworkErrorHistogram(-net::ERR_FAILED);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+  EXPECT_FALSE(HasCachedDecision());
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Second, the server fails with an internal error.
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                        /*dm_status_count=*/1);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  EXPECT_FALSE(HasCachedDecision());
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Finally, the server responds with a correct server state availability
+  // result.
+  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
+                  /*with_id_hash=*/false);
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceSyncExecutionTimeHistogram(/*success_time_recorded=*/true);
+  EXPECT_EQ(auto_enrollment_job_type_,
+            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  VerifyCachedResult(/*should_enroll=*/false, kPowerLimit);
+  EXPECT_FALSE(HasServerBackedState());
+}
+
+TEST_F(AutoEnrollmentClientImplTest,
+       RetryStateRetrievalAfterConnectionErrorAndServerError) {
+  // Set up cached server state availability to skip the availability request.
+  local_state_->SetUserPref(prefs::kShouldAutoEnroll,
+                            std::make_unique<base::Value>(true));
+  local_state_->SetUserPref(prefs::kAutoEnrollmentPowerLimit,
+                            std::make_unique<base::Value>(8));
+
+  // First, the server fails with a connection error.
+  ServerWillFail(net::ERR_FAILED, DeviceManagementService::kSuccess);
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceNetworkErrorHistogram(-net::ERR_FAILED);
+  EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Second, the server fails with an internal error.
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                        /*dm_status_count=*/1);
+  EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Third, the server responds with a correct server state.
+  ServerWillSendState(std::string(),
+                      em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
+                      std::string(), kNotWithLicense,
+                      em::DeviceInitialEnrollmentStateResponse::NOT_EXIST);
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
+  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  VerifyCachedResult(/*should_enroll=*/true, kPowerLimit);
+  VerifyServerBackedState(std::string(), std::string(), std::string(),
+                          kNotWithLicense, kNoLicenseType);
+
+  // Finally, the client uses its cached result instead of requesting the
+  // server.
+  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  VerifyCachedResult(/*should_enroll=*/true, kPowerLimit);
+  VerifyServerBackedState(std::string(), std::string(), std::string(),
+                          kNotWithLicense, kNoLicenseType);
 }
 
 using AutoEnrollmentClientImplFREToInitialEnrollmentTest =
