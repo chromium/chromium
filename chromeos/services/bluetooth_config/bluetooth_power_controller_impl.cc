@@ -87,8 +87,10 @@ void BluetoothPowerControllerImpl::SetBluetoothHidDetectionActive() {
 void BluetoothPowerControllerImpl::SetBluetoothHidDetectionInactive(
     bool is_using_bluetooth) {
   if (is_using_bluetooth) {
-    BLUETOOTH_LOG(EVENT) << "HID detection finished but Bluetooth is being "
-                         << "used. Not restoring persisted Bluetooth state.";
+    BLUETOOTH_LOG(EVENT) << "HID detection finished and Bluetooth is being "
+                         << "used. Ensuring Bluetooth is enabled and the "
+                         << "enabled state persisted.";
+    SetBluetoothEnabledState(true);
     return;
   }
 

@@ -408,10 +408,9 @@ TEST_F(BluetoothPowerControllerImplTest,
   // Set HID detection inactive with Bluetooth being used.
   SetBluetoothHidDetectionInactive(/*is_using_bluetooth=*/true);
 
-  // The pref and adapter state should remain unchanged.
+  // The adapter state should remain unchanged and the pref set to enabled.
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kEnabling);
-  EXPECT_FALSE(
-      local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
 }
 
 }  // namespace bluetooth_config
