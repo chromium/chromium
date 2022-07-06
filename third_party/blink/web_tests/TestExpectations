@@ -4809,12 +4809,6 @@ crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.j
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule.js [ Failure Pass Timeout ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-change-node-while-editing.js [ Failure Pass ]
 
-# Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally timeout,
-# but the test coverage is still good.
-crbug.com/919789 fast/dom/Window/window-resize-contents.html [ Pass Timeout ]
-
-crbug.com/1021627 fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Failure Pass Timeout ]
-
 # Sheriff 2019-03-28
 crbug.com/946711 http/tests/devtools/editor/text-editor-search-switch-editor.js [ Failure Pass ]
 crbug.com/946712 [ Release ] http/tests/devtools/elements/styles-2/paste-property.js [ Crash Pass Timeout ]
