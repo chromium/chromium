@@ -55,7 +55,7 @@ export class FileWatcher extends EventTarget {
 
       if (eventURL === watchedDirURL) {
         fireWatcherDirectoryChanged(event.changedFiles);
-      } else if (watchedDirURL.match(new RegExp('^' + eventURL))) {
+      } else if (watchedDirURL.startsWith(eventURL)) {
         // When watched directory is deleted by the change in parent directory,
         // notify it as watcher directory changed.
         this.watchedDirectoryEntry_.getDirectory(
