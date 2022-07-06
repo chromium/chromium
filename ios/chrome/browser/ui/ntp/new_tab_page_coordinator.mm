@@ -398,15 +398,6 @@ namespace {
   self.feedWrapperViewController = nil;
   self.feedViewController = nil;
   self.feedMetricsRecorder = nil;
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    // Unfocus omnibox, to prevent it from lingering when it should be dismissed
-    // (for example, when navigating away or when changing feed visibility).
-    // Do this after the MVC classes are deallocated so no reset animations are
-    // fired in response to this cancel.
-    id<OmniboxCommands> omniboxCommandHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), OmniboxCommands);
-    [omniboxCommandHandler cancelOmniboxEdit];
-  }
 
   [self.feedExpandedPref setObserver:nil];
   self.feedExpandedPref = nil;
@@ -630,6 +621,15 @@ namespace {
         self.feedMetricsRecorder.feedControlDelegate = self;
         self.feedMetricsRecorder.followDelegate = self;
       }
+    }
+    if (!visible) {
+      // Unfocus omnibox, to prevent it from lingering when it should be
+      // dismissed (for example, when navigating away or when changing feed
+      // visibility). Do this after the MVC classes are deallocated so no reset
+      // animations are fired in response to this cancel.
+      id<OmniboxCommands> omniboxCommandHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), OmniboxCommands);
+      [omniboxCommandHandler cancelOmniboxEdit];
     }
   }
   self.viewPresented = visible;
