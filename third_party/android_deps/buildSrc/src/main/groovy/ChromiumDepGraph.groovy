@@ -118,7 +118,8 @@ class ChromiumDepGraph {
         org_bouncycastle_bcprov_jdk15on: new PropertyOverride(
             url: 'https://github.com/bcgit/bc-java',
             licensePath: 'licenses/Bouncy_Castle-2015.txt',
-            licenseName: 'MIT'),
+            licenseName: 'MIT',
+            overrideLatest: true),
         org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
             url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
             /* groovylint-disable-next-line LineLength */
