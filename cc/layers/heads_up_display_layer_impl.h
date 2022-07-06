@@ -130,8 +130,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void DrawDebugRect(PaintCanvas* canvas,
                      PaintFlags* flags,
                      const DebugRect& rect,
-                     SkColor stroke_color,
-                     SkColor fill_color,
+                     SkColor4f stroke_color,
+                     SkColor4f fill_color,
                      float stroke_width,
                      const std::string& label_text) const;
   void DrawDebugRects(PaintCanvas* canvas,

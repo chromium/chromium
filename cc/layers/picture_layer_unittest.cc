@@ -401,14 +401,14 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
   client.set_bounds(layer_bounds);
   // Fill layer with solid color.
   PaintFlags solid_flags;
-  SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
+  SkColor4f solid_color{0.1f, 0.15f, 0.2f, 1.0f};
   solid_flags.setColor(solid_color);
   client.add_draw_rect(
       gfx::ScaleToEnclosingRect(gfx::Rect(layer_bounds), recording_scale),
       solid_flags);
 
   // Add 1 pixel of non solid color.
-  SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
+  SkColor4f non_solid_color{0.25f, 0.3f, 0.35f, 0.5f};
   PaintFlags non_solid_flags;
   non_solid_flags.setColor(non_solid_color);
   client.add_draw_rect(gfx::Rect(std::round(390 * recording_scale),

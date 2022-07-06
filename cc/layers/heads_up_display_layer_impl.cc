@@ -685,8 +685,7 @@ void HeadsUpDisplayLayerImpl::DrawText(PaintCanvas* canvas,
 void HeadsUpDisplayLayerImpl::DrawGraphBackground(PaintCanvas* canvas,
                                                   PaintFlags* flags,
                                                   const SkRect& bounds) const {
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags->setColor(DebugColors::HUDBackgroundColor().toSkColor());
+  flags->setColor(DebugColors::HUDBackgroundColor());
   canvas->drawRect(bounds, *flags);
 }
 
@@ -694,8 +693,7 @@ void HeadsUpDisplayLayerImpl::DrawGraphLines(PaintCanvas* canvas,
                                              PaintFlags* flags,
                                              const SkRect& bounds) const {
   // Draw top and bottom line.
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags->setColor(DebugColors::HUDSeparatorLineColor().toSkColor());
+  flags->setColor(DebugColors::HUDSeparatorLineColor());
   canvas->drawLine(bounds.left(), bounds.top() - 1, bounds.right(),
                    bounds.top() - 1, *flags);
   canvas->drawLine(bounds.left(), bounds.bottom(), bounds.right(),
@@ -757,13 +755,11 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   }
   VLOG(1) << value_text;
 
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags.setColor(DebugColors::HUDTitleColor().toSkColor());
+  flags.setColor(DebugColors::HUDTitleColor());
   DrawText(canvas, flags, title, TextAlign::kLeft, kTitleFontHeight,
            title_bounds.left(), title_bounds.bottom());
 
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags.setColor(DebugColors::FPSDisplayTextAndGraphColor().toSkColor());
+  flags.setColor(DebugColors::FPSDisplayTextAndGraphColor());
   DrawText(canvas, flags, value_text, TextAlign::kRight, kFontHeight,
            text_bounds.right(), text_bounds.bottom());
 
@@ -790,15 +786,13 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   flags.setStyle(PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1);
 
-  // TODO(crbug/1308932): Remove all instances of toSkColor below and make all
-  // SkColor4f.
-  flags.setColor(DebugColors::FPSDisplaySuccessfulFrame().toSkColor());
+  flags.setColor(DebugColors::FPSDisplaySuccessfulFrame());
   canvas->drawPath(good_path, flags);
 
-  flags.setColor(DebugColors::FPSDisplayDroppedFrame().toSkColor());
+  flags.setColor(DebugColors::FPSDisplayDroppedFrame());
   canvas->drawPath(dropped_path, flags);
 
-  flags.setColor(DebugColors::FPSDisplayMissedFrame().toSkColor());
+  flags.setColor(DebugColors::FPSDisplayMissedFrame());
   canvas->drawPath(partial_path, flags);
 
   return area;
@@ -939,8 +933,8 @@ void HeadsUpDisplayLayerImpl::DrawDebugRect(
     PaintCanvas* canvas,
     PaintFlags* flags,
     const DebugRect& rect,
-    SkColor stroke_color,
-    SkColor fill_color,
+    SkColor4f stroke_color,
+    SkColor4f fill_color,
     float stroke_width,
     const std::string& label_text) const {
   DCHECK(typeface_.get());
@@ -998,14 +992,12 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
   std::vector<DebugRect> new_layout_shift_rects;
 
   for (size_t i = 0; i < debug_rects.size(); ++i) {
-    SkColor stroke_color = 0;
-    SkColor fill_color = 0;
+    SkColor4f stroke_color = SkColors::kTransparent;
+    SkColor4f fill_color = SkColors::kTransparent;
     float stroke_width = 0.f;
     std::string label_text;
 
     switch (debug_rects[i].type) {
-        // TODO(crbug/1308932): Remove all instances of toSkColor below and make
-        // all SkColor4f.
       case LAYOUT_SHIFT_RECT_TYPE:
         new_layout_shift_rects.push_back(debug_rects[i]);
         continue;
@@ -1013,65 +1005,56 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
         new_paint_rects.push_back(debug_rects[i]);
         continue;
       case PROPERTY_CHANGED_RECT_TYPE:
-        stroke_color =
-            DebugColors::PropertyChangedRectBorderColor().toSkColor();
-        fill_color = DebugColors::PropertyChangedRectFillColor().toSkColor();
+        stroke_color = DebugColors::PropertyChangedRectBorderColor();
+        fill_color = DebugColors::PropertyChangedRectFillColor();
         stroke_width = DebugColors::PropertyChangedRectBorderWidth();
         break;
       case SURFACE_DAMAGE_RECT_TYPE:
-        stroke_color = DebugColors::SurfaceDamageRectBorderColor().toSkColor();
-        fill_color = DebugColors::SurfaceDamageRectFillColor().toSkColor();
+        stroke_color = DebugColors::SurfaceDamageRectBorderColor();
+        fill_color = DebugColors::SurfaceDamageRectFillColor();
         stroke_width = DebugColors::SurfaceDamageRectBorderWidth();
         break;
       case SCREEN_SPACE_RECT_TYPE:
-        stroke_color =
-            DebugColors::ScreenSpaceLayerRectBorderColor().toSkColor();
-        fill_color = DebugColors::ScreenSpaceLayerRectFillColor().toSkColor();
+        stroke_color = DebugColors::ScreenSpaceLayerRectBorderColor();
+        fill_color = DebugColors::ScreenSpaceLayerRectFillColor();
         stroke_width = DebugColors::ScreenSpaceLayerRectBorderWidth();
         break;
       case TOUCH_EVENT_HANDLER_RECT_TYPE:
-        stroke_color =
-            DebugColors::TouchEventHandlerRectBorderColor().toSkColor();
-        fill_color = DebugColors::TouchEventHandlerRectFillColor().toSkColor();
+        stroke_color = DebugColors::TouchEventHandlerRectBorderColor();
+        fill_color = DebugColors::TouchEventHandlerRectFillColor();
         stroke_width = DebugColors::TouchEventHandlerRectBorderWidth();
         label_text = "touch event listener: ";
         label_text.append(TouchActionToString(debug_rects[i].touch_action));
         break;
       case WHEEL_EVENT_HANDLER_RECT_TYPE:
-        stroke_color =
-            DebugColors::WheelEventHandlerRectBorderColor().toSkColor();
-        fill_color = DebugColors::WheelEventHandlerRectFillColor().toSkColor();
+        stroke_color = DebugColors::WheelEventHandlerRectBorderColor();
+        fill_color = DebugColors::WheelEventHandlerRectFillColor();
         stroke_width = DebugColors::WheelEventHandlerRectBorderWidth();
         label_text = "mousewheel event listener";
         break;
       case SCROLL_EVENT_HANDLER_RECT_TYPE:
-        stroke_color =
-            DebugColors::ScrollEventHandlerRectBorderColor().toSkColor();
-        fill_color = DebugColors::ScrollEventHandlerRectFillColor().toSkColor();
+        stroke_color = DebugColors::ScrollEventHandlerRectBorderColor();
+        fill_color = DebugColors::ScrollEventHandlerRectFillColor();
         stroke_width = DebugColors::ScrollEventHandlerRectBorderWidth();
         label_text = "scroll event listener";
         break;
       case NON_FAST_SCROLLABLE_RECT_TYPE:
-        stroke_color =
-            DebugColors::NonFastScrollableRectBorderColor().toSkColor();
-        fill_color = DebugColors::NonFastScrollableRectFillColor().toSkColor();
+        stroke_color = DebugColors::NonFastScrollableRectBorderColor();
+        fill_color = DebugColors::NonFastScrollableRectFillColor();
         stroke_width = DebugColors::NonFastScrollableRectBorderWidth();
         label_text = "repaints on scroll";
         break;
       case MAIN_THREAD_SCROLLING_REASON_RECT_TYPE:
-        stroke_color =
-            DebugColors::MainThreadScrollingReasonRectBorderColor().toSkColor();
-        fill_color =
-            DebugColors::MainThreadScrollingReasonRectFillColor().toSkColor();
+        stroke_color = DebugColors::MainThreadScrollingReasonRectBorderColor();
+        fill_color = DebugColors::MainThreadScrollingReasonRectFillColor();
         stroke_width = DebugColors::MainThreadScrollingReasonRectBorderWidth();
         label_text = "main thread scrolling: ";
         label_text.append(base::ToLowerASCII(MainThreadScrollingReason::AsText(
             debug_rects[i].main_thread_scrolling_reasons)));
         break;
       case ANIMATION_BOUNDS_RECT_TYPE:
-        stroke_color =
-            DebugColors::LayerAnimationBoundsBorderColor().toSkColor();
-        fill_color = DebugColors::LayerAnimationBoundsFillColor().toSkColor();
+        stroke_color = DebugColors::LayerAnimationBoundsBorderColor();
+        fill_color = DebugColors::LayerAnimationBoundsFillColor();
         stroke_width = DebugColors::LayerAnimationBoundsBorderWidth();
         label_text = "animation bounds";
         break;
@@ -1088,13 +1071,10 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
   if (paint_rects_fade_step_ > 0) {
     paint_rects_fade_step_--;
     for (auto& paint_rect : paint_rects_) {
-      // TODO(crbug/1308932): Remove all instances of toSkColor below and make
-      // all SkColor4f.
-      DrawDebugRect(
-          canvas, &flags, paint_rect,
-          DebugColors::PaintRectBorderColor(paint_rects_fade_step_).toSkColor(),
-          DebugColors::PaintRectFillColor(paint_rects_fade_step_).toSkColor(),
-          DebugColors::PaintRectBorderWidth(), "");
+      DrawDebugRect(canvas, &flags, paint_rect,
+                    DebugColors::PaintRectBorderColor(paint_rects_fade_step_),
+                    DebugColors::PaintRectFillColor(paint_rects_fade_step_),
+                    DebugColors::PaintRectBorderWidth(), "");
     }
   }
   if (new_layout_shift_rects.size()) {
@@ -1108,9 +1088,8 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
       // all SkColor4f.
       DrawDebugRect(
           canvas, &flags, layout_shift_debug_rect,
-          DebugColors::LayoutShiftRectBorderColor().toSkColor(),
-          DebugColors::LayoutShiftRectFillColor(layout_shift_rects_fade_step_)
-              .toSkColor(),
+          DebugColors::LayoutShiftRectBorderColor(),
+          DebugColors::LayoutShiftRectFillColor(layout_shift_rects_fade_step_),
           DebugColors::LayoutShiftRectBorderWidth(), "");
     }
   }
@@ -1126,19 +1105,18 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
     bool has_value,
     double value) const {
   std::string value_str = "-";
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  SkColor metrics_color = DebugColors::HUDTitleColor().toSkColor();
-  SkColor badge_color = SK_ColorGREEN;
+  SkColor4f metrics_color = DebugColors::HUDTitleColor();
+  SkColor4f badge_color = SkColors::kGreen;
   if (has_value) {
     value_str = ToStringTwoDecimalPrecision(value) + info.UnitToString();
     if (value < info.green_threshold) {
-      metrics_color = SK_ColorGREEN;
+      metrics_color = SkColors::kGreen;
     } else if (value < info.yellow_threshold) {
-      metrics_color = SK_ColorYELLOW;
-      badge_color = SK_ColorYELLOW;
+      metrics_color = SkColors::kYellow;
+      badge_color = SkColors::kYellow;
     } else {
-      metrics_color = SK_ColorRED;
-      badge_color = SK_ColorRED;
+      metrics_color = SkColors::kRed;
+      badge_color = SkColors::kRed;
     }
   }
 
@@ -1147,13 +1125,13 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
   badge_flags.setColor(badge_color);
   badge_flags.setStyle(PaintFlags::kFill_Style);
   badge_flags.setAntiAlias(true);
-  if (badge_color == SK_ColorGREEN) {
+  if (badge_color == SkColors::kGreen) {
     constexpr int kRadius = 6;
     int x = left + metrics_sizes.kSidePadding + kRadius;
     int y = top - kRadius - 2;
     SkPath circle = SkPath::Circle(x, y, kRadius);
     canvas->drawPath(circle, badge_flags);
-  } else if (badge_color == SK_ColorYELLOW) {
+  } else if (badge_color == SkColors::kYellow) {
     constexpr int kSquareSize = 12;
     int x = left + metrics_sizes.kSidePadding;
     int y = top - kSquareSize - 2;
@@ -1175,8 +1153,7 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
 
   // Draw the label and values of the metric.
   PaintFlags flags;
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags.setColor(DebugColors::HUDTitleColor().toSkColor());
+  flags.setColor(DebugColors::HUDTitleColor());
   DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
            left + metrics_sizes.kSidePadding + metrics_sizes.kBadgeWidth, top);
   flags.setColor(metrics_color);
