@@ -333,7 +333,7 @@ union CpuResult {
 
 // Information about the device's CPUs.
 //
-// NextMinVersion: 1, NextIndex: 5
+// NextMinVersion: 2, NextIndex: 7
 struct CpuInfo {
   // Number of total threads available.
   uint32 num_total_threads@0;
@@ -346,6 +346,69 @@ struct CpuInfo {
   array<CpuTemperatureChannel> temperature_channels@3;
   // Information about keylocker.
   KeylockerInfo? keylocker_info@4;
+  // The general virtualization info. Guaranteed to be not null unless the
+  // version doesn't match.
+  [MinVersion=1] VirtualizationInfo? virtualization@5;
+  // The cpu vulnerability info. The key is the name of the vulnerability.
+  // Guaranteed to be not null unless the version doesn't match.
+  [MinVersion=1] map<string, VulnerabilityInfo>? vulnerabilities@6;
+};
+
+// Information related to virtualization.
+//
+// NextMinVersion: 1, NextIndex: 3
+struct VirtualizationInfo {
+  // The possible states of Simultaneous multithreading(SMT) control.
+  [Extensible]
+  enum SMTControl{
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // SMT is enabled.
+    kOn,
+    // SMT is disabled.
+    kOff,
+    // SMT is force disabled. Cannot be changed.
+    kForceOff,
+    // SMT is not supported by the CPU.
+    kNotSupported,
+    // SMT runtime toggling is not implemented for the architecture, or the
+    // kernel version doesn't support SMT detection yet.
+    kNotImplemented,
+  };
+
+  // Whether the /dev/kvm device exists.
+  bool has_kvm_device@0;
+  // Whether SMT is active. This will always be false if SMT detection is not
+  // supported by the kernel of this device.
+  bool is_smt_active@1;
+  // The state of SMT control.
+  SMTControl smt_control@2;
+};
+
+// Information related to CPU Vulnerabilities.
+//
+// NextMinVersion: 1, NextIndex: 2
+struct VulnerabilityInfo {
+  // The status of the vulnerability.
+  [Extensible]
+  enum Status{
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // Not affected by this vulnerability.
+    kNotAffected,
+    // Vulnerable by this vulnerability.
+    kVulnerable,
+    // Vulnerability is mitigated.
+    kMitigation,
+    // Vulnerability is unknown.
+    kUnknown,
+    // Vulnerability is unrecognized by parser.
+    kUnrecognized,
+  };
+
+  Status status@0;
+  // The description of the vulnerability.
+  string message@1;
 };
 
 // Information related to Keylocker.
@@ -358,13 +421,42 @@ struct KeylockerInfo {
 
 // Information related to a particular physical CPU.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 4
 struct PhysicalCpuInfo {
   // The CPU model name, if available.
   // For Arm devices, we will return SoC model instead.
   string? model_name@0;
   // Logical CPUs corresponding to this physical CPU.
   array<LogicalCpuInfo> logical_cpus@1;
+  // The cpu flags, labelled as |flags| in x86 architecture and |Features| in
+  // ARM architecture.
+  [MinVersion=1] array<string>? flags@2;
+  // The virtualization info of this cpu.
+  [MinVersion=1] CpuVirtualizationInfo? virtualization@3;
+};
+
+// Information related to virtualization status of a cpu.
+//
+// NextMinVersion: 1, NextIndex: 3
+struct CpuVirtualizationInfo {
+  // The type of cpu hardware virtualization.
+  [Extensible]
+  enum Type{
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // The cpu supports Intel virtualization (VT-x).
+    kVMX,
+    // The cpu supports AMD virtualization (AMD-V).
+    kSVM,
+  };
+
+  Type type@0;
+  // Whether virtualization is enabled.
+  bool is_enabled@1;
+  // Whether the virtualization configuration is locked and cannot be modified.
+  // This is usually set by the BIOS to prevent the OS changing the setting
+  // after booting into the OS.
+  bool is_locked@2;
 };
 
 // Information related to a particular logical CPU.
