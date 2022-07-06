@@ -3954,31 +3954,6 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
       "Autofill.StoredCreditCardCount.Server.Masked.WithNickname", 2, 1);
 }
 
-TEST_F(AutofillMetricsTest, LogStoredOfferMetrics) {
-  std::vector<std::unique_ptr<AutofillOfferData>> offers;
-  AutofillOfferData offer1 = test::GetCardLinkedOfferData1();
-  AutofillOfferData offer2 = test::GetCardLinkedOfferData2();
-  offer2.SetEligibleInstrumentIdForTesting({222222, 999999, 888888});
-  offer2.SetMerchantOriginForTesting(
-      {GURL("http://www.example2.com"), GURL("https://www.example3.com/")});
-  offers.push_back(std::make_unique<AutofillOfferData>(offer1));
-  offers.push_back(std::make_unique<AutofillOfferData>(offer2));
-
-  base::HistogramTester histogram_tester;
-  auto SamplesOf = [&histogram_tester](base::StringPiece metric) {
-    return histogram_tester.GetAllSamples(metric);
-  };
-  AutofillMetrics::LogStoredOfferMetrics(offers);
-
-  // Validate the count metrics.
-  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount"),
-              BucketsAre(Bucket(2, 1)));
-  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferRelatedMerchantCount"),
-              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
-  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferRelatedCardCount"),
-              BucketsAre(Bucket(1, 1), Bucket(3, 1)));
-}
-
 // Test that we correctly log when Profile Autofill is enabled at startup.
 TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
   base::HistogramTester histogram_tester;

@@ -1708,11 +1708,6 @@ class AutofillMetrics {
       size_t server_card_count_with_card_art_image,
       base::TimeDelta disused_data_threshold);
 
-  // Logs metrics about the offer data associated with a profile. This should be
-  // called each time a chrome profile is launched.
-  static void LogStoredOfferMetrics(
-      const std::vector<std::unique_ptr<AutofillOfferData>>& offers);
-
   // Logs whether the synced autofill offer data is valid.
   static void LogSyncedOfferDataBeingValid(bool invalid);
 

@@ -2236,21 +2236,6 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
 }
 
 // static
-void AutofillMetrics::LogStoredOfferMetrics(
-    const std::vector<std::unique_ptr<AutofillOfferData>>& offers) {
-  base::UmaHistogramCounts1000("Autofill.Offer.StoredOfferCount",
-                               offers.size());
-
-  for (const std::unique_ptr<AutofillOfferData>& offer : offers) {
-    base::UmaHistogramCounts1000(
-        "Autofill.Offer.StoredOfferRelatedMerchantCount",
-        offer->GetMerchantOrigins().size());
-    base::UmaHistogramCounts1000("Autofill.Offer.StoredOfferRelatedCardCount",
-                                 offer->GetEligibleInstrumentIds().size());
-  }
-}
-
-// static
 void AutofillMetrics::LogSyncedOfferDataBeingValid(bool valid) {
   base::UmaHistogramBoolean("Autofill.Offer.SyncedOfferDataBeingValid", valid);
 }

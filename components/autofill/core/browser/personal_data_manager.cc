@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
@@ -1885,7 +1886,7 @@ void PersonalDataManager::LogStoredCreditCardMetrics() const {
 
 void PersonalDataManager::LogStoredOfferMetrics() const {
   if (!has_logged_stored_offer_metrics_) {
-    AutofillMetrics::LogStoredOfferMetrics(autofill_offer_data_);
+    autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
     // Only log this info once per chrome user profile load.
     has_logged_stored_offer_metrics_ = true;
   }

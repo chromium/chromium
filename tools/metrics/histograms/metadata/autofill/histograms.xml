@@ -2073,12 +2073,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Offer.StoredOfferCount" units="offers"
     expires_after="2022-12-04">
+  <obsolete>
+    Deprecated in June 2022. Subsumed by
+    Autofill.Offer.StoredOfferCount.{OfferType}.
+  </obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks the number of autofill offers data a user has stored, measured at
     Chrome profile launch time.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.StoredOfferCount.{OfferType}" units="offers"
+    expires_after="2022-12-04">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the number of Autofill offers a user has stored, separated by offer
+    type, and measured at Chrome profile launch time.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
 <histogram name="Autofill.Offer.StoredOfferRelatedCardCount" units="cards"
