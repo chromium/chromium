@@ -45,7 +45,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
     private String mAccountInUse;
 
     private List<FeedbackSource> mSynchronousSources;
-    private List<AsyncFeedbackSource> mAsynchronousSources;
+    @VisibleForTesting
+    protected List<AsyncFeedbackSource> mAsynchronousSources;
 
     private ScreenshotSource mScreenshotTask;
 
