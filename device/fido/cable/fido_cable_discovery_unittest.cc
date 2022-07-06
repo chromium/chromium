@@ -224,22 +224,6 @@ class CableMockAdapter : public MockBluetoothAdapter {
       observer.DeviceAdded(this, mock_device_ptr);
   }
 
-  void AddNewTestAppleBluetoothDevice(
-      base::span<const uint8_t, kCableEphemeralIdSize> authenticator_eid) {
-    auto mock_device = CreateTestBluetoothDevice();
-    // Apple doesn't allow advertising service data, so we advertise a 16 bit
-    // UUID plus the EID converted into 128 bit UUID.
-    mock_device->AddUUID(BluetoothUUID("fde2"));
-    mock_device->AddUUID(BluetoothUUID(
-        fido_parsing_utils::ConvertBytesToUuid(authenticator_eid)));
-
-    auto* mock_device_ptr = mock_device.get();
-    AddMockDevice(std::move(mock_device));
-
-    for (auto& observer : GetObservers())
-      observer.DeviceAdded(this, mock_device_ptr);
-  }
-
   void ExpectRegisterAdvertisementWithResponse(
       bool simulate_success,
       base::span<const uint8_t> expected_client_eid,
@@ -278,19 +262,13 @@ class CableMockAdapter : public MockBluetoothAdapter {
   }
 
   void ExpectDiscoveryWithScanCallback(
-      base::span<const uint8_t, kCableEphemeralIdSize> eid,
-      bool is_apple_device = false) {
+      base::span<const uint8_t, kCableEphemeralIdSize> eid) {
     EXPECT_CALL(*this, StartScanWithFilter_(_, _))
-        .WillOnce(
-            ::testing::WithArg<1>([this, eid, is_apple_device](auto& callback) {
-              std::move(callback).Run(
-                  false, device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
-              if (is_apple_device) {
-                AddNewTestAppleBluetoothDevice(eid);
-              } else {
-                AddNewTestBluetoothDevice(eid);
-              }
-            }));
+        .WillOnce(::testing::WithArg<1>([this, eid](auto& callback) {
+          std::move(callback).Run(
+              false, device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+          AddNewTestBluetoothDevice(eid);
+        }));
   }
 
  protected:
@@ -399,26 +377,6 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewDevice) {
 
   auto mock_adapter = CableMockAdapter::MakePoweredOn();
   mock_adapter->ExpectDiscoveryWithScanCallback(kAuthenticatorEid);
-  mock_adapter->ExpectRegisterAdvertisementWithResponse(
-      true /* simulate_success */, kClientEid, kUuidFormattedClientEid);
-
-  BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
-  cable_discovery->Start();
-  task_environment_.FastForwardUntilNoTasksRemain();
-}
-
-// Tests successful discovery flow for Apple Cable device.
-TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewAppleDevice) {
-  auto cable_discovery = CreateDiscovery();
-  NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer,
-              DiscoveryStarted(cable_discovery.get(), true,
-                               std::vector<FidoAuthenticator*>()));
-  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
-  cable_discovery->set_observer(&mock_observer);
-
-  auto mock_adapter = CableMockAdapter::MakePoweredOn();
-  mock_adapter->ExpectDiscoveryWithScanCallback(kAuthenticatorEid, true);
   mock_adapter->ExpectRegisterAdvertisementWithResponse(
       true /* simulate_success */, kClientEid, kUuidFormattedClientEid);
 

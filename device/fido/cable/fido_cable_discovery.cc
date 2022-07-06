@@ -107,23 +107,6 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
   return advertisement_data;
 }
 
-static bool Is128BitUUID(const CableEidArray& eid) {
-  // Abbreviated UUIDs have a fixed, 12-byte suffix. kGoogleCableUUID
-  // is one such abbeviated UUID.
-  static_assert(sizeof(kGoogleCableUUID) == EXTENT(eid), "");
-  return memcmp(eid.data() + 4, kGoogleCableUUID + 4,
-                sizeof(kGoogleCableUUID) - 4) != 0;
-}
-
-static bool IsCableUUID(const CableEidArray& eid) {
-  static_assert(sizeof(kGoogleCableUUID) == EXTENT(eid), "");
-  static_assert(sizeof(kFIDOCableUUID) == EXTENT(eid), "");
-
-  return (memcmp(eid.data(), kGoogleCableUUID, sizeof(kGoogleCableUUID)) ==
-          0) ||
-         (memcmp(eid.data(), kFIDOCableUUID, sizeof(kFIDOCableUUID)) == 0);
-}
-
 }  // namespace
 
 // FidoCableDiscovery::CableV1DiscoveryEvent  ---------------------------------
@@ -639,53 +622,11 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
     FIDO_LOG(DEBUG) << "  Service data: <none>";
   }
 
-  // uuid128s is the subset of |uuids| that are 128-bit values. Likewise
-  // |uuid32s| is the (disjoint) subset that are 32- or 16-bit UUIDs.
-  // TODO: handle the case where the 32-bit UUID collides with the caBLE
-  // indicator.
-  std::vector<CableEidArray> uuid128s;
-  std::vector<CableEidArray> uuid32s;
-
-  if (!uuids.empty()) {
-    FIDO_LOG(DEBUG) << "  UUIDs:";
-    for (const auto& uuid : uuids) {
-      auto eid_result = GetCableDiscoveryDataFromAuthenticatorEid(uuid);
-      FIDO_LOG(DEBUG) << "    " << ResultDebugString(uuid, eid_result);
-      if (!result && eid_result) {
-        result = std::move(eid_result);
-      }
-
-      if (Is128BitUUID(uuid)) {
-        uuid128s.push_back(uuid);
-      } else if (!IsCableUUID(uuid)) {
-        // 16-bit UUIDs are also considered to be 32-bit UUID because one in
-        // 2**16 32-bit UUIDs will randomly turn into 16-bit ones.
-        uuid32s.push_back(uuid);
-      }
-    }
-  }
-
-  if (advert_callback_) {
-    std::array<uint8_t, 16 + 4> v2_advert;
-
-    // Try all combinations of 16- and 4-byte UUIDs to form 20-byte advert
-    // payloads. (We don't know if something in the BLE stack might add other
-    // short UUIDs to a BLE advert message).
-    for (const auto& uuid128 : uuid128s) {
-      static_assert(EXTENT(uuid128) == 16, "");
-      memcpy(v2_advert.data(), uuid128.data(), 16);
-
-      for (const auto& uuid32 : uuid32s) {
-        static_assert(EXTENT(uuid32) >= 4, "");
-        memcpy(v2_advert.data() + 16, uuid32.data(), 4);
-        advert_callback_.Run(v2_advert);
-      }
-    }
-
-    if (service_data && service_data->size() == v2_advert.size()) {
-      memcpy(v2_advert.data(), service_data->data(), v2_advert.size());
-      advert_callback_.Run(v2_advert);
-    }
+  std::array<uint8_t, 16 + 4> v2_advert;
+  if (advert_callback_ && service_data &&
+      service_data->size() == v2_advert.size()) {
+    memcpy(v2_advert.data(), service_data->data(), v2_advert.size());
+    advert_callback_.Run(v2_advert);
   }
 
   auto observed_data = std::make_unique<ObservedDeviceData>();
