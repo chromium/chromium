@@ -867,8 +867,11 @@ TEST_F(PrerenderHostRegistryTest,
 }
 
 TEST_F(PrerenderHostRegistryTest,
-       CompareInitialAndActivationCommonParams_ShouldCheckMainWorldCSP) {
-  EXPECT_FALSE(CheckIsActivatedForParams(
+       CompareInitialAndActivationCommonParams_ShouldNotCheckMainWorldCSP) {
+  // Initial navigation blocked by the main world CSP cancels prerendering.
+  // So, it's safe to match the page for CSP bypassing requests from isolated
+  // worlds (e.g., extensions).
+  EXPECT_TRUE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_should_check_main_world_csp(
             network::mojom::CSPDisposition::DO_NOT_CHECK);

@@ -761,10 +761,11 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // TODO(crbug.com/1232919): ensure the activated document consumes
   // text_fragment_token and scrolls to the corresponding viewport.
 
-  if (potential_activation.should_check_main_world_csp !=
-      common_params_->should_check_main_world_csp) {
-    return false;
-  }
+  // No need to compare should_check_main_world_csp, as if the CSP blocks the
+  // initial navigation, it cancels prerendering, and we don't reach here for
+  // matching. So regardless of the activation's capability to bypass the main
+  // world CSP, the prerendered page is eligible for the activation. This also
+  // permits content scripts to activate the page.
 
   if (potential_activation.initiator_origin_trial_features !=
       common_params_->initiator_origin_trial_features) {
@@ -855,6 +856,11 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
   initial_navigation_id_ = navigation->GetNavigationId();
   begin_params_ = navigation->begin_params().Clone();
   common_params_ = navigation->common_params().Clone();
+
+  // The prerendered page should be checked by the main world CSP. See also
+  // relevant comments in AreCommonNavigationParamsCompatibleWithNavigation().
+  DCHECK_EQ(common_params_->should_check_main_world_csp,
+            network::mojom::CSPDisposition::CHECK);
 }
 
 bool PrerenderHost::IsUrlMatch(const GURL& url) const {
