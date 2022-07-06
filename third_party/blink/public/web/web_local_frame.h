@@ -53,13 +53,8 @@
 #include "ui/gfx/range/range.h"
 #include "v8/include/v8-forward.h"
 
-template <typename T>
-class sk_sp;
-
 namespace cc {
 class PaintCanvas;
-class PaintOpBuffer;
-using PaintRecord = PaintOpBuffer;
 }  // namespace cc
 
 namespace gfx {
@@ -916,10 +911,6 @@ class WebLocalFrame : public WebFrame {
   virtual void AddHitTestOnTouchStartCallback(
       base::RepeatingCallback<void(const blink::WebHitTestResult&)>
           callback) = 0;
-
-  // Get the PaintRecord based on the cached paint artifact generated during
-  // the last paint in lifecycle update.
-  virtual sk_sp<cc::PaintRecord> GetPaintRecord() const = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,
