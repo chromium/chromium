@@ -43,6 +43,7 @@ consoles.console_view(
             "win32",
             "paeverywhere",
             "backuprefptr",
+            "buildperf",
         ],
         "code_coverage": consoles.ordering(
             short_names = ["and", "ann", "lnx", "lcr", "jcr", "mac"],
@@ -1044,6 +1045,47 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     xcode = xcode.x13main,
+)
+
+# Build Perf builders use CQ reclient instance and high reclient jobs/cores and
+# SSD to represent CQ build performance.
+
+# Sync specs with android-pie-arm64-rel-compilator
+# in chromium/try/tryserver.chromium.android.star
+ci.builder(
+    name = "Build Perf Android",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "and",
+    ),
+    executable = "recipe:build_perf",
+    execution_timeout = 10 * time.hour,
+    # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
+    os = os.LINUX_DEFAULT,
+    cores = 32,
+    ssd = True,
+)
+
+# Sync specs with win10_chromium_x64_rel_ng-compilator
+# in chromium/try/tryserver.chromium.win.star
+ci.builder(
+    name = "Build Perf Windows",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "win",
+    ),
+    executable = "recipe:build_perf",
+    execution_timeout = 6 * time.hour,
+    # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
+    os = os.WINDOWS_DEFAULT,
+    cores = 32,
+    ssd = True,
 )
 
 ci.builder(

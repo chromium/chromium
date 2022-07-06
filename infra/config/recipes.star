@@ -115,6 +115,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:build_perf",
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 

@@ -312,4 +312,6 @@ rbe_jobs = struct(
     DEFAULT = 250,
     LOW_JOBS_FOR_CI = 80,
     HIGH_JOBS_FOR_CI = 500,
+    LOW_JOBS_FOR_CQ = 80,
+    HIGH_JOBS_FOR_CQ = 500,
 )
