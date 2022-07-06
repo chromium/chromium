@@ -960,7 +960,8 @@ export class FileGrid extends Grid {
     } else {
       box.classList.toggle('no-thumbnail', true);
       const locationInfo = this.volumeManager_.getLocationInfo(entry);
-      const icon = FileType.getIcon(entry, opt_mimeType, locationInfo.rootType);
+      const rootType = locationInfo && locationInfo.rootType || undefined;
+      const icon = FileType.getIcon(entry, opt_mimeType, rootType);
       box.setAttribute('generic-thumbnail', icon);
     }
   }

@@ -735,14 +735,16 @@ export class DirectoryModel extends EventTarget {
 
     // Retrieve metadata information for the newly selected directory.
     const currentEntry = this.currentDirContents_.getDirectoryEntry();
-    if (this.volumeManager_.getLocationInfo(assert(currentEntry))
-            .isDriveBased) {
-      chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
-    }
-    if (currentEntry && !util.isFakeEntry(assert(currentEntry))) {
-      this.metadataModel_.get(
-          [currentEntry],
-          constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES);
+    if (currentEntry) {
+      const locationInfo = this.volumeManager_.getLocationInfo(currentEntry);
+      if (locationInfo && locationInfo.isDriveBased) {
+        chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
+      }
+      if (!util.isFakeEntry(currentEntry)) {
+        this.metadataModel_.get(
+            [currentEntry],
+            constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES);
+      }
     }
 
     // Clear the table, and start scanning.

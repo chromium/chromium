@@ -340,9 +340,9 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
 filelist.renderFileTypeIcon = (doc, entry, locationInfo, opt_mimeType) => {
   const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
   icon.className = 'detail-icon';
+  const rootType = locationInfo && locationInfo.rootType || undefined;
   icon.setAttribute(
-      'file-type-icon',
-      FileType.getIcon(entry, opt_mimeType, locationInfo.rootType));
+      'file-type-icon', FileType.getIcon(entry, opt_mimeType, rootType));
   return icon;
 };
 

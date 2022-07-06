@@ -73,12 +73,17 @@ export class QuickViewUma {
     metrics.recordEnum(
         'QuickView.WayToOpen', wayToOpen, QuickViewUma.WayToOpenValues_);
 
-    const volumeType = this.volumeManager_.getVolumeInfo(entry).volumeType;
-    if (QuickViewUma.VolumeType.includes(assert(volumeType))) {
-      metrics.recordEnum(
-          'QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
+    const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
+    const volumeType = volumeInfo && volumeInfo.volumeType;
+    if (volumeType) {
+      if (QuickViewUma.VolumeType.includes(volumeType)) {
+        metrics.recordEnum(
+            'QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
+      } else {
+        console.warn('Unknown volume type: ' + volumeType);
+      }
     } else {
-      console.error('Unknown volume type: ' + volumeType);
+      console.warn('Missing volume type');
     }
     // Record stats of dialog types. It must be in sync with
     // FileDialogType enum in tools/metrics/histograms/enums.xml.
