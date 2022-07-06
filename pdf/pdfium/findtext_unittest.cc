@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
@@ -52,6 +53,22 @@ class FindTextTestClient : public TestClient {
   }
 };
 
+void ExpectInitialSearchResults(FindTextTestClient& client, int count) {
+  DCHECK_GT(count, 0);
+
+  InSequence sequence;
+
+  EXPECT_CALL(client,
+              NotifyNumberOfFindResultsChanged(1, /*final_result=*/false));
+  EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
+  for (int i = 2; i < count + 1; ++i) {
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(i, /*final_result=*/false));
+  }
+  EXPECT_CALL(client,
+              NotifyNumberOfFindResultsChanged(count, /*final_result=*/true));
+}
+
 }  // namespace
 
 using FindTextTest = PDFiumTestBase;
@@ -62,16 +79,7 @@ TEST_F(FindTextTest, FindText) {
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(1, false));
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
-    for (int i = 1; i < 10; ++i)
-      EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(i + 1, false));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(10, true));
-  }
-
+  ExpectInitialSearchResults(client, 10);
   engine->StartFind("o", /*case_sensitive=*/true);
 }
 
@@ -81,16 +89,7 @@ TEST_F(FindTextTest, FindHyphenatedText) {
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(1, false));
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
-    for (int i = 1; i < 6; ++i)
-      EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(i + 1, false));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(6, true));
-  }
-
+  ExpectInitialSearchResults(client, 6);
   engine->StartFind("application", /*case_sensitive=*/true);
 }
 
@@ -100,14 +99,7 @@ TEST_F(FindTextTest, FindLineBreakText) {
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(1, false));
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(1, true));
-  }
-
+  ExpectInitialSearchResults(client, 1);
   engine->StartFind("is the first system", /*case_sensitive=*/true);
 }
 
@@ -117,15 +109,7 @@ TEST_F(FindTextTest, FindSimpleQuotationMarkText) {
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_142627.pdf"));
   ASSERT_TRUE(engine);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(1, false));
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(2, false));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(2, true));
-  }
-
+  ExpectInitialSearchResults(client, 2);
   engine->StartFind("don't", /*case_sensitive=*/true);
 }
 
@@ -135,14 +119,7 @@ TEST_F(FindTextTest, FindFancyQuotationMarkText) {
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_142627.pdf"));
   ASSERT_TRUE(engine);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(1, false));
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(2, false));
-    EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(2, true));
-  }
+  ExpectInitialSearchResults(client, 2);
 
   // don't, using right apostrophe instead of a single quotation mark
   std::u16string term = {'d', 'o', 'n', 0x2019, 't'};
@@ -155,20 +132,7 @@ TEST_F(FindTextTest, SelectFindResult) {
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  {
-    InSequence sequence;
-
-    EXPECT_CALL(client,
-                NotifyNumberOfFindResultsChanged(1, /*final_result=*/false));
-    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
-    for (int i = 1; i < 4; ++i) {
-      EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(
-                              i + 1, /*final_result=*/false));
-    }
-    EXPECT_CALL(client,
-                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
-  }
-
+  ExpectInitialSearchResults(client, 4);
   engine->StartFind("world", /*case_sensitive=*/true);
 
   EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(_, _)).Times(0);
