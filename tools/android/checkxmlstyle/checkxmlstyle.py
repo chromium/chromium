@@ -550,12 +550,14 @@ def _CheckStringResourceQuotesPunctuations(input_api, output_api):
   """Check whether inappropriate quotes are used"""
   warning = '''
   Android String Resources Check failed:
-    Your new string is using one or more of generic quotes(\u0022 \\u0022, \u0027 \\u0027,
+    Your new string is using one or more of generic quotes (\u0022 \\u0022, \u0027 \\u0027,
     \u0060 \\u0060, \u00B4 \\u00B4), which is not encouraged. Instead, quotations marks
-    (\u201C \\u201C, \u201D \\u201D, \u2018 \\u2018, \u2019 \\u2019) are usually preferred.
+    (\u201C \\u201C, \u201D \\u201D, \u2018 \\u2018, \u2019 \\u2019) are usually preferred (see
+    https://material.io/archive/guidelines/style/writing.html#writing-capitalization-punctuation).
 
     Use prime (\u2032 \\u2032) only in abbreviations for feet, arcminutes, and minutes.
-    Use Double-prime (\u2033 \\u2033) only in abbreviations for inches, arcminutes, and minutes.
+    Use double-prime (\u2033 \\u2033) only in abbreviations for inches, arcseconds, and seconds.
+    Use the right single quotation mark (\u2019 \\u2019) for apostrophes.
 
     Please reach out to the UX designer/writer in your team to double check
     which punctuation should be correctly used. Ignore this warning if UX has confirmed.
