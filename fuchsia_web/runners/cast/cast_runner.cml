@@ -60,8 +60,6 @@
         "fuchsia.media.AudioDeviceEnumerator",
         "fuchsia.media.ProfileProvider",
         "fuchsia.media.SessionAudioConsumerFactory",
-        "fuchsia.media.drm.PlayReady",
-        "fuchsia.media.drm.Widevine",
         "fuchsia.mediacodec.CodecFactory",
         "fuchsia.memorypressure.Provider",
         "fuchsia.net.interfaces.State",
@@ -76,6 +74,14 @@
         "fuchsia.ui.input3.Keyboard",
         "fuchsia.ui.scenic.Scenic",
       ]
+    },
+    {
+      // Optional capabilities to be passed to WebEngine instances.
+      protocol: [
+        "fuchsia.media.drm.PlayReady",
+        "fuchsia.media.drm.Widevine",
+      ],
+      availability: "optional"
     },
     {
       storage: "cache",
