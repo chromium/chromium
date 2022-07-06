@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
@@ -174,6 +176,17 @@ PseudoElement::PseudoElement(Element* parent,
       parent->HasTagName(html_names::kInputTag)) {
     UseCounter::Count(parent->GetDocument(),
                       WebFeature::kPseudoBeforeAfterForInputElement);
+    if (HTMLInputElement* input = DynamicTo<HTMLInputElement>(parent)) {
+      if (input->type() == input_type_names::kDate ||
+          input->type() == input_type_names::kDatetimeLocal ||
+          input->type() == input_type_names::kMonth ||
+          input->type() == input_type_names::kWeek ||
+          input->type() == input_type_names::kTime) {
+        UseCounter::Count(
+            parent->GetDocument(),
+            WebFeature::kPseudoBeforeAfterForDateTimeInputElement);
+      }
+    }
   }
 }
 

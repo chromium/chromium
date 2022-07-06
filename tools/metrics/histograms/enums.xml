@@ -40637,6 +40637,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4291" label="DeviceMotionPermissionRequested"/>
   <int value="4292" label="DeviceMotionUsedWithoutPermissionRequest"/>
   <int value="4293" label="PrivateNetworkAccessPermissionPrompt"/>
+  <int value="4294" label="PseudoBeforeAfterForDateTimeInputElement"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
