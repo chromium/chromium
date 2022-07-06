@@ -97,6 +97,9 @@ class ArcPolicyBridge : public KeyedService,
         base::Time time,
         const std::set<std::string>& package_names) {}
 
+    // Called when ARC DPC starts.
+    virtual void OnReportDPCVersion(const std::string& version) {}
+
    protected:
     Observer() = default;
     virtual ~Observer() = default;
@@ -162,6 +165,7 @@ class ArcPolicyBridge : public KeyedService,
   void ReportForceInstallMainLoopFailed(
       base::Time time,
       const std::vector<std::string>& package_names) override;
+  void ReportDPCVersion(const std::string& version) override;
 
   // PolicyService::Observer overrides.
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
@@ -178,6 +182,7 @@ class ArcPolicyBridge : public KeyedService,
   const std::string& get_arc_policy_compliance_report() {
     return arc_policy_compliance_report_;
   }
+  const std::string& get_arc_dpc_version() { return arc_dpc_version_; }
 
  private:
   void InitializePolicyService();
@@ -228,6 +233,8 @@ class ArcPolicyBridge : public KeyedService,
   // Saved last received compliance report. Should be used only for feedback
   // reporting.
   std::string arc_policy_compliance_report_;
+  // Saved ARC DPC version.
+  std::string arc_dpc_version_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcPolicyBridge> weak_ptr_factory_{this};

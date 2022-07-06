@@ -630,6 +630,13 @@ void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
     observer.OnReportForceInstallMainLoopFailed(time, packages_set);
 }
 
+void ArcPolicyBridge::ReportDPCVersion(const std::string& version) {
+  arc_dpc_version_ = version;
+
+  for (Observer& observer : observers_)
+    observer.OnReportDPCVersion(version);
+}
+
 void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                       const policy::PolicyMap& previous,
                                       const policy::PolicyMap& current) {

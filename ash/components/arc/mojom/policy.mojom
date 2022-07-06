@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module arc.mojom;
 
@@ -93,6 +93,9 @@ interface PolicyHost {
   // force install the packages.
   [MinVersion=5] ReportForceInstallMainLoopFailed@6(mojo_base.mojom.Time time,
                                           array<string> package_names);
+
+  // Reports the version of ARC DPC.
+  [MinVersion=6] ReportDPCVersion@7(string version);
 };
 
 // Deprecated method IDs: 0

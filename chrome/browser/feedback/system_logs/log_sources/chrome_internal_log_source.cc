@@ -84,6 +84,7 @@ constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
 constexpr char kAshChromeVersionPrefix[] = "Ash ";
 constexpr char kArcPolicyComplianceReportKey[] =
     "CHROMEOS_ARC_POLICY_COMPLIANCE_REPORT";
+constexpr char kArcDpcVersionKey[] = "CHROMEOS_ARC_DPC_VERSION";
 constexpr char kArcPolicyKey[] = "CHROMEOS_ARC_POLICY";
 constexpr char kChromeOsFirmwareVersion[] = "CHROMEOS_FIRMWARE_VERSION";
 constexpr char kChromeEnrollmentTag[] = "ENTERPRISE_ENROLLED";
@@ -484,6 +485,11 @@ void ChromeInternalLogSource::PopulateArcPolicyStatus(
                     arc::ArcPolicyBridge::GetForBrowserContext(
                         ProfileManager::GetLastUsedProfile())
                         ->get_arc_policy_compliance_report());
+
+  response->emplace(kArcDpcVersionKey,
+                    arc::ArcPolicyBridge::GetForBrowserContext(
+                        ProfileManager::GetLastUsedProfile())
+                        ->get_arc_dpc_version());
 }
 
 void ChromeInternalLogSource::PopulateOnboardingTime(

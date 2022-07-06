@@ -166,6 +166,7 @@ class MockArcPolicyBridgeObserver : public ArcPolicyBridge::Observer {
 
   MOCK_METHOD1(OnPolicySent, void(const std::string&));
   MOCK_METHOD1(OnComplianceReportReceived, void(const base::Value*));
+  MOCK_METHOD1(OnReportDPCVersion, void(const std::string&));
 };
 
 // Helper class to define callbacks that verify that they were run.
@@ -292,6 +293,16 @@ class ArcPolicyBridgeTestBase {
     policy_bridge()->GetPolicies(PolicyStringCallback(expected_policy_json));
     EXPECT_EQ(expected_policy_json,
               policy_bridge()->get_arc_policy_for_reporting());
+    Mock::VerifyAndClearExpectations(&observer_);
+  }
+
+  void ReportDPCVersionAndVerifyObserverCallback(const std::string& version) {
+    Mock::VerifyAndClearExpectations(&observer_);
+    EXPECT_CALL(observer_, OnReportDPCVersion(version));
+
+    policy_bridge()->ReportDPCVersion(version);
+
+    EXPECT_EQ(version, policy_bridge()->get_arc_dpc_version());
     Mock::VerifyAndClearExpectations(&observer_);
   }
 
@@ -719,6 +730,10 @@ TEST_F(ArcPolicyBridgeTest, ReportComplianceTest_WithNonCompliantDetails) {
       "\"packageName\":\"\",\"settingName\":\"guid\"}]}");
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcPolicyComplianceReported));
+}
+
+TEST_F(ArcPolicyBridgeTest, ReportDPCVersionTest) {
+  ReportDPCVersionAndVerifyObserverCallback("100");
 }
 
 // This and the following test send the policies through a mojo connection
