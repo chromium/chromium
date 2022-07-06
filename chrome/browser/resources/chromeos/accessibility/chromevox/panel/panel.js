@@ -466,7 +466,7 @@ export class Panel extends PanelInterface {
           const menu = Panel.menus_[i];
           for (let j = 0; j < menu.items.length; ++j) {
             const item = menu.items[j];
-            if (CommandStore.denyOOBE(item.element.id)) {
+            if (CommandStore.denySignedOut(item.element.id)) {
               item.disable();
             }
           }

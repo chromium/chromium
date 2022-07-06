@@ -91,11 +91,11 @@ CommandStore.commandsForCategory = function(category) {
  * @param {string} command The command to query.
  * @return {boolean} Whether or not this command is denied in the OOBE.
  */
-CommandStore.denyOOBE = function(command) {
+CommandStore.denySignedOut = function(command) {
   if (!CommandStore.CMD_ALLOWLIST[command]) {
     return false;
   }
-  return Boolean(CommandStore.CMD_ALLOWLIST[command].denyOOBE);
+  return Boolean(CommandStore.CMD_ALLOWLIST[command].denySignedOut);
 };
 
 
@@ -112,7 +112,7 @@ CommandStore.denyOOBE = function(command) {
  *                skipInput: (undefined|boolean),
  *                allowEvents: (undefined|boolean),
  *                denyContinuation: (undefined|boolean),
- *                denyOOBE: (undefined|boolean)}>}
+ *                denySignedOut: (undefined|boolean)}>}
  *  forward: Whether this command points forward.
  *  backward: Whether this command points backward. If neither forward or
  *            backward are specified, it stays facing in the current direction.
@@ -128,8 +128,8 @@ CommandStore.denyOOBE = function(command) {
  *            showing a list of nodes.
  *  skipInput: Explicitly skips this command when text input has focus.
  *             Defaults to false.
- *  denyOOBE: Explicitly denies this command when on chrome://oobe/*.
- *             Defaults to false.
+ *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
+ *             other signed-out contexts. Defaults to false.
  *  allowEvents: Allows EventWatcher to continue processing events which can
  * trump TTS.
  *  denyContinuation: denies continuous read to proceed. Defaults to
@@ -438,34 +438,34 @@ CommandStore.CMD_ALLOWLIST = {
     announce: false,
     denyContinuation: true,
     msgId: 'show_options_page',
-    denyOOBE: true,
+    denySignedOut: true,
     category: 'help_commands'
   },
   'showLogPage': {
     announce: false,
     denyContinuation: true,
     msgId: 'show_log_page',
-    denyOOBE: true,
+    denySignedOut: true,
     category: 'help_commands'
   },
   'showLearnModePage': {
     announce: false,
     denyContinuation: true,
     msgId: 'show_kb_explorer_page',
-    denyOOBE: true,
+    denySignedOut: true,
     category: 'help_commands'
   },
   'showTtsSettings': {
     announce: false,
     msgId: 'show_tts_settings',
     category: 'help_commands',
-    denyOOBE: true
+    denySignedOut: true
   },
   'toggleBrailleCaptions':
       {announce: false, msgId: 'braille_captions', category: 'help_commands'},
   'reportIssue': {
     announce: false,
-    denyOOBE: true,
+    denySignedOut: true,
     msgId: 'panel_menu_item_report_issue',
     category: 'help_commands'
   },

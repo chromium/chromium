@@ -21,28 +21,34 @@ import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {SmartStickyMode} from '/chromevox/background/smart_sticky_mode.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {CommandStore} from '/chromevox/common/command_store.js';
-import {CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
 import {GestureGranularity} from '/chromevox/common/gesture_command_data.js';
 import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
 import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {EventGenerator} from '/common/event_generator.js';
 
-const ActionType = chrome.automation.ActionType;
-const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
 
 export class CommandHandler extends CommandHandlerInterface {
   /** @private */
   constructor() {
     super();
 
+    /**
+     * To support viewGraphicAsBraille_(), the current image node.
+     * @type {?AutomationNode}
+     */
+    this.imageNode_;
+
     /** @private {boolean} */
     this.isIncognito_ = Boolean(chrome.runtime.getManifest()['incognito']);
+
+    /** @private {boolean} */
+    this.isKioskSession_ = false;
 
     /** @private {boolean} */
     this.languageLoggingEnabled_ = false;
@@ -53,24 +59,13 @@ export class CommandHandler extends CommandHandlerInterface {
      */
     this.smartStickyMode_ = new SmartStickyMode();
 
-    /**
-     * To support viewGraphicAsBraille_(), the current image node.
-     * @type {AutomationNode?};
-     */
-    this.imageNode_;
-
-    /** @private {boolean} */
-    this.isKioskSession_ = false;
-
     this.init();
   }
 
   /** @override */
   onCommand(command) {
     // Check for a command denied in incognito contexts and kiosk.
-    if ((this.isIncognito_ || this.isKioskSession_) &&
-        CommandStore.CMD_ALLOWLIST[command] &&
-        CommandStore.CMD_ALLOWLIST[command].denyOOBE) {
+    if (!this.isAllowed_(command)) {
       return true;
     }
 
@@ -1320,7 +1315,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /**
    * Called when an image frame is received on a node.
-   * @param {!(AutomationEvent|CustomAutomationEvent)} event The event.
+   * @param {!ChromeVoxEvent} event The event.
    * @private
    */
   onImageFrameUpdated_(event) {
@@ -1480,7 +1475,6 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /** @override */
-
   skipLabelOrDescriptionFor(current, dir) {
     if (!current) {
       return null;
@@ -1534,6 +1528,15 @@ export class CommandHandler extends CommandHandlerInterface {
         focusedNode.role === RoleType.CLIENT) {
       ChromeVoxState.instance.setCurrentRange(null);
     }
+  }
+
+  isAllowed_(command) {
+    if (!this.isIncognito_ && !this.isKioskSession_) {
+      return true;
+    }
+
+    return !CommandStore.CMD_ALLOWLIST[command] ||
+        !CommandStore.CMD_ALLOWLIST[command].denySignedOut;
   }
 
   /**
