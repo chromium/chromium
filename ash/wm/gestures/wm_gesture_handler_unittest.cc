@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -316,8 +317,9 @@ TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
           ->desks_bar_view()
           ->mini_views()[1];
 
-  overview_session->highlight_controller()->MoveHighlightToView(mini_view_1);
-  EXPECT_TRUE(mini_view_1->IsViewHighlighted());
+  overview_session->highlight_controller()->MoveHighlightToView(
+      mini_view_1->desk_preview());
+  EXPECT_TRUE(mini_view_1->desk_preview()->IsViewHighlighted());
 
   // Exit overview with 3-fingers downward swipes.
   DeskSwitchAnimationWaiter waiter;

@@ -830,7 +830,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   // comes later in the highlight order (See documentation of
   // OnViewDestroyingOrDisabling()).
   highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
-  highlight_controller->OnViewDestroyingOrDisabling(*iter);
+  highlight_controller->OnViewDestroyingOrDisabling((*iter)->desk_preview());
 
   expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
 

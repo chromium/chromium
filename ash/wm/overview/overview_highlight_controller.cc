@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -259,7 +260,7 @@ OverviewHighlightController::GetTraversableViews() const {
         }
       } else {
         for (auto* mini_view : bar_view->mini_views()) {
-          traversable_views.push_back(mini_view);
+          traversable_views.push_back(mini_view->desk_preview());
           traversable_views.push_back(mini_view->desk_name_view());
         }
 

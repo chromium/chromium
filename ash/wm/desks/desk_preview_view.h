@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/button.h"
@@ -66,7 +67,8 @@ class WmHighlightItemBorder;
 // the fast rounded corners implementation we must make them sibling layers,
 // rather than one being a descendant of the other. Otherwise, this will trigger
 // a render surface.
-class ASH_EXPORT DeskPreviewView : public views::Button {
+class ASH_EXPORT DeskPreviewView : public views::Button,
+                                   public OverviewHighlightableView {
  public:
   DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
 
@@ -92,10 +94,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
   // true, this `DeskPreviewView` becomes highlighted.
   void SetHighlightOverlayVisibility(bool visible);
 
-  // Called when the CloseDeskButton is pressed, and the desk is about to be
-  // removed.
-  void OnRemovingDesk();
-
   // This should be called when there is a change in the desk contents so that
   // we can recreate the mirrored layer tree.
   void RecreateDeskContentsMirrorLayers();
@@ -109,6 +107,18 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
+  void OnFocus() override;
+  void OnBlur() override;
+
+  // OverviewHighlightableView:
+  views::View* GetView() override;
+  void MaybeActivateHighlightedView() override;
+  void MaybeCloseHighlightedView(bool primary_action) override;
+  void MaybeSwapHighlightedView(bool right) override;
+  bool MaybeActivateHighlightedViewOnOverviewExit(
+      OverviewSession* overview_session) override;
+  void OnViewHighlighted() override;
+  void OnViewUnhighlighted() override;
 
  private:
   friend class DesksTestApi;

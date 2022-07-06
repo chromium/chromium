@@ -40,6 +40,10 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
   WmHighlightItemBorder* border_ptr() { return border_ptr_; }
 
+  // views::View:
+  void OnFocus() override;
+  void OnBlur() override;
+
   // LabelButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;

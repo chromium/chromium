@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/zero_state_button.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
@@ -12,6 +14,8 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
@@ -70,7 +74,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
   SetFocusPainter(nullptr);
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   SetAccessibleName(text);
   SetTooltipText(text);
@@ -80,8 +84,31 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   SetBorder(std::move(border));
   views::InstallRoundRectHighlightPathGenerator(this, GetInsets(),
                                                 border_corder_radius);
+  SetInstallFocusRingOnFocus(false);
 
   UpdateBorderState();
+}
+
+void DeskButtonBase::OnFocus() {
+  auto* highlight_controller = Shell::Get()
+                                   ->overview_controller()
+                                   ->overview_session()
+                                   ->highlight_controller();
+  DCHECK(highlight_controller);
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  if (highlight_controller->IsFocusHighlightVisible() ||
+      accessibility_controller->spoken_feedback().enabled()) {
+    highlight_controller->MoveHighlightToView(this);
+  }
+
+  UpdateBorderState();
+  View::OnFocus();
+}
+
+void DeskButtonBase::OnBlur() {
+  UpdateBorderState();
+  View::OnBlur();
 }
 
 void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {

@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -31,7 +30,6 @@ class DesksBarView;
 // supports desk activation and removal.
 class ASH_EXPORT DeskMiniView : public views::View,
                                 public Desk::Observer,
-                                public OverviewHighlightableView,
                                 public views::TextfieldController,
                                 public views::ViewObserver {
  public:
@@ -114,6 +112,13 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Closes context menu on this mini view if one exists.
   void MaybeCloseContextMenu();
 
+  // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
+  // to false depending on whether the `kDesksCloseAll` feature is active, and
+  // then removes the desk. If `close_type` is `kCloseAllWindows*`, this
+  // function tells the `DesksController` to remove `desk_`'s windows as well,
+  // and wait for the user to confirm.
+  void OnRemovingDesk(DeskCloseType close_type);
+
   // views::View:
   const char* GetClassName() const override;
   void Layout() override;
@@ -125,16 +130,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnContentChanged() override;
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override;
-
-  // OverviewHighlightableView:
-  views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  bool MaybeActivateHighlightedViewOnOverviewExit(
-      OverviewSession* overview_session) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -150,13 +145,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
  private:
   friend class DesksTestApi;
-
-  // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
-  // to false depending on whether the `kDesksCloseAll` feature is active, and
-  // then removes the desk. If `close_type` is `kCloseAllWindows*`, this
-  // function tells the `DesksController` to remove `desk_`'s windows as well,
-  // and wait for the user to confirm.
-  void OnRemovingDesk(DeskCloseType close_type);
 
   // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
   // visible.

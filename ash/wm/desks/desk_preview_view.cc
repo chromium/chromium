@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -17,6 +18,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_highlight_item_border.h"
@@ -264,7 +267,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
 
   SetFocusPainter(nullptr);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks, but this focusable View needs to
@@ -306,6 +309,8 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   auto border = std::make_unique<WmHighlightItemBorder>(kBorderCornerRadius);
   border_ptr_ = border.get();
   SetBorder(std::move(border));
+  // Do not install the default focus ring on the button since we have `border`.
+  SetInstallFocusRingOnFocus(false);
 
   RecreateDeskContentsMirrorLayers();
 }
@@ -333,13 +338,6 @@ void DeskPreviewView::SetBorderColor(SkColor color) {
 void DeskPreviewView::SetHighlightOverlayVisibility(bool visible) {
   DCHECK(highlight_overlay_);
   highlight_overlay_->SetVisible(visible);
-}
-
-void DeskPreviewView::OnRemovingDesk() {
-  // Since the mini view has a remove animation, we don't want this desk preview
-  // to be pressed while it's animating. The desk will have already be removed
-  // after this.
-  SetCallback(views::Button::PressedCallback());
 }
 
 void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
@@ -479,6 +477,79 @@ void DeskPreviewView::OnThemeChanged() {
                         AshColorProvider::ControlsLayerType::kHighlightColor1),
                     kHighlightTransparency));
   }
+}
+
+void DeskPreviewView::OnFocus() {
+  auto* highlight_controller = Shell::Get()
+                                   ->overview_controller()
+                                   ->overview_session()
+                                   ->highlight_controller();
+  DCHECK(highlight_controller);
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  if (highlight_controller->IsFocusHighlightVisible() ||
+      accessibility_controller->spoken_feedback().enabled()) {
+    highlight_controller->MoveHighlightToView(this);
+  }
+  mini_view_->UpdateBorderColor();
+  View::OnFocus();
+}
+
+void DeskPreviewView::OnBlur() {
+  mini_view_->UpdateBorderColor();
+  View::OnBlur();
+}
+
+views::View* DeskPreviewView::GetView() {
+  return this;
+}
+
+void DeskPreviewView::MaybeActivateHighlightedView() {
+  DesksController::Get()->ActivateDesk(mini_view_->desk(),
+                                       DesksSwitchSource::kMiniViewButton);
+  RequestFocus();
+}
+
+void DeskPreviewView::MaybeCloseHighlightedView(bool primary_action) {
+  // The primary action (Ctrl + W) is to remove the desk and not close the
+  // windows (combine the desk with one on the right or left). The secondary
+  // action (Ctrl + Shift + W) is to close the desk and all its applications.
+  mini_view_->OnRemovingDesk(primary_action
+                                 ? DeskCloseType::kCombineDesks
+                                 : DeskCloseType::kCloseAllWindowsAndWait);
+}
+
+void DeskPreviewView::MaybeSwapHighlightedView(bool right) {
+  const int old_index = mini_view_->owner_bar()->GetMiniViewIndex(mini_view_);
+  DCHECK_NE(old_index, -1);
+
+  const bool mirrored = mini_view_->owner_bar()->GetMirrored();
+  // If mirrored, flip the swap direction.
+  int new_index = mirrored ^ right ? old_index + 1 : old_index - 1;
+  if (new_index < 0 ||
+      new_index ==
+          static_cast<int>(mini_view_->owner_bar()->mini_views().size())) {
+    return;
+  }
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->ReorderDesk(old_index, new_index);
+  desks_controller->UpdateDesksDefaultNames();
+}
+
+bool DeskPreviewView::MaybeActivateHighlightedViewOnOverviewExit(
+    OverviewSession* overview_session) {
+  MaybeActivateHighlightedView();
+  return true;
+}
+
+void DeskPreviewView::OnViewHighlighted() {
+  mini_view_->UpdateBorderColor();
+  mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
+}
+
+void DeskPreviewView::OnViewUnhighlighted() {
+  mini_view_->UpdateBorderColor();
 }
 
 }  // namespace ash
