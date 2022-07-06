@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
@@ -27,7 +28,7 @@ AsyncSharedStorageDatabaseImpl::Create(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<SharedStorageDatabaseOptions> options) {
-  return absl::WrapUnique(new AsyncSharedStorageDatabaseImpl(
+  return base::WrapUnique(new AsyncSharedStorageDatabaseImpl(
       std::move(db_path), std::move(blocking_task_runner),
       std::move(special_storage_policy), std::move(options)));
 }

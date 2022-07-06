@@ -5,6 +5,8 @@
 #ifndef DEVICE_BLUETOOTH_BLUEZ_METRICS_RECORDER_H_
 #define DEVICE_BLUETOOTH_BLUEZ_METRICS_RECORDER_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {

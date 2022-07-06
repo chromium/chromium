@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_SKIA_UTILS_H_
 #define GPU_COMMAND_BUFFER_COMMON_SKIA_UTILS_H_
 
+#include <cstdint>
 #include "gpu/raster_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

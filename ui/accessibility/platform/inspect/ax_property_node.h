@@ -5,7 +5,9 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_PROPERTY_NODE_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_PROPERTY_NODE_H_
 
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_WEBUI_JSON_GENERATION_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_WEBUI_JSON_GENERATION_H_
 
+#include <memory>
 #include <string>
 
 #include "base/values.h"
