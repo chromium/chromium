@@ -3104,7 +3104,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Preperiod_Enabled"
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeferredShaping"
+                    ]
                 }
             ]
         }
