@@ -32,14 +32,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void RemoveObserver(Observer* observer) override;
   void AddVmObserver(VmObserver* observer) override;
   void RemoveVmObserver(VmObserver* observer) override;
-  void AddContainerObserver(ContainerObserver* observer) override;
-  void RemoveContainerObserver(ContainerObserver* observer) override;
   void AddDiskImageObserver(DiskImageObserver* observer) override;
   void RemoveDiskImageObserver(DiskImageObserver* observer) override;
 
   bool IsVmStartedSignalConnected() override;
   bool IsVmStoppedSignalConnected() override;
-  bool IsContainerStartupFailedSignalConnected() override;
   bool IsDiskImageProgressSignalConnected() override;
   void CreateDiskImage(
       const vm_tools::concierge::CreateDiskImageRequest& request,
@@ -144,10 +141,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   const base::ObserverList<VmObserver>::Unchecked& vm_observer_list() const {
     return vm_observer_list_;
   }
-  const base::ObserverList<ContainerObserver>::Unchecked&
-  container_observer_list() const {
-    return container_observer_list_;
-  }
   const base::ObserverList<DiskImageObserver>::Unchecked&
   disk_image_observer_list() const {
     return disk_image_observer_list_;
@@ -198,9 +191,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   }
   void set_vm_stopped_signal_connected(bool connected) {
     is_vm_stopped_signal_connected_ = connected;
-  }
-  void set_container_startup_failed_signal_connected(bool connected) {
-    is_container_startup_failed_signal_connected_ = connected;
   }
   void set_disk_image_progress_signal_connected(bool connected) {
     is_disk_image_progress_signal_connected_ = connected;
@@ -370,7 +360,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
-  bool is_container_startup_failed_signal_connected_ = true;
   bool is_disk_image_progress_signal_connected_ = true;
 
   bool wait_for_service_to_be_available_response_ = true;
@@ -422,9 +411,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       ConciergeClient::kObserverListPolicy};
 
   base::ObserverList<VmObserver>::Unchecked vm_observer_list_{
-      ConciergeClient::kObserverListPolicy};
-
-  base::ObserverList<ContainerObserver>::Unchecked container_observer_list_{
       ConciergeClient::kObserverListPolicy};
 
   base::ObserverList<DiskImageObserver>::Unchecked disk_image_observer_list_{

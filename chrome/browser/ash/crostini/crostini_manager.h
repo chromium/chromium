@@ -150,7 +150,6 @@ class ContainerShutdownObserver : public base::CheckedObserver {
 class CrostiniManager : public KeyedService,
                         public ash::AnomalyDetectorClient::Observer,
                         public ash::ConciergeClient::VmObserver,
-                        public ash::ConciergeClient::ContainerObserver,
                         public ash::CiceroneClient::Observer,
                         public chromeos::NetworkStateHandlerObserver,
                         public chromeos::PowerManagerClient::Observer {
@@ -496,10 +495,6 @@ class CrostiniManager : public KeyedService,
   // ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
-
-  // ConciergeClient::ContainerObserver:
-  void OnContainerStartupFailed(
-      const vm_tools::concierge::ContainerStartedSignal& signal) override;
 
   // CiceroneClient::Observer:
   void OnContainerStarted(

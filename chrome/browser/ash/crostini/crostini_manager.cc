@@ -1212,7 +1212,6 @@ CrostiniManager::CrostiniManager(Profile* profile)
   DCHECK(!profile_->IsOffTheRecord());
   GetCiceroneClient()->AddObserver(this);
   GetConciergeClient()->AddVmObserver(this);
-  GetConciergeClient()->AddContainerObserver(this);
   if (ash::AnomalyDetectorClient::Get()) {  // May be null in tests.
     ash::AnomalyDetectorClient::Get()->AddObserver(this);
   }
@@ -1258,7 +1257,6 @@ void CrostiniManager::RemoveDBusObservers() {
   }
   dbus_observers_removed_ = true;
   GetCiceroneClient()->RemoveObserver(this);
-  GetConciergeClient()->RemoveContainerObserver(this);
   if (ash::AnomalyDetectorClient::Get()) {  // May be null in tests.
     ash::AnomalyDetectorClient::Get()->RemoveObserver(this);
   }
@@ -2716,19 +2714,6 @@ void CrostiniManager::OnVmStopped(
     return;
   }
   OnVmStoppedCleanup(signal.name());
-}
-
-void CrostiniManager::OnContainerStartupFailed(
-    const vm_tools::concierge::ContainerStartedSignal& signal) {
-  if (signal.owner_id() != owner_id_)
-    return;
-
-  guest_os::GuestId container(kCrostiniDefaultVmType, signal.vm_name(),
-                              signal.container_name());
-  LOG(ERROR) << "Container startup failed for container: " << container;
-  InvokeAndErasePendingContainerCallbacks(
-      &start_container_callbacks_, container,
-      CrostiniResult::CONTAINER_START_FAILED);
 }
 
 void CrostiniManager::OnContainerShutdown(

@@ -65,14 +65,6 @@ void FakeConciergeClient::RemoveVmObserver(VmObserver* observer) {
   vm_observer_list_.RemoveObserver(observer);
 }
 
-void FakeConciergeClient::AddContainerObserver(ContainerObserver* observer) {
-  container_observer_list_.AddObserver(observer);
-}
-
-void FakeConciergeClient::RemoveContainerObserver(ContainerObserver* observer) {
-  container_observer_list_.RemoveObserver(observer);
-}
-
 void FakeConciergeClient::AddDiskImageObserver(DiskImageObserver* observer) {
   disk_image_observer_list_.AddObserver(observer);
 }
@@ -87,10 +79,6 @@ bool FakeConciergeClient::IsVmStartedSignalConnected() {
 
 bool FakeConciergeClient::IsVmStoppedSignalConnected() {
   return is_vm_stopped_signal_connected_;
-}
-
-bool FakeConciergeClient::IsContainerStartupFailedSignalConnected() {
-  return is_container_startup_failed_signal_connected_;
 }
 
 bool FakeConciergeClient::IsDiskImageProgressSignalConnected() {
