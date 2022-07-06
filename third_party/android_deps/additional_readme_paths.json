@@ -116,6 +116,7 @@
     "libs/javax_inject_javax_inject",
     "libs/net_ltgt_gradle_incap_incap",
     "libs/net_sf_kxml_kxml2",
+    "libs/org_bouncycastle_bcprov_jdk15on",
     "libs/org_ccil_cowan_tagsoup_tagsoup",
     "libs/org_checkerframework_checker_compat_qual",
     "libs/org_checkerframework_checker_qual",
