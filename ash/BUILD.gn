@@ -2851,7 +2851,6 @@ test("ash_unittests") {
     "system/tracing_notification_controller_unittest.cc",
     "system/tray/size_range_layout_unittest.cc",
     "system/tray/status_area_overflow_button_tray_unittest.cc",
-    "system/tray/system_nudge_unittest.cc",
     "system/tray/tray_background_view_unittest.cc",
     "system/tray/tray_event_filter_unittest.cc",
     "system/tray/tri_view_unittest.cc",

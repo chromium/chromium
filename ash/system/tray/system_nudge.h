@@ -35,8 +35,7 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   SystemNudge(const std::string& name,
               int icon_size,
               int icon_label_spacing,
-              int nudge_padding,
-              bool anchor_status_area = false);
+              int nudge_padding);
   SystemNudge(const SystemNudge&) = delete;
   SystemNudge& operator=(const SystemNudge&) = delete;
   ~SystemNudge() override;
@@ -69,17 +68,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   // screen reader is enabled when the view is shown.
   virtual std::u16string GetAccessibilityText() const = 0;
 
-  // Calculates the expected bounds of nudge widget.
-  static gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
-                                         Shelf* shelf,
-                                         int nudge_width,
-                                         int nudge_height,
-                                         bool anchor_status_area);
-
  private:
   class SystemNudgeView;
-
-  friend class SystemNudgeTest;
 
   struct SystemNudgeParams {
     // The name for the widget.
@@ -90,10 +80,6 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
     int icon_label_spacing;
     // The padding which separates the nudge's border with its inner contents.
     int nudge_padding;
-    // If true, the nudge will be on the same side of the status area.
-    // Otherwise the nudge will be on the left/right side of the window for
-    // non-RTL/RTL locale.
-    bool anchor_status_area = false;
   };
 
   // Calculate and set widget bounds based on a fixed width and a variable
