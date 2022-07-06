@@ -1278,7 +1278,10 @@ gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrameForDisplay(
   display::Display display;
   if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
                                                             &display)) {
-    return display.work_area();
+    // Use the current window size to avoid unexpected window resizes on
+    // subsequent cross-screen window drag and drops; see crbug.com/1338664
+    return gfx::Rect(display.work_area().origin(),
+                     FullscreenControllerGetFrame().size());
   }
   return gfx::Rect();
 }
