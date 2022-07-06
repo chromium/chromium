@@ -215,21 +215,17 @@ void PropertyTreeBuilderContext::AddClipNodeIfNeeded(
     data_for_children->clip_tree_parent = parent_id;
   } else {
     ClipNode node;
-    node.clip = layer->EffectiveClipRect();
-
-    // Move the clip bounds so that it is relative to the transform parent.
-    node.clip += layer->offset_to_transform_parent();
-
+    if (layer_clips_subtree) {
+      node.clip = layer->EffectiveClipRect();
+      // Move the clip bounds so that it is relative to the transform parent.
+      node.clip += layer->offset_to_transform_parent();
+    } else {
+      DCHECK(layer->filters().HasFilterThatMovesPixels());
+      node.pixel_moving_filter_id = layer->effect_tree_index();
+    }
     node.transform_id = created_transform_node
                             ? data_for_children->transform_tree_parent
                             : data_from_ancestor.transform_tree_parent;
-    if (layer_clips_subtree) {
-      node.clip_type = ClipNode::ClipType::APPLIES_LOCAL_CLIP;
-    } else {
-      DCHECK(layer->filters().HasFilterThatMovesPixels());
-      node.clip_type = ClipNode::ClipType::EXPANDS_CLIP;
-      node.clip_expander = ClipExpander(layer->effect_tree_index());
-    }
     data_for_children->clip_tree_parent = clip_tree_.Insert(node, parent_id);
   }
 
@@ -813,7 +809,6 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   transform_tree_.set_device_scale_factor(
       layer_tree_host_->device_scale_factor());
   ClipNode root_clip;
-  root_clip.clip_type = ClipNode::ClipType::APPLIES_LOCAL_CLIP;
   root_clip.clip = gfx::RectF(layer_tree_host_->device_viewport_rect());
   root_clip.transform_id = kRootPropertyNodeId;
   data_for_recursion.clip_tree_parent =

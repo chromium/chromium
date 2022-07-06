@@ -976,6 +976,8 @@ TEST_F(DrawPropertiesTest, DrawableContentRectForReferenceFilter) {
   auto& child_effect_node = CreateEffectNode(child);
   child_effect_node.render_surface_reason = RenderSurfaceReason::kTest;
   child_effect_node.filters = filters;
+  auto& child_clip_node = CreateClipNode(child);
+  child_clip_node.pixel_moving_filter_id = child_effect_node.id;
 
   UpdateActiveTreeDrawProperties();
 
@@ -1005,6 +1007,8 @@ TEST_F(DrawPropertiesTest, DrawableContentRectForReferenceFilterHighDpi) {
   auto& child_effect_node = CreateEffectNode(child);
   child_effect_node.render_surface_reason = RenderSurfaceReason::kTest;
   child_effect_node.filters = filters;
+  auto& child_clip_node = CreateClipNode(child);
+  child_clip_node.pixel_moving_filter_id = child_effect_node.id;
 
   UpdateActiveTreeDrawProperties(device_scale_factor);
 
@@ -1015,6 +1019,53 @@ TEST_F(DrawPropertiesTest, DrawableContentRectForReferenceFilterHighDpi) {
   ASSERT_TRUE(GetRenderSurface(child));
   EXPECT_EQ(gfx::RectF(100, 100, 50, 50),
             GetRenderSurface(child)->DrawableContentRect());
+}
+
+TEST_F(DrawPropertiesTest, VisibleLayerRectForBlurFilterUnderClip) {
+  LayerImpl* root = root_layer();
+  LayerImpl* child = AddLayer<LayerImpl>();
+
+  root->SetBounds(gfx::Size(100, 100));
+  child->SetBounds(gfx::Size(300, 300));
+  child->SetDrawsContent(true);
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(10));
+
+  CreateClipNode(root);
+  CopyProperties(root, child);
+  child->SetOffsetToTransformParent(gfx::Vector2dF(-100, -100));
+  auto& filter_node = CreateEffectNode(child);
+  filter_node.render_surface_reason = RenderSurfaceReason::kFilter;
+  filter_node.filters = filters;
+  auto& clip_node = CreateClipNode(child);
+  clip_node.pixel_moving_filter_id = filter_node.id;
+
+  UpdateActiveTreeDrawProperties();
+  EXPECT_EQ(gfx::Rect(70, 70, 160, 160), child->visible_layer_rect());
+}
+
+TEST_F(DrawPropertiesTest, VisibleLayerRectForReferenceFilterUnderClip) {
+  LayerImpl* root = root_layer();
+  LayerImpl* child = AddLayer<LayerImpl>();
+
+  root->SetBounds(gfx::Size(100, 100));
+  child->SetBounds(gfx::Size(300, 300));
+  child->SetDrawsContent(true);
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateReferenceFilter(
+      sk_make_sp<OffsetPaintFilter>(50, 50, nullptr)));
+
+  CreateClipNode(root);
+  CopyProperties(root, child);
+  child->SetOffsetToTransformParent(gfx::Vector2dF(-100, -100));
+  auto& filter_node = CreateEffectNode(child);
+  filter_node.render_surface_reason = RenderSurfaceReason::kFilter;
+  filter_node.filters = filters;
+  auto& clip_node = CreateClipNode(child);
+  clip_node.pixel_moving_filter_id = filter_node.id;
+
+  UpdateActiveTreeDrawProperties();
+  EXPECT_EQ(gfx::Rect(100, 100, 150, 150), child->visible_layer_rect());
 }
 
 TEST_F(DrawPropertiesTest, RenderSurfaceForBlendMode) {

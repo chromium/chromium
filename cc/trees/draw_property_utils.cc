@@ -161,58 +161,65 @@ ConditionalClip ComputeCurrentClip(const ClipNode* clip_node,
   return ConditionalClip{true /* is_clipped */, current_clip};
 }
 
+bool ExpandClipForPixelMovingFilter(const PropertyTrees* property_trees,
+                                    int target_id,
+                                    const EffectNode* filter_node,
+                                    gfx::RectF* clip_rect) {
+  // Bring the accumulated clip to the space of the pixel-moving filter.
+  gfx::RectF clip_rect_in_mapping_space;
+  bool success = ConvertRectBetweenSurfaceSpaces(property_trees, target_id,
+                                                 filter_node->id, *clip_rect,
+                                                 &clip_rect_in_mapping_space);
+  // If transform is not invertible, no clip will be applied.
+  if (!success)
+    return false;
+
+  // Do the expansion.
+  SkMatrix filter_draw_matrix =
+      SkMatrix::Scale(filter_node->surface_contents_scale.x(),
+                      filter_node->surface_contents_scale.y());
+  gfx::RectF mapped_clip_in_mapping_space(filter_node->filters.MapRect(
+      ToEnclosingClipRect(clip_rect_in_mapping_space), filter_draw_matrix));
+
+  // Put the expanded clip back into the original target space.
+  gfx::RectF original_clip_rect = *clip_rect;
+  success = ConvertRectBetweenSurfaceSpaces(
+      property_trees, filter_node->id, target_id, mapped_clip_in_mapping_space,
+      clip_rect);
+  // If transform is not invertible, no clip will be applied.
+  if (!success)
+    return false;
+
+  // Ensure the clip is expanded in the target space, in case that the
+  // mapped accumulated_clip doesn't contain the original.
+  clip_rect->Union(original_clip_rect);
+  return true;
+}
+
 bool ApplyClipNodeToAccumulatedClip(const PropertyTrees* property_trees,
                                     bool include_expanding_clips,
                                     int target_id,
                                     int target_transform_id,
                                     const ClipNode* clip_node,
                                     gfx::RectF* accumulated_clip) {
-  switch (clip_node->clip_type) {
-    case ClipNode::ClipType::APPLIES_LOCAL_CLIP: {
-      ConditionalClip current_clip = ComputeCurrentClip(
-          clip_node, property_trees, target_transform_id, target_id);
-
-      // If transform is not invertible, no clip will be applied.
-      if (!current_clip.is_clipped)
-        return false;
-
-      *accumulated_clip =
-          gfx::IntersectRects(*accumulated_clip, current_clip.clip_rect);
+  if (!clip_node->AppliesLocalClip()) {
+    if (!include_expanding_clips)
       return true;
-    }
-    case ClipNode::ClipType::EXPANDS_CLIP: {
-      if (!include_expanding_clips)
-        return true;
-
-      // Bring the accumulated clip to the space of the expanding effect.
-      const EffectNode* expanding_effect_node =
-          property_trees->effect_tree().Node(
-              clip_node->clip_expander->target_effect_id());
-      gfx::RectF accumulated_clip_rect_in_expanding_space;
-      bool success = ConvertRectBetweenSurfaceSpaces(
-          property_trees, target_id, expanding_effect_node->id,
-          *accumulated_clip, &accumulated_clip_rect_in_expanding_space);
-      // If transform is not invertible, no clip will be applied.
-      if (!success)
-        return false;
-
-      // Do the expansion.
-      gfx::RectF expanded_clip_in_expanding_space =
-          gfx::RectF(clip_node->clip_expander->MapRect(
-              ToEnclosingClipRect(accumulated_clip_rect_in_expanding_space),
-              property_trees));
-
-      // Put the expanded clip back into the original target space.
-      success = ConvertRectBetweenSurfaceSpaces(
-          property_trees, expanding_effect_node->id, target_id,
-          expanded_clip_in_expanding_space, accumulated_clip);
-      // If transform is not invertible, no clip will be applied.
-      if (!success)
-        return false;
-      return true;
-    }
+    const EffectNode* filter_node =
+        property_trees->effect_tree().Node(clip_node->pixel_moving_filter_id);
+    DCHECK(filter_node);
+    return ExpandClipForPixelMovingFilter(property_trees, target_id,
+                                          filter_node, accumulated_clip);
   }
-  NOTREACHED();
+
+  ConditionalClip current_clip = ComputeCurrentClip(
+      clip_node, property_trees, target_transform_id, target_id);
+
+  // If transform is not invertible, no clip will be applied.
+  if (!current_clip.is_clipped)
+    return false;
+
+  accumulated_clip->Intersect(current_clip.clip_rect);
   return true;
 }
 
@@ -293,13 +300,12 @@ ConditionalClip ComputeAccumulatedClip(PropertyTrees* property_trees,
   } else {
     // No cache hit or the cached clip has no clip to apply. We need to find
     // the first clip that applies clip as there is no clip to expand.
-    while (clip_node->clip_type != ClipNode::ClipType::APPLIES_LOCAL_CLIP &&
-           parent_chain.size() > 0) {
+    while (!clip_node->AppliesLocalClip() && parent_chain.size() > 0) {
       clip_node = parent_chain.top();
       parent_chain.pop();
     }
 
-    if (clip_node->clip_type != ClipNode::ClipType::APPLIES_LOCAL_CLIP) {
+    if (!clip_node->AppliesLocalClip()) {
       // No clip to apply.
       cached_data->clip = unclipped;
       return unclipped;
@@ -555,7 +561,7 @@ void SetSurfaceIsClipped(const ClipTree& clip_tree,
     // If the clips between the render surface and its target only expand the
     // clips and do not apply any new clip, we need not clip the render surface.
     const ClipNode* clip_node = clip_tree.Node(render_surface->ClipTreeIndex());
-    is_clipped = clip_node->clip_type != ClipNode::ClipType::EXPANDS_CLIP;
+    is_clipped = clip_node->AppliesLocalClip();
   }
   render_surface->SetIsClipped(is_clipped);
 }

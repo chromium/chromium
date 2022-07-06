@@ -263,7 +263,6 @@ void PropertyTreeManager::SetupRootClipNode() {
       clip_tree_.Insert(cc::ClipNode(), cc::kRootPropertyNodeId));
   DCHECK_EQ(clip_node.id, cc::kSecondaryRootPropertyNodeId);
 
-  clip_node.clip_type = cc::ClipNode::ClipType::APPLIES_LOCAL_CLIP;
   // TODO(bokan): This needs to come from the Visual Viewport which will
   // correctly account for the URL bar. In fact, the visual viewport property
   // tree builder should probably be the one to create the property tree state
@@ -533,7 +532,6 @@ int PropertyTreeManager::EnsureCompositorClipNode(
   compositor_node.clip = clip_node.PaintClipRect().Rect();
   compositor_node.transform_id =
       EnsureCompositorTransformNode(clip_node.LocalTransformSpace().Unalias());
-  compositor_node.clip_type = cc::ClipNode::ClipType::APPLIES_LOCAL_CLIP;
 
   clip_node.SetCcNodeId(new_sequence_number_, id);
   clip_tree_.set_needs_update(true);

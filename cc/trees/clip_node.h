@@ -7,8 +7,6 @@
 
 #include "base/containers/stack_container.h"
 #include "cc/cc_export.h"
-#include "cc/trees/clip_expander.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace base {
@@ -37,28 +35,17 @@ struct CC_EXPORT ClipNode {
 
   ~ClipNode();
 
+  // Returns true if we should apply |clip|. Otherwise we should map the
+  // accumulated clip by the filter specified by |pixel_moving_filter_id|.
+  bool AppliesLocalClip() const;
+
   // The node index of this node in the clip tree node vector.
   int id;
   // The node index of the parent node in the clip tree node vector.
   int parent_id;
 
-  enum class ClipType {
-    // The node contributes a new clip (that is, |clip| needs to be applied).
-    APPLIES_LOCAL_CLIP,
-
-    // This node represents a space expansion. When computing visible rects,
-    // the accumulated clip inherited by this node gets expanded. Similarly,
-    // when mapping a rect in descendant space to the rect in ancestor space
-    // that depends on the descendant rect's contents, this node expands the
-    // descendant rect. This is used for effects like pixel-moving filters,
-    // where clipped-out content can affect visible output.
-    EXPANDS_CLIP
-  };
-
-  ClipType clip_type;
-
   // The clip rect that this node contributes, expressed in the space of its
-  // transform node.
+  // transform node. This field is ignored if AppliesLocalClip() is false.
   gfx::RectF clip;
 
   // Each element of this cache stores the accumulated clip from this clip
@@ -74,8 +61,11 @@ struct CC_EXPORT ClipNode {
   // It is used in the computation of layer's visible rect.
   gfx::RectF cached_accumulated_rect_in_screen_space;
 
-  // For nodes that expand, this represents the amount of expansion.
-  absl::optional<ClipExpander> clip_expander;
+  // If valid, it's the id of a pixel-moving filter in the effect tree.
+  // Instead of applying |clip|, this clip node expands the accumulated clip
+  // to include any pixels in the contents that can affect the rendering result
+  // with the filter.
+  int pixel_moving_filter_id;
 
   // The id of the transform node that defines the clip node's local space.
   int transform_id;

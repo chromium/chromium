@@ -97,7 +97,6 @@ ClipNode& CreateClipNodeInternal(LayerType* layer,
   int id = clip_tree.Insert(ClipNode(),
                             ID_OR_DEFAULT(parent_id, layer->clip_tree_index()));
   auto* node = clip_tree.Node(id);
-  node->clip_type = ClipNode::ClipType::APPLIES_LOCAL_CLIP;
   node->transform_id =
       ID_OR_DEFAULT(transform_id, layer->transform_tree_index());
   if (layer) {

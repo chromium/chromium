@@ -2291,7 +2291,7 @@ static bool PointIsClippedByAncestorClipNode(
   for (const ClipNode* clip_node = clip_tree.Node(layer->clip_tree_index());
        clip_node->id > kViewportPropertyNodeId;
        clip_node = clip_tree.parent(clip_node)) {
-    if (clip_node->clip_type == ClipNode::ClipType::APPLIES_LOCAL_CLIP) {
+    if (clip_node->AppliesLocalClip()) {
       clip = gfx::ToEnclosingRect(clip_node->clip);
 
       gfx::Transform screen_space_transform =

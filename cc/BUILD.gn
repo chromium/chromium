@@ -346,8 +346,6 @@ cc_component("cc") {
     "trees/animation_options.h",
     "trees/browser_controls_params.cc",
     "trees/browser_controls_params.h",
-    "trees/clip_expander.cc",
-    "trees/clip_expander.h",
     "trees/clip_node.cc",
     "trees/clip_node.h",
     "trees/commit_state.cc",
