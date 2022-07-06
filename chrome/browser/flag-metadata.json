@@ -5584,7 +5584,7 @@
   {
     "name": "sharing-desktop-share-preview",
     "owners": ["ellyjones", "chrome-with-friends-robots@google.com"],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "sharing-hub-desktop-app-menu",
