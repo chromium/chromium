@@ -12,15 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** View that shows a Material themed spinner. */
 public class MaterialSpinnerView extends AppCompatImageView {
     private final CircularProgressDrawable mSpinner;
-    private final boolean mAlwaysAnimate;
 
     public MaterialSpinnerView(Context context) {
         this(context, null);
@@ -40,9 +37,6 @@ public class MaterialSpinnerView extends AppCompatImageView {
         mSpinner.setStyle(CircularProgressDrawable.DEFAULT);
         setImageDrawable(mSpinner);
         mSpinner.setColorSchemeColors(SemanticColorUtils.getDefaultIconColorAccent1(context));
-        mAlwaysAnimate = FeatureList.isInitialized() ? ChromeFeatureList.isEnabled(
-                                 ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE)
-                                                     : false;
         updateAnimationState(isAttachedToWindow());
         TraceEvent.end("MaterialSpinnerView");
     }
@@ -71,13 +65,6 @@ public class MaterialSpinnerView extends AppCompatImageView {
         // Some Android versions call onVisibilityChanged() during the View's constructor before the
         // spinner is created.
         if (mSpinner == null) return;
-
-        // TODO(crbug.com/1151391): This feature is used for A:B testing to determine the impact of
-        // a bug fix. Remove after experiment is complete.
-        if (mAlwaysAnimate) {
-            if (!mSpinner.isRunning()) mSpinner.start();
-            return;
-        }
 
         boolean visible = isShown() && isAttached;
         if (mSpinner.isRunning() && !visible) {

@@ -42,9 +42,6 @@ extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 #endif
 
-// Used for A:B testing of a bug fix (crbug.com/1151391).
-extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;
-
 // Feature that allows users to keep up with and consume web content.
 extern const base::Feature kWebFeed;
 

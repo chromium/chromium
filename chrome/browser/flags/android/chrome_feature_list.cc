@@ -144,7 +144,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kFeedInteractiveRefresh,
     &feed::kFeedLoadingPlaceholder,
     &feed::kInterestFeedContentSuggestions,
-    &feed::kInterestFeedSpinnerAlwaysAnimate,
     &feed::kInterestFeedV1ClicksAndViewsConditionalUpload,
     &feed::kInterestFeedV2,
     &feed::kInterestFeedV2Autoplay,

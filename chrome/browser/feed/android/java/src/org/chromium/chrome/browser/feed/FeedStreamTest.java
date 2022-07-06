@@ -165,7 +165,6 @@ public class FeedStreamTest {
     private void setFeatureOverrides(boolean feedLoadingPlaceholderOn, boolean onboardingOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
-        overrides.put(ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE, false);
         overrides.put(ChromeFeatureList.WEB_FEED_ONBOARDING, onboardingOn);
         FeatureList.setTestFeatures(overrides);
     }

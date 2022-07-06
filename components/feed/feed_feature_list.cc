@@ -52,9 +52,6 @@ const base::Feature kInterestFeedNoticeCardAutoDismiss{
     "InterestFeedNoticeCardAutoDismiss", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-const base::Feature kInterestFeedSpinnerAlwaysAnimate{
-    "InterestFeedSpinnerAlwaysAnimate", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kWebFeed{"WebFeed", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDiscoFeedEndpoint{"DiscoFeedEndpoint",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
