@@ -50,6 +50,8 @@ extern const base::Feature kElasticOverscroll;
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kAndroidPermissionsCache;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kElasticOverscrollType[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kElasticOverscrollTypeFilter[];
