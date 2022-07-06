@@ -10,6 +10,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/bug_1307307_tracker.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -237,11 +238,16 @@ SharedImageVideoSurfaceTexture::ProduceSkia(
   // For (old) overlays, we don't have a texture owner, but overlay promotion
   // might not happen for some reasons. In that case, it will try to draw
   // which should result in no image.
-  if (!stream_texture_sii_->HasTextureOwner())
+  if (!stream_texture_sii_->HasTextureOwner()) {
+    Bug1307307Tracker::SetLastAccessError(
+        Bug1307307Tracker::VideoAccessError::kSurfaceTexture_NoTextureOwner);
     return nullptr;
+  }
 
   if (!context_state->GrContextIsGL()) {
     DCHECK(false);
+    Bug1307307Tracker::SetLastAccessError(
+        Bug1307307Tracker::VideoAccessError::kSurfaceTexture_NotGLContext);
     return nullptr;
   }
 
@@ -252,8 +258,11 @@ SharedImageVideoSurfaceTexture::ProduceSkia(
       (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough);
 
   auto texture = GenAbstractTexture(passthrough);
-  if (!texture)
+  if (!texture) {
+    Bug1307307Tracker::SetLastAccessError(
+        Bug1307307Tracker::VideoAccessError::kSurfaceTexture_CantCreateTexture);
     return nullptr;
+  }
 
   // If TextureOwner binds texture implicitly on update, that means it will
   // use TextureOwner texture_id to update and bind. Hence use TextureOwner
@@ -274,9 +283,15 @@ SharedImageVideoSurfaceTexture::ProduceSkia(
         std::make_unique<SharedImageRepresentationGLTextureVideo>(
             manager, this, tracker, std::move(texture));
   }
-  return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
-                                                 std::move(context_state),
-                                                 manager, this, tracker);
+  auto skia_representation = SharedImageRepresentationSkiaGL::Create(
+      std::move(gl_representation), std::move(context_state), manager, this,
+      tracker);
+  if (!skia_representation) {
+    Bug1307307Tracker::SetLastAccessError(
+        Bug1307307Tracker::VideoAccessError::
+            kSurfaceTexture_CantCreateRepresentation);
+  }
+  return skia_representation;
 }
 
 void SharedImageVideoSurfaceTexture::BeginGLReadAccess(
