@@ -50763,6 +50763,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Unsupported Legacy OS"/>
 </enum>
 
+<enum name="IOSLensWebUploadStatus">
+  <summary>The status of the upload of image data to Lens.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Malformed response"/>
+</enum>
+
 <enum name="IosLocationAuthorizationStatus">
   <int value="0" label="User has not made a choice"/>
   <int value="1" label="Restricted"/>
