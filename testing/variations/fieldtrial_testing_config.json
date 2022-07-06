@@ -4269,7 +4269,28 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "delay_creation": "false",
                         "enable_launch_polish": "false"
+                    },
+                    "enable_features": [
+                        "GridTabSwitcherForTablets"
+                    ]
+                },
+                {
+                    "name": "Enabled_Polish",
+                    "params": {
+                        "delay_creation": "false",
+                        "enable_launch_polish": "true"
+                    },
+                    "enable_features": [
+                        "GridTabSwitcherForTablets"
+                    ]
+                },
+                {
+                    "name": "Enabled_Polish_Delay",
+                    "params": {
+                        "delay_creation": "true",
+                        "enable_launch_polish": "true"
                     },
                     "enable_features": [
                         "GridTabSwitcherForTablets"

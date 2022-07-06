@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
  */
 class TabSwitcherModeTTCoordinator {
     private final ViewStub mTabSwitcherToolbarStub;
-    private final ViewStub mTabSwitcherFullscreenToolbarStub;
+    private ViewStub mTabSwitcherFullscreenToolbarStub;
 
     // TODO(twellington): Create a model to hold all of these properties. Consider using
     // LazyConstructionPropertyMcp to collect all of the properties since it is designed to
@@ -66,6 +66,14 @@ class TabSwitcherModeTTCoordinator {
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mTopToolbarInteractabilityManager =
                 new TopToolbarInteractabilityManager(enabled -> setNewTabEnabled(enabled));
+    }
+
+    /**
+     * Set stub for GTS fullscreen toolbar.
+     * @param toolbarStub stub to set.
+     */
+    void setFullScreenToolbarStub(ViewStub toolbarStub) {
+        mTabSwitcherFullscreenToolbarStub = toolbarStub;
     }
 
     /**
@@ -202,6 +210,7 @@ class TabSwitcherModeTTCoordinator {
     private TabSwitcherModeTopToolbar maybeInflateActiveToolbar(boolean useFullscreenToolbar) {
         if (useFullscreenToolbar) {
             if (mTabSwitcherFullscreenToolbar == null) {
+                assert mTabSwitcherFullscreenToolbarStub != null;
                 mTabSwitcherFullscreenToolbar =
                         (TabSwitcherModeTopToolbar) mTabSwitcherFullscreenToolbarStub.inflate();
                 initializeToolbar(mTabSwitcherFullscreenToolbar, true);

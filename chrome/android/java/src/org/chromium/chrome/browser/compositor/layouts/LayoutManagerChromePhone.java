@@ -36,16 +36,18 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
-     *                     should be used, otherwise GTS should be used.
+     * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher. Used
+     *         to create overviewLayout if it has value, otherwise will use the accessibility
+     *         overview layout.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param jankTracker tracker for surface jank.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
-            StartSurface startSurface,
+            Supplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
-        super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
+        super(host, contentContainer, startSurfaceSupplier, tabContentManagerSupplier,
                 topUiThemeColorProvider, jankTracker, null, null);
     }
 

@@ -762,6 +762,10 @@ public class LayoutManagerImpl
         getActiveLayout().onTabsAllClosing(incognito);
     }
 
+    protected Supplier<TopUiThemeColorProvider> getTopUiThemeColorProvider() {
+        return mTopUiThemeColorProvider;
+    }
+
     @Override
     public void initLayoutTabFromHost(final int tabId) {
         if (getTabModelSelector() == null || getActiveLayout() == null) return;

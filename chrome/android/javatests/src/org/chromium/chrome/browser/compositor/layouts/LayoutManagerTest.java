@@ -45,6 +45,7 @@ import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -115,6 +116,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private long mLastDownTime;
 
     private TabModelSelector mTabModelSelector;
+    private Supplier<StartSurface> mStartSurfaceSupplier;
     private LayoutManagerChrome mManager;
     private LayoutManagerChromePhone mManagerPhone;
 
@@ -211,8 +213,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
                 new ObservableSupplierImpl<>();
 
-        mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, mStartSurface,
-                tabContentManagerSupplier, () -> mTopUiThemeColorProvider, new DummyJankTracker());
+        mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container,
+                mStartSurfaceSupplier, tabContentManagerSupplier,
+                () -> mTopUiThemeColorProvider, new DummyJankTracker());
         verify(mStartSurface)
                 .addTabSwitcherViewObserver(mTabSwitcherViewObserverArgumentCaptor.capture());
 
@@ -701,6 +704,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         // Load the browser process.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+
+        mStartSurfaceSupplier = () -> mStartSurface;
     }
 
     @After

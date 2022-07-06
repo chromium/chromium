@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -285,6 +286,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Count histogram used to track number of tabs when we show the Overview on Return to Chrome.
     private static final String TAB_COUNT_ON_RETURN = "Tabs.TabCountOnStartScreenShown";
+    // Time histogram used to track time to inflate tab switcher views.
+    private static final String TAB_SWITCHER_CREATION_TIME = "Android.TabSwitcher.CreationTime";
 
     private final MainIntentBehaviorMetrics mMainIntentMetrics;
     private @Nullable MultiInstanceManager mMultiInstanceManager;
@@ -700,12 +703,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // TODO(1239025): Remove all GTS enabled checks after GTS is enabled by default on
             // tablets.
             if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
-                createStartSurface(compositorViewHolder);
+                createStartSurface(compositorViewHolder, compositorViewHolder);
             }
 
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                    mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
+                    mStartSurfaceSupplier, getTabContentManagerSupplier(),
                     mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
@@ -721,33 +724,32 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // TODO(1239025): Remove all GTS enabled checks after GTS is enabled by default on
             // tablets.
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
-                createStartSurface(compositorViewHolder);
+            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)
+                    && !TabUiFeatureUtilities.isTabletGridTabSwitcherDelayCreationEnabled()) {
+                createAndSetStartSurfaceForTablet();
             }
 
             // clang-format off
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.grid_tab_switcher_view_holder);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
-                    mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
-                    mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
-                    tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
-                    getLifecycleDispatcher());
+                mStartSurfaceSupplier, getTabContentManagerSupplier(),
+                mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
+                tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
+                getLifecycleDispatcher(), () -> createAndSetStartSurfaceForTablet());
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
     }
 
-    private void createStartSurface(CompositorViewHolder compositorViewHolder) {
-        ViewGroup containerView = TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(this)
-                ? findViewById(R.id.grid_tab_switcher_view_holder)
-                : compositorViewHolder;
+    private void createStartSurface(
+            CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
         StartSurfaceDelegate.createStartSurface(this, mRootUiCoordinator.getScrimCoordinator(),
                 mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier,
-                mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid(), containerView,
-                compositorViewHolder::getDynamicResourceLoader, getTabModelSelector(),
-                getBrowserControlsManager(), getSnackbarManager(), getShareDelegateSupplier(),
-                getToolbarManager()::getOmniboxStub, getTabContentManager(),
-                getModalDialogManager(),
+                mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid(),
+                tabSwitcherContainer, compositorViewHolder::getDynamicResourceLoader,
+                getTabModelSelector(), getBrowserControlsManager(), getSnackbarManager(),
+                getShareDelegateSupplier(), getToolbarManager()::getOmniboxStub,
+                getTabContentManager(), getModalDialogManager(),
                 /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
                 getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar,
@@ -845,6 +847,28 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 //         && mOverviewModeController.overviewVisible());
             }
         }
+    }
+
+    private ViewGroup createAndSetStartSurfaceForTablet() {
+        assert isTablet();
+        final long startTimeMs = SystemClock.uptimeMillis();
+        CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
+        ViewGroup containerView = compositorViewHolder;
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(this)) {
+            // Inflate view holder for polish GTS.
+            containerView =
+                    (ViewGroup) ((ViewStub) findViewById(R.id.grid_tab_switcher_view_holder_stub))
+                            .inflate();
+            // Set view in toolbar manager to set toolbar stub.
+            getToolbarManager().setTabSwitcherFullScreenView(containerView);
+        }
+
+        // create start surface.
+        createStartSurface(compositorViewHolder, containerView);
+        mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(getOnCreateTimestampMs());
+        RecordHistogram.recordTimesHistogram(
+                TAB_SWITCHER_CREATION_TIME, SystemClock.uptimeMillis() - startTimeMs);
+        return containerView;
     }
 
     private void maybeCreateIncognitoTabSnapshotController() {
@@ -1161,7 +1185,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
 
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
+            if (mStartSurfaceSupplier.hasValue()) {
                 mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(
                         getOnCreateTimestampMs());
             }
