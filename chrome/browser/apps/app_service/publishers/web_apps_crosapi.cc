@@ -341,6 +341,8 @@ void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
   if (!web_app::IsWebAppsCrosapiEnabled())
     return;
 
+  on_initial_apps_received_ = true;
+
   if (!controller_.is_bound()) {
     // If `controller_` is not bound, add `deltas` to `delta_cache_` to wait for
     // registering the crosapi controller to publish all deltas saved in
@@ -351,18 +353,7 @@ void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
     return;
   }
 
-  std::vector<apps::mojom::AppPtr> mojom_apps;
-  for (const AppPtr& delta : deltas) {
-    mojom_apps.push_back(ConvertAppToMojomApp(delta));
-  }
-  apps::AppPublisher::Publish(std::move(deltas), AppType::kWeb,
-                              should_notify_initialized_);
-
-  for (auto& subscriber : subscribers_) {
-    subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),
-                       apps::mojom::AppType::kWeb, should_notify_initialized_);
-  }
-  should_notify_initialized_ = false;
+  PublishImpl(std::move(deltas));
 }
 
 void WebAppsCrosapi::RegisterAppController(
@@ -374,27 +365,12 @@ void WebAppsCrosapi::RegisterAppController(
   controller_.set_disconnect_handler(base::BindOnce(
       &WebAppsCrosapi::OnControllerDisconnected, base::Unretained(this)));
 
-  if (delta_cache_.empty()) {
-    // If there is no apps saved in `app_cache_`, still publish an empty app
-    // list to initialize the web app AppType for AppRegistryCache.
-    apps::AppPublisher::Publish(std::vector<AppPtr>{}, AppType::kWeb,
-                                should_notify_initialized_);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_apps;
-    for (const auto& delta : delta_cache_) {
-      mojom_apps.push_back(ConvertAppToMojomApp(delta));
-    }
-    apps::AppPublisher::Publish(std::move(delta_cache_), AppType::kWeb,
-                                should_notify_initialized_);
-    delta_cache_.clear();
-
-    for (auto& subscriber : subscribers_) {
-      subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),
-                         apps::mojom::AppType::kWeb,
-                         should_notify_initialized_);
-    }
+  if (!on_initial_apps_received_) {
+    return;
   }
-  should_notify_initialized_ = false;
+
+  PublishImpl(std::move(delta_cache_));
+  delta_cache_.clear();
 }
 
 void WebAppsCrosapi::OnCapabilityAccesses(
@@ -453,6 +429,21 @@ void WebAppsCrosapi::OnApplyIconEffects(IconType icon_type,
   }
 
   std::move(callback).Run(std::move(icon_value));
+}
+
+void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
+  std::vector<apps::mojom::AppPtr> mojom_apps;
+  for (const auto& delta : deltas) {
+    mojom_apps.push_back(ConvertAppToMojomApp(delta));
+  }
+  apps::AppPublisher::Publish(std::move(deltas), AppType::kWeb,
+                              should_notify_initialized_);
+
+  for (auto& subscriber : subscribers_) {
+    subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),
+                       apps::mojom::AppType::kWeb, should_notify_initialized_);
+  }
+  should_notify_initialized_ = false;
 }
 
 }  // namespace apps
