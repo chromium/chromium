@@ -36,27 +36,24 @@ MITMSoftwareUI::~MITMSoftwareUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void MITMSoftwareUI::PopulateStringsForHTML(base::Value* load_time_data) {
-  CHECK(load_time_data);
-
+void MITMSoftwareUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(
       ssl_info_, base::Time::NowFromSystemTime(), load_time_data);
 
   // Set display booleans.
-  load_time_data->SetBoolKey("overridable", false);
-  load_time_data->SetBoolKey("hide_primary_button", true);
-  load_time_data->SetBoolKey("bad_clock", false);
+  load_time_data.Set("overridable", false);
+  load_time_data.Set("hide_primary_button", true);
+  load_time_data.Set("bad_clock", false);
 
   // Set strings that are shared between enterprise and non-enterprise
   // interstitials.
-  load_time_data->SetStringKey("tabTitle",
-                               l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_HEADING));
-  load_time_data->SetStringKey("primaryButtonText", std::string());
-  load_time_data->SetStringKey("finalParagraph", std::string());
+  load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_HEADING));
+  load_time_data.Set("primaryButtonText", "");
+  load_time_data.Set("finalParagraph", "");
 
   if (is_enterprise_managed_) {
     MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(load_time_data);
@@ -109,13 +106,13 @@ void MITMSoftwareUI::HandleCommand(SecurityInterstitialCommand command) {
 }
 
 void MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(
-    base::Value* load_time_data) {
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_PRIMARY_PARAGRAPH_ENTERPRISE,
           base::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_))));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_EXPLANATION_ENTERPRISE,
@@ -124,13 +121,13 @@ void MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(
 }
 
 void MITMSoftwareUI::PopulateAtHomeUserStringsForHTML(
-    base::Value* load_time_data) {
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_PRIMARY_PARAGRAPH_NONENTERPRISE,
           base::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_))));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_EXPLANATION_NONENTERPRISE,

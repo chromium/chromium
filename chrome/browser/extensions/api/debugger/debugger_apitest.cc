@@ -263,7 +263,8 @@ class TestInterstitialPage
   void OnInterstitialClosing() override {}
 
  protected:
-  void PopulateInterstitialStrings(base::Value* load_time_data) override {}
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
+  }
 
   std::unique_ptr<security_interstitials::MetricsHelper>
   CreateTestMetricsHelper(content::WebContents* web_contents) {

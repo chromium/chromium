@@ -71,7 +71,7 @@ class SSLBlockingPage : public SSLBlockingPageBase {
  protected:
   // SecurityInterstitialPage implementation:
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(base::Value* load_time_data) override;
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
 
  private:
   friend class policy::PolicyTest_SSLErrorOverridingDisallowed_Test;

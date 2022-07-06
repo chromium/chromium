@@ -51,23 +51,20 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
 // TODO(crbug.com/1251490 ) Update to make disabled page works in Lacros.
 std::string GetAppDisabledErrorPage() {
-  base::DictionaryValue strings;
+  base::Value::Dict strings;
 
-  strings.SetStringKey(
-      "disabledPageHeader",
-      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
-  strings.SetStringKey(
-      "disabledPageTitle",
-      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
-  strings.SetStringKey(
-      "disabledPageMessage",
-      l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
+  strings.Set("disabledPageHeader",
+              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
+  strings.Set("disabledPageTitle",
+              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
+  strings.Set("disabledPageMessage",
+              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_CHROME_URLS_DISABLED_PAGE_HTML);
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
-  return webui::GetI18nTemplateHtml(html, &strings);
+  return webui::GetI18nTemplateHtml(html, strings);
 }
 
 bool IsAppDisabled(const std::string& app_id) {

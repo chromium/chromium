@@ -66,7 +66,7 @@ BlockedInterceptionBlockingPage::GetTypeForTesting() {
 }
 
 void BlockedInterceptionBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) {
+    base::Value::Dict& load_time_data) {
   blocked_interception_ui_->PopulateStringsForHTML(load_time_data);
   cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
   cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);

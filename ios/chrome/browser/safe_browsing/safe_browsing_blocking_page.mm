@@ -113,15 +113,15 @@ void SafeBrowsingBlockingPage::SetClient(
 }
 
 std::string SafeBrowsingBlockingPage::GetHtmlContents() const {
-  base::DictionaryValue load_time_data;
-  PopulateInterstitialStrings(&load_time_data);
+  base::Value::Dict load_time_data;
+  PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(client_->GetApplicationLocale(),
                                  &load_time_data);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           error_ui_->GetHTMLTemplateId());
   webui::AppendWebUiCssTextDefaults(&html);
-  return webui::GetI18nTemplateHtml(html, &load_time_data);
+  return webui::GetI18nTemplateHtml(html, load_time_data);
 }
 
 void SafeBrowsingBlockingPage::HandleCommand(
@@ -143,8 +143,8 @@ bool SafeBrowsingBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) const {
-  load_time_data->SetStringKey("url_to_reload", request_url().spec());
+    base::Value::Dict& load_time_data) const {
+  load_time_data.Set("url_to_reload", request_url().spec());
   error_ui_->PopulateStringsForHtml(load_time_data);
 }
 

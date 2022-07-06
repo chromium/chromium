@@ -62,7 +62,8 @@ class TestInterstitialPage : public SecurityInterstitialPage {
   void OnInterstitialClosing() override {}
 
  protected:
-  void PopulateInterstitialStrings(base::Value* load_time_data) override {}
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
+  }
 
  private:
   raw_ptr<bool> destroyed_tracker_;

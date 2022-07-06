@@ -120,26 +120,26 @@ std::string CaptivePortalBlockingPage::GetWiFiSSID() const {
 }
 
 void CaptivePortalBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) {
-  load_time_data->SetStringKey("iconClass", "icon-offline");
-  load_time_data->SetStringKey("type", "CAPTIVE_PORTAL");
-  load_time_data->SetBoolKey("overridable", false);
-  load_time_data->SetBoolKey("hide_primary_button", false);
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("iconClass", "icon-offline");
+  load_time_data.Set("type", "CAPTIVE_PORTAL");
+  load_time_data.Set("overridable", false);
+  load_time_data.Set("hide_primary_button", false);
 
   // |IsWifiConnection| isn't accurate on some platforms, so always try to get
   // the Wi-Fi SSID even if |IsWifiConnection| is false.
   std::string wifi_ssid = GetWiFiSSID();
   bool is_wifi = !wifi_ssid.empty() || IsWifiConnection();
 
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
 
   std::u16string tab_title =
       l10n_util::GetStringUTF16(is_wifi ? IDS_CAPTIVE_PORTAL_HEADING_WIFI
                                         : IDS_CAPTIVE_PORTAL_HEADING_WIRED);
-  load_time_data->SetStringKey("tabTitle", tab_title);
-  load_time_data->SetStringKey("heading", tab_title);
+  load_time_data.Set("tabTitle", tab_title);
+  load_time_data.Set("heading", tab_title);
 
   std::u16string paragraph;
   if (login_url_.is_empty() ||
@@ -178,27 +178,26 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
           base::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)), login_host);
     }
   }
-  load_time_data->SetStringKey("primaryParagraph", paragraph);
-  load_time_data->SetStringKey(
-      "optInLink",
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetStringKey(
+  load_time_data.Set("primaryParagraph", std::move(paragraph));
+  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
+                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data.Set(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
   // Explicitly specify other expected fields to empty.
-  load_time_data->SetStringKey("openDetails", "");
-  load_time_data->SetStringKey("closeDetails", "");
-  load_time_data->SetStringKey("explanationParagraph", "");
-  load_time_data->SetStringKey("finalParagraph", "");
-  load_time_data->SetStringKey("recurrentErrorParagraph", "");
-  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
+  load_time_data.Set("openDetails", "");
+  load_time_data.Set("closeDetails", "");
+  load_time_data.Set("explanationParagraph", "");
+  load_time_data.Set("finalParagraph", "");
+  load_time_data.Set("recurrentErrorParagraph", "");
+  load_time_data.Set("show_recurrent_error_paragraph", false);
 
   if (cert_report_helper()) {
     cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
     cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
   } else {
-    load_time_data->SetBoolKey(security_interstitials::kDisplayCheckBox, false);
-    load_time_data->SetBoolKey(
+    load_time_data.Set(security_interstitials::kDisplayCheckBox, false);
+    load_time_data.Set(
         security_interstitials::kDisplayEnhancedProtectionMessage, false);
   }
 }

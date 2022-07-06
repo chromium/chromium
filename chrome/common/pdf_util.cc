@@ -31,12 +31,12 @@ std::string GetPDFPlaceholderHTML(const GURL& pdf_url) {
           IDR_PDF_PLUGIN_HTML);
   webui::AppendWebUiCssTextDefaults(&template_html);
 
-  base::DictionaryValue values;
-  values.SetString("fileName", pdf_url.ExtractFileName());
-  values.SetString("open", l10n_util::GetStringUTF8(IDS_ACCNAME_OPEN));
-  values.SetString("pdfUrl", pdf_url.spec());
+  base::Value::Dict values;
+  values.Set("fileName", pdf_url.ExtractFileName());
+  values.Set("open", l10n_util::GetStringUTF8(IDS_ACCNAME_OPEN));
+  values.Set("pdfUrl", pdf_url.spec());
 
-  return webui::GetI18nTemplateHtml(template_html, &values);
+  return webui::GetI18nTemplateHtml(template_html, values);
 }
 
 bool IsPdfExtensionOrigin(const url::Origin& origin) {

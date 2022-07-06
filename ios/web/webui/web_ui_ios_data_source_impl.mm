@@ -76,27 +76,26 @@ WebUIIOSDataSourceImpl::~WebUIIOSDataSourceImpl() {}
 
 void WebUIIOSDataSourceImpl::AddString(const std::string& name,
                                        const std::u16string& value) {
-  localized_strings_.GetDict().Set(name, value);
+  localized_strings_.Set(name, value);
   replacements_[name] = base::UTF16ToUTF8(value);
 }
 
 void WebUIIOSDataSourceImpl::AddString(const std::string& name,
                                        const std::string& value) {
-  localized_strings_.GetDict().Set(name, value);
+  localized_strings_.Set(name, value);
   replacements_[name] = value;
 }
 
 void WebUIIOSDataSourceImpl::AddLocalizedString(const std::string& name,
                                                 int ids) {
-  localized_strings_.GetDict().Set(name,
-                                   GetWebClient()->GetLocalizedString(ids));
+  localized_strings_.Set(name, GetWebClient()->GetLocalizedString(ids));
   replacements_[name] =
       base::UTF16ToUTF8(GetWebClient()->GetLocalizedString(ids));
 }
 
 void WebUIIOSDataSourceImpl::AddLocalizedStrings(
     const base::Value::Dict& localized_strings) {
-  localized_strings_.GetDict().Merge(localized_strings.Clone());
+  localized_strings_.Merge(localized_strings.Clone());
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
 }
@@ -109,7 +108,7 @@ void WebUIIOSDataSourceImpl::AddLocalizedStrings(
 }
 
 void WebUIIOSDataSourceImpl::AddBoolean(const std::string& name, bool value) {
-  localized_strings_.GetDict().Set(name, value);
+  localized_strings_.Set(name, value);
 }
 
 void WebUIIOSDataSourceImpl::UseStringsJs() {
@@ -200,7 +199,7 @@ void WebUIIOSDataSourceImpl::SendLocalizedStringsAsJSON(
     URLDataSourceIOS::GotDataCallback callback,
     bool from_js_module) {
   std::string template_data;
-  webui::AppendJsonJS(&localized_strings_, &template_data, from_js_module);
+  webui::AppendJsonJS(localized_strings_, &template_data, from_js_module);
   std::move(callback).Run(base::RefCountedString::TakeString(&template_data));
 }
 

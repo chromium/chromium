@@ -80,7 +80,7 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   // further changes are made to it after initialization.
   ui::TemplateReplacements replacements_;
   // The |replacements_| is intended to replace |localized_strings_|.
-  base::Value localized_strings_{base::Value::Type::DICT};
+  base::Value::Dict localized_strings_;
   bool deny_xframe_options_;
   bool load_time_data_defaults_added_;
   bool replace_existing_source_;

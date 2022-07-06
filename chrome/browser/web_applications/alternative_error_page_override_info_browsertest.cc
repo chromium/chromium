@@ -23,14 +23,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
-namespace {
-const std::string kYellow = skia::SkColorToHexString(SK_ColorYELLOW);
-const std::string kGreen = skia::SkColorToHexString(SK_ColorGREEN);
-const std::string kRed = skia::SkColorToHexString(SK_ColorRED);
-const std::string kBlue = skia::SkColorToHexString(SK_ColorBLUE);
-const std::string kBlack = skia::SkColorToHexString(SK_ColorBLACK);
-const std::string kWhite = skia::SkColorToHexString(SK_ColorWHITE);
-}  // namespace
 // Class to test browser error page display info.
 class AlternativeErrorPageOverrideInfoBrowserTest
     : public InProcessBrowserTest {
@@ -58,6 +50,14 @@ class AlternativeErrorPageOverrideInfoBrowserTest
         net::ERR_INTERNET_DISCONNECTED);
   }
 
+ protected:
+  const std::string yellow_ = skia::SkColorToHexString(SK_ColorYELLOW);
+  const std::string green_ = skia::SkColorToHexString(SK_ColorGREEN);
+  const std::string red_ = skia::SkColorToHexString(SK_ColorRED);
+  const std::string blue_ = skia::SkColorToHexString(SK_ColorBLUE);
+  const std::string black_ = skia::SkColorToHexString(SK_ColorBLACK);
+  const std::string white_ = skia::SkColorToHexString(SK_ColorWHITE);
+
  private:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -66,6 +66,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
   }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -79,9 +80,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest, Manifest) {
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("customized_background_color"),
-      base::Value(kWhite));
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
-            base::Value(kBlack));
+      white_);
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"), black_);
 }
 
 // Testing app manifest with theme color.
@@ -96,10 +96,9 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("customized_background_color"),
-      base::Value(kWhite));
-  EXPECT_EQ(
-      *info->alternative_error_page_params.Find("theme_color"),
-      base::Value(skia::SkColorToHexString(SkColorSetRGB(0xAA, 0xCC, 0xEE))));
+      white_);
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
+            skia::SkColorToHexString(SkColorSetRGB(0xAA, 0xCC, 0xEE)));
 }
 
 // Testing app manifest with background color.
@@ -114,9 +113,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("customized_background_color"),
-      base::Value(kBlue));
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
-            base::Value(kBlack));
+      blue_);
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"), black_);
 }
 
 // Testing url outside the scope of an installed app.
@@ -149,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with custom app short name.
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
-            base::Value("Manifest"));
+            "Manifest");
 }
 
 // Testing app manifest with no app short name.
@@ -163,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct with customized with app name.
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
-            base::Value("Manifest test app"));
+            "Manifest test app");
 }
 
 // Testing app manifest with no app short name or app name.
@@ -177,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
-            base::Value("Web app banner test page"));
+            "Web app banner test page");
 }
 
 // Testing app manifest with no app short name or app name, and HTML page
@@ -201,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
   EXPECT_EQ(*info->alternative_error_page_params.Find("app_short_name"),
-            base::Value(url_formatter::FormatUrl(app_url)));
+            base::UTF16ToUTF8(url_formatter::FormatUrl(app_url)));
 }
 
 // Testing app with manifest and no service worker.
@@ -215,9 +213,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("customized_background_color"),
-      base::Value(kYellow));
-  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"),
-            base::Value(kGreen));
+      yellow_);
+  EXPECT_EQ(*info->alternative_error_page_params.Find("theme_color"), green_);
 }
 
 // Testing app manifest with dark mode theme and background colors.
@@ -233,9 +230,9 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("dark_mode_background_color"),
-      base::Value(kRed));
+      red_);
   EXPECT_EQ(*info->alternative_error_page_params.Find("dark_mode_theme_color"),
-            base::Value(kRed));
+            red_);
 }
 
 // Testing app manifest with no dark mode theme or background color.
@@ -250,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("dark_mode_background_color"),
-      base::Value(kYellow));
+      yellow_);
   EXPECT_EQ(*info->alternative_error_page_params.Find("dark_mode_theme_color"),
-            base::Value(kGreen));
+            green_);
 }
 
 // Testing manifest with icon.
@@ -281,14 +278,13 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_TRUE(info);
   EXPECT_EQ(
       *info->alternative_error_page_params.Find("icon_url"),
-      base::Value(
-          "data:image/"
-          "png;base64,"
-          "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA4UlEQVQ4jZVSuwqFMAw1"
-          "8baI2M3FyUXXfoGT3+FvC/"
-          "6A4iQKUrFDcweht7fWwUwhOSc5eUDXddEbw1foKIo+"
-          "1iOiIAIAiAgAfIINubh7KtABALTWxhjOuYVax58BAM7zLIqirmtEvMS4an8EIkJEpZSU"
-          "smkaIYQQwhjjSUK3tmVmWaaUWtc1jmNvGbGU0m3COZ/neRiGtm3zPO/"
-          "7Pk3T8JYuSVrrsiyrqjqOY5omzrkx5nGtRMQYG8dx33et9bZtSZK46D+"
-          "Cy1yWBREvtJcNH44xdg8GZrh3u5d7fI0ne/2tX8uNb4qnIrpWAAAAAElFTkSuQmCC"));
+      "data:image/"
+      "png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA4UlEQVQ4jZVSuwqFMAw1"
+      "8baI2M3FyUXXfoGT3+FvC/"
+      "6A4iQKUrFDcweht7fWwUwhOSc5eUDXddEbw1foKIo+"
+      "1iOiIAIAiAgAfIINubh7KtABALTWxhjOuYVax58BAM7zLIqirmtEvMS4an8EIkJEpZSU"
+      "smkaIYQQwhjjSUK3tmVmWaaUWtc1jmNvGbGU0m3COZ/neRiGtm3zPO/"
+      "7Pk3T8JYuSVrrsiyrqjqOY5omzrkx5nGtRMQYG8dx33et9bZtSZK46D+"
+      "Cy1yWBREvtJcNH44xdg8GZrh3u5d7fI0ne/2tX8uNb4qnIrpWAAAAAElFTkSuQmCC");
 }

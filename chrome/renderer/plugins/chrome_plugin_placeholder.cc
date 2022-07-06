@@ -134,12 +134,11 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_BLOCKED_PLUGIN_HTML);
 
-  base::DictionaryValue values;
-  values.SetStringKey("name", "");
-  values.SetStringKey("message",
-                      l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
+  base::Value::Dict values;
+  values.Set("name", "");
+  values.Set("message", l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
 
-  std::string html_data = webui::GetI18nTemplateHtml(template_html, &values);
+  std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
   // Will destroy itself when its WebViewPlugin is going away.
   return new ChromePluginPlaceholder(render_frame, params, html_data,
@@ -155,11 +154,11 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
     const std::u16string& name,
     int template_id,
     const std::u16string& message) {
-  base::DictionaryValue values;
-  values.SetStringKey("message", message);
-  values.SetStringKey("name", name);
-  values.SetStringKey("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));
-  values.SetStringKey(
+  base::Value::Dict values;
+  values.Set("message", message);
+  values.Set("name", name);
+  values.Set("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));
+  values.Set(
       "pluginType",
       render_frame->IsMainFrame() &&
               render_frame->GetWebFrame()->GetDocument().IsPluginDocument()
@@ -172,7 +171,7 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
 
   DCHECK(!template_html.empty()) << "unable to load template. ID: "
                                  << template_id;
-  std::string html_data = webui::GetI18nTemplateHtml(template_html, &values);
+  std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
   // |blocked_plugin| will destroy itself when its WebViewPlugin is going away.
   ChromePluginPlaceholder* blocked_plugin =

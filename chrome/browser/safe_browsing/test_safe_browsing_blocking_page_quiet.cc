@@ -60,15 +60,15 @@ TestSafeBrowsingBlockingPageQuiet::CreateBlockingPage(
 }
 
 std::string TestSafeBrowsingBlockingPageQuiet::GetHTML() {
-  base::DictionaryValue load_time_data;
-  sb_error_ui_.PopulateStringsForHtml(&load_time_data);
+  base::Value::Dict load_time_data;
+  sb_error_ui_.PopulateStringsForHtml(load_time_data);
   webui::SetLoadTimeDataDefaults(controller()->GetApplicationLocale(),
                                  &load_time_data);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_SECURITY_INTERSTITIAL_QUIET_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
-  html = webui::GetI18nTemplateHtml(html, &load_time_data);
+  html = webui::GetI18nTemplateHtml(html, load_time_data);
   return html;
 }
 

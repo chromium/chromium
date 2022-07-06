@@ -69,41 +69,38 @@ SafeBrowsingLoudErrorUI::~SafeBrowsingLoudErrorUI() {
 }
 
 void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
-    base::Value* load_time_data) {
-  DCHECK(load_time_data);
-
-  load_time_data->SetStringKey("type", "SAFEBROWSING");
-  load_time_data->SetStringKey(
-      "tabTitle", l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("type", "SAFEBROWSING");
+  load_time_data.Set("tabTitle",
+                     l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
+  load_time_data.Set(
       "openDetails",
       l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_OPEN_DETAILS_BUTTON));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "closeDetails",
       l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_CLOSE_DETAILS_BUTTON));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_SAFEBROWSING_OVERRIDABLE_SAFETY_BUTTON));
-  load_time_data->SetBoolKey("overridable", !is_proceed_anyway_disabled());
-  load_time_data->SetStringKey(
+  load_time_data.Set("overridable", !is_proceed_anyway_disabled());
+  load_time_data.Set(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       security_interstitials::kEnhancedProtectionMessage,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 
   if (always_show_back_to_safety()) {
-    load_time_data->SetBoolKey("hide_primary_button", false);
+    load_time_data.Set("hide_primary_button", false);
   } else {
-    load_time_data->SetBoolKey("hide_primary_button",
-                               created_prior_to_navigation_
-                                   ? !controller()->CanGoBackBeforeNavigation()
-                                   : !controller()->CanGoBack());
+    load_time_data.Set("hide_primary_button",
+                       created_prior_to_navigation_
+                           ? !controller()->CanGoBackBeforeNavigation()
+                           : !controller()->CanGoBack());
   }
 
-  load_time_data->SetBoolKey(
-      "billing",
-      interstitial_reason() == BaseSafeBrowsingErrorUI::SB_REASON_BILLING);
+  load_time_data.Set("billing", interstitial_reason() ==
+                                    BaseSafeBrowsingErrorUI::SB_REASON_BILLING);
 
   switch (interstitial_reason()) {
     case BaseSafeBrowsingErrorUI::SB_REASON_MALWARE:
@@ -121,8 +118,8 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
   }
 
   // Not used by this interstitial.
-  load_time_data->SetStringKey("recurrentErrorParagraph", "");
-  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
+  load_time_data.Set("recurrentErrorParagraph", "");
+  load_time_data.Set("show_recurrent_error_paragraph", false);
 
   PopulateExtendedReportingOption(load_time_data);
   PopulateEnhancedProtectionMessage(load_time_data);
@@ -247,16 +244,16 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
 }
 
 void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", false);
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_MALWARE_V3_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", false);
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_MALWARE_V3_HEADING));
+  load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MALWARE_V3_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url())));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "explanationParagraph",
       is_main_frame_load_blocked()
           ? l10n_util::GetStringFUTF16(
@@ -266,104 +263,96 @@ void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
                 IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
                 base::UTF8ToUTF16(main_frame_url().host()),
                 common_string_util::GetFormattedHostName(request_url())));
-  load_time_data->SetStringKey(
-      "finalParagraph",
-      l10n_util::GetStringUTF16(IDS_MALWARE_V3_PROCEED_PARAGRAPH));
+  load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
+                                           IDS_MALWARE_V3_PROCEED_PARAGRAPH));
 }
 
 void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", false);
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_HARMFUL_V3_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", false);
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_HARMFUL_V3_HEADING));
+  load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_HARMFUL_V3_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url())));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(
           IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url())));
-  load_time_data->SetStringKey(
-      "finalParagraph",
-      l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PROCEED_PARAGRAPH));
+  load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
+                                           IDS_HARMFUL_V3_PROCEED_PARAGRAPH));
 }
 
 void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", true);
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_PHISHING_V4_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", true);
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_PHISHING_V4_HEADING));
+  load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_PHISHING_V4_PRIMARY_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url())));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(
           IDS_PHISHING_V4_EXPLANATION_PARAGRAPH,
           common_string_util::GetFormattedHostName(request_url())));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "finalParagraph",
       l10n_util::GetStringUTF16(IDS_PHISHING_V4_PROCEED_AND_REPORT_PARAGRAPH));
 }
 
 void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
-    base::Value* load_time_data) {
+    base::Value::Dict& load_time_data) {
   bool can_show_extended_reporting_option = CanShowExtendedReportingOption();
   bool can_show_enhanced_protection_message =
       CanShowEnhancedProtectionMessage();
-  load_time_data->SetBoolKey(security_interstitials::kDisplayCheckBox,
-                             can_show_extended_reporting_option &&
-                                 !can_show_enhanced_protection_message);
+  load_time_data.Set(security_interstitials::kDisplayCheckBox,
+                     can_show_extended_reporting_option &&
+                         !can_show_enhanced_protection_message);
   if (!can_show_extended_reporting_option) {
     return;
   }
 
-  load_time_data->SetBoolKey(security_interstitials::kBoxChecked,
-                             is_extended_reporting_enabled());
+  load_time_data.Set(security_interstitials::kBoxChecked,
+                     is_extended_reporting_enabled());
 }
 
 void SafeBrowsingLoudErrorUI::PopulateEnhancedProtectionMessage(
-    base::Value* load_time_data) {
+    base::Value::Dict& load_time_data) {
   bool can_show_enhanced_protection_message =
       CanShowEnhancedProtectionMessage();
   if (can_show_enhanced_protection_message) {
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION);
   }
-  load_time_data->SetBoolKey(
-      security_interstitials::kDisplayEnhancedProtectionMessage,
-      can_show_enhanced_protection_message);
+  load_time_data.Set(security_interstitials::kDisplayEnhancedProtectionMessage,
+                     can_show_enhanced_protection_message);
 }
 
 void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", false);
-  load_time_data->SetBoolKey("overridable", true);
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", false);
+  load_time_data.Set("overridable", true);
 
-  load_time_data->SetStringKey("tabTitle",
-                               l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
-  load_time_data->SetStringKey("heading",
-                               l10n_util::GetStringUTF16(IDS_BILLING_HEADING));
-  load_time_data->SetStringKey(
-      "primaryParagraph",
-      l10n_util::GetStringUTF16(IDS_BILLING_PRIMARY_PARAGRAPH));
+  load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
+  load_time_data.Set("heading", l10n_util::GetStringUTF16(IDS_BILLING_HEADING));
+  load_time_data.Set("primaryParagraph",
+                     l10n_util::GetStringUTF16(IDS_BILLING_PRIMARY_PARAGRAPH));
 
-  load_time_data->SetStringKey(
-      "primaryButtonText",
-      l10n_util::GetStringUTF16(IDS_BILLING_PRIMARY_BUTTON));
-  load_time_data->SetStringKey(
-      "proceedButtonText",
-      l10n_util::GetStringUTF16(IDS_BILLING_PROCEED_BUTTON));
+  load_time_data.Set("primaryButtonText",
+                     l10n_util::GetStringUTF16(IDS_BILLING_PRIMARY_BUTTON));
+  load_time_data.Set("proceedButtonText",
+                     l10n_util::GetStringUTF16(IDS_BILLING_PROCEED_BUTTON));
 
-  load_time_data->SetStringKey("openDetails", "");
-  load_time_data->SetStringKey("closeDetails", "");
-  load_time_data->SetStringKey("explanationParagraph", "");
-  load_time_data->SetStringKey("finalParagraph", "");
+  load_time_data.Set("openDetails", "");
+  load_time_data.Set("closeDetails", "");
+  load_time_data.Set("explanationParagraph", "");
+  load_time_data.Set("finalParagraph", "");
 }
 
 int SafeBrowsingLoudErrorUI::GetHTMLTemplateId() const {

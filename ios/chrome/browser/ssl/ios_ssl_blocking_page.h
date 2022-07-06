@@ -48,7 +48,8 @@ class IOSSSLBlockingPage
  protected:
   // SecurityInterstitialPage implementation:
   bool ShouldCreateNewNavigation() const override;
-  void PopulateInterstitialStrings(base::Value* load_time_data) const override;
+  void PopulateInterstitialStrings(
+      base::Value::Dict& load_time_data) const override;
 
  private:
   void HandleCommand(

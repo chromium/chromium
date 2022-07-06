@@ -68,10 +68,8 @@ SecurityInterstitialPage::TypeID SecurityInterstitialPage::GetTypeForTesting() {
 }
 
 std::string SecurityInterstitialPage::GetHTMLContents() {
-  // TODO(crbug.com/1187061): Change to base::Value once webui functions have
-  // been converted to take base::Value* instead of base::DictionaryValue*.
-  base::DictionaryValue load_time_data;
-  PopulateInterstitialStrings(&load_time_data);
+  base::Value::Dict load_time_data;
+  PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(controller()->GetApplicationLocale(),
                                  &load_time_data);
   std::string html =
@@ -79,7 +77,7 @@ std::string SecurityInterstitialPage::GetHTMLContents() {
           GetHTMLTemplateId());
 
   webui::AppendWebUiCssTextDefaults(&html);
-  return webui::GetI18nTemplateHtml(html, &load_time_data);
+  return webui::GetI18nTemplateHtml(html, load_time_data);
 }
 
 SecurityInterstitialControllerClient* SecurityInterstitialPage::controller()

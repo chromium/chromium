@@ -131,7 +131,7 @@ void BaseBlockingPage::CommandReceived(const std::string& page_cmd) {
 }
 
 void BaseBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) {
+    base::Value::Dict& load_time_data) {
   sb_error_ui_->PopulateStringsForHtml(load_time_data);
 }
 

@@ -40,46 +40,42 @@ BlockedInterceptionUI::~BlockedInterceptionUI() {
 }
 
 void BlockedInterceptionUI::PopulateStringsForHTML(
-    base::Value* load_time_data) {
-  CHECK(load_time_data);
-
+    base::Value::Dict& load_time_data) {
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(
       ssl_info_, base::Time::NowFromSystemTime(), load_time_data);
 
-  load_time_data->SetBoolKey("overridable", true);
-  load_time_data->SetBoolKey("hide_primary_button", false);
-  load_time_data->SetBoolKey("bad_clock", false);
-  load_time_data->SetStringKey("type", "BLOCKED_INTERCEPTION");
+  load_time_data.Set("overridable", true);
+  load_time_data.Set("hide_primary_button", false);
+  load_time_data.Set("bad_clock", false);
+  load_time_data.Set("type", "BLOCKED_INTERCEPTION");
 
   const std::u16string hostname(
       common_string_util::GetFormattedHostName(request_url_));
 
   // Set strings that are shared between enterprise and non-enterprise
   // interstitials.
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "tabTitle",
       l10n_util::GetStringFUTF16(IDS_BLOCKED_INTERCEPTION_HEADING, hostname));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "heading",
       l10n_util::GetStringFUTF16(IDS_BLOCKED_INTERCEPTION_HEADING, hostname));
-  load_time_data->SetStringKey(
+  load_time_data.Set(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_SSL_OVERRIDABLE_SAFETY_BUTTON));
-  load_time_data->SetStringKey("finalParagraph", std::string());
+  load_time_data.Set("finalParagraph", "");
 
   // Reuse the strings from the WebUI page.
-  load_time_data->SetStringKey(
-      "primaryParagraph",
-      l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY1));
-  load_time_data->SetStringKey(
-      "explanationParagraph",
-      l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY2));
+  load_time_data.Set("primaryParagraph",
+                     l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY1));
+  load_time_data.Set("explanationParagraph",
+                     l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY2));
 
-  load_time_data->SetStringKey(
-      "finalParagraph", l10n_util::GetStringFUTF16(
-                            IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH, hostname));
+  load_time_data.Set("finalParagraph",
+                     l10n_util::GetStringFUTF16(
+                         IDS_SSL_OVERRIDABLE_PROCEED_PARAGRAPH, hostname));
 }
 
 void BlockedInterceptionUI::HandleCommand(SecurityInterstitialCommand command) {

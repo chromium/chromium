@@ -30,11 +30,11 @@ class BadClockUI {
 
   ~BadClockUI();
 
-  void PopulateStringsForHTML(base::Value* load_time_data);
+  void PopulateStringsForHTML(base::Value::Dict& load_time_data);
   void HandleCommand(SecurityInterstitialCommand command);
 
  private:
-  void PopulateClockStrings(base::Value* load_time_data);
+  void PopulateClockStrings(base::Value::Dict& load_time_data);
 
   const GURL request_url_;
   const int cert_error_;

@@ -38,8 +38,8 @@ class TestInterstitialPage : public IOSSecurityInterstitialPage {
                      bool user_is_interacting,
                      web::WebFrame* sender_frame) override {}
   bool ShouldCreateNewNavigation() const override { return false; }
-  void PopulateInterstitialStrings(base::Value* load_time_data) const override {
-  }
+  void PopulateInterstitialStrings(
+      base::Value::Dict& load_time_data) const override {}
 
   bool* destroyed_tracker_ = nullptr;
 };

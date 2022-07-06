@@ -23,7 +23,7 @@ namespace {
 
 // Appends a script tag with a variable name |templateData| that has the JSON
 // assigned to it.
-void AppendJsonHtml(const base::Value* json, std::string* output) {
+void AppendJsonHtml(const base::Value::Dict& json, std::string* output) {
   std::string javascript_string;
   AppendJsonJS(json, &javascript_string, /*from_js_module=*/false);
 
@@ -73,7 +73,7 @@ void AppendJsTemplateSourceHtml(std::string* output) {
 // Appends the code that processes the JsTemplate with the JSON. You should
 // call AppendJsTemplateSourceHtml and AppendLoadTimeData before calling this.
 void AppendJsTemplateProcessHtml(const base::Value::Dict& json,
-                                 const base::StringPiece& template_id,
+                                 base::StringPiece template_id,
                                  std::string* output) {
   std::string jstext;
   JSONStringValueSerializer serializer(&jstext);
@@ -93,10 +93,10 @@ void AppendJsTemplateProcessHtml(const base::Value::Dict& json,
 
 }  // namespace
 
-std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
-                                const base::Value* json) {
+std::string GetI18nTemplateHtml(base::StringPiece html_template,
+                                const base::Value::Dict& json) {
   ui::TemplateReplacements replacements;
-  ui::TemplateReplacementsFromDictionaryValue(json->GetDict(), &replacements);
+  ui::TemplateReplacementsFromDictionaryValue(json, &replacements);
   std::string output =
       ui::ReplaceTemplateExpressions(html_template, replacements);
 
@@ -106,9 +106,9 @@ std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
   return output;
 }
 
-std::string GetTemplatesHtml(const base::StringPiece& html_template,
+std::string GetTemplatesHtml(base::StringPiece html_template,
                              const base::Value::Dict& json,
-                             const base::StringPiece& template_id) {
+                             base::StringPiece template_id) {
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(json, &replacements);
   std::string output =
@@ -120,12 +120,9 @@ std::string GetTemplatesHtml(const base::StringPiece& html_template,
   return output;
 }
 
-void AppendJsonJS(const base::Value* json,
+void AppendJsonJS(const base::Value::Dict& json,
                   std::string* output,
                   bool from_js_module) {
-  // Convert the template data to a json string.
-  DCHECK(json) << "must include json data structure";
-
   if (from_js_module) {
     // If the script is being imported as a module, import |loadTimeData| in
     // order to allow assigning the localized strings to loadTimeData.data.
@@ -135,7 +132,7 @@ void AppendJsonJS(const base::Value* json,
 
   std::string jstext;
   JSONStringValueSerializer serializer(&jstext);
-  serializer.Serialize(*json);
+  serializer.Serialize(json);
   output->append("loadTimeData.data = ");
   output->append(jstext);
   output->append(";");

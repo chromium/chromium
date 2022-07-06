@@ -25,49 +25,44 @@ std::u16string GetFormattedHostName(const GURL& gurl) {
   return host;
 }
 
-void PopulateSSLLayoutStrings(int cert_error, base::Value* load_time_data) {
-  load_time_data->SetStringKey("type", "SSL");
-  load_time_data->SetStringKey("errorCode", net::ErrorToString(cert_error));
-  load_time_data->SetStringKey(
-      "openDetails", l10n_util::GetStringUTF16(IDS_SSL_OPEN_DETAILS_BUTTON));
-  load_time_data->SetStringKey(
-      "closeDetails", l10n_util::GetStringUTF16(IDS_SSL_CLOSE_DETAILS_BUTTON));
+void PopulateSSLLayoutStrings(int cert_error,
+                              base::Value::Dict& load_time_data) {
+  load_time_data.Set("type", "SSL");
+  load_time_data.Set("errorCode", net::ErrorToString(cert_error));
+  load_time_data.Set("openDetails",
+                     l10n_util::GetStringUTF16(IDS_SSL_OPEN_DETAILS_BUTTON));
+  load_time_data.Set("closeDetails",
+                     l10n_util::GetStringUTF16(IDS_SSL_CLOSE_DETAILS_BUTTON));
   // Not used by most interstitials; can be overridden by individual
   // interstitials as needed.
-  load_time_data->SetStringKey("recurrentErrorParagraph", "");
-  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
-  load_time_data->SetStringKey(
-      "optInLink",
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetStringKey(
+  load_time_data.Set("recurrentErrorParagraph", "");
+  load_time_data.Set("show_recurrent_error_paragraph", false);
+  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
+                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data.Set(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
 void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
                                  const base::Time time_triggered,
-                                 base::Value* load_time_data) {
-  load_time_data->SetStringKey("subject",
-                               ssl_info.cert->subject().GetDisplayName());
-  load_time_data->SetStringKey("issuer",
-                               ssl_info.cert->issuer().GetDisplayName());
-  load_time_data->SetStringKey(
-      "expirationDate",
-      base::TimeFormatShortDate(ssl_info.cert->valid_expiry()));
-  load_time_data->SetStringKey("currentDate",
-                               base::TimeFormatShortDate(time_triggered));
-  std::vector<std::string> sct_list;
+                                 base::Value::Dict& load_time_data) {
+  load_time_data.Set("subject", ssl_info.cert->subject().GetDisplayName());
+  load_time_data.Set("issuer", ssl_info.cert->issuer().GetDisplayName());
+  load_time_data.Set("expirationDate",
+                     base::TimeFormatShortDate(ssl_info.cert->valid_expiry()));
+  load_time_data.Set("currentDate", base::TimeFormatShortDate(time_triggered));
+  std::string sct_list;
   for (const auto& sct_status : ssl_info.signed_certificate_timestamps) {
-    std::string sct_info = "\n\nSCT " + sct_status.sct->log_description + " (" +
-                           net::ct::OriginToString(sct_status.sct->origin) +
-                           ", " + net::ct::StatusToString(sct_status.status) +
-                           ")";
-    sct_list.push_back(sct_info);
+    base::StrAppend(&sct_list,
+                    {"\n\nSCT ", sct_status.sct->log_description, " (",
+                     net::ct::OriginToString(sct_status.sct->origin), ", ",
+                     net::ct::StatusToString(sct_status.status), ")"});
   }
-  load_time_data->SetStringKey("ct", base::StrCat(sct_list));
+  load_time_data.Set("ct", std::move(sct_list));
   std::vector<std::string> encoded_chain;
   ssl_info.cert->GetPEMEncodedChain(&encoded_chain);
-  load_time_data->SetStringKey("pem", base::StrCat(encoded_chain));
+  load_time_data.Set("pem", base::StrCat(encoded_chain));
 }
 
 void PopulateLegacyTLSStrings(base::Value* load_time_data,

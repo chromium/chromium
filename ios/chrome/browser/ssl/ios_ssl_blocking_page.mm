@@ -83,7 +83,7 @@ IOSSSLBlockingPage::~IOSSSLBlockingPage() {
 }
 
 void IOSSSLBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) const {
+    base::Value::Dict& load_time_data) const {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
 }
 

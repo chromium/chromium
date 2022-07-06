@@ -48,17 +48,15 @@ SafeBrowsingQuietErrorUI::~SafeBrowsingQuietErrorUI() {
 }
 
 void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
-    base::Value* load_time_data) {
-  DCHECK(load_time_data);
-
-  load_time_data->SetStringKey("type", "SAFEBROWSING");
-  load_time_data->SetStringKey(
-      "tabTitle", l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
-  load_time_data->SetBoolKey("overridable", !is_proceed_anyway_disabled());
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("type", "SAFEBROWSING");
+  load_time_data.Set("tabTitle",
+                     l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
+  load_time_data.Set("overridable", !is_proceed_anyway_disabled());
+  load_time_data.Set(
       "openDetails",
       l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_OPEN_DETAILS_BUTTON));
-  load_time_data->SetBoolKey("is_giant", is_giant_webview_);
+  load_time_data.Set("is_giant", is_giant_webview_);
 
   switch (interstitial_reason()) {
     case BaseSafeBrowsingErrorUI::SB_REASON_MALWARE:
@@ -76,8 +74,8 @@ void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
   }
 
   // Not used by this interstitial.
-  load_time_data->SetStringKey("recurrentErrorParagraph", "");
-  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
+  load_time_data.Set("recurrentErrorParagraph", "");
+  load_time_data.Set("show_recurrent_error_paragraph", false);
 }
 
 void SafeBrowsingQuietErrorUI::SetGiantWebViewForTesting(
@@ -119,43 +117,42 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
 }
 
 void SafeBrowsingQuietErrorUI::PopulateMalwareLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", false);
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_MALWARE_WEBVIEW_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", false);
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_MALWARE_WEBVIEW_HEADING));
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_MALWARE_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 void SafeBrowsingQuietErrorUI::PopulateHarmfulLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", false);
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_HARMFUL_WEBVIEW_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", false);
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_HARMFUL_WEBVIEW_HEADING));
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_HARMFUL_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 void SafeBrowsingQuietErrorUI::PopulatePhishingLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", true);
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", true);
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_HEADING));
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 void SafeBrowsingQuietErrorUI::PopulateBillingLoadTimeData(
-    base::Value* load_time_data) {
-  load_time_data->SetBoolKey("phishing", false);
-  load_time_data->SetStringKey("tabTitle",
-                               l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
-  load_time_data->SetStringKey(
-      "heading", l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_HEADING));
-  load_time_data->SetStringKey(
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("phishing", false);
+  load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_HEADING));
+  load_time_data.Set(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_EXPLANATION_PARAGRAPH));
 }

@@ -28,10 +28,10 @@ namespace security_interstitials {
 namespace {
 // Adjusts the interstitial page's template parameter "fontsize" by system font
 // size multiplier.
-void AdjustFontSize(base::DictionaryValue& load_time_data) {
-  base::Value* value = load_time_data.FindKey("fontsize");
-  DCHECK(value && value->is_string());
-  std::string old_size = value->GetString();
+void AdjustFontSize(base::Value::Dict& load_time_data) {
+  std::string* value = load_time_data.FindString("fontsize");
+  DCHECK(value);
+  std::string old_size = *value;
   // |old_size| should be in form of "75%".
   DCHECK(old_size.size() > 1 && old_size.back() == '%');
   double new_size = 75.0;
@@ -39,7 +39,7 @@ void AdjustFontSize(base::DictionaryValue& load_time_data) {
       base::StringToDouble(old_size.substr(0, old_size.size() - 1), &new_size);
   DCHECK(converted);
   new_size *= ui_util::SystemSuggestedFontSizeMultiplier();
-  load_time_data.SetString("fontsize", base::StringPrintf("%.0lf%%", new_size));
+  load_time_data.Set("fontsize", base::StringPrintf("%.0lf%%", new_size));
 }
 }  // namespace
 
@@ -55,12 +55,12 @@ IOSSecurityInterstitialPage::IOSSecurityInterstitialPage(
 IOSSecurityInterstitialPage::~IOSSecurityInterstitialPage() {}
 
 std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
-  base::DictionaryValue load_time_data;
+  base::Value::Dict load_time_data;
   // Interstitial pages on iOS get reloaded to prevent loading from cache, since
   // loading from cache breaks JavaScript commands. Set as |load_time_data|
   // for safety.
-  load_time_data.SetString("url_to_reload", request_url_.spec());
-  PopulateInterstitialStrings(&load_time_data);
+  load_time_data.Set("url_to_reload", request_url_.spec());
+  PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(client_->GetApplicationLocale(),
                                  &load_time_data);
   AdjustFontSize(load_time_data);
@@ -68,7 +68,7 @@ std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_SECURITY_INTERSTITIAL_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
-  return webui::GetI18nTemplateHtml(html, &load_time_data);
+  return webui::GetI18nTemplateHtml(html, load_time_data);
 }
 
 bool IOSSecurityInterstitialPage::ShouldDisplayURL() const {

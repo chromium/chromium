@@ -56,14 +56,12 @@ bool LookalikeUrlBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void LookalikeUrlBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) const {
-  CHECK(load_time_data);
-
+    base::Value::Dict& load_time_data) const {
   // Set a value if backwards navigation is not available, used
   // to change the button text to 'Close page' when there is no
   // suggested URL.
   if (!controller_->CanGoBack()) {
-    load_time_data->SetBoolKey("cant_go_back", true);
+    load_time_data.Set("cant_go_back", true);
   }
 
   PopulateLookalikeUrlBlockingPageStrings(load_time_data, safe_url_,
