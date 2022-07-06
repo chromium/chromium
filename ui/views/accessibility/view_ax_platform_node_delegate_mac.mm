@@ -71,7 +71,8 @@ const std::string& ViewAXPlatformNodeDelegateMac::GetName() const {
   // Otherwise, NSAccessibility will set the window title to the message text.
   const std::string& name = ViewAXPlatformNodeDelegate::GetName();
   if (!ui::IsDialog(GetRole()) ||
-      !HasStringAttribute(ax::mojom::StringAttribute::kDescription))
+      !HasStringAttribute(ax::mojom::StringAttribute::kDescription) ||
+      GetStringAttribute(ax::mojom::StringAttribute::kDescription).empty())
     return name;
 
   if (auto* widget = view()->GetWidget()) {

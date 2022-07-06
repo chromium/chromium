@@ -1326,6 +1326,7 @@ test("views_unittests") {
 
   if (is_mac) {
     sources += [
+      "accessibility/view_ax_platform_node_delegate_mac_unittest.cc",
       "cocoa/bridged_native_widget_unittest.mm",
       "cocoa/cocoa_mouse_capture_unittest.mm",
       "cocoa/drag_drop_client_mac_unittest.mm",
