@@ -347,7 +347,7 @@ const base::Feature kAutofillFixFillableFieldTypes{
 // TODO(crbug.com/1293341): Remove once launched.
 const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled{
     "AutofillFixServerQueriesIfPasswordManagerIsEnabled",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, the Autofill popup ignores second clicks for a certain period
 // (kAutofillIgnoreEarlyClicksOnPopupDuration) after the Autofill popup was
