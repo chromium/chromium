@@ -1960,7 +1960,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       NavigateInIframe) {
+                       // TODO(crbug.com/1342326): Re-enable this test
+                       DISABLED_NavigateInIframe) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/regression/iframe-navigation.html");
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
