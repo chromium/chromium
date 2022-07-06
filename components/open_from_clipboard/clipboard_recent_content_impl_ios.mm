@@ -388,8 +388,12 @@ NSString* const kDefaultScheme = @"https";
               completionHandler:^(
                   NSDictionary<UIPasteboardDetectionPattern, id>* values,
                   NSError* error) {
-                DCHECK(!error) << error.debugDescription;
-
+                // On iOS 16, users can deny access to the clipboard.
+                if (error) {
+                  weakSelf.cachedURL = nil;
+                  callback(nil);
+                  return;
+                }
                 NSURL* url = [NSURL
                     URLWithString:
                         values[UIPasteboardDetectionPatternProbableWebURL]];
