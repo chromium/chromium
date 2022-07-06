@@ -178,6 +178,10 @@ void MediaControlsRotateToFullscreenDelegate::OnScreenOrientationChange() {
   DVLOG(3) << __func__ << " " << static_cast<int>(previous_screen_orientation)
            << " -> " << static_cast<int>(current_screen_orientation_);
 
+  // Do not enable if video is in Picture-in-Picture.
+  if (video_element_->GetDisplayType() == DisplayType::kPictureInPicture)
+    return;
+
   // Only enable if native media controls are used.
   if (!video_element_->ShouldShowControls())
     return;

@@ -752,6 +752,30 @@ TEST_F(MediaControlsRotateToFullscreenDelegateTest,
   EXPECT_FALSE(GetVideo().IsFullscreen());
 }
 
+TEST_F(MediaControlsRotateToFullscreenDelegateTest, EnterFailPictureInPicture) {
+  // Portrait screen, landscape video.
+  InitScreenAndVideo(display::mojom::blink::ScreenOrientation::kPortraitPrimary,
+                     gfx::Size(640, 480));
+  EXPECT_EQ(SimpleOrientation::kPortrait, ObservedScreenOrientation());
+  EXPECT_EQ(SimpleOrientation::kLandscape, ComputeVideoOrientation());
+
+  EXPECT_FALSE(ObservedVisibility());
+
+  PlayVideo();
+  UpdateVisibilityObserver();
+
+  EXPECT_TRUE(ObservedVisibility());
+
+  // Simulate Picture-in-Picture.
+  GetVideo().SetPersistentState(true);
+
+  // Rotate screen to landscape.
+  RotateTo(display::mojom::blink::ScreenOrientation::kLandscapePrimary);
+
+  // Should not enter fullscreen when Picture-in-Picture.
+  EXPECT_FALSE(GetVideo().IsFullscreen());
+}
+
 TEST_F(MediaControlsRotateToFullscreenDelegateTest,
        EnterSuccessControlsListNoDownload) {
   // Portrait screen, landscape video.
