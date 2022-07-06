@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 
 assert(enable_extensions, "Ash Chrome has to be built with extensions")
 assert(is_chromeos_ash)
@@ -14,6 +15,11 @@ assert(use_ozone)
 
 source_set("ash") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = []
+  if (use_cras) {
+    defines += [ "USE_CRAS" ]
+  }
 
   sources = [
     "accessibility/accessibility_event_rewriter_delegate_impl.cc",
