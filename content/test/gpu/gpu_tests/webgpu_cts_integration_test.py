@@ -26,6 +26,9 @@ EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                                  'dawn', 'webgpu-cts', 'expectations.txt')
 LIST_SCRIPT = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                            'dawn', 'webgpu-cts', 'scripts', 'list.py')
+WORKER_TEST_GLOB_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
+                                     'third_party', 'dawn', 'webgpu-cts',
+                                     'worker_test_globs.txt')
 
 MULTI_PAYLOAD_TIMEOUT = 0.5
 TEST_RUNS_BETWEEN_CLEANUP = 1000
@@ -35,30 +38,6 @@ DEFAULT_TEST_TIMEOUT = 5
 SLOW_MULTIPLIER = 5
 ASAN_MULTIPLIER = 4
 BACKEND_VALIDATION_MULTIPLIER = 6
-
-# TODO: Switch this to reading from a file in the Dawn repo so that Dawn
-# contributors can update this without a full Chromium checkout.
-# Tests that should be run in a worker in addition to normally.
-WORKER_TEST_GLOBS = [
-    'webgpu:api,operation,buffers,map:mapAsync,write:*',
-    'webgpu:api,operation,buffers,map:mapAsync,read:*',
-    'webgpu:api,operation,buffers,map:mapAsync,read,typedArrayAccess:*',
-    'webgpu:api,operation,buffers,map:mappedAtCreation:*',
-    'webgpu:api,operation,buffers,map:remapped_for_write:*',
-    'webgpu:api,operation,buffers,map_detach:while_mapped:*',
-    'webgpu:api,operation,command_buffer,basic:*',
-    'webgpu:api,operation,command_buffer,copyBufferToBuffer:*',
-    'webgpu:api,operation,compute,basic:memcpy:*',
-    'webgpu:api,operation,compute,basic:large_dispatch:*',
-    'webgpu:api,operation,rendering,basic:clear:*',
-    'webgpu:api,operation,rendering,basic:fullscreen_quad:*',
-    'webgpu:api,operation,rendering,basic:large_draw:*',
-    'webgpu:api,operation,render_pass,storeOp:*',
-    'webgpu:api,operation,render_pass,storeop2:*',
-    'webgpu:api,operation,onSubmittedWorkDone:*',
-    'webgpu:api,validation,buffer,destroy:*',
-    'webgpu:api,validation,buffer,mapping:*',
-]
 
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
@@ -111,6 +90,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   _typescript_tempdir = tempfile.TemporaryDirectory()
   _test_list = None
+  _worker_test_globs = None
 
   total_tests_run = 0
 
@@ -253,11 +233,15 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                          stdout=subprocess.PIPE,
                          check=True)
       cls._test_list = p.stdout.decode('utf-8').splitlines()
+    if cls._worker_test_globs is None:
+      with open(WORKER_TEST_GLOB_FILE) as f:
+        contents = f.read()
+      cls._worker_test_globs = [l for l in contents.splitlines() if l]
     for line in cls._test_list:  # pylint:disable=not-an-iterable
       if not line:
         continue
       test_inputs = [line, False]
-      for wg in WORKER_TEST_GLOBS:
+      for wg in cls._worker_test_globs:  # pylint:disable=not-an-iterable
         if fnmatch.fnmatch(line, wg):
           yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
           test_inputs = [line, True]
