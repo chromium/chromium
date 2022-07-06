@@ -36,6 +36,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -498,6 +499,11 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
                 std::end(DemoSession::kSupportedCountries),
                 country_uppercase) !=
       std::end(DemoSession::kSupportedCountries)) {
+    if (chromeos::features::IsCloudGamingDeviceEnabled()) {
+      return base::StringPrintf("admin-%s-blazey@%s", country_lowercase.c_str(),
+                                policy::kDemoModeDomain);
+    }
+
     return "admin-" + country_lowercase + "@" + policy::kDemoModeDomain;
   }
   return std::string();

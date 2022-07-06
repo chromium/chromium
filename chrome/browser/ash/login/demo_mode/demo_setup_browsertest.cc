@@ -51,6 +51,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
@@ -1130,6 +1131,57 @@ IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
   // test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   SelectFranceAndFinishSetup();
+}
+
+/**
+ * Test case of Blazey specific device.
+ */
+class DemoSetupBlazeyDeviceTest : public DemoSetupArcSupportedTest {
+ public:
+  ~DemoSetupBlazeyDeviceTest() override = default;
+
+  DemoSetupBlazeyDeviceTest() {
+    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+                                             "us");
+    feature_list_.InitAndEnableFeature(chromeos::features::kCloudGamingDevice);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DeviceIsBlazeyEnabledDevice DISABLED_DeviceIsBlazeyEnabledDevice
+#else
+#define MAYBE_DeviceIsBlazeyEnabledDevice DeviceIsBlazeyEnabledDevice
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
+                       MAYBE_DeviceIsBlazeyEnabledDevice) {
+  // Simulate successful online setup.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  // Expect active "OK" button when entering the preference screen.
+  test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
+  test::OobeJS().ExpectElementValue("US", kDemoPreferencesCountrySelect);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  UseOnlineModeOnNetworkScreen();
+
+  AcceptTermsAndExpectDemoSetupProgress();
+
+  // Verify the email corresponds to US.
+  EXPECT_EQ("admin-us-blazey@cros-demo-mode.com",
+            DemoSetupController::GetSubOrganizationEmail());
+
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
 }  // namespace
