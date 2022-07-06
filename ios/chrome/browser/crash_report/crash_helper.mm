@@ -183,6 +183,8 @@ void Start() {
     }
   }
 
+  crash_reporter::InitializeCrashKeys();
+
   // Don't start MTFD when prewarmed, the check thread will just get confused.
   if (!base::ios::IsApplicationPreWarmed()) {
     [[MainThreadFreezeDetector sharedInstance] start];
