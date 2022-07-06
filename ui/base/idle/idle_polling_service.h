@@ -8,11 +8,16 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace ui {
 
@@ -44,6 +49,8 @@ class COMPONENT_EXPORT(UI_BASE_IDLE) IdlePollingService {
 
   void SetProviderForTest(std::unique_ptr<IdleTimeProvider> provider);
   bool IsPollingForTest();
+  void SetTaskRunnerForTest(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
   friend class base::NoDestructor<IdlePollingService>;

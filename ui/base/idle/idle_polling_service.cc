@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_time_provider.h"
 
@@ -76,6 +77,11 @@ void IdlePollingService::SetProviderForTest(
 
 bool IdlePollingService::IsPollingForTest() {
   return timer_.IsRunning();
+}
+
+void IdlePollingService::SetTaskRunnerForTest(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  timer_.SetTaskRunner(std::move(task_runner));
 }
 
 IdlePollingService::IdlePollingService()
