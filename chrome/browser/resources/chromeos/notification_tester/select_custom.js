@@ -15,7 +15,7 @@ export class SelectCustom extends PolymerElement {
     this.shadowRoot.querySelector('.hidden-input').hidden = true;
 
     // Set default value of select to the first option.
-    this.shadowRoot.querySelector('#' + this.selectid).selectedIndex = 0;
+    this.selectValue = this.selectElements[0].value;
   }
 
   static get is() {
@@ -29,7 +29,8 @@ export class SelectCustom extends PolymerElement {
   static get properties() {
     return {
       selectElements: {type: Array},
-      selectValue: {type: String, notify: true},
+      selectValue:
+          {type: String, notify: true, observer: 'onSelectValueChange'},
       formItemStyle: {type: String, value: 'form-item'},
       displayLabel: {type: String},
       selectid: {type: String},
@@ -64,6 +65,13 @@ export class SelectCustom extends PolymerElement {
       const customInput = this.shadowRoot.querySelector('.hidden-input');
       this.selectValue = customInput.value;
     }
+  }
+
+  // When this.selectValue changes, update the value of the <select> element.
+  // This is to ensure the visually selected element matches this.selectValue
+  // when it is modified in parent polymer components.
+  onSelectValueChange() {
+    this.shadowRoot.querySelector('#' + this.selectid).value = this.selectValue;
   }
 }
 customElements.define(SelectCustom.is, SelectCustom);
