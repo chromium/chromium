@@ -53,7 +53,6 @@ import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
-import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
@@ -118,8 +117,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 88
-// Next method id: 92
+// Next version: 87
+// Next method id: 91
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -380,10 +379,6 @@ interface Crosapi {
   // Added in M89.
   [MinVersion=8]
   BindMetricsReporting@13(pending_receiver<MetricsReporting> receiver);
-
-  // Binds the NetworkChange interface for getting network change notification.
-  [MinVersion=87]
-  BindNetworkChange@91(pending_receiver<NetworkChange> receiver);
 
   // Binds the networking attributes service which is used by enterprise
   // extension APIs to query details about the network.

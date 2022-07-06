@@ -312,7 +312,7 @@ mojom("url_loader_base") {
   }
 
   enabled_features = []
-  if (is_android || is_chromeos) {
+  if (is_android || is_chromeos_ash) {
     enabled_features += [ "network_change_notifier_in_browser" ]
   }
 

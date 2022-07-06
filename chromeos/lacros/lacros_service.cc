@@ -59,7 +59,6 @@
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
-#include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
@@ -369,9 +368,6 @@ LacrosService::LacrosService()
       crosapi::mojom::NativeThemeService,
       &crosapi::mojom::Crosapi::BindNativeThemeService,
       Crosapi::MethodMinVersions::kBindNativeThemeServiceMinVersion>();
-  ConstructRemote<crosapi::mojom::NetworkChange,
-                  &crosapi::mojom::Crosapi::BindNetworkChange,
-                  Crosapi::MethodMinVersions::kBindNetworkChangeMinVersion>();
   ConstructRemote<crosapi::mojom::Power, &crosapi::mojom::Crosapi::BindPower,
                   Crosapi::MethodMinVersions::kBindPowerMinVersion>();
   ConstructRemote<

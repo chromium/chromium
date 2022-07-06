@@ -27,7 +27,7 @@ class NetworkConnectionChangeSimulator
 
   ~NetworkConnectionChangeSimulator() override;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initializes the ChromeOS network connection type.
   // This should be used in tests that don't have a DBus set up.
   void InitializeChromeosConnectionType();

@@ -137,7 +137,6 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
-#include "content/public/test/network_connection_change_simulator.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
 #endif
@@ -728,11 +727,6 @@ base::FilePath InProcessBrowserTest::GetChromeTestDataDir() const {
 }
 
 void InProcessBrowserTest::PreRunTestOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  content::NetworkConnectionChangeSimulator network_change_simulator;
-  network_change_simulator.InitializeChromeosConnectionType();
-#endif
-
   AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 
   // Take the ChromeBrowserMainParts' RunLoop to run ourself, when we

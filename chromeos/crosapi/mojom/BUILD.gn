@@ -57,7 +57,6 @@ mojom("mojom") {
     "message_center.mojom",
     "metrics_reporting.mojom",
     "native_theme.mojom",
-    "network_change.mojom",
     "network_settings_service.mojom",
     "networking_attributes.mojom",
     "networking_private.mojom",

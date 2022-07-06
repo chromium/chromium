@@ -151,8 +151,6 @@ source_set("crosapi") {
     "move_migrator.h",
     "native_theme_service_ash.cc",
     "native_theme_service_ash.h",
-    "network_change_ash.cc",
-    "network_change_ash.h",
     "network_settings_service_ash.cc",
     "network_settings_service_ash.h",
     "network_settings_translation.h",

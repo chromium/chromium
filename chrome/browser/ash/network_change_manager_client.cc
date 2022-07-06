@@ -5,29 +5,22 @@
 #include "chrome/browser/ash/network_change_manager_client.h"
 
 #include "base/bind.h"
-#include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_posix.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace ash {
-
-namespace {
-NetworkChangeManagerClient* g_network_change_manager_client = nullptr;
-}
 
 NetworkChangeManagerClient::NetworkChangeManagerClient(
     net::NetworkChangeNotifierPosix* network_change_notifier)
     : connection_type_(net::NetworkChangeNotifier::GetConnectionType()),
       connection_subtype_(net::NetworkChangeNotifier::GetConnectionSubtype()),
       network_change_notifier_(network_change_notifier) {
-  DCHECK(!g_network_change_manager_client);
-  g_network_change_manager_client = this;
-
   PowerManagerClient::Get()->AddObserver(this);
 
   network_state_handler_observer_.Observe(
@@ -43,24 +36,19 @@ NetworkChangeManagerClient::NetworkChangeManagerClient(
 
 NetworkChangeManagerClient::~NetworkChangeManagerClient() {
   PowerManagerClient::Get()->RemoveObserver(this);
-  DCHECK_EQ(g_network_change_manager_client, this);
-  g_network_change_manager_client = nullptr;
-}
-
-// static
-NetworkChangeManagerClient* NetworkChangeManagerClient::GetInstance() {
-  return g_network_change_manager_client;
 }
 
 void NetworkChangeManagerClient::SuspendDone(base::TimeDelta sleep_duration) {
-  // Set `ip_address_changed` to true to force invalidation of network resources
-  // on resume.
-  NotifyObservers(
-      /*dns_changed=*/false, /*ip_address_changed=*/true,
-      /*connection_type_changed=*/false,
-      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
-      /*connection_subtype_changed=*/false,
-      net::NetworkChangeNotifier::ConnectionSubtype::SUBTYPE_NONE);
+  // Force invalidation of network resources on resume.
+  network_change_notifier_->OnIPAddressChanged();
+  if (network_change_manager_) {
+    network_change_manager_->OnNetworkChanged(
+        /*dns_changed=*/false, /*ip_address_changed=*/true,
+        /*connection_type_changed=*/false,
+        network::mojom::ConnectionType::CONNECTION_UNKNOWN,
+        /*connection_subtype_changed=*/false,
+        network::mojom::ConnectionSubtype::SUBTYPE_NONE);
+  }
 }
 
 void NetworkChangeManagerClient::DefaultNetworkChanged(
@@ -73,25 +61,23 @@ void NetworkChangeManagerClient::DefaultNetworkChanged(
   UpdateState(default_network, &dns_changed, &ip_address_changed,
               &connection_type_changed, &connection_subtype_changed);
 
-  NotifyObservers(dns_changed, ip_address_changed, connection_type_changed,
-                  connection_type_, connection_subtype_changed,
-                  connection_subtype_);
-}
+  if (ip_address_changed)
+    network_change_notifier_->OnIPAddressChanged();
+  if (dns_changed)
+    network_change_notifier_->OnDNSChanged();
+  if (connection_type_changed)
+    network_change_notifier_->OnConnectionChanged(connection_type_);
+  if (connection_subtype_changed || connection_type_changed)
+    network_change_notifier_->OnConnectionSubtypeChanged(connection_type_,
+                                                         connection_subtype_);
 
-void NetworkChangeManagerClient::AddLacrosNetworkChangeObserver(
-    mojo::PendingRemote<crosapi::mojom::NetworkChangeObserver> observer) {
-  mojo::Remote<crosapi::mojom::NetworkChangeObserver> remote(
-      std::move(observer));
-
-  // Tell the observer what the current connection type is.
-  remote->OnNetworkChanged(
-      /*dns_changed=*/false, /*ip_address_changed=*/false,
-      /*connection_type_changed=*/true,
-      crosapi::mojom::ConnectionType(connection_type_),
-      /*connection_subtype_changed=*/true,
-      crosapi::mojom::ConnectionSubtype(connection_subtype_));
-
-  lacros_network_change_observers_.Add(std::move(remote));
+  if (network_change_manager_) {
+    network_change_manager_->OnNetworkChanged(
+        dns_changed, ip_address_changed, connection_type_changed,
+        network::mojom::ConnectionType(connection_type_),
+        connection_subtype_changed,
+        network::mojom::ConnectionSubtype(connection_subtype_));
+  }
 }
 
 void NetworkChangeManagerClient::ConnectToNetworkChangeManager() {
@@ -206,43 +192,6 @@ void NetworkChangeManagerClient::UpdateState(
   if (new_subtype != connection_subtype_) {
     connection_subtype_ = new_subtype;
     *connection_subtype_changed = true;
-  }
-}
-
-void NetworkChangeManagerClient::NotifyObservers(
-    bool dns_changed,
-    bool ip_address_changed,
-    bool connection_type_changed,
-    net::NetworkChangeNotifier::ConnectionType connection_type,
-    bool connection_subtype_changed,
-    net::NetworkChangeNotifier::ConnectionSubtype connection_subtype) {
-  // Notify NetworkChangeNotifier.
-  if (ip_address_changed)
-    network_change_notifier_->OnIPAddressChanged();
-  if (dns_changed)
-    network_change_notifier_->OnDNSChanged();
-  if (connection_type_changed)
-    network_change_notifier_->OnConnectionChanged(connection_type);
-  if (connection_subtype_changed || connection_type_changed)
-    network_change_notifier_->OnConnectionSubtypeChanged(connection_type,
-                                                         connection_subtype);
-
-  // Notify NetworkChangeManager if exists.
-  if (network_change_manager_) {
-    network_change_manager_->OnNetworkChanged(
-        dns_changed, ip_address_changed, connection_type_changed,
-        network::mojom::ConnectionType(connection_type),
-        connection_subtype_changed,
-        network::mojom::ConnectionSubtype(connection_subtype));
-  }
-
-  // Notify NetworkChangeObserver in Lacros if exists.
-  for (auto& observer : lacros_network_change_observers_) {
-    observer->OnNetworkChanged(
-        dns_changed, ip_address_changed, connection_type_changed,
-        crosapi::mojom::ConnectionType(connection_type),
-        connection_subtype_changed,
-        crosapi::mojom::ConnectionSubtype(connection_subtype));
   }
 }
 

@@ -5441,8 +5441,6 @@ static_library("browser") {
       "lacros/metrics_reporting_observer.h",
       "lacros/net/lacros_extension_proxy_tracker.cc",
       "lacros/net/lacros_extension_proxy_tracker.h",
-      "lacros/net/network_change_manager_bridge.cc",
-      "lacros/net/network_change_manager_bridge.h",
       "lacros/net/network_settings_translation.h",
       "lacros/net/network_settings_translation_crosapi.cc",
       "lacros/net/network_settings_translation_net_proxy.cc",
