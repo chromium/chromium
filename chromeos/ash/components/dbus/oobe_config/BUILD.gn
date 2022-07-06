@@ -8,8 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("oobe_config") {
-  output_name = "chromeos_oobe_config"
-  defines = [ "IS_CHROMEOS_DBUS_OOBE_CONFIG_IMPL" ]
+  output_name = "ash_oobe_config"
+  defines = [ "IS_ASH_DBUS_OOBE_CONFIG_IMPL" ]
   deps = [
     ":proto",
     "//base",
@@ -44,5 +44,5 @@ proto_library("proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/oobe_config/oobe_config.proto" ]
 
-  proto_out_dir = "chromeos/dbus/oobe_config"
+  proto_out_dir = "chromeos/ash/components/dbus/oobe_config"
 }

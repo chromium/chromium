@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
-#define CHROMEOS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 
 #include "base/component_export.h"
-#include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of OobeConfigurationClient, provides configuration
 // specified via command-line flag.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
+class COMPONENT_EXPORT(ASH_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
     : public OobeConfigurationClient {
  public:
   FakeOobeConfigurationClient();
@@ -29,6 +29,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
   void CheckForOobeConfiguration(ConfigurationCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_FAKE_OOBE_CONFIGURATION_CLIENT_H_

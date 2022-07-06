@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
-#define CHROMEOS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
 
 #include <string>
 
@@ -11,13 +11,13 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/common/dbus_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Client for calling OobeConfiguration dbus service. The service provides
 // verified OOBE configuration, that allows to automate out-of-box experience.
 // This configuration comes either from the state before power wash, or from
 // USB stick during USB-based enrollment flow.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
+class COMPONENT_EXPORT(ASH_DBUS_OOBE_CONFIG) OobeConfigurationClient
     : public DBusClient {
  public:
   using ConfigurationCallback =
@@ -50,6 +50,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
   ~OobeConfigurationClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_

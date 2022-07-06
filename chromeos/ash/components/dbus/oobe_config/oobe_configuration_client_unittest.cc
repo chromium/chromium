@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 
 #include <memory>
 #include <string>
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/oobe_config/oobe_config.pb.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_config.pb.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -23,7 +23,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -202,4 +202,4 @@ TEST_F(OobeConfigurationClientTest, CheckConfigurationExists) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

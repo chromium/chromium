@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/dbus/oobe_config/fake_oobe_configuration_client.h"
-#include "chromeos/dbus/oobe_config/oobe_config.pb.h"
+#include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_config.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 OobeConfigurationClient* g_instance = nullptr;
@@ -124,4 +124,4 @@ OobeConfigurationClient::~OobeConfigurationClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

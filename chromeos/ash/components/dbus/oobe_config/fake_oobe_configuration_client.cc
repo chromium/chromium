@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/oobe_config/fake_oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 
 #include <string>
 
@@ -26,14 +26,14 @@ std::string LoadConfigurationFile(base::FilePath path) {
 }
 
 void OnConfigurationLoaded(
-    chromeos::OobeConfigurationClient::ConfigurationCallback callback,
+    ash::OobeConfigurationClient::ConfigurationCallback callback,
     const std::string& configuration) {
   std::move(callback).Run(!configuration.empty(), configuration);
 }
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 FakeOobeConfigurationClient::FakeOobeConfigurationClient() = default;
 
@@ -59,4 +59,4 @@ void FakeOobeConfigurationClient::CheckForOobeConfiguration(
       base::BindOnce(&OnConfigurationLoaded, std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

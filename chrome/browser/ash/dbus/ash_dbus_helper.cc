@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
@@ -68,7 +69,6 @@
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
@@ -154,7 +154,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::MachineLearningClient>(bus);
   InitializeDBusClient<MediaAnalyticsClient>(bus);
   InitializeDBusClient<chromeos::MissiveClient>(bus);
-  InitializeDBusClient<chromeos::OobeConfigurationClient>(bus);
+  InitializeDBusClient<OobeConfigurationClient>(bus);
   InitializeDBusClient<OsInstallClient>(bus);
   InitializeDBusClient<PatchPanelClient>(bus);
   InitializeDBusClient<PciguardClient>(bus);
@@ -258,7 +258,7 @@ void ShutdownDBus() {
   PciguardClient::Shutdown();
   PatchPanelClient::Shutdown();
   OsInstallClient::Shutdown();
-  chromeos::OobeConfigurationClient::Shutdown();
+  OobeConfigurationClient::Shutdown();
   chromeos::MissiveClient::Shutdown();
   MediaAnalyticsClient::Shutdown();
   chromeos::MachineLearningClient::Shutdown();
