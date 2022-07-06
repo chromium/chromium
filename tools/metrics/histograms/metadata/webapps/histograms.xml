@@ -775,6 +775,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.RunOnOsLogin.CommandCompletionState"
+    enum="RunOnOSLoginCommandCompletionState" expires_after="2025-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the completion state for Run On OS Login commands being scheduled.
+    The command can be scheduled when the user changes the Run on OS login
+    setting and/or when a policy is applied, and the completion state is
+    recorded after the command either executes succesfully or fails prematurely.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Shortcuts.Creation.Result"
     enum="ShortcutsCreationResult" expires_after="2022-11-20">
   <owner>phillis@chromium.org</owner>

@@ -83335,6 +83335,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Tabbed Mode"/>
 </enum>
 
+<enum name="RunOnOSLoginCommandCompletionState">
+  <int value="0" label="Run On OS Login command successfully completed"/>
+  <int value="1"
+      label="Run On OS Login command failed due to a shutdown of the command
+             system"/>
+  <int value="2"
+      label="Run On OS Login command failed because setting of command is not
+             allowed by policy."/>
+  <int value="3"
+      label="Run On OS Login command shutdown during sync because login mode
+             already matched what is set."/>
+  <int value="4"
+      label="Run On OS Login command failed because app is not locally
+             installed"/>
+  <int value="5"
+      label="Run On OS Login command failed because OS Hooks were not
+             properly set."/>
+</enum>
+
 <enum name="SadTabEvent">
   <int value="0" label="Displayed"/>
   <int value="1" label="Button clicked"/>
