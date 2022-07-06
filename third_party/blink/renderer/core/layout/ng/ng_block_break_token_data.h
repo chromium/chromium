@@ -17,6 +17,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
     kFieldsetBreakTokenData,
     kFlexBreakTokenData,
     kGridBreakTokenData,
+    kTableBreakTokenData,
     kTableRowBreakTokenData
     // When adding new values, ensure |type| below has enough bits.
   };
@@ -38,9 +39,14 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
 
   virtual ~NGBlockBreakTokenData() = default;
 
+  // One note about type checking and downcasting: It's generally not safe to
+  // assume that a node has a specific break token data type. Break tokens
+  // aren't always created by the layout algorithm normally associated with a
+  // given node type, e.g. if we add a break-before break token.
   bool IsFieldsetType() const { return Type() == kFieldsetBreakTokenData; }
   bool IsFlexType() const { return Type() == kFlexBreakTokenData; }
   bool IsGridType() const { return Type() == kGridBreakTokenData; }
+  bool IsTableType() const { return Type() == kTableBreakTokenData; }
   bool IsTableRowType() const { return Type() == kTableRowBreakTokenData; }
 
   virtual void Trace(Visitor* visitor) const {}

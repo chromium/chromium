@@ -642,6 +642,7 @@ blink_core_sources_layout = [
   "ng/table/ng_table_layout_algorithm_utils.h",
   "ng/table/ng_table_node.cc",
   "ng/table/ng_table_node.h",
+  "ng/table/ng_table_break_token_data.h",
   "ng/table/ng_table_row_break_token_data.h",
   "ng/table/ng_table_row_layout_algorithm.cc",
   "ng/table/ng_table_row_layout_algorithm.h",
