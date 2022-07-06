@@ -92,7 +92,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) = 0;
+      SimpleFontData* resulting_font_data) = 0;
 
   // Called whenever a page attempts to find a local font based on a name. This
   // only includes lookups where the name is allowed to match PostScript names
@@ -100,7 +100,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual void ReportFontLookupByUniqueNameOnly(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data,
+      SimpleFontData* resulting_font_data,
       bool is_loading_fallback = false) = 0;
 
   // Called whenever a page attempts to find a local font based on a fallback
@@ -109,12 +109,12 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
       UChar32 fallback_character,
       FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) = 0;
+      SimpleFontData* resulting_font_data) = 0;
 
   // Called whenever a page attempts to find a last-resort font.
   virtual void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) = 0;
+      SimpleFontData* resulting_font_data) = 0;
 
   virtual void ReportNotDefGlyph() const = 0;
 
@@ -136,8 +136,6 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual bool IsPlatformFamilyMatchAvailable(
       const FontDescription&,
       const FontFamily& passed_family) = 0;
-
-  virtual bool IsContextThread() const = 0;
 
   FontFallbackMap& GetFontFallbackMap();
 

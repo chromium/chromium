@@ -870,8 +870,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
         RemoteFontFaceSource* source =
             MakeGarbageCollected<RemoteFontFaceSource>(
                 css_font_face_, font_selector,
-                CSSValueToFontDisplay(display_.Get()),
-                GetExecutionContext()->GetTaskRunner(TaskType::kFontLoading));
+                CSSValueToFontDisplay(display_.Get()));
         item.Fetch(context, source);
         css_font_face_->AddSource(source);
       }
