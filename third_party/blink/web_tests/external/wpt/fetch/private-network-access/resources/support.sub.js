@@ -404,10 +404,10 @@ async function nestedWorkerScriptTest(t, { source, target, expected }) {
 async function sharedWorkerScriptTest(t, { source, target, expected }) {
   const sourceUrl = resolveUrl("resources/shared-worker-fetcher.html",
                                sourceResolveOptions(source));
-
   const targetUrl = preflightUrl(target);
   targetUrl.searchParams.append(
       "body", "onconnect = (e) => e.ports[0].postMessage({ loaded: true })")
+  targetUrl.searchParams.append("mime-type", "application/javascript")
 
   const iframe = await appendIframe(t, document, sourceUrl);
   const reply = futureMessage();
