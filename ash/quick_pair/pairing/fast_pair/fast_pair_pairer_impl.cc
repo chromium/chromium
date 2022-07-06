@@ -395,8 +395,8 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
 
   // We want to verify the opt in status if the flag is enabled before we write
   // an account key.
-  if (features::IsFastPairSavedDevicesEnabled()) {
-    QP_LOG(INFO) << __func__ << ": Saved Devices Flag enabled";
+  if (features::IsFastPairSavedDevicesEnabled() &&
+      features::IsFastPairSavedDevicesStrictOptInEnabled()) {
     FastPairRepository::Get()->CheckOptInStatus(
         base::BindOnce(&FastPairPairerImpl::OnCheckOptInStatus,
                        weak_ptr_factory_.GetWeakPtr()));
