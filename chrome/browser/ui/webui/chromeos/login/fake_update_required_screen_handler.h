@@ -27,9 +27,6 @@ class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
 
  private:
   void Show() override {}
-  void Hide() override {}
-  void Bind(ash::UpdateRequiredScreen* screen) override {}
-  void Unbind() override {}
 
   void SetIsConnected(bool connected) override {}
   void SetUpdateProgressUnavailable(bool unavailable) override {}

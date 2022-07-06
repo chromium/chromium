@@ -82,7 +82,8 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
         .WillRepeatedly(Return(false));
 
     update_required_screen_ = std::make_unique<UpdateRequiredScreen>(
-        fake_view_.get(), mock_error_screen_.get(), base::DoNothing());
+        fake_view_.get()->AsWeakPtr(), mock_error_screen_.get(),
+        base::DoNothing());
 
     update_required_screen_->GetVersionUpdaterForTesting()
         ->set_wait_for_reboot_time_for_testing(base::Seconds(0));

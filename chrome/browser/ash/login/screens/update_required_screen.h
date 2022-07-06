@@ -38,7 +38,7 @@ class UpdateRequiredScreen : public BaseScreen,
  public:
   using TView = UpdateRequiredView;
 
-  UpdateRequiredScreen(UpdateRequiredView* view,
+  UpdateRequiredScreen(base::WeakPtr<UpdateRequiredView> view,
                        ErrorScreen* error_screen,
                        base::RepeatingClosure exit_callback);
 
@@ -46,10 +46,6 @@ class UpdateRequiredScreen : public BaseScreen,
   UpdateRequiredScreen& operator=(const UpdateRequiredScreen&) = delete;
 
   ~UpdateRequiredScreen() override;
-
-  // Called when the being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before it.
-  void OnViewDestroyed(UpdateRequiredView* view);
 
   // VersionUpdater::Delegate:
   void OnWaitForRebootTimeElapsed() override;
@@ -78,7 +74,7 @@ class UpdateRequiredScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   void EnsureScreenIsShown();
 
@@ -120,7 +116,7 @@ class UpdateRequiredScreen : public BaseScreen,
   // the default network.
   bool is_first_portal_notification_ = true;
 
-  UpdateRequiredView* view_ = nullptr;
+  base::WeakPtr<UpdateRequiredView> view_;
   ErrorScreen* error_screen_;
   base::RepeatingClosure exit_callback_;
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;

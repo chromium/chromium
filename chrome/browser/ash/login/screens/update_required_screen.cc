@@ -48,12 +48,13 @@ constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
 
 }  // namespace
 
-UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
-                                           ErrorScreen* error_screen,
-                                           base::RepeatingClosure exit_callback)
+UpdateRequiredScreen::UpdateRequiredScreen(
+    base::WeakPtr<UpdateRequiredView> view,
+    ErrorScreen* error_screen,
+    base::RepeatingClosure exit_callback)
     : BaseScreen(UpdateRequiredView::kScreenId,
                  OobeScreenPriority::SCREEN_UPDATE_REQUIRED),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(std::move(exit_callback)),
       histogram_helper_(
@@ -66,27 +67,20 @@ UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
       kDeviceMinimumVersionAueMessage,
       base::BindRepeating(&UpdateRequiredScreen::OnEolMessageChanged,
                           weak_factory_.GetWeakPtr()));
-  if (view_)
-    view_->Bind(this);
 }
 
 UpdateRequiredScreen::~UpdateRequiredScreen() {
   StopObservingNetworkState();
-  if (view_)
-    view_->Unbind();
-}
-
-void UpdateRequiredScreen::OnViewDestroyed(UpdateRequiredView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void UpdateRequiredScreen::ShowImpl() {
   LoginScreen::Get()->SetAllowLoginAsGuest(false);
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDomainManager(),
-                                    ui::GetChromeOSDeviceName());
+  if (view_) {
+    view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDomainManager(),
+                                      ui::GetChromeOSDeviceName());
+  }
 
   is_shown_ = true;
 
@@ -142,14 +136,12 @@ void UpdateRequiredScreen::OnEolMessageChanged() {
 }
 
 void UpdateRequiredScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
   is_shown_ = false;
   StopObservingNetworkState();
 }
 
-void UpdateRequiredScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void UpdateRequiredScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSelectNetworkButtonClicked) {
     OnSelectNetworkButtonClicked();
   } else if (action_id == kUserActionUpdateButtonClicked) {
@@ -171,7 +163,7 @@ void UpdateRequiredScreen::OnUserActionDeprecated(
   } else if (action_id == kUserActionConfirmDeleteUsersData) {
     DeleteUsersData();
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 

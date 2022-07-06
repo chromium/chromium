@@ -672,7 +672,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnManagementTransitionScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateRequiredScreen>(
-      oobe_ui->GetView<UpdateRequiredScreenHandler>(),
+      oobe_ui->GetView<UpdateRequiredScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnUpdateRequiredScreenExit,
                           weak_factory_.GetWeakPtr())));

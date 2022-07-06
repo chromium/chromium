@@ -19,17 +19,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId UpdateRequiredView::kScreenId;
-
 UpdateRequiredScreenHandler::UpdateRequiredScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.UpdateRequiredScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-UpdateRequiredScreenHandler::~UpdateRequiredScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+UpdateRequiredScreenHandler::~UpdateRequiredScreenHandler() = default;
 
 void UpdateRequiredScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -90,78 +83,53 @@ void UpdateRequiredScreenHandler::DeclareLocalizedValues(
 #endif
 }
 
-void UpdateRequiredScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
 void UpdateRequiredScreenHandler::SetEnterpriseAndDeviceName(
     const std::string& enterpriseDomain,
     const std::u16string& deviceName) {
-  CallJS("login.UpdateRequiredScreen.setEnterpriseAndDeviceName",
-         enterpriseDomain, deviceName);
+  CallExternalAPI("setEnterpriseAndDeviceName", enterpriseDomain, deviceName);
 }
 
 void UpdateRequiredScreenHandler::SetEolMessage(const std::string& eolMessage) {
-  CallJS("login.UpdateRequiredScreen.setEolMessage", eolMessage);
+  CallExternalAPI("setEolMessage", eolMessage);
 }
 
 void UpdateRequiredScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
 }
 
-void UpdateRequiredScreenHandler::Hide() {}
-
-void UpdateRequiredScreenHandler::Bind(UpdateRequiredScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void UpdateRequiredScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void UpdateRequiredScreenHandler::SetIsConnected(bool connected) {
-  CallJS("login.UpdateRequiredScreen.setIsConnected", connected);
+  CallExternalAPI("setIsConnected", connected);
 }
 
 void UpdateRequiredScreenHandler::SetUpdateProgressUnavailable(
     bool unavailable) {
-  CallJS("login.UpdateRequiredScreen.setUpdateProgressUnavailable",
-         unavailable);
+  CallExternalAPI("setUpdateProgressUnavailable", unavailable);
 }
 
 void UpdateRequiredScreenHandler::SetUpdateProgressValue(int progress) {
-  CallJS("login.UpdateRequiredScreen.setUpdateProgressValue", progress);
+  CallExternalAPI("setUpdateProgressValue", progress);
 }
 
 void UpdateRequiredScreenHandler::SetUpdateProgressMessage(
     const std::u16string& message) {
-  CallJS("login.UpdateRequiredScreen.setUpdateProgressMessage", message);
+  CallExternalAPI("setUpdateProgressMessage", message);
 }
 
 void UpdateRequiredScreenHandler::SetEstimatedTimeLeftVisible(bool visible) {
-  CallJS("login.UpdateRequiredScreen.setEstimatedTimeLeftVisible", visible);
+  CallExternalAPI("setEstimatedTimeLeftVisible", visible);
 }
 
 void UpdateRequiredScreenHandler::SetEstimatedTimeLeft(int seconds_left) {
-  CallJS("login.UpdateRequiredScreen.setEstimatedTimeLeft", seconds_left);
+  CallExternalAPI("setEstimatedTimeLeft", seconds_left);
 }
 
 void UpdateRequiredScreenHandler::SetUIState(
     UpdateRequiredView::UIState ui_state) {
-  CallJS("login.UpdateRequiredScreen.setUIState", static_cast<int>(ui_state));
+  CallExternalAPI("setUIState", static_cast<int>(ui_state));
 }
 
 void UpdateRequiredScreenHandler::SetIsUserDataPresent(bool data_present) {
-  CallJS("login.UpdateRequiredScreen.setIsUserDataPresent", data_present);
+  CallExternalAPI("setIsUserDataPresent", data_present);
 }
 
 }  // namespace chromeos
