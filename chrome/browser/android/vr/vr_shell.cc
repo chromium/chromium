@@ -585,12 +585,11 @@ void VrShell::CancelToast(JNIEnv* env,
 }
 
 void VrShell::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
-  PostToGlThread(FROM_HERE,
-                 base::BindOnce(&BrowserRenderer::ConnectPresentingService,
-                                gl_thread_->GetBrowserRenderer(),
-                                std::move(display_info), std::move(options)));
+  PostToGlThread(
+      FROM_HERE,
+      base::BindOnce(&BrowserRenderer::ConnectPresentingService,
+                     gl_thread_->GetBrowserRenderer(), std::move(options)));
 }
 
 void VrShell::SetHistoryButtonsEnabled(JNIEnv* env,

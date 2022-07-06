@@ -113,11 +113,11 @@ namespace device {
 
 ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
     mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
-    mojom::VRDisplayInfoPtr display_info,
+    mojom::XRViewPtr view,
     mojo::PendingRemote<mojom::XRSessionController> session_controller,
     mojom::XRPresentationConnectionPtr presentation_connection)
     : frame_data_provider(std::move(frame_data_provider)),
-      display_info(std::move(display_info)),
+      view(std::move(view)),
       session_controller(std::move(session_controller)),
       presentation_connection(std::move(presentation_connection)) {}
 ArCoreGlCreateSessionResult::~ArCoreGlCreateSessionResult() = default;
@@ -200,6 +200,18 @@ void ArCoreGl::Initialize(
   camera_image_size_ = {0, 0};
   display_rotation_ = display_rotation;
   recalculate_uvs_and_projection_ = true;
+
+  // ARCore is monoscopic and does not have an associated eye.
+  view_.eye = mojom::XREye::kNone;
+  view_.viewport = gfx::Rect(0, 0, frame_size.width(), frame_size.height());
+  // We don't have the transform or field of view until the first frame, so set
+  // the transform to identity and field of view to zero. The XR Session
+  // creation callback only needs the viewport size for the framebuffer.
+  // mojo_from_view is set on every frame in ArCoreGl::GetFrameData and
+  // field_of_view is set in ArCoreGl::RecalculateUvsAndProjection, which is
+  // called one time on the first frame.
+  view_.mojo_from_view = gfx::Transform();
+  view_.field_of_view = mojom::VRFieldOfView::New(0.0f, 0.0f, 0.0f, 0.0f);
 
   // If we're using the ArCompositor, we need to initialize GL without the
   // drawing_widget. (Since the ArCompositor accesses the surface through a
@@ -371,8 +383,7 @@ void ArCoreGl::OnInitialized() {
                                     frame_sink_id));
 }
 
-void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,
-                             ArCoreGlCreateSessionCallback create_callback,
+void ArCoreGl::CreateSession(ArCoreGlCreateSessionCallback create_callback,
                              base::OnceClosure shutdown_callback) {
   DVLOG(3) << __func__;
 
@@ -409,11 +420,8 @@ void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,
       presentation_receiver_.BindNewPipeAndPassRemote();
   submit_frame_sink->transport_options = std::move(transport_options);
 
-  DCHECK_EQ(display_info->views.size(), 1u);
-  display_info_ = std::move(display_info);
-
   ArCoreGlCreateSessionResult result(
-      frame_data_receiver_.BindNewPipeAndPassRemote(), display_info_->Clone(),
+      frame_data_receiver_.BindNewPipeAndPassRemote(), view_.Clone(),
       session_controller_receiver_.BindNewPipeAndPassRemote(),
       std::move(submit_frame_sink));
 
@@ -583,9 +591,7 @@ void ArCoreGl::RecalculateUvsAndProjection() {
            << " left=" << field_of_view->left_degrees
            << " right=" << field_of_view->right_degrees;
 
-  DCHECK_EQ(display_info_->views.size(), 1u);
-  display_info_->views[0]->field_of_view = std::move(field_of_view);
-  display_info_changed_ = true;
+  view_.field_of_view = std::move(field_of_view);
 }
 
 void ArCoreGl::GetFrameData(
@@ -734,11 +740,6 @@ void ArCoreGl::GetFrameData(
     frame_data->stage_parameters = stage_parameters_.Clone();
   }
 
-  if (display_info_changed_) {
-    frame_data->views.emplace_back(display_info_->views[0].Clone());
-    display_info_changed_ = false;
-  }
-
   if (ArImageTransport::UseSharedBuffer()) {
     // Set up a shared buffer for the renderer to draw into, it'll be sent
     // alongside the frame pose.
@@ -759,14 +760,12 @@ void ArCoreGl::GetFrameData(
     DCHECK(pose->position);
 
     // The view properties besides the transform are calculated by
-    // ArCoreGl::RecalculateUvsAndProjection() as needed.
-    DCHECK_EQ(display_info_->views.size(), 1u);
-    mojom::XRViewPtr view = display_info_->views[0]->Clone();
-    view->mojo_from_view = vr_utils::VrPoseToTransform(pose.get());
-
-    frame_data->views.push_back(std::move(view));
+    // ArCoreGl::RecalculateUvsAndProjection() as needed. IF we don't have a
+    // pose, the transform from the previous frame is used.
+    view_.mojo_from_view = vr_utils::VrPoseToTransform(pose.get());
   }
 
+  frame_data->views.push_back(view_.Clone());
   frame_data->mojo_from_viewer = std::move(pose);
   frame_data->time_delta = now - base::TimeTicks();
   if (rendering_time_ratio_ > 0) {

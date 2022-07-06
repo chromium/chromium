@@ -73,9 +73,6 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // runtime or if there's no active immersive session.
   BrowserXRRuntimeImpl* GetCurrentlyPresentingImmersiveRuntime();
 
-  device::mojom::VRDisplayInfoPtr GetCurrentVRDisplayInfo(
-      VRServiceImpl* service);
-
   // Returns true if another service is presenting. Returns false if this
   // service is presenting, or if nobody is presenting.
   bool IsOtherClientPresenting(VRServiceImpl* service);
@@ -97,7 +94,6 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // VRDeviceProviderClient implementation
   void AddRuntime(
       device::mojom::XRDeviceId id,
-      device::mojom::VRDisplayInfoPtr info,
       device::mojom::XRDeviceDataPtr device_data,
       mojo::PendingRemote<device::mojom::XRRuntime> runtime) override;
   void RemoveRuntime(device::mojom::XRDeviceId id) override;

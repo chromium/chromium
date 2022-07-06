@@ -16,11 +16,11 @@ gfx::Size GetMaximumWebVrSize(gvr::GvrApi* gvr_api) {
   // Get the default, unscaled size for the WebVR transfer surface
   // based on the optimal 1:1 render resolution. A scalar will be applied to
   // this value in the renderer to reduce the render load. This size will also
-  // be reported to the client via CreateVRDisplayInfo as the
-  // client-recommended render_width/render_height and for the GVR
-  // framebuffer. If the client chooses a different size or resizes it
-  // while presenting, we'll resize the transfer surface and GVR
-  // framebuffer to match.
+  // be reported to the client via XRViews (initially on XRSessionDeviceConfig,
+  // and then on XRFrameData) as the client-recommended
+  // render_width/render_height and for the GVR framebuffer. If the client
+  // chooses a different size or resizes it while presenting, we'll resize the
+  // transfer surface and GVR framebuffer to match.
   gvr::Sizei render_target_size =
       gvr_api->GetMaximumEffectiveRenderTargetSize();
 

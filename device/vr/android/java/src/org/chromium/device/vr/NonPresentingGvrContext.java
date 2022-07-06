@@ -14,7 +14,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 /**
@@ -89,14 +88,5 @@ public class NonPresentingGvrContext {
 
     public void onDisplayConfigurationChanged() {
         mGvrApi.refreshDisplayMetrics();
-        if (mNativeGvrDevice != 0) {
-            NonPresentingGvrContextJni.get().onDisplayConfigurationChanged(
-                    mNativeGvrDevice, NonPresentingGvrContext.this);
-        }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onDisplayConfigurationChanged(long nativeGvrDevice, NonPresentingGvrContext caller);
     }
 }

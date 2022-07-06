@@ -30,9 +30,8 @@ void ArCoreDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
         std::make_unique<webxr::ArCoreJavaUtils>(compositor_delegate_provider_),
         client->GetXrFrameSinkClientFactory());
 
-    client->AddRuntime(
-        arcore_device_->GetId(), arcore_device_->GetVRDisplayInfo(),
-        arcore_device_->GetDeviceData(), arcore_device_->BindXRRuntime());
+    client->AddRuntime(arcore_device_->GetId(), arcore_device_->GetDeviceData(),
+                       arcore_device_->BindXRRuntime());
   }
   initialized_ = true;
   client->OnProviderInitialized();

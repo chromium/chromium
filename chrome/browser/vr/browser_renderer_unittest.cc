@@ -89,7 +89,6 @@ class MockSchedulerDelegate : public SchedulerDelegate {
   MOCK_METHOD2(SubmitDrawnFrame, void(FrameType, const gfx::Transform&));
   void AddInputSourceState(device::mojom::XRInputSourceStatePtr state) {}
   void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options) override {}
 };
 

@@ -59,7 +59,6 @@ void SchedulerDelegateWin::AddInputSourceState(
 }
 
 void SchedulerDelegateWin::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
   NOTREACHED();
 }

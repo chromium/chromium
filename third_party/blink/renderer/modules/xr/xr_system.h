@@ -419,7 +419,6 @@ class XRSystem final : public EventTargetWithInlineData,
       device::mojom::blink::XRInteractionMode interaction_mode,
       mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
           client_receiver,
-      device::mojom::blink::VRDisplayInfoPtr display_info,
       device::mojom::blink::XRSessionDeviceConfigPtr device_config,
       XRSessionFeatureSet enabled_features,
       bool sensorless_session = false);

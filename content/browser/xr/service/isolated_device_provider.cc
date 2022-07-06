@@ -30,8 +30,7 @@ void IsolatedVRDeviceProvider::OnDeviceAdded(
     mojo::PendingRemote<device::mojom::XRCompositorHost> compositor_host,
     device::mojom::XRDeviceDataPtr device_data,
     device::mojom::XRDeviceId device_id) {
-  client_->AddRuntime(device_id, nullptr, std::move(device_data),
-                      std::move(device));
+  client_->AddRuntime(device_id, std::move(device_data), std::move(device));
 
   auto* integration_client = GetXrIntegrationClient();
   if (!integration_client)

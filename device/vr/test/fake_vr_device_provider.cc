@@ -17,8 +17,7 @@ void FakeVRDeviceProvider::AddDevice(std::unique_ptr<VRDeviceBase> device) {
   VRDeviceBase* device_base = static_cast<VRDeviceBase*>(device.get());
   devices_.push_back(std::move(device));
   if (initialized_)
-    client_->AddRuntime(device_base->GetId(), device_base->GetVRDisplayInfo(),
-                        device_base->GetDeviceData(),
+    client_->AddRuntime(device_base->GetId(), device_base->GetDeviceData(),
                         device_base->BindXRRuntime());
 }
 
@@ -38,8 +37,7 @@ void FakeVRDeviceProvider::Initialize(VRDeviceProviderClient* client) {
 
   for (std::unique_ptr<VRDeviceBase>& device : devices_) {
     auto* device_base = static_cast<VRDeviceBase*>(device.get());
-    client_->AddRuntime(device_base->GetId(), device_base->GetVRDisplayInfo(),
-                        device_base->GetDeviceData(),
+    client_->AddRuntime(device_base->GetId(), device_base->GetDeviceData(),
                         device_base->BindXRRuntime());
   }
   initialized_ = true;

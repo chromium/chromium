@@ -39,7 +39,6 @@ class VR_EXPORT SchedulerDelegate {
   virtual void AddInputSourceState(
       device::mojom::XRInputSourceStatePtr state) = 0;
   virtual void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options) = 0;
 };
 

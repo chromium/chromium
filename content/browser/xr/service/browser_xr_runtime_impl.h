@@ -40,8 +40,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   explicit BrowserXRRuntimeImpl(
       device::mojom::XRDeviceId id,
       device::mojom::XRDeviceDataPtr device_data,
-      mojo::PendingRemote<device::mojom::XRRuntime> runtime,
-      device::mojom::VRDisplayInfoPtr info);
+      mojo::PendingRemote<device::mojom::XRRuntime> runtime);
   ~BrowserXRRuntimeImpl() override;
 
   void ExitActiveImmersiveSession();
@@ -81,10 +80,6 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
     return presenting_service_;
   }
 
-  device::mojom::VRDisplayInfoPtr GetVRDisplayInfo() {
-    return display_info_.Clone();
-  }
-
   device::mojom::XRDeviceId GetId() const { return id_; }
 
 #if BUILDFLAG(IS_WIN)
@@ -101,8 +96,6 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
 
  private:
   // device::XRRuntimeEventListener
-  void OnDisplayInfoChanged(
-      device::mojom::VRDisplayInfoPtr vr_device_info) override;
   void OnExitPresent() override;
   void OnVisibilityStateChanged(
       device::mojom::XRVisibilityState visibility_state) override;
@@ -124,7 +117,6 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   bool immersive_session_has_camera_access_ = false;
 
   std::set<VRServiceImpl*> services_;
-  device::mojom::VRDisplayInfoPtr display_info_;
 
   raw_ptr<VRServiceImpl> presenting_service_ = nullptr;
 

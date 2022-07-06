@@ -70,6 +70,16 @@ static_assert(kRightView < kNumPrimaryViews,
 // polled.
 constexpr base::TimeDelta kTimeBetweenPollingEvents = base::Seconds(1);
 
+mojom::XREye GetEyeFromIndex(int i) {
+  if (i == kLeftView) {
+    return mojom::XREye::kLeft;
+  } else if (i == kRightView) {
+    return mojom::XREye::kRight;
+  } else {
+    return mojom::XREye::kNone;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<OpenXrApiWrapper> OpenXrApiWrapper::Create(
@@ -1424,16 +1434,6 @@ void OpenXrApiWrapper::SetTestHook(VRTestHook* hook) {
   test_hook_ = hook;
   if (service_test_hook_) {
     service_test_hook_->SetTestHook(test_hook_);
-  }
-}
-
-mojom::XREye OpenXrApiWrapper::GetEyeFromIndex(int i) {
-  if (i == kLeftView) {
-    return mojom::XREye::kLeft;
-  } else if (i == kRightView) {
-    return mojom::XREye::kRight;
-  } else {
-    return mojom::XREye::kNone;
   }
 }
 

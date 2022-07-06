@@ -38,8 +38,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                          public viz::ContextLostObserver {
  public:
   OpenXrRenderLoop(
-      base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-          on_display_info_changed,
       VizContextProviderFactoryAsync context_provider_factory_async,
       XrInstance instance,
       const OpenXrExtensionHelper& extension_helper_);
@@ -74,11 +72,11 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode) override;
   bool CanEnableAntiAliasing() const override;
+  std::vector<mojom::XRViewPtr> GetDefaultViews() const override;
 
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void SendInitialDisplayInfo();
   void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
                               XrResult result);
   bool UpdateViews();
@@ -140,9 +138,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
-
-  base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-      on_display_info_changed_;
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};

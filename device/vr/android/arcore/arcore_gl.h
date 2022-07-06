@@ -54,13 +54,13 @@ class WebXrPresentationState;
 
 struct ArCoreGlCreateSessionResult {
   mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider;
-  mojom::VRDisplayInfoPtr display_info;
+  mojom::XRViewPtr view;
   mojo::PendingRemote<mojom::XRSessionController> session_controller;
   mojom::XRPresentationConnectionPtr presentation_connection;
 
   ArCoreGlCreateSessionResult(
       mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
-      mojom::VRDisplayInfoPtr display_info,
+      mojom::XRViewPtr view,
       mojo::PendingRemote<mojom::XRSessionController> session_controller,
       mojom::XRPresentationConnectionPtr presentation_connection);
   ArCoreGlCreateSessionResult(ArCoreGlCreateSessionResult&& other);
@@ -117,8 +117,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
       device::mojom::XRDepthOptionsPtr depth_options,
       ArCoreGlInitializeCallback callback);
 
-  void CreateSession(mojom::VRDisplayInfoPtr display_info,
-                     ArCoreGlCreateSessionCallback create_callback,
+  void CreateSession(ArCoreGlCreateSessionCallback create_callback,
                      base::OnceClosure shutdown_callback);
 
   const scoped_refptr<base::SingleThreadTaskRunner>& GetGlThreadTaskRunner() {
@@ -310,6 +309,9 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // same aspect ratio as the screen size, but may have a different resolution.
   gfx::Size camera_image_size_ = gfx::Size(0, 0);
 
+  // The single view that ArCore supports.
+  mojom::XRView view_;
+
   display::Display::Rotation display_rotation_ = display::Display::ROTATE_0;
 
   // UV transform for drawing the camera texture, this is supplied by ARCore
@@ -367,9 +369,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // by the task runner would lead to inconsistent state on session shutdown.
   // See https://crbug.com/1065572.
   base::OnceClosure pending_getframedata_;
-
-  mojom::VRDisplayInfoPtr display_info_;
-  bool display_info_changed_ = false;
 
   mojom::VRStageParametersPtr stage_parameters_;
   uint32_t stage_parameters_id_;

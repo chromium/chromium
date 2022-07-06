@@ -25,15 +25,12 @@
 namespace device {
 
 OpenXrRenderLoop::OpenXrRenderLoop(
-    base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-        on_display_info_changed,
     VizContextProviderFactoryAsync context_provider_factory_async,
     XrInstance instance,
     const OpenXrExtensionHelper& extension_helper)
     : XRCompositorCommon(),
       instance_(instance),
       extension_helper_(extension_helper),
-      on_display_info_changed_(std::move(on_display_info_changed)),
       context_provider_factory_async_(
           std::move(context_provider_factory_async)) {
   DCHECK(instance_ != XR_NULL_HANDLE);
@@ -158,8 +155,8 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
     return;
   }
 
-  SendInitialDisplayInfo();
   texture_helper_.SetDefaultSize(openxr_->GetSwapchainSize());
+
   StartContextProviderIfNeeded(std::move(start_runtime_callback));
 }
 
@@ -225,6 +222,10 @@ device::mojom::XRInteractionMode OpenXrRenderLoop::GetInteractionMode(
 
 bool OpenXrRenderLoop::CanEnableAntiAliasing() const {
   return openxr_->CanEnableAntiAliasing();
+}
+
+std::vector<mojom::XRViewPtr> OpenXrRenderLoop::GetDefaultViews() const {
+  return openxr_->GetDefaultViews();
 }
 
 void OpenXrRenderLoop::OnSessionStart() {
@@ -331,15 +332,6 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
     gl->DestroyGpuFenceCHROMIUM(id);
   }
-}
-
-void OpenXrRenderLoop::SendInitialDisplayInfo() {
-  mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-  display_info->views = openxr_->GetDefaultViews();
-
-  main_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_display_info_changed_, std::move(display_info)));
 }
 
 void OpenXrRenderLoop::UpdateStageParameters() {

@@ -243,7 +243,6 @@ class VrShell : VoiceResultDelegate,
                    const base::android::JavaParamRef<jobject>& obj);
 
   void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options);
 
   // ChromeLocationBarModelDelegate implementation.

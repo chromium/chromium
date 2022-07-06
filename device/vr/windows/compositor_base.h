@@ -54,6 +54,7 @@ class XRDeviceAbstraction {
   virtual device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode);
   virtual bool CanEnableAntiAliasing() const;
+  virtual std::vector<mojom::XRViewPtr> GetDefaultViews() const = 0;
 };
 
 class XRCompositorCommon : public base::Thread,

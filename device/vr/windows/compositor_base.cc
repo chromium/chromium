@@ -296,6 +296,7 @@ void XRCompositorCommon::StartRuntimeFinish(
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->uses_input_eventing = UsesInputEventing();
   session->device_config->enable_anti_aliasing = CanEnableAntiAliasing();
+  session->device_config->views = GetDefaultViews();
   session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
   session->interaction_mode = GetInteractionMode(options->mode);
 

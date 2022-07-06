@@ -254,54 +254,6 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
   return nullptr;
 }
 
-device::mojom::VRDisplayInfoPtr XRRuntimeManagerImpl::GetCurrentVRDisplayInfo(
-    VRServiceImpl* service) {
-  // This seems to be occurring every frame on Windows
-  DVLOG(3) << __func__;
-  // Get an immersive VR runtime if there is one.
-  auto* immersive_runtime = GetImmersiveVrRuntime();
-  if (immersive_runtime) {
-    // Listen to changes for this runtime.
-    immersive_runtime->OnServiceAdded(service);
-
-    // If we don't have display info for the immersive runtime, get display info
-    // from a different runtime.
-    if (!immersive_runtime->GetVRDisplayInfo()) {
-      immersive_runtime = nullptr;
-    }
-  }
-
-  // Get an AR runtime if there is one.
-  auto* ar_runtime = GetImmersiveArRuntime();
-  if (ar_runtime) {
-    // Listen to  changes for this runtime.
-    ar_runtime->OnServiceAdded(service);
-  }
-
-  // If there is neither, use the generic non-immersive runtime.
-  if (!ar_runtime && !immersive_runtime) {
-    device::mojom::XRSessionOptions options = {};
-    options.mode = device::mojom::XRSessionMode::kInline;
-    auto* non_immersive_runtime = GetRuntimeForOptions(&options);
-    if (non_immersive_runtime) {
-      // Listen to changes for this runtime.
-      non_immersive_runtime->OnServiceAdded(service);
-    }
-
-    // If we don't have an AR or immersive runtime, return the generic non-
-    // immersive runtime's DisplayInfo if we have it.
-    return non_immersive_runtime ? non_immersive_runtime->GetVRDisplayInfo()
-                                 : nullptr;
-  }
-
-  // Use the immersive or AR runtime.
-  device::mojom::VRDisplayInfoPtr device_info =
-      immersive_runtime ? immersive_runtime->GetVRDisplayInfo()
-                        : ar_runtime->GetVRDisplayInfo();
-
-  return device_info;
-}
-
 BrowserXRRuntimeImpl*
 XRRuntimeManagerImpl::GetCurrentlyPresentingImmersiveRuntime() {
   auto* vr_runtime = GetImmersiveVrRuntime();
@@ -535,7 +487,6 @@ bool XRRuntimeManagerImpl::AreAllProvidersInitialized() {
 
 void XRRuntimeManagerImpl::AddRuntime(
     device::mojom::XRDeviceId id,
-    device::mojom::VRDisplayInfoPtr info,
     device::mojom::XRDeviceDataPtr device_data,
     mojo::PendingRemote<device::mojom::XRRuntime> runtime) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -544,14 +495,16 @@ void XRRuntimeManagerImpl::AddRuntime(
   TRACE_EVENT_INSTANT1("xr", "AddRuntime", TRACE_EVENT_SCOPE_THREAD, "id", id);
 
   runtimes_[id] = std::make_unique<BrowserXRRuntimeImpl>(
-      id, std::move(device_data), std::move(runtime), std::move(info));
+      id, std::move(device_data), std::move(runtime));
 
   for (Observer& obs : g_xr_runtime_manager_observers.Get())
     obs.OnRuntimeAdded(runtimes_[id].get());
 
-  for (VRServiceImpl* service : services_)
+  for (VRServiceImpl* service : services_) {
     // TODO(sumankancherla): Consider combining with XRRuntimeManager::Observer.
     service->RuntimesChanged();
+    runtimes_[id]->OnServiceAdded(service);
+  }
 }
 
 void XRRuntimeManagerImpl::RemoveRuntime(device::mojom::XRDeviceId id) {

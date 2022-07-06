@@ -120,11 +120,9 @@ class MockOrientationDeviceProviderClient : public VRDeviceProviderClient {
   ~MockOrientationDeviceProviderClient() override = default;
   void AddRuntime(
       device::mojom::XRDeviceId id,
-      device::mojom::VRDisplayInfoPtr info,
       device::mojom::XRDeviceDataPtr device_data,
       mojo::PendingRemote<device::mojom::XRRuntime> runtime) override {
     if (wait_for_device_) {
-      ASSERT_TRUE(info);
       ASSERT_TRUE(device_data);
       ASSERT_TRUE(runtime);
       wait_for_device_->Quit();

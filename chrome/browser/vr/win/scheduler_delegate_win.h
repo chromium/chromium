@@ -34,7 +34,6 @@ class SchedulerDelegateWin : public SchedulerDelegate {
                         const gfx::Transform& head_pose) override;
   void AddInputSourceState(device::mojom::XRInputSourceStatePtr state) override;
   void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options) override;
 
  private:

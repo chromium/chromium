@@ -21,8 +21,8 @@ VROrientationDeviceProvider::~VROrientationDeviceProvider() = default;
 
 void VROrientationDeviceProvider::Initialize(VRDeviceProviderClient* client) {
   if (device_ && device_->IsAvailable()) {
-    client->AddRuntime(device_->GetId(), device_->GetVRDisplayInfo(),
-                       device_->GetDeviceData(), device_->BindXRRuntime());
+    client->AddRuntime(device_->GetId(), device_->GetDeviceData(),
+                       device_->BindXRRuntime());
     return;
   }
 
@@ -47,8 +47,8 @@ void VROrientationDeviceProvider::DeviceInitialized() {
 
   // If the device successfully connected to the orientation APIs, provide it.
   if (device_->IsAvailable()) {
-    client_->AddRuntime(device_->GetId(), device_->GetVRDisplayInfo(),
-                        device_->GetDeviceData(), device_->BindXRRuntime());
+    client_->AddRuntime(device_->GetId(), device_->GetDeviceData(),
+                        device_->BindXRRuntime());
   }
 
   initialized_ = true;

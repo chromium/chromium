@@ -160,8 +160,6 @@ class OpenXrApiWrapper {
   void CreateSharedMailboxes();
   void ReleaseColorSwapchainImages();
 
-  static mojom::XREye GetEyeFromIndex(int i);
-
   // The session is running only after xrBeginSession and before xrEndSession.
   // It is not considered running after creation but before xrBeginSession.
   bool session_running_;

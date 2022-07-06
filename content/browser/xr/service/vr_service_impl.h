@@ -83,7 +83,6 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   void OnExitPresent();
   void OnVisibilityStateChanged(
       device::mojom::XRVisibilityState visibility_state);
-  void OnDisplayInfoChanged();
   void RuntimesChanged();
   void OnMakeXrCompatibleComplete(device::mojom::XrCompatibleResult result);
 

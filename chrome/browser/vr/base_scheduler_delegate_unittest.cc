@@ -45,7 +45,6 @@ class ConcreteSchedulerDelegate : public BaseSchedulerDelegate {
   void AddInputSourceState(
       device::mojom::XRInputSourceStatePtr state) override {}
   void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options) override {}
 };
 

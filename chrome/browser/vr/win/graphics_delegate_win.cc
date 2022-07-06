@@ -201,25 +201,19 @@ void GraphicsDelegateWin::ResetMemoryBuffer() {
   gpu_memory_buffer_ = nullptr;
 }
 
-void GraphicsDelegateWin::UpdateViews(
-    std::vector<device::mojom::XRViewPtr> views) {
-  // Store the first left and right views. VRUiHostImpl::SetVRDisplayInfo has
-  // already validated that the left and right views exist.
+void GraphicsDelegateWin::SetXrViews(
+    const std::vector<device::mojom::XRViewPtr>& views) {
+  // Store the first left and right views.
   for (auto& view : views) {
     if (view->eye == device::mojom::XREye::kLeft) {
-      left_ = std::move(view);
+      left_ = view.Clone();
     } else if (view->eye == device::mojom::XREye::kRight) {
-      right_ = std::move(view);
+      right_ = view.Clone();
     }
   }
 
   DCHECK(left_);
   DCHECK(right_);
-}
-
-void GraphicsDelegateWin::SetVRDisplayInfo(
-    device::mojom::VRDisplayInfoPtr info) {
-  UpdateViews(std::move(info->views));
 }
 
 FovRectangles GraphicsDelegateWin::GetRecommendedFovs() {

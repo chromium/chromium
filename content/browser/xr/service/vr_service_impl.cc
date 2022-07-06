@@ -246,19 +246,8 @@ void VRServiceImpl::ResolvePendingRequests() {
   pending_requests_.clear();
 }
 
-void VRServiceImpl::OnDisplayInfoChanged() {
-  device::mojom::VRDisplayInfoPtr display_info =
-      runtime_manager_->GetCurrentVRDisplayInfo(this);
-  if (display_info) {
-    for (auto& client : session_clients_)
-      client->OnChanged(display_info.Clone());
-  }
-}
-
 void VRServiceImpl::RuntimesChanged() {
   DVLOG(2) << __func__;
-  OnDisplayInfoChanged();
-
   if (service_client_) {
     service_client_->OnDeviceChanged();
   }

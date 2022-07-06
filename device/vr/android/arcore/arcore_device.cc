@@ -25,38 +25,9 @@
 
 using base::android::JavaRef;
 
-namespace {
-constexpr float kDegreesPerRadian = 180.0f / base::kPiFloat;
-}  // namespace
-
 namespace device {
 
 namespace {
-
-mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
-  mojom::XRViewPtr view = mojom::XRView::New();
-  // ARCore is monoscopic and does not have an associated eye.
-  view->eye = mojom::XREye::kNone;
-  view->field_of_view = mojom::VRFieldOfView::New();
-  // TODO(lincolnfrog): get these values for real (see gvr device).
-  double fov_x = 1437.387;
-  double fov_y = 1438.074;
-  // TODO(lincolnfrog): get real camera intrinsics.
-  int width = frame_size.width();
-  int height = frame_size.height();
-  float horizontal_degrees = atan(width / (2.0 * fov_x)) * kDegreesPerRadian;
-  float vertical_degrees = atan(height / (2.0 * fov_y)) * kDegreesPerRadian;
-  view->field_of_view->left_degrees = horizontal_degrees;
-  view->field_of_view->right_degrees = horizontal_degrees;
-  view->field_of_view->up_degrees = vertical_degrees;
-  view->field_of_view->down_degrees = vertical_degrees;
-  view->viewport = gfx::Rect(0, 0, width, height);
-
-  mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
-  device->views.emplace_back(std::move(view));
-
-  return device;
-}
 
 const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
   static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
@@ -97,12 +68,6 @@ ArCoreDevice::ArCoreDevice(
       xr_frame_sink_client_factory_(std::move(xr_frame_sink_client_factory)),
       mailbox_bridge_(mailbox_bridge_factory_->Create()),
       session_state_(std::make_unique<ArCoreDevice::SessionState>()) {
-  // Ensure display_info_ is set to avoid crash in CallDeferredSessionCallback
-  // if initialization fails. Use an arbitrary but really low resolution to make
-  // it obvious if we're using this data instead of the actual values we get
-  // from the output drawing surface.
-  SetVRDisplayInfo(CreateVRDisplayInfo({16, 16}));
-
   // ARCORE always support AR blend modes
   SetArBlendModeSupported(true);
 
@@ -230,9 +195,6 @@ void ArCoreDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
            << frame_size.height() << " rotation=" << static_cast<int>(rotation);
   DCHECK(!session_state_->is_arcore_gl_initialized_);
 
-  auto display_info = CreateVRDisplayInfo(frame_size);
-  SetVRDisplayInfo(std::move(display_info));
-
   RequestArCoreGlInitialization(window, surface_handle, root_window, rotation,
                                 frame_size);
 }
@@ -353,7 +315,6 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(
   PostTaskToGlThread(base::BindOnce(
       &ArCoreGl::CreateSession,
       session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),
-      display_info_->Clone(),
       CreateMainThreadCallback(std::move(create_callback)),
       CreateMainThreadCallback(std::move(shutdown_callback))));
 }
@@ -377,7 +338,6 @@ void ArCoreDevice::OnCreateSessionCallback(
   auto* session = session_result->session.get();
 
   session->data_provider = std::move(create_session_result.frame_data_provider);
-  session->display_info = std::move(create_session_result.display_info);
   session->submit_frame_sink =
       std::move(create_session_result.presentation_connection);
   session->enabled_features.assign(initialize_result.enabled_features.begin(),
@@ -390,6 +350,7 @@ void ArCoreDevice::OnCreateSessionCallback(
       initialize_result.depth_configuration
           ? initialize_result.depth_configuration->Clone()
           : nullptr;
+  config->views.push_back(std::move(create_session_result.view));
 
   // ARCORE only supports immersive-ar sessions
   session->enviroment_blend_mode =

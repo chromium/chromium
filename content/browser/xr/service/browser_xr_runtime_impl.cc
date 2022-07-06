@@ -121,38 +121,18 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
   return ret;
 }
 
-device::mojom::VRDisplayInfoPtr ValidateVRDisplayInfo(
-    const device::mojom::VRDisplayInfo* info) {
-  if (!info)
-    return nullptr;
-
-  device::mojom::VRDisplayInfoPtr ret = device::mojom::VRDisplayInfo::New();
-  ret->views.resize(info->views.size());
-  for (size_t i = 0; i < info->views.size(); i++) {
-    ret->views[i] = ValidateXRView(info->views[i].get());
-  }
-
-  return ret;
-}
-
 }  // anonymous namespace
 
 BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
     device::mojom::XRDeviceId id,
     device::mojom::XRDeviceDataPtr device_data,
-    mojo::PendingRemote<device::mojom::XRRuntime> runtime,
-    device::mojom::VRDisplayInfoPtr display_info)
+    mojo::PendingRemote<device::mojom::XRRuntime> runtime)
     : id_(id),
       device_data_(std::move(device_data)),
-      runtime_(std::move(runtime)),
-      display_info_(ValidateVRDisplayInfo(display_info.get())) {
+      runtime_(std::move(runtime)) {
   DVLOG(2) << __func__ << ": id=" << id;
-  // Unretained is safe because we are calling through an InterfacePtr we own,
-  // so we won't be called after runtime_ is destroyed.
-  runtime_->ListenToDeviceChanges(
-      receiver_.BindNewEndpointAndPassRemote(),
-      base::BindOnce(&BrowserXRRuntimeImpl::OnDisplayInfoChanged,
-                     base::Unretained(this)));
+
+  runtime_->ListenToDeviceChanges(receiver_.BindNewEndpointAndPassRemote());
 
   // TODO(crbug.com/1031622): Convert this to a query for the client off of
   // ContentBrowserClient once BrowserXRRuntimeImpl moves to content.
@@ -243,22 +223,6 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
 
 bool BrowserXRRuntimeImpl::SupportsArBlendMode() {
   return device_data_->is_ar_blend_mode_supported;
-}
-
-void BrowserXRRuntimeImpl::OnDisplayInfoChanged(
-    device::mojom::VRDisplayInfoPtr vr_device_info) {
-  bool had_display_info = !!display_info_;
-  display_info_ = ValidateVRDisplayInfo(vr_device_info.get());
-  if (had_display_info) {
-    for (VRServiceImpl* service : services_) {
-      service->OnDisplayInfoChanged();
-    }
-  }
-
-  // Notify observers of the new display info.
-  for (Observer& observer : observers_) {
-    observer.VRDisplayInfoChanged(display_info_.Clone());
-  }
 }
 
 void BrowserXRRuntimeImpl::StopImmersiveSession(
@@ -378,9 +342,17 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
           base::BindOnce(&BrowserXRRuntimeImpl::OnImmersiveSessionError,
                          base::Unretained(this)));
 
+      std::vector<device::mojom::XRViewPtr>& views =
+          session_result->session->device_config->views;
+
+      for (device::mojom::XRViewPtr& view : views) {
+        view = ValidateXRView(view.get());
+      }
+
       // Notify observers that we have started presentation.
       content::WebContents* web_contents = service->GetWebContents();
       for (Observer& observer : observers_) {
+        observer.SetDefaultXrViews(views);
         observer.WebXRWebContentsChanged(web_contents);
       }
 
@@ -451,7 +423,6 @@ void BrowserXRRuntimeImpl::OnImmersiveSessionError() {
 
 void BrowserXRRuntimeImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  observer->VRDisplayInfoChanged(display_info_.Clone());
 }
 
 void BrowserXRRuntimeImpl::RemoveObserver(Observer* observer) {

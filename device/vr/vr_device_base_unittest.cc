@@ -31,10 +31,6 @@ class VRDeviceBaseForTesting : public VRDeviceBase {
 
   ~VRDeviceBaseForTesting() override = default;
 
-  void SetVRDisplayInfoForTest(mojom::VRDisplayInfoPtr display_info) {
-    SetVRDisplayInfo(std::move(display_info));
-  }
-
   void RequestSession(
       mojom::XRRuntimeSessionOptionsPtr options,
       mojom::XRRuntime::RequestSessionCallback callback) override {}
@@ -44,11 +40,6 @@ class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {
  public:
   StubVRDeviceEventListener() = default;
   ~StubVRDeviceEventListener() override = default;
-
-  MOCK_METHOD1(DoOnChanged, void(mojom::VRDisplayInfo* vr_device_info));
-  void OnDisplayInfoChanged(mojom::VRDisplayInfoPtr vr_device_info) override {
-    DoOnChanged(vr_device_info.get());
-  }
 
   MOCK_METHOD0(OnExitPresent, void());
   MOCK_METHOD1(OnVisibilityStateChanged, void(mojom::XRVisibilityState));
@@ -76,7 +67,6 @@ class VRDeviceTest : public testing::Test {
   std::unique_ptr<VRDeviceBaseForTesting> MakeVRDevice() {
     std::unique_ptr<VRDeviceBaseForTesting> device =
         std::make_unique<VRDeviceBaseForTesting>();
-    device->SetVRDisplayInfoForTest(mojom::VRDisplayInfo::New());
     return device;
   }
 
@@ -90,12 +80,8 @@ TEST_F(VRDeviceTest, DeviceChangedDispatched) {
   auto device = MakeVRDevice();
   mojo::Remote<mojom::XRRuntime> device_remote(device->BindXRRuntime());
   StubVRDeviceEventListener listener;
-  device_remote->ListenToDeviceChanges(
-      listener.BindPendingRemote(),
-      base::DoNothing());  // TODO: consider getting initial info
+  device_remote->ListenToDeviceChanges(listener.BindPendingRemote());
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(listener, DoOnChanged(testing::_)).Times(1);
-  device->SetVRDisplayInfoForTest(mojom::VRDisplayInfo::New());
   base::RunLoop().RunUntilIdle();
 }
 

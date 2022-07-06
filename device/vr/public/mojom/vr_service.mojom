@@ -187,6 +187,11 @@ struct XRSessionDeviceConfig {
   // unless overridden by the developer.
   float default_framebuffer_scale = 1.0;
 
+  // Information about all the views in the device at the time the session was
+  // created. Views may change on any frame, so the session should inspect
+  // subsequent views in XRFrameData on each frame.
+  array<XRView> views;
+
   // Indicates whether the device supports dynamic viewport scaling via
   // XRView.requestViewportScale which results in UpdateLayerBounds mojo calls.
   // This is opt-in to avoid problems with devices that assume default bounds,
@@ -220,9 +225,6 @@ struct XRSession {
   // TODO(http://crbug.com/842025) Move where the client_receiver gets set to the
   // device process then mark this as non-optional.
   pending_receiver<XRSessionClient>? client_receiver;
-  // TODO(http://crbug.com/842025) Move the information that is sent in display
-  // info to more sensible places so that this doesn't need to be sent here.
-  VRDisplayInfo display_info;
   XRPresentationConnection? submit_frame_sink;
 
   // Represents the set of requested features that are both supported by the
@@ -478,12 +480,6 @@ struct VRStageParameters {
   // no need to transform them by the accompanying standing transform) and
   // in a clockwise winding order.
   array<gfx.mojom.Point3F>? bounds;
-};
-
-struct VRDisplayInfo {
-  // Parameters required to distort a scene for viewing in a VR headset. Only
-  // required for devices which have the can_present capability.
-  array<XRView> views;
 };
 
 // Frame transport method from the Renderer's point of view.
@@ -1230,7 +1226,6 @@ enum XRVisibilityState {
 
 // Functions for pushing device information to the sessions.
 interface XRSessionClient {
-  OnChanged(VRDisplayInfo display);
   OnExitPresent();
   // Indicates a change in the visibility of the WebXR content.
   OnVisibilityStateChanged(XRVisibilityState visibility_state);

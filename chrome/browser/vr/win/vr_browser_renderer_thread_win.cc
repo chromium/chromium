@@ -70,11 +70,18 @@ void VRBrowserRendererThreadWin::StopOverlay() {
   scheduler_ui_ = nullptr;
 }
 
-void VRBrowserRendererThreadWin::SetVRDisplayInfo(
-    device::mojom::VRDisplayInfoPtr display_info) {
-  display_info_ = std::move(display_info);
-  if (graphics_)
-    graphics_->SetVRDisplayInfo(display_info_.Clone());
+void VRBrowserRendererThreadWin::SetDefaultXrViews(
+    const std::vector<device::mojom::XRViewPtr>& views) {
+  if (graphics_) {
+    graphics_->SetXrViews(views);
+  }
+
+  for (auto& view : views) {
+    if (view->eye == device::mojom::XREye::kLeft ||
+        view->eye == device::mojom::XREye::kRight) {
+      default_views_.push_back(view.Clone());
+    }
+  }
 }
 
 void VRBrowserRendererThreadWin::SetLocationInfo(GURL gurl) {
@@ -287,6 +294,10 @@ void VRBrowserRendererThreadWin::StartOverlay() {
     return;
   }
 
+  // We should have received valid views from the ui host before rendering.
+  DCHECK(!default_views_.empty());
+  initializing_graphics_->SetXrViews(default_views_);
+
   initializing_graphics_->InitializeOnGLThread();
   initializing_graphics_->BindContext();
 
@@ -325,7 +336,6 @@ void VRBrowserRendererThreadWin::StartOverlay() {
       std::make_unique<SchedulerDelegateWin>();
   scheduler_ = scheduler_delegate.get();
   graphics_ = initializing_graphics_.get();
-  graphics_->SetVRDisplayInfo(display_info_.Clone());
   std::unique_ptr<InputDelegateWin> input_delegate =
       std::make_unique<InputDelegateWin>();
   input_ = input_delegate.get();
@@ -422,7 +432,7 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
   // If we're getting poses and should be drawing, StartOverlay() should have
   // initialized graphics_.
   DCHECK(graphics_);
-  graphics_->UpdateViews(std::move(data->views));
+  graphics_->SetXrViews(std::move(data->views));
 
   if (!PreRender())
     return;

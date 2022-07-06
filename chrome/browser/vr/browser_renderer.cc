@@ -302,10 +302,8 @@ void BrowserRenderer::ProcessControllerInputForWebXr(
 }
 
 void BrowserRenderer::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
-  scheduler_delegate_->ConnectPresentingService(std::move(display_info),
-                                                std::move(options));
+  scheduler_delegate_->ConnectPresentingService(std::move(options));
 }
 
 base::TimeDelta BrowserRenderer::ProcessControllerInput(

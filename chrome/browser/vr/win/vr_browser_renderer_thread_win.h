@@ -33,7 +33,7 @@ class VR_EXPORT VRBrowserRendererThreadWin {
       device::mojom::XRCompositorHost* compositor);
   ~VRBrowserRendererThreadWin();
 
-  void SetVRDisplayInfo(device::mojom::VRDisplayInfoPtr display_info);
+  void SetDefaultXrViews(const std::vector<device::mojom::XRViewPtr>& views);
   void SetLocationInfo(GURL gurl);
   void SetWebXrPresenting(bool presenting);
   void SetFramesThrottled(bool throttled);
@@ -112,9 +112,9 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   bool waiting_for_webxr_frame_ = false;
   bool frames_throttled_ = false;
   int current_request_id_ = 0;
+  std::vector<device::mojom::XRViewPtr> default_views_;
 
   mojo::Remote<device::mojom::ImmersiveOverlay> overlay_;
-  device::mojom::VRDisplayInfoPtr display_info_;
 
   base::CancelableOnceClosure webxr_frame_timeout_closure_;
   base::CancelableOnceClosure webxr_spinner_timeout_closure_;

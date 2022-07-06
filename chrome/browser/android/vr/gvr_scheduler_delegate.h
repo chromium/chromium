@@ -84,7 +84,6 @@ class GvrSchedulerDelegate : public BaseSchedulerDelegate,
   void SetBrowserRenderer(
       SchedulerBrowserRendererInterface* browser_renderer) override;
   void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options) override;
 
   void GvrInit();

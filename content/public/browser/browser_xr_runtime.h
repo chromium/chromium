@@ -22,9 +22,6 @@ class CONTENT_EXPORT BrowserXRRuntime {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void VRDisplayInfoChanged(
-        device::mojom::VRDisplayInfoPtr display_info) {}
-
     // Called when a page starts or ends an immersive WebXR session. When a
     // session was started, |web_contents| will be non-null. There can only be
     // at most one active immersive session for the XRRuntime. When there is no
@@ -41,6 +38,9 @@ class CONTENT_EXPORT BrowserXRRuntime {
     // |web_contents| will not be null.
     virtual void WebXRCameraInUseChanged(WebContents* web_contents,
                                          bool in_use) {}
+
+    virtual void SetDefaultXrViews(
+        const std::vector<device::mojom::XRViewPtr>& views) {}
   };
 
   virtual void AddObserver(Observer* observer) = 0;

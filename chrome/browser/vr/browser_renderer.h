@@ -84,7 +84,6 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   void SetBrowserRendererBrowserInterfaceForTesting(
       BrowserRendererBrowserInterface* interface_ptr);
   void ConnectPresentingService(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options);
 
  private:

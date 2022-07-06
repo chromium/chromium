@@ -61,12 +61,10 @@ class VrShellDelegate : public device::GvrDelegateProvider {
   // device::GvrDelegateProvider implementation.
   bool ShouldDisableGvrDevice() override;
   void StartWebXRPresentation(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback) override;
 
   void OnPresentResult(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback,
       bool success);

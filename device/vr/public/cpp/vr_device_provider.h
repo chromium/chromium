@@ -18,10 +18,8 @@ class COMPONENT_EXPORT(VR_PUBLIC_CPP) VRDeviceProviderClient {
   VRDeviceProviderClient();
   virtual ~VRDeviceProviderClient();
 
-  // TODO(crbug.com/1090029): Wrap XRDeviceId + VRDisplayInfo into XRDeviceData
   virtual void AddRuntime(
       device::mojom::XRDeviceId id,
-      device::mojom::VRDisplayInfoPtr info,
       device::mojom::XRDeviceDataPtr device_data,
       mojo::PendingRemote<device::mojom::XRRuntime> runtime) = 0;
   virtual void RemoveRuntime(device::mojom::XRDeviceId id) = 0;

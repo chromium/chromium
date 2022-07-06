@@ -30,9 +30,6 @@ interface XRSessionController {
 // The XRRuntimeEventListener lives in the xr runtime service, and allows the
 // browser to listen to state changes about a device.
 interface XRRuntimeEventListener {
-  // A device has changed its display information.
-  OnDisplayInfoChanged(device.mojom.VRDisplayInfo display_info);
-
   // A device has indicated that the visibility of the content it's displaying
   // has changed.
   OnVisibilityStateChanged(device.mojom.XRVisibilityState visibility_state);
@@ -99,11 +96,9 @@ interface XRRuntime {
   // is ready for starting a new session.
   ShutdownSession() => ();
 
-  // The browser may register for changes to a device. Initial VRDisplayInfo
-  // will immediately be returned to the listener to prevent races.
+  // The browser may register for changes to a device.
   ListenToDeviceChanges(
-      pending_associated_remote<XRRuntimeEventListener> listener) =>
-          (VRDisplayInfo? display_info);
+      pending_associated_remote<XRRuntimeEventListener> listener);
 };
 
 // Information required for rendering, used by ImmersiveOverlay.
@@ -166,7 +161,6 @@ interface XRCompositorHost {
 
 // Information about a particular XR device that is available. All information
 // about an available XR device should be wrapped in this struct.
-// TODO(crbug.com/1090029): Wrap XRDeviceId + VRDisplayInfo in this struct
 struct XRDeviceData {
   // List of XR Session Features supported by the device.
   array<XRSessionFeature> supported_features;

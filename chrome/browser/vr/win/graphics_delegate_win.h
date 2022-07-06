@@ -43,7 +43,7 @@ class GraphicsDelegateWin : public GraphicsDelegate {
 
   // Called on background GL thread.
   void InitializeOnGLThread();
-  void SetVRDisplayInfo(device::mojom::VRDisplayInfoPtr info);
+  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views);
   bool PreRender();
   void PostRender();
   mojo::PlatformHandle GetTexture();

@@ -400,16 +400,7 @@ class MockRuntime {
     }
 
     this.supportedModes_ = this._convertModesToEnum(supportedModes);
-
-    // Initialize DisplayInfo first to set the defaults, then override with
-    // anything from the deviceInit
-    if (this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveVr) ||
-        this.supportedModes_.includes(vrMojom.XRSessionMode.kImmersiveAr)) {
-      this.displayInfo_ = this._getImmersiveDisplayInfo();
-    } else if (this.supportedModes_.includes(vrMojom.XRSessionMode.kInline)) {
-      this.displayInfo_ = this._getNonImmersiveDisplayInfo();
-    } else {
-      // This should never happen!
+    if (this.supportedModes_.length == 0) {
       console.error("Device has empty supported modes array!");
       throw new InvalidStateError();
     }
@@ -456,15 +447,6 @@ class MockRuntime {
     if (secondaryViews) {
       this.secondaryViews_ = [];
       this._setViews(secondaryViews, xOffset, this.secondaryViews_);
-    }
-
-    // Do not include secondary views here because they are only exposed to
-    // WebXR if requested by the session. getFrameData() will send back the
-    // secondary views when enabled.
-    this.displayInfo_.views = this.primaryViews_;
-
-    if (this.sessionClient_) {
-      this.sessionClient_.onChanged(this.displayInfo_);
     }
   }
 
@@ -725,28 +707,13 @@ class MockRuntime {
     this.stageParametersId_++;
   }
 
-  _getNonImmersiveDisplayInfo() {
-    const displayInfo = this._getImmersiveDisplayInfo();
+  _getDefaultViews() {
+    if (this.primaryViews_) {
+      return this.primaryViews_;
+    }
 
-    displayInfo.capabilities.canPresent = false;
-    displayInfo.views = [];
-
-    return displayInfo;
-  }
-
-  // Function to generate some valid display information for the device.
-  _getImmersiveDisplayInfo() {
     const viewport_size = 20;
-    return {
-      displayName: 'FakeDevice',
-      capabilities: {
-        hasPosition: false,
-        hasExternalDisplay: false,
-        canPresent: true,
-        maxLayers: 1
-      },
-      stageParameters: null,
-      views: [{
+    return [{
         eye: vrMojom.XREye.kLeft,
         fieldOfView: {
           upDegrees: 48.316,
@@ -773,8 +740,7 @@ class MockRuntime {
           orientation: [0, 0, 0, 1]
         })),
         viewport: { x: viewport_size, y: 0, width: viewport_size, height: viewport_size }
-      }]
-    };
+      }];
   }
 
   // This function converts between the matrix provided by the WebXR test API
@@ -1199,7 +1165,6 @@ class MockRuntime {
             submitFrameSink: submit_frame_sink,
             dataProvider: dataProviderPtr,
             clientReceiver: clientReceiver,
-            displayInfo: this.displayInfo_,
             enabledFeatures: enabled_features,
             deviceConfig: {
               usesInputEventing: false,
@@ -1210,6 +1175,7 @@ class MockRuntime {
                   depthUsage: vrMojom.XRDepthUsage.kCPUOptimized,
                   depthDataFormat: vrMojom.XRDepthDataFormat.kLuminanceAlpha,
                 } : null,
+              views: this._getDefaultViews(),
             },
             enviromentBlendMode: this.enviromentBlendMode_,
             interactionMode: this.interactionMode_

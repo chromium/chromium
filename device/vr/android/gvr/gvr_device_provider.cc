@@ -22,8 +22,7 @@ void GvrDeviceProvider::Initialize(VRDeviceProviderClient* client) {
     vr_device_ = base::WrapUnique(new GvrDevice());
   }
   if (vr_device_) {
-    client->AddRuntime(vr_device_->GetId(), vr_device_->GetVRDisplayInfo(),
-                       vr_device_->GetDeviceData(),
+    client->AddRuntime(vr_device_->GetId(), vr_device_->GetDeviceData(),
                        vr_device_->BindXRRuntime());
   }
   initialized_ = true;

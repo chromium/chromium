@@ -155,25 +155,8 @@ VRUiHostImpl::~VRUiHostImpl() {
     WebXRWebContentsChanged(nullptr);
 }
 
-bool IsValidInfo(device::mojom::VRDisplayInfoPtr& info) {
-  // Numeric properties are validated elsewhere, but we expect a stereo headset.
-  if (!info) {
-    return false;
-  }
-
-  return base::Contains(info->views, device::mojom::XREye::kLeft,
-                        &device::mojom::XRView::eye) &&
-         base::Contains(info->views, device::mojom::XREye::kRight,
-                        &device::mojom::XRView::eye);
-}
-
 void VRUiHostImpl::WebXRWebContentsChanged(content::WebContents* contents) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (!IsValidInfo(info_)) {
-    content::XRRuntimeManager::ExitImmersivePresentation();
-    return;
-  }
 
   if (web_contents_ == contents) {
     // Nothing to do. This includes the case where both the old and new contents
@@ -242,6 +225,29 @@ void VRUiHostImpl::WebXRWebContentsChanged(content::WebContents* contents) {
   }
 }
 
+void VRUiHostImpl::SetDefaultXrViews(
+    const std::vector<device::mojom::XRViewPtr>& views) {
+  if (!base::Contains(views, device::mojom::XREye::kLeft,
+                      &device::mojom::XRView::eye) ||
+      !base::Contains(views, device::mojom::XREye::kRight,
+                      &device::mojom::XRView::eye)) {
+    // The graphics delegate requires the left and right views to render.
+    content::XRRuntimeManager::ExitImmersivePresentation();
+    return;
+  }
+
+  if (ui_rendering_thread_) {
+    ui_rendering_thread_->SetDefaultXrViews(views);
+  }
+
+  for (auto& view : views) {
+    if (view->eye == device::mojom::XREye::kLeft ||
+        view->eye == device::mojom::XREye::kRight) {
+      default_views_.push_back(view.Clone());
+    }
+  }
+}
+
 void VRUiHostImpl::WebXRFramesThrottledChanged(bool throttled) {
   frames_throttled_ = throttled;
 
@@ -253,31 +259,16 @@ void VRUiHostImpl::WebXRFramesThrottledChanged(bool throttled) {
   ui_rendering_thread_->SetFramesThrottled(frames_throttled_);
 }
 
-void VRUiHostImpl::VRDisplayInfoChanged(
-    device::mojom::VRDisplayInfoPtr display_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // On Windows this is getting logged every frame, so set to 3.
-  DVLOG(3) << __func__;
-
-  if (!IsValidInfo(display_info)) {
-    content::XRRuntimeManager::ExitImmersivePresentation();
-    return;
-  }
-
-  info_ = std::move(display_info);
-  if (ui_rendering_thread_) {
-    ui_rendering_thread_->SetVRDisplayInfo(info_.Clone());
-  }
-}
-
 void VRUiHostImpl::StartUiRendering() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << __func__;
 
-  DCHECK(info_);
   ui_rendering_thread_ =
       std::make_unique<VRBrowserRendererThreadWin>(compositor_.get());
-  ui_rendering_thread_->SetVRDisplayInfo(info_.Clone());
+
+  // We should have received default views from the browser before rendering
+  DCHECK(!default_views_.empty());
+  ui_rendering_thread_->SetDefaultXrViews(default_views_);
 }
 
 void VRUiHostImpl::StopUiRendering() {

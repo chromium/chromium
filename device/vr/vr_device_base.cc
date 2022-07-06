@@ -34,10 +34,6 @@ void VRDeviceBase::PauseTracking() {}
 
 void VRDeviceBase::ResumeTracking() {}
 
-mojom::VRDisplayInfoPtr VRDeviceBase::GetVRDisplayInfo() {
-  return display_info_.Clone();
-}
-
 void VRDeviceBase::ShutdownSession(base::OnceClosure on_completed) {
   DVLOG(2) << __func__;
   // TODO(https://crbug.com/1015594): The default implementation of running the
@@ -65,18 +61,9 @@ bool VRDeviceBase::HasExclusiveSession() {
 }
 
 void VRDeviceBase::ListenToDeviceChanges(
-    mojo::PendingAssociatedRemote<mojom::XRRuntimeEventListener> listener_info,
-    mojom::XRRuntime::ListenToDeviceChangesCallback callback) {
+    mojo::PendingAssociatedRemote<mojom::XRRuntimeEventListener>
+        listener_info) {
   listener_.Bind(std::move(listener_info));
-  std::move(callback).Run(display_info_.Clone());
-}
-
-void VRDeviceBase::SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info) {
-  DCHECK(display_info);
-  display_info_ = std::move(display_info);
-
-  if (listener_)
-    listener_->OnDisplayInfoChanged(display_info_.Clone());
 }
 
 void VRDeviceBase::OnVisibilityStateChanged(

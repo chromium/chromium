@@ -1609,9 +1609,6 @@ void XRSystem::FinishSessionCreation(
   auto session_ptr = std::move(result->get_success()->session);
   auto metrics_recorder = std::move(result->get_success()->metrics_recorder);
 
-  // immersive sessions must supply display info.
-  DCHECK(session_ptr->display_info);
-
   XRSessionFeatureSet enabled_features;
   for (const auto& feature : session_ptr->enabled_features) {
     DVLOG(2) << __func__ << ": feature " << feature << " will be enabled";
@@ -1621,7 +1618,6 @@ void XRSystem::FinishSessionCreation(
   XRSession* session = CreateSession(
       query->mode(), session_ptr->enviroment_blend_mode,
       session_ptr->interaction_mode, std::move(session_ptr->client_receiver),
-      std::move(session_ptr->display_info),
       std::move(session_ptr->device_config), enabled_features);
 
   frameProvider()->OnSessionStarted(session, std::move(session_ptr));
@@ -1706,7 +1702,6 @@ XRSession* XRSystem::CreateSession(
     device::mojom::blink::XRInteractionMode interaction_mode,
     mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
         client_receiver,
-    device::mojom::blink::VRDisplayInfoPtr display_info,
     device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     XRSessionFeatureSet enabled_features,
     bool sensorless_session) {
@@ -1714,8 +1709,6 @@ XRSession* XRSystem::CreateSession(
       this, std::move(client_receiver), mode, blend_mode, interaction_mode,
       std::move(device_config), sensorless_session,
       std::move(enabled_features));
-  if (display_info)
-    session->SetXRDisplayInfo(std::move(display_info));
   sessions_.insert(session);
   return session;
 }
@@ -1731,7 +1724,7 @@ XRSession* XRSystem::CreateSensorlessInlineSession() {
   return CreateSession(device::mojom::blink::XRSessionMode::kInline, blend_mode,
                        interaction_mode,
                        mojo::NullReceiver() /* client receiver */,
-                       nullptr /* display_info */, std::move(device_config),
+                       std::move(device_config),
                        {device::mojom::XRSessionFeature::REF_SPACE_VIEWER},
                        true /* sensorless_session */);
 }
