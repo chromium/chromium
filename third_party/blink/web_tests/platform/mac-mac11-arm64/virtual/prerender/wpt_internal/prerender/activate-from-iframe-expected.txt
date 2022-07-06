@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Navigation on the main frame initiated by window opened by an iframe opening via window.parent.location should not activate a prerendered page
-Harness: the test ran to completion.
-

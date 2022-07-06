@@ -242504,6 +242504,19 @@
       {}
      ]
     ],
+    "shadow-style-invalidation-vw-units.html": [
+     "98c69e19fe9dcb95c7df0895dbe0becf2a54b992",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/imperative-slot-layout-invalidation-001-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "untriaged": {
      "shadow-trees": {
       "nested-shadow-trees": {
@@ -329695,6 +329708,10 @@
       []
      ]
     },
+    "shadow-style-invalidation-vw-units-ref.html": [
+     "d86fd234ca321a762fff5017b4adc68301124bcd",
+     []
+    ],
     "untriaged": {
      "README": [
       "5b7572bda4e2c2b2477a151345de3441265a8ca8",
@@ -517247,6 +517264,13 @@
     ]
    },
    "resize-observer": {
+    "calculate-depth-for-node.html": [
+     "339e52bb79cbd1fc20d1059993ae8ee3b0591b3f",
+     [
+      null,
+      {}
+     ]
+    ],
     "change-layout-in-error.html": [
      "9083fb48f94efe2a4d402fda2e452d72f94b1e17",
      [

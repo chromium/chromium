@@ -3365,6 +3365,9 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/shadow-dom/shadow-style-invalidation-vw-units.html [ Failure ]
+crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/shadow-dom/shadow-style-invalidation-vw-units.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-persistence.tentative.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color/currentcolor-003.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a [ Timeout ]
