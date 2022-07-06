@@ -316,7 +316,7 @@ prevented from depending on the other ones).
 Example:
 ```python
 template("template_with_multiple_targets") {
-  action("${target_name}__helper) {
+  action("${target_name}__helper") {
     forward_variables_from(invoker, [ "testonly" ])
     ...
   }
