@@ -29,7 +29,7 @@ sys.path.append(
                  'scripts'))
 
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR)
-from build import LLVM_BOOTSTRAP_INSTALL_DIR
+from build import (LLVM_BOOTSTRAP_INSTALL_DIR, MaybeDownloadHostGcc)
 
 from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
                          STAGE0_JSON_SHA256, THIRD_PARTY_DIR,
@@ -87,16 +87,18 @@ def CheckoutCrubit(commit, dir):
     sys.exit(1)
 
 
-def BuildCrubit():
+def BuildCrubit(gcc_toolchain_path):
     # TODO(https://crbug.com/1337346): Use locally built Rust instead of having
     # Bazel always download the whole Rust toolchain from the internet.
     # TODO(https://crbug.com/1337348): Use crates from chromium/src/third_party/rust.
-    # TODO(https://crbug.com/1338217): Don't use system-wide C++ stdlib.
-    env = {"LLVM_INSTALL_PATH": LLVM_BOOTSTRAP_INSTALL_DIR}
-    args = ["bazel", "build", "rs_bindings_from_cc:rs_bindings_from_cc_impl"]
 
-    # CC is set via `--repo_env` rather than via `env` to ensure that we
-    # override the defaults from `crubit/.bazelrc`.
+    # This environment variable is consumed by crubit/bazel/llvm.bzl and will
+    # configure Crubit's build to include and link against LLVM+Clang headers
+    # and libraries built when building Chromium toolchain.  (Instead of
+    # downloading LLVM+Clang and building it during Crubit build.)
+    env = {"LLVM_INSTALL_PATH": LLVM_BOOTSTRAP_INSTALL_DIR}
+
+    # Use the compiler and linker from `LLVM_BUILD_DIR`.
     #
     # Note that we use `bin/clang` from `LLVM_BUILD_DIR`, but depend on headers
     # and libraries from `LLVM_BOOTSTRAP_INSTALL_DIR`.  The former helps ensure
@@ -104,16 +106,33 @@ def BuildCrubit():
     # The latter is needed, because the headers+libraries are not available
     # anywhere else.
     clang_path = os.path.join(LLVM_BUILD_DIR, "bin", "clang")
-    args += [
-        "--repo_env=CC=",  # Unset/ignore old values from the environment.
-        "--repo_env=CXX=",
-        "--repo_env=LD=",
+    env["CXX"] = f"{clang_path}++"
+    env["LD"] = f"{clang_path}++"
+    # CC is set via `--repo_env` rather than via `env` to ensure that we
+    # override the defaults from `crubit/.bazelrc`.
+    extra_args = [
+        "--repo_env=CC=",  # Unset/ignore the value set via crubit/.bazelrc
         f"--repo_env=CC={clang_path}",
-        f"--repo_env=CXX={clang_path}++",
-        f"--repo_env=LD={clang_path}",
     ]
 
-    RunCommand(args, env=env, cwd=CRUBIT_SRC_DIR)
+    # Include and link against the C++ stdlib from the GCC toolchain.
+    gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}'
+                          if gcc_toolchain_path else '')
+    env["BAZEL_CXXOPTS"] = gcc_toolchain_flag
+    env["BAZEL_LINKOPTS"] = gcc_toolchain_flag
+    # TODO(https://crbug.com/1338217): Link C++ stdlib *statically*.
+    # Things tried so far:
+    # - Attempts that result in a sefgault when compiling Rust rlib ...
+    #     1a. env["BAZEL_LINKOPTS"] = f"{gcc_toolchain_flag}:-static"
+    #     1b. extra_args += ["--features=fully_static_link"]
+    #         # Optionally: extra_args += ["--sandbox_debug"]
+    # - Attempts that don't have any effect (`ldd ... rs_bindings_from_cc_impl`
+    #   still shows `libstdc++.so.6 => ...`):
+    #     2. extra_args += ["--dynamic_mode=off"]
+
+    # Run bazel build ...
+    args = ["bazel", "build", "rs_bindings_from_cc:rs_bindings_from_cc_impl"]
+    RunCommand(args + extra_args, env=env, cwd=CRUBIT_SRC_DIR)
 
 
 def ShutdownBazel():
@@ -136,11 +155,16 @@ def main():
         help='skip Crubit git checkout. Useful for trying local changes')
     args, rest = parser.parse_known_args()
 
+    # Fetch GCC package to build against same libstdc++ as Clang. This function
+    # will only download it if necessary.
+    args.gcc_toolchain = None
+    MaybeDownloadHostGcc(args)
+
     if not args.skip_checkout:
         CheckoutCrubit(CRUBIT_REVISION, CRUBIT_SRC_DIR)
 
     try:
-        BuildCrubit()
+        BuildCrubit(args.gcc_toolchain)
     finally:
         ShutdownBazel()
 
