@@ -220,7 +220,7 @@ reviewer.
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
 
-<histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientRedirect"
+<histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
     units="ms" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
@@ -230,7 +230,7 @@ reviewer.
     The amount of time after a navigation to a site commits until a renderer
     initiated navigation (without user activation) is started to a different
     site. Not recorded if the redirecting site does not access state (e.g.
-    cookies) or takes longer than 10 seconds to initiate the redirect.
+    cookies) or takes longer than 10 seconds to initiate the redirect (bounce).
   </summary>
 </histogram>
 

@@ -876,6 +876,13 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           Bucket((int)RedirectCategory::kReadWriteCookies_NoEngagement, 1),
           // b.test
           Bucket((int)RedirectCategory::kReadCookies_HasEngagement, 1)));
+
+  // Verify a redirect time metric was recorded for each bounce.
+  histograms.ExpectBucketCount(
+      "Privacy.DIPS.TimeFromNavigationCommitToClientBounce",
+      static_cast<base::HistogramBase::Sample>(
+          base::Seconds(1).InMilliseconds()),
+      /*expected_count=*/2);
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
