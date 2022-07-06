@@ -3569,6 +3569,7 @@ if (enable_java_templates) {
       not_needed(invoker,
                  [
                    "lint_baseline_file",
+                   "lint_jar_path",
                    "lint_min_sdk_version",
                    "lint_suppressions_dep",
                    "lint_suppressions_file",
@@ -5413,6 +5414,7 @@ if (enable_java_templates) {
       not_needed(invoker,
                  [
                    "lint_baseline_file",
+                   "lint_jar_path",
                    "lint_min_sdk_version",
                    "lint_suppressions_dep",
                    "lint_suppressions_file",
