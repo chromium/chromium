@@ -9636,53 +9636,6 @@
             ]
         }
     ],
-    "WebRTC-Audio-AgcMinMicLevelExperiment": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled-20_20220325"
-                }
-            ]
-        }
-    ],
-    "WebRTC-Audio-AnalogAgcClippingControl": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_0",
-                    "params": {
-                        "clipped_level_step": "15",
-                        "clipped_ratio_threshold": "0.1",
-                        "clipped_wait_frames": "300",
-                        "clipping_threshold": "-1.0",
-                        "crest_factor_margin": "3.0",
-                        "mode": "0",
-                        "reference_window_delay": "5",
-                        "reference_window_length": "5",
-                        "use_predicted_step": "true",
-                        "window_length": "5"
-                    },
-                    "enable_features": [
-                        "WebRtcAnalogAgcClippingControl"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Audio-NetEqDecisionLogicConfig": [
         {
             "platforms": [
