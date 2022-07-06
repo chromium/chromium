@@ -260,10 +260,12 @@ export class PanelBackground {
    */
   async waitForPanelCollapse_() {
     return new Promise(async resolve => {
-      const desktop = await new Promise(chrome.automation.getDesktop);
+      const desktop =
+          await new Promise((resolve) => chrome.automation.getDesktop(resolve));
       // Watch for a focus event outside the panel.
       const onFocus = event => {
-        if (event.target.docUrl.contains('chromevox/panel')) {
+        if (event.target.docUrl &&
+            event.target.docUrl.includes('chromevox/panel')) {
           return;
         }
 
