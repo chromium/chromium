@@ -70,6 +70,7 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -83,6 +84,7 @@ import java.util.Map;
  * after each test, leaving a clean state.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@DisabledTest(message = "Flaky test: https://crbug.com/1312662")
 public class FlagsFragmentTest {
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
