@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 /**
  * This factory returns an implementation for the backend. The factory itself is implemented
  * downstream, too.
@@ -42,5 +45,11 @@ public abstract class PasswordStoreAndroidBackendFactory {
      */
     public boolean canCreateBackend() {
         return false;
+    }
+
+    @VisibleForTesting
+    public static void setFactoryInstanceForTesting(
+            @Nullable PasswordStoreAndroidBackendFactory factory) {
+        sInstance = factory;
     }
 }

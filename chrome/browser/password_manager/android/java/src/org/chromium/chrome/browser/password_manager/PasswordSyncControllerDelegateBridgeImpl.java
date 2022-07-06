@@ -30,7 +30,7 @@ class PasswordSyncControllerDelegateBridgeImpl {
     static PasswordSyncControllerDelegateBridgeImpl create(
             long nativePasswordSyncControllerDelegateBridgeImpl) {
         PasswordSyncControllerDelegateFactory factory =
-                new PasswordSyncControllerDelegateFactoryImpl();
+                PasswordSyncControllerDelegateFactory.getInstance();
         return new PasswordSyncControllerDelegateBridgeImpl(
                 nativePasswordSyncControllerDelegateBridgeImpl, factory.createDelegate());
     }

@@ -1,0 +1,230 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.password_manager.tests;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import android.accounts.Account;
+
+import androidx.annotation.Nullable;
+
+import com.google.common.base.Optional;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.chrome.browser.password_manager.tests.utils.FakePasswordStoreAndroidBackend;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.sync.protocol.PasswordSpecificsData;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * Tests for {@link FakePasswordStoreAndroidBackend}.
+ */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class FakePasswordStoreAndroidBackendTest {
+    private FakePasswordStoreAndroidBackend mBackend;
+
+    private static final PasswordSpecificsData sPasswordData =
+            PasswordSpecificsData.newBuilder()
+                    .setUsernameValue("Todd Tester")
+                    .setUsernameElement("username")
+                    .setPasswordElement("pwd")
+                    .setOrigin("https://www.google.com/")
+                    .setSignonRealm("https://accounts.google.com/signin")
+                    .setPasswordValue("password")
+                    .build();
+    private static final PasswordSpecificsData sPasswordDataBlocklisted =
+            PasswordSpecificsData.newBuilder()
+                    .setUsernameElement("username")
+                    .setPasswordElement("pwd")
+                    .setOrigin("https://www.google1.com/")
+                    .setSignonRealm("https://accounts.google.com/signin")
+                    .setPasswordValue("password")
+                    .setBlacklisted(true)
+                    .build();
+    private static final PasswordSpecificsData sPasswordDataNoSignonRealm =
+            PasswordSpecificsData.newBuilder()
+                    .setUsernameValue("Todd Tester")
+                    .setUsernameElement("username")
+                    .setPasswordElement("pwd")
+                    .setOrigin("https://www.google2.com/")
+                    .setPasswordValue("password")
+                    .build();
+
+    private static final PasswordWithLocalData sPwdWithLocalData =
+            PasswordWithLocalData.newBuilder().setPasswordSpecificsData(sPasswordData).build();
+    private static final PasswordWithLocalData sPwdWithLocalDataBlocklisted =
+            PasswordWithLocalData.newBuilder()
+                    .setPasswordSpecificsData(sPasswordDataBlocklisted)
+                    .build();
+    private static final PasswordWithLocalData sPwdWithLocalDataNoSignonRealm =
+            PasswordWithLocalData.newBuilder()
+                    .setPasswordSpecificsData(sPasswordDataNoSignonRealm)
+                    .build();
+    private static final String sTestAccountEmail = "test@email.com";
+    private static final Optional<Account> sTestAccount =
+            Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
+
+    @Before
+    public void setUp() {
+        mBackend = new FakePasswordStoreAndroidBackend();
+    }
+
+    @Test
+    public void testAddLogin() throws TimeoutException {
+        CallbackHelper successCallback = new CallbackHelper();
+
+        mBackend.addLogin(sPwdWithLocalData.toByteArray(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+
+        successCallback.waitForCallback(successCallback.getCallCount());
+        Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
+        assertThat(successCallback.getCallCount(), is(1));
+        assertThat(allPasswords.get(sTestAccount.get()), hasSize(1));
+        assertThat(allPasswords, hasEntry(is(sTestAccount.get()), hasItem(sPwdWithLocalData)));
+    }
+
+    @Test
+    public void testGetAllLogins() throws TimeoutException {
+        fillPasswordStore();
+
+        PayloadCallbackHelper<byte[]> successCallback = new PayloadCallbackHelper<>();
+        mBackend.getAllLogins(sTestAccount, successCallback::notifyCalled, unexpected -> fail());
+
+        ListPasswordsResult actualPasswords =
+                parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
+        ListPasswordsResult expectedPasswords =
+                ListPasswordsResult.newBuilder()
+                        .addPasswordData(sPwdWithLocalData)
+                        .addPasswordData(sPwdWithLocalDataBlocklisted)
+                        .addPasswordData(sPwdWithLocalDataNoSignonRealm)
+                        .build();
+        assertThat(actualPasswords, is(expectedPasswords));
+    }
+
+    @Test
+    public void testGetAutofillableLogins() throws TimeoutException {
+        fillPasswordStore();
+
+        PayloadCallbackHelper<byte[]> successCallback = new PayloadCallbackHelper<>();
+        mBackend.getAutofillableLogins(
+                sTestAccount, successCallback::notifyCalled, unexpected -> fail());
+
+        ListPasswordsResult actualPasswords =
+                parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
+        ListPasswordsResult expectedPasswords =
+                ListPasswordsResult.newBuilder()
+                        .addPasswordData(sPwdWithLocalData)
+                        .addPasswordData(sPwdWithLocalDataNoSignonRealm)
+                        .build();
+        assertThat(actualPasswords, is(expectedPasswords));
+    }
+
+    @Test
+    public void testGetLoginsForSignonRealm() throws TimeoutException {
+        fillPasswordStore();
+
+        PayloadCallbackHelper<byte[]> successCallback = new PayloadCallbackHelper<>();
+        mBackend.getLoginsForSignonRealm(
+                sPwdWithLocalData.getPasswordSpecificsData().getSignonRealm(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+
+        ListPasswordsResult actualPasswords =
+                parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
+        ListPasswordsResult expectedPasswords =
+                ListPasswordsResult.newBuilder()
+                        .addPasswordData(sPwdWithLocalData)
+                        .addPasswordData(sPwdWithLocalDataBlocklisted)
+                        .build();
+        assertThat(actualPasswords, is(expectedPasswords));
+    }
+
+    @Test
+    public void testUpdateLogin() throws TimeoutException {
+        fillPasswordStore();
+
+        CallbackHelper successCallback = new CallbackHelper();
+        PasswordSpecificsData updatedPasswordData =
+                PasswordSpecificsData.newBuilder()
+                        .setUsernameValue("Todd Tester")
+                        .setUsernameElement("username")
+                        .setPasswordElement("pwd")
+                        .setOrigin("https://www.google.com/")
+                        .setSignonRealm("https://accounts.google.com/signin")
+                        .setPasswordValue("UpdatedPassword")
+                        .build();
+        PasswordWithLocalData updatedPwdWithLocalData =
+                PasswordWithLocalData.newBuilder()
+                        .setPasswordSpecificsData(updatedPasswordData)
+                        .build();
+        mBackend.updateLogin(updatedPwdWithLocalData.toByteArray(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+
+        successCallback.waitForCallback(successCallback.getCallCount());
+        Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
+        assertThat(successCallback.getCallCount(), is(1));
+        assertThat(allPasswords.get(sTestAccount.get()), hasSize(3));
+        assertThat(
+                allPasswords, hasEntry(is(sTestAccount.get()), hasItem(updatedPwdWithLocalData)));
+    }
+
+    @Test
+    public void testRemoveLogin() throws TimeoutException {
+        fillPasswordStore();
+
+        CallbackHelper successCallback = new CallbackHelper();
+        mBackend.removeLogin(sPasswordData.toByteArray(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+
+        successCallback.waitForCallback(successCallback.getCallCount());
+        Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
+        assertThat(successCallback.getCallCount(), is(1));
+        assertThat(allPasswords.get(sTestAccount.get()), hasSize(2));
+        assertThat(allPasswords, hasEntry(is(sTestAccount.get()), not(hasItem(sPwdWithLocalData))));
+    }
+
+    private void fillPasswordStore() throws TimeoutException {
+        CallbackHelper successCallback = new CallbackHelper();
+
+        mBackend.addLogin(sPwdWithLocalData.toByteArray(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+        successCallback.waitForCallback(successCallback.getCallCount());
+        mBackend.addLogin(sPwdWithLocalDataBlocklisted.toByteArray(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+        successCallback.waitForCallback(successCallback.getCallCount());
+        mBackend.addLogin(sPwdWithLocalDataNoSignonRealm.toByteArray(), sTestAccount,
+                successCallback::notifyCalled, unexpected -> fail());
+        successCallback.waitForCallback(successCallback.getCallCount());
+    }
+
+    private static @Nullable ListPasswordsResult parseListPasswordResultOrFail(
+            byte[] listPwdResult) {
+        try {
+            return ListPasswordsResult.parseFrom(listPwdResult);
+        } catch (Exception parsingError) {
+            Assert.fail("Could not parse byte array into ListPasswordsResult.");
+            return null;
+        }
+    }
+}
