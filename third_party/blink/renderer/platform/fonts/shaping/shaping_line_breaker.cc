@@ -314,8 +314,10 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // look for breaking opportunityes after the end of the sequence.
   // https://www.unicode.org/reports/tr14/#BA
   // TODO(jfernandez): if break-spaces, do special handling.
+  const bool use_previous_break_opportunity =
+      !IsBreakableSpace(text[candidate_break]) || is_break_after_any_space;
   BreakOpportunity break_opportunity =
-      !IsBreakableSpace(text[candidate_break]) || is_break_after_any_space
+      use_previous_break_opportunity
           ? PreviousBreakOpportunity(candidate_break, start)
           : NextBreakOpportunity(std::max(candidate_break, start + 1), start,
                                  range_end);
@@ -325,13 +327,33 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // TODO: (jfernandez): Maybe also non_hangable_run_end <= start ?
   result_out->is_overflow = break_opportunity.offset <= start;
   if (result_out->is_overflow) {
-    DCHECK(is_break_after_any_space ||
-           !IsBreakableSpace(text[candidate_break]));
+    DCHECK(use_previous_break_opportunity);
     if (options & kNoResultIfOverflow)
       return nullptr;
     // No need to scan past range_end for a break opportunity.
     break_opportunity = NextBreakOpportunity(
         std::max(candidate_break, start + 1), start, range_end);
+  }
+
+  // If we were looking for a next break opportunity and found one that is after
+  // candidate_break but doesn't have a corresponding non-hangable run that
+  // spans to at least candidate_break, that would be an overflow. However,
+  // there might still be break opportunities before candidate_break that we
+  // haven't checked, so we look for them first.
+  if (!use_previous_break_opportunity &&
+      break_opportunity.offset > candidate_break &&
+      (!break_opportunity.non_hangable_run_end ||
+       *break_opportunity.non_hangable_run_end > candidate_break)) {
+    DCHECK(!result_out->is_overflow);
+    BreakOpportunity previous_opportunity =
+        PreviousBreakOpportunity(candidate_break, start);
+    if (previous_opportunity.offset > start) {
+      break_opportunity = previous_opportunity;
+    } else {
+      result_out->is_overflow = true;
+      if (options & kNoResultIfOverflow)
+        return nullptr;
+    }
   }
 
   // We don't care whether this result contains only spaces if we

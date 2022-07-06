@@ -968,5 +968,45 @@ C c
   BreakLines(node, LayoutUnit::Max());
 }
 
+// https://crbug.com/1292848
+// Test that, if it's not possible to break after an ideographic space (as
+// happens before an end bracket), previous break opportunities are considered.
+TEST_F(NGLineBreakerTest, IdeographicSpaceBeforeEndBracket) {
+  LoadAhem();
+  // Atomic inline, and ideographic space before the ideographic full stop.
+  NGInlineNode node1 = CreateInlineNode(
+      uR"HTML(
+<!DOCTYPE html>
+<style>
+body { margin: 0; padding: 0; font: 10px/10px Ahem; }
+</style>
+<div id="container">
+全角空白の前では、変な行末があります。　]
+</div>
+)HTML");
+  auto lines1 = BreakLines(node1, LayoutUnit(190));
+
+  // Test that it doesn't overflow.
+  EXPECT_EQ(lines1.size(), 2u);
+
+  // No ideographic space.
+  NGInlineNode node2 = CreateInlineNode(
+      uR"HTML(
+<!DOCTYPE html>
+<style>
+body { margin: 0; padding: 0; font: 10px/10px Ahem; }
+</style>
+<div id="container">
+全角空白の前では、変な行末があります。]
+</div>
+)HTML");
+  auto lines2 = BreakLines(node2, LayoutUnit(190));
+
+  // node1 and node2 should break at the same point because there aren't break
+  // opportunities after the ideographic period, and any opportunities before it
+  // should be the same.
+  EXPECT_EQ(lines1[0].first, lines2[0].first);
+}
+
 }  // namespace
 }  // namespace blink
