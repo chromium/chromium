@@ -153,21 +153,23 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     @Override
     public void onGotManifestData(BrowserServicesIntentDataProvider fetchedIntentDataProvider,
             String primaryIconUrl, String splashIconUrl) {
-        mFetchedInfo =
-                MergedWebappInfo.create(/* oldWebappInfo= */ mInfo, fetchedIntentDataProvider);
         mFetchedPrimaryIconUrl = primaryIconUrl;
         mFetchedSplashIconUrl = splashIconUrl;
+        mFetchedInfo =
+                MergedWebappInfo.create(/* oldWebappInfo= */ mInfo, fetchedIntentDataProvider);
 
-        // When only some/no app identity updates are permitted, the update
-        // should still proceed with updating all the other values (not related
-        // to the blocked app identity update).
-        if (!nameUpdateDialogEnabled()) {
-            mFetchedInfo.setUseOldName(true);
-        }
-        if (!iconUpdateDialogEnabled()) {
-            mFetchedInfo.setUseOldIcon(true);
-            // Forces recreation of the primary icon during proto construction.
-            mFetchedPrimaryIconUrl = "";
+        if (mFetchedInfo != null) {
+            // When only some/no app identity updates are permitted, the update
+            // should still proceed with updating all the other values (not related
+            // to the blocked app identity update).
+            if (!nameUpdateDialogEnabled()) {
+                mFetchedInfo.setUseOldName(true);
+            }
+            if (!iconUpdateDialogEnabled()) {
+                mFetchedInfo.setUseOldIcon(true);
+                // Forces recreation of the primary icon during proto construction.
+                mFetchedPrimaryIconUrl = "";
+            }
         }
 
         mStorage.updateTimeOfLastCheckForUpdatedWebManifest();

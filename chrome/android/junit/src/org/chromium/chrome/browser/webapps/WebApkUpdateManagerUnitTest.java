@@ -1456,4 +1456,21 @@ public class WebApkUpdateManagerUnitTest {
         verifyHistograms(HISTOGRAM_SHOWING, 0);
         verifyHistograms(HISTOGRAM_PRE_APPROVED, 0);
     }
+
+    /**
+     * Test for crashing when IntentDataProvider is null, as per https://crbug.com/1342066.
+     */
+    @Test
+    public void testDoesntCrashWithNullProvider() {
+        ManifestData androidManifestData = defaultManifestData();
+        registerWebApk(
+                WEBAPK_PACKAGE_NAME, androidManifestData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
+        mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
+
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager, androidManifestData.shortcuts);
+        assertTrue(updateManager.updateCheckStarted());
+        updateManager.onGotManifestData(/* fetchedIntentDataProvider= */ null,
+                /* primaryIconUrl= */ null, /* splashIconUrl= */ null);
+    }
 }
