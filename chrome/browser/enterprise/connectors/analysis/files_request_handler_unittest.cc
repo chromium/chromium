@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -87,6 +88,17 @@ constexpr char kBlockingScansForMalware[] = R"(
     }
   ],
   "block_until_verdict": 1
+})";
+
+constexpr char kLocalServiceProvider[] = R"(
+{
+  "service_provider": "local_test",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ]
 })";
 
 constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
@@ -203,8 +215,10 @@ class FilesRequestHandlerTest : public BaseTest {
     // The access point is only used for metrics, so its value doesn't affect
     // the tests in this file and can always be the same.
     fake_files_request_handler_ = std::make_unique<FakeFilesRequestHandler>(
-        base::BindRepeating(&FilesRequestHandlerTest::FakeFileUploadCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &FilesRequestHandlerTest::FakeFileUploadCallback,
+            weak_ptr_factory_.GetWeakPtr(),
+            settings.cloud_or_local_settings.is_cloud_analysis()),
         /*upload_service=*/nullptr, profile_, settings, GURL(kTestUrl),
         safe_browsing::DeepScanAccessPoint::UPLOAD, paths,
         base::BindOnce(
@@ -279,11 +293,14 @@ class FilesRequestHandlerTest : public BaseTest {
   }
 
   void FakeFileUploadCallback(
+      bool is_cloud_analysis,
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
     EXPECT_FALSE(path.empty());
-    EXPECT_EQ(request->device_token(), kDmToken);
+    if (is_cloud_analysis)
+      EXPECT_EQ(request->device_token(), kDmToken);
+
     // Simulate a response.
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -465,6 +482,40 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted) {
   EXPECT_TRUE(called);
 }
 
+// With a local service provider, a scan should not terminate early due to
+// encryption.
+TEST_F(FilesRequestHandlerTest, FileIsEncrypted_LocalAnalysis) {
+  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
+
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
+                                      AnalysisConnector::FILE_ATTACHED,
+                                      kLocalServiceProvider);
+  GURL url(kTestUrl);
+  std::vector<base::FilePath> paths;
+
+  base::FilePath test_zip;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
+  test_zip = test_zip.AppendASCII("safe_browsing")
+                 .AppendASCII("download_protection")
+                 .AppendASCII("encrypted.zip");
+  paths.emplace_back(test_zip);
+
+  bool called = false;
+  ScanUpload(paths,
+             base::BindOnce(
+                 [](bool* called, std::vector<RequestHandlerResult> results) {
+                   EXPECT_EQ(1u, results.size());
+                   EXPECT_THAT(
+                       results[0],
+                       MatchesRequestHandlerResult(
+                           true, FinalContentAnalysisResult::SUCCESS, ""));
+                   *called = true;
+                 },
+                 &called));
+
+  EXPECT_TRUE(called);
+}
+
 TEST_F(FilesRequestHandlerTest, FileIsEncrypted_PolicyAllows) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
@@ -490,6 +541,41 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted_PolicyAllows) {
                  .AppendASCII("download_protection")
                  .AppendASCII("encrypted.zip");
   paths.emplace_back(test_zip);
+
+  bool called = false;
+  ScanUpload(paths,
+             base::BindOnce(
+                 [](bool* called, std::vector<RequestHandlerResult> results) {
+                   EXPECT_EQ(1u, results.size());
+                   EXPECT_THAT(
+                       results[0],
+                       MatchesRequestHandlerResult(
+                           true, FinalContentAnalysisResult::SUCCESS, ""));
+                   *called = true;
+                 },
+                 &called));
+
+  EXPECT_TRUE(called);
+}
+
+// With a local service provider, a scan should not terminate early due to
+// size.
+TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
+  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
+
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
+                                      AnalysisConnector::FILE_ATTACHED,
+                                      kLocalServiceProvider);
+  GURL url(kTestUrl);
+  std::vector<base::FilePath> paths;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
+  std::string contents(
+      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  base::WriteFile(file_path, contents.data(), contents.size());
+  paths.emplace_back(file_path);
 
   bool called = false;
   ScanUpload(paths,

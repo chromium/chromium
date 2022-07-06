@@ -24,6 +24,22 @@ FilesRequestHandler::Factory* GetFactoryStorage() {
   return factory.get();
 }
 
+// Returns true if `result` as returned by FileAnalysisRequest is considered a
+// a failed result when attempting a cloud-based content analysis.
+bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
+  return result != safe_browsing::BinaryUploadService::Result::SUCCESS;
+}
+
+// Returns true if `result` as returned by FileAnalysisRequest is considered a
+// a failed result when attempting a local content analysis.
+bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
+  return result != safe_browsing::BinaryUploadService::Result::SUCCESS &&
+         result != safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE &&
+         result != safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED &&
+         result != safe_browsing::BinaryUploadService::Result::
+                       DLP_SCAN_UNSUPPORTED_FILE_TYPE;
+}
+
 }  // namespace
 
 FilesRequestHandler::FileInfo::FileInfo() = default;
@@ -162,10 +178,10 @@ void FilesRequestHandler::OnGotFileInfo(
   file_info_[index].size = data.size;
   file_info_[index].mime_type = data.mime_type;
 
-  // If a non-SUCCESS result was previously obtained, it means the file has some
-  // property (too large, unsupported file type, encrypted, ...) that make its
-  // upload pointless, so the request should finish early.
-  if (result != safe_browsing::BinaryUploadService::Result::SUCCESS) {
+  bool failed = analysis_settings_.cloud_or_local_settings.is_cloud_analysis()
+                    ? CloudResultIsFailure(result)
+                    : LocalResultIsFailure(result);
+  if (failed) {
     request->FinishRequest(result,
                            enterprise_connectors::ContentAnalysisResponse());
     return;

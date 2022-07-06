@@ -202,17 +202,20 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     return absl::nullopt;
 
   absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
-  if (!dm_token.has_value())
-    return absl::nullopt;
+  bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
 
-  if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+  if (is_cloud) {
+    if (!dm_token.has_value())
+      return absl::nullopt;
+
     absl::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
         .dm_token = dm_token.value().value;
   }
 
   settings.value().per_profile =
+      dm_token.has_value() &&
       dm_token.value().scope == policy::POLICY_SCOPE_USER;
-  settings.value().client_metadata = BuildClientMetadata();
+  settings.value().client_metadata = BuildClientMetadata(is_cloud);
 
   return settings;
 }
@@ -495,21 +498,30 @@ bool ConnectorsService::ConnectorsEnabled() const {
   return !Profile::FromBrowserContext(context_)->IsOffTheRecord();
 }
 
-std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
-  // Check the reporting policy value to check if the analysis should include
-  // browser/device/profile information.
+std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
+    bool is_cloud) {
+  // Use reporting settings to determine what should be included in client
+  // metadata, but only for cloud service providers.  If the reporting
+  // connector is is not enabled, don't send anything at all.
   auto reporting_settings =
       GetReportingSettings(ReportingConnector::SECURITY_EVENT);
-  if (!reporting_settings.has_value())
+  if (is_cloud && !reporting_settings.has_value())
     return nullptr;
 
   Profile* profile = Profile::FromBrowserContext(context_);
-  const bool include_device_info = enterprise_connectors::IncludeDeviceInfo(
-      profile, reporting_settings.value().per_profile);
-
   auto metadata = std::make_unique<ClientMetadata>(
       reporting::GetContextAsClientMetadata(profile));
-  PopulateBrowserMetadata(include_device_info, metadata->mutable_browser());
+
+  // Device info is only useful for cloud service providers since local
+  // provider can already determine all this info themselves.
+  const bool include_device_info =
+      is_cloud && enterprise_connectors::IncludeDeviceInfo(
+                      profile, reporting_settings.value().per_profile);
+
+  // Always include browser metadata for local service providers, but include
+  // it for cloud service providers only if device info is included.
+  PopulateBrowserMetadata(!is_cloud || include_device_info,
+                          metadata->mutable_browser());
   if (include_device_info) {
     PopulateDeviceMetadata(reporting_settings.value(), profile,
                            metadata->mutable_device());

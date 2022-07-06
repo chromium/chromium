@@ -125,8 +125,9 @@ class ConnectorsService : public KeyedService {
   bool ConnectorsEnabled() const;
 
   // Obtain a ClientMetadata instance corresponding to the current
-  // OnSecurityEvent policy value.
-  std::unique_ptr<ClientMetadata> BuildClientMetadata();
+  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
+  // based service provider and false when using a local service provider.
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
 
   raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
