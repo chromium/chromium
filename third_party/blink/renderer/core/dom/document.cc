@@ -6806,9 +6806,11 @@ void Document::FinishedParsing() {
     if (ShouldMarkFontPerformance())
       FontPerformance::MarkDomContentLoaded();
 
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-        "MarkDOMContent", inspector_mark_load_event::Data, frame);
-    probe::DomContentLoadedEventFired(frame);
+    if (frame->IsAttached()) {
+      DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+          "MarkDOMContent", inspector_mark_load_event::Data, frame);
+      probe::DomContentLoadedEventFired(frame);
+    }
     frame->GetIdlenessDetector()->DomContentLoadedEventFired();
   }
 
