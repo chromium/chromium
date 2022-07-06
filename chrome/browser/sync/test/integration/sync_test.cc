@@ -71,6 +71,7 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -110,7 +111,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
-#else
+#else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -118,7 +119,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using syncer::SyncServiceImpl;
 
@@ -545,7 +546,7 @@ std::vector<SyncServiceImplHarness*> SyncTest::GetSyncClients() {
   return clients;
 }
 
-SyncServiceImpl* SyncTest::GetSyncService(int index) {
+SyncServiceImpl* SyncTest::GetSyncService(int index) const {
   return SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile(index));
 }
 
@@ -812,14 +813,6 @@ void SyncTest::InitializeConfigurationRefresher(int index) {
   }
 }
 
-void SyncTest::SetupSyncNoWaitingForCompletion() {
-  SetupSyncInternal(/*setup_mode=*/NO_WAITING);
-}
-
-void SyncTest::SetupSyncOneClientAfterAnother() {
-  SetupSyncInternal(/*setup_mode=*/WAIT_FOR_COMMITS_TO_COMPLETE);
-}
-
 void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
@@ -875,22 +868,10 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        client->AwaitSyncSetupCompletion();
+        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        // TODO(crbug.com/1188034): remove the DCHECK.
-        DCHECK(TestUsesSelfNotifications())
-            << "We need that for the UpdatedProgressMarkerChecker";
-        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
-        ASSERT_TRUE(
-            CommittedAllNudgedChangesChecker(GetSyncService(client_index))
-                .Wait());
-
-        // Wait for committing DeviceInfo with all the necessary fields. This is
-        // used to prevent starting another sync cycle after SetupSync() call
-        // which might be unexpected in several tests.
-        ASSERT_TRUE(device_info_helper::WaitForFullDeviceInfoCommitted(
-            GetCacheGuid(client_index)));
+        ASSERT_TRUE(WaitForAsyncChangesToBeCommitted(client_index));
         break;
     }
   }
@@ -905,7 +886,7 @@ void SyncTest::ClearProfiles() {
   clients_.clear();
 }
 
-bool SyncTest::SetupSync() {
+bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
@@ -915,7 +896,7 @@ bool SyncTest::SetupSync() {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  SetupSyncInternal(/*setup_mode=*/WAIT_FOR_SYNC_SETUP_TO_COMPLETE);
+  SetupSyncInternal(setup_mode);
 
   // Because clients may modify sync data as part of startup (for example
   // local session-releated data is rewritten), we need to ensure all
@@ -924,7 +905,7 @@ bool SyncTest::SetupSync() {
   // Tests that don't use self-notifications can't await quiescense.  They'll
   // have to find their own way of waiting for an initial state if they really
   // need such guarantees.
-  if (TestUsesSelfNotifications()) {
+  if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
     if (!AwaitQuiescence()) {
       LOG(FATAL) << "AwaitQuiescence() failed.";
       return false;
@@ -1108,7 +1089,7 @@ void SyncTest::ResetSyncForPrimaryAccount() {
     // SyncServiceImplHarness::ResetSyncForPrimaryAccount() can succeed.
     // The passphrase will be reset together with the rest of the sync data
     // clearing.
-    SetupSyncNoWaitingForCompletion();
+    ASSERT_TRUE(SetupSync(NO_WAITING));
     GetClient(0)->ResetSyncForPrimaryAccount();
     // After reset account, the client should get a NOT_MY_BIRTHDAY error
     // and disable sync. Adding a wait to make sure this is propagated.
@@ -1317,4 +1298,24 @@ arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {
 std::string SyncTest::GetCacheGuid(size_t profile_index) const {
   syncer::SyncTransportDataPrefs prefs(GetProfile(profile_index)->GetPrefs());
   return prefs.GetCacheGuid();
+}
+
+bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
+  // Wait for committing DeviceInfo with sharing_fields, it may happen
+  // asynchronously due to FCM token registration.
+  if (GetSyncService(profile_index)
+          ->GetPreferredDataTypes()
+          .Has(syncer::SHARING_MESSAGE)) {
+    if (!device_info_helper::WaitForFullDeviceInfoCommitted(
+            GetCacheGuid(profile_index))) {
+      return false;
+    }
+  }
+
+  // Wait for any other locally nudged changes to be committed.
+  if (!CommittedAllNudgedChangesChecker(GetSyncService(profile_index)).Wait()) {
+    return false;
+  }
+
+  return true;
 }

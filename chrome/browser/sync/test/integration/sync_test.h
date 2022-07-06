@@ -130,6 +130,21 @@ class SyncTest : public PlatformBrowserTest {
                              // in-process (bypassing HTTP calls).
   };
 
+  // Modes when setting up sync.
+  enum SetupSyncMode {
+    // Do not wait for clients to be ready to sync.
+    NO_WAITING,
+
+    // Wait for sync engine initialization only. This may be used when waiting
+    // for commits is impossible (e.g. due to commit errors or a custom
+    // passphrase).
+    WAIT_FOR_SYNC_SETUP_TO_COMPLETE,
+
+    // Wait for all the changes to be committed including asynchronous changes
+    // (e.g. DeviceInfo fields).
+    WAIT_FOR_COMMITS_TO_COMPLETE,
+  };
+
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
 
@@ -180,7 +195,7 @@ class SyncTest : public PlatformBrowserTest {
   std::vector<SyncServiceImplHarness*> GetSyncClients();
 
   // Returns a SyncServiceImpl at the given index.
-  syncer::SyncServiceImpl* GetSyncService(int index);
+  syncer::SyncServiceImpl* GetSyncService(int index) const;
 
   // Returns the set of SyncServiceImpls.
   std::vector<syncer::SyncServiceImpl*> GetSyncServices();
@@ -209,26 +224,16 @@ class SyncTest : public PlatformBrowserTest {
   // Initializes sync clients and profiles but does not sync any of them.
   [[nodiscard]] virtual bool SetupClients();
 
-  // Initializes sync clients and profiles if required and syncs each of them.
-  // Makes it sure that all the local changes are committed and waits for
-  // populating all fields in DeviceInfo.
-  [[nodiscard]] virtual bool SetupSync();
+  // Initializes sync clients and waits for different stages to complete
+  // depending on |setup_mode|.
+  [[nodiscard]] bool SetupSync(
+      SetupSyncMode setup_mode = WAIT_FOR_COMMITS_TO_COMPLETE);
 
   // This is similar to click the reset button on chrome.google.com/sync.
   // Only takes effect when running with external servers.
   // Please call this before setting anything. This method will clear all
   // local profiles, browsers, etc.
   void ResetSyncForPrimaryAccount();
-
-  // Like SetupSync() but does not wait for the clients to be ready to sync.
-  void SetupSyncNoWaitingForCompletion();
-
-  // Like SetupSync() but does wait for commits to complete before proceeding to
-  // another client.
-  // TODO(crbug.com/956043): Investigate deeper why such sequential setup is
-  // needed by some tests and why using SetupSync() instead is causing
-  // flakiness. Ideally get rid of this function.
-  void SetupSyncOneClientAfterAnother();
 
   // Sets whether or not the sync clients in this test should respond to
   // notifications of their own commits.  Real sync clients do not do this, but
@@ -334,11 +339,6 @@ class SyncTest : public PlatformBrowserTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  enum SetupSyncMode {
-    NO_WAITING,
-    WAIT_FOR_SYNC_SETUP_TO_COMPLETE,
-    WAIT_FOR_COMMITS_TO_COMPLETE
-  };
   // Handles Profile creation for given index. Profile's path and type is
   // determined at runtime based on server type.
   bool CreateProfile(int index);
@@ -408,6 +408,11 @@ class SyncTest : public PlatformBrowserTest {
   void SetupSyncInternal(SetupSyncMode setup_mode);
 
   void ClearProfiles();
+
+  // Waits for all the changes which might be done asynchronously after setting
+  // up sync engine. This is used to prevent starting another sync cycle after
+  // SetupSync() call which might be unexpected in several tests.
+  bool WaitForAsyncChangesToBeCommitted(size_t profile_index) const;
 
   // Used to differentiate between single-client and two-client tests.
   const TestType test_type_;
