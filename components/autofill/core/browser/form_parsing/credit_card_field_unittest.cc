@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -167,12 +168,15 @@ struct CreditCardFieldYearTestCase {
 class CreditCardFieldYearTest
     : public CreditCardFieldTestBase,
       public testing::TestWithParam<std::tuple<PatternProviderFeatureState,
-                                               CreditCardFieldYearTestCase>> {
+                                               CreditCardFieldYearTestCase,
+                                               bool>> {
  public:
   CreditCardFieldYearTest()
       : CreditCardFieldTestBase(std::get<0>(GetParam())) {}
 
   bool with_noise() const { return std::get<1>(GetParam()).with_noise; }
+
+  bool ShouldSwapMonthAndYear() const { return std::get<2>(GetParam()); }
 
   ServerFieldType expected_type() const {
     return std::get<1>(GetParam()).expected_type;
@@ -201,6 +205,9 @@ TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
       expected_type() == CREDIT_CARD_EXP_2_DIGIT_YEAR ? 2 : 4,
       MakeOptionVector(), expected_type());
 
+  if (ShouldSwapMonthAndYear())
+    std::swap(list_[1], list_[2]);
+
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
@@ -213,7 +220,8 @@ INSTANTIATE_TEST_SUITE_P(
             CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_2_DIGIT_YEAR},
             CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_4_DIGIT_YEAR},
             CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_2_DIGIT_YEAR},
-            CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_4_DIGIT_YEAR})));
+            CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_4_DIGIT_YEAR}),
+        testing::Bool()));
 
 TEST_P(CreditCardFieldTest, ParseFullCreditCard) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);

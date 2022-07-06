@@ -9,11 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::features::kAutofillFixFillableFieldTypes;
@@ -283,4 +285,84 @@ TEST_P(FormFieldTest, ParseFormFieldsForPromoCodes) {
               fields, LanguageCode(""), /*is_form_tag=*/true, pattern_source())
               .size());
 }
+
+struct ParseInAnyOrderTestcase {
+  // An nxn matrix, describing that field i is matched by parser j.
+  std::vector<std::vector<bool>> field_matches_parser;
+  // The expected order in which the n fields are matched, or empty, if the
+  // matching is expected to fail.
+  std::vector<int> expected_permutation;
+};
+
+class ParseInAnyOrderTest
+    : public testing::TestWithParam<ParseInAnyOrderTestcase> {};
+
+const ParseInAnyOrderTestcase kParseInAnyOrderTestcases[]{
+    // Field i is only matched by parser i -> matched in order.
+    {{{true, false, false}, {false, true, false}, {false, false, true}},
+     {0, 1, 2}},
+    // Opposite order.
+    {{{false, true}, {true, false}}, {1, 0}},
+    // The second field has to go first, because it is only matched by the first
+    // parser.
+    {{{true, true}, {true, false}}, {1, 0}},
+    // The second parser doesn't match any field, thus no match.
+    {{{true, false}, {true, false}}, {}},
+    // No field matches.
+    {{{false, false}, {false, false}}, {}}};
+
+INSTANTIATE_TEST_SUITE_P(FormFieldTest,
+                         ParseInAnyOrderTest,
+                         testing::ValuesIn(kParseInAnyOrderTestcases));
+
+TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
+  auto testcase = GetParam();
+  bool expect_success = !testcase.expected_permutation.empty();
+  size_t n = testcase.field_matches_parser.size();
+
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  // Creates n fields and encodes their ids in `max_length`, as `id_attribute`
+  // is a string.
+  for (size_t i = 0; i < n; i++) {
+    FormFieldData form_field_data;
+    form_field_data.max_length = i;
+    fields.push_back(std::make_unique<AutofillField>(form_field_data));
+  }
+
+  // Checks if `matching_ids` of the `scanner`'s current position is true.
+  // This is used to simulate different parsers, as described by
+  // `testcase.field_matches_parser`.
+  auto Matches = [](AutofillScanner* scanner,
+                    const std::vector<bool>& matching_ids) -> bool {
+    return matching_ids[scanner->Cursor()->max_length];
+  };
+
+  // Construct n parsers from `testcase.field_matches_parser`.
+  AutofillScanner scanner(fields);
+  std::vector<AutofillField*> matched_fields(n);
+  std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+      fields_and_parsers;
+  for (size_t i = 0; i < n; i++) {
+    fields_and_parsers.emplace_back(
+        &matched_fields[i],
+        base::BindRepeating(Matches, &scanner,
+                            testcase.field_matches_parser[i]));
+  }
+
+  EXPECT_EQ(FormField::ParseInAnyOrderForTesting(&scanner, fields_and_parsers),
+            expect_success);
+
+  if (expect_success) {
+    EXPECT_TRUE(scanner.IsEnd());
+    ASSERT_EQ(testcase.expected_permutation.size(), n);
+    for (size_t i = 0; i < n; i++) {
+      EXPECT_EQ(matched_fields[i],
+                fields[testcase.expected_permutation[i]].get());
+    }
+  } else {
+    EXPECT_EQ(scanner.CursorPosition(), 0u);
+    EXPECT_THAT(matched_fields, ::testing::Each(nullptr));
+  }
+}
+
 }  // namespace autofill

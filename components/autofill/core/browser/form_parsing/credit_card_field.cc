@@ -528,23 +528,18 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
 
   // First try to parse split month/year expiration fields by looking for a
   // pair of select fields that look like month/year.
-  size_t month_year_saved_cursor = scanner->SaveCursor();
-
-  if (LikelyCardMonthSelectField(scanner)) {
-    expiration_month_ = scanner->Cursor();
-    scanner->Advance();
-    if (LikelyCardYearSelectField(scanner, log_manager, page_language,
-                                  pattern_source)) {
-      expiration_year_ = scanner->Cursor();
-      scanner->Advance();
-      return true;
-    }
-    expiration_month_ = nullptr;
-    expiration_year_ = nullptr;
+  if (ParseInAnyOrder(
+          scanner, {{&expiration_month_,
+                     base::BindRepeating(&LikelyCardMonthSelectField, scanner)},
+                    {&expiration_year_,
+                     base::BindRepeating(&LikelyCardYearSelectField, scanner,
+                                         log_manager, page_language,
+                                         pattern_source)}})) {
+    return true;
   }
 
   // If that fails, do a general regex search.
-  scanner->RewindTo(month_year_saved_cursor);
+  size_t month_year_saved_cursor = scanner->SaveCursor();
   const auto kMatchCCType =
       kDefaultMatchParamsWith<MatchFieldType::kNumber,
                               MatchFieldType::kTelephone,

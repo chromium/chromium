@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
@@ -70,6 +72,13 @@ class FormField {
     return FormField::Match(field, pattern, match_type, logging);
   }
 
+  static bool ParseInAnyOrderForTesting(
+      AutofillScanner* scanner,
+      std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+          fields_and_parsers) {
+    return FormField::ParseInAnyOrder(scanner, fields_and_parsers);
+  }
+
   // Assign types to the fields for the testing purposes.
   void AddClassificationsForTesting(
       FieldCandidatesMap* field_candidates_for_testing) const {
@@ -117,6 +126,18 @@ class FormField {
   // Attempts to parse a field with an empty label.  Returns true
   // on success and fills |match| with a pointer to the field.
   static bool ParseEmptyLabel(AutofillScanner* scanner, AutofillField** match);
+
+  // Attempts to parse several fields using the specified parsing functions in
+  // arbitrary order. This is useful e.g. when parsing dates, where both dd/mm
+  // and mm/dd makes sense.
+  // Returns true if all fields were parsed successfully. In this case, the
+  // fields are assigned with the matching ones.
+  // If no order is matched every parser, false is returned, all fields are
+  // reset to nullptr and the scanner is rewound to it's original position.
+  static bool ParseInAnyOrder(
+      AutofillScanner* scanner,
+      std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+          fields_and_parsers);
 
   // Adds an association between a |field| and a |type| into |field_candidates|.
   // This association is weighted by |score|, the higher the stronger the

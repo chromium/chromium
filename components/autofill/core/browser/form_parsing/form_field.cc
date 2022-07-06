@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <iterator>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 
@@ -243,6 +244,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
   return false;
 }
 
+// static
 bool FormField::ParseFieldSpecifics(
     AutofillScanner* scanner,
     base::StringPiece16 pattern,
@@ -256,6 +258,42 @@ bool FormField::ParseFieldSpecifics(
                                                   logging, projection)
              : ParseFieldSpecificsWithLegacyPattern(scanner, pattern,
                                                     match_type, match, logging);
+}
+
+// static
+bool FormField::ParseInAnyOrder(
+    AutofillScanner* scanner,
+    std::vector<std::pair<AutofillField**, base::RepeatingCallback<bool()>>>
+        fields_and_parsers) {
+  if (scanner->IsEnd())
+    return fields_and_parsers.empty();
+  auto original_pos = scanner->SaveCursor();
+  // The implementation tries matching every permutation `p` of parsers with the
+  // scanners fields. While this has a terrible runtime for general n, the only
+  // planned use cases are dates (2 or 3 components).
+  // If necessary, bipartite matching could be used for general n.
+  DCHECK(fields_and_parsers.size() <= 3);
+  std::vector<int> p(fields_and_parsers.size());
+  std::iota(p.begin(), p.end(), 0);
+  do {
+    bool matches = true;
+    for (int i : p) {
+      const auto& [field, parser] = fields_and_parsers[i];
+      if (!scanner->IsEnd() && parser.Run()) {
+        *field = scanner->Cursor();
+        scanner->Advance();
+      } else {
+        matches = false;
+        break;
+      }
+    }
+    if (matches)
+      return true;
+    scanner->RewindTo(original_pos);
+  } while (std::next_permutation(p.begin(), p.end()));
+  for (const auto& [field, _] : fields_and_parsers)
+    *field = nullptr;
+  return false;
 }
 
 // static
