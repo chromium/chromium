@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data_transfer_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1157,6 +1158,41 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   // Closing the original |audio_data| should not affect |new_data|.
   audio_data->close();
   EXPECT_TRUE(new_data->data());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
+  V8TestingScope scope;
+
+  const unsigned kFrames = 500;
+  auto audio_buffer = media::AudioBuffer::CreateEmptyBuffer(
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+      /*channel_count=*/2,
+      /*sample_rate=*/8000, kFrames, base::Milliseconds(314));
+
+  auto* audio_data = MakeGarbageCollected<AudioData>(audio_buffer);
+
+  // Transfer the frame and make sure the size is the same.
+  Transferables transferables;
+  AudioDataTransferList* transfer_list =
+      transferables.GetOrCreateTransferList<AudioDataTransferList>();
+  transfer_list->audio_data_collection.push_back(audio_data);
+  v8::Local<v8::Value> wrapper = ToV8(audio_data, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
+
+  AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_data->numberOfFrames(), kFrames);
+
+  EXPECT_FALSE(audio_buffer->HasOneRef());
+
+  // The transfer should have closed the source data.
+  EXPECT_EQ(audio_data->format(), absl::nullopt);
+
+  // Closing |new_data| should remove all references to |audio_buffer|.
+  new_data->close();
+  EXPECT_TRUE(audio_buffer->HasOneRef());
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {

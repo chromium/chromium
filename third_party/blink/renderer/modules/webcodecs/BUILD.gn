@@ -15,6 +15,8 @@ blink_modules_sources("webcodecs") {
     "audio_data.h",
     "audio_data_attachment.cc",
     "audio_data_attachment.h",
+    "audio_data_transfer_list.cc",
+    "audio_data_transfer_list.h",
     "audio_decoder.cc",
     "audio_decoder.h",
     "audio_decoder_broker.cc",

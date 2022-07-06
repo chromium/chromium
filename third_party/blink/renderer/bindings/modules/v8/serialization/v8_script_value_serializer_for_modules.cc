@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data_transfer_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/decoder_buffer_attachment.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -85,6 +86,22 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
       return false;
     }
     transfer_list->video_frames.push_back(video_frame);
+    return true;
+  }
+
+  if (V8AudioData::HasInstance(object, isolate)) {
+    AudioData* audio_data =
+        V8AudioData::ToImpl(v8::Local<v8::Object>::Cast(object));
+    AudioDataTransferList* transfer_list =
+        transferables.GetOrCreateTransferList<AudioDataTransferList>();
+    if (transfer_list->audio_data_collection.Contains(audio_data)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "AudioData at index " + String::Number(object_index) +
+              " is a duplicate of an earlier AudioData.");
+      return false;
+    }
+    transfer_list->audio_data_collection.push_back(audio_data);
     return true;
   }
 
