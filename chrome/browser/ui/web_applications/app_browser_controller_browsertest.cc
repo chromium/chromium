@@ -93,11 +93,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
  public:
   AppBrowserControllerBrowserTest()
       : test_system_web_app_installation_(
-            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
+            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
   AppBrowserControllerBrowserTest(const AppBrowserControllerBrowserTest&) =
       delete;
   AppBrowserControllerBrowserTest& operator=(
@@ -361,11 +357,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
  public:
   AppBrowserControllerChromeUntrustedBrowserTest()
       : test_system_web_app_installation_(
-            ash::TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
+            ash::TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {}
 
  protected:
   Browser* InstallAndLaunchMockApp() {

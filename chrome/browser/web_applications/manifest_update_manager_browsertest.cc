@@ -1914,16 +1914,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerLaunchHandlerBrowserTest,
             (LaunchHandler{LaunchHandler::RouteTo::kExistingClientNavigate}));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class ManifestUpdateManagerSystemAppBrowserTest
     : public ManifestUpdateManagerBrowserTest {
  public:
   ManifestUpdateManagerSystemAppBrowserTest()
       : system_app_(ash::TestSystemWebAppInstallation::
-                        SetUpStandaloneSingleWindowApp()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
+                        SetUpStandaloneSingleWindowApp()) {}
 
   void SetUpOnMainThread() override { system_app_->WaitForAppInstall(); }
 
@@ -1941,6 +1938,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerSystemAppBrowserTest,
       kUpdateHistogramName, ManifestUpdateResult::kAppIsSystemWebApp, 1);
   EXPECT_EQ(GetProvider().registrar().GetAppThemeColor(app_id), SK_ColorGREEN);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ManifestUpdateManagerWebAppsBrowserTest =
     ManifestUpdateManagerBrowserTest;

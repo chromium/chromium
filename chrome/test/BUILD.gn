@@ -2039,7 +2039,6 @@ if (!is_android) {
       "../browser/sessions/session_restore_observer_browsertest.cc",
       "../browser/sessions/session_service_log_browsertest.cc",
       "../browser/sessions/tab_restore_browsertest.cc",
-      "../browser/sessions/tab_restore_service_browsertest.cc",
       "../browser/shared_highlighting/shared_highlighting_browsertest.cc",
       "../browser/signin/e2e_tests/live_sign_in_test.cc",
       "../browser/signin/e2e_tests/live_test.cc",
@@ -2367,6 +2366,10 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
+    }
+
+    if (is_chromeos_ash) {
+      sources += [ "../browser/sessions/tab_restore_service_browsertest.cc" ]
     }
 
     # https://crbug.com/1252812 The intent picker (launch icon) actions
@@ -3263,7 +3266,6 @@ if (!is_android) {
         "../browser/ui/views/frame/browser_non_client_frame_view_browsertest.cc",
         "../browser/ui/views/frame/browser_root_view_browsertest.cc",
         "../browser/ui/views/frame/browser_view_browsertest.cc",
-        "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
         "../browser/ui/views/hung_renderer_view_browsertest.cc",
         "../browser/ui/views/importer/import_lock_dialog_view_browsertest.cc",
         "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest.cc",
@@ -3365,6 +3367,7 @@ if (!is_android) {
       }
       if (is_chromeos_ash) {
         sources += [
+          "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
         deps += [ "//ash/services/multidevice_setup/public/cpp:prefs" ]
@@ -4487,7 +4490,6 @@ if (!is_android) {
         "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_browsertest.cc",
-        "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
         "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
         "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
         "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
@@ -9360,6 +9362,7 @@ if (!is_android) {
         ]
       }
       if (is_chromeos_ash) {
+        sources += [ "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc" ]
         deps += [
           "//ash:ash",
           "//chrome/browser/ash/crosapi:crosapi",
@@ -9375,9 +9378,6 @@ if (!is_android) {
           "../browser/ui/views:test_support",
           "//components/media_router/browser:test_support",
         ]
-      }
-      if (!is_android) {
-        sources += [ "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc" ]
       }
       if (use_aura) {
         sources += [ "../browser/ui/views/tooltip/tooltip_browsertest.cc" ]

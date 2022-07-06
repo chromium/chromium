@@ -1625,7 +1625,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerBackgroundTaskTest
     : public SystemWebAppManagerBrowserTest {
@@ -1684,6 +1683,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
             tasks[0]->get_state_for_testing());
   EXPECT_EQ(base::Days(1), timer->GetCurrentDelay());
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerContextMenuBrowserTest
     : public SystemWebAppManagerBrowserTest {
@@ -1945,10 +1946,10 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerShortcutTest);
-#endif
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBackgroundTaskTest);
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

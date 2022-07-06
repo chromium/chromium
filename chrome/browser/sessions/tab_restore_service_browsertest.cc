@@ -2,13 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jamescook): Why does this test run on all Aura platforms, instead of
-// only Chrome OS or Ash?
-#if defined(USE_AURA)
-
 #include "components/sessions/core/tab_restore_service.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -26,11 +21,7 @@ class TabRestoreServiceImplBrowserTest : public InProcessBrowserTest {
  public:
   TabRestoreServiceImplBrowserTest()
       : test_system_web_app_installation_(
-            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    web_app::EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
+            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
 
  protected:
   std::unique_ptr<ash::TestSystemWebAppInstallation>
@@ -90,5 +81,3 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
   EXPECT_EQ(app_browser->app_name(), restored_window->app_name);
   EXPECT_EQ(1U, restored_window->tabs.size());
 }
-
-#endif  // defined(USE_AURA)

@@ -33,7 +33,6 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [
-    "app_browser_controller_browsertest.cc",
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
     "sub_apps_service_impl_browsertest.cc",
@@ -62,7 +61,10 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos_ash) {
-    sources += [ "web_app_guest_session_browsertest_chromeos.cc" ]
+    sources += [
+      "app_browser_controller_browsertest.cc",
+      "web_app_guest_session_browsertest_chromeos.cc",
+    ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

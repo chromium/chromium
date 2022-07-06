@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -65,7 +66,12 @@ bool SystemWebAppManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+  // System Web Apps are only available in Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return web_app::GetBrowserContextForWebApps(context);
+#else
+  return nullptr;
+#endif
 }
 
 void SystemWebAppManagerFactory::RegisterProfilePrefs(

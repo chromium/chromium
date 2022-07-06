@@ -73,8 +73,8 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
-  DCHECK(system_web_apps_delegate_map_);
-  if (IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, *app_id)) {
+  if (system_web_apps_delegate_map_ &&
+      IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, *app_id)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
   }
