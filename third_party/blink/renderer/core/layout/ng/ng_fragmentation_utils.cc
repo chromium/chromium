@@ -317,28 +317,36 @@ void SetupFragmentBuilderForFragmentation(
       !space.IsInitialColumnBalancingPass()) {
     bool requires_content_before_breaking =
         space.RequiresContentBeforeBreaking();
-    // Pass an "infinite" intrinsic size to see how the block-size is
-    // constrained. If it doesn't affect the block size, it means that we can
-    // tell before layout how much more space this node needs.
-    LayoutUnit max_block_size = ComputeBlockSizeForFragment(
-        space, node.Style(), builder->BorderPadding(), LayoutUnit::Max(),
-        builder->InitialBorderBoxSize().inline_size);
-    DCHECK(space.HasKnownFragmentainerBlockSize());
+    // We're now going to figure out if the (remainder of the) node is
+    // guaranteed to fit in the fragmentainer, and make some decisions based on
+    // that. We'll skip this for tables, because table sizing is complicated,
+    // since captions are not part of the "table box", and any specified
+    // block-size pertains to the table box, while the captions are on the
+    // outside of the "table box", but still part of the fragment.
+    if (!node.IsTable()) {
+      // Pass an "infinite" intrinsic size to see how the block-size is
+      // constrained. If it doesn't affect the block size, it means that we can
+      // tell before layout how much more space this node needs.
+      LayoutUnit max_block_size = ComputeBlockSizeForFragment(
+          space, node.Style(), builder->BorderPadding(), LayoutUnit::Max(),
+          builder->InitialBorderBoxSize().inline_size);
+      DCHECK(space.HasKnownFragmentainerBlockSize());
 
-    DCHECK(!builder->BfcBlockOffset());
-    LayoutUnit space_left =
-        FragmentainerSpaceAtBfcStart(space) - space.ExpectedBfcBlockOffset();
+      DCHECK(!builder->BfcBlockOffset());
+      LayoutUnit space_left =
+          FragmentainerSpaceAtBfcStart(space) - space.ExpectedBfcBlockOffset();
 
-    LayoutUnit previously_consumed_block_size;
-    if (previous_break_token) {
-      previously_consumed_block_size =
-          previous_break_token->ConsumedBlockSize();
-    }
+      LayoutUnit previously_consumed_block_size;
+      if (previous_break_token) {
+        previously_consumed_block_size =
+            previous_break_token->ConsumedBlockSize();
+      }
 
-    if (max_block_size - previously_consumed_block_size <= space_left) {
-      builder->SetIsKnownToFitInFragmentainer(true);
-      if (builder->MustStayInCurrentFragmentainer())
-        requires_content_before_breaking = true;
+      if (max_block_size - previously_consumed_block_size <= space_left) {
+        builder->SetIsKnownToFitInFragmentainer(true);
+        if (builder->MustStayInCurrentFragmentainer())
+          requires_content_before_breaking = true;
+      }
     }
     builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
   }
