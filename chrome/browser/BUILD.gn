@@ -8133,6 +8133,7 @@ static_library("test_support") {
       "//chrome/browser/ash",
       "//chrome/test:test_support_ui",
       "//chromeos:test_support",
+      "//chromeos/ash/components/oobe_quick_start:oobe_quick_start",
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
       "//components/login",

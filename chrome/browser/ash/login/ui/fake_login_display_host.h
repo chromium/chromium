@@ -85,6 +85,8 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   bool IsWizardControllerCreated() const final;
   WizardContext* GetWizardContextForTesting() final;
   bool IsWebUIStarted() const final;
+  base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+  GetQuickStartBootstrapController() final;
 
  private:
   class FakeBaseScreen;

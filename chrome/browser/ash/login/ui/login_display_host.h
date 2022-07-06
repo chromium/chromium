@@ -12,8 +12,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+#include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -262,6 +263,9 @@ class LoginDisplayHost {
   // Returns true if WebUI was created, which allows observers to wait for
   // Browser initialization finish.
   virtual bool IsWebUIStarted() const = 0;
+
+  virtual base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+  GetQuickStartBootstrapController() = 0;
 
  protected:
   LoginDisplayHost();

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_observer.h"
@@ -69,6 +70,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   bool HandleAccelerator(LoginAcceleratorAction action) final;
   void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) final;
+  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
+  GetQuickStartBootstrapController() final;
 
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;
@@ -161,6 +164,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // Callback to be executed when WebUI is started.
   base::RepeatingClosure on_wizard_controller_created_for_tests_;
+
+  std::unique_ptr<ash::quick_start::TargetDeviceBootstrapController>
+      bootstrap_controller_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

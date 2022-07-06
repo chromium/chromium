@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/language_preferences.h"
@@ -37,11 +36,8 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -53,11 +49,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/common/features/feature_session_type.h"
-#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ash {
 namespace {
@@ -666,6 +660,11 @@ void LoginDisplayHostCommon::AddWizardCreatedObserverForTests(
     base::RepeatingClosure on_created) {
   DCHECK(!on_wizard_controller_created_for_tests_);
   on_wizard_controller_created_for_tests_ = std::move(on_created);
+}
+
+base::WeakPtr<quick_start::TargetDeviceBootstrapController>
+LoginDisplayHostCommon::GetQuickStartBootstrapController() {
+  return bootstrap_controller_->GetAsWeakPtrForClient();
 }
 
 void LoginDisplayHostCommon::NotifyWizardCreated() {

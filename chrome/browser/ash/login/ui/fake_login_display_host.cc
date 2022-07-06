@@ -191,6 +191,11 @@ bool FakeLoginDisplayHost::IsWebUIStarted() const {
   return wizard_controller_.get();
 }
 
+base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+FakeLoginDisplayHost::GetQuickStartBootstrapController() {
+  return nullptr;
+}
+
 bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {

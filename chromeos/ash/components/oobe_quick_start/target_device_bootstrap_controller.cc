@@ -15,6 +15,21 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController() {
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
 
+void TargetDeviceBootstrapController::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void TargetDeviceBootstrapController::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
+base::WeakPtr<TargetDeviceBootstrapController>
+TargetDeviceBootstrapController::GetAsWeakPtrForClient() {
+  // Only one client at a time should have a pointer.
+  DCHECK(!weak_ptr_factory_for_clients_.HasWeakPtrs());
+  return weak_ptr_factory_for_clients_.GetWeakPtr();
+}
+
 void TargetDeviceBootstrapController::StartAdvertising() {
   DCHECK(connection_broker_->GetFeatureSupportStatus() ==
          TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);

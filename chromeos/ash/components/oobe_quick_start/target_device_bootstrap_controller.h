@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
 namespace ash::quick_start {
@@ -23,6 +25,24 @@ class TargetDeviceBootstrapController
       delete;
   ~TargetDeviceBootstrapController();
 
+  struct Status {
+    // TBD.
+  };
+
+  class Observer : public base::CheckedObserver {
+    virtual void OnStatusChanged(const Status& status) = 0;
+
+   protected:
+    ~Observer() override = default;
+  };
+
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
+
+  // This function would crash (if DCHECKs are on) in case there are existing
+  // valid weakptrs.
+  base::WeakPtr<TargetDeviceBootstrapController> GetAsWeakPtrForClient();
+
   // TODO: Finalize api for frontend.
   void StartAdvertising();
   void StopAdvertising();
@@ -30,7 +50,11 @@ class TargetDeviceBootstrapController
  private:
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
-  base::WeakPtrFactory<TargetDeviceBootstrapController> weak_ptr_factory_{this};
+  // TODO: Should we enforce one observer at a time here too?
+  base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<TargetDeviceBootstrapController>
+      weak_ptr_factory_for_clients_{this};
 };
 
 }  // namespace ash::quick_start
