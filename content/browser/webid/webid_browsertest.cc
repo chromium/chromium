@@ -182,7 +182,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
   std::string BaseIdpUrl() {
     return std::string(kIdpOrigin) + ":" +
-           base::NumberToString(https_server().port());
+           base::NumberToString(https_server().port()) + "/fedcm.json";
   }
 
   std::string GetBasicRequestString() {
@@ -191,7 +191,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
           var x = (await navigator.credentials.get({
             federated: {
               providers: [{
-                url: ')" +
+                configURL: ')" +
            BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
                 nonce: '12345',
@@ -260,8 +260,9 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
           var x = (await navigator.credentials.get({
             federated: {
               providers: [{
-                url: 'http://idp.example)" +
-                       base::NumberToString(https_server().port()) + R"(',
+                configURL: 'http://idp.example:)" +
+                       base::NumberToString(https_server().port()) +
+                       R"(/fedcm.json',
                 clientId: 'client_id_1',
                 nonce: '12345',
               }]

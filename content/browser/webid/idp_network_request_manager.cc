@@ -389,22 +389,6 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
-GURL IdpNetworkRequestManager::FixupProviderUrl(const GURL& url) {
-  // We accept both "https://idp.example/foo/" and "https://idp.example/foo" as
-  // valid provider url to locate the manifest. Historically, URLs with a
-  // trailing slash indicate a directory while those without a trailing slash
-  // denote a file. However, to give developers more flexibility, we append a
-  // trailing slash if one is not present.
-  GURL target_url = url;
-  if (target_url.path().empty() || target_url.path().back() != '/') {
-    std::string new_path = target_url.path() + '/';
-    GURL::Replacements replacements;
-    replacements.SetPathStr(new_path);
-    target_url = target_url.ReplaceComponents(replacements);
-  }
-  return target_url;
-}
-
 // static
 absl::optional<GURL> IdpNetworkRequestManager::ComputeManifestListUrl(
     const GURL& provider) {
@@ -459,9 +443,8 @@ void IdpNetworkRequestManager::FetchManifest(
 
   idp_manifest_callback_ = std::move(callback);
 
-  GURL target_url = FixupProviderUrl(provider_);
-
-  target_url = target_url.Resolve(IdpNetworkRequestManager::kManifestFilePath);
+  GURL target_url =
+      provider_.Resolve(IdpNetworkRequestManager::kManifestFilePath);
 
   url_loader_ =
       CreateUncredentialedUrlLoader(target_url, /* send_referrer= */ false);
@@ -689,7 +672,7 @@ void IdpNetworkRequestManager::OnManifestListParsed(
           .Run(FetchStatus::kInvalidResponseError, std::set<GURL>());
       return;
     }
-    urls.insert(FixupProviderUrl(GURL(*url)));
+    urls.insert(GURL(*url));
   }
 
   std::move(manifest_list_callback_).Run(FetchStatus::kSuccess, urls);

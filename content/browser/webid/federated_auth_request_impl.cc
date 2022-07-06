@@ -525,7 +525,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
   // navigator.credentials.get({
   //   federated: {
   //     providers: [{
-  //       url: "https://foo.idp.example",
+  //       configURL: "https://foo.idp.example/fedcm.json",
   //       clientId: "1234"
   //     }],
   //   }
@@ -533,17 +533,15 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
   // must match the one in the manifest list:
   // {
   //   "provider_urls": [
-  //     "https://foo.idp.example"
+  //     "https://foo.idp.example/fedcm.json"
   //   ]
   // }
-  // However, it's possible for developers to append a trailing slash in one of
-  // them but not in the other one especially when there's path involved.
-  // Besides, for GURL without path, |provider_.spec()| will append a trailing
-  // slash automatically. Therefore we relax the requirement by allowing
-  // mismatch on trailing slash.
-  GURL provider_url = IdpNetworkRequestManager::FixupProviderUrl(provider_);
-  DCHECK_EQ(provider_url.path().back(), '/');
 
+  // Temporarily resolve provider_ with respect to the current directory to
+  // allow both filepaths and filenames as the provider_url since the manifest
+  // list is still specifying directories, not filenames. To be removed when
+  // crrev.com/c/3730747 lands.
+  GURL provider_url = provider_.Resolve(".");
   bool provider_url_is_valid = (urls.count(provider_url) != 0);
 
   if (!provider_url_is_valid) {
@@ -551,8 +549,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
                              render_frame_host_->GetPageUkmSourceId(),
                              provider_);
     CompleteRequest(FederatedAuthRequestResult::kErrorManifestNotInManifestList,
-                    "",
-                    /*should_call_callback=*/false);
+                    "", /*should_call_callback=*/false);
     return;
   }
 

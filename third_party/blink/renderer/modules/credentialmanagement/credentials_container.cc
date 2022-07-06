@@ -1217,7 +1217,7 @@ ScriptPromise CredentialsContainer::get(
         // Some of this has not been spec'd yet.
         FederatedIdentityProvider* federated_identity_provider =
             provider->GetAsFederatedIdentityProvider();
-        KURL provider_url(federated_identity_provider->url());
+        KURL provider_url(federated_identity_provider->configURL());
         String client_id = federated_identity_provider->clientId();
         String nonce = federated_identity_provider->getNonceOr("");
 

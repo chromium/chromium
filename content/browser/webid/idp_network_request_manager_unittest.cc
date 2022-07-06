@@ -474,7 +474,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
   EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/")}, urls);
 
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
-  "provider_urls": ["https://idp.test/path"]
+  "provider_urls": ["https://idp.test/path/"]
   })");
   EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
   EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/path/")}, urls);
