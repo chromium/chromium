@@ -21,7 +21,6 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"

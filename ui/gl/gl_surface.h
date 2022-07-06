@@ -26,7 +26,6 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gpu_preference.h"
@@ -36,6 +35,7 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ColorSpace;
+struct OverlayPlaneData;
 class GpuFence;
 class VSyncProvider;
 }  // namespace gfx
@@ -48,6 +48,7 @@ struct DCRendererLayerParams;
 namespace gl {
 
 class GLContext;
+class GLImage;
 class EGLTimestampClient;
 
 // Encapsulates a surface that can be rendered to with GL, hiding platform

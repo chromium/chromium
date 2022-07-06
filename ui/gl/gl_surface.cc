@@ -16,7 +16,6 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gl_switches.h"

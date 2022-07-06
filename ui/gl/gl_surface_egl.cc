@@ -27,7 +27,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display_egl_util.h"
 #include "ui/gl/gl_display_manager.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_utils.h"
