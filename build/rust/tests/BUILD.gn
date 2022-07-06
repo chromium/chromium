@@ -57,6 +57,12 @@ group("deps") {
         "test_rust_static_library_non_standard_arrangement:foo_tests",
         "test_rust_unittests",
         "test_variable_static_library:test_variable_static_library_rs_unittests",
+
+        # TODO(https://crbug.com/1329611): Enable the additional target below
+        # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
+        # meantime see the instructions in
+        # `//build/rust/run_rs_bindings_from_cc.py`.
+        #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
 
       # TODO(crbug.com/1297592): The bot isolate does not end up including any
@@ -79,6 +85,12 @@ group("deps") {
         "test_rust_multiple_dep_versions_exe",
         "test_simple_rust_exe",
         "//third_party/rust/bindgen/v0_59:bindgen",
+
+        # TODO(https://crbug.com/1329611): Enable the additional target below
+        # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
+        # meantime see the instructions in
+        # `//build/rust/run_rs_bindings_from_cc.py`.
+        #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
       ]
     }
   }
