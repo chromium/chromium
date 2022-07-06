@@ -24,7 +24,8 @@ public class PriceTrackingFeatures {
     @VisibleForTesting
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
             "allow_disable_price_annotations";
-    private static final String PRICE_DROP_IPH_ENABLED_PARAM = "enable_price_drop_iph";
+    @VisibleForTesting
+    public static final String PRICE_DROP_IPH_ENABLED_PARAM = "enable_price_drop_iph";
     private static final String PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM =
             "price_annotations_enabled_metrics_window_duration_ms";
 
