@@ -8415,15 +8415,6 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
         }
       }
     }
-
-    // Check for inert
-    if (options->checkInert()) {
-      if (HTMLElement* ancestor_element = DynamicTo<HTMLElement>(&ancestor)) {
-        if (ancestor_element->IsInertRoot()) {
-          return false;
-        }
-      }
-    }
   }
 
   return true;

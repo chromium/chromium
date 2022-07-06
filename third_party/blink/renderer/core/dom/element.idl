@@ -26,7 +26,6 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
 // https://drafts.csswg.org/cssom-view/#dictdef-checkvisibilityoptions
 dictionary CheckVisibilityOptions {
-  boolean checkInert = false;
   boolean checkOpacity = false;
   boolean checkVisibilityCSS = false;
 };
