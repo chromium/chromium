@@ -1685,8 +1685,6 @@ TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
 }
 
-// This class is used to test PSM for initial enrollment test cases only.
-// Therefore, the PsmState param has to be kEnabled.
 class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
  protected:
   // Indicates the state of the PSM protocol.
@@ -1999,6 +1997,62 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndDeviceDisabled) {
   VerifyServerBackedState("example.com", kDeviceStateModeDisabled,
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
+
+class PsmHelperInitialEnrollmentInternalErrorTest
+    : public PsmHelperInitialEnrollmentTest,
+      public testing::WithParamInterface<PsmResult> {
+ protected:
+  void SetUp() override {
+    ASSERT_NE(GetPsmInternalErrorResult(), PsmResult::kSuccessfulDetermination);
+    ASSERT_NE(GetPsmInternalErrorResult(), PsmResult::kConnectionError);
+    ASSERT_NE(GetPsmInternalErrorResult(), PsmResult::kServerError);
+
+    PsmHelperInitialEnrollmentTest::SetUp();
+  }
+
+  PsmResult GetPsmInternalErrorResult() const { return GetParam(); }
+};
+
+TEST_P(PsmHelperInitialEnrollmentInternalErrorTest, PsmFails) {
+  // This test verifies that after PSM client fails with an internal error, the
+  // client reports `AUTO_ENROLLMENT_STATE_NO_ENROLLMENT` and retry does not
+  // change the decision.
+
+  PsmWillReplyWith(GetPsmInternalErrorResult());
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  const StateDiscoveryResult kExpectedStateResult =
+      StateDiscoveryResult::kFailure;
+  const PsmExecutionResult kExpectedPsmExecutionResult =
+      em::DeviceRegisterRequest::PSM_RESULT_ERROR;
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+
+  // Verify that PSM cached membership result hasn't changed.
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PsmForInitialEnrollmentInternalError,
+    PsmHelperInitialEnrollmentInternalErrorTest,
+    testing::ValuesIn({PsmResult::kCreateRlweClientLibraryError,
+                       PsmResult::kCreateOprfRequestLibraryError,
+                       PsmResult::kCreateQueryRequestLibraryError,
+                       PsmResult::kProcessingQueryResponseLibraryError,
+                       PsmResult::kEmptyOprfResponseError,
+                       PsmResult::kEmptyQueryResponseError,
+                       PsmResult::kTimeout}));
 
 }  // namespace
 }  // namespace policy
