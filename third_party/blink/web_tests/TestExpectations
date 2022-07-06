@@ -2345,11 +2345,6 @@ crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-
 crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-token-redemption-default-permissions-policy.tentative.https.sub.html [ Failure ]
 crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-token-redemption-supported-by-permissions-policy.tentative.html [ Failure ]
 
-# crbug.com/1095379: These three time out 100% of the time across all platforms:
-crbug.com/919789 images/image-click-scale-restore-zoomed-image.html [ Timeout ]
-crbug.com/919789 images/image-zoom-to-25.html [ Timeout ]
-crbug.com/919789 images/image-zoom-to-500.html [ Timeout ]
-
 # Sheriff 2020-02-06
 # Flaking on Linux Leak
 crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass Skip Timeout ]
