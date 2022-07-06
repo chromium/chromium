@@ -369,9 +369,12 @@ void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
   // `output` can be null in unit tests where it doesn't wait for output events.
   if (!output)
     return;
-  zaura_toplevel_set_window_bounds(aura_toplevel_.get(), bounds.x(), bounds.y(),
-                                   bounds.width(), bounds.height(),
-                                   output->get_output());
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_WINDOW_BOUNDS_SINCE_VERSION) {
+    zaura_toplevel_set_window_bounds(aura_toplevel_.get(), bounds.x(),
+                                     bounds.y(), bounds.width(),
+                                     bounds.height(), output->get_output());
+  }
 }
 
 void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
