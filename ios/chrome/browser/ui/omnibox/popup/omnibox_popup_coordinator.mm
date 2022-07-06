@@ -124,10 +124,21 @@
             ? PopupUIVariationOne
             : PopupUIVariationTwo;
 
+    std::string pasteButtonVariationName =
+        base::GetFieldTrialParamValueByFeature(
+            kOmniboxPasteButton, kOmniboxPasteButtonParameterName);
+
+    PopupPasteButtonVariation popupPasteButtonVariation =
+        (pasteButtonVariationName ==
+         kOmniboxPasteButtonParameterBlueFullCapsule)
+            ? PopupPasteButtonVariationIconText
+            : PopupPasteButtonVariationIcon;
+
     self.popupViewController = [OmniboxPopupViewProvider
         makeViewControllerWithModel:self.model
                     uiConfiguration:self.uiConfiguration
                    popupUIVariation:popupUIVariation
+          popupPasteButtonVariation:popupPasteButtonVariation
                 popupShouldSelfSize:popupShouldSelfSize
             appearanceContainerType:[OmniboxPopupContainerView class]];
     [self.browser->GetCommandDispatcher()

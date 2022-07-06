@@ -40,6 +40,7 @@ struct PopupMatchRowView: View {
   }
 
   @Environment(\.popupUIVariation) var uiVariation: PopupUIVariation
+  @Environment(\.popupPasteButtonVariation) var pasteButtonVariation: PopupPasteButtonVariation
   @Environment(\.horizontalSizeClass) var sizeClass
 
   let match: PopupMatch
@@ -215,7 +216,7 @@ struct PopupMatchRowView: View {
           // Clipboard matches are never appendable or tab matches.
           #if __IPHONE_16_0
             if #available(iOS 16.0, *) {
-              PasteButton(
+              let pasteButton: PasteButton = PasteButton(
                 // The clipboard suggestion row is only going to appear for these
                 // types of clipboard content.
                 supportedContentTypes: [.text, .image, .url],
@@ -228,8 +229,16 @@ struct PopupMatchRowView: View {
                   }
                 }
               )
-              .buttonBorderShape(.capsule)
-              .labelStyle(.iconOnly)
+              switch pasteButtonVariation {
+              case .icon:
+                pasteButton
+                  .labelStyle(.iconOnly)
+                  .buttonBorderShape(.capsule)
+              case .iconText:
+                pasteButton
+                  .labelStyle(.titleAndIcon)
+                  .buttonBorderShape(.capsule)
+              }
             }
           #endif  // __IPHONE_16_0
         }

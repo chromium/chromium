@@ -23,15 +23,17 @@ import UIKit
   /// - Returns: The hosting controller which embeds the popup view.
   public static func makeViewController(
     withModel model: PopupModel, uiConfiguration: PopupUIConfiguration,
-    popupUIVariation: PopupUIVariation, popupShouldSelfSize: Bool,
-    appearanceContainerType: UIAppearanceContainer.Type?
+    popupUIVariation: PopupUIVariation, popupPasteButtonVariation: PopupPasteButtonVariation,
+    popupShouldSelfSize: Bool, appearanceContainerType: UIAppearanceContainer.Type?
   )
     -> UIViewController & ContentProviding
   {
     let rootView = PopupView(
       model: model, uiConfiguration: uiConfiguration, shouldSelfSize: popupShouldSelfSize,
       appearanceContainerType: appearanceContainerType
-    ).environment(\.popupUIVariation, popupUIVariation)
+    )
+    .environment(\.popupUIVariation, popupUIVariation)
+    .environment(\.popupPasteButtonVariation, popupPasteButtonVariation)
     return OmniboxPopupHostingController(
       rootView: rootView, model: model, uiConfiguration: uiConfiguration)
   }
