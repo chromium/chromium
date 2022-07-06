@@ -59924,6 +59924,7 @@ from previous Chrome versions.
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
   <int value="989062160" label="ModuleScriptsImportMetaUrl:enabled"/>
+  <int value="989740984" label="BorealisStorageBallooning:enabled"/>
   <int value="990380525"
       label="AutofillRationalizeStreetAddressAndAddressLine:enabled"/>
   <int value="991462028"
@@ -60213,6 +60214,7 @@ from previous Chrome versions.
   <int value="1168226627" label="OmniboxMaxZeroSuggestMatches:enabled"/>
   <int value="1169418814" label="ManualFallbacksFilling:enabled"/>
   <int value="1170030686" label="BookmarkBottomSheet:enabled"/>
+  <int value="1172226600" label="BorealisStorageBallooning:disabled"/>
   <int value="1173244409" label="AutofillUseMobileLabelDisambiguation:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
   <int value="1176183341" label="SearchHistoryLink:enabled"/>

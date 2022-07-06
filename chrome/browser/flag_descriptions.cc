@@ -603,6 +603,11 @@ const char kBorealisPermittedDescription[] =
     "other reasons, including: administrator settings, device hardware "
     "capabilities, or other security measures.";
 
+const char kBorealisStorageBallooningName[] = "Borealis Storage Ballooning";
+const char kBorealisStorageBallooningDescription[] =
+    "Enables storage balloning for Borealis. This takes precedence over the "
+    "other Borealis Disk management flag.";
+
 const char kBypassAppBannerEngagementChecksName[] =
     "Bypass user engagement checks";
 const char kBypassAppBannerEngagementChecksDescription[] =

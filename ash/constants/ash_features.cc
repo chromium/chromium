@@ -259,6 +259,11 @@ const base::Feature kBorealisForceBetaClient{"BorealisForceBetaClient",
 const base::Feature kBorealisLinuxMode{"BorealisLinuxMode",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable storage ballooning for Borealis. This takes precedence over
+// kBorealisDiskManagement.
+const base::Feature kBorealisStorageBallooning{
+    "BorealisStorageBallooning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable TermsOfServiceURL policy for managed users.
 // https://crbug.com/1221342
 const base::Feature kManagedTermsOfService{"ManagedTermsOfService",

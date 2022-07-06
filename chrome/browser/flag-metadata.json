@@ -688,6 +688,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "borealis-storage-ballooning",
+    "owners": [ "danielng" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "broker-file-operations-on-disk-cache-in-network-service",
     "owners": [ "yhirano", "network-service-dev" ],
     "expiry_milestone": 120

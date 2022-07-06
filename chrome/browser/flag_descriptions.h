@@ -324,6 +324,9 @@ extern const char kBorealisLinuxModeDescription[];
 extern const char kBorealisPermittedName[];
 extern const char kBorealisPermittedDescription[];
 
+extern const char kBorealisStorageBallooningName[];
+extern const char kBorealisStorageBallooningDescription[];
+
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
