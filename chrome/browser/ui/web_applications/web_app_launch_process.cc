@@ -147,12 +147,12 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
       params_.intent &&
       params_.intent->action == apps_util::kIntentActionCreateNote;
 
-  if (!params_.override_url.is_empty()) {
-    launch_url = params_.override_url;
-    is_file_handling = !params_.launch_files.empty();
-  } else if (share_target) {
+  if (share_target) {
     // Handle share_target launch.
     launch_url = share_target->action;
+  } else if (!params_.override_url.is_empty()) {
+    launch_url = params_.override_url;
+    is_file_handling = !params_.launch_files.empty();
   } else if (params_.url_handler_launch_url.has_value() &&
              params_.url_handler_launch_url->is_valid()) {
     // Handle url_handlers launch.
