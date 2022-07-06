@@ -131,7 +131,7 @@ HEADER = headers.header(
                 headers.link(
                     text = "coverage",
                     branch_selector = branches.ALL_BRANCHES,
-                    url = "https://analysis.chromium.org/p/chromium/coverage",
+                    url = "https://analysis.chromium.org/coverage/p/chromium",
                     alt = "Chromium code coverage dashboard",
                 ),
                 headers.link(
