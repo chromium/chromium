@@ -4730,6 +4730,8 @@ static_library("browser") {
       "component_updater/smart_dim_component_installer.h",
       "device_identity/chromeos/device_oauth2_token_store_chromeos.cc",
       "device_identity/chromeos/device_oauth2_token_store_chromeos.h",
+      "enterprise/connectors/analysis/file_transfer_analysis_delegate.cc",
+      "enterprise/connectors/analysis/file_transfer_analysis_delegate.h",
       "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.cc",
       "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
       "enterprise/reporting/android_app_info_generator.cc",

@@ -133,7 +133,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   // threads. Always nullptr for non-file content scanning.
   std::unique_ptr<safe_browsing::FileOpeningJob> file_opening_job_;
 
-  const std::vector<base::FilePath>& paths_;
+  std::vector<base::FilePath> paths_;
   std::vector<FileInfo> file_info_;
 
   // The number of file scans that have completed. If more than one file is
