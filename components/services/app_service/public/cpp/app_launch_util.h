@@ -9,6 +9,53 @@
 
 namespace apps {
 
+// Enumeration of possible app launch sources.
+// This should be kept in sync with metadata/apps/histograms.xml, and
+// LaunchSource in enums.xml.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
+enum class LaunchSource {
+  kUnknown = 0,
+  kFromAppListGrid = 1,              // Grid of apps, not the search box.
+  kFromAppListGridContextMenu = 2,   // Grid of apps; context menu.
+  kFromAppListQuery = 3,             // Query-dependent results (larger icons).
+  kFromAppListQueryContextMenu = 4,  // Query-dependent results; context menu.
+  kFromAppListRecommendation = 5,    // Query-less recommendations (smaller
+                                     // icons).
+  kFromParentalControls = 6,         // Parental Controls Settings Section and
+                                     // Per App time notification.
+  kFromShelf = 7,                    // Shelf.
+  kFromFileManager = 8,              // FileManager.
+  kFromLink = 9,                     // Left-clicking on links in the browser.
+  kFromOmnibox = 10,                 // Enter URL in the Omnibox in the
+                                     // browser.
+  kFromChromeInternal = 11,          // Chrome internal call.
+  kFromKeyboard = 12,                // Keyboard shortcut for opening app.
+  kFromOtherApp = 13,                // Clicking link in another app or webui.
+  kFromMenu = 14,                    // Menu.
+  kFromInstalledNotification = 15,   // Installed notification
+  kFromTest = 16,                    // Test
+  kFromArc = 17,                     // Arc.
+  kFromSharesheet = 18,              // Sharesheet.
+  kFromReleaseNotesNotification = 19,  // Release Notes Notification.
+  kFromFullRestore = 20,               // Full restore.
+  kFromSmartTextContextMenu = 21,      // Smart text selection context menu.
+  kFromDiscoverTabNotification = 22,   // Discover Tab Notification.
+  kFromManagementApi = 23,             // Management API.
+  kFromKiosk = 24,                     // Kiosk.
+  kFromCommandLine = 25,               // Command line.
+  kFromBackgroundMode = 26,            // Background mode.
+  kFromNewTabPage = 27,                // New tab page.
+  kFromIntentUrl = 28,                 // Intent URL.
+  kFromOsLogin = 29,                   // Run on OS login.
+  kFromProtocolHandler = 30,           // Protocol handler.
+  kFromUrlHandler = 31,                // Url handler.
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kFromUrlHandler,
+};
+
 // Don't remove items or change the order of this enum.  It's used in
 // histograms and preferences.
 enum class LaunchContainer {
@@ -23,6 +70,12 @@ enum class LaunchContainer {
   // enumerator value.
   kMaxValue = kLaunchContainerNone,
 };
+
+// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
+// AppService.
+COMPONENT_EXPORT(APP_TYPES)
+LaunchSource ConvertMojomLaunchSourceToLaunchSource(
+    apps::mojom::LaunchSource mojom_launch_source);
 
 }  // namespace apps
 

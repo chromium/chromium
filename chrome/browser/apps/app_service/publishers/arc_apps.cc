@@ -49,6 +49,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -773,7 +774,8 @@ void ArcApps::Launch(const std::string& app_id,
   }
 
   if (app_id == arc::kPlayStoreAppId &&
-      apps_util::IsHumanLaunch(launch_source)) {
+      apps_util::IsHumanLaunch(
+          ConvertMojomLaunchSourceToLaunchSource(launch_source))) {
     arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
                                           /*launched=*/true);
   }
@@ -803,7 +805,8 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
   }
 
   if (app_id == arc::kPlayStoreAppId &&
-      apps_util::IsHumanLaunch(launch_source)) {
+      apps_util::IsHumanLaunch(
+          ConvertMojomLaunchSourceToLaunchSource(launch_source))) {
     arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
                                           /*launched=*/true);
   }

@@ -38,41 +38,41 @@ bool IsInstalled(apps::Readiness readiness) {
   }
 }
 
-bool IsHumanLaunch(apps::mojom::LaunchSource launch_source) {
+bool IsHumanLaunch(apps::LaunchSource launch_source) {
   switch (launch_source) {
-    case apps::mojom::LaunchSource::kFromAppListGrid:
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListQuery:
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
-    case apps::mojom::LaunchSource::kFromParentalControls:
-    case apps::mojom::LaunchSource::kFromShelf:
-    case apps::mojom::LaunchSource::kFromFileManager:
-    case apps::mojom::LaunchSource::kFromLink:
-    case apps::mojom::LaunchSource::kFromOmnibox:
-    case apps::mojom::LaunchSource::kFromKeyboard:
-    case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromMenu:
-    case apps::mojom::LaunchSource::kFromInstalledNotification:
-    case apps::mojom::LaunchSource::kFromSharesheet:
-    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
-    case apps::mojom::LaunchSource::kFromFullRestore:
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
-    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
-    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
+    case apps::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromParentalControls:
+    case apps::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromCommandLine:
       return true;
-    case apps::mojom::LaunchSource::kUnknown:
-    case apps::mojom::LaunchSource::kFromChromeInternal:
-    case apps::mojom::LaunchSource::kFromTest:
-    case apps::mojom::LaunchSource::kFromArc:
-    case apps::mojom::LaunchSource::kFromManagementApi:
-    case apps::mojom::LaunchSource::kFromKiosk:
-    case apps::mojom::LaunchSource::kFromBackgroundMode:
-    case apps::mojom::LaunchSource::kFromNewTabPage:
-    case apps::mojom::LaunchSource::kFromIntentUrl:
-    case apps::mojom::LaunchSource::kFromOsLogin:
-    case apps::mojom::LaunchSource::kFromProtocolHandler:
-    case apps::mojom::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kUnknown:
+    case apps::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromUrlHandler:
       return false;
   }
   NOTREACHED();

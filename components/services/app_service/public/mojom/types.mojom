@@ -255,6 +255,8 @@ enum IconType {
 // LaunchSource in enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
+// DEPRECATED. When adding new fields, please use the App struct in
+// components/services/app_service/public/cpp/app_launch_util.h.
 enum LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,               // Grid of apps, not the search box.

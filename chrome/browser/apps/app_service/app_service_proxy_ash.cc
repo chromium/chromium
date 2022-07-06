@@ -594,7 +594,8 @@ void AppServiceProxyAsh::PerformPostUninstallTasks(
 
 void AppServiceProxyAsh::PerformPostLaunchTasks(
     apps::mojom::LaunchSource launch_source) {
-  if (apps_util::IsHumanLaunch(launch_source)) {
+  if (apps_util::IsHumanLaunch(
+          ConvertMojomLaunchSourceToLaunchSource(launch_source))) {
     ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);
   }
 }
