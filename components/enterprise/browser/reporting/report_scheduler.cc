@@ -204,6 +204,7 @@ void ReportScheduler::Stop() {
     delegate_->StopWatchingUpdates();
   delegate_->StopWatchingExtensionRequest();
   extension_request_uploader_.reset();
+  report_uploader_.reset();
   if (pref_change_registrar_.IsObserved(kCloudReportingUploadFrequency))
     pref_change_registrar_.Remove(kCloudReportingUploadFrequency);
 }
