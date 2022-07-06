@@ -69,23 +69,24 @@ void SendCachedData(String response_url,
       cache_storage_cache_name, serialized_data.data(), serialized_data.size());
 }
 
-class WasmStreamingClient : public v8::WasmStreaming::Client {
+class WasmCodeCachingCallback {
  public:
-  WasmStreamingClient(const String& response_url,
-                      const base::Time& response_time,
-                      const String& cache_storage_cache_name,
-                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                      ExecutionContext* execution_context)
+  WasmCodeCachingCallback(
+      const String& response_url,
+      const base::Time& response_time,
+      const String& cache_storage_cache_name,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      ExecutionContext* execution_context)
       : response_url_(response_url),
         response_time_(response_time),
         cache_storage_cache_name_(cache_storage_cache_name),
         main_thread_task_runner_(std::move(task_runner)),
         execution_context_(execution_context) {}
 
-  WasmStreamingClient(const WasmStreamingClient&) = delete;
-  WasmStreamingClient operator=(const WasmStreamingClient&) = delete;
+  WasmCodeCachingCallback(const WasmCodeCachingCallback&) = delete;
+  WasmCodeCachingCallback operator=(const WasmCodeCachingCallback&) = delete;
 
-  void OnModuleCompiled(v8::CompiledWasmModule compiled_module) override {
+  void OnMoreFunctionsCanBeSerialized(v8::CompiledWasmModule compiled_module) {
     // Called off the main thread.
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
@@ -173,14 +174,12 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       std::shared_ptr<v8::WasmStreaming> streaming,
       ScriptState* script_state,
       ScriptCachedMetadataHandler* cache_handler,
-      std::shared_ptr<WasmStreamingClient> streaming_client)
+      std::shared_ptr<WasmCodeCachingCallback> code_caching_callback)
       : url_(url),
         streaming_(std::move(streaming)),
         script_state_(script_state),
         cache_handler_(cache_handler),
-        streaming_client_(streaming_client),
-        code_cache_state_(CodeCacheState::kBeforeFirstByte),
-        digestor_(kHashAlgorithmSha256) {}
+        code_caching_callback_(std::move(code_caching_callback)) {}
 
   v8::WasmStreaming* streaming() const { return streaming_.get(); }
 
@@ -368,7 +367,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
 
     base::UmaHistogramEnumeration("V8.WasmCodeCaching", WasmCodeCaching::kHit);
     // Keep the buffer alive until V8 is ready to deserialize it.
-    streaming_client_->SetBuffer(cached_module);
+    // TODO(wasm): Shorten the life time of {cached_module} to reduce memory
+    // usage.
+    code_caching_callback_->SetBuffer(cached_module);
     return CodeCacheState::kUseCodeCache;
   }
 
@@ -407,9 +408,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   std::shared_ptr<v8::WasmStreaming> streaming_;
   const Member<ScriptState> script_state_;
   Member<ScriptCachedMetadataHandler> cache_handler_;
-  std::shared_ptr<WasmStreamingClient> streaming_client_;
-  CodeCacheState code_cache_state_;
-  Digestor digestor_;
+  std::shared_ptr<WasmCodeCachingCallback> code_caching_callback_;
+  CodeCacheState code_cache_state_ = CodeCacheState::kBeforeFirstByte;
+  Digestor digestor_{kHashAlgorithmSha256};
 };
 
 // TODO(mtrofin): WasmDataLoaderClient is necessary so we may provide an
@@ -558,21 +559,25 @@ void StreamFromResponseCallback(
   const std::string& url_utf8 = url.Utf8();
   streaming->SetUrl(url_utf8.c_str(), url_utf8.size());
   auto* cache_handler = response->BodyBuffer()->GetCachedMetadataHandler();
-  std::shared_ptr<WasmStreamingClient> client;
+  std::shared_ptr<WasmCodeCachingCallback> code_caching_callback;
   if (cache_handler) {
     auto* execution_context = ExecutionContext::From(script_state);
     DCHECK_NE(execution_context, nullptr);
 
-    client = std::make_shared<WasmStreamingClient>(
+    code_caching_callback = std::make_shared<WasmCodeCachingCallback>(
         url, response->GetResponse()->InternalResponse()->ResponseTime(),
         response->GetResponse()->InternalResponse()->CacheStorageCacheName(),
         GetContextTaskRunner(*execution_context), execution_context);
-    streaming->SetClient(client);
+    streaming->SetMoreFunctionsCanBeSerializedCallback(
+        [code_caching_callback](v8::CompiledWasmModule compiled_module) {
+          code_caching_callback->OnMoreFunctionsCanBeSerialized(
+              std::move(compiled_module));
+        });
   }
 
   FetchDataLoaderForWasmStreaming* loader =
       MakeGarbageCollected<FetchDataLoaderForWasmStreaming>(
-          url, streaming, script_state, cache_handler, client);
+          url, streaming, script_state, cache_handler, code_caching_callback);
   response->BodyBuffer()->StartLoading(
       loader, MakeGarbageCollected<WasmDataLoaderClient>(loader),
       exception_state);
