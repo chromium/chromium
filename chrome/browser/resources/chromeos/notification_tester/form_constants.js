@@ -118,7 +118,14 @@ export const FormSelectOptions = {
   ],
   IMAGE_OPTIONS: [
     {displayText: 'No Image', value: 'none'},
-    {displayText: 'CrOS Logo (1218x317, PNG)', value: 'chromeos_logo_main'},
+    {
+      displayText: 'Google Logo (PNG, 180 x 68)',
+      value: 'google_logo_small_png'
+    },
+    {
+      displayText: 'Chromium Logo (PNG, 192 x 192)',
+      value: 'chromium_logo_large_png'
+    },
   ],
   URL_OPTIONS: [
     {displayText: 'URL (Left-to-Right)', value: 'https://testurl.xyz'},

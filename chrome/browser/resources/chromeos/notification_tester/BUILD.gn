@@ -17,7 +17,6 @@ generate_grd("build_grd") {
     "index.html",
     "form_constants.js",
     "types.js",
-    "images/chromeos_logo_main.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
 

@@ -12,7 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/grit/notification_tester_resources.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -98,13 +99,16 @@ const gfx::VectorIcon& NotificationTesterHandler::GetNotificationIcon(
   return gfx::kNoneIcon;  // Default Case
 }
 
+// TODO(crbug/1341401): Need to switch from SetNotification...() to
+// GetNotification...()
 void NotificationTesterHandler::SetNotificationImage(
     const std::string& image,
     message_center::RichNotificationData& optional_fields) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  if (image == "chromeos_logo_main") {
-    optional_fields.image = rb.GetNativeImageNamed(
-        IDR_NOTIFICATION_TESTER_IMAGES_CHROMEOS_LOGO_MAIN_PNG);
+  if (image == "google_logo_small_png") {
+    optional_fields.image = rb.GetImageNamed(IDR_LOGO_GOOGLE_COLOR_90);
+  } else if (image == "chromium_logo_large_png") {
+    optional_fields.image = rb.GetImageNamed(IDR_CHROME_APP_ICON_192);
   }
 }
 
