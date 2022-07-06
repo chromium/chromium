@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_list_view_controller_impl.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -23,7 +24,9 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
+#include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
@@ -108,6 +111,42 @@ std::string CreateTestEid(int euicc_num) {
   return base::StringPrintf("%s%d", kTestBaseEid, euicc_num);
 }
 
+class TestNetworkStateHandlerObserver
+    : public chromeos::NetworkStateHandlerObserver {
+ public:
+  TestNetworkStateHandlerObserver() = default;
+
+  TestNetworkStateHandlerObserver(const TestNetworkStateHandlerObserver&) =
+      delete;
+  TestNetworkStateHandlerObserver& operator=(
+      const TestNetworkStateHandlerObserver&) = delete;
+
+  // chromeos::NetworkStateHandlerObserver:
+  void ScanRequested(const NetworkTypePattern& type) override {
+    scan_request_count_++;
+
+    if (type.MatchesPattern(NetworkTypePattern::WiFi())) {
+      wifi_scan_request_count_++;
+    }
+
+    if (type.MatchesPattern(NetworkTypePattern::Tether())) {
+      tether_scan_request_count_++;
+    }
+  }
+
+  // Returns the number of ScanRequested() call.
+  size_t scan_request_count() { return scan_request_count_; }
+
+  size_t wifi_scan_request_count() { return wifi_scan_request_count_; }
+
+  size_t tether_scan_request_count() { return tether_scan_request_count_; }
+
+ private:
+  size_t scan_request_count_ = 0;
+  size_t wifi_scan_request_count_ = 0;
+  size_t tether_scan_request_count_ = 0;
+};
+
 }  // namespace
 
 class NetworkListViewControllerTest : public AshTestBase {
@@ -150,6 +189,10 @@ class NetworkListViewControllerTest : public AshTestBase {
     network_list_view_controller_impl_ =
         std::make_unique<NetworkListViewControllerImpl>(
             fake_network_detailed_network_view_.get());
+
+    network_state_handler_observer_ =
+        std::make_unique<TestNetworkStateHandlerObserver>();
+    network_state_handler()->AddObserver(network_state_handler_observer_.get());
   }
 
   void SetGlobalPolicyConfig(bool allow_only_policy) {
@@ -173,6 +216,10 @@ class NetworkListViewControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
+    network_state_handler()->RemoveObserver(
+        network_state_handler_observer_.get());
+    network_state_handler_observer_.reset();
+
     network_list_view_controller_impl_.reset();
     fake_network_detailed_network_view_.reset();
     cros_network_config_test_helper_.reset();
@@ -411,8 +458,28 @@ class NetworkListViewControllerTest : public AshTestBase {
     network_state_helper()->device_test()->AddDevice(
         kWifiDevicePath, shill::kTypeWifi, kWifiName);
 
+    network_state_helper()->device_test()->SetDeviceProperty(
+        kWifiDevicePath, shill::kScanningProperty, base::Value(true),
+        /*notify_changed=*/true);
+
     // Wait for network state and device change events to be handled.
     base::RunLoop().RunUntilIdle();
+  }
+
+  bool getScanningBarVisibility() {
+    return fake_network_detailed_network_view_->last_scan_bar_visibility();
+  }
+
+  size_t GetScanCount() {
+    return network_state_handler_observer_->scan_request_count();
+  }
+
+  size_t GetWifiScanCount() {
+    return network_state_handler_observer_->wifi_scan_request_count();
+  }
+
+  size_t GetTetherScanCount() {
+    return network_state_handler_observer_->tether_scan_request_count();
   }
 
   std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellularScanning() {
@@ -453,6 +520,11 @@ class NetworkListViewControllerTest : public AshTestBase {
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::LOGIN_SECONDARY);
     base::RunLoop().RunUntilIdle();
+  }
+
+  bool HasScanTimerStarted() {
+    return network_list_view_controller_impl_->network_scan_repeating_timer_
+        .IsRunning();
   }
 
   chromeos::NetworkStateHandler* network_state_handler() {
@@ -496,6 +568,9 @@ class NetworkListViewControllerTest : public AshTestBase {
       mock_managed_network_configuration_manager_;
 
   base::Value global_config_;
+
+  std::unique_ptr<TestNetworkStateHandlerObserver>
+      network_state_handler_observer_;
 };
 
 TEST_F(NetworkListViewControllerTest, MobileDataSectionIsShown) {
@@ -986,6 +1061,62 @@ TEST_F(NetworkListViewControllerTest, HasConnectionWarning) {
   // Clear all devices and make sure warning is no longer being shown.
   network_state_helper()->ClearDevices();
   EXPECT_EQ(nullptr, GetConnectionWarning());
+}
+
+TEST_F(NetworkListViewControllerTest, NetworkScanning) {
+  network_state_helper()->ClearDevices();
+  network_state_helper()->manager_test()->SetInteractiveDelay(
+      kInteractiveDelay);
+
+  // Scanning bar is not visible if WiFi is not enabled.
+  EXPECT_FALSE(HasScanTimerStarted());
+  EXPECT_FALSE(getScanningBarVisibility());
+  EXPECT_EQ(0u, GetScanCount());
+  EXPECT_EQ(0u, GetWifiScanCount());
+  EXPECT_EQ(0u, GetTetherScanCount());
+
+  // Add an enabled WiFi device.
+  AddWifiDevice();
+  EXPECT_TRUE(HasScanTimerStarted());
+  EXPECT_TRUE(getScanningBarVisibility());
+  EXPECT_EQ(2u, GetScanCount());
+  EXPECT_EQ(1u, GetWifiScanCount());
+  EXPECT_EQ(1u, GetTetherScanCount());
+
+  // Simulate scanning finishing.
+  task_environment()->FastForwardBy(kInteractiveDelay);
+
+  EXPECT_FALSE(getScanningBarVisibility());
+  EXPECT_TRUE(HasScanTimerStarted());
+  EXPECT_EQ(2u, GetScanCount());
+  EXPECT_EQ(1u, GetWifiScanCount());
+  EXPECT_EQ(1u, GetTetherScanCount());
+
+  // Make sure scan timer is still running.
+  task_environment()->FastForwardBy(kInteractiveDelay);
+  EXPECT_TRUE(HasScanTimerStarted());
+  EXPECT_FALSE(getScanningBarVisibility());
+  EXPECT_EQ(2u, GetScanCount());
+  EXPECT_EQ(1u, GetWifiScanCount());
+  EXPECT_EQ(1u, GetTetherScanCount());
+
+  task_environment()->FastForwardBy(kInteractiveDelay);
+  EXPECT_TRUE(HasScanTimerStarted());
+  EXPECT_FALSE(getScanningBarVisibility());
+  EXPECT_EQ(2u, GetScanCount());
+  EXPECT_EQ(1u, GetWifiScanCount());
+  EXPECT_EQ(1u, GetTetherScanCount());
+
+  // Disabling WiFi device ends scan timer.
+  network_state_handler()->SetTechnologyEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/false, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(getScanningBarVisibility());
+  EXPECT_FALSE(HasScanTimerStarted());
+  EXPECT_EQ(2u, GetScanCount());
+  EXPECT_EQ(1u, GetWifiScanCount());
+  EXPECT_EQ(1u, GetTetherScanCount());
 }
 
 }  // namespace ash

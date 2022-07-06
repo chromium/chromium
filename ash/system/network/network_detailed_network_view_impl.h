@@ -44,6 +44,7 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   NetworkListNetworkItemView* AddNetworkListItem() override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
+  void UpdateScanningBarVisibility(bool visible) override;
   views::View* network_list() override;
 
   // NetworkListNetworkHeaderView::Delegate:

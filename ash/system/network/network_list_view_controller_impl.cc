@@ -19,6 +19,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/timer/timer.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -46,6 +47,9 @@ using chromeos::network_config::mojom::ProxyMode;
 
 using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
+
+// Delay between scan requests.
+constexpr int kRequestScanDelaySeconds = 10;
 
 // Helper function to remove |*view| from its view hierarchy, delete the view,
 // and reset the value of |*view| to be |nullptr|.
@@ -241,6 +245,8 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     network_detailed_network_view()->network_list()->ReorderChildView(
         wifi_status_message_, index++);
   }
+
+  UpdateScanningBarAndTimer();
 
   // Remaining views in |previous_network_views| are no longer needed
   // and should be deleted.
@@ -618,6 +624,40 @@ void NetworkListViewControllerImpl::ShowConnectionWarning() {
   connection_warning_ =
       network_detailed_network_view()->network_list()->AddChildView(
           std::move(connection_warning));
+}
+
+void NetworkListViewControllerImpl::UpdateScanningBarAndTimer() {
+  if (is_wifi_enabled_ && !network_scan_repeating_timer_.IsRunning())
+    ScanAndStartTimer();
+
+  if (!is_wifi_enabled_ && network_scan_repeating_timer_.IsRunning())
+    network_scan_repeating_timer_.Stop();
+
+  bool is_scanning_bar_visible = false;
+  if (is_wifi_enabled_) {
+    const DeviceStateProperties* wifi = model_->GetDevice(NetworkType::kWiFi);
+    const DeviceStateProperties* tether =
+        model_->GetDevice(NetworkType::kTether);
+
+    is_scanning_bar_visible =
+        (wifi && wifi->scanning) || (tether && tether->scanning);
+  }
+
+  network_detailed_network_view()->UpdateScanningBarVisibility(
+      /*visible=*/is_scanning_bar_visible);
+}
+
+void NetworkListViewControllerImpl::ScanAndStartTimer() {
+  RequestScan();
+  network_scan_repeating_timer_.Start(
+      FROM_HERE, base::Seconds(kRequestScanDelaySeconds), this,
+      &NetworkListViewControllerImpl::RequestScan);
+}
+
+void NetworkListViewControllerImpl::RequestScan() {
+  VLOG(1) << "Requesting Network Scan.";
+  model_->cros_network_config()->RequestNetworkScan(NetworkType::kWiFi);
+  model_->cros_network_config()->RequestNetworkScan(NetworkType::kTether);
 }
 
 void NetworkListViewControllerImpl::FocusLastSelectedView() {

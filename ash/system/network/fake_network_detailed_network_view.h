@@ -32,6 +32,8 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
     return notify_network_list_changed_call_count_;
   }
 
+  bool last_scan_bar_visibility() { return last_scan_bar_visibility_; }
+
   const NetworkListItemView* last_clicked_network_list_item() const {
     return last_clicked_network_list_item_;
   }
@@ -45,12 +47,14 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   NetworkListNetworkItemView* AddNetworkListItem() override;
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
+  void UpdateScanningBarVisibility(bool visible) override;
 
   // ViewClickListener:
   void OnViewClicked(views::View* view) override;
 
   std::unique_ptr<views::View> network_list_;
   size_t notify_network_list_changed_call_count_ = 0;
+  bool last_scan_bar_visibility_;
   NetworkListItemView* last_clicked_network_list_item_ = nullptr;
 };
 

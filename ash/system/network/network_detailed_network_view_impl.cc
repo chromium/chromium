@@ -65,6 +65,10 @@ void NetworkDetailedNetworkViewImpl::OnWifiToggleClicked(bool new_state) {
   NetworkDetailedNetworkView::delegate()->OnWifiToggleClicked(new_state);
 }
 
+void NetworkDetailedNetworkViewImpl::UpdateScanningBarVisibility(bool visible) {
+  ShowProgress(-1, visible);
+}
+
 BEGIN_METADATA(NetworkDetailedNetworkViewImpl, views::View)
 END_METADATA
 

@@ -79,6 +79,9 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // removing and rearranging the sub-header.
   virtual NetworkListMobileHeaderView* AddMobileSectionHeader() = 0;
 
+  // Updates the scanning bar visibility.
+  virtual void UpdateScanningBarVisibility(bool visible) = 0;
+
   // Returns the network list.
   virtual views::View* network_list() = 0;
 

@@ -55,4 +55,8 @@ FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
       new FakeNetworkListMobileHeaderView(/*delegate=*/nullptr));
 }
 
+void FakeNetworkDetailedNetworkView::UpdateScanningBarVisibility(bool visible) {
+  last_scan_bar_visibility_ = visible;
+};
+
 }  // namespace ash
