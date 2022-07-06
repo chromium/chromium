@@ -16,6 +16,9 @@ const base::Feature kCrashpadIOS{"CrashpadIOSEnabler",
 const base::Feature kMetrickitCrashReport{"MetrickitCrashReport",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMetrickitNonCrashReport{"MetrickitNonCrashReport",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSyntheticCrashReportsForUte{
     "SyntheticCrashReportsForUte", base::FEATURE_DISABLED_BY_DEFAULT};
 

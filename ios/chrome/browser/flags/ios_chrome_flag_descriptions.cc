@@ -440,6 +440,11 @@ const char kMetrickitCrashReportName[] = "Metrickit crash reports";
 const char kMetrickitCrashReportDescription[] =
     "Enables sending Metrickit crash reports";
 
+const char kMetrickitNonCrashReportName[] = "Metrickit non-crash reports";
+const char kMetrickitNonCrashReportDescription[] =
+    "Enables sending Metrickit reports for non crash type (hang, "
+    "cpu-exception, diskwrite-exception)";
+
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";

@@ -1034,6 +1034,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMaxURLMatches,
                                     kOmniboxMaxURLMatchesVariations,
                                     "OmniboxMaxURLMatches")},
+    {"metrickit-non-crash-reports",
+     flag_descriptions::kMetrickitNonCrashReportName,
+     flag_descriptions::kMetrickitNonCrashReportDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kMetrickitNonCrashReport)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

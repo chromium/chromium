@@ -186,16 +186,18 @@ void SendDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
     for (MXCrashDiagnostic* diagnostic in payload.crashDiagnostics) {
       SendDiagnostic(diagnostic, "crash");
     }
-    for (MXCPUExceptionDiagnostic* diagnostic in payload
-             .cpuExceptionDiagnostics) {
-      SendDiagnostic(diagnostic, "cpu-exception");
-    }
-    for (MXHangDiagnostic* diagnostic in payload.hangDiagnostics) {
-      SendDiagnostic(diagnostic, "hang");
-    }
-    for (MXDiskWriteExceptionDiagnostic* diagnostic in payload
-             .diskWriteExceptionDiagnostics) {
-      SendDiagnostic(diagnostic, "diskwrite-exception");
+    if (base::FeatureList::IsEnabled(kMetrickitNonCrashReport)) {
+      for (MXCPUExceptionDiagnostic* diagnostic in payload
+               .cpuExceptionDiagnostics) {
+        SendDiagnostic(diagnostic, "cpu-exception");
+      }
+      for (MXHangDiagnostic* diagnostic in payload.hangDiagnostics) {
+        SendDiagnostic(diagnostic, "hang");
+      }
+      for (MXDiskWriteExceptionDiagnostic* diagnostic in payload
+               .diskWriteExceptionDiagnostics) {
+        SendDiagnostic(diagnostic, "diskwrite-exception");
+      }
     }
   }
 }
