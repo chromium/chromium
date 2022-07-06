@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/availability_model.h"
 
 namespace feature_engagement {
@@ -36,7 +37,9 @@ class NeverAvailabilityModel : public AvailabilityModel {
   void ForwardedOnInitializedCallback(OnInitializedCallback callback);
 
   // Whether the model has been successfully initialized.
-  bool ready_;
+  bool ready_ = false;
+
+  base::WeakPtrFactory<NeverAvailabilityModel> weak_ptr_factory_{this};
 };
 
 }  // namespace feature_engagement
