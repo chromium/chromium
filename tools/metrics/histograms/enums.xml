@@ -9000,11 +9000,51 @@ others/histograms.xml -->
       label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX - Predictions
              different - Value agrees with both predictions"/>
   <int value="739"
+      label="PHONE_HOME_NUMBER_PREFIX - Predictions equal - Value agrees"/>
+  <int value="740"
+      label="PHONE_HOME_NUMBER_PREFIX - Predictions equal - Value disagrees"/>
+  <int value="741"
+      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="742"
+      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="743"
       label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
              with neither prediction"/>
-  <int value="740"
+  <int value="744"
+      label="PHONE_HOME_NUMBER_PREFIX - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="745"
+      label="PHONE_HOME_NUMBER_SUFFIX - Predictions equal - Value agrees"/>
+  <int value="746"
+      label="PHONE_HOME_NUMBER_SUFFIX - Predictions equal - Value disagrees"/>
+  <int value="747"
+      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="748"
+      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="749"
+      label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="750"
       label="PHONE_HOME_NUMBER_SUFFIX - Predictions different - Value agrees
              with both predictions"/>
+  <int value="751" label="IBAN_VALUE - Predictions equal - Value agrees"/>
+  <int value="752" label="IBAN_VALUE - Predictions equal - Value disagrees"/>
+  <int value="753"
+      label="IBAN_VALUE - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="754"
+      label="IBAN_VALUE - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="755"
+      label="IBAN_VALUE - Predictions different - Value agrees with neither
+             prediction"/>
+  <int value="756"
+      label="IBAN_VALUE - Predictions different - Value agrees with both
+             predictions"/>
 </enum>
 
 <enum name="AutofillPredictionSource">
