@@ -21,12 +21,14 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
+#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -34,8 +36,10 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -63,8 +67,39 @@ class MockWebMediaPlayerForContextMenu : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(HasVideo, bool());
 };
 
+class ContextMenuControllerTestPlugin : public FakeWebPlugin {
+ public:
+  struct PluginAttributes {
+    // Whether the plugin has copy permission.
+    bool can_copy;
+
+    // The selected text in the plugin when the context menu is created.
+    WebString selected_text;
+  };
+
+  explicit ContextMenuControllerTestPlugin(const WebPluginParams& params)
+      : FakeWebPlugin(params) {}
+
+  // FakeWebPlugin:
+  WebString SelectionAsText() const override { return selected_text_; }
+  bool CanCopy() const override { return can_copy_; }
+
+  void SetAttributesForTesting(const PluginAttributes& attributes) {
+    can_copy_ = attributes.can_copy;
+    selected_text_ = attributes.selected_text;
+  }
+
+ private:
+  bool can_copy_ = true;
+  WebString selected_text_;
+};
+
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
  public:
+  WebPlugin* CreatePlugin(const WebPluginParams& params) override {
+    return new ContextMenuControllerTestPlugin(params);
+  }
+
   void UpdateContextMenuDataForTesting(
       const ContextMenuData& data,
       const absl::optional<gfx::Point>& host_context_menu_location) override {
@@ -103,6 +138,11 @@ void RegisterMockedImageURLLoad(const String& url) {
 }
 
 }  // namespace
+
+template <>
+struct DowncastTraits<ContextMenuControllerTestPlugin> {
+  static bool AllowFrom(const WebPlugin& object) { return true; }
+};
 
 class ContextMenuControllerTest : public testing::Test,
                                   public ::testing::WithParamInterface<bool> {
@@ -177,6 +217,78 @@ class ContextMenuControllerTest : public testing::Test,
 };
 
 INSTANTIATE_TEST_SUITE_P(, ContextMenuControllerTest, ::testing::Bool());
+
+TEST_P(ContextMenuControllerTest, CopyFromPlugin) {
+  ContextMenuAllowedScope context_menu_allowed_scope;
+  frame_test_helpers::LoadFrame(LocalMainFrame(), R"HTML(data:text/html,
+  <html>
+    <body>
+      <embed id="embed" type="application/x-webkit-test-webplugin"
+       src="chrome-extension://test" original-url="http://www.test.pdf">
+      </embed>
+    </body>
+  <html>
+  )HTML");
+
+  Document* document = GetDocument();
+  ASSERT_TRUE(IsA<HTMLDocument>(document));
+
+  Element* embed_element = document->getElementById("embed");
+  ASSERT_TRUE(IsA<HTMLEmbedElement>(embed_element));
+
+  auto* embedded =
+      DynamicTo<LayoutEmbeddedContent>(embed_element->GetLayoutObject());
+  WebPluginContainerImpl* embedded_plugin_view = embedded->Plugin();
+  ASSERT_TRUE(!!embedded_plugin_view);
+
+  auto* test_plugin = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_plugin_view->Plugin());
+
+  // The plugin has copy permission but no text is selected.
+  test_plugin->SetAttributesForTesting(
+      {/*can_copy=*/true, /*selected_text=*/""});
+
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_FALSE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+  EXPECT_EQ(context_menu_data.selected_text, "");
+
+  // The plugin has copy permission and some text is selected.
+  test_plugin->SetAttributesForTesting({/*can_copy=*/true,
+                                        /*selected_text=*/"some text"});
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_TRUE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+  EXPECT_EQ(context_menu_data.selected_text, "some text");
+
+  // The plugin does not have copy permission and no text is selected.
+  test_plugin->SetAttributesForTesting({/*can_copy=*/false,
+                                        /*selected_text=*/""});
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_FALSE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+  EXPECT_EQ(context_menu_data.selected_text, "");
+
+  // The plugin does not have copy permission but some text is selected.
+  test_plugin->SetAttributesForTesting({/*can_copy=*/false,
+                                        /*selected_text=*/"some text"});
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_EQ(context_menu_data.selected_text, "some text");
+  EXPECT_FALSE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+}
 
 TEST_P(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuAllowedScope context_menu_allowed_scope;

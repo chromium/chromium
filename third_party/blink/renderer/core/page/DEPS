@@ -8,6 +8,9 @@ specific_include_rules = {
     "+base/run_loop.h",
   ],
   "context_menu_controller\.cc": [
-    "+components/shared_highlighting/core/common/shared_highlighting_features.h"
-  ]
+    "+components/shared_highlighting/core/common/shared_highlighting_features.h",
+  ],
+  "context_menu_controller_test\.cc": [
+    "+third_party/blink/renderer/core/exported/web_plugin_container_impl.h",
+  ],
 }
