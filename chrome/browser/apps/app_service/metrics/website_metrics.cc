@@ -182,6 +182,11 @@ void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
   // `deletion_info`.
   webcontents_to_ukm_key_.clear();
   url_infos_.clear();
+
+  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
+                                         kWebsiteUsageTime);
+  auto& dict = usage_time_update->GetDict();
+  dict.clear();
 }
 
 void WebsiteMetrics::HistoryServiceBeingDeleted(
@@ -431,7 +436,13 @@ void WebsiteMetrics::SaveUsageTime() {
   auto& dict = usage_time_update->GetDict();
   dict.clear();
   for (auto it : url_infos_) {
-    dict.Set(it.first.spec(), it.second.ConvertToValue());
+    if (it.second.is_activated) {
+      it.second.running_time += base::TimeTicks::Now() - it.second.start_time;
+      it.second.start_time = base::TimeTicks::Now();
+    }
+    if (!it.second.running_time.is_zero()) {
+      dict.Set(it.first.spec(), it.second.ConvertToValue());
+    }
   }
 }
 

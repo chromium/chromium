@@ -190,6 +190,15 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(promotable, promotable_value.value());
   }
 
+  void VerifyNoUrlInfoInPref(const GURL& url) {
+    DictionaryPrefUpdate update(
+        ProfileManager::GetPrimaryUserProfile()->GetPrefs(), kWebsiteUsageTime);
+    auto& dict = update->GetDict();
+
+    const auto* url_info = dict.FindDict(url.spec());
+    ASSERT_FALSE(url_info);
+  }
+
   WebsiteMetrics* website_metrics() {
     DCHECK(app_platform_metrics_service_);
     return app_platform_metrics_service_->website_metrics_.get();
@@ -295,6 +304,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/false, /*promotable=*/false);
   website_metrics()->OnFiveMinutes();
+  VerifyNoUrlInfoInPref(GURL("https://a.example.org"));
   VerifyUrlInfoInPref(GURL("https://b.example.org"), UrlContent::kFullUrl,
                       /*promotable=*/false);
   VerifyUrlInfoInPref(GURL("https://c.example.org"), UrlContent::kFullUrl,
@@ -596,6 +606,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
   EXPECT_TRUE(url_infos().empty());
+  VerifyNoUrlInfoInPref(GURL("https://a.example.org"));
+  VerifyNoUrlInfoInPref(GURL("https://b.example.org"));
 
   // Create 2 tabs for the 2 browsers separately.
   auto* tab_app3 = InsertForegroundTab(browser1, "https://c.example.org");
@@ -615,8 +627,9 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   VerifyUrlInfo(GURL("https://d.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/true, /*promotable=*/false);
   website_metrics()->OnFiveMinutes();
-  VerifyUrlInfoInPref(GURL("https://c.example.org"), UrlContent::kFullUrl,
-                      /*promotable=*/false);
+  // "https://c.example.org" is inactivated, and the running time is zero, so it
+  // won't be saved in the user pref.
+  VerifyNoUrlInfoInPref(GURL("https://c.example.org"));
   VerifyUrlInfoInPref(GURL("https://d.example.org"), UrlContent::kFullUrl,
                       /*promotable=*/false);
 
