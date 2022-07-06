@@ -16,6 +16,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/result_catcher.h"
@@ -272,7 +273,8 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
                          "http://restricted.example/*"],
              "js": ["content_script.js"],
              "run_at": "document_end"
-           }]
+           }],
+           "permissions": ["storage"]
          })";
 
   // Change the page title if the script is injected. Since the script is
@@ -325,6 +327,9 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
   EXPECT_EQ(PermissionsData::PageAccess::kDenied,
             extension->permissions_data()->GetContentScriptAccess(
                 unrequested_url, kTabId, nullptr));
+  // And sanity check API permissions.
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kStorage));
 
   // Next, simulate the user granting all extensions access to `allowed_url` and
   // `unrequested_url`.
@@ -350,6 +355,9 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
   EXPECT_EQ(PermissionsData::PageAccess::kDenied,
             extension->permissions_data()->GetContentScriptAccess(
                 unrequested_url, kTabId, nullptr));
+  // Sanity check API permissions are unaffected.
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kStorage));
 
   // Verify permissions access in the renderer. `allowed_url`'s title should be
   // changed, while `restricted_url` and `unrequested_url` should remain at

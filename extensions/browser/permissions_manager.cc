@@ -257,6 +257,14 @@ void PermissionsManager::UpdatePermissionsWithUserSettings(
   std::unique_ptr<const PermissionSet> bounded_active =
       PermissionSet::CreateIntersection(*stored_active_permissions,
                                         *requested_permissions);
+  // Since we don't allow withholding of API and manifest permissions, the
+  // allowed set always contains all (bounded) requested API and manifest
+  // permissions.
+  allowed_permissions = std::make_unique<const PermissionSet>(
+      bounded_active->apis().Clone(),
+      bounded_active->manifest_permissions().Clone(),
+      allowed_permissions->explicit_hosts().Clone(),
+      allowed_permissions->scriptable_hosts().Clone());
 
   // 4) Calculate the new active and withheld permissions. The active
   //    permissions are the intersection of all permissions the extension is
