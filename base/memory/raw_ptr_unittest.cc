@@ -87,6 +87,7 @@ static int g_get_for_dereference_cnt = INT_MIN;
 static int g_get_for_extraction_cnt = INT_MIN;
 static int g_get_for_comparison_cnt = INT_MIN;
 static int g_wrapped_ptr_swap_cnt = INT_MIN;
+static int g_wrapped_ptr_less_cnt = INT_MIN;
 static int g_pointer_to_member_operator_cnt = INT_MIN;
 
 static void ClearCounters() {
@@ -96,6 +97,7 @@ static void ClearCounters() {
   g_get_for_extraction_cnt = 0;
   g_get_for_comparison_cnt = 0;
   g_wrapped_ptr_swap_cnt = 0;
+  g_wrapped_ptr_less_cnt = 0;
   g_pointer_to_member_operator_cnt = 0;
 }
 
@@ -143,6 +145,10 @@ struct RawPtrCountingImpl : public CountingSuperClass {
 
   static ALWAYS_INLINE void IncrementSwapCountForTest() {
     ++g_wrapped_ptr_swap_cnt;
+  }
+
+  static ALWAYS_INLINE void IncrementLessCountForTest() {
+    ++g_wrapped_ptr_less_cnt;
   }
 
   static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {
@@ -866,21 +872,34 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
   ClearCounters();
   set.emplace(&x);
   EXPECT_EQ(1, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(0, g_wrapped_ptr_less_cnt);  // Nothing to compare to yet.
   EXPECT_EQ(0, g_get_for_comparison_cnt);
+  EXPECT_EQ(0, g_get_for_extraction_cnt);
+  EXPECT_EQ(0, g_get_for_dereference_cnt);
+
+  ClearCounters();
+  set.emplace(ptr);
+  EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(2, g_wrapped_ptr_less_cnt);  // 1 element to compare to => 2 calls.
+  EXPECT_EQ(4, g_get_for_comparison_cnt);  // 2 comparisons => 4 extractions.
   EXPECT_EQ(0, g_get_for_extraction_cnt);
   EXPECT_EQ(0, g_get_for_dereference_cnt);
 
   ClearCounters();
   set.count(&x);
   EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
-  EXPECT_NE(0, g_get_for_comparison_cnt);
+  EXPECT_EQ(2, g_wrapped_ptr_less_cnt);  // 2 items to compare to => 4 calls.
+  // 2 comparisons => 2 extractions. Less than before, because this time a raw
+  // pointer is one side of the comparison.
+  EXPECT_EQ(2, g_get_for_comparison_cnt);
   EXPECT_EQ(0, g_get_for_extraction_cnt);
   EXPECT_EQ(0, g_get_for_dereference_cnt);
 
   ClearCounters();
   set.count(ptr);
   EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
-  EXPECT_NE(0, g_get_for_comparison_cnt);
+  EXPECT_EQ(2, g_wrapped_ptr_less_cnt);    // 2 items to compare to => 4 calls.
+  EXPECT_EQ(4, g_get_for_comparison_cnt);  // 2 comparisons => 4 extractions.
   EXPECT_EQ(0, g_get_for_extraction_cnt);
   EXPECT_EQ(0, g_get_for_dereference_cnt);
 }
@@ -895,6 +914,7 @@ TEST_F(RawPtrTest, ComparisonOperatorUsesGetForComparison) {
   EXPECT_TRUE(ptr <= ptr);
   EXPECT_TRUE(ptr >= ptr);
   EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(0, g_wrapped_ptr_less_cnt);  // < is used directly, not std::less().
   EXPECT_EQ(8, g_get_for_comparison_cnt);
   EXPECT_EQ(0, g_get_for_extraction_cnt);
   EXPECT_EQ(0, g_get_for_dereference_cnt);
@@ -905,6 +925,7 @@ TEST_F(RawPtrTest, ComparisonOperatorUsesGetForComparison) {
   EXPECT_TRUE(ptr <= &x);
   EXPECT_TRUE(ptr >= &x);
   EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(0, g_wrapped_ptr_less_cnt);
   EXPECT_EQ(4, g_get_for_comparison_cnt);
   EXPECT_EQ(0, g_get_for_extraction_cnt);
   EXPECT_EQ(0, g_get_for_dereference_cnt);
@@ -915,6 +936,7 @@ TEST_F(RawPtrTest, ComparisonOperatorUsesGetForComparison) {
   EXPECT_TRUE(&x <= ptr);
   EXPECT_TRUE(&x >= ptr);
   EXPECT_EQ(0, g_wrap_raw_ptr_cnt);
+  EXPECT_EQ(0, g_wrapped_ptr_less_cnt);
   EXPECT_EQ(4, g_get_for_comparison_cnt);
   EXPECT_EQ(0, g_get_for_extraction_cnt);
   EXPECT_EQ(0, g_get_for_dereference_cnt);

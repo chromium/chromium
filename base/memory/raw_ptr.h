@@ -129,6 +129,7 @@ struct RawPtrNoOpImpl {
 
   // This is for accounting only, used by unit tests.
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static ALWAYS_INLINE void IncrementLessCountForTest() {}
   static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 };
 
@@ -272,6 +273,7 @@ struct MTECheckedPtrImpl {
 
   // This is for accounting only, used by unit tests.
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static ALWAYS_INLINE void IncrementLessCountForTest() {}
   static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
@@ -459,6 +461,7 @@ struct BackupRefPtrImpl {
 
   // This is for accounting only, used by unit tests.
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static ALWAYS_INLINE void IncrementLessCountForTest() {}
   static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
@@ -549,6 +552,7 @@ struct AsanBackupRefPtrImpl {
 
   // This is for accounting only, used by unit tests.
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static ALWAYS_INLINE void IncrementLessCountForTest() {}
   static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
@@ -1172,17 +1176,25 @@ namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
 // dangling pointers to be used for lookup.
-template <typename T, typename I>
-struct less<raw_ptr<T, I>> {
+template <typename T, typename Impl>
+struct less<raw_ptr<T, Impl>> {
   using is_transparent = void;
 
-  bool operator()(const raw_ptr<T, I>& lhs, const raw_ptr<T, I>& rhs) const {
+  bool operator()(const raw_ptr<T, Impl>& lhs,
+                  const raw_ptr<T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(T* lhs, const raw_ptr<T, I>& rhs) const { return lhs < rhs; }
+  bool operator()(T* lhs, const raw_ptr<T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
+    return lhs < rhs;
+  }
 
-  bool operator()(const raw_ptr<T, I>& lhs, T* rhs) const { return lhs < rhs; }
+  bool operator()(const raw_ptr<T, Impl>& lhs, T* rhs) const {
+    Impl::IncrementLessCountForTest();
+    return lhs < rhs;
+  }
 };
 
 }  // namespace std
