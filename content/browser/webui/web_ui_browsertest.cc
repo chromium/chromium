@@ -372,8 +372,10 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
   EXPECT_EQ(0, test_handler()->message_requiring_gesture_count());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
-                       MessageRequiringGestureAllowedWithInteractiveEvent) {
+IN_PROC_BROWSER_TEST_F(
+    WebUIRequiringGestureBrowserTest,
+    // TODO(crbug.com/1342300): Re-enable this test
+    DISABLED_MessageRequiringGestureAllowedWithInteractiveEvent) {
   // Simulate a click at Now.
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
