@@ -454,6 +454,10 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
 
+// Title and description for the maximum number of URL matches.
+extern const char kOmniboxMaxURLMatchesName[];
+extern const char kOmniboxMaxURLMatchesDescription[];
+
 // Title and description for the flag to swap Omnibox Textfield implementation
 // to a new experimental one.
 extern const char kOmniboxNewImplementationName[];

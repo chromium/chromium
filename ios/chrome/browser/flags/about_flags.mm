@@ -184,6 +184,22 @@ const FeatureEntry::FeatureVariation kOmniboxMaxZPSMatchesVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxMaxURLMatches5[] = {
+    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "5"}};
+const FeatureEntry::FeatureParam kOmniboxMaxURLMatches6[] = {
+    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "6"}};
+const FeatureEntry::FeatureParam kOmniboxMaxURLMatches7[] = {
+    {OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "7"}};
+
+const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
+    {"5 matches", kOmniboxMaxURLMatches5, std::size(kOmniboxMaxURLMatches5),
+     nullptr},
+    {"6 matches", kOmniboxMaxURLMatches6, std::size(kOmniboxMaxURLMatches6),
+     nullptr},
+    {"7 matches", kOmniboxMaxURLMatches7, std::size(kOmniboxMaxURLMatches7),
+     nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kAutofillUseMobileLabelDisambiguationShowAll[] = {
         {autofill::features::kAutofillUseMobileLabelDisambiguationParameterName,
@@ -1013,6 +1029,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncEnableHistoryDataTypeName,
      flag_descriptions::kSyncEnableHistoryDataTypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncEnableHistoryDataType)},
+    {"omnibox-max-url-matches", flag_descriptions::kOmniboxMaxURLMatchesName,
+     flag_descriptions::kOmniboxMaxURLMatchesDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMaxURLMatches,
+                                    kOmniboxMaxURLMatchesVariations,
+                                    "OmniboxMaxURLMatches")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

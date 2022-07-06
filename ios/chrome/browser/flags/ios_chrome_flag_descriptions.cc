@@ -499,6 +499,12 @@ const char kOmniboxOnFocusSuggestionsDescription[] =
     "before the user has typed any input. This provides overrides for the "
     "default suggestion locations.";
 
+const char kOmniboxMaxURLMatchesName[] = "Omnibox Max URL matches";
+const char kOmniboxMaxURLMatchesDescription[] =
+    "Limit the number of URL suggestions in the omnibox. The omnibox will "
+    "still display more than MaxURLMatches if there are no non-URL suggestions "
+    "to replace them.";
+
 const char kOmniboxNewImplementationName[] =
     "Use experimental omnibox textfield";
 const char kOmniboxNewImplementationDescription[] =
