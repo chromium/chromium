@@ -207,11 +207,11 @@
       </message>
       <!-- WebAuthn titles -->
       <if expr="is_macosx">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The product name of the fingerprint reader on macOS. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">
-          Touch ID
+        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="A platform authenticator using device unlock on macOS. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking.">
+          Device unlock
         </message>
         <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking on macOS. Sentence-Cased.">
-          Use Touch ID to confirm cards faster
+          Use device unlock to confirm cards faster
         </message>
       </if>
       <if expr="is_win">

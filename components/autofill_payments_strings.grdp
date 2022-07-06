@@ -423,16 +423,16 @@
   <if expr="not is_ios and not is_android">
     <if expr="is_macosx">
       <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE" desc="Headline asking the user if they want to use their device's platform authenticator to confirm their cards in the future instead of CVC.">
-        Use Touch ID instead of CVC?
+        Use device unlock instead of CVC?
       </message>
       <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE_ERROR" desc="Headline explaining to users there were errors in the attempt to opt in using platform's authenticator.">
-        Couldn't use Touch ID
+        Couldn't use device unlock
       </message>
       <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_INSTRUCTION" desc="Subheading that appears below the headline explaining to the user that they won't have to enter their card's security code if they decide to use their device's platform authenticator in the future.">
-        Confirm your cards faster by using Touch ID from now on
+        Confirm your cards faster by using device unlock from now on
       </message>
       <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_OK_BUTTON_LABEL" desc="Button that allows the user to use their device's platform authenticator to confirm card use in the future.">
-        Use Touch ID
+        Use device unlock
       </message>
     </if>
     <if expr="is_win">
