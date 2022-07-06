@@ -6,10 +6,7 @@
  * @fileoverview Parses the output format.
  */
 
-goog.provide('OutputFormatTree');
-
-goog.scope(function() {
-OutputFormatTree = class {
+export class OutputFormatTree {
   /** @private */
   constructor() {
     /** @public {string} */
@@ -84,5 +81,4 @@ OutputFormatTree = class {
 
     return root;
   }
-};
-});  // goog.scope
+}

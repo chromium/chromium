@@ -8,6 +8,7 @@
 import {EventSourceState} from '/chromevox/background/event_source.js';
 import {OutputAncestryInfo} from '/chromevox/background/output/output_ancestry_info.js';
 import {OutputFormatParser, OutputFormatParserObserver} from '/chromevox/background/output/output_format_parser.js';
+import {OutputFormatTree} from '/chromevox/background/output/output_format_tree.js';
 import {OutputRulesStr} from '/chromevox/background/output/output_logger.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
