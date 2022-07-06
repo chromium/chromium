@@ -410,6 +410,19 @@ class ShouldCompleteScope {
   HTMLDocumentParserState* state_;
 };
 
+class FetchBatchScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit FetchBatchScope(HTMLDocumentParser* parser) : parser_(parser) {
+    parser_->StartFetchBatch();
+  }
+  ~FetchBatchScope() { parser_->EndFetchBatch(); }
+
+ private:
+  HTMLDocumentParser* const parser_;
+};
+
 // This is a direct transcription of step 4 from:
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#fragment-case
 static HTMLTokenizer::State TokenizerStateForContextElement(
@@ -573,6 +586,14 @@ bool HTMLDocumentParser::HasPendingWorkScheduledForTesting() const {
 }
 
 void HTMLDocumentParser::Detach() {
+  // Unwind any nested batch operations before being detached
+  if (!IsDetached()) {
+    ResourceFetcher* fetcher = GetDocument()->Fetcher();
+    while (pending_batch_operations_ > 0) {
+      pending_batch_operations_--;
+      fetcher->EndBatch();
+    }
+  }
   // Deschedule any pending tokenizer pumps.
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kNotScheduled);
@@ -787,6 +808,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
   // DidWriteHTML instead of WillWriteHTML.
   probe::ParseHTML probe(GetDocument(), this);
 
+  FetchBatchScope fetch_batch(this);
+
   bool should_yield = false;
   // If we've yielded more than 2 times, then set the budget to a very large
   // number, to attempt to consume all available tokens in one go. This
@@ -1000,6 +1023,8 @@ void HTMLDocumentParser::Append(const String& input_source) {
 
   if (IsStopped())
     return;
+
+  FetchBatchScope fetch_batch(this);
 
   const SegmentedString source(input_source);
 
@@ -1554,6 +1579,19 @@ void HTMLDocumentParser::FlushPendingPreloads() {
 
     for (auto& preload : preload_data)
       ProcessPreloadData(std::move(preload));
+  }
+}
+
+void HTMLDocumentParser::StartFetchBatch() {
+  GetDocument()->Fetcher()->StartBatch();
+  pending_batch_operations_++;
+}
+
+void HTMLDocumentParser::EndFetchBatch() {
+  if (!IsDetached()) {
+    DCHECK_NE(0u, pending_batch_operations_);
+    pending_batch_operations_--;
+    GetDocument()->Fetcher()->EndBatch();
   }
 }
 

@@ -58,6 +58,7 @@ class BackgroundHTMLScanner;
 class Document;
 class DocumentFragment;
 class Element;
+class FetchBatchScope;
 class HTMLDocument;
 class HTMLParserMetrics;
 class HTMLParserScriptRunner;
@@ -81,6 +82,8 @@ size_t CORE_EXPORT GetDiscardedTokenCountForTesting();
 
 class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                                        private HTMLParserScriptRunnerHost {
+  friend FetchBatchScope;
+
  public:
   HTMLDocumentParser(HTMLDocument&,
                      ParserSynchronizationPolicy,
@@ -243,6 +246,13 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       GUARDED_BY(pending_preload_lock_);
 
   ThreadScheduler* scheduler_;
+
+  // Handle the ref counting of nested batch fetches. This is tracked
+  // independently because the batches need to be fully unwound wid-parse
+  // if the parser is detached from the document while being parsed.
+  void StartFetchBatch();
+  void EndFetchBatch();
+  uint32_t pending_batch_operations_ = 0u;
 };
 
 }  // namespace blink
