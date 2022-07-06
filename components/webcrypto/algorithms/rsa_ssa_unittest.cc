@@ -474,8 +474,7 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadModulusLength) {
 
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");
 
-  for (size_t i = 0; i < std::size(kBadModulusBits); ++i) {
-    const unsigned int modulus_length_bits = kBadModulusBits[i];
+  for (auto modulus_length_bits : kBadModulusBits) {
     blink::WebCryptoAlgorithm algorithm = CreateRsaHashedKeyGenAlgorithm(
         blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
         blink::kWebCryptoAlgorithmIdSha256, modulus_length_bits,
@@ -506,12 +505,12 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadExponent) {
       "010000",  // 65536
   };
 
-  for (size_t i = 0; i < std::size(kPublicExponents); ++i) {
-    SCOPED_TRACE(i);
+  for (auto* const exponent : kPublicExponents) {
+    SCOPED_TRACE(&exponent - &kPublicExponents[0]);
     blink::WebCryptoAlgorithm algorithm = CreateRsaHashedKeyGenAlgorithm(
         blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
         blink::kWebCryptoAlgorithmIdSha256, modulus_length,
-        HexStringToBytes(kPublicExponents[i]));
+        HexStringToBytes(exponent));
 
     blink::WebCryptoKey public_key;
     blink::WebCryptoKey private_key;
@@ -671,21 +670,19 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaPublicKeyBadUsage_SPKI) {
       blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
       blink::kWebCryptoAlgorithmIdSha256);
 
-  blink::WebCryptoKeyUsageMask bad_usages[] = {
+  const blink::WebCryptoKeyUsageMask kBadUsages[] = {
       blink::kWebCryptoKeyUsageSign,
       blink::kWebCryptoKeyUsageSign | blink::kWebCryptoKeyUsageVerify,
       blink::kWebCryptoKeyUsageEncrypt,
       blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
   };
 
-  for (size_t i = 0; i < std::size(bad_usages); ++i) {
-    SCOPED_TRACE(i);
-
+  for (auto usage : kBadUsages) {
     blink::WebCryptoKey public_key;
     ASSERT_EQ(Status::ErrorCreateKeyBadUsages(),
               ImportKey(blink::kWebCryptoKeyFormatSpki,
                         HexStringToBytes(kPublicKeySpkiDerHex), algorithm,
-                        false, bad_usages[i], &public_key));
+                        false, usage, &public_key));
   }
 }
 
@@ -696,7 +693,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaPublicKeyBadUsage_JWK) {
       blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
       blink::kWebCryptoAlgorithmIdSha256);
 
-  blink::WebCryptoKeyUsageMask bad_usages[] = {
+  const blink::WebCryptoKeyUsageMask kBadUsages[] = {
       blink::kWebCryptoKeyUsageSign,
       blink::kWebCryptoKeyUsageSign | blink::kWebCryptoKeyUsageVerify,
       blink::kWebCryptoKeyUsageEncrypt,
@@ -708,20 +705,17 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaPublicKeyBadUsage_JWK) {
   dict.RemoveKey("use");
   dict.SetString("alg", "RS256");
 
-  for (size_t i = 0; i < std::size(bad_usages); ++i) {
-    SCOPED_TRACE(i);
-
+  for (auto usage : kBadUsages) {
     blink::WebCryptoKey public_key;
     ASSERT_EQ(Status::ErrorCreateKeyBadUsages(),
-              ImportKeyJwkFromDict(dict, algorithm, false, bad_usages[i],
-                                   &public_key));
+              ImportKeyJwkFromDict(dict, algorithm, false, usage, &public_key));
   }
 }
 
 // Generate an RSA-SSA key pair with invalid usages. RSA-SSA supports:
 //   'sign', 'verify'
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyBadUsages) {
-  blink::WebCryptoKeyUsageMask bad_usages[] = {
+  const blink::WebCryptoKeyUsageMask kBadUsages[] = {
       blink::kWebCryptoKeyUsageDecrypt,
       blink::kWebCryptoKeyUsageVerify | blink::kWebCryptoKeyUsageDecrypt,
       blink::kWebCryptoKeyUsageWrapKey,
@@ -730,9 +724,7 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyBadUsages) {
   const unsigned int modulus_length = 256;
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");
 
-  for (size_t i = 0; i < std::size(bad_usages); ++i) {
-    SCOPED_TRACE(i);
-
+  for (auto usage : kBadUsages) {
     blink::WebCryptoKey public_key;
     blink::WebCryptoKey private_key;
 
@@ -741,7 +733,7 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyBadUsages) {
                                   blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
                                   blink::kWebCryptoAlgorithmIdSha256,
                                   modulus_length, public_exponent),
-                              true, bad_usages[i], &public_key, &private_key));
+                              true, usage, &public_key, &private_key));
   }
 }
 
@@ -866,9 +858,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportExportJwkRsaPublicKey) {
                              {blink::kWebCryptoAlgorithmIdSha512,
                               blink::kWebCryptoKeyUsageVerify, "RS512"}};
 
-  for (size_t test_index = 0; test_index < std::size(kTests); ++test_index) {
-    SCOPED_TRACE(test_index);
-    const TestCase& test = kTests[test_index];
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(&test - &kTests[0]);
 
     const blink::WebCryptoAlgorithm import_algorithm =
         CreateRsaHashedImportAlgorithm(
@@ -932,23 +923,22 @@ TEST_F(WebCryptoRsaSsaTest, ImportJwkRsaFailures) {
   // The following are specific failure cases for when kty = "RSA".
 
   // Fail if either "n" or "e" is not present or malformed.
-  const std::string kKtyParmName[] = {"n", "e"};
-  for (size_t idx = 0; idx < std::size(kKtyParmName); ++idx) {
+  for (auto* const parm : {"n", "e"}) {
     // Fail on missing parameter.
-    dict.RemoveKey(kKtyParmName[idx]);
+    dict.RemoveKey(parm);
     EXPECT_NE(Status::Success(),
               ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
     RestoreJwkRsaDictionary(&dict);
 
     // Fail on bad b64 parameter encoding.
-    dict.SetString(kKtyParmName[idx], "Qk3f0DsytU8lfza2au #$% Htaw2xpop9yTuH0");
+    dict.SetString(parm, "Qk3f0DsytU8lfza2au #$% Htaw2xpop9yTuH0");
     EXPECT_NE(Status::Success(),
               ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
     RestoreJwkRsaDictionary(&dict);
 
     // Fail on empty parameter.
-    dict.SetString(kKtyParmName[idx], "");
-    EXPECT_EQ(Status::ErrorJwkEmptyBigInteger(kKtyParmName[idx]),
+    dict.SetString(parm, "");
+    EXPECT_EQ(Status::ErrorJwkEmptyBigInteger(parm),
               ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
     RestoreJwkRsaDictionary(&dict);
   }

@@ -191,9 +191,9 @@ blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::DictionaryValue* dict,
       {"sha-512", blink::kWebCryptoAlgorithmIdSha512},
   };
 
-  for (size_t i = 0; i < std::size(kDigestNameToId); ++i) {
-    if (kDigestNameToId[i].name == algorithm_name)
-      return CreateAlgorithm(kDigestNameToId[i].id);
+  for (auto mapping : kDigestNameToId) {
+    if (mapping.name == algorithm_name)
+      return CreateAlgorithm(mapping.id);
   }
 
   return blink::WebCryptoAlgorithm::CreateNull();
@@ -212,20 +212,7 @@ class CompareUsingIndex {
 };
 
 bool CopiesExist(const std::vector<std::vector<uint8_t>>& bufs) {
-  // Sort the indices of |bufs| into a separate vector. This reduces the amount
-  // of data copied versus sorting |bufs| directly.
-  std::vector<size_t> sorted_indices(bufs.size());
-  for (size_t i = 0; i < sorted_indices.size(); ++i)
-    sorted_indices[i] = i;
-  std::sort(sorted_indices.begin(), sorted_indices.end(),
-            CompareUsingIndex(&bufs));
-
-  // Scan for adjacent duplicates.
-  for (size_t i = 1; i < sorted_indices.size(); ++i) {
-    if (bufs[sorted_indices[i]] == bufs[sorted_indices[i - 1]])
-      return true;
-  }
-  return false;
+  return std::set(bufs.begin(), bufs.end()).size() != bufs.size();
 }
 
 blink::WebCryptoAlgorithm CreateAesKeyGenAlgorithm(

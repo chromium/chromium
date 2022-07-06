@@ -95,12 +95,11 @@ Status AesGcmDecrypt(const blink::WebCryptoKey& key,
 class WebCryptoAesGcmTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoAesGcmTest, GenerateKeyBadLength) {
-  const uint16_t kKeyLen[] = {0, 127, 257};
   blink::WebCryptoKey key;
-  for (size_t i = 0; i < std::size(kKeyLen); ++i) {
-    SCOPED_TRACE(i);
+  for (auto len : {0, 127, 257}) {
+    SCOPED_TRACE(len);
     EXPECT_EQ(Status::ErrorGenerateAesKeyLength(),
-              GenerateSecretKey(CreateAesGcmKeyGenAlgorithm(kKeyLen[i]), true,
+              GenerateSecretKey(CreateAesGcmKeyGenAlgorithm(len), true,
                                 blink::kWebCryptoKeyUsageDecrypt, &key));
   }
 }
@@ -202,15 +201,13 @@ TEST_F(WebCryptoAesGcmTest, SampleSets) {
                             Corrupted(test_authentication_tag), &plain_text));
 
     // Try different incorrect tag lengths
-    uint8_t kAlternateTagLengths[] = {0, 8, 96, 120, 128, 160, 255};
-    for (size_t tag_i = 0; tag_i < std::size(kAlternateTagLengths); ++tag_i) {
-      unsigned int wrong_tag_size_bits = kAlternateTagLengths[tag_i];
-      if (test_tag_size_bits == wrong_tag_size_bits)
+    for (unsigned int length : {0, 8, 96, 120, 128, 160, 255}) {
+      if (test_tag_size_bits == length)
         continue;
       EXPECT_NE(Status::Success(),
-                AesGcmDecrypt(key, test_iv, test_additional_data,
-                              wrong_tag_size_bits, test_cipher_text,
-                              test_authentication_tag, &plain_text));
+                AesGcmDecrypt(key, test_iv, test_additional_data, length,
+                              test_cipher_text, test_authentication_tag,
+                              &plain_text));
     }
   }
 }

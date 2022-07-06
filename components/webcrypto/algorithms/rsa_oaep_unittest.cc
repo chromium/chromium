@@ -117,8 +117,7 @@ TEST_F(WebCryptoRsaOaepTest, ExportPublicJwk) {
                    {blink::kWebCryptoAlgorithmIdSha256, "RSA-OAEP-256"},
                    {blink::kWebCryptoAlgorithmIdSha384, "RSA-OAEP-384"},
                    {blink::kWebCryptoAlgorithmIdSha512, "RSA-OAEP-512"}};
-  for (size_t i = 0; i < std::size(kTestData); ++i) {
-    const TestData& test_data = kTestData[i];
+  for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.expected_jwk_alg);
 
     // Import the key in a known-good format
@@ -659,9 +658,8 @@ TEST_F(WebCryptoRsaOaepTest, ImportExportJwkRsaPublicKey) {
       {blink::kWebCryptoAlgorithmIdSha512, blink::kWebCryptoKeyUsageEncrypt,
        "RSA-OAEP-512"}};
 
-  for (size_t test_index = 0; test_index < std::size(kTests); ++test_index) {
-    SCOPED_TRACE(test_index);
-    const TestCase& test = kTests[test_index];
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(&test - &kTests[0]);
 
     const blink::WebCryptoAlgorithm import_algorithm =
         CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaOaep,

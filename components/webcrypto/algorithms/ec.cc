@@ -81,9 +81,9 @@ Status ReadJwkCrv(const JwkReader& jwk,
   if (status.IsError())
     return status;
 
-  for (size_t i = 0; i < std::size(kJwkCrvMappings); ++i) {
-    if (kJwkCrvMappings[i].jwk_curve == jwk_curve) {
-      *named_curve = kJwkCrvMappings[i].named_curve;
+  for (const auto& mapping : kJwkCrvMappings) {
+    if (mapping.jwk_curve == jwk_curve) {
+      *named_curve = mapping.named_curve;
       return Status::Success();
     }
   }
@@ -94,9 +94,9 @@ Status ReadJwkCrv(const JwkReader& jwk,
 // Converts a WebCryptoNamedCurve to an equivalent JWK "crv".
 Status WebCryptoCurveToJwkCrv(blink::WebCryptoNamedCurve named_curve,
                               std::string* jwk_crv) {
-  for (size_t i = 0; i < std::size(kJwkCrvMappings); ++i) {
-    if (kJwkCrvMappings[i].named_curve == named_curve) {
-      *jwk_crv = kJwkCrvMappings[i].jwk_curve;
+  for (const auto& mapping : kJwkCrvMappings) {
+    if (mapping.named_curve == named_curve) {
+      *jwk_crv = mapping.jwk_curve;
       return Status::Success();
     }
   }
