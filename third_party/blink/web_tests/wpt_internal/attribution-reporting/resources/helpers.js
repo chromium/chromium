@@ -62,6 +62,7 @@ const registerAttributionSrc = async (t, {
   trigger,
   cookie,
   method = 'img',
+  extraQueryParams = {},
 }) => {
   const searchParams = new URLSearchParams(location.search);
 
@@ -107,6 +108,9 @@ const registerAttributionSrc = async (t, {
   }
 
   const url = blankURLWithHeaders(headers, status);
+
+  Object.entries(extraQueryParams)
+      .forEach(([key, value]) => url.searchParams.set(key, value));
 
   switch (method) {
     case 'img':
