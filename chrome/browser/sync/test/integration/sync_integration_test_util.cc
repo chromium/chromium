@@ -30,22 +30,3 @@ bool ServerCountMatchStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
       << ModelTypeToDebugString(type_);
   return count_ == actual_count;
 }
-
-PassphraseRequiredChecker::PassphraseRequiredChecker(
-    syncer::SyncServiceImpl* service)
-    : SingleClientStatusChangeChecker(service) {}
-
-bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Passhrase Required";
-  return service()->GetUserSettings()->IsPassphraseRequired();
-}
-
-PassphraseAcceptedChecker::PassphraseAcceptedChecker(
-    syncer::SyncServiceImpl* service)
-    : SingleClientStatusChangeChecker(service) {}
-
-bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Passhrase Accepted";
-  return !service()->GetUserSettings()->IsPassphraseRequired() &&
-         service()->GetUserSettings()->IsUsingExplicitPassphrase();
-}

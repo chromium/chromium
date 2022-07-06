@@ -38,11 +38,6 @@ class TwoClientUserEventsSyncTest : public SyncTest {
         .Wait();
   }
 
-  bool WaitForPassphraseRequiredState(int index, bool desired_state) {
-    return PassphraseRequiredStateChecker(GetSyncService(index), desired_state)
-        .Wait();
-  }
-
   void AddTestBookmarksToClient(int index) {
     ASSERT_TRUE(bookmarks_helper::AddURL(
         index, 0, "What are you syncing about?", GURL(kTestBookmarkURL)));

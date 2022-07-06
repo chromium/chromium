@@ -544,9 +544,7 @@ IN_PROC_BROWSER_TEST_F(
       kDefaultKeyParams.derivation_params, GetFakeServer());
   SetupSyncNoWaitingForCompletion();
 
-  EXPECT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
-          .Wait());
+  EXPECT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       "password"));
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
@@ -575,9 +573,7 @@ IN_PROC_BROWSER_TEST_F(
       kPassphraseKeyParams.derivation_params, GetFakeServer());
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
-          .Wait());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
 
   // Add local passwords.
   const password_manager::PasswordForm password_form2 =
@@ -643,16 +639,12 @@ IN_PROC_BROWSER_TEST_F(
       kPassphraseKeyParams.derivation_params, GetFakeServer());
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
-          .Wait());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
 
   // Mimic that passphrase is provided by the user.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kPassphraseKeyParams.password));
-  ASSERT_TRUE(PassphraseRequiredStateChecker(GetSyncService(0),
-                                             /*desired_stater=*/false)
-                  .Wait());
+  ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(WaitForPasswordForms({password_form1}));
 
   // Add local passwords.
@@ -1208,14 +1200,10 @@ IN_PROC_BROWSER_TEST_F(
                             kCustomPassphraseKeyParams, kTrustedVaultKeyParams),
                         GetFakeServer());
 
-  EXPECT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
-          .Wait());
+  EXPECT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kCustomPassphraseKeyParams.password));
-  EXPECT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
-          .Wait());
+  EXPECT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
 
   // Ensure that client can decrypt with both |kTrustedVaultKeyParams|
   // and |kCustomPassphraseKeyParams|.

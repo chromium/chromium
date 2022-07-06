@@ -215,9 +215,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
   ASSERT_TRUE(CheckInitialState(1));
 
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("passphrase");
-  ASSERT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(1), /*desired_state=*/true)
-          .Wait());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(1)).Wait());
   ASSERT_TRUE(GetSyncService(1)->GetUserSettings()->SetDecryptionPassphrase(
       "passphrase"));
   // Make sure that re-encryption happens before opening the tab (otherwise race

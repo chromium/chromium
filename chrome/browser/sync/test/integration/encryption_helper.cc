@@ -48,18 +48,33 @@ bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
   return given_key_name == expected_key_name_;
 }
 
-PassphraseRequiredStateChecker::PassphraseRequiredStateChecker(
-    syncer::SyncServiceImpl* service,
-    bool desired_state)
-    : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
+PassphraseRequiredChecker::PassphraseRequiredChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
 
-bool PassphraseRequiredStateChecker::IsExitConditionSatisfied(
-    std::ostream* os) {
-  *os << "Waiting until decryption passphrase is " +
-             std::string(desired_state_ ? "required" : "not required");
-  return service()
-             ->GetUserSettings()
-             ->IsPassphraseRequiredForPreferredDataTypes() == desired_state_;
+bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking whether passhrase is required";
+  return service()->GetUserSettings()->IsPassphraseRequired();
+}
+
+PassphraseAcceptedChecker::PassphraseAcceptedChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
+
+bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking whether passhrase is accepted";
+  switch (service()->GetUserSettings()->GetPassphraseType()) {
+    case syncer::PassphraseType::kKeystorePassphrase:
+    case syncer::PassphraseType::kTrustedVaultPassphrase:
+      return false;
+    // With kImplicitPassphrase user needs to enter the passphrase even despite
+    // it's not treat as explicit passphrase.
+    case syncer::PassphraseType::kImplicitPassphrase:
+    case syncer::PassphraseType::kFrozenImplicitPassphrase:
+    case syncer::PassphraseType::kCustomPassphrase:
+      break;
+  }
+  return !service()->GetUserSettings()->IsPassphraseRequired();
 }
 
 TrustedVaultKeyRequiredStateChecker::TrustedVaultKeyRequiredStateChecker(

@@ -206,9 +206,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
       GetFakeServer());
 
   // Data isn't decryptable yet, client should enter passphrase required state.
-  ASSERT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
-          .Wait());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
 
   // Mimic passphrase being provided by Ash, verify that passphrase is no longer
   // required and the data is decryptable.
@@ -220,9 +218,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
                 kKeyParams.derivation_params, kKeyParams.password)));
       });
   client_observer()->OnPassphraseAvailable();
-  EXPECT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
-          .Wait());
+  EXPECT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
 }
 
@@ -245,9 +241,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
   // required.
   client_observer()->OnPassphraseRequired();
 
-  ASSERT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
-          .Wait());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
 
   // Mimic that user enters the passphrase, key should be exposed to Ash.
   base::RunLoop run_loop;
@@ -259,9 +253,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
 
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
-  ASSERT_TRUE(
-      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
-          .Wait());
+  ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
 
   run_loop.Run();
 }

@@ -123,9 +123,12 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
     return ServerPassphraseTypeChecker(expected_passphrase_type).Wait();
   }
 
-  bool WaitForPassphraseRequiredState(bool desired_state) {
-    return PassphraseRequiredStateChecker(GetSyncService(), desired_state)
-        .Wait();
+  bool WaitForPassphraseRequired() {
+    return PassphraseRequiredChecker(GetSyncService()).Wait();
+  }
+
+  bool WaitForPassphraseAccepted() {
+    return PassphraseAcceptedChecker(GetSyncService()).Wait();
   }
 
   bool WaitForClientBookmarkWithTitle(std::string title) {
@@ -200,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted());
 
   EXPECT_TRUE(WaitForClientBookmarkWithTitle("PBKDF2-encrypted bookmark"));
 }
@@ -213,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted());
 
   const std::string kTitle = "Should be encrypted";
   const GURL kURL("https://google.com/encrypted");
@@ -235,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
 
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted());
 
   EXPECT_TRUE(WaitForClientBookmarkWithTitle("scypt-encrypted bookmark"));
 }
@@ -248,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted());
 
   const std::string kTitle = "Should be encrypted";
   const GURL kURL("https://google.com/encrypted");
@@ -348,10 +351,10 @@ IN_PROC_BROWSER_TEST_F(
       ScryptPassphraseKeyParamsForTesting("hunter2");
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
-  ASSERT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/true));
+  ASSERT_TRUE(WaitForPassphraseRequired());
   ASSERT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
-  ASSERT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  ASSERT_TRUE(WaitForPassphraseAccepted());
 
   // Mimic going through CLIENT_DATA_OBSOLETE state.
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
@@ -363,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   // Make sure the client is still able to decrypt the data.
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted());
   const std::string kEncryptedBookmarkTitle = "title2";
   InjectEncryptedServerBookmark(kEncryptedBookmarkTitle,
                                 GURL("https://www.google.com"), kKeyParams);
@@ -392,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   // Make sure the client is still able to decrypt the data.
-  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted());
   const std::string kEncryptedBookmarkTitle = "title2";
 
   NigoriSpecifics nigori;

@@ -41,9 +41,12 @@ class TwoClientCustomPassphraseSyncTest : public SyncTest {
 
   bool WaitForBookmarksToMatch() { return BookmarksMatchChecker().Wait(); }
 
-  bool WaitForPassphraseRequiredState(int index, bool desired_state) {
-    return PassphraseRequiredStateChecker(GetSyncService(index), desired_state)
-        .Wait();
+  bool WaitForPassphraseRequired(int index) {
+    return PassphraseRequiredChecker(GetSyncService(index)).Wait();
+  }
+
+  bool WaitForPassphraseAccepted(int index) {
+    return PassphraseAcceptedChecker(GetSyncService(index)).Wait();
   }
 
   void AddTestBookmarksToClient(int index) {
@@ -62,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
   GetSyncService(kEncryptingClientId)
       ->GetUserSettings()
       ->SetEncryptionPassphrase("hunter2");
-  ASSERT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
-                                             /*desired_state=*/true));
+  ASSERT_TRUE(WaitForPassphraseRequired(kDecryptingClientId));
   EXPECT_FALSE(GetSyncService(kDecryptingClientId)
                    ->GetUserSettings()
                    ->SetDecryptionPassphrase("incorrect passphrase"));
@@ -79,13 +81,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest, ClientsCanSyncData) {
   GetSyncService(kEncryptingClientId)
       ->GetUserSettings()
       ->SetEncryptionPassphrase("hunter2");
-  ASSERT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
-                                             /*desired_state=*/true));
+  ASSERT_TRUE(WaitForPassphraseRequired(kDecryptingClientId));
   EXPECT_TRUE(GetSyncService(kDecryptingClientId)
                   ->GetUserSettings()
                   ->SetDecryptionPassphrase("hunter2"));
-  EXPECT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
-                                             /*desired_state=*/false));
+  EXPECT_TRUE(WaitForPassphraseAccepted(kDecryptingClientId));
   AddTestBookmarksToClient(kEncryptingClientId);
 
   ASSERT_TRUE(
