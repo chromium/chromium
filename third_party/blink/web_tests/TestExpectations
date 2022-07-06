@@ -4307,6 +4307,12 @@ crbug.com/1197444 [ Linux ] virtual/scroll-unification-prefer_compositing_to_lcd
 
 crbug.com/715718 external/wpt/media-source/mediasource-remove.html [ Failure Pass ]
 
+# Temporarily disabled since tests don't make window key on Mac
+crbug.com/1267867 [ Mac ] external/wpt/pointerevents/pointerlock/* [ Skip ]
+crbug.com/1267867 [ Mac ] external/wpt/pointerlock/* [ Skip ]
+crbug.com/1267867 [ Mac ] http/tests/pointer-lock/* [ Skip ]
+crbug.com/1267867 [ Mac ] pointer-lock/* [ Skip ]
+
 # Feature Policy changes fullscreen behaviour, tests need updating
 crbug.com/718155 fullscreen/full-screen-restrictions.html [ Failure Timeout ]
 

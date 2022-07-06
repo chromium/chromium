@@ -49,6 +49,7 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewMac {
     return mouse_lock_unadjusted_movement_;
   }
   bool HasFocus() override { return true; }
+  bool CanBeMouseLocked() override { return true; }
 };
 
 void InstallCreateHooksForPointerLockBrowserTests() {

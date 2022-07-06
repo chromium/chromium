@@ -108,6 +108,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   std::u16string GetSelectedText() override;
   bool IsMouseLocked() override;
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
+  bool CanBeMouseLocked() override;
   bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes) override;
   void SetBackgroundColor(SkColor color) override;
   absl::optional<SkColor> GetBackgroundColor() override;

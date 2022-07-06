@@ -2919,7 +2919,7 @@ void RenderWidgetHostImpl::RequestMouseLock(
     return;
   }
 
-  if (!view_ || !view_->HasFocus()) {
+  if (!view_ || !view_->CanBeMouseLocked()) {
     std::move(response).Run(blink::mojom::PointerLockResult::kWrongDocument,
                             /*context=*/mojo::NullRemote());
     return;

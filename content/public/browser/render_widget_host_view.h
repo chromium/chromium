@@ -178,6 +178,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Get the pointer lock unadjusted movement setting for testing.
   // Returns true if mouse is locked and is in unadjusted movement mode.
   virtual bool GetIsMouseLockedUnadjustedMovementForTesting() = 0;
+  // Whether the view can trigger pointer lock. This is the same as `HasFocus`
+  // on non-Mac platforms, but on Mac it also ensures that the window is key.
+  virtual bool CanBeMouseLocked() = 0;
 
   // Start/Stop intercepting future system keyboard events.
   virtual bool LockKeyboard(
