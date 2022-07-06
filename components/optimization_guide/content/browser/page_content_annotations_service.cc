@@ -492,7 +492,7 @@ void PageContentAnnotationsService::OnURLQueried(
     PersistAnnotationsCallback callback,
     PageContentAnnotationsType annotation_type,
     history::QueryURLResult url_result) {
-  if (!url_result.success) {
+  if (!url_result.success || url_result.visits.empty()) {
     LogPageContentAnnotationsStorageStatus(
         PageContentAnnotationsStorageStatus::kNoVisitsForUrl, annotation_type);
     return;
