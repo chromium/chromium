@@ -343,7 +343,7 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
       // clang-format off
       "DELETE FROM rate_limits "
       DCHECK_SQL_INDEXED_BY("rate_limit_time_idx")
-      "WHERE time <= ?";  // clang-format on
+      "WHERE time<=?";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
   statement.BindTime(0, timestamp);
@@ -360,7 +360,7 @@ bool RateLimitTable::ClearDataForSourceIds(
     return false;
 
   static constexpr char kDeleteRateLimitSql[] =
-      "DELETE FROM rate_limits WHERE source_id = ?";
+      "DELETE FROM rate_limits WHERE source_id=?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
 

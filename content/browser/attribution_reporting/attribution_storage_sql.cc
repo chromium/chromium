@@ -94,7 +94,7 @@ constexpr int64_t kUnsetReportId = -1;
   "WHERE " column "=?"
 
 #define ATTRIBUTION_NEXT_REPORT_TIME_SQL(table) \
-  "SELECT MIN(report_time) FROM " table " WHERE report_time>?"
+  "SELECT MIN(report_time)FROM " table " WHERE report_time>?"
 
 // Set the report time for all reports that should have been sent before now
 // to now + a random number of microseconds between `min_delay` and
@@ -106,7 +106,7 @@ constexpr int64_t kUnsetReportId = -1;
 // take the remainder modulo 1, which is always 0.
 #define ATTRIBUTION_SET_REPORT_TIME_SQL(table) \
   "UPDATE " table                              \
-  " SET report_time=?+ABS(RANDOM()%?) "        \
+  " SET report_time=?+ABS(RANDOM()%?)"         \
   "WHERE report_time<?"
 
 // clang-format off
@@ -136,7 +136,7 @@ constexpr int64_t kUnsetReportId = -1;
   ",C.trigger_data,C.trigger_time,C.report_time,C.report_id,"       \
   "C.priority,C.failed_send_attempts,C.external_report_id,C.debug_key "      \
   "FROM event_level_reports C "                                                      \
-  "JOIN sources I ON C.source_id = I.source_id "
+  "JOIN sources I ON C.source_id=I.source_id "
 
 #define ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL  \
   "SELECT "                                                            \
@@ -145,7 +145,7 @@ constexpr int64_t kUnsetReportId = -1;
   "A.external_report_id,A.failed_send_attempts,A.initial_report_time " \
   "FROM aggregatable_report_metadata A "                               \
   DCHECK_SQL_INDEXED_BY("aggregate_report_time_idx")                   \
-  "JOIN sources I ON A.source_id = I.source_id "
+  "JOIN sources I ON A.source_id=I.source_id "
 
 // This query should be reasonably optimized via
 // `kConversionDestinationIndexSql`. The conversion origin is the third
@@ -358,7 +358,7 @@ absl::optional<StoredSourceData> ReadSourceToAttribute(
       // clang-format off
       "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
       " FROM sources "
-      "WHERE source_id = ?";  // clang-format on
+      "WHERE source_id=?";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kReadSourceToAttributeSql));
   statement.BindInt64(0, *source_id);
@@ -420,9 +420,9 @@ AttributionStorageSql::DeactivateSources(
         "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
         " FROM sources "
         DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
-        "WHERE destination_site = ? AND reporting_origin = ? AND "
-        "((event_level_active = 1 AND num_attributions > 0) OR "
-        "(aggregatable_active = 1 AND aggregatable_budget_consumed > 0)) "
+        "WHERE destination_site=? AND reporting_origin=? AND"
+        "((event_level_active=1 AND num_attributions>0)OR"
+        "(aggregatable_active=1 AND aggregatable_budget_consumed>0)) "
         "LIMIT ?"; // clang-format on
     sql::Statement get_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kGetSourcesToReturnSql));
@@ -450,10 +450,10 @@ AttributionStorageSql::DeactivateSources(
   static constexpr char kDeactivateSourcesSql[] =
       "UPDATE sources "
       DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
-      "SET event_level_active = 0,aggregatable_active = 0 "
-      "WHERE destination_site = ? AND reporting_origin = ? AND "
-      "((event_level_active = 1 AND num_attributions > 0) OR "
-      "(aggregatable_active = 1 AND aggregatable_budget_consumed > 0))";
+      "SET event_level_active=0,aggregatable_active=0 "
+      "WHERE destination_site=? AND reporting_origin=? AND"
+      "((event_level_active=1 AND num_attributions>0)OR"
+      "(aggregatable_active=1 AND aggregatable_budget_consumed>0))";
   sql::Statement deactivate_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSourcesSql));
   deactivate_statement.BindString(0, serialized_conversion_destination);
@@ -669,8 +669,8 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   static constexpr char kMinPrioritySql[] =
       "SELECT priority,report_id "
       "FROM event_level_reports "
-      "WHERE source_id = ? AND report_time = ? "
-      "ORDER BY priority ASC, trigger_time DESC "
+      "WHERE source_id=? AND report_time=? "
+      "ORDER BY priority ASC,trigger_time DESC "
       "LIMIT 1";
   sql::Statement min_priority_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kMinPrioritySql));
@@ -685,7 +685,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // generated in the future.
   if (!has_matching_report) {
     static constexpr char kDeactivateSql[] =
-        "UPDATE sources SET event_level_active = 0 WHERE source_id = ?";
+        "UPDATE sources SET event_level_active=0 WHERE source_id=?";
     sql::Statement deactivate_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
     deactivate_statement.BindInt64(0, *source.source_id());
@@ -972,9 +972,9 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   static constexpr char kGetMatchingSourcesSql[] =
       "SELECT source_id FROM sources "
       DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
-      "WHERE destination_site = ? AND reporting_origin = ? "
-      "AND (event_level_active = 1 OR aggregatable_active = 1) "
-      "AND expiry_time > ? "
+      "WHERE destination_site=? AND reporting_origin=? "
+      "AND(event_level_active=1 OR aggregatable_active=1)"
+      "AND expiry_time>? "
       "ORDER BY priority DESC,source_time DESC";
 
   sql::Statement statement(
@@ -1150,8 +1150,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   if (maybe_replace_lower_priority_report_result ==
       MaybeReplaceLowerPriorityEventLevelReportResult::kAddNewReport) {
     static constexpr char kUpdateImpressionForConversionSql[] =
-        "UPDATE sources SET num_attributions = num_attributions + 1 "
-        "WHERE source_id = ?";
+        "UPDATE sources SET num_attributions=num_attributions+1 "
+        "WHERE source_id=?";
     sql::Statement impression_update_statement(db_->GetCachedStatement(
         SQL_FROM_HERE, kUpdateImpressionForConversionSql));
 
@@ -1300,7 +1300,7 @@ AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
   // (https://sqlite.org/lang_select.html#limitoffset).
   static constexpr char kGetReportsSql[] =
       ATTRIBUTION_SELECT_EVENT_LEVEL_REPORT_AND_SOURCE_COLUMNS_SQL
-      "WHERE C.report_time <= ? LIMIT ?";
+      "WHERE C.report_time<=? LIMIT ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetReportsSql));
   statement.BindTime(0, max_report_time);
@@ -1383,7 +1383,7 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
     AttributionReport::EventLevelData::Id conversion_id) {
   static constexpr char kGetReportSql[] =
       ATTRIBUTION_SELECT_EVENT_LEVEL_REPORT_AND_SOURCE_COLUMNS_SQL
-      "WHERE C.report_id = ?";
+      "WHERE C.report_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetReportSql));
   statement.BindInt64(0, *conversion_id);
@@ -1425,7 +1425,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   static constexpr char kSelectExpiredSourcesSql[] =
       "SELECT source_id FROM sources "
       DCHECK_SQL_INDEXED_BY("sources_by_expiry_time")
-      "WHERE expiry_time <= ? AND "
+      "WHERE expiry_time<=? AND "
       "source_id NOT IN("
       "SELECT source_id FROM event_level_reports"
       DCHECK_SQL_INDEXED_BY("event_level_reports_by_source_id")
@@ -1447,7 +1447,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   static constexpr char kSelectInactiveSourcesSql[] =
       "SELECT source_id FROM sources "
       DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
-      "WHERE event_level_active = 0 AND aggregatable_active = 0 AND "
+      "WHERE event_level_active=0 AND aggregatable_active=0 AND "
       "source_id NOT IN("
       "SELECT source_id FROM event_level_reports"
       DCHECK_SQL_INDEXED_BY("event_level_reports_by_source_id")
@@ -1477,7 +1477,7 @@ bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
 bool AttributionStorageSql::DeleteReportInternal(
     AttributionReport::EventLevelData::Id report_id) {
   static constexpr char kDeleteReportSql[] =
-      "DELETE FROM event_level_reports WHERE report_id = ?";
+      "DELETE FROM event_level_reports WHERE report_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteReportSql));
   statement.BindInt64(0, *report_id);
@@ -1611,7 +1611,7 @@ void AttributionStorageSql::ClearData(
       "SELECT I.source_origin,I.destination_origin,I.reporting_origin,"
       "I.source_id,C.report_id "
       "FROM sources I LEFT JOIN event_level_reports C ON "
-      "C.source_id = I.source_id WHERE"
+      "C.source_id=I.source_id WHERE"
       "(I.source_time BETWEEN ?1 AND ?2)OR"
       "(C.trigger_time BETWEEN ?1 AND ?2)";
   sql::Statement statement(
@@ -1675,7 +1675,7 @@ void AttributionStorageSql::ClearData(
   // Delete all unattributed reports here to ensure everything is cleaned
   // up.
   static constexpr char kDeleteVestigialConversionSql[] =
-      "DELETE FROM event_level_reports WHERE source_id = ?";
+      "DELETE FROM event_level_reports WHERE source_id=?";
   sql::Statement delete_vestigial_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteVestigialConversionSql));
   for (StoredSource::Id source_id : source_ids_to_delete) {
@@ -1767,7 +1767,7 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
       // clang-format off
       "SELECT COUNT(source_origin)FROM sources "
       DCHECK_SQL_INDEXED_BY("sources_by_origin")
-      "WHERE source_origin = ?";  // clang-format on
+      "WHERE source_origin=?";  // clang-format on
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountSourcesSql));
@@ -1786,7 +1786,7 @@ AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
 
   static constexpr char kCountReportsSql[] =
       "SELECT COUNT(*)FROM dedup_keys "
-      "WHERE source_id = ? AND dedup_key = ?";
+      "WHERE source_id=? AND dedup_key=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountReportsSql));
   statement.BindInt64(0, *source_id);
@@ -1842,8 +1842,8 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
       // clang-format off
       "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
       " FROM sources "
-      "WHERE (event_level_active = 1 OR aggregatable_active = 1) AND "
-      "expiry_time > ? LIMIT ?";  // clang-format on
+      "WHERE(event_level_active=1 OR aggregatable_active=1)AND "
+      "expiry_time>? LIMIT ?";  // clang-format on
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetActiveSourcesSql));
@@ -1874,7 +1874,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
 absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
     StoredSource::Id source_id) {
   static constexpr char kDedupKeySql[] =
-      "SELECT dedup_key FROM dedup_keys WHERE source_id = ?";
+      "SELECT dedup_key FROM dedup_keys WHERE source_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDedupKeySql));
   statement.BindInt64(0, *source_id);
@@ -2332,7 +2332,7 @@ bool AttributionStorageSql::DeleteSources(
     return false;
 
   static constexpr char kDeleteSourcesSql[] =
-      "DELETE FROM sources WHERE source_id = ?";
+      "DELETE FROM sources WHERE source_id=?";
   sql::Statement delete_impression_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSourcesSql));
 
@@ -2344,7 +2344,7 @@ bool AttributionStorageSql::DeleteSources(
   }
 
   static constexpr char kDeleteDedupKeySql[] =
-      "DELETE FROM dedup_keys WHERE source_id = ?";
+      "DELETE FROM dedup_keys WHERE source_id=?";
   sql::Statement delete_dedup_key_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteDedupKeySql));
 
@@ -2776,7 +2776,7 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
     AttributionReport::AggregatableAttributionData::Id report_id) {
   static constexpr char kGetReportSql[] =
       ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL
-      "WHERE A.aggregation_id = ?";
+      "WHERE A.aggregation_id=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetReportSql));
   statement.BindInt64(0, *report_id);
