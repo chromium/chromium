@@ -271,11 +271,11 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
     // TODO(crbug.com/1327973): Temporarily log additional information for
     // INVALID_SENDER errors. Remove once the investigation is complete!
     if (status == RegistrationRequest::Status::INVALID_SENDER) {
-      SCOPED_CRASH_KEY_STRING32("gcm_registration", "url",
+      SCOPED_CRASH_KEY_STRING64("gcm_registration", "url",
                                 source->GetFinalURL().spec());
-      SCOPED_CRASH_KEY_STRING32("gcm_registration", "request_body",
-                                request_body);
-      SCOPED_CRASH_KEY_STRING32("gcm_registration", "response_body", response);
+      SCOPED_CRASH_KEY_STRING256("gcm_registration", "request_body",
+                                 request_body);
+      SCOPED_CRASH_KEY_STRING256("gcm_registration", "response_body", response);
       base::debug::DumpWithoutCrashing(FROM_HERE,
                                        /*time_between_dumps=*/base::Hours(12));
     }
