@@ -159,6 +159,21 @@ static void ** NextStackFrame(void **old_frame_pointer, const void *uc) {
     const uintptr_t max_size = STRICT_UNWINDING ? 100000 : 1000000;
     const uintptr_t frame_size =
         ComputeStackFrameSize(old_frame_pointer, new_frame_pointer);
+
+    // If we have a alternate signal stack, the stack pointer may not be
+    // contiguous. In such a case, we can simply skip the check and assume that
+    // the non-contiguity is permissible.
+    if (frame_size == kUnknownFrameSize) {
+      assert(old_frame_pointer >= new_frame_pointer);
+
+      stack_t ss{};
+      if (sigaltstack(nullptr, &ss) == 0) {
+        if (ss.ss_flags & SS_DISABLE)
+          return nullptr;
+        return new_frame_pointer;
+      }
+    }
+
     if (frame_size == kUnknownFrameSize || frame_size > max_size)
       return nullptr;
   }
