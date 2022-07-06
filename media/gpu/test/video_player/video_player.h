@@ -99,8 +99,6 @@ class VideoPlayer {
   size_t GetCurrentFrame() const;
   // Get the current state of the video player.
   VideoPlayerState GetState() const;
-  // Get the frame renderer associated with the video player.
-  FrameRendererDummy* GetFrameRenderer() const;
 
   // Wait for an event to occur the specified number of times. All events that
   // occurred since last calling this function will be taken into account. All

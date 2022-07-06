@@ -78,8 +78,6 @@ class VideoDecoderClient {
   bool WaitForFrameProcessors();
   // Wait until the renderer has finished rendering all queued frames.
   void WaitForRenderer();
-  // Get the frame renderer associated with the video decoder client.
-  FrameRendererDummy* GetFrameRenderer() const;
 
   // Initialize the video decoder for the specified |video|. This function can
   // be called multiple times and needs to be called before Play().

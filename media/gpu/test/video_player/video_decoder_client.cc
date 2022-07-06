@@ -137,10 +137,6 @@ void VideoDecoderClient::WaitForRenderer() {
   frame_renderer_->WaitUntilRenderingDone();
 }
 
-FrameRendererDummy* VideoDecoderClient::GetFrameRenderer() const {
-  return frame_renderer_.get();
-}
-
 void VideoDecoderClient::Initialize(const Video* video) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
   DCHECK(video);

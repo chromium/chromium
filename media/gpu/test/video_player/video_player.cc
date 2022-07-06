@@ -172,10 +172,6 @@ VideoPlayerState VideoPlayer::GetState() const {
   return video_player_state_;
 }
 
-FrameRendererDummy* VideoPlayer::GetFrameRenderer() const {
-  return decoder_client_->GetFrameRenderer();
-}
-
 bool VideoPlayer::WaitForEvent(VideoPlayerEvent event, size_t times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(times, 1u);
