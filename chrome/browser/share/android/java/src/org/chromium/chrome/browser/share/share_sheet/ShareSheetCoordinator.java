@@ -74,7 +74,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
-    private boolean mDisableUsageRankingForTesting;
     private Set<Integer> mContentTypes;
     private Activity mActivity;
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -146,6 +145,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
         mProfileSupplier = profileSupplier;
+        mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
+                mBottomSheet, mShareStartTime, mLinkGenerationStatusForMetrics,
+                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfileSupplier);
     }
 
     protected void destroy() {
@@ -308,11 +310,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 && mTabProvider != null && mTabProvider.hasValue();
     }
 
-    @VisibleForTesting
-    void setDisableUsageRankingForTesting(boolean shouldDisableUsageRanking) {
-        mDisableUsageRankingForTesting = shouldDisableUsageRanking;
-    }
-
     /**
      * Create third-party property models.
      *
@@ -334,23 +331,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return;
         }
 
-        mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
-                mBottomSheet, mShareStartTime, mLinkGenerationStatusForMetrics,
-                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfileSupplier);
-
-        if (!mDisableUsageRankingForTesting) {
-            mShareSheetUsageRankingHelper.createThirdPartyPropertyModelsFromUsageRanking(
-                    activity, params, contentTypes, saveLastUsed, callback);
-            return;
-        }
-
-        List<PropertyModel> models = mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet,
-                contentTypes, params, saveLastUsed, mShareStartTime,
-                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails);
-        models.add(mShareSheetUsageRankingHelper.createMorePropertyModel(
-                activity, params, saveLastUsed));
-
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(models));
+        mShareSheetUsageRankingHelper.createThirdPartyPropertyModelsFromUsageRanking(
+                activity, params, contentTypes, saveLastUsed, callback);
     }
 
     class ResolveInfoPackageNameComparator implements Comparator<ResolveInfo> {

@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -16,7 +14,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -33,9 +30,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -55,8 +50,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Tests {@link ShareSheetCoordinator}.
@@ -131,7 +124,6 @@ public final class ShareSheetCoordinatorTest {
         mShareSheetCoordinator =
                 new ShareSheetCoordinator(mController, mLifecycleDispatcher, mTabProvider,
                         mPropertyModelBuilder, null, null, false, null, null, mProfileSupplier);
-        mShareSheetCoordinator.setDisableUsageRankingForTesting(true);
     }
 
     @Test
@@ -143,51 +135,5 @@ public final class ShareSheetCoordinatorTest {
                 mActivity, mParams, /*chromeShareExtras=*/null,
                 ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST);
         assertEquals("Property model list should be empty.", 0, propertyModels.size());
-    }
-
-    @Test
-    @SmallTest
-    public void testCreateThirdPartyPropertyModels() throws TimeoutException {
-        final AtomicReference<List<PropertyModel>> resultPropertyModels = new AtomicReference<>();
-        CallbackHelper helper = new CallbackHelper();
-        mShareSheetCoordinator.createThirdPartyPropertyModels(mActivity, mParams,
-                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
-                /*saveLastUsed=*/false, models -> {
-                    resultPropertyModels.set(models);
-                    helper.notifyCalled();
-                });
-        helper.waitForFirst();
-        List<PropertyModel> propertyModels = resultPropertyModels.get();
-
-        assertEquals("Incorrect number of property models.", 3, propertyModels.size());
-        assertEquals("First property model isn't testModel1.", "testModel1",
-                propertyModels.get(0).get(ShareSheetItemViewProperties.LABEL));
-        assertEquals("Second property model isn't testModel2.", "testModel2",
-                propertyModels.get(1).get(ShareSheetItemViewProperties.LABEL));
-        assertEquals("Third property model isn't More.",
-                mActivity.getResources().getString(R.string.sharing_more_icon_label),
-                propertyModels.get(2).get(ShareSheetItemViewProperties.LABEL));
-    }
-
-    @Test
-    @SmallTest
-    public void testClickMoreRemovesCallback() throws TimeoutException {
-        final AtomicReference<List<PropertyModel>> resultPropertyModels = new AtomicReference<>();
-        CallbackHelper helper = new CallbackHelper();
-        mShareSheetCoordinator.createThirdPartyPropertyModels(mActivity, mParams,
-                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
-                /*saveLastUsed=*/false, models -> {
-                    resultPropertyModels.set(models);
-                    helper.notifyCalled();
-                });
-        helper.waitForFirst();
-        List<PropertyModel> propertyModels = resultPropertyModels.get();
-
-        View.OnClickListener onClickListener =
-                propertyModels.get(2).get(ShareSheetItemViewProperties.CLICK_LISTENER);
-
-        assertNotNull("Callback should not be null before pressing More", mParams.getCallback());
-        onClickListener.onClick(null);
-        assertNull("Callback should be null after pressing More", mParams.getCallback());
     }
 }

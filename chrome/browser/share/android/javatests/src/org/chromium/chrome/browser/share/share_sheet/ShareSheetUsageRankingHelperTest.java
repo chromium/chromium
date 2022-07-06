@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -139,5 +142,30 @@ public class ShareSheetUsageRankingHelperTest {
         assertEquals("Second property model isn't More.",
                 mActivity.getResources().getString(R.string.sharing_more_icon_label),
                 propertyModels.get(1).get(ShareSheetItemViewProperties.LABEL));
+    }
+
+    @Test
+    @SmallTest
+    public void testClickMoreRemovesCallback() throws TimeoutException {
+        List<String> targets = new ArrayList<String>();
+        targets.add("$more");
+        final AtomicReference<List<PropertyModel>> resultPropertyModels = new AtomicReference<>();
+        CallbackHelper helper = new CallbackHelper();
+
+        mShareSheetUsageRankingHelper.setTargetsForTesting(targets);
+        mShareSheetUsageRankingHelper.createThirdPartyPropertyModelsFromUsageRanking(
+                mActivity, mParams, mContentTypes, /*saveLastUsed=*/false, models -> {
+                    resultPropertyModels.set(models);
+                    helper.notifyCalled();
+                });
+        helper.waitForFirst();
+        List<PropertyModel> propertyModels = resultPropertyModels.get();
+
+        View.OnClickListener onClickListener =
+                propertyModels.get(0).get(ShareSheetItemViewProperties.CLICK_LISTENER);
+
+        assertNotNull("Callback should not be null before pressing More", mParams.getCallback());
+        onClickListener.onClick(null);
+        assertNull("Callback should be null after pressing More", mParams.getCallback());
     }
 }
