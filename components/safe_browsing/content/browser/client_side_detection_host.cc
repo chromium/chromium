@@ -400,6 +400,9 @@ void ClientSideDetectionHost::DidFinishNavigation(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    return;
+
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
