@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -469,26 +470,76 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   DCHECK(device_task_runner_->BelongsToCurrentThread());
   DCHECK(!desktop_id.is_null());
 
+  enum DesktopCaptureImplementation {
+    kNoImplementation,
+    kScreenCaptureDeviceAndroid,
+    kScreenCaptureKitDeviceMac,
+    kDesktopCaptureDeviceMac,
+    kLegacyDesktopCaptureDevice,
+    kImplementationCount,
+  };
+  auto implementation = kNoImplementation;
+
   std::unique_ptr<media::VideoCaptureDevice> video_capture_device;
 #if BUILDFLAG(IS_ANDROID)
-  video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>();
+  if ((video_capture_device = std::make_unique<ScreenCaptureDeviceAndroid>()))
+    implementation = DesktopCaptureImplementation::kScreenCaptureDeviceAndroid;
 #else
 #if BUILDFLAG(IS_MAC)
   // Prefer using ScreenCaptureKit. After that try DesktopCaptureDeviceMac, and
   // if both fail, use the generic DesktopCaptureDevice.
   if (!video_capture_device &&
       base::FeatureList::IsEnabled(kScreenCaptureKitMac)) {
-    video_capture_device = CreateScreenCaptureKitDeviceMac(desktop_id);
+    if ((video_capture_device = CreateScreenCaptureKitDeviceMac(desktop_id)))
+      implementation = kScreenCaptureKitDeviceMac;
   }
   if (!video_capture_device &&
       base::FeatureList::IsEnabled(kDesktopCaptureMacV2)) {
-    video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id);
+    if ((video_capture_device = CreateDesktopCaptureDeviceMac(desktop_id)))
+      implementation = kDesktopCaptureDeviceMac;
   }
 #endif
-  if (!video_capture_device)
-    video_capture_device = DesktopCaptureDevice::Create(desktop_id);
+  if (!video_capture_device &&
+      (video_capture_device = DesktopCaptureDevice::Create(desktop_id))) {
+    implementation = kLegacyDesktopCaptureDevice;
+  }
 #endif
-
+  DVLOG(1) << __func__ << " implementation " << implementation << " type "
+           << desktop_id.type;
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum DesktopCaptureImplementationAndType {
+    kNoImplementationTypeNone = 0,
+    kNoImplementationTypeScreen = 1,
+    kNoImplementationTypeWindow = 2,
+    kNoImplementationTypeWebContents = 3,
+    kScreenCaptureDeviceAndroidTypeNone = 4,
+    kScreenCaptureDeviceAndroidTypeScreen = 5,
+    kScreenCaptureDeviceAndroidTypeWindow = 6,
+    kScreenCaptureDeviceAndroidTypeWebContents = 7,
+    kScreenCaptureKitDeviceMacTypeNone = 8,
+    kScreenCaptureKitDeviceMacTypeScreen = 9,
+    kScreenCaptureKitDeviceMacTypeWindow = 10,
+    kScreenCaptureKitDeviceMacTypeWebContents = 11,
+    kDesktopCaptureDeviceMacTypeNone = 12,
+    kDesktopCaptureDeviceMacTypeScreen = 13,
+    kDesktopCaptureDeviceMacTypeWindow = 14,
+    kDesktopCaptureDeviceMacTypeWebContents = 15,
+    kLegacyDesktopCaptureDeviceTypeNone = 16,
+    kLegacyDesktopCaptureDeviceTypeScreen = 17,
+    kLegacyDesktopCaptureDeviceTypeWindow = 18,
+    kLegacyDesktopCaptureDeviceTypeWebContents = 19,
+    kMaxValue = kLegacyDesktopCaptureDeviceTypeWebContents,
+  };
+  constexpr int kDesktopIdTypeCount = 4;
+  static_assert(kDesktopIdTypeCount * kImplementationCount ==
+                DesktopCaptureImplementationAndType::kMaxValue + 1);
+  auto implementation_and_type =
+      static_cast<DesktopCaptureImplementationAndType>(
+          implementation * kDesktopIdTypeCount + desktop_id.type);
+  base::UmaHistogramEnumeration(
+      "Media.VideoCaptureManager.DesktopCaptureImplementationAndType",
+      implementation_and_type);
   if (video_capture_device)
     video_capture_device->AllocateAndStart(params, std::move(device_client));
   std::move(result_callback).Run(std::move(video_capture_device));

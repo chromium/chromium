@@ -24353,6 +24353,29 @@ Called by update_debug_scenarios.py.-->
   <int value="17" label="Desktop capture changed source via notification bar."/>
 </enum>
 
+<enum name="DesktopCaptureImplementationAndType">
+  <int value="0" label="NoImplementationTypeNone"/>
+  <int value="1" label="NoImplementationTypeScreen"/>
+  <int value="2" label="NoImplementationTypeWindow"/>
+  <int value="3" label="NoImplementationTypeWebContents"/>
+  <int value="4" label="ScreenCaptureDeviceAndroidTypeNone"/>
+  <int value="5" label="ScreenCaptureDeviceAndroidTypeScreen"/>
+  <int value="6" label="ScreenCaptureDeviceAndroidTypeWindow"/>
+  <int value="7" label="ScreenCaptureDeviceAndroidTypeWebContents"/>
+  <int value="8" label="ScreenCaptureKitDeviceMacTypeNone"/>
+  <int value="9" label="ScreenCaptureKitDeviceMacTypeScreen"/>
+  <int value="10" label="ScreenCaptureKitDeviceMacTypeWindow"/>
+  <int value="11" label="ScreenCaptureKitDeviceMacTypeWebContents"/>
+  <int value="12" label="DesktopCaptureDeviceMacTypeNone"/>
+  <int value="13" label="DesktopCaptureDeviceMacTypeScreen"/>
+  <int value="14" label="DesktopCaptureDeviceMacTypeWindow"/>
+  <int value="15" label="DesktopCaptureDeviceMacTypeWebContents"/>
+  <int value="16" label="LegacyDesktopCaptureDeviceTypeNone"/>
+  <int value="17" label="LegacyDesktopCaptureDeviceTypeScreen"/>
+  <int value="18" label="LegacyDesktopCaptureDeviceTypeWindow"/>
+  <int value="19" label="LegacyDesktopCaptureDeviceTypeWebContents"/>
+</enum>
+
 <enum name="DesktopIOSPromotionDismissalReason">
   <obsolete>
     Deprecated 11/2018 in issue 894963.
