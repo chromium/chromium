@@ -337,11 +337,16 @@ export function testUndefinedThresholdAndSizeStats() {
     totalSize: 20 * 1024 * 1024 * 1024,     // 20 GB
     remainingSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   };
+  const testSizeStatsFull = {
+    totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+    remainingSize: 0,                    // full
+  };
 
   assertFalse(isBelowThreshold(undefined, undefined));
   assertFalse(isBelowThreshold(testMinSizeThreshold, undefined));
   assertFalse(isBelowThreshold(testMinRatioThreshold, undefined));
   assertFalse(isBelowThreshold(undefined, testSizeStats));
+  assertTrue(isBelowThreshold(testMinRatioThreshold, testSizeStatsFull));
 }
 
 /**

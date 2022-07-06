@@ -1735,5 +1735,11 @@ util.getLocaleBasedWeekStart = () => {
  */
 class UserCanceledError extends Error {}
 
+/**
+ * Returns whether the given value is null or undefined.
+ * @param {*} value
+ * @returns {boolean}
+ */
+util.isNullOrUndefined = (value) => value === null || value === undefined;
 
 export {util, UserCanceledError};
