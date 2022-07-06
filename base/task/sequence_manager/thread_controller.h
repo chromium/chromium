@@ -241,10 +241,11 @@ class ThreadController {
       explicit RunLevel(State initial_state, bool is_nested);
       ~RunLevel();
 
-      // Moveable for STL compat. Marks |other| as idle so it noops on
-      // destruction after handing off its responsibility.
+      // Move-constructible for STL compat. Flags `other.was_moved_` so it noops
+      // on destruction after handing off its responsibility. Move-assignment
+      // is not necessary nor possible as not all members are assignable.
       RunLevel(RunLevel&& other);
-      RunLevel& operator=(RunLevel&& other);
+      RunLevel& operator=(RunLevel&&) = delete;
 
       void UpdateState(State new_state);
 
@@ -256,6 +257,22 @@ class ThreadController {
 
       SampleMetadata thread_controller_sample_metadata_;
       size_t thread_controller_active_id_ = 0;
+
+      // Toggles to true when used as RunLevel&& input to construct another
+      // RunLevel. This RunLevel's destructor will then no-op.
+      class TruePostMove {
+       public:
+        TruePostMove() = default;
+        TruePostMove(TruePostMove&& other) { other.was_moved_ = true; }
+        // Not necessary for now.
+        TruePostMove& operator=(TruePostMove&&) = delete;
+
+        explicit operator bool() { return was_moved_; }
+
+       private:
+        bool was_moved_ = false;
+      };
+      TruePostMove was_moved_;
     };
 
     [[maybe_unused]] const ThreadController& outer_;

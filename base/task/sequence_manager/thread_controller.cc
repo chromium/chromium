@@ -126,27 +126,21 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(State initial_state,
 }
 
 ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
-  UpdateState(kIdle);
-  // Intentionally ordered after UpdateState(kIdle), reinstantiates
-  // thread_controller_sample_metadata_ when yielding back to a parent RunLevel
-  // (which is active by definition as it is currently running this one).
-  if (is_nested_) {
-    thread_controller_sample_metadata_.Set(
-        static_cast<int64_t>(++thread_controller_active_id_));
+  if (!was_moved_) {
+    UpdateState(kIdle);
+    // Intentionally ordered after UpdateState(kIdle), reinstantiates
+    // thread_controller_sample_metadata_ when yielding back to a parent
+    // RunLevel (which is active by definition as it is currently running this
+    // one).
+    if (is_nested_) {
+      thread_controller_sample_metadata_.Set(
+          static_cast<int64_t>(++thread_controller_active_id_));
+    }
   }
 }
 
-ThreadController::RunLevelTracker::RunLevel::RunLevel(RunLevel&& other)
-    : state_(std::exchange(other.state_, kIdle)),
-      is_nested_(std::exchange(other.is_nested_, false)),
-      thread_controller_sample_metadata_(
-          other.thread_controller_sample_metadata_),
-      thread_controller_active_id_(other.thread_controller_active_id_) {}
-ThreadController::RunLevelTracker::RunLevel&
-ThreadController::RunLevelTracker::RunLevel::operator=(RunLevel&& other) {
-  state_ = std::exchange(other.state_, kIdle);
-  return *this;
-}
+ThreadController::RunLevelTracker::RunLevel::RunLevel(RunLevel&& other) =
+    default;
 
 void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
   // The only state that can be redeclared is idle, anything else should be a
