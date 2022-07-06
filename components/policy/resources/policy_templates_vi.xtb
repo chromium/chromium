@@ -4600,7 +4600,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
       Hệ thống sẽ kích hoạt quá trình kiểm tra này bất cứ khi nào màn hình đăng nhập được tải, sau đó thử lại sau mỗi giờ (nếu thiết bị vẫn ở trên màn hình đăng nhập). Quá trình di chuyển sẽ không được phép bắt đầu vào giữa phiên hoạt động của người dùng, giúp người dùng cuối tránh được các sự cố tiềm ẩn.</translation>
 <translation id="6053681087509103368">Cho phép WebRTC sử dụng các phiên bản cũ của giao thức TLD/DTLS</translation>
-<translation id="6058879286588763839">Trừ khi bạn chỉ định <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> để ghi đè <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, tùy chọn cài đặt <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> sẽ chỉ định chính sách quản lý nguồn điện của chế độ sạc pin (nếu được hỗ trợ trên thiết bị). Để kéo dài tuổi thọ pin, chính sách này tự động kiểm soát hoạt động sạc pin bằng cách giảm thiểu ứng suất và mức độ hao mòn pin.
+<translation id="6058879286588763839">Trừ khi bạn chỉ định <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> để ghi đè <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, tùy chọn cài đặt <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> sẽ chỉ định chính sách quản lý nguồn điện của chế độ sạc pin (nếu được hỗ trợ trên thiết bị). Để kéo dài thời lượng pin, chính sách này tự động kiểm soát hoạt động sạc pin bằng cách giảm thiểu ứng suất và mức độ hao mòn pin.
 
       Khi bạn không đặt chính sách này (nếu được hỗ trợ trên thiết bị), chế độ sạc pin chuẩn sẽ áp dụng và người dùng sẽ không thể thay đổi chế độ này.
 
@@ -6492,7 +6492,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
       Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượng dữ liệu tối thiểu tính bằng byte sẽ kích hoạt quá trình kiểm tra mẫu. Điều này có nghĩa là một URL bị chặn sẽ được phép ghi dữ liệu vào khay nhớ tạm nếu kích thước của dữ liệu được sao chép nhỏ hơn giá trị được chỉ định trong trường này. Giá trị mặc định là 100 byte nếu bạn không đặt trường này.
       </translation>
-<translation id="8035570672225663428">Bật mô hình sạc thích ứng để giữ quá trình sạc nhằm kéo dài tuổi thọ pin</translation>
+<translation id="8035570672225663428">Bật mô hình sạc thích ứng để giữ quá trình sạc nhằm kéo dài thời lượng pin</translation>
 <translation id="8044493735196713914">Báo cáo chế độ khởi động thiết bị</translation>
 <translation id="8044720778481009876">Đích đến <ph name="CLOUD_PRINT_NAME" /> và "Lưu vào Google Drive" (Không dùng nữa)</translation>
 <translation id="80453040817068401">Cho phép sử dụng trình duyệt <ph name="LACROS_NAME" /></translation>
@@ -6532,10 +6532,10 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="8099880303030573137">Độ trễ khi không sử dụng khi chạy trên nguồn pin</translation>
 <translation id="8101381354936029836">Nhóm chính sách không thể phân chia:</translation>
 <translation id="8102913158860568230">Cài đặt luồng truyền thông mặc định</translation>
-<translation id="8103563905615378194">Chỉ định việc có chấp nhận mô hình sạc thích ứng hay không để giữ quá trình sạc nhằm kéo dài tuổi thọ pin.
+<translation id="8103563905615378194">Chỉ định việc có chấp nhận mô hình sạc thích ứng hay không để giữ quá trình sạc nhằm kéo dài thời lượng pin.
 
-      Khi thiết bị đang cắm vào nguồn điện, mô hình sạc thích ứng sẽ đánh giá liệu có cần giữ quá trình sạc để kéo dài tuổi thọ pin hay không. Nếu chế độ sạc thích ứng giữ quá trình sạc, thì pin sẽ được duy trì ở một mức cụ thể (ví dụ: 80%) rồi sạc thiết bị lên 100% khi người dùng cần đến.
-      Nếu chính sách này được đặt thành Đúng hoặc không đặt, thì mô hình sạc thích ứng sẽ được bật và cho phép giữ quá trình sạc để kéo dài tuổi thọ pin. Nếu chính sách này được đặt thành Tắt, mô hình sạc thích ứng sẽ không tác động đến quá trình sạc.</translation>
+      Khi thiết bị đang cắm vào nguồn điện, mô hình sạc thích ứng sẽ đánh giá liệu có cần giữ quá trình sạc để kéo dài thời lượng pin hay không. Nếu chế độ sạc thích ứng giữ quá trình sạc, thì pin sẽ được duy trì ở một mức cụ thể (ví dụ: 80%) rồi sạc thiết bị lên 100% khi người dùng cần đến.
+      Nếu chính sách này được đặt thành Đúng hoặc không đặt, thì mô hình sạc thích ứng sẽ được bật và cho phép giữ quá trình sạc để kéo dài thời lượng pin. Nếu chính sách này được đặt thành Tắt, mô hình sạc thích ứng sẽ không tác động đến quá trình sạc.</translation>
 <translation id="8104962233214241919">Tự động chọn chứng chỉ ứng dụng khách cho các trang web này</translation>
 <translation id="8114382167597081590">Không buộc sử dụng Chế độ hạn chế trên YouTube</translation>
 <translation id="8117921351531866504">Giúp bạn thiết lập để cho phép hoặc không cho phép các trang web kiểm tra xem người dùng đã lưu phương thức thanh toán hay chưa.
