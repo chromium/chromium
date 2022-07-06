@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
