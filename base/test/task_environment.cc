@@ -354,7 +354,8 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // Only ever written to from the main sequence. Start from real Now() instead
   // of zero to give a more realistic view to tests.
   TimeTicks now_ticks_ GUARDED_BY(now_ticks_lock_){
-      base::subtle::TimeTicksNowIgnoringOverride()};
+      base::subtle::TimeTicksNowIgnoringOverride()
+          .SnappedToNextTick(TimeTicks(), Milliseconds(1))};
 };
 
 TaskEnvironment::MockTimeDomain*

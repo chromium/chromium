@@ -105,6 +105,8 @@ class TaskEnvironment {
     // according to the semantics of the current Run*() or FastForward*() call.
     //
     // This also mocks Time/TimeTicks::Now() with the same mock clock.
+    // Time::Now() and TimeTicks::Now() (with respect to its origin) start
+    // without submillisecond components.
     //
     // Warning some platform APIs are still real-time, e.g.:
     //   * PlatformThread::Sleep

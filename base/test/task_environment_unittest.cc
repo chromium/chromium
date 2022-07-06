@@ -407,6 +407,19 @@ TEST_F(TaskEnvironmentTest,
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
+TEST_F(TaskEnvironmentTest, MockTimeStartsWithWholeMilliseconds) {
+  TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
+  const TickClock* mock_tick_clock = task_environment.GetMockTickClock();
+  const Clock* mock_clock = task_environment.GetMockClock();
+  EXPECT_TRUE(
+      (mock_tick_clock->NowTicks().since_origin() % Milliseconds(1)).is_zero());
+  // The Windows epoch has no subsecond components, so any subsecond components
+  // in `Time::Now()` will appear in their difference.
+  EXPECT_TRUE((mock_clock->Now().since_origin() % Milliseconds(1)).is_zero());
+  EXPECT_TRUE((Time::Now().since_origin() % Milliseconds(1)).is_zero());
+  EXPECT_TRUE((TimeTicks::Now().since_origin() % Milliseconds(1)).is_zero());
+}
+
 // Verify that the TickClock returned by
 // |TaskEnvironment::GetMockTickClock| gets updated when the
 // FastForward(By|UntilNoTasksRemain) functions are called.
