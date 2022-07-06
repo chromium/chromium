@@ -277,6 +277,8 @@ ts_files = [
 # HTML template files that are used to generate the ".html.ts"
 ts_templates = [ "file_manager/widgets/breadcrumbs.html" ]
 
+ts_test_files = [ "file_manager/widgets/xf_breadcrumbs_unittest.ts" ]
+
 ts_generated_templates = []
 foreach(_t, ts_templates) {
   ts_generated_templates += [ _t + ".ts" ]

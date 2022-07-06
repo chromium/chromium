@@ -278,17 +278,22 @@ copy("copy_ts") {
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
 
+copy("copy_ts_test") {
+  sources = ts_test_files
+  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+}
+
 html_to_wrapper("html_wrapper_files") {
   in_files = ts_templates
 }
 
 ts_library("test_build_ts") {
   testonly = true
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc_test"
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
 
-  in_files = [ "file_manager/widgets/xf_breadcrumbs_unittest.ts" ]
+  in_files = ts_test_files
 
   path_mappings = [
     # for chai_assert.js.
@@ -298,6 +303,7 @@ ts_library("test_build_ts") {
   ]
 
   deps = [ ":build_ts" ]
+  extra_deps = [ ":copy_ts_test" ]
 }
 
 # GRD for test files.
