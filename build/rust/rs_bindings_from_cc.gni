@@ -19,14 +19,12 @@ import("//build/rust/mixed_static_library.gni")
 #
 # Parameters:
 #
-#   public_header:
-#     The .h file to generate bindings for.
+#   public_headers:
+#     The .h files to generate bindings for.
 #
 #     Implementation note: This doesn't just take *all* the headers of the C++
 #     target, because typically only a *subset* of headers provides the
 #     *public* API that bindings are needed for.
-#
-#     TODO(crbug.com/1297592): Support *multiple* public headers.
 #
 #   deps: TODO(crbug.com/1297592): Not tested.  Most likely broken.  Will
 #                                  require invoking `rs_bindings_from_cc` on
@@ -47,7 +45,7 @@ import("//build/rust/mixed_static_library.gni")
 #       # Crubit's convention is to append "_rs_api" suffix to the target name
 #       # when naming the generated Rust crate.
 #       rs_bindings_from_cc("cpp_lib_rs_api") {
-#         public_header = "cpp_lib.h"
+#         public_headers = ["cpp_lib.h"]
 #         deps = [ ":cpp_lib" ]
 #       }
 #
@@ -64,7 +62,7 @@ import("//build/rust/mixed_static_library.gni")
 #     }
 #
 template("rs_bindings_from_cc") {
-  assert(defined(invoker.public_header),
+  assert(defined(invoker.public_headers),
          "Must specify the public C headers to make bindings for.")
 
   _target_name = target_name
@@ -126,7 +124,7 @@ template("rs_bindings_from_cc") {
 
     script = "//build/rust/run_rs_bindings_from_cc.py"
     inputs = [ "//third_party/rust-toolchain/bin/rs_bindings_from_cc" ]
-    sources = [ invoker.public_header ]
+    sources = invoker.public_headers
     outputs = [
       _rs_out_path,
       _cc_out_path,
@@ -139,12 +137,20 @@ template("rs_bindings_from_cc") {
     }
 
     # Target-specific inputs for Crubit's `rs_bindings_from_cc`:
-    _public_header = rebase_path(invoker.public_header)
+    _rebased_public_headers = []
+    foreach(hdr, invoker.public_headers) {
+      _rebased_public_headers += [ rebase_path(hdr) ]
+    }
+    _quoted_public_headers = []
+    foreach(hdr, _rebased_public_headers) {
+      _quoted_public_headers += [ "\"${hdr}\"" ]
+    }
+    _public_headers_cmdline_arg = string_join(",", _rebased_public_headers)
+    _public_headers_map_snippet = string_join(",", _quoted_public_headers)
 
     # TODO(crbug.com/1297592): Instead of hardcoding it, we should compute the
     # targets=>headers map from the local, transitive BUILD.gn dependencies.
-    _targets_and_headers =
-        "[{\"t\": \"${_target_name}\", \"h\": [\"${_public_header}\"]}]"
+    _targets_and_headers_cmdline_arg = "[{\"t\": \"${_target_name}\", \"h\": [${_public_headers_map_snippet}]}]"
 
     args = [
       # Target-specific outputs:
@@ -155,9 +161,9 @@ template("rs_bindings_from_cc") {
 
       # Target-specific inputs:
       "--public_headers",
-      _public_header,
+      _public_headers_cmdline_arg,
       "--targets_and_headers",
-      _targets_and_headers,
+      _targets_and_headers_cmdline_arg,
 
       # Fixed config:
       "--crubit_support_path",  # No rebasing - this is for textual inclusion.

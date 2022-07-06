@@ -8,15 +8,28 @@ import("//build/rust/rust_executable.gni")
 rust_executable("test_rs_bindings_from_cc") {
   crate_root = "main.rs"
   sources = [ "main.rs" ]
-  deps = [ ":self_contained_header_rs_api" ]
+  deps = [ ":self_contained_target_rs_api" ]
   build_native_rust_unit_tests = true
 }
 
-rs_bindings_from_cc("self_contained_header_rs_api") {
-  public_header = "self_contained_header.h"
-  deps = [ ":self_contained_header" ]
+rs_bindings_from_cc("self_contained_target_rs_api") {
+  # TODO(crbug.com/1297592): Is there something we can do (a convention?) to
+  # avoid duplication/repetition across
+  # 1a) `public_headers` here and 1b) `sources` in ":self_contained_target"
+  # 2) mentioning "self_contained_target" in `deps` and in the name of the
+  #    target (with "_rs_api" suffix added).
+  public_headers = [
+    "self_contained_target_header1.h",
+    "self_contained_target_header2.h",
+  ]
+
+  deps = [ ":self_contained_target" ]
 }
 
-source_set("self_contained_header") {
-  sources = [ "self_contained_header.h" ]
+source_set("self_contained_target") {
+  sources = [
+    "self_contained_target_header1.h",
+    "self_contained_target_header2.cc",
+    "self_contained_target_header2.h",
+  ]
 }
