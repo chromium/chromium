@@ -72,6 +72,12 @@ class FontDataCache final {
   USING_FAST_MALLOC(FontDataCache);
 
  public:
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  static FontDataCache& SharedInstance();
+#endif
+
+  static std::unique_ptr<FontDataCache> Create();
+
   FontDataCache() = default;
   FontDataCache(const FontDataCache&) = delete;
   FontDataCache& operator=(const FontDataCache&) = delete;

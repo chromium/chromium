@@ -43,6 +43,19 @@ const unsigned kCMaxInactiveFontData = 225;
 const unsigned kCTargetInactiveFontData = 200;
 #endif
 
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+// static
+FontDataCache& FontDataCache::SharedInstance() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(FontDataCache, shared_font_data_cache, ());
+  return shared_font_data_cache;
+}
+#endif
+
+// static
+std::unique_ptr<FontDataCache> FontDataCache::Create() {
+  return std::make_unique<FontDataCache>();
+}
+
 scoped_refptr<SimpleFontData> FontDataCache::Get(
     const FontPlatformData* platform_data,
     ShouldRetain should_retain,
