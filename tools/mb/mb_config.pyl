@@ -311,8 +311,12 @@
 
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
+      # Keep in sync with android-pie-arm64-rel, but with reclient.
+      'Build Perf Android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
       # Keep in sync with linux-rel, but with reclient.
       'Build Perf Linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
+      # Keep in sync with win10_chromium_x64_rel_ng, but with reclient.
+      'Build Perf Windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'CFI Linux CF (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
       'Comparison Android (reclient)': {
         'goma': 'android_webview_google_debug_static_bot_arm64',
@@ -1675,6 +1679,12 @@
       'no_secondary_abi',
     ],
 
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
+      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
+      'no_secondary_abi',
+    ],
+
     # TODO(crbug/1182468) Remove these android coverage expectations after
     # existing CQ bot is running them.
     'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage': [
@@ -2744,6 +2754,7 @@
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
     ],
+
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
@@ -2767,6 +2778,11 @@
     # needed.
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage': [
       'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
