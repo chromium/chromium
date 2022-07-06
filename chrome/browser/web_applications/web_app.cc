@@ -394,6 +394,10 @@ void WebApp::SetWebAppManagementExternalConfigMap(
       std::move(management_to_external_config_map);
 }
 
+void WebApp::SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip) {
+  tab_strip_ = std::move(tab_strip);
+}
+
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -552,7 +556,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.install_source_for_metrics_,
         app.app_size_in_bytes_,
         app.data_size_in_bytes_,
-        app.management_to_external_config_map_
+        app.management_to_external_config_map_,
+        app.tab_strip_
         // clang-format on
     );
   };
@@ -831,6 +836,37 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetBoolKey("window_controls_overlay_enabled",
                   window_controls_overlay_enabled_);
+
+  if (tab_strip_.has_value()) {
+    base::Value& tab_strip_json =
+        *root.SetKey("tab_strip", base::Value(base::Value::Type::DICTIONARY));
+    if (absl::holds_alternative<TabStrip::Visibility>(
+            tab_strip_.value().new_tab_button)) {
+      tab_strip_json.SetStringKey(
+          "new_tab_button", ConvertToString(absl::get<TabStrip::Visibility>(
+                                tab_strip_.value().new_tab_button)));
+    } else {
+      base::Value& new_tab_button_json = *tab_strip_json.SetKey(
+          "new_tab_button", base::Value(base::Value::Type::DICTIONARY));
+      new_tab_button_json.SetStringKey(
+          "url", ConvertToString(absl::get<blink::Manifest::NewTabButtonParams>(
+                                     tab_strip_.value().new_tab_button)
+                                     .url.value_or(GURL(""))));
+    }
+
+    if (absl::holds_alternative<TabStrip::Visibility>(
+            tab_strip_.value().home_tab)) {
+      tab_strip_json.SetStringKey(
+          "home_tab", ConvertToString(absl::get<TabStrip::Visibility>(
+                          tab_strip_.value().home_tab)));
+    } else {
+      tab_strip_json.SetKey("home_tab",
+                            base::Value(base::Value::Type::DICTIONARY));
+      // TODO(crbug.com/897314): Add debug info for home tab icons.
+    }
+  } else {
+    root.SetKey("tab_strip", base::Value());
+  }
 
   return root;
 }

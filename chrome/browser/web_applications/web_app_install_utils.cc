@@ -979,6 +979,8 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetManifestUrl(web_app_info.manifest_url);
 
   web_app.SetLaunchHandler(web_app_info.launch_handler);
+
+  web_app.SetTabStrip(web_app_info.tab_strip);
 }
 
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,

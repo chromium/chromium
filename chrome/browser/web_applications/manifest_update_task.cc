@@ -427,6 +427,9 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   if (install_info_->permissions_policy != app->permissions_policy())
     return true;
 
+  // TODO(crbug.com/897314): Check changes to tab_strip field once icons are
+  // stored.
+
   // TODO(crbug.com/1212849): Handle changes to is_storage_isolated.
 
   // TODO(crbug.com/926083): Check more manifest fields.

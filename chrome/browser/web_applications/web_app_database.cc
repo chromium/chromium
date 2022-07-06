@@ -249,6 +249,26 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
   }
 }
 
+TabStripProto::Visibility TabStripVisibilityToProto(
+    TabStrip::Visibility visibility) {
+  switch (visibility) {
+    case TabStrip::Visibility::kAuto:
+      return TabStripProto_Visibility_AUTO;
+    case TabStrip::Visibility::kAbsent:
+      return TabStripProto_Visibility_ABSENT;
+  }
+}
+
+TabStrip::Visibility ProtoToTabStripVisibility(
+    TabStripProto::Visibility visibility) {
+  switch (visibility) {
+    case TabStripProto_Visibility_AUTO:
+      return TabStrip::Visibility::kAuto;
+    case TabStripProto_Visibility_ABSENT:
+      return TabStrip::Visibility::kAbsent;
+  }
+}
+
 }  // anonymous namespace
 
 WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
@@ -643,6 +663,31 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         DCHECK(url.is_valid());
         management_config_proto->add_install_urls(url.spec());
       }
+    }
+  }
+
+  if (web_app.tab_strip()) {
+    TabStrip tab_strip = web_app.tab_strip().value();
+
+    auto* mutable_tab_strip = local_data->mutable_tab_strip();
+    if (absl::holds_alternative<TabStrip::Visibility>(tab_strip.home_tab)) {
+      mutable_tab_strip->set_home_tab_visibility(TabStripVisibilityToProto(
+          absl::get<TabStrip::Visibility>(tab_strip.home_tab)));
+    }
+
+    if (absl::holds_alternative<TabStrip::Visibility>(
+            tab_strip.new_tab_button)) {
+      mutable_tab_strip->set_new_tab_button_visibility(
+          TabStripVisibilityToProto(absl::get<TabStrip::Visibility>(
+              web_app.tab_strip().value().new_tab_button)));
+    } else {
+      auto* mutable_new_tab_button_params =
+          mutable_tab_strip->mutable_new_tab_button_params();
+      absl::optional<GURL> url = absl::get<blink::Manifest::NewTabButtonParams>(
+                                     tab_strip.new_tab_button)
+                                     .url;
+      if (url)
+        mutable_new_tab_button_params->set_url(url.value().spec());
     }
   }
 
@@ -1220,6 +1265,27 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         std::move(config));
   }
   web_app->SetWebAppManagementExternalConfigMap(management_to_external_config);
+
+  if (local_data.has_tab_strip()) {
+    TabStrip tab_strip;
+    if (local_data.tab_strip().has_home_tab_visibility()) {
+      tab_strip.home_tab = ProtoToTabStripVisibility(
+          local_data.tab_strip().home_tab_visibility());
+    }
+
+    if (local_data.tab_strip().has_new_tab_button_visibility()) {
+      tab_strip.new_tab_button = ProtoToTabStripVisibility(
+          local_data.tab_strip().new_tab_button_visibility());
+    } else {
+      blink::Manifest::NewTabButtonParams new_tab_button_params;
+      if (local_data.tab_strip().new_tab_button_params().has_url()) {
+        new_tab_button_params.url =
+            GURL(local_data.tab_strip().new_tab_button_params().url());
+      }
+      tab_strip.new_tab_button = new_tab_button_params;
+    }
+    web_app->SetTabStrip(std::move(tab_strip));
+  }
 
   if (local_data.has_app_size_in_bytes()) {
     web_app->SetAppSizeInBytes(local_data.app_size_in_bytes());

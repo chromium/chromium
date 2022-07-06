@@ -574,6 +574,24 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetAppSizeInBytes(random.next_uint());
   app->SetDataSizeInBytes(random.next_uint());
 
+  if (random.next_bool()) {
+    blink::Manifest::TabStrip tab_strip;
+    tab_strip.home_tab =
+        random.next_enum<blink::mojom::TabStripMemberVisibility>();
+    if (random.next_bool()) {
+      blink::Manifest::NewTabButtonParams new_tab_button_params;
+      if (random.next_bool()) {
+        new_tab_button_params.url = scope.Resolve(
+            "new_tab_button_url" + base::NumberToString(random.next_uint()));
+      }
+      tab_strip.new_tab_button = new_tab_button_params;
+    } else {
+      tab_strip.new_tab_button =
+          random.next_enum<blink::mojom::TabStripMemberVisibility>();
+    }
+    app->SetTabStrip(std::move(tab_strip));
+  }
+
   return app;
 }
 

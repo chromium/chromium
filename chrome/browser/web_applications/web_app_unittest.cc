@@ -230,6 +230,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
       "scope": "",
       "theme_color": "none"
    },
+   "tab_strip": null,
    "theme_color": "none",
    "unhashed_app_id": "",
    "url_handlers": [  ],
@@ -526,6 +527,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "scope": "https://example.com/scope1234/",
       "theme_color": "rgba(61,127,69,0.8431372549019608)"
    },
+   "tab_strip": null,
    "theme_color": "rgba(151,34,83,0.8823529411764706)",
    "unhashed_app_id": "https://example.com/scope1234/start1234",
    "url_handlers": [ {

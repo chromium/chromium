@@ -294,6 +294,10 @@ class WebApp {
     return management_to_external_config_map_;
   }
 
+  const absl::optional<blink::Manifest::TabStrip> tab_strip() const {
+    return tab_strip_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -377,6 +381,7 @@ class WebApp {
   void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
   void SetWebAppManagementExternalConfigMap(
       ExternalConfigMap management_to_external_config_map);
+  void SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -487,6 +492,8 @@ class WebApp {
   // Maps WebAppManagement::Type to config values for externally installed apps,
   // like is_placeholder and install URLs.
   ExternalConfigMap management_to_external_config_map_;
+
+  absl::optional<blink::Manifest::TabStrip> tab_strip_;
 
   // New fields must be added to:
   //  - |operator==|
