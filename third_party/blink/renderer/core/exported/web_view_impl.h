@@ -177,7 +177,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetScreenOrientationOverrideForTesting(
       absl::optional<display::mojom::blink::ScreenOrientation> orientation)
       override;
-  void UseSynchronousResizeModeForTesting(bool enable) override;
   void SetWindowRectSynchronouslyForTesting(
       const gfx::Rect& new_window_rect) override;
   void ResetScrollAndScaleState() override;

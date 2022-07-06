@@ -290,9 +290,6 @@ class WebView {
   virtual void SetScreenOrientationOverrideForTesting(
       absl::optional<display::mojom::ScreenOrientation> orientation) = 0;
 
-  // Enable/Disable synchronous resize mode that is used for web tests.
-  virtual void UseSynchronousResizeModeForTesting(bool enable) = 0;
-
   // Set the window rect synchronously for testing. The normal flow is an
   // asynchronous request to the browser.
   virtual void SetWindowRectSynchronouslyForTesting(

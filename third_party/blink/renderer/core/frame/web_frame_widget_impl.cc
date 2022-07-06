@@ -1699,10 +1699,6 @@ void WebFrameWidgetImpl::SynchronouslyCompositeForTesting(
   widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false);
 }
 
-void WebFrameWidgetImpl::UseSynchronousResizeModeForTesting(bool enable) {
-  main_data().synchronous_resize_mode_for_testing = enable;
-}
-
 void WebFrameWidgetImpl::SetDeviceColorSpaceForTesting(
     const gfx::ColorSpace& color_space) {
   DCHECK(ForMainFrame());
@@ -1899,12 +1895,6 @@ void WebFrameWidgetImpl::DidAutoResize(const gfx::Size& size) {
   DCHECK(ForMainFrame());
   gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size);
   size_ = size;
-
-  if (main_data().synchronous_resize_mode_for_testing) {
-    gfx::Rect new_pos(widget_base_->WindowRect());
-    new_pos.set_size(size_in_dips);
-    SetScreenRects(new_pos, new_pos);
-  }
 
   // TODO(ccameron): Note that this destroys any information differentiating
   // |size| from the compositor's viewport size.
@@ -4195,10 +4185,6 @@ HitTestResult WebFrameWidgetImpl::HitTestResultForRootFramePos(
   return result;
 }
 
-bool WebFrameWidgetImpl::SynchronousResizeModeForTestingEnabled() {
-  return main_data().synchronous_resize_mode_for_testing;
-}
-
 KURL WebFrameWidgetImpl::GetURLForDebugTrace() {
   WebFrame* main_frame = View()->MainFrame();
   if (main_frame->IsWebLocalFrame())
@@ -4359,13 +4345,6 @@ void WebFrameWidgetImpl::ImeFinishComposingTextForPlugin(bool keep_selection) {
 void WebFrameWidgetImpl::SetWindowRect(const gfx::Rect& requested_rect,
                                        const gfx::Rect& adjusted_rect) {
   DCHECK(ForMainFrame());
-  if (SynchronousResizeModeForTestingEnabled()) {
-    // This is a web-test-only path. At one point, it was planned to be
-    // removed. See https://crbug.com/309760.
-    SetWindowRectSynchronously(adjusted_rect);
-    return;
-  }
-
   SetPendingWindowRect(adjusted_rect);
   View()->SendWindowRectToMainFrameHost(
       requested_rect, WTF::Bind(&WebFrameWidgetImpl::AckPendingWindowRect,

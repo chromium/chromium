@@ -171,16 +171,6 @@ void ConvertAndSet(gin::Arguments* args, blink::WebString* set_param) {
       args->isolate(), result.ToLocalChecked());
 }
 
-class SynchronousResizeModeVisitor : public RenderViewVisitor {
- public:
-  SynchronousResizeModeVisitor() = default;
-
-  bool Visit(RenderView* render_view) override {
-    render_view->GetWebView()->UseSynchronousResizeModeForTesting(true);
-    return true;
-  }
-};
-
 }  // namespace
 
 class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
@@ -372,7 +362,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SimulateWebNotificationClick(gin::Arguments* args);
   void SimulateWebNotificationClose(const std::string& title, bool by_user);
   void SimulateWebContentIndexDelete(const std::string& id);
-  void UseUnfortunateSynchronousResizeMode();
   void WaitForPolicyDelegate();
   void WaitUntilDone();
   void WaitUntilExternalURLLoad();
@@ -816,8 +805,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("zoomPageOut", &TestRunnerBindings::ZoomPageOut)
       .SetMethod("setPageZoomFactor", &TestRunnerBindings::SetPageZoomFactor)
       .SetProperty("tooltipText", &TestRunnerBindings::TooltipText)
-      .SetMethod("useUnfortunateSynchronousResizeMode",
-                 &TestRunnerBindings::UseUnfortunateSynchronousResizeMode)
       .SetMethod("waitForPolicyDelegate",
                  &TestRunnerBindings::WaitForPolicyDelegate)
       .SetMethod("waitUntilDone", &TestRunnerBindings::WaitUntilDone)
@@ -1264,12 +1251,6 @@ void TestRunnerBindings::SetTextDirection(const std::string& direction_name) {
     return;
 
   GetWebFrame()->SetTextDirectionForTesting(direction);
-}
-
-void TestRunnerBindings::UseUnfortunateSynchronousResizeMode() {
-  if (invalid_)
-    return;
-  runner_->UseUnfortunateSynchronousResizeMode();
 }
 
 void TestRunnerBindings::EnableAutoResizeMode(int min_width,
@@ -2379,7 +2360,6 @@ void TestRunner::ResetWebView(blink::WebView* web_view) {
   web_view->DisableAutoResizeForTesting(gfx::Size());
   web_view->SetScreenOrientationOverrideForTesting(
       fake_screen_orientation_impl_.CurrentOrientationType());
-  web_view->UseSynchronousResizeModeForTesting(false);
 }
 
 void TestRunner::ResetWebFrameWidget(blink::WebFrameWidget* web_frame_widget) {
@@ -2953,12 +2933,6 @@ void TestRunner::SetTextSubpixelPositioning(bool value) {
   // positioning, we'll fall back to setting it globally for all fonts.
   blink::WebFontRenderStyle::SetSubpixelPositioning(value);
 #endif
-}
-
-void TestRunner::UseUnfortunateSynchronousResizeMode() {
-  // Sets the resize mode on the view of each open window.
-  SynchronousResizeModeVisitor visitor;
-  RenderView::ForEach(&visitor);
 }
 
 void TestRunner::SetMockScreenOrientation(blink::WebView* view,

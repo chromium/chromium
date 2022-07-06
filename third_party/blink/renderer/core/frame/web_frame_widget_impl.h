@@ -519,11 +519,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // BeginMainFrame, and update the document lifecycle.
   void SynchronouslyCompositeForTesting(base::TimeTicks frame_time);
 
-  // Adjust the synchronous resize mode for testing. Normally resizes are
-  // asynchronous with sending the resize to the browser, however some tests
-  // still need the resize to happen in a synchronous fashion.
-  void UseSynchronousResizeModeForTesting(bool enable);
-
   // Sets the device color space for testing.
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
 
@@ -905,9 +900,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool DidChangeFullscreenState(
       const VisualProperties& visual_properties) const;
 
-  // Returns the current state of synchronous resize mode for testing.
-  bool SynchronousResizeModeForTestingEnabled();
-
   void NotifyZoomLevelChanged(LocalFrame* root);
 
   // A copy of the web drop data object we received from the browser.
@@ -1062,20 +1054,6 @@ class CORE_EXPORT WebFrameWidgetImpl
     // contents") like a <webview> or <portal> widget. If false, the widget is
     // the top level widget.
     bool is_for_nested_main_frame = false;
-
-    // In web tests, synchronous resizing mode may be used. Normally each
-    // widget's size is controlled by IPC from the browser. In synchronous
-    // resize mode the renderer controls the size directly, and IPCs from the
-    // browser must be ignored. This was deprecated but then later undeprecated,
-    // so it is now called unfortunate instead. See https://crbug.com/309760.
-    // When this is enabled the various size properties will be controlled
-    // directly when SetWindowRect() is called instead of needing a round trip
-    // through the browser. Note that SetWindowRectSynchronouslyForTesting()
-    // provides a secondary way to control the size of the FrameWidget
-    // independently from the renderer process, without the use of this mode,
-    // however it would be overridden by the browser if they disagree.
-    bool synchronous_resize_mode_for_testing = false;
-
   } main_frame_data_;
 
   MainFrameData& main_data() {

@@ -1362,10 +1362,6 @@ void WebViewImpl::SetScreenOrientationOverrideForTesting(
   }
 }
 
-void WebViewImpl::UseSynchronousResizeModeForTesting(bool enable) {
-  web_widget_->UseSynchronousResizeModeForTesting(enable);
-}
-
 void WebViewImpl::SetWindowRectSynchronouslyForTesting(
     const gfx::Rect& new_window_rect) {
   web_widget_->SetWindowRectSynchronouslyForTesting(new_window_rect);
