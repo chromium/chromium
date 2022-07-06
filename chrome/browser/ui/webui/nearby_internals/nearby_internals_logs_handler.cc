@@ -37,7 +37,7 @@ NearbyInternalsLogsHandler::NearbyInternalsLogsHandler() {}
 NearbyInternalsLogsHandler::~NearbyInternalsLogsHandler() = default;
 
 void NearbyInternalsLogsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getLogMessages",
       base::BindRepeating(&NearbyInternalsLogsHandler::HandleGetLogMessages,
                           base::Unretained(this)));
@@ -52,14 +52,14 @@ void NearbyInternalsLogsHandler::OnJavascriptDisallowed() {
 }
 
 void NearbyInternalsLogsHandler::HandleGetLogMessages(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  base::Value list(base::Value::Type::LIST);
+  const base::Value& callback_id = args[0];
+  base::Value::List list;
   for (const auto& log : *LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
-  ResolveJavascriptCallback(callback_id, list);
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(list)));
 }
 
 void NearbyInternalsLogsHandler::OnLogBufferCleared() {

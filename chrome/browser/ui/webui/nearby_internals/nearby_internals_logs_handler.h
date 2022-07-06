@@ -11,10 +11,6 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class Value;
-}
-
 // WebUIMessageHandler for the NS_LOG Macro to pass logging messages to the
 // chrome://nearby-internals logging tab.
 class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
@@ -37,10 +33,10 @@ class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
   void OnLogBufferCleared() override;
 
   // Message handler callback that returns the Log Buffer in dictionary form.
-  void HandleGetLogMessages(const base::ListValue* args);
+  void HandleGetLogMessages(const base::Value::List& args);
 
   // Message handler callback that clears the Log Buffer.
-  void ClearLogBuffer(const base::ListValue* args);
+  void ClearLogBuffer(const base::Value::List& args);
 
   base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
   base::WeakPtrFactory<NearbyInternalsLogsHandler> weak_ptr_factory_{this};
