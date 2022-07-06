@@ -1731,20 +1731,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsA11yMessages").EnableFiltersInRecents(),
         TestCase("recentsA11yMessages").EnableFiltersInRecents().FilesSwa(),
         TestCase("recentsAllowCutForDownloads")
-            .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentsAllowCutForDownloads")
-            .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
             .FilesSwa(),
         TestCase("recentsAllowCutForDrive")
-            .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentsAllowCutForDrive")
-            .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
             .FilesSwa(),
@@ -1850,6 +1846,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentsReadOnlyHidden")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
+        TestCase("recentsTimePeriodHeadings")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentsTimePeriodHeadings")
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
             .FilesSwa(),

@@ -626,11 +626,11 @@ export class RemoteCallFilesApp extends RemoteCall {
    * Waits for the file list turns to the given contents.
    * @param {string} appId App window Id.
    * @param {Array<Array<string>>} expected Expected contents of file list.
-   * @param {{orderCheck:(?boolean|undefined),
-   *     ignoreLastModifiedTime:(?boolean|undefined)}=} opt_options Options of
-   *     the comparison. If orderCheck is true, it also compares the order of
-   *     files. If ignoreLastModifiedTime is true, it compares the file without
-   *     its last modified time.
+   * @param {{orderCheck:(?boolean|undefined), ignoreFileSize:
+   *     (?boolean|undefined), ignoreLastModifiedTime:(?boolean|undefined)}=}
+   *     opt_options Options of the comparison. If orderCheck is true, it also
+   *     compares the order of files. If ignoreLastModifiedTime is true, it
+   *     compares the file without its last modified time.
    * @return {Promise} Promise to be fulfilled when the file list turns to the
    *     given contents.
    */

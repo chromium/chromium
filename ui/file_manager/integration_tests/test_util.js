@@ -1664,16 +1664,15 @@ export async function getUserActionCount(name) {
 }
 
 /**
- * Returns a date time string within last month. This can be used as the
+ * Returns a date time string with diff days. This can be used as the
  * lastModifiedTime field of TestEntryInfo object, which is useful to construct
  * a recent file.
+ * @param {number} diffDays how many days in diff
  * @return {string}
  */
-export function getDateWithinLastMonth() {
+export function getDateWithDayDiff(diffDays) {
   const nowDate = new Date();
-  // At least 3 days ago to prevent file list from showing "Today/Yesterday".
-  const randomDayDiff = 3 + Math.floor(Math.random() * 23);
-  nowDate.setDate(nowDate.getDate() - randomDayDiff);
+  nowDate.setDate(nowDate.getDate() - diffDays);
   // Format: "May 2, 2021, 11:25 AM"
   return nowDate.toLocaleString('default', {
     month: 'short',
