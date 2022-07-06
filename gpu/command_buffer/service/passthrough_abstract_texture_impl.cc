@@ -85,7 +85,7 @@ void PassthroughAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
   texture_passthrough_->SetStreamLevelImage(target, level, image, service_id);
 }
 
-gl::GLImage* PassthroughAbstractTextureImpl::GetImage() const {
+gl::GLImage* PassthroughAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_passthrough_)
     return nullptr;
 

@@ -97,7 +97,7 @@ void ValidatingAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
   SetCleared();
 }
 
-gl::GLImage* ValidatingAbstractTextureImpl::GetImage() const {
+gl::GLImage* ValidatingAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_ref_)
     return nullptr;
 

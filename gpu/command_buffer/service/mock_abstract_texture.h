@@ -29,7 +29,7 @@ class MockAbstractTexture
                void(gl::GLImage* image, GLuint service_id));
   MOCK_METHOD2(BindImage, void(gl::GLImage* image, bool client_managed));
   MOCK_METHOD0(ReleaseImage, void());
-  MOCK_CONST_METHOD0(GetImage, gl::GLImage*());
+  MOCK_CONST_METHOD0(GetImageForTesting, gl::GLImage*());
   MOCK_METHOD0(SetCleared, void());
   MOCK_METHOD1(SetCleanupCallback, void(CleanupCallback));
   MOCK_METHOD0(NotifyOnContextLost, void());

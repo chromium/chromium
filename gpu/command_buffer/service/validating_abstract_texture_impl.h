@@ -37,7 +37,7 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   void SetParameteri(GLenum pname, GLint param) override;
   void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
   void BindImage(gl::GLImage* image, bool client_managed) override;
-  gl::GLImage* GetImage() const override;
+  gl::GLImage* GetImageForTesting() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
   void NotifyOnContextLost() override;

@@ -77,7 +77,7 @@ void AbstractTextureImpl::BindImage(gl::GLImage* image, bool client_managed) {
   NOTIMPLEMENTED();
 }
 
-gl::GLImage* AbstractTextureImpl::GetImage() const {
+gl::GLImage* AbstractTextureImpl::GetImageForTesting() const {
   NOTIMPLEMENTED();
   return nullptr;
 }
@@ -151,7 +151,7 @@ void AbstractTextureImplPassthrough::BindImage(gl::GLImage* image,
   NOTIMPLEMENTED();
 }
 
-gl::GLImage* AbstractTextureImplPassthrough::GetImage() const {
+gl::GLImage* AbstractTextureImplPassthrough::GetImageForTesting() const {
   NOTIMPLEMENTED();
   return nullptr;
 }
