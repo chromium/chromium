@@ -84109,8 +84109,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SBClientDownloadCheckDownloadStats">
   <int value="0" label="INVALID_URL"/>
   <int value="1" label="SB_DISABLED"/>
-  <int value="2" label="WHITELISTED_URL"/>
-  <int value="3" label="WHITELISTED_REFERRER"/>
+  <int value="2" label="ALLOWLISTED_URL"/>
+  <int value="3" label="ALLOWLISTED_REFERRER"/>
   <int value="4" label="INVALID_REQUEST_PROTO"/>
   <int value="5" label="SERVER_PING_FAILED"/>
   <int value="6" label="INVALID_RESPONSE_PROTO"/>

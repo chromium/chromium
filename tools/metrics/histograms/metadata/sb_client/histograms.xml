@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
     the improved SafeBrowsing binary download protection. Note that
     UNSUPPORTED_URL_SCHEME was split out of the INVALID_URL bucket in M41. The
     NOT_BINARY_FILE check was moved before the UNSUPPORTED_URL_SCHEME check in
-    M42. The WHITELISTED_URL check was moved to before NOT_BINARY_FILE in M62.
+    M42. The ALLOWLISTED_URL check was moved to before NOT_BINARY_FILE in M62.
     This is logged after download scanned by Safe Browsing.
 
     This metric is used to populate a dashboard on go/crsb-site.
