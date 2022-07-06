@@ -3013,6 +3013,11 @@ if (enable_java_templates) {
         get_label_info(":${target_name}", "label_no_toolchain"),
       ]
 
+      # SDK jar must be first on classpath.
+      if (invoker.include_android_sdk) {
+        args += [ "--classpath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
+      }
+
       if (defined(invoker.header_jar_path)) {
         inputs += [ invoker.header_jar_path ]
         args += [
@@ -3050,9 +3055,6 @@ if (enable_java_templates) {
         ]
       }
 
-      if (invoker.supports_android || invoker.use_turbine) {
-        args += [ "--java-version=1.8" ]
-      }
       if (use_java_goma) {
         args += [ "--gomacc-path=$goma_dir/gomacc" ]
 
@@ -3064,9 +3066,6 @@ if (enable_java_templates) {
       # checkout_android_prebuilts_build_tools=True in .gclient.
       if (enable_kythe_annotations && !invoker.enable_errorprone) {
         args += [ "--enable-kythe-annotations" ]
-      }
-      if (invoker.include_android_sdk) {
-        args += [ "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
       }
       if (_chromium_code) {
         args += [ "--chromium-code=1" ]
@@ -3737,7 +3736,6 @@ if (enable_java_templates) {
               java_sources_file = _java_sources_file
             }
             chromium_code = _chromium_code
-            supports_android = _supports_android
             include_android_sdk = _is_robolectric || _requires_android
           }
         }
