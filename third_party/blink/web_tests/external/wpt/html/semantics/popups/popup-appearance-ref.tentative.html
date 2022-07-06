@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Popup element appearance</title>
+<link rel="stylesheet" href="resources/popup-styles.css">
+
+<style>
+.fake-pop-up {top: 100px;}
+#blank {left: -300px;}
+#auto {left: -100px;}
+#hint {left: 100px;}
+#manual {left: 300px;}
+</style>
+
+<p>There should be four pop-ups with similar appearance, and
+  the word Unknown with no special styling.</p>
+<div class="fake-pop-up" id=blank>Blank</div>
+<div class="fake-pop-up" id=auto>Auto</div>
+<div class="fake-pop-up" id=hint><span>Hint</span></div>
+<div class="fake-pop-up" id=manual>Manual</div>
+<div class="not-a-pop-up!" id=unknown>Unknown</div>

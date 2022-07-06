@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Popup element appearance</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<link rel="match" href="popup-appearance-ref.tentative.html">
+
+<style>
+[popup] {top: 100px}
+[popup=""] {left: -300px}
+[popup=auto] {left: -100px; }
+[popup=hint] {left: 100px; }
+[popup=manual] {left: 300px; }
+</style>
+
+<p>There should be four pop-ups with similar appearance, and
+   the word Unknown with no special styling.</p>
+<div popup>Blank
+  <div popup=auto>Auto</div>
+</div>
+<div popup=hint>Hint</div>
+<div popup=manual>Manual</div>
+<!-- This ensures unsupported popup values don't receive styling -->
+<div popup=unknown>Unknown</div>
+<script>
+  document.querySelectorAll('[popup]').forEach(p => {
+    try {
+      p.showPopUp();
+    } catch {
+      // The unknown popup should throw an error on .showPopUp().
+    }
+  });
+</script>

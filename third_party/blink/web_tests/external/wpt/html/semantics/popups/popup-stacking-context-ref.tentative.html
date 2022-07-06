@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <link rel="author" href="mailto:masonf@chromium.org">
+<link rel="stylesheet" href="resources/popup-styles.css">
 
-<div id=popup>
+<div class="fake-pop-up">
   Inside popup
   <div class=z style="z-index: 2; background:lightgreen">z-index 2
     <div class=z style="z-index: 3; background:lightblue; left: 20px;">z-index 3</div>
@@ -13,19 +14,10 @@
 </div>
 
 <style>
-  #popup {
-    /* Per spec: */
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    /* Per settings in test file: */
+  .fake-pop-up {
     width: 200px;
     height: 230px;
     border: 1px solid red;
-    padding: 1em;
-    background: white;
-    color: black;
     top:50px;
     left:50px;
   }

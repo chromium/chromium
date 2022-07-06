@@ -3103,6 +3103,12 @@ void Element::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   int avail_height = GetDocument().View()->Size().height();
   gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
 
+  // Remove any margins on the listbox part, so we can position it correctly.
+  style.SetMarginTop(Length::Fixed(0));
+  style.SetMarginLeft(Length::Fixed(0));
+  style.SetMarginRight(Length::Fixed(0));
+  style.SetMarginBottom(Length::Fixed(0));
+
   // Position the listbox part where is more space available.
   const float available_space_above =
       anchor_rect_in_screen.y() - avail_rect.y();

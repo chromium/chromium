@@ -16,27 +16,23 @@
 [popup="" i],
 [popup=auto i],
 [popup=hint i],
-[popup=async i] {
-  display: block;
+[popup=manual i] {
   position: fixed;
-  top: 0;
-  left: 0;
-  /* The rest here is copied from dialog, perhaps these shouldn't
-     apply to popup. At least the background color is nice, because
-     it obscures the backdrop. And the foreground color/border
-     help to set off the popup from the rest of the page. */
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   width: fit-content;
   height: fit-content;
-  border: 1px solid;
+  margin: auto;
+  border: solid;
   padding: 1em;
-  background: -internal-light-dark(white, black);
-  color: -internal-light-dark(black, white);
+  background-color: Canvas;
+  color: CanvasText;
 }
 
 [popup="" i]::backdrop,
 [popup=auto i]::backdrop,
 [popup=hint i]::backdrop,
-[popup=async i]::backdrop {
+[popup=manual i]::backdrop {
     position: fixed;
     top: 0;
     right: 0;
