@@ -17,7 +17,6 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace base {
-class ListValue;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -61,36 +60,36 @@ class ScanningHandler : public content::WebUIMessageHandler,
 
  private:
   // Initializes Javascript.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(const base::Value::List& args);
 
   // Opens the select dialog for the user to choose the directory to save
   // completed scans.
-  void HandleRequestScanToLocation(const base::ListValue* args);
+  void HandleRequestScanToLocation(const base::Value::List& args);
 
   // Opens the Media app with the completed scan files.
-  void HandleOpenFilesInMediaApp(const base::ListValue* args);
+  void HandleOpenFilesInMediaApp(const base::Value::List& args);
 
   // Opens the Files app to the show the saved scan file.
-  void HandleShowFileInLocation(const base::ListValue* args);
+  void HandleShowFileInLocation(const base::Value::List& args);
 
   // Callback for HandleShowFileInLocation().
   void OnShowFileInLocation(const std::string& callback, bool files_app_opened);
 
   // Returns a localized, pluralized string.
-  void HandleGetPluralString(const base::ListValue* args);
+  void HandleGetPluralString(const base::Value::List& args);
 
   // Gets the MyFiles path for the current user.
-  void HandleGetMyFilesPath(const base::ListValue* args);
+  void HandleGetMyFilesPath(const base::Value::List& args);
 
   // Saves scan settings to Pref service.
-  void HandleSaveScanSettings(const base::ListValue* args);
+  void HandleSaveScanSettings(const base::Value::List& args);
 
   // Fetches scan settings from Pref service.
-  void HandleGetScanSettings(const base::ListValue* args);
+  void HandleGetScanSettings(const base::Value::List& args);
 
   // Validates that a file path exists on the local filesystem and returns its
   // display name. If the file path doesn't exist, return an empty file path.
-  void HandleEnsureValidFilePath(const base::ListValue* args);
+  void HandleEnsureValidFilePath(const base::Value::List& args);
 
   // Callback for HandleEnsureValidFilePath().
   void OnPathExists(const base::FilePath& file_path,

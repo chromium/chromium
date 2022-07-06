@@ -5,11 +5,8 @@
 #ifndef ASH_WEBUI_SCANNING_SCANNING_METRICS_HANDLER_H_
 #define ASH_WEBUI_SCANNING_SCANNING_METRICS_HANDLER_H_
 
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace ash {
 
@@ -27,16 +24,16 @@ class ScanningMetricsHandler : public content::WebUIMessageHandler {
 
  private:
   // Records the number of scan setting changes before a scan is initiated.
-  void HandleRecordNumScanSettingChanges(const base::ListValue* args);
+  void HandleRecordNumScanSettingChanges(const base::Value::List& args);
 
   // Records the action taken after a completed scan job.
-  void HandleRecordScanCompleteAction(const base::ListValue* args);
+  void HandleRecordScanCompleteAction(const base::Value::List& args);
 
   // Records the settings for a scan job.
-  void HandleRecordScanJobSettings(const base::ListValue* args);
+  void HandleRecordScanJobSettings(const base::Value::List& args);
 
   // Records the number of completed scans in a Scan app session.
-  void HandleRecordNumCompletedScans(const base::ListValue* args);
+  void HandleRecordNumCompletedScans(const base::Value::List& args);
 };
 
 }  // namespace ash

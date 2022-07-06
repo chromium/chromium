@@ -45,46 +45,46 @@ ScanningHandler::~ScanningHandler() {
 }
 
 void ScanningHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize", base::BindRepeating(&ScanningHandler::HandleInitialize,
                                         base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestScanToLocation",
       base::BindRepeating(&ScanningHandler::HandleRequestScanToLocation,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showFileInLocation",
       base::BindRepeating(&ScanningHandler::HandleShowFileInLocation,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPluralString",
       base::BindRepeating(&ScanningHandler::HandleGetPluralString,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getMyFilesPath",
       base::BindRepeating(&ScanningHandler::HandleGetMyFilesPath,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openFilesInMediaApp",
       base::BindRepeating(&ScanningHandler::HandleOpenFilesInMediaApp,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "saveScanSettings",
       base::BindRepeating(&ScanningHandler::HandleSaveScanSettings,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getScanSettings",
       base::BindRepeating(&ScanningHandler::HandleGetScanSettings,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "ensureValidFilePath",
       base::BindRepeating(&ScanningHandler::HandleEnsureValidFilePath,
                           base::Unretained(this)));
@@ -126,19 +126,18 @@ void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-void ScanningHandler::HandleInitialize(const base::ListValue* args) {
-  DCHECK(args && args->GetListDeprecated().empty());
+void ScanningHandler::HandleInitialize(const base::Value::List& args) {
+  DCHECK(args.empty());
   AllowJavascript();
 }
 
-void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
+void ScanningHandler::HandleOpenFilesInMediaApp(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  DCHECK(args->GetListDeprecated()[0].is_list());
-  const base::Value::ConstListView& value_list =
-      args->GetListDeprecated()[0].GetListDeprecated();
+  CHECK_EQ(1U, args.size());
+  DCHECK(args[0].is_list());
+  const base::Value::List& value_list = args[0].GetList();
   DCHECK(!value_list.empty());
 
   std::vector<base::FilePath> file_paths;
@@ -149,7 +148,8 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
   scanning_app_delegate_->OpenFilesInMediaApp(file_paths);
 }
 
-void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
+void ScanningHandler::HandleRequestScanToLocation(
+    const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -157,8 +157,8 @@ void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
   if (select_file_dialog_)
     return;
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  scan_location_callback_id_ = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  scan_location_callback_id_ = args[0].GetString();
 
   content::WebContents* web_contents = web_ui()->GetWebContents();
   gfx::NativeWindow owning_window =
@@ -175,13 +175,13 @@ void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
       nullptr /* params */);
 }
 
-void ScanningHandler::HandleShowFileInLocation(const base::ListValue* args) {
+void ScanningHandler::HandleShowFileInLocation(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string callback = args->GetListDeprecated()[0].GetString();
-  const base::FilePath file_location(args->GetListDeprecated()[1].GetString());
+  CHECK_EQ(2U, args.size());
+  const std::string callback = args[0].GetString();
+  const base::FilePath file_location(args[1].GetString());
   scanning_app_delegate_->ShowFileInFilesApp(
       file_location,
       base::BindOnce(&ScanningHandler::OnShowFileInLocation,
@@ -194,14 +194,14 @@ void ScanningHandler::OnShowFileInLocation(const std::string& callback,
                             base::Value(files_app_opened));
 }
 
-void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
+void ScanningHandler::HandleGetPluralString(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(3U, args->GetListDeprecated().size());
-  const std::string callback = args->GetListDeprecated()[0].GetString();
-  const std::string name = args->GetListDeprecated()[1].GetString();
-  const int count = args->GetListDeprecated()[2].GetInt();
+  CHECK_EQ(3U, args.size());
+  const std::string callback = args[0].GetString();
+  const std::string name = args[1].GetString();
+  const int count = args[2].GetInt();
 
   auto iter = string_id_map_.find(name);
   if (iter == string_id_map_.end()) {
@@ -215,46 +215,46 @@ void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
                             base::Value(localized_string));
 }
 
-void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
+void ScanningHandler::HandleGetMyFilesPath(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback = args[0].GetString();
 
   const base::FilePath my_files_path = scanning_app_delegate_->GetMyFilesPath();
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(my_files_path.value()));
 }
 
-void ScanningHandler::HandleSaveScanSettings(const base::ListValue* args) {
+void ScanningHandler::HandleSaveScanSettings(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& scan_settings = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& scan_settings = args[0].GetString();
   scanning_app_delegate_->SaveScanSettingsToPrefs(scan_settings);
 }
 
-void ScanningHandler::HandleGetScanSettings(const base::ListValue* args) {
+void ScanningHandler::HandleGetScanSettings(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const std::string& callback = args->GetListDeprecated()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback = args[0].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback),
       base::Value(scanning_app_delegate_->GetScanSettingsFromPrefs()));
 }
 
-void ScanningHandler::HandleEnsureValidFilePath(const base::ListValue* args) {
+void ScanningHandler::HandleEnsureValidFilePath(const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const std::string callback = args->GetListDeprecated()[0].GetString();
-  const base::FilePath file_path(args->GetListDeprecated()[1].GetString());
+  CHECK_EQ(2U, args.size());
+  const std::string callback = args[0].GetString();
+  const base::FilePath file_path(args[1].GetString());
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, file_path),
