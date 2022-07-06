@@ -23,6 +23,7 @@ class LacrosExtensionAppsPublisher;
 class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
+class NetworkChangeManagerBridge;
 class QuickAnswersController;
 class StandaloneBrowserTestController;
 class SyncExplicitPassphraseClientLacros;
@@ -86,6 +87,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends lacros installation status of force-installed extensions to ash.
   std::unique_ptr<ForceInstalledTrackerLacros> force_installed_tracker_;
+
+  // Receives and handles network change status.
+  std::unique_ptr<NetworkChangeManagerBridge> network_change_manager_bridge_;
 
   // Sends lacros load/unload events of Vpn extensions to ash.
   std::unique_ptr<VpnExtensionTrackerLacros> vpn_extension_tracker_;

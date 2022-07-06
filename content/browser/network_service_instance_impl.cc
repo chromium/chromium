@@ -601,7 +601,7 @@ base::CallbackListSubscription RegisterNetworkServiceCrashHandler(
   return GetCrashHandlersList().Add(std::move(handler));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 net::NetworkChangeNotifier* GetNetworkChangeNotifier() {
   return BrowserMainLoop::GetInstance()->network_change_notifier();
 }

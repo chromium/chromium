@@ -16,7 +16,7 @@
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/test/network_connection_change_simulator.h"
 #endif
 
@@ -36,7 +36,7 @@ void AppShellTest::SetUp() {
 }
 
 void AppShellTest::PreRunTestOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   content::NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.InitializeChromeosConnectionType();
 #endif

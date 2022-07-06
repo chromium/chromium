@@ -182,7 +182,7 @@ class CONTENT_EXPORT BrowserMainLoop {
     return media_keys_listener_manager_.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Only expose this on ChromeOS since it's only needed there. On Android this
   // be null if this process started in reduced mode.
   net::NetworkChangeNotifier* network_change_notifier() const {

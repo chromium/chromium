@@ -40,7 +40,7 @@ namespace content {
 CONTENT_EXPORT network::mojom::NetworkService* GetNetworkService();
 
 // Only on ChromeOS since it's only used there.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns the global NetworkChangeNotifier instance.
 CONTENT_EXPORT net::NetworkChangeNotifier* GetNetworkChangeNotifier();
 #endif
