@@ -554,6 +554,12 @@
 // carousel.
 + (id<GREYMatcher>)downloadsDestinationButton;
 
+#pragma mark - Overflow Menu Actions
+
+// Returns matcher for the settings action button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)settingsActionButton;
+
 #pragma mark - Manual Fallback
 
 // Returns a matcher for the scroll view in keyboard accessory bar.

@@ -1082,6 +1082,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuSiteInformation);
 }
 
+#pragma mark - Overflow Menu Actions
+
++ (id<GREYMatcher>)settingsActionButton {
+  return grey_accessibilityID(kToolsMenuSettingsActionId);
+}
+
 #pragma mark - Manual Fallback
 
 + (id<GREYMatcher>)manualFallbackFormSuggestionViewMatcher {

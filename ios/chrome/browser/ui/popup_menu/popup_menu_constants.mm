@@ -38,6 +38,7 @@ NSString* const kToolsMenuTranslateId = @"kToolsMenuTranslateId";
 NSString* const kToolsMenuFindInPageId = @"kToolsMenuFindInPageId";
 NSString* const kToolsMenuRequestDesktopId = @"kToolsMenuRequestDesktopId";
 NSString* const kToolsMenuSettingsId = @"kToolsMenuSettingsId";
+NSString* const kToolsMenuSettingsActionId = @"kToolsMenuSettingsActionId";
 NSString* const kToolsMenuHelpId = @"kToolsMenuHelpId";
 NSString* const kToolsMenuRequestMobileId = @"kToolsMenuRequestMobileId";
 NSString* const kToolsMenuReadLater = @"kToolsMenuReadLater";

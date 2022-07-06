@@ -694,6 +694,12 @@ id<GREYMatcher> SettingsDestinationButton() {
   return [ChromeMatchersAppInterface settingsDestinationButton];
 }
 
+#pragma mark - Overflow Menu Actions
+
+id<GREYMatcher> SettingsActionButton() {
+  return [ChromeMatchersAppInterface settingsActionButton];
+}
+
 #pragma mark - Manual Fallback
 
 id<GREYMatcher> ManualFallbackFormSuggestionViewMatcher() {

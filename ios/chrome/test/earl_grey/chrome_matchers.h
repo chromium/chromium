@@ -636,6 +636,11 @@ id<GREYMatcher> SiteInfoDestinationButton();
 // Returns a matcher for the settings destination button in the overflow menu.
 id<GREYMatcher> SettingsDestinationButton();
 
+#pragma mark - Overflow Menu Actions
+
+// Returns a matcher for the settings action button in the overflow menu.
+id<GREYMatcher> SettingsActionButton();
+
 #pragma mark - Tab Grid Edit Mode
 
 // Returns a matcher for the button to open the context menu for edit actions.

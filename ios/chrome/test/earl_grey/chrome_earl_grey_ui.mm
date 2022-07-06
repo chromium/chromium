@@ -36,6 +36,7 @@ using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
 using chrome_test_util::ClearSavedPasswordsButton;
 using chrome_test_util::ConfirmClearBrowsingDataButton;
+using chrome_test_util::SettingsActionButton;
 using chrome_test_util::SettingsDestinationButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::ToolsMenuView;
@@ -168,12 +169,20 @@ class ScopedDisableTimerTracking {
 
 - (void)openSettingsMenu {
   [self openToolsMenu];
-  [self tapToolsMenuButton:SettingsDestinationButton()];
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    [self tapToolsMenuButton:SettingsDestinationButton()];
+  } else {
+    [self tapToolsMenuButton:SettingsActionButton()];
+  }
 }
 
 - (void)openSettingsMenuInWindowWithNumber:(int)windowNumber {
   [self openToolsMenuInWindowWithNumber:windowNumber];
-  [self tapToolsMenuButton:SettingsDestinationButton()];
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    [self tapToolsMenuButton:SettingsDestinationButton()];
+  } else {
+    [self tapToolsMenuButton:SettingsActionButton()];
+  }
 }
 
 - (void)openNewTabMenu {

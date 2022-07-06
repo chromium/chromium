@@ -626,7 +626,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                    });
     self.settingsAction =
         CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_SETTINGS, kGearShapeSymbol,
-                                 YES, kToolsMenuSettingsId, ^{
+                                 YES, kToolsMenuSettingsActionId, ^{
                                    [weakSelf openSettingsFromAction];
                                  });
 
@@ -749,7 +749,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
     self.settingsAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_action_settings",
-        kToolsMenuSettingsId, ^{
+        kToolsMenuSettingsActionId, ^{
           [weakSelf openSettingsFromAction];
         });
 
