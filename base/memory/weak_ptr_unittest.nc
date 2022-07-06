@@ -115,14 +115,14 @@ void WontCompile() {
   WeakPtr<Unrelated> ptr = AsWeakPtr<Unrelated>(&f);
 }
 
-#elif defined(NCTEST_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::Unrelated>::value' \"AsWeakPtr argument must inherit from SupportsWeakPtr\""]
+#elif defined(NCTEST_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::Unrelated>::value':? \"?AsWeakPtr argument must inherit from SupportsWeakPtr\"?"]
 
 void WontCompile() {
   Unrelated f;
   WeakPtr<Unrelated> ptr = AsWeakPtr(&f);
 }
 
-#elif defined(NCTEST_DERIVED_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::DerivedUnrelated>::value' \"AsWeakPtr argument must inherit from SupportsWeakPtr\""]
+#elif defined(NCTEST_DERIVED_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::DerivedUnrelated>::value':? \"?AsWeakPtr argument must inherit from SupportsWeakPtr\"?"]
 
 void WontCompile() {
   DerivedUnrelated f;
