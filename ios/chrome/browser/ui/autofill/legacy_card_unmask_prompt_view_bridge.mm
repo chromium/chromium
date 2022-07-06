@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/legacy_card_unmask_prompt_view_bridge.h"
 
 #import <MaterialComponents/MaterialTypography.h>
 
-#include "base/bind.h"
-#include "base/location.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "base/location.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/status_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,9 +48,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 namespace autofill {
 
-#pragma mark CardUnmaskPromptViewBridge
+#pragma mark LegacyCardUnmaskPromptViewBridge
 
-CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
+LegacyCardUnmaskPromptViewBridge::LegacyCardUnmaskPromptViewBridge(
     CardUnmaskPromptController* controller,
     UIViewController* base_view_controller)
     : controller_(controller),
@@ -59,14 +59,14 @@ CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
   DCHECK(controller_);
 }
 
-CardUnmaskPromptViewBridge::~CardUnmaskPromptViewBridge() {
+LegacyCardUnmaskPromptViewBridge::~LegacyCardUnmaskPromptViewBridge() {
   if (controller_)
     controller_->OnUnmaskDialogClosed();
 }
 
-void CardUnmaskPromptViewBridge::Show() {
+void LegacyCardUnmaskPromptViewBridge::Show() {
   view_controller_ =
-      [[CardUnmaskPromptViewController alloc] initWithBridge:this];
+      [[LegacyCardUnmaskPromptViewController alloc] initWithBridge:this];
   [view_controller_ setModalPresentationStyle:UIModalPresentationFormSheet];
   [view_controller_
       setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
@@ -75,23 +75,23 @@ void CardUnmaskPromptViewBridge::Show() {
                                     completion:nil];
 }
 
-void CardUnmaskPromptViewBridge::ControllerGone() {
+void LegacyCardUnmaskPromptViewBridge::ControllerGone() {
   controller_ = nullptr;
   PerformClose();
 }
 
-void CardUnmaskPromptViewBridge::DisableAndWaitForVerification() {
+void LegacyCardUnmaskPromptViewBridge::DisableAndWaitForVerification() {
   [view_controller_ showSpinner];
 }
 
-void CardUnmaskPromptViewBridge::GotVerificationResult(
+void LegacyCardUnmaskPromptViewBridge::GotVerificationResult(
     const std::u16string& error_message,
     bool allow_retry) {
   if (error_message.empty()) {
     [view_controller_ showSuccess];
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&CardUnmaskPromptViewBridge::PerformClose,
+        base::BindOnce(&LegacyCardUnmaskPromptViewBridge::PerformClose,
                        weak_ptr_factory_.GetWeakPtr()),
         controller_->GetSuccessMessageDuration());
   } else {
@@ -104,12 +104,12 @@ void CardUnmaskPromptViewBridge::GotVerificationResult(
   }
 }
 
-CardUnmaskPromptController* CardUnmaskPromptViewBridge::GetController() {
+CardUnmaskPromptController* LegacyCardUnmaskPromptViewBridge::GetController() {
   return controller_;
 }
 
-void CardUnmaskPromptViewBridge::PerformClose() {
-  base::WeakPtr<CardUnmaskPromptViewBridge> weak_this =
+void LegacyCardUnmaskPromptViewBridge::PerformClose() {
+  base::WeakPtr<LegacyCardUnmaskPromptViewBridge> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   [view_controller_ dismissViewControllerAnimated:YES
                                        completion:^{
@@ -119,31 +119,32 @@ void CardUnmaskPromptViewBridge::PerformClose() {
                                        }];
 }
 
-void CardUnmaskPromptViewBridge::DeleteSelf() {
+void LegacyCardUnmaskPromptViewBridge::DeleteSelf() {
   delete this;
 }
 
-}  // autofill
+}  // namespace autofill
 
-@interface CardUnmaskPromptViewController ()<UITextFieldDelegate> {
+@interface LegacyCardUnmaskPromptViewController () <UITextFieldDelegate> {
   UIBarButtonItem* _cancelButton;
   UIBarButtonItem* _verifyButton;
   CVCItem* _CVCItem;
   StatusItem* _statusItem;
 
   // Owns `self`.
-  autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
+  autofill::LegacyCardUnmaskPromptViewBridge* _bridge;  // weak
 }
 
 @end
 
-@implementation CardUnmaskPromptViewController
+@implementation LegacyCardUnmaskPromptViewController
 
-- (instancetype)initWithBridge:(autofill::CardUnmaskPromptViewBridge*)bridge {
+- (instancetype)initWithBridge:
+    (autofill::LegacyCardUnmaskPromptViewBridge*)bridge {
   UICollectionViewLayout* layout = [[MDCCollectionViewFlowLayout alloc] init];
   DCHECK(bridge);
-  self =
-      [super initWithLayout:layout style:CollectionViewControllerStyleAppBar];
+  self = [super initWithLayout:layout
+                         style:CollectionViewControllerStyleAppBar];
   if (self) {
     _bridge = bridge;
     self.title =
@@ -480,8 +481,8 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  UICollectionViewCell* cell =
-      [super collectionView:collectionView cellForItemAtIndexPath:indexPath];
+  UICollectionViewCell* cell = [super collectionView:collectionView
+                              cellForItemAtIndexPath:indexPath];
 
   ItemType itemType = static_cast<ItemType>(
       [self.collectionViewModel itemTypeForIndexPath:indexPath]);

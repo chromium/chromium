@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
-#define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_LEGACY_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
+#define IOS_CHROME_BROWSER_UI_AUTOFILL_LEGACY_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 
-#include <string>
+#import <string>
 
-#include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 
 extern NSString* const kCardUnmaskPromptCollectionViewAccessibilityID;
 
-@class CardUnmaskPromptViewController;
+@class LegacyCardUnmaskPromptViewController;
 @class UIViewController;
 
 namespace autofill {
@@ -21,18 +21,21 @@ namespace autofill {
 class CardUnmaskPromptController;
 
 // iOS implementation of the unmask prompt UI.
-class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
+// A new implementation is on the works and will replace this one.
+// Target Milestone: 107
+class LegacyCardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  public:
   // `base_view_controller` is a weak reference to the view controller used to
   // present UI.
-  CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
-                             UIViewController* base_view_controller);
+  LegacyCardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
+                                   UIViewController* base_view_controller);
 
-  CardUnmaskPromptViewBridge(const CardUnmaskPromptViewBridge&) = delete;
-  CardUnmaskPromptViewBridge& operator=(const CardUnmaskPromptViewBridge&) =
+  LegacyCardUnmaskPromptViewBridge(const LegacyCardUnmaskPromptViewBridge&) =
       delete;
+  LegacyCardUnmaskPromptViewBridge& operator=(
+      const LegacyCardUnmaskPromptViewBridge&) = delete;
 
-  ~CardUnmaskPromptViewBridge() override;
+  ~LegacyCardUnmaskPromptViewBridge() override;
 
   // CardUnmaskPromptView:
   void Show() override;
@@ -51,7 +54,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   void DeleteSelf();
 
  protected:
-  CardUnmaskPromptViewController* view_controller_;
+  LegacyCardUnmaskPromptViewController* view_controller_;
 
  private:
   // The controller `this` queries for logic and state.
@@ -60,15 +63,16 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;
 
-  base::WeakPtrFactory<CardUnmaskPromptViewBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<LegacyCardUnmaskPromptViewBridge> weak_ptr_factory_;
 };
 
 }  // namespace autofill
 
-@interface CardUnmaskPromptViewController : CollectionViewController
+@interface LegacyCardUnmaskPromptViewController : CollectionViewController
 
 // Designated initializer. `bridge` must not be null.
-- (instancetype)initWithBridge:(autofill::CardUnmaskPromptViewBridge*)bridge
+- (instancetype)initWithBridge:
+    (autofill::LegacyCardUnmaskPromptViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout
                          style:(CollectionViewControllerStyle)style
@@ -92,4 +96,4 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_LEGACY_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_

@@ -4,30 +4,30 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 
-#include <string>
+#import <string>
 
 #import "base/test/ios/wait_util.h"
-#include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#import "base/time/time.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/prefs/pref_service.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/ui/autofill/legacy_card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -162,7 +162,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
   // Spin the run loop to trigger the animation.
   base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1.0));
   EXPECT_TRUE([base_view_controller.presentedViewController
-      isMemberOfClass:[CardUnmaskPromptViewController class]]);
+      isMemberOfClass:[LegacyCardUnmaskPromptViewController class]]);
 
   full_card_requester.OnUnmaskVerificationResult(
       autofill::AutofillClient::PaymentsRpcResult::kSuccess);
