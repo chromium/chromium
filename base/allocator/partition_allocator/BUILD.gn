@@ -277,8 +277,6 @@ target(partition_alloc_target_type, "partition_alloc") {
     ":debugging_buildflags",
     ":logging_buildflags",
     ":partition_alloc_buildflags",
-    "//base:synchronization_buildflags",
-    "//base:tracing_buildflags",
     "//build:branding_buildflags",
     "//build/config/compiler:compiler_buildflags",
   ]
@@ -365,8 +363,6 @@ source_set("test_support") {
     ":debugging_buildflags",
     ":logging_buildflags",
     ":partition_alloc_buildflags",
-    "//base:synchronization_buildflags",
-    "//base:tracing_buildflags",
     "//build:branding_buildflags",
     "//build/config/compiler:compiler_buildflags",
   ]
