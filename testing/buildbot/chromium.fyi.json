@@ -19574,8 +19574,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19598,8 +19597,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19622,8 +19620,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19646,8 +19643,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19671,8 +19667,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19695,8 +19690,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19719,8 +19713,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19743,8 +19736,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19768,8 +19760,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19793,8 +19784,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19817,8 +19807,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19841,8 +19830,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19865,8 +19853,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19889,8 +19876,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19913,8 +19899,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19937,8 +19922,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19962,8 +19946,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19986,8 +19969,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20010,8 +19992,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20035,8 +20016,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20059,8 +20039,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20084,8 +20063,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20108,8 +20086,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20132,8 +20109,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20156,8 +20132,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20180,8 +20155,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20204,8 +20178,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20228,8 +20201,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20252,8 +20224,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20276,8 +20247,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20301,8 +20271,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20325,8 +20294,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20349,8 +20317,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20374,8 +20341,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20398,8 +20364,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20423,8 +20388,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20447,8 +20411,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20471,8 +20434,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20495,8 +20457,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20520,8 +20481,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20544,8 +20504,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20568,8 +20527,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20592,8 +20550,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20617,8 +20574,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20642,8 +20598,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20669,8 +20624,7 @@
           "--ozone-platform=headless",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20693,8 +20647,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20717,8 +20670,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20741,8 +20693,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20766,8 +20717,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20791,8 +20741,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20815,8 +20764,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20839,8 +20787,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20863,8 +20810,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20887,8 +20833,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20912,8 +20857,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20936,8 +20880,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20960,8 +20903,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -20985,8 +20927,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21010,8 +20951,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21035,8 +20975,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21059,8 +20998,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21086,8 +21024,7 @@
           "--vmodule=test_navigation_listener=1",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21111,8 +21048,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21135,8 +21071,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21159,8 +21094,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21183,8 +21117,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21207,8 +21140,7 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -21235,7 +21167,6 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--test-launcher-jobs=2",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_name": "angle_unittests",

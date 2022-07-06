@@ -460,8 +460,7 @@
     '$mixin_append': {
       'args': [
         '--code-coverage',
-        '--code-coverage-dir=${ISOLATED_OUTDIR}',
-        '--test-launcher-jobs=2'
+        '--code-coverage-dir=${ISOLATED_OUTDIR}'
       ],
     },
   },
