@@ -30,7 +30,7 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
 
   ~MockCryptoClientStreamFactory() override;
 
-  quic::QuicCryptoClientStream* CreateQuicCryptoClientStream(
+  std::unique_ptr<quic::QuicCryptoClientStream> CreateQuicCryptoClientStream(
       const quic::QuicServerId& server_id,
       QuicChromiumClientSession* session,
       std::unique_ptr<quic::ProofVerifyContext> proof_verify_context,

@@ -21,7 +21,7 @@ void MockCryptoClientStreamFactory::SetConfig(const quic::QuicConfig& config) {
   config_ = std::make_unique<quic::QuicConfig>(config);
 }
 
-quic::QuicCryptoClientStream*
+std::unique_ptr<quic::QuicCryptoClientStream>
 MockCryptoClientStreamFactory::CreateQuicCryptoClientStream(
     const quic::QuicServerId& server_id,
     QuicChromiumClientSession* session,
@@ -32,9 +32,10 @@ MockCryptoClientStreamFactory::CreateQuicCryptoClientStream(
     proof_verify_details = proof_verify_details_queue_.front();
     proof_verify_details_queue_.pop();
   }
-  raw_ptr<MockCryptoClientStream> stream = new MockCryptoClientStream(
-      server_id, session, nullptr, *(config_.get()), crypto_config,
-      handshake_mode_, proof_verify_details, use_mock_crypter_);
+  std::unique_ptr<MockCryptoClientStream> stream =
+      std::make_unique<MockCryptoClientStream>(
+          server_id, session, nullptr, *(config_.get()), crypto_config,
+          handshake_mode_, proof_verify_details, use_mock_crypter_);
   streams_.push_back(stream->GetWeakPtr());
   return stream;
 }

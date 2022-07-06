@@ -246,7 +246,7 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
 
   ~HttpResponseBodyDrainerTest() override = default;
 
-  HttpNetworkSession* CreateNetworkSession() {
+  std::unique_ptr<HttpNetworkSession> CreateNetworkSession() {
     HttpNetworkSessionContext context;
     context.client_socket_factory = &socket_factory_;
     context.proxy_resolution_service = proxy_resolution_service_.get();
@@ -256,7 +256,8 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
     context.transport_security_state = &transport_security_state_;
     context.ct_policy_enforcer = &ct_policy_enforcer_;
     context.quic_context = &quic_context_;
-    return new HttpNetworkSession(HttpNetworkSessionParams(), context);
+    return std::make_unique<HttpNetworkSession>(HttpNetworkSessionParams(),
+                                                context);
   }
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;

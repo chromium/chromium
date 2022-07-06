@@ -1364,7 +1364,7 @@ void RuleBasedHostResolverProc::AddRuleInternal(const Rule& rule) {
   rules_.push_back(fixed_rule);
 }
 
-RuleBasedHostResolverProc* CreateCatchAllHostResolverProc() {
+scoped_refptr<RuleBasedHostResolverProc> CreateCatchAllHostResolverProc() {
   RuleBasedHostResolverProc* catchall =
       new RuleBasedHostResolverProc(/*previous=*/nullptr,
                                     /*allow_fallback=*/false);
@@ -1372,7 +1372,8 @@ RuleBasedHostResolverProc* CreateCatchAllHostResolverProc() {
   catchall->AddIPLiteralRule("*", "127.0.0.1", "localhost");
 
   // Next add a rules-based layer that the test controls.
-  return new RuleBasedHostResolverProc(catchall, /*allow_fallback=*/false);
+  return base::MakeRefCounted<RuleBasedHostResolverProc>(
+      catchall, /*allow_fallback=*/false);
 }
 
 //-----------------------------------------------------------------------------

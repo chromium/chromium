@@ -251,13 +251,13 @@ class QuicChromiumClientSessionTest
     ASSERT_THAT(session_->CryptoConnect(callback_.callback()), IsOk());
   }
 
-  QuicChromiumPacketWriter* CreateQuicChromiumPacketWriter(
+  std::unique_ptr<QuicChromiumPacketWriter> CreateQuicChromiumPacketWriter(
       DatagramClientSocket* socket,
       QuicChromiumClientSession* session) const {
     auto writer = std::make_unique<QuicChromiumPacketWriter>(
         socket, base::ThreadTaskRunnerHandle::Get().get());
     writer->set_delegate(session);
-    return writer.release();
+    return writer;
   }
 
   quic::QuicStreamId GetNthClientInitiatedBidirectionalStreamId(int n) {

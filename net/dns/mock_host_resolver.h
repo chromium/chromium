@@ -630,7 +630,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
 };
 
 // Create rules that map all requests to localhost.
-RuleBasedHostResolverProc* CreateCatchAllHostResolverProc();
+scoped_refptr<RuleBasedHostResolverProc> CreateCatchAllHostResolverProc();
 
 // HangingHostResolver never completes its |Resolve| request. As LOCAL_ONLY
 // requests are not allowed to complete asynchronously, they will always result

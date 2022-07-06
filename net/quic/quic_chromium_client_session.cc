@@ -988,12 +988,10 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       sockets_.back().get(), clock, this, yield_after_packets,
       yield_after_duration, net_log_));
   CHECK_EQ(packet_readers_.size(), sockets_.size());
-  crypto_stream_.reset(
-      crypto_client_stream_factory->CreateQuicCryptoClientStream(
-          session_key.server_id(), this,
-          std::make_unique<ProofVerifyContextChromium>(cert_verify_flags,
-                                                       net_log_),
-          crypto_config_->GetConfig()));
+  crypto_stream_ = crypto_client_stream_factory->CreateQuicCryptoClientStream(
+      session_key.server_id(), this,
+      std::make_unique<ProofVerifyContextChromium>(cert_verify_flags, net_log_),
+      crypto_config_->GetConfig());
   if (VersionUsesHttp3(transport_version()))
     set_debug_visitor(http3_logger_.get());
   connection->set_debug_visitor(logger_.get());

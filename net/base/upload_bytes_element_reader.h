@@ -56,7 +56,7 @@ class NET_EXPORT UploadOwnedBytesElementReader
   ~UploadOwnedBytesElementReader() override;
 
   // Creates UploadOwnedBytesElementReader with a string.
-  static UploadOwnedBytesElementReader* CreateWithString(
+  static std::unique_ptr<UploadOwnedBytesElementReader> CreateWithString(
       const std::string& string);
 
  private:

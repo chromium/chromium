@@ -29,7 +29,8 @@ class NET_EXPORT QuicCryptoClientStreamFactory {
  public:
   virtual ~QuicCryptoClientStreamFactory() = default;
 
-  virtual quic::QuicCryptoClientStream* CreateQuicCryptoClientStream(
+  virtual std::unique_ptr<quic::QuicCryptoClientStream>
+  CreateQuicCryptoClientStream(
       const quic::QuicServerId& server_id,
       QuicChromiumClientSession* session,
       std::unique_ptr<quic::ProofVerifyContext> proof_verify_context,

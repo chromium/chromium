@@ -158,7 +158,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 
-  HttpNetworkSession* CreateNetworkSession() {
+  std::unique_ptr<HttpNetworkSession> CreateNetworkSession() {
     HttpNetworkSessionContext session_context;
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = &cert_verifier_;
@@ -171,7 +171,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         http_auth_handler_factory_.get();
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
-    return new HttpNetworkSession(HttpNetworkSessionParams(), session_context);
+    return std::make_unique<HttpNetworkSession>(HttpNetworkSessionParams(),
+                                                session_context);
   }
 
  protected:
