@@ -7,6 +7,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_cache.h"
@@ -31,6 +32,20 @@ namespace {
 // TODO(https://crbug.com/1339708): Adjust the default size based on stats.
 const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxTotalSize{
     &features::kNetworkServiceMemoryCache, "max_total_size", 64 * 1024 * 1024};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class EntryStatus {
+  kNotInCache = 0,
+  kStale = 1,
+  kUsed = 2,
+  kMaxValue = kUsed,
+};
+
+void RecordEntryStatus(EntryStatus result) {
+  base::UmaHistogramEnumeration("NetworkService.MemoryCache.EntryStatus",
+                                result);
+}
 
 std::string GenerateCacheKeyForResourceRequest(
     const ResourceRequest& resource_request,
@@ -198,8 +213,10 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
       resource_request, network_isolation_key);
 
   auto it = entries_.Peek(cache_key);
-  if (it == entries_.end())
+  if (it == entries_.end()) {
+    RecordEntryStatus(EntryStatus::kNotInCache);
     return absl::nullopt;
+  }
 
   const mojom::URLResponseHeadPtr& response = it->second->response_head;
 
@@ -215,11 +232,13 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   net::ValidationType validation_type = response->headers->RequiresValidation(
       response->request_time, response->response_time, GetCurrentTime());
   if (validation_type != net::VALIDATION_NONE) {
+    RecordEntryStatus(EntryStatus::kStale);
     // The cached response is stale, erase it from the in-memory cache.
     entries_.Erase(it);
     return absl::nullopt;
   }
 
+  RecordEntryStatus(EntryStatus::kUsed);
   return std::move(cache_key);
 }
 

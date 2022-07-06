@@ -2980,6 +2980,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.MemoryCache.EntryStatus"
+    enum="NetworkServiceMemoryCacheEntryStatus" expires_after="2022-10-05">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records whether an HTTP response is served from the in-memory cache in the
+    network service. Recorded when the network service starts a network request
+    and the request satisfies preconditions. Preconditions include: CORS checks
+    passed, the request was a valid GET request, and the request didn't force
+    network access etc. See NetworkServiceMemoryCache::CanServe() for details.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.ShutdownTime" units="ms" expires_after="M85">
   <owner>jam@chromium.org</owner>
   <summary>

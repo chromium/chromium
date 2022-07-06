@@ -69361,6 +69361,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="26" label="SIM_LOCKED"/>
 </enum>
 
+<enum name="NetworkServiceMemoryCacheEntryStatus">
+  <int value="0" label="NotInCache"/>
+  <int value="1" label="Stale"/>
+  <int value="2" label="Used"/>
+</enum>
+
 <enum name="NetworkServiceSandboxGrantResult">
   <int value="0" label="kSuccess">A data migration was successful.</int>
   <int value="1" label="kFailedToCreateCacheDirectory">
