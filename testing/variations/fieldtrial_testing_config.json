@@ -5855,11 +5855,10 @@
             ],
             "experiments": [
                 {
-                    "name": "NoBackground-ForYou1",
+                    "name": "NoBackground-ForYou2",
                     "params": {
                         "new-user-modules": "nux-google-apps,nux-set-as-default,signin-view",
-                        "onboarding-group": "NoBackgroundSynthetic-ForYou1",
-                        "returning-user-modules": "nux-set-as-default"
+                        "onboarding-group": "NoBackgroundSynthetic-ForYou2"
                     },
                     "enable_features": [
                         "NuxOnboarding"
