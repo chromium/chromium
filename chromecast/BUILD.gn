@@ -744,8 +744,6 @@ if (is_android) {
 
     shared_libraries = [ "//chromecast/android:libcast_shell_android" ]
 
-    product_config_java_packages = [ "org.chromium.chromecast.shell" ]
-
     deps = [
       ":cast_shell_apk_assets",
       "//base:base_java",
@@ -782,7 +780,6 @@ if (is_android) {
       package_id = 125
 
       shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
-      product_config_java_packages = [ "org.chromium.chromecast.shell" ]
       deps = [
         "//base:base_java",
         "//base:jni_java",

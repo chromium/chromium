@@ -141,10 +141,6 @@ android_library("reactive_android_java") {
   ]
 }
 
-generate_product_config_srcjar("chromecast_product_config") {
-  java_package = "org.chromium.chromecast.shell"
-}
-
 common_android_library_deps = [
   ":cast_audio_manager_java",
   ":cast_command_line_helper_java",
@@ -180,7 +176,6 @@ common_java_src_dir = "//chromecast/browser/android/apk/src"
 common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
@@ -209,7 +204,6 @@ android_library("cast_shell_java") {
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
     ":cast_shell_build_config_gen",
-    ":chromecast_product_config",
     ":logs_provider_aidl",
     "//chromecast/browser:java_enums",
   ]
@@ -232,7 +226,6 @@ android_library("cast_browser_java") {
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
     ":cast_shell_build_config_gen",
-    ":chromecast_product_config",
     ":logs_provider_aidl",
     "//chromecast/browser:java_enums",
   ]
