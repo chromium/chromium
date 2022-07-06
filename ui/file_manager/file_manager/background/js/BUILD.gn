@@ -813,6 +813,7 @@ image_loader_path =
                 root_build_dir)
 
 optimize_webui("build") {
+  visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 
   input = tsc_folder
