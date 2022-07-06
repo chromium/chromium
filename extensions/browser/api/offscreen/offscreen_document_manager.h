@@ -28,7 +28,7 @@ class OffscreenDocumentHost;
 class OffscreenDocumentManager : public KeyedService,
                                  public ExtensionRegistryObserver {
  public:
-  OffscreenDocumentManager(content::BrowserContext* browser_context);
+  explicit OffscreenDocumentManager(content::BrowserContext* browser_context);
 
   OffscreenDocumentManager(const OffscreenDocumentManager&) = delete;
   OffscreenDocumentManager& operator=(const OffscreenDocumentManager&) = delete;
@@ -71,6 +71,9 @@ class OffscreenDocumentManager : public KeyedService,
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // The collection of offscreen documents, mapped to extension ID.
   std::map<ExtensionId, OffscreenDocumentData> offscreen_documents_;
