@@ -2,26 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "services/network/test/test_url_loader_factory.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/device_signals/core/common/signals_features.h"
+#endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#endif
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/strcat.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
-#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #endif
 
@@ -41,6 +67,10 @@
 
 namespace extensions {
 namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kAffiliationId[] = "affiliation-id";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Manifest key for the Endpoint Verification extension found at
 // chrome.google.com/webstore/detail/callobklhcbilhphinckomhgkigmfocg
@@ -83,12 +113,47 @@ constexpr char kManifestTemplate[] = R"(
 class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   EnterpriseReportingPrivateApiTest() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    scoped_features_.InitAndEnableFeature(
+        enterprise_signals::features::kNewEvSignalsEnabled);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     browser_dm_token_storage_.SetClientId("client_id");
-#endif
+    browser_dm_token_storage_.SetEnrollmentToken("enrollment_token");
+    browser_dm_token_storage_.SetDMToken("dm_token");
+    policy::BrowserDMTokenStorage::SetForTesting(&browser_dm_token_storage_);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   ~EnterpriseReportingPrivateApiTest() override = default;
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Signs in and returns the account ID of the primary account.
+  AccountInfo SignIn(const std::string& email, bool as_managed = true) {
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSignin);
+    EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+        signin::ConsentLevel::kSignin));
+
+    if (as_managed) {
+      account_info.hosted_domain = "example.com";
+      identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+      safe_browsing::SetProfileDMToken(profile(), "fake_user_dmtoken");
+      auto profile_policy_data =
+          std::make_unique<enterprise_management::PolicyData>();
+      profile_policy_data->add_user_affiliation_ids(kAffiliationId);
+      profile()
+          ->GetUserCloudPolicyManager()
+          ->core()
+          ->store()
+          ->set_policy_data_for_testing(std::move(profile_policy_data));
+    }
+
+    return account_info;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   void RunTest(const std::string& background_js,
                bool authorized_manifest_key = true) {
@@ -116,6 +181,69 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&EnterpriseReportingPrivateApiTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     &test_url_loader_factory_));
+  }
+
+  void SetUpOnMainThread() override {
+    extensions::ExtensionApiTest::SetUpOnMainThread();
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+
+    identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    // Set device org's affiliated IDs.
+    auto* browser_policy_manager =
+        g_browser_process->browser_policy_connector()
+            ->machine_level_user_cloud_policy_manager();
+    auto browser_policy_data =
+        std::make_unique<enterprise_management::PolicyData>();
+    browser_policy_data->add_device_affiliation_ids(kAffiliationId);
+    browser_policy_manager->core()->store()->set_policy_data_for_testing(
+        std::move(browser_policy_data));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  }
+
+  void TearDownOnMainThread() override {
+    extensions::ExtensionApiTest::TearDownOnMainThread();
+    // Must be destroyed before the Profile.
+    identity_test_env_profile_adaptor_.reset();
+  }
+
+  policy::ProfilePolicyConnector* profile_policy_connector() {
+    return profile()->GetProfilePolicyConnector();
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+  base::CallbackListSubscription create_services_subscription_;
+
+  base::test::ScopedFeatureList scoped_features_;
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
 #endif
@@ -382,6 +510,46 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetCertificate) {
     });)");
 }
 
+#if BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetAvInfo_Success) {
+  constexpr char kTest[] = R"(
+      chrome.test.assertEq(
+        'function',
+        typeof chrome.enterprise.reportingPrivate.getAvInfo);
+      const userContext = {userId: '%s'};
+
+   chrome.enterprise.reportingPrivate.getAvInfo(userContext, (avProducts) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertTrue(avProducts instanceof Array);
+        chrome.test.notifyPass();
+      });
+  )";
+
+  AccountInfo account_info = SignIn("some-email@example.com");
+  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str()));
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetHotfixes_Success) {
+  constexpr char kTest[] = R"(
+      chrome.test.assertEq(
+        'function',
+        typeof chrome.enterprise.reportingPrivate.getHotfixes);
+      const userContext = {userId: '%s'};
+
+   chrome.enterprise.reportingPrivate.getHotfixes(userContext, (hotfixes) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertTrue(hotfixes instanceof Array);
+        chrome.test.notifyPass();
+      });
+  )";
+
+  AccountInfo account_info = SignIn("some-email@example.com");
+  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str()));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS)
 static void RunTestUsingProfile(const std::string& background_js,
                                 Profile* profile) {
@@ -522,7 +690,6 @@ using EnterpriseReportingPrivateEnqueueRecordApiTest = ExtensionApiTest;
 
 static void SetupAffiliationLacros() {
   constexpr char kDomain[] = "fake-domain";
-  constexpr char kAffiliationId[] = "affiliation-id";
   constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
   constexpr char kFakeDMToken[] = "fake-dm-token";
   enterprise_management::PolicyData profile_policy_data;
