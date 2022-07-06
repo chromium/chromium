@@ -79,10 +79,9 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
         GetHandle(), querySet->GetHandle(), firstQuery, queryCount,
         destination->GetHandle(), destinationOffset);
   }
-  void writeTimestamp(DawnObject<WGPUQuerySet>* querySet, uint32_t queryIndex) {
-    GetProcs().commandEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
-                                            queryIndex);
-  }
+  void writeTimestamp(DawnObject<WGPUQuerySet>* querySet,
+                      uint32_t queryIndex,
+                      ExceptionState& exception_state);
   void clearBuffer(DawnObject<WGPUBuffer>* buffer, uint64_t offset) {
     GetProcs().commandEncoderClearBuffer(GetHandle(), buffer->GetHandle(),
                                          offset, WGPU_WHOLE_SIZE);

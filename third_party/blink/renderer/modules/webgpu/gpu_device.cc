@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
@@ -223,14 +224,18 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
     return true;
   }
 
-  std::string deviceLabel =
-      label().IsEmpty() ? "" : " \"" + label().Utf8() + "\"";
-
-  exception_state.ThrowTypeError(
-      String::Format("Use of the '%s' texture format requires the '%s' feature "
-                     "to be enabled on [Device%s].",
-                     format.AsCStr(), requiredFeature, deviceLabel.c_str()));
+  exception_state.ThrowTypeError(String::Format(
+      "Use of the '%s' texture format requires the '%s' feature "
+      "to be enabled on %s.",
+      format.AsCStr(), requiredFeature, formattedLabel().c_str()));
   return false;
+}
+
+std::string GPUDevice::formattedLabel() const {
+  std::string deviceLabel =
+      label().IsEmpty() ? "[Device]" : "[Device \"" + label().Utf8() + "\"]";
+
+  return deviceLabel;
 }
 
 void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
@@ -514,8 +519,15 @@ GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
   return GPURenderBundleEncoder::Create(this, descriptor, exception_state);
 }
 
-GPUQuerySet* GPUDevice::createQuerySet(
-    const GPUQuerySetDescriptor* descriptor) {
+GPUQuerySet* GPUDevice::createQuerySet(const GPUQuerySetDescriptor* descriptor,
+                                       ExceptionState& exception_state) {
+  if (descriptor->type() == "timestamp" && !features_->has("timestamp-query")) {
+    exception_state.ThrowTypeError(String::Format(
+        "Use of 'timestamp' queries requires the 'timestamp-query' feature to "
+        "be enabled on %s.",
+        formattedLabel().c_str()));
+    return nullptr;
+  }
   return GPUQuerySet::Create(this, descriptor);
 }
 

@@ -44,7 +44,7 @@
         GPUBuffer destination,
         GPUSize64 destinationOffset);
 
-    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+   [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     void clearBuffer(
         GPUBuffer buffer,
