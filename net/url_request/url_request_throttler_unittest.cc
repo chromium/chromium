@@ -181,7 +181,7 @@ void URLRequestThrottlerEntryTest::SetUp() {
   request_->SetLoadFlags(0);
 
   now_ = TimeTicks::Now();
-  entry_ = new MockURLRequestThrottlerEntry(&manager_);
+  entry_ = base::MakeRefCounted<MockURLRequestThrottlerEntry>(&manager_);
   entry_->ResetToBlank(now_);
 }
 

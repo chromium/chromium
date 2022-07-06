@@ -1007,7 +1007,8 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
       }
     }
 
-    headers = new HttpResponseHeaders(std::string("HTTP/0.9 200 OK"));
+    headers = base::MakeRefCounted<HttpResponseHeaders>(
+        std::string("HTTP/0.9 200 OK"));
   }
 
   // Check for multiple Content-Length headers when the response is not

@@ -205,8 +205,7 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
     int days_old) {
   base::Time current(base::Time::Now());
   base::Time past_creation(base::Time::Now() - base::Days(100));
-  scoped_refptr<MockSimplePersistentCookieStore> store(
-      new MockSimplePersistentCookieStore);
+  auto store = base::MakeRefCounted<MockSimplePersistentCookieStore>();
   int total_cookies = num_secure_cookies + num_non_secure_cookies;
   int base = 0;
   // Must expire to be persistent

@@ -173,7 +173,7 @@ void URLRequestMockHTTPJob::SetHeadersAndStart(const std::string& raw_headers) {
 
 // Private const version.
 void URLRequestMockHTTPJob::GetResponseInfoConst(HttpResponseInfo* info) const {
-  info->headers = new HttpResponseHeaders(raw_headers_);
+  info->headers = base::MakeRefCounted<HttpResponseHeaders>(raw_headers_);
 }
 
 int64_t URLRequestMockHTTPJob::GetTotalReceivedBytes() const {

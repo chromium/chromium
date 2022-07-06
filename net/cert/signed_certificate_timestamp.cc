@@ -49,8 +49,7 @@ SignedCertificateTimestamp::CreateFromPickle(base::PickleIterator* iter) {
   int64_t timestamp;
   int hash_algorithm;
   int sig_algorithm;
-  scoped_refptr<SignedCertificateTimestamp> sct(
-      new SignedCertificateTimestamp());
+  auto sct = base::MakeRefCounted<SignedCertificateTimestamp>();
   int origin;
   // string values are set directly
   if (!(iter->ReadInt(&version) &&

@@ -295,8 +295,9 @@ class DnsClientImpl : public DnsClient {
     if (new_effective_config) {
       DCHECK(new_effective_config.value().IsValid());
 
-      session_ = new DnsSession(std::move(new_effective_config).value(),
-                                rand_int_callback_, net_log_);
+      session_ = base::MakeRefCounted<DnsSession>(
+          std::move(new_effective_config).value(), rand_int_callback_,
+          net_log_);
       factory_ = DnsTransactionFactory::CreateFactory(session_.get());
     }
   }

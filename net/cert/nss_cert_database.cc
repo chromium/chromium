@@ -91,7 +91,8 @@ NSSCertDatabase::NSSCertDatabase(crypto::ScopedPK11Slot public_slot,
                                  crypto::ScopedPK11Slot private_slot)
     : public_slot_(std::move(public_slot)),
       private_slot_(std::move(private_slot)),
-      observer_list_(new base::ObserverListThreadSafe<Observer>) {
+      observer_list_(
+          base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
   CHECK(public_slot_);
 
   CertDatabase* cert_db = CertDatabase::GetInstance();

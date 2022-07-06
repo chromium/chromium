@@ -3552,8 +3552,8 @@ TEST_F(ProcessAlternativeServicesTest, ProcessEmptyAltSvc) {
   url::SchemeHostPort origin;
   NetworkIsolationKey network_isolation_key;
 
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
+
   session_->http_stream_factory()->ProcessAlternativeServices(
       session_.get(), network_isolation_key, headers.get(), origin);
 
@@ -3582,8 +3582,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcClear) {
                    .GetAlternativeServiceInfos(origin, network_isolation_key)
                    .empty());
 
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
   headers->AddHeader("alt-svc", "clear");
 
   session_->http_stream_factory()->ProcessAlternativeServices(
@@ -3605,8 +3604,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
       SchemefulSite(GURL("https://example.com")),
       SchemefulSite(GURL("https://example.com")));
 
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
   headers->AddHeader("alt-svc",
                      "h3-29=\":443\","
                      "h3-Q050=\":443\","
@@ -3643,8 +3641,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcHttp2) {
       SchemefulSite(GURL("https://example.com")),
       SchemefulSite(GURL("https://example.com")));
 
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
   headers->AddHeader("alt-svc", "h2=\"other.example.com:443\"");
 
   session_->http_stream_factory()->ProcessAlternativeServices(

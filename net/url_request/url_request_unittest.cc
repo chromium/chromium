@@ -3731,12 +3731,11 @@ int FixedDateNetworkDelegate::OnHeadersReceived(
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
     absl::optional<GURL>* preserve_fragment_on_redirect_url) {
-  HttpResponseHeaders* new_response_headers =
-      new HttpResponseHeaders(original_response_headers->raw_headers());
+  *override_response_headers = base::MakeRefCounted<HttpResponseHeaders>(
+      original_response_headers->raw_headers());
 
-  new_response_headers->SetHeader("Date", fixed_date_);
+  (*override_response_headers)->SetHeader("Date", fixed_date_);
 
-  *override_response_headers = new_response_headers;
   return TestNetworkDelegate::OnHeadersReceived(
       request, std::move(callback), original_response_headers,
       override_response_headers, endpoint, preserve_fragment_on_redirect_url);

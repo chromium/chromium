@@ -98,7 +98,7 @@ ExampleEmployer::~ExampleEmployer() = default;
 bool ExampleEmployer::DoSomething(CompletionOnceCallback callback) {
   DCHECK(!request_.get()) << "already in use";
 
-  request_ = new ExampleWorker(this, std::move(callback));
+  request_ = base::MakeRefCounted<ExampleWorker>(this, std::move(callback));
 
   if (!base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&ExampleWorker::DoWork, request_))) {

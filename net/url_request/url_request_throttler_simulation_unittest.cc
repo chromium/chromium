@@ -488,8 +488,8 @@ void SimulateAttack(Server* server,
   for (size_t i = 0; i < kNumAttackers; ++i) {
     // Use a tiny time_between_requests so the attackers will ping the
     // server at every tick of the simulation.
-    scoped_refptr<MockURLRequestThrottlerEntry> throttler_entry(
-        new MockURLRequestThrottlerEntry(&manager));
+    auto throttler_entry =
+        base::MakeRefCounted<MockURLRequestThrottlerEntry>(&manager);
     if (!enable_throttling)
       throttler_entry->DisableBackoffThrottling();
 
@@ -501,8 +501,8 @@ void SimulateAttack(Server* server,
   }
   for (size_t i = 0; i < kNumClients; ++i) {
     // Normal clients only make requests every 2 minutes, plus/minus 1 minute.
-    scoped_refptr<MockURLRequestThrottlerEntry> throttler_entry(
-        new MockURLRequestThrottlerEntry(&manager));
+    auto throttler_entry =
+        base::MakeRefCounted<MockURLRequestThrottlerEntry>(&manager);
     if (!enable_throttling)
       throttler_entry->DisableBackoffThrottling();
 
@@ -584,8 +584,8 @@ double SimulateDowntime(const base::TimeDelta& duration,
   server.SetDowntime(start_downtime, duration);
 
   URLRequestThrottlerManager manager;
-  scoped_refptr<MockURLRequestThrottlerEntry> throttler_entry(
-      new MockURLRequestThrottlerEntry(&manager));
+  auto throttler_entry =
+      base::MakeRefCounted<MockURLRequestThrottlerEntry>(&manager);
   if (!enable_throttling)
     throttler_entry->DisableBackoffThrottling();
 

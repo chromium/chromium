@@ -515,7 +515,7 @@ class BidirectionalStreamQuicImplTest
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),
                                                         NetLog::Get());
     socket->Connect(peer_addr_);
-    runner_ = new TestTaskRunner(&clock_);
+    runner_ = base::MakeRefCounted<TestTaskRunner>(&clock_);
     helper_ = std::make_unique<QuicChromiumConnectionHelper>(
         &clock_, &random_generator_);
     alarm_factory_ =

@@ -194,8 +194,7 @@ TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
   scoped_refptr<ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   EXPECT_CALL(*mock_fetcher,
               FetchCaIssuers(GURL("http://url-for-aia2/I2.foo"), _, _))
@@ -229,8 +228,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
   scoped_refptr<ParsedCertificate> intermediate_cert2;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert2));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   EXPECT_CALL(*mock_fetcher,
               FetchCaIssuers(GURL("http://url-for-aia/I.cer"), _, _))
@@ -271,8 +269,7 @@ TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
   scoped_refptr<ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   // HTTP request returns with an error.
   EXPECT_CALL(*mock_fetcher,
@@ -296,8 +293,7 @@ TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
   scoped_refptr<ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   // HTTP request returns invalid certificate data.
   EXPECT_CALL(*mock_fetcher,
@@ -324,8 +320,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
   scoped_refptr<ParsedCertificate> intermediate_cert2;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert2));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   // Request for I.cer completes first, but fails.
   EXPECT_CALL(*mock_fetcher,
@@ -364,8 +359,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
   scoped_refptr<ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   // Request for I.cer completes first.
   EXPECT_CALL(*mock_fetcher,
@@ -402,8 +396,7 @@ TEST(CertIssuerSourceAiaTest, MaxFetchesPerCert) {
   scoped_refptr<ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_six_aia.pem", &cert));
 
-  scoped_refptr<StrictMock<MockCertNetFetcher>> mock_fetcher(
-      new StrictMock<MockCertNetFetcher>());
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 
   std::vector<uint8_t> bad_der({1, 2, 3, 4, 5});
 

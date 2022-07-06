@@ -525,7 +525,7 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
       : TestWithTaskEnvironment(time_source),
-        proc_(new MockHostResolverProc()) {}
+        proc_(base::MakeRefCounted<MockHostResolverProc>()) {}
 
   void CreateResolver(bool check_ipv6_on_wifi = true) {
     CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_.get()),
@@ -2415,9 +2415,8 @@ TEST_F(HostResolverManagerTest, MultipleAttempts) {
   // retry at t=6001 instead of t=6000.
   base::TimeDelta kSleepFudgeFactor = base::Milliseconds(1);
 
-  scoped_refptr<LookupAttemptHostResolverProc> resolver_proc(
-      new LookupAttemptHostResolverProc(nullptr, kAttemptNumberToResolve,
-                                        kTotalAttempts));
+  auto resolver_proc = base::MakeRefCounted<LookupAttemptHostResolverProc>(
+      nullptr, kAttemptNumberToResolve, kTotalAttempts);
 
   ProcTaskParams params = DefaultParams(resolver_proc.get());
   base::TimeDelta unresponsive_delay = params.unresponsive_delay;

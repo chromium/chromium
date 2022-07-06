@@ -452,8 +452,8 @@ int MultiThreadedProxyResolver::GetProxyForURL(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!callback.is_null());
 
-  scoped_refptr<GetProxyForURLJob> job(new GetProxyForURLJob(
-      url, network_isolation_key, results, std::move(callback), net_log));
+  auto job = base::MakeRefCounted<GetProxyForURLJob>(
+      url, network_isolation_key, results, std::move(callback), net_log);
 
   // Completion will be notified through |callback|, unless the caller cancels
   // the request using |request|.
@@ -495,10 +495,11 @@ void MultiThreadedProxyResolver::AddNewExecutor() {
   DCHECK_LT(executors_.size(), max_num_threads_);
   // The "thread number" is used to give the thread a unique name.
   int thread_number = executors_.size();
-  Executor* executor = new Executor(this, thread_number);
+
+  auto executor = base::MakeRefCounted<Executor>(this, thread_number);
   executor->StartJob(
       new CreateResolverJob(script_data_, resolver_factory_.get()));
-  executors_.push_back(base::WrapRefCounted(executor));
+  executors_.push_back(std::move(executor));
 }
 
 void MultiThreadedProxyResolver::OnExecutorReady(Executor* executor) {
@@ -530,7 +531,7 @@ class MultiThreadedProxyResolverFactory::Job
         resolver_factory_(std::move(resolver_factory)),
         max_num_threads_(max_num_threads),
         script_data_(script_data),
-        executor_(new Executor(this, 0)),
+        executor_(base::MakeRefCounted<Executor>(this, 0)),
         callback_(std::move(callback)) {
     executor_->StartJob(
         new CreateResolverJob(script_data_, resolver_factory_.get()));

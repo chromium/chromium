@@ -532,13 +532,14 @@ base::Value CertVerifyParams(X509Certificate* cert,
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
 #if BUILDFLAG(IS_ANDROID)
-  return new CertVerifyProcAndroid(std::move(cert_net_fetcher));
+  return base::MakeRefCounted<CertVerifyProcAndroid>(
+      std::move(cert_net_fetcher));
 #elif BUILDFLAG(IS_IOS)
-  return new CertVerifyProcIOS();
+  return base::MakeRefCounted<CertVerifyProcIOS>();
 #elif BUILDFLAG(IS_MAC)
-  return new CertVerifyProcMac();
+  return base::MakeRefCounted<CertVerifyProcMac>();
 #elif BUILDFLAG(IS_WIN)
-  return new CertVerifyProcWin();
+  return base::MakeRefCounted<CertVerifyProcWin>();
 #else
 #error Unsupported platform
 #endif

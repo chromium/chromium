@@ -318,8 +318,7 @@ bool DecodeSCTList(base::StringPiece input,
 bool DecodeSignedCertificateTimestamp(
     base::StringPiece* input,
     scoped_refptr<SignedCertificateTimestamp>* output) {
-  scoped_refptr<SignedCertificateTimestamp> result(
-      new SignedCertificateTimestamp());
+  auto result = base::MakeRefCounted<SignedCertificateTimestamp>();
   uint8_t version;
   CBS input_cbs;
   CBS_init(&input_cbs, reinterpret_cast<const uint8_t*>(input->data()),

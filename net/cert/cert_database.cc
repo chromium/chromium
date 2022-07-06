@@ -39,7 +39,8 @@ void CertDatabase::NotifyObserversCertDBChanged() {
 }
 
 CertDatabase::CertDatabase()
-    : observer_list_(new base::ObserverListThreadSafe<Observer>) {}
+    : observer_list_(
+          base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {}
 
 CertDatabase::~CertDatabase() {
 #if BUILDFLAG(IS_MAC)

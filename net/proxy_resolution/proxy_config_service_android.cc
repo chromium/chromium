@@ -495,9 +495,10 @@ class ProxyConfigServiceAndroid::Delegate
 ProxyConfigServiceAndroid::ProxyConfigServiceAndroid(
     const scoped_refptr<base::SequencedTaskRunner>& main_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& jni_task_runner)
-    : delegate_(new Delegate(main_task_runner,
-                             jni_task_runner,
-                             base::BindRepeating(&GetJavaProperty))) {
+    : delegate_(base::MakeRefCounted<Delegate>(
+          main_task_runner,
+          jni_task_runner,
+          base::BindRepeating(&GetJavaProperty))) {
   delegate_->SetupJNI();
   delegate_->FetchInitialConfig();
 }
@@ -528,9 +529,9 @@ ProxyConfigServiceAndroid::ProxyConfigServiceAndroid(
     const scoped_refptr<base::SequencedTaskRunner>& main_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& jni_task_runner,
     GetPropertyCallback get_property_callback)
-    : delegate_(new Delegate(main_task_runner,
-                             jni_task_runner,
-                             get_property_callback)) {
+    : delegate_(base::MakeRefCounted<Delegate>(main_task_runner,
+                                               jni_task_runner,
+                                               get_property_callback)) {
   delegate_->SetupJNI();
   delegate_->FetchInitialConfig();
 }

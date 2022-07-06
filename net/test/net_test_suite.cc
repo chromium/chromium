@@ -67,7 +67,8 @@ void NetTestSuite::InitializeTestThread() {
 }
 
 void NetTestSuite::InitializeTestThreadNoNetworkChangeNotifier() {
-  host_resolver_proc_ = new net::RuleBasedHostResolverProc(nullptr);
+  host_resolver_proc_ =
+      base::MakeRefCounted<net::RuleBasedHostResolverProc>(nullptr);
   scoped_host_resolver_proc_.Init(host_resolver_proc_.get());
   // In case any attempts are made to resolve host names, force them all to
   // be mapped to localhost.  This prevents DNS queries from being sent in

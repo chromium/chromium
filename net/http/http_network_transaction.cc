@@ -1203,7 +1203,8 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   // Unless this is a WebSocket request, in which case we pass it on up.
   if (response_.headers->response_code() / 100 == 1 &&
       !ForWebSocketHandshake()) {
-    response_.headers = new HttpResponseHeaders(std::string());
+    response_.headers =
+        base::MakeRefCounted<HttpResponseHeaders>(std::string());
     next_state_ = STATE_READ_HEADERS;
     return OK;
   }

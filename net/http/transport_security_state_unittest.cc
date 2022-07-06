@@ -107,8 +107,7 @@ void MakeTestSCTAndStatus(ct::SignedCertificateTimestamp::Origin origin,
                           const base::Time& timestamp,
                           ct::SCTVerifyStatus status,
                           SignedCertificateTimestampAndStatusList* sct_list) {
-  scoped_refptr<net::ct::SignedCertificateTimestamp> sct(
-      new net::ct::SignedCertificateTimestamp());
+  auto sct = base::MakeRefCounted<net::ct::SignedCertificateTimestamp>();
   sct->version = net::ct::SignedCertificateTimestamp::V1;
   sct->log_id = log_id;
   sct->extensions = extensions;

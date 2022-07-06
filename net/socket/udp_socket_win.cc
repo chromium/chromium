@@ -268,7 +268,7 @@ int UDPSocketWin::Open(AddressFamily address_family) {
   if (socket_ == INVALID_SOCKET)
     return MapSystemError(WSAGetLastError());
   if (!use_non_blocking_io_) {
-    core_ = new Core(this);
+    core_ = base::MakeRefCounted<Core>(this);
   } else {
     read_write_event_.Set(WSACreateEvent());
     WSAEventSelect(socket_, read_write_event_.Get(), FD_READ | FD_WRITE);

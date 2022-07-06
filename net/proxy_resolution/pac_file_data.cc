@@ -11,22 +11,26 @@ namespace net {
 
 // static
 scoped_refptr<PacFileData> PacFileData::FromUTF8(const std::string& utf8) {
-  return new PacFileData(TYPE_SCRIPT_CONTENTS, GURL(), base::UTF8ToUTF16(utf8));
+  return base::WrapRefCounted(
+      new PacFileData(TYPE_SCRIPT_CONTENTS, GURL(), base::UTF8ToUTF16(utf8)));
 }
 
 // static
 scoped_refptr<PacFileData> PacFileData::FromUTF16(const std::u16string& utf16) {
-  return new PacFileData(TYPE_SCRIPT_CONTENTS, GURL(), utf16);
+  return base::WrapRefCounted(
+      new PacFileData(TYPE_SCRIPT_CONTENTS, GURL(), utf16));
 }
 
 // static
 scoped_refptr<PacFileData> PacFileData::FromURL(const GURL& url) {
-  return new PacFileData(TYPE_SCRIPT_URL, url, std::u16string());
+  return base::WrapRefCounted(
+      new PacFileData(TYPE_SCRIPT_URL, url, std::u16string()));
 }
 
 // static
 scoped_refptr<PacFileData> PacFileData::ForAutoDetect() {
-  return new PacFileData(TYPE_AUTO_DETECT, GURL(), std::u16string());
+  return base::WrapRefCounted(
+      new PacFileData(TYPE_AUTO_DETECT, GURL(), std::u16string()));
 }
 
 const std::u16string& PacFileData::utf16() const {

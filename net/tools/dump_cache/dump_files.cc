@@ -196,7 +196,7 @@ bool CacheDumper::Init() {
   }
 
   base::FilePath index_name(path_.Append(kIndexName));
-  index_file_ = new disk_cache::MappedFile;
+  index_file_ = base::MakeRefCounted<disk_cache::MappedFile>();
   index_ = reinterpret_cast<disk_cache::Index*>(
       index_file_->Init(index_name, 0));
   if (!index_) {

@@ -593,8 +593,8 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
     return nullptr;
   }
 
-  scoped_refptr<EntryImpl> cache_entry(
-      new EntryImpl(this, entry_address, false));
+  auto cache_entry =
+      base::MakeRefCounted<EntryImpl>(this, entry_address, false);
   IncreaseNumRefs();
 
   if (!cache_entry->CreateEntry(node_address, key, hash)) {
@@ -1414,8 +1414,7 @@ bool BackendImpl::InitBackingStore(bool* file_created) {
   bool ret = true;
   *file_created = base_file.created();
 
-  scoped_refptr<disk_cache::File> file(
-      new disk_cache::File(std::move(base_file)));
+  auto file = base::MakeRefCounted<disk_cache::File>(std::move(base_file));
   if (*file_created)
     ret = CreateBackingStore(file.get());
 
@@ -1423,7 +1422,7 @@ bool BackendImpl::InitBackingStore(bool* file_created) {
   if (!ret)
     return false;
 
-  index_ = new MappedFile();
+  index_ = base::MakeRefCounted<MappedFile>();
   data_ = static_cast<Index*>(index_->Init(index_name, 0));
   if (!data_) {
     LOG(ERROR) << "Unable to map Index file";
@@ -1590,8 +1589,7 @@ int BackendImpl::NewEntry(Addr address, scoped_refptr<EntryImpl>* entry) {
     return ERR_INVALID_ADDRESS;
   }
 
-  scoped_refptr<EntryImpl> cache_entry(
-      new EntryImpl(this, address, read_only_));
+  auto cache_entry = base::MakeRefCounted<EntryImpl>(this, address, read_only_);
   IncreaseNumRefs();
   *entry = nullptr;
 

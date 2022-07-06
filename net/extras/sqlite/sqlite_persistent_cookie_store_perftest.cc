@@ -94,7 +94,7 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    store_ = new SQLitePersistentCookieStore(
+    store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(cookie_filename), client_task_runner_,
         background_task_runner_, false, nullptr);
     std::vector<CanonicalCookie*> cookies;
@@ -113,7 +113,7 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
     // Flush ThreadPool tasks, causing pending commits to run.
     task_environment_.RunUntilIdle();
 
-    store_ = new SQLitePersistentCookieStore(
+    store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(cookie_filename), client_task_runner_,
         background_task_runner_, false, nullptr);
   }

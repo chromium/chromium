@@ -69,8 +69,7 @@ void NetworkDelegateErrorObserver::Core::Shutdown() {
 NetworkDelegateErrorObserver::NetworkDelegateErrorObserver(
     NetworkDelegate* network_delegate,
     base::SingleThreadTaskRunner* origin_runner)
-    : core_(new Core(network_delegate, origin_runner)) {
-}
+    : core_(base::MakeRefCounted<Core>(network_delegate, origin_runner)) {}
 
 NetworkDelegateErrorObserver::~NetworkDelegateErrorObserver() {
   core_->Shutdown();

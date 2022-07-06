@@ -1304,7 +1304,7 @@ File* EntryImpl::GetExternalFile(Addr address, int index) {
   DCHECK(index >= 0 && index <= kKeyFileIndex);
   if (!files_[index].get()) {
     // For a key file, use mixed mode IO.
-    scoped_refptr<File> file(new File(kKeyFileIndex == index));
+    auto file = base::MakeRefCounted<File>(kKeyFileIndex == index);
     if (file->Init(backend_->GetFileName(address)))
       files_[index].swap(file);
   }

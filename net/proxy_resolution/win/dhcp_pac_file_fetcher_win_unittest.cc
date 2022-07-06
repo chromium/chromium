@@ -346,7 +346,7 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
     next_adapter_fetcher_index_ = 0;
     num_fetchers_created_ = 0;
     adapter_fetchers_.clear();
-    adapter_query_ = new MockAdapterQuery();
+    adapter_query_ = base::MakeRefCounted<MockAdapterQuery>();
     max_wait_ = TestTimeouts::tiny_timeout();
   }
 

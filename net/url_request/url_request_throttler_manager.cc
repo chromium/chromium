@@ -68,7 +68,7 @@ scoped_refptr<URLRequestThrottlerEntryInterface>
 
   // Create the entry if needed.
   if (entry.get() == nullptr) {
-    entry = new URLRequestThrottlerEntry(this, url_id);
+    entry = base::MakeRefCounted<URLRequestThrottlerEntry>(this, url_id);
 
     // We only disable back-off throttling on an entry that we have
     // just constructed.  This is to allow unit tests to explicitly override

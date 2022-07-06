@@ -224,7 +224,7 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
   response_time = Time::FromInternalValue(time_val);
 
   // Read response-headers
-  headers = new HttpResponseHeaders(&iter);
+  headers = base::MakeRefCounted<HttpResponseHeaders>(&iter);
   if (headers->response_code() == -1)
     return false;
 

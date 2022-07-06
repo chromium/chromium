@@ -9734,7 +9734,8 @@ TEST_F(HttpCacheTest, PersistHttpResponseInfo) {
   HttpResponseInfo response1;
   response1.was_cached = false;
   response1.remote_endpoint = expected_endpoint;
-  response1.headers = new HttpResponseHeaders("HTTP/1.1 200 OK");
+  response1.headers =
+      base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   // Pickle.
   base::Pickle pickle;

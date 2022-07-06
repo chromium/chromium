@@ -2655,7 +2655,7 @@ TEST_F(WebSocketChannelEventInterfaceTest, OnAuthRequiredCalled) {
   connect_data_.socket_url = wss_url;
   AuthChallengeInfo auth_info;
   absl::optional<AuthCredentials> credentials;
-  scoped_refptr<HttpResponseHeaders> response_headers =
+  auto response_headers =
       base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK");
   IPEndPoint remote_endpoint(net::IPAddress(127, 0, 0, 1), 80);
 

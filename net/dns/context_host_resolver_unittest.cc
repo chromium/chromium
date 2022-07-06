@@ -854,8 +854,7 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
 
   const url::SchemeHostPort host(url::kHttpsScheme, "example.com",
                                  NetworkAwareHostResolverProc::kPort);
-  scoped_refptr<NetworkAwareHostResolverProc> resolver_proc =
-      new NetworkAwareHostResolverProc();
+  auto resolver_proc = base::MakeRefCounted<NetworkAwareHostResolverProc>();
   ScopedDefaultHostResolverProc scoped_default_host_resolver;
   scoped_default_host_resolver.Init(resolver_proc.get());
 
@@ -895,8 +894,7 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
 TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
   const url::SchemeHostPort host(url::kHttpsScheme, "example.com",
                                  NetworkAwareHostResolverProc::kPort);
-  scoped_refptr<NetworkAwareHostResolverProc> resolver_proc =
-      new NetworkAwareHostResolverProc();
+  auto resolver_proc = base::MakeRefCounted<NetworkAwareHostResolverProc>();
   ScopedDefaultHostResolverProc scoped_default_host_resolver;
   scoped_default_host_resolver.Init(resolver_proc.get());
 

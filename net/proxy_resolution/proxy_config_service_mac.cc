@@ -198,7 +198,7 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
     const scoped_refptr<base::SequencedTaskRunner>& sequenced_task_runner,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarder_(this),
-      helper_(new Helper(this)),
+      helper_(base::MakeRefCounted<Helper>(this)),
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());

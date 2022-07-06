@@ -1032,7 +1032,7 @@ class HostResolverManager::ProcTask {
       params_.resolver_proc = HostResolverProc::GetDefault();
     // If default is unset, use the system proc.
     if (!params_.resolver_proc.get())
-      params_.resolver_proc = new SystemHostResolverProc();
+      params_.resolver_proc = base::MakeRefCounted<SystemHostResolverProc>();
   }
 
   ProcTask(const ProcTask&) = delete;

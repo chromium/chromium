@@ -144,8 +144,8 @@ int MockAsyncProxyResolverFactory::CreateProxyResolver(
     std::unique_ptr<ProxyResolver>* resolver,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolverFactory::Request>* request_handle) {
-  scoped_refptr<Request> request =
-      new Request(this, pac_script, resolver, std::move(callback));
+  auto request = base::MakeRefCounted<Request>(this, pac_script, resolver,
+                                               std::move(callback));
   pending_requests_.push_back(request);
 
   *request_handle = std::make_unique<Job>(request);

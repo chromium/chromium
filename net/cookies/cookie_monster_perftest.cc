@@ -356,7 +356,7 @@ TEST_F(CookieMonsterTest, TestDomainLine) {
 }
 
 TEST_F(CookieMonsterTest, TestImport) {
-  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
   GetCookieListCallback getCookieListCallback;
 

@@ -63,7 +63,8 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
 
 class CompletionHandlerHolder {
  public:
-  CompletionHandlerHolder() { completion_handler_ = new CompletionHandler; }
+  CompletionHandlerHolder()
+      : completion_handler_(base::MakeRefCounted<CompletionHandler>()) {}
 
   CompletionHandler* completion_handler() { return completion_handler_.get(); }
 

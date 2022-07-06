@@ -476,8 +476,8 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateInternal(
 
   return base::WrapUnique(new FileNetLogObserver(
       file_task_runner, std::move(file_writer),
-      base::WrapRefCounted(new WriteQueue(write_queue_memory_max)),
-      capture_mode, std::move(constants)));
+      base::MakeRefCounted<WriteQueue>(write_queue_memory_max), capture_mode,
+      std::move(constants)));
 }
 
 FileNetLogObserver::FileNetLogObserver(

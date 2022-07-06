@@ -59,7 +59,7 @@ class HttpResponseHeadersCacheControlTest : public HttpResponseHeadersTest {
     raw_headers += cache_control;
     raw_headers += "\n";
     HeadersToRaw(&raw_headers);
-    headers_ = new HttpResponseHeaders(raw_headers);
+    headers_ = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
   }
 
   const scoped_refptr<HttpResponseHeaders>& headers() { return headers_; }
@@ -138,8 +138,7 @@ TEST_P(CommonHttpResponseHeadersTest, TestCommon) {
   HeadersToRaw(&raw_headers);
   std::string expected_headers(test.expected_headers);
 
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(raw_headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
   std::string headers = ToSimpleString(parsed);
 
   // Transform to readable output format (so it's easier to see diffs).
@@ -325,13 +324,13 @@ TEST_P(PersistenceTest, Persist) {
 
   std::string headers = test.raw_headers;
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed1(new HttpResponseHeaders(headers));
+  auto parsed1 = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   base::Pickle pickle;
   parsed1->Persist(&pickle, test.options);
 
   base::PickleIterator iter(pickle);
-  scoped_refptr<HttpResponseHeaders> parsed2(new HttpResponseHeaders(&iter));
+  auto parsed2 = base::MakeRefCounted<HttpResponseHeaders>(&iter);
 
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed2));
 }
@@ -507,7 +506,7 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Coalesced) {
       "cache-Control: no-store\n"
       "cache-Control:\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   size_t iter = 0;
   std::string value;
@@ -536,7 +535,7 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Challenge) {
       "WWW-Authenticate:Digest realm=foobar, nonce=x, domain=y\n"
       "WWW-Authenticate:Basic realm=quatar\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   size_t iter = 0;
   std::string value;
@@ -555,7 +554,7 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_DateValued) {
       "Date: Tue, 07 Aug 2007 23:10:55 GMT\n"
       "Last-Modified: Wed, 01 Aug 2007 23:23:45 GMT\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   std::string value;
   EXPECT_TRUE(parsed->EnumerateHeader(nullptr, "date", &value));
@@ -573,7 +572,7 @@ TEST(HttpResponseHeadersTest, DefaultDateToGMT) {
       "Last-Modified: Tue, 07 Aug 2007 19:10:55 EDT\n"
       "Expires: Tue, 07 Aug 2007 23:10:55 UTC\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::Time expected_value;
   ASSERT_TRUE(base::Time::FromString("Tue, 07 Aug 2007 23:10:55 GMT",
                                      &expected_value));
@@ -598,7 +597,7 @@ TEST(HttpResponseHeadersTest, GetAgeValue10) {
       "HTTP/1.1 200 OK\n"
       "Age: 10\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::TimeDelta age;
   ASSERT_TRUE(parsed->GetAgeValue(&age));
   EXPECT_EQ(10, age.InSeconds());
@@ -609,7 +608,7 @@ TEST(HttpResponseHeadersTest, GetAgeValue0) {
       "HTTP/1.1 200 OK\n"
       "Age: 0\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::TimeDelta age;
   ASSERT_TRUE(parsed->GetAgeValue(&age));
   EXPECT_EQ(0, age.InSeconds());
@@ -620,7 +619,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueBogus) {
       "HTTP/1.1 200 OK\n"
       "Age: donkey\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::TimeDelta age;
   ASSERT_FALSE(parsed->GetAgeValue(&age));
 }
@@ -630,7 +629,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueNegative) {
       "HTTP/1.1 200 OK\n"
       "Age: -10\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::TimeDelta age;
   ASSERT_FALSE(parsed->GetAgeValue(&age));
 }
@@ -640,7 +639,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueLeadingPlus) {
       "HTTP/1.1 200 OK\n"
       "Age: +10\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::TimeDelta age;
   ASSERT_FALSE(parsed->GetAgeValue(&age));
 }
@@ -650,7 +649,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueOverflow) {
       "HTTP/1.1 200 OK\n"
       "Age: 999999999999999999999999999999999999999999\n";
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   base::TimeDelta age;
   ASSERT_TRUE(parsed->GetAgeValue(&age));
 
@@ -677,7 +676,7 @@ TEST_P(ContentTypeTest, GetMimeType) {
 
   std::string headers(test.raw_headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   std::string value;
   EXPECT_EQ(test.has_mimetype, parsed->GetMimeType(&value));
@@ -850,7 +849,7 @@ TEST_P(RequiresValidationTest, RequiresValidation) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   ValidationType validation_type =
       parsed->RequiresValidation(request_time, response_time, current_time);
@@ -1041,13 +1040,11 @@ TEST_P(UpdateTest, Update) {
 
   std::string orig_headers(test.orig_headers);
   HeadersToRaw(&orig_headers);
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers);
 
   std::string new_headers(test.new_headers);
   HeadersToRaw(&new_headers);
-  scoped_refptr<HttpResponseHeaders> new_parsed(
-      new HttpResponseHeaders(new_headers));
+  auto new_parsed = base::MakeRefCounted<HttpResponseHeaders>(new_headers);
 
   parsed->Update(*new_parsed.get());
 
@@ -1177,7 +1174,7 @@ TEST_P(EnumerateHeaderLinesTest, EnumerateHeaderLines) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   std::string name, value, lines;
 
@@ -1236,7 +1233,7 @@ TEST_P(IsRedirectTest, IsRedirect) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   std::string location;
   EXPECT_EQ(parsed->IsRedirect(&location), test.is_redirect);
@@ -1322,7 +1319,7 @@ TEST_P(GetContentLengthTest, GetContentLength) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   EXPECT_EQ(test.expected_len, parsed->GetContentLength());
 }
@@ -1402,7 +1399,7 @@ TEST_P(ContentRangeTest, GetContentRangeFor206) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   int64_t first_byte_position;
   int64_t last_byte_position;
@@ -1461,7 +1458,7 @@ TEST_P(IsKeepAliveTest, IsKeepAlive) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   EXPECT_EQ(test.expected_keep_alive, parsed->IsKeepAlive());
 }
@@ -1621,7 +1618,7 @@ TEST_P(HasStrongValidatorsTest, HasStrongValidators) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   EXPECT_EQ(test.expected_result, parsed->HasStrongValidators());
 }
@@ -1679,7 +1676,7 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
 TEST(HttpResponseHeadersTest, HasValidatorsNone) {
   std::string headers("HTTP/1.1 200 OK");
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   EXPECT_FALSE(parsed->HasValidators());
 }
 
@@ -1688,7 +1685,7 @@ TEST(HttpResponseHeadersTest, HasValidatorsEtag) {
       "HTTP/1.1 200 OK\n"
       "etag: \"anything\"");
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   EXPECT_TRUE(parsed->HasValidators());
 }
 
@@ -1697,7 +1694,7 @@ TEST(HttpResponseHeadersTest, HasValidatorsLastModified) {
       "HTTP/1.1 200 OK\n"
       "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT");
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   EXPECT_TRUE(parsed->HasValidators());
 }
 
@@ -1706,7 +1703,7 @@ TEST(HttpResponseHeadersTest, HasValidatorsWeakEtag) {
       "HTTP/1.1 200 OK\n"
       "etag: W/\"anything\"");
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   EXPECT_TRUE(parsed->HasValidators());
 }
 
@@ -1853,8 +1850,7 @@ TEST_P(RemoveHeaderTest, RemoveHeader) {
 
   std::string orig_headers(test.orig_headers);
   HeadersToRaw(&orig_headers);
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers);
 
   std::string name(test.to_remove);
   parsed->RemoveHeader(name);
@@ -1906,8 +1902,7 @@ TEST_P(RemoveHeadersTest, RemoveHeaders) {
 
   std::string orig_headers(test.orig_headers);
   HeadersToRaw(&orig_headers);
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers);
 
   std::unordered_set<std::string> to_remove;
   for (auto* header : test.to_remove) {
@@ -1970,8 +1965,7 @@ TEST_P(RemoveIndividualHeaderTest, RemoveIndividualHeader) {
 
   std::string orig_headers(test.orig_headers);
   HeadersToRaw(&orig_headers);
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers);
 
   std::string name(test.to_remove_name);
   std::string value(test.to_remove_value);
@@ -2072,8 +2066,7 @@ TEST_P(ReplaceStatusTest, ReplaceStatus) {
 
   std::string orig_headers(test.orig_headers);
   HeadersToRaw(&orig_headers);
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers);
 
   std::string name(test.new_status);
   parsed->ReplaceStatusLine(name);
@@ -2138,8 +2131,7 @@ TEST_P(UpdateWithNewRangeTest, UpdateWithNewRange) {
 
   std::string orig_headers(test.orig_headers);
   std::replace(orig_headers.begin(), orig_headers.end(), '\n', '\0');
-  scoped_refptr<HttpResponseHeaders> parsed(
-      new HttpResponseHeaders(orig_headers + '\0'));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers + '\0');
   int64_t content_size = parsed->GetContentLength();
 
   // Update headers without replacing status line.
@@ -2342,7 +2334,7 @@ TEST_P(GetCurrentAgeTest, GetCurrentAge) {
 
   std::string headers(test.headers);
   HeadersToRaw(&headers);
-  scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   base::TimeDelta age =
       parsed->GetCurrentAge(request_time, response_time, current_time);

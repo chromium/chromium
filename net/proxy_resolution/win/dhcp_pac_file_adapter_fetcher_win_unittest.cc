@@ -100,7 +100,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   };
 
   DhcpQuery* ImplCreateDhcpQuery() override {
-    dhcp_query_ = new DelayingDhcpQuery();
+    dhcp_query_ = base::MakeRefCounted<DelayingDhcpQuery>();
     dhcp_query_->dhcp_delay_ = dhcp_delay_;
     dhcp_query_->configured_url_ = configured_url_;
     return dhcp_query_.get();

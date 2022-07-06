@@ -642,11 +642,11 @@ class DnsTransactionTestBase : public testing::Test {
 
   // Called after fully configuring |config|.
   void ConfigureFactory() {
-    session_ =
-        new DnsSession(config_,
-                       base::BindRepeating(&DnsTransactionTestBase::GetNextId,
-                                           base::Unretained(this)),
-                       nullptr /* NetLog */);
+    session_ = base::MakeRefCounted<DnsSession>(
+        config_,
+        base::BindRepeating(&DnsTransactionTestBase::GetNextId,
+                            base::Unretained(this)),
+        nullptr /* NetLog */);
     resolve_context_->InvalidateCachesAndPerSessionData(
         session_.get(), false /* network_change */);
     transaction_factory_ = DnsTransactionFactory::CreateFactory(session_.get());

@@ -91,7 +91,7 @@ class MockServerErrorJob : public URLRequestJob {
 
  protected:
   void GetResponseInfo(HttpResponseInfo* info) override {
-    info->headers = new HttpResponseHeaders(
+    info->headers = base::MakeRefCounted<HttpResponseHeaders>(
         "HTTP/1.1 500 Internal Server Error\n"
         "Content-type: text/plain\n"
         "Content-Length: 0\n");

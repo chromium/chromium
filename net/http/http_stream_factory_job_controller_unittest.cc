@@ -3737,8 +3737,7 @@ void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
   request_info.network_isolation_key = network_isolation_key;
   Initialize(request_info);
   url::SchemeHostPort origin(request_info.url);
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
   headers->AddHeader("alt-svc", alt_svc_header);
   session_->http_stream_factory()->ProcessAlternativeServices(
       session_.get(), network_isolation_key, headers.get(), origin);

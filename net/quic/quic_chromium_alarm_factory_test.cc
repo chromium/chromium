@@ -27,7 +27,7 @@ class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
 class QuicChromiumAlarmFactoryTest : public ::testing::Test {
  protected:
   QuicChromiumAlarmFactoryTest()
-      : runner_(new TestTaskRunner(&clock_)),
+      : runner_(base::MakeRefCounted<TestTaskRunner>(&clock_)),
         alarm_factory_(runner_.get(), &clock_) {}
 
   scoped_refptr<TestTaskRunner> runner_;

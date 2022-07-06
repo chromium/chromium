@@ -390,8 +390,8 @@ int TestNetworkDelegate::OnHeadersReceived(
   next_states_[req_id] |= kStageBeforeStartTransaction;
 
   if (!redirect_on_headers_received_url_.is_empty()) {
-    *override_response_headers =
-        new HttpResponseHeaders(original_response_headers->raw_headers());
+    *override_response_headers = base::MakeRefCounted<HttpResponseHeaders>(
+        original_response_headers->raw_headers());
     (*override_response_headers)->ReplaceStatusLine("HTTP/1.1 302 Found");
     (*override_response_headers)->RemoveHeader("Location");
     (*override_response_headers)
@@ -402,8 +402,8 @@ int TestNetworkDelegate::OnHeadersReceived(
     // Since both values are absl::optionals, can just copy this over.
     *preserve_fragment_on_redirect_url = preserve_fragment_on_redirect_url_;
   } else if (add_header_to_first_response_ && is_first_response) {
-    *override_response_headers =
-        new HttpResponseHeaders(original_response_headers->raw_headers());
+    *override_response_headers = base::MakeRefCounted<HttpResponseHeaders>(
+        original_response_headers->raw_headers());
     (*override_response_headers)
         ->AddHeader("X-Network-Delegate", "Greetings, planet");
   }

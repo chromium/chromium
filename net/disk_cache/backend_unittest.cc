@@ -3896,7 +3896,7 @@ TEST_F(DiskCacheBackendTest, FileSharing) {
   base::FilePath name = cache_impl_->GetFileName(address);
 
   {
-    scoped_refptr<disk_cache::File> file(new disk_cache::File(false));
+    auto file = base::MakeRefCounted<disk_cache::File>(false);
     file->Init(name);
 
 #if BUILDFLAG(IS_WIN)

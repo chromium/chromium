@@ -236,7 +236,7 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   if (not_after < 0)
     return false;
 
-  scoped_refptr<CRLSet> crl_set(new CRLSet());
+  auto crl_set = base::WrapRefCounted(new CRLSet());
   crl_set->sequence_ = static_cast<uint32_t>(*sequence);
   crl_set->not_after_ = static_cast<uint64_t>(not_after);
   crl_set->crls_.reserve(64);  // Value observed experimentally.
@@ -435,7 +435,7 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
     OPENSSL_free(x501_data);
   }
 
-  scoped_refptr<CRLSet> crl_set(new CRLSet);
+  auto crl_set = base::WrapRefCounted(new CRLSet());
   crl_set->sequence_ = 0;
   if (is_expired)
     crl_set->not_after_ = 1;

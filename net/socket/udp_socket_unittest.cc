@@ -145,7 +145,7 @@ class UDPSocketTest : public PlatformTest, public WithTaskEnvironment {
   int SendToSocket(UDPSocket* socket,
                    std::string msg,
                    const IPEndPoint& address) {
-    scoped_refptr<StringIOBuffer> io_buffer = new StringIOBuffer(msg);
+    auto io_buffer = base::MakeRefCounted<StringIOBuffer>(msg);
     TestCompletionCallback callback;
     int rv = socket->SendTo(io_buffer.get(), io_buffer->size(), address,
                             callback.callback());

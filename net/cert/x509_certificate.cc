@@ -118,7 +118,7 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBuffer(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates) {
   DCHECK(cert_buffer);
-  scoped_refptr<X509Certificate> cert(
+  auto cert = base::WrapRefCounted(
       new X509Certificate(std::move(cert_buffer), std::move(intermediates)));
   if (!cert->cert_buffer())
     return nullptr;  // Initialize() failed.
@@ -131,7 +131,7 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBufferUnsafeOptions(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates,
     UnsafeCreateOptions options) {
   DCHECK(cert_buffer);
-  scoped_refptr<X509Certificate> cert(new X509Certificate(
+  auto cert = base::WrapRefCounted(new X509Certificate(
       std::move(cert_buffer), std::move(intermediates), options));
   if (!cert->cert_buffer())
     return nullptr;  // Initialize() failed.

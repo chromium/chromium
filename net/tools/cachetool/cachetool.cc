@@ -605,7 +605,8 @@ void UpdateRawResponseHeaders(CommandMarshal* command_marshal) {
   if (truncated_response_info)
     std::cerr << "WARNING: Truncated HTTP response." << std::endl;
 
-  response_info.headers = new net::HttpResponseHeaders(raw_headers);
+  response_info.headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
   PersistResponseInfo(command_marshal, key, response_info);
 }
 

@@ -191,16 +191,17 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
   switch (type) {
 #if BUILDFLAG(IS_ANDROID)
     case CERT_VERIFY_PROC_ANDROID:
-      return new CertVerifyProcAndroid(std::move(cert_net_fetcher));
+      return base::MakeRefCounted<CertVerifyProcAndroid>(
+          std::move(cert_net_fetcher));
 #elif BUILDFLAG(IS_IOS)
     case CERT_VERIFY_PROC_IOS:
-      return new CertVerifyProcIOS();
+      return base::MakeRefCounted<CertVerifyProcIOS>();
 #elif BUILDFLAG(IS_MAC)
     case CERT_VERIFY_PROC_MAC:
-      return new CertVerifyProcMac();
+      return base::MakeRefCounted<CertVerifyProcMac>();
 #elif BUILDFLAG(IS_WIN)
     case CERT_VERIFY_PROC_WIN:
-      return new CertVerifyProcWin();
+      return base::MakeRefCounted<CertVerifyProcWin>();
 #endif
     case CERT_VERIFY_PROC_BUILTIN:
       return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
@@ -1193,8 +1194,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
     CertVerifyResult dummy_result;
     CertVerifyResult verify_result;
 
-    scoped_refptr<CertVerifyProc> verify_proc =
-        new MockCertVerifyProc(dummy_result);
+    auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
 
     return verify_proc->Verify(
         chain.get(), "test.example.com", /*ocsp_response=*/std::string(),
@@ -1849,8 +1849,7 @@ TEST(CertVerifyProcTest, IntranetHostsRejected) {
   // Intranet names for public CAs should be flagged:
   CertVerifyResult dummy_result;
   dummy_result.is_issued_by_known_root = true;
-  scoped_refptr<CertVerifyProc> verify_proc =
-      new MockCertVerifyProc(dummy_result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
   error = verify_proc->Verify(
       cert.get(), "webmail", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
@@ -4292,7 +4291,7 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
   result.has_sha1 = true;
   result.has_sha1_leaf = true;
   result.is_issued_by_known_root = true;
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   int flags = 0;
   CertVerifyResult verify_result;
@@ -4313,7 +4312,7 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1IntermediatesUnlessAllowed) {
   result.has_sha1 = true;
   result.has_sha1_leaf = false;
   result.is_issued_by_known_root = true;
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   int flags = 0;
   CertVerifyResult verify_result;
@@ -4340,7 +4339,7 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
   result.has_sha1 = true;
   result.has_sha1_leaf = true;
   result.is_issued_by_known_root = false;
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   // SHA-1 should be rejected by default for private roots...
   int flags = 0;
@@ -4439,8 +4438,7 @@ TEST_P(CertVerifyProcWeakDigestTest, VerifyDetectsAlgorithm) {
   //
   // This is sufficient for the purposes of this test, as the checking for weak
   // hash algorithms is done by CertVerifyProc::Verify().
-  scoped_refptr<CertVerifyProc> proc =
-      new MockCertVerifyProc(CertVerifyResult());
+  auto proc = base::MakeRefCounted<MockCertVerifyProc>(CertVerifyResult());
   int error = proc->Verify(ee_chain.get(), "127.0.0.1",
                            /*ocsp_response=*/std::string(),
                            /*sct_list=*/std::string(), flags,
@@ -4570,7 +4568,7 @@ class CertVerifyProcNameTest : public ::testing::Test {
     ASSERT_TRUE(cert);
     CertVerifyResult result;
     result.is_issued_by_known_root = false;
-    scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+    auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
@@ -4679,7 +4677,7 @@ TEST(CertVerifyProcTest, HasTrustAnchorVerifyUMA) {
 
   const base::HistogramBase::Sample kGTSRootR4HistogramID = 486;
 
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   histograms.ExpectTotalCount(kTrustAnchorVerifyHistogram, 0);
 
@@ -4727,7 +4725,7 @@ TEST(CertVerifyProcTest, LogsOnlyMostSpecificTrustAnchorUMA) {
 
   const base::HistogramBase::Sample kGTSRootR3HistogramID = 485;
 
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   histograms.ExpectTotalCount(kTrustAnchorVerifyHistogram, 0);
 
@@ -4765,7 +4763,7 @@ TEST(CertVerifyProcTest, HasTrustAnchorVerifyOutOfDateUMA) {
   result.public_key_hashes.push_back(HashValue(root_hash));
   result.is_issued_by_known_root = true;
 
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   histograms.ExpectTotalCount(kTrustAnchorVerifyHistogram, 0);
   histograms.ExpectTotalCount(kTrustAnchorVerifyOutOfDateHistogram, 0);
@@ -4798,7 +4796,7 @@ TEST(CertVerifyProcTest, DoesNotRecalculateStapledOCSPResult) {
   result.ocsp_result.response_status = OCSPVerifyResult::PROVIDED;
   result.ocsp_result.revocation_status = OCSPRevocationStatus::GOOD;
 
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   int flags = 0;
   CertVerifyResult verify_result;
@@ -4829,7 +4827,7 @@ TEST(CertVerifyProcTest, CalculateStapledOCSPResultIfNotAlreadyDone) {
   EXPECT_EQ(OCSPRevocationStatus::UNKNOWN,
             result.ocsp_result.revocation_status);
 
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
+  auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
   int flags = 0;
   CertVerifyResult verify_result;

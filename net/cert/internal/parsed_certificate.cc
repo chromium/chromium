@@ -87,7 +87,7 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
   if (!errors)
     errors = &unused_errors;
 
-  scoped_refptr<ParsedCertificate> result(new ParsedCertificate);
+  auto result = base::WrapRefCounted(new ParsedCertificate);
   result->cert_data_ = std::move(backing_data);
   result->cert_ = der::Input(CRYPTO_BUFFER_data(result->cert_data_.get()),
                              CRYPTO_BUFFER_len(result->cert_data_.get()));

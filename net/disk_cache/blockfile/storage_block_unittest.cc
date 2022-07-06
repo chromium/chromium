@@ -14,7 +14,7 @@ typedef disk_cache::StorageBlock<disk_cache::EntryStore> CacheEntryBlock;
 
 TEST_F(DiskCacheTest, StorageBlock_LoadStore) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
-  scoped_refptr<disk_cache::MappedFile> file(new disk_cache::MappedFile);
+  auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
   ASSERT_TRUE(file->Init(filename, 8192));
 
@@ -34,7 +34,7 @@ TEST_F(DiskCacheTest, StorageBlock_LoadStore) {
 
 TEST_F(DiskCacheTest, StorageBlock_SetData) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
-  scoped_refptr<disk_cache::MappedFile> file(new disk_cache::MappedFile);
+  auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
   ASSERT_TRUE(file->Init(filename, 8192));
 
@@ -54,17 +54,17 @@ TEST_F(DiskCacheTest, StorageBlock_SetData) {
 
 TEST_F(DiskCacheTest, StorageBlock_SetModified) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
-  scoped_refptr<disk_cache::MappedFile> file(new disk_cache::MappedFile);
+  auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
   ASSERT_TRUE(file->Init(filename, 8192));
 
-  CacheEntryBlock* entry1 =
-      new CacheEntryBlock(file.get(), disk_cache::Addr(0xa0010003));
+  auto entry1 = std::make_unique<CacheEntryBlock>(file.get(),
+                                                  disk_cache::Addr(0xa0010003));
   EXPECT_TRUE(entry1->Load());
   EXPECT_TRUE(0 == entry1->Data()->hash);
   entry1->Data()->hash = 0x45687912;
   entry1->set_modified();
-  delete entry1;
+  entry1.reset();
 
   CacheEntryBlock entry2(file.get(), disk_cache::Addr(0xa0010003));
   EXPECT_TRUE(entry2.Load());

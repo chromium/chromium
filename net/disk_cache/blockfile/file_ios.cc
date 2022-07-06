@@ -118,8 +118,8 @@ void FileBackgroundIO::Write() {
 
 void FileInFlightIO::PostRead(disk_cache::File *file, void* buf, size_t buf_len,
                           size_t offset, disk_cache::FileIOCallback *callback) {
-  scoped_refptr<FileBackgroundIO> operation(
-      new FileBackgroundIO(file, buf, buf_len, offset, callback, this));
+  auto operation = base::MakeRefCounted<FileBackgroundIO>(
+      file, buf, buf_len, offset, callback, this);
   file->AddRef();  // Balanced on OnOperationComplete()
 
   base::ThreadPool::PostTask(
@@ -132,8 +132,8 @@ void FileInFlightIO::PostRead(disk_cache::File *file, void* buf, size_t buf_len,
 void FileInFlightIO::PostWrite(disk_cache::File* file, const void* buf,
                            size_t buf_len, size_t offset,
                            disk_cache::FileIOCallback* callback) {
-  scoped_refptr<FileBackgroundIO> operation(
-      new FileBackgroundIO(file, buf, buf_len, offset, callback, this));
+  auto operation = base::MakeRefCounted<FileBackgroundIO>(
+      file, buf, buf_len, offset, callback, this);
   file->AddRef();  // Balanced on OnOperationComplete()
 
   base::ThreadPool::PostTask(

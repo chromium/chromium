@@ -97,35 +97,38 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
-        ssl_config_service_(new SSLConfigServiceDefaults),
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         http_auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         session_(CreateNetworkSession()),
-        direct_transport_socket_params_(new TransportSocketParams(
-            url::SchemeHostPort(url::kHttpsScheme, "host", 443),
-            NetworkIsolationKey(),
-            SecureDnsPolicy::kAllow,
-            OnHostResolutionCallback(),
-            /*supported_alpns=*/{"h2", "http/1.1"})),
+        direct_transport_socket_params_(
+            base::MakeRefCounted<TransportSocketParams>(
+                url::SchemeHostPort(url::kHttpsScheme, "host", 443),
+                NetworkIsolationKey(),
+                SecureDnsPolicy::kAllow,
+                OnHostResolutionCallback(),
+                /*supported_alpns=*/
+                base::flat_set<std::string>({"h2", "http/1.1"}))),
         proxy_transport_socket_params_(
-            new TransportSocketParams(HostPortPair("proxy", 443),
-                                      NetworkIsolationKey(),
-                                      SecureDnsPolicy::kAllow,
-                                      OnHostResolutionCallback(),
-                                      /*supported_alpns=*/{})),
-        socks_socket_params_(
-            new SOCKSSocketParams(proxy_transport_socket_params_,
-                                  true,
-                                  HostPortPair("sockshost", 443),
-                                  NetworkIsolationKey(),
-                                  TRAFFIC_ANNOTATION_FOR_TESTS)),
-        http_proxy_socket_params_(
-            new HttpProxySocketParams(proxy_transport_socket_params_,
-                                      nullptr /* ssl_params */,
-                                      false /* is_quic */,
-                                      HostPortPair("host", 80),
-                                      /*tunnel=*/true,
-                                      TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      NetworkIsolationKey())),
+            base::MakeRefCounted<TransportSocketParams>(
+                HostPortPair("proxy", 443),
+                NetworkIsolationKey(),
+                SecureDnsPolicy::kAllow,
+                OnHostResolutionCallback(),
+                /*supported_alpns=*/base::flat_set<std::string>({}))),
+        socks_socket_params_(base::MakeRefCounted<SOCKSSocketParams>(
+            proxy_transport_socket_params_,
+            true,
+            HostPortPair("sockshost", 443),
+            NetworkIsolationKey(),
+            TRAFFIC_ANNOTATION_FOR_TESTS)),
+        http_proxy_socket_params_(base::MakeRefCounted<HttpProxySocketParams>(
+            proxy_transport_socket_params_,
+            nullptr /* ssl_params */,
+            false /* is_quic */,
+            HostPortPair("host", 80),
+            /*tunnel=*/true,
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            NetworkIsolationKey())),
         common_connect_job_params_(session_->CreateCommonConnectJobParams()) {}
 
   ~SSLConnectJobTest() override = default;

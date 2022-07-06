@@ -22,7 +22,7 @@ namespace {
 class HttpResponseInfoTest : public testing::Test {
  protected:
   void SetUp() override {
-    response_info_.headers = new HttpResponseHeaders("");
+    response_info_.headers = base::MakeRefCounted<HttpResponseHeaders>("");
   }
 
   void PickleAndRestore(const HttpResponseInfo& response_info,

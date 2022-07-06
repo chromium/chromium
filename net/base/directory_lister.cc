@@ -71,7 +71,7 @@ DirectoryLister::DirectoryLister(const base::FilePath& dir,
                                  ListingType type,
                                  DirectoryListerDelegate* delegate)
     : delegate_(delegate) {
-  core_ = new Core(dir, type, this);
+  core_ = base::MakeRefCounted<Core>(dir, type, this);
   DCHECK(delegate_);
   DCHECK(!dir.value().empty());
 }

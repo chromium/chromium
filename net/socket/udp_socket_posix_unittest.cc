@@ -89,7 +89,7 @@ class MockUDPSocketPosix : public UDPSocketPosix {
                      net::NetLog* net_log,
                      const net::NetLogSource& source)
       : UDPSocketPosix(bind_type, net_log, source) {
-    sender_ = new MockUDPSocketPosixSender();
+    sender_ = base::MakeRefCounted<MockUDPSocketPosixSender>();
   }
 
   MockUDPSocketPosixSender* sender() {

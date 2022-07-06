@@ -307,7 +307,7 @@ int TCPSocketWin::AdoptConnectedSocket(SocketDescriptor socket,
     return result;
   }
 
-  core_ = new Core(this);
+  core_ = base::MakeRefCounted<Core>(this);
   peer_address_ = std::make_unique<IPEndPoint>(peer_address);
 
   return OK;
@@ -853,7 +853,7 @@ int TCPSocketWin::DoConnect() {
     return CreateNetLogIPEndPointParams(peer_address_.get());
   });
 
-  core_ = new Core(this);
+  core_ = base::MakeRefCounted<Core>(this);
 
   // WSAEventSelect sets the socket to non-blocking mode as a side effect.
   // Our connect() and recv() calls require that the socket be non-blocking.

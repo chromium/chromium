@@ -1438,9 +1438,9 @@ void ProxyConfigServiceLinux::Delegate::OnDestroy() {
 }
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux()
-    : delegate_(new Delegate(base::Environment::Create(),
-                             absl::nullopt,
-                             absl::nullopt)) {}
+    : delegate_(base::MakeRefCounted<Delegate>(base::Environment::Create(),
+                                               absl::nullopt,
+                                               absl::nullopt)) {}
 
 ProxyConfigServiceLinux::~ProxyConfigServiceLinux() {
   delegate_->PostDestroyTask();
@@ -1449,17 +1449,17 @@ ProxyConfigServiceLinux::~ProxyConfigServiceLinux() {
 ProxyConfigServiceLinux::ProxyConfigServiceLinux(
     std::unique_ptr<base::Environment> env_var_getter,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : delegate_(new Delegate(std::move(env_var_getter),
-                             absl::nullopt,
-                             traffic_annotation)) {}
+    : delegate_(base::MakeRefCounted<Delegate>(std::move(env_var_getter),
+                                               absl::nullopt,
+                                               traffic_annotation)) {}
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux(
     std::unique_ptr<base::Environment> env_var_getter,
     SettingGetter* setting_getter,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : delegate_(new Delegate(std::move(env_var_getter),
-                             base::WrapUnique(setting_getter),
-                             traffic_annotation)) {}
+    : delegate_(base::MakeRefCounted<Delegate>(std::move(env_var_getter),
+                                               base::WrapUnique(setting_getter),
+                                               traffic_annotation)) {}
 
 void ProxyConfigServiceLinux::AddObserver(Observer* observer) {
   delegate_->AddObserver(observer);

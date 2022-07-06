@@ -412,7 +412,7 @@ bool BlockFiles::CreateBlockFile(int index, FileType file_type, bool force) {
   int flags = force ? base::File::FLAG_CREATE_ALWAYS : base::File::FLAG_CREATE;
   flags |= base::File::FLAG_WRITE | base::File::FLAG_WIN_EXCLUSIVE_WRITE;
 
-  scoped_refptr<File> file(new File(base::File(name, flags)));
+  auto file = base::MakeRefCounted<File>(base::File(name, flags));
   if (!file->IsValid())
     return false;
 
@@ -435,7 +435,7 @@ bool BlockFiles::OpenBlockFile(int index) {
   }
 
   base::FilePath name = Name(index);
-  scoped_refptr<MappedFile> file(new MappedFile());
+  auto file = base::MakeRefCounted<MappedFile>();
 
   if (!file->Init(name, kBlockHeaderSize)) {
     LOG(ERROR) << "Failed to open " << name.value();
@@ -593,7 +593,7 @@ bool BlockFiles::RemoveEmptyFile(FileType block_type) {
       // We get a new handle to the file and release the old one so that the
       // file gets unmmaped... so we can delete it.
       base::FilePath name = Name(file_index);
-      scoped_refptr<File> this_file(new File(false));
+      auto this_file = base::MakeRefCounted<File>(false);
       this_file->Init(name);
       block_files_[file_index] = nullptr;
 

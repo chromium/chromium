@@ -131,7 +131,7 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
                                net::NetLog* net_log,
                                const net::NetLogSource& source)
     : write_async_watcher_(std::make_unique<WriteAsyncWatcher>(this)),
-      sender_(new UDPSocketPosixSender()),
+      sender_(base::MakeRefCounted<UDPSocketPosixSender>()),
       socket_(kInvalidSocket),
       bind_type_(bind_type),
       read_socket_watcher_(FROM_HERE),

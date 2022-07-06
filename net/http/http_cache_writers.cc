@@ -281,8 +281,7 @@ void HttpCache::Writers::ProcessFailure(int error) {
 
 void HttpCache::Writers::TruncateEntry() {
   DCHECK(ShouldTruncate());
-
-  scoped_refptr<PickledIOBuffer> data(new PickledIOBuffer());
+  auto data = base::MakeRefCounted<PickledIOBuffer>();
   response_info_truncation_.Persist(data->pickle(),
                                     true /* skip_transient_headers*/,
                                     true /* response_truncated */);

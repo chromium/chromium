@@ -867,7 +867,7 @@ void CertNetFetcherURLRequest::DoFetchOnNetworkSequence(
 std::unique_ptr<CertNetFetcherURLRequest::Request>
 CertNetFetcherURLRequest::DoFetch(
     std::unique_ptr<RequestParams> request_params) {
-  scoped_refptr<RequestCore> request_core = new RequestCore(task_runner_);
+  auto request_core = base::MakeRefCounted<RequestCore>(task_runner_);
 
   // If the fetcher has already been shutdown, DoFetchOnNetworkSequence will
   // signal the request with an error. However, if the fetcher shuts down

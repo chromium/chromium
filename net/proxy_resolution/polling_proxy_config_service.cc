@@ -183,7 +183,9 @@ PollingProxyConfigService::PollingProxyConfigService(
     base::TimeDelta poll_interval,
     GetConfigFunction get_config_func,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : core_(new Core(poll_interval, get_config_func, traffic_annotation)) {}
+    : core_(base::MakeRefCounted<Core>(poll_interval,
+                                       get_config_func,
+                                       traffic_annotation)) {}
 
 PollingProxyConfigService::~PollingProxyConfigService() {
   core_->Orphan();

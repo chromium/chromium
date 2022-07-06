@@ -173,7 +173,7 @@ TEST_F(DiskCacheTest, BlockFiles_ZeroSizeFile) {
   files.CloseFiles();
   // Truncate one of the files.
   {
-    scoped_refptr<File> file(new File);
+    auto file = base::MakeRefCounted<File>();
     ASSERT_TRUE(file->Init(filename));
     EXPECT_TRUE(file->SetLength(0));
   }
@@ -196,7 +196,7 @@ TEST_F(DiskCacheTest, BlockFiles_TruncatedFile) {
   files.CloseFiles();
   // Truncate one of the files.
   {
-    scoped_refptr<File> file(new File);
+    auto file = base::MakeRefCounted<File>();
     ASSERT_TRUE(file->Init(filename));
     EXPECT_TRUE(file->SetLength(15000));
   }

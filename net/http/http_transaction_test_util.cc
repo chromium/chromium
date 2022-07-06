@@ -506,7 +506,7 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
   if (!t->response_time.is_null())
     response_.response_time = t->response_time;
 
-  response_.headers = new HttpResponseHeaders(header_data);
+  response_.headers = base::MakeRefCounted<HttpResponseHeaders>(header_data);
   response_.ssl_info.cert = t->cert;
   response_.ssl_info.cert_status = t->cert_status;
   response_.ssl_info.connection_status = t->ssl_connection_status;

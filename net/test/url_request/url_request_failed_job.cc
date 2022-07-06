@@ -180,7 +180,8 @@ void URLRequestFailedJob::StartAsync() {
     return;
   }
   const std::string headers = "HTTP/1.1 200 OK";
-  response_info_.headers = new net::HttpResponseHeaders(headers);
+  response_info_.headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(headers);
   total_received_bytes_ = headers.size();
   NotifyHeadersComplete();
 }

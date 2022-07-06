@@ -346,7 +346,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),
                                                         NetLog::Get());
     socket->Connect(peer_addr_);
-    runner_ = new TestTaskRunner(&clock_);
+    runner_ = base::MakeRefCounted<TestTaskRunner>(&clock_);
     send_algorithm_ = new quic::test::MockSendAlgorithm();
     EXPECT_CALL(*send_algorithm_, InRecovery()).WillRepeatedly(Return(false));
     EXPECT_CALL(*send_algorithm_, InSlowStart()).WillRepeatedly(Return(false));

@@ -207,7 +207,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                 GetLocalhostResult())),
         ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         socket_factory_(std::make_unique<MockClientSocketFactory>()),
-        runner_(new TestTaskRunner(context_.mock_clock())),
+        runner_(base::MakeRefCounted<TestTaskRunner>(context_.mock_clock())),
         version_(version),
         client_maker_(version_,
                       quic::QuicUtils::CreateRandomConnectionId(

@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -192,9 +193,7 @@ class SimpleBackendImpl::ActiveEntryProxy
   static std::unique_ptr<SimpleEntryImpl::ActiveEntryProxy> Create(
       int64_t entry_hash,
       SimpleBackendImpl* backend) {
-    std::unique_ptr<SimpleEntryImpl::ActiveEntryProxy> proxy(
-        new ActiveEntryProxy(entry_hash, backend));
-    return proxy;
+    return base::WrapUnique(new ActiveEntryProxy(entry_hash, backend));
   }
 
  private:

@@ -149,7 +149,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
     if (crypt_cookies)
       cookie_crypto_delegate_ = std::make_unique<CookieCryptor>();
 
-    store_ = new SQLitePersistentCookieStore(
+    store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(kCookieFilename),
         use_current_thread ? base::ThreadTaskRunnerHandle::Get()
                            : client_task_runner_,
@@ -321,7 +321,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestSessionCookiesDeletedOnStartup) {
 
   // Load the store a second time. Before the store finishes loading, add a
   // transient cookie and flush it to disk.
-  store_ = new SQLitePersistentCookieStore(
+  store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
       temp_dir_.GetPath().Append(kCookieFilename), client_task_runner_,
       background_task_runner_, false, nullptr);
 
@@ -356,7 +356,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestSessionCookiesDeletedOnStartup) {
   // Load the store a third time, this time restoring session cookies. The
   // store should contain exactly 4 cookies: the 3 persistent, and "c.com",
   // which was added during the second cookie store load.
-  store_ = new SQLitePersistentCookieStore(
+  store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
       temp_dir_.GetPath().Append(kCookieFilename), client_task_runner_,
       background_task_runner_, true, nullptr);
   store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,

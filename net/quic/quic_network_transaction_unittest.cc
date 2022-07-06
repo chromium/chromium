@@ -312,7 +312,8 @@ class QuicNetworkTransactionTest
                       kDefaultServerHostName,
                       quic::Perspective::IS_SERVER,
                       false),
-        quic_task_runner_(new TestTaskRunner(context_.mock_clock())),
+        quic_task_runner_(
+            base::MakeRefCounted<TestTaskRunner>(context_.mock_clock())),
         ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
@@ -7373,8 +7374,8 @@ TEST_P(QuicNetworkTransactionWithDestinationTest, PoolIfCertificateValid) {
   AddHangingSocketData();
   AddHangingSocketData();
 
-  scoped_refptr<TestTaskRunner> quic_task_runner(
-      new TestTaskRunner(context_.mock_clock()));
+  auto quic_task_runner =
+      base::MakeRefCounted<TestTaskRunner>(context_.mock_clock());
   QuicStreamFactoryPeer::SetAlarmFactory(
       session_->quic_stream_factory(),
       std::make_unique<QuicChromiumAlarmFactory>(quic_task_runner.get(),

@@ -192,33 +192,37 @@ class NetworkChangeNotifier::NetworkChangeCalculator
 class NetworkChangeNotifier::ObserverList {
  public:
   ObserverList()
-      : ip_address_observer_list_(new base::ObserverListThreadSafe<
-                                  NetworkChangeNotifier::IPAddressObserver>(
-            base::ObserverListPolicy::EXISTING_ONLY)),
-        connection_type_observer_list_(
-            new base::ObserverListThreadSafe<
-                NetworkChangeNotifier::ConnectionTypeObserver>(
+      : ip_address_observer_list_(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::IPAddressObserver>>(
                 base::ObserverListPolicy::EXISTING_ONLY)),
-        resolver_state_observer_list_(new base::ObserverListThreadSafe<
-                                      NetworkChangeNotifier::DNSObserver>(
-            base::ObserverListPolicy::EXISTING_ONLY)),
+        connection_type_observer_list_(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::ConnectionTypeObserver>>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
+        resolver_state_observer_list_(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::DNSObserver>>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
         network_change_observer_list_(
-            new base::ObserverListThreadSafe<
-                NetworkChangeNotifier::NetworkChangeObserver>(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::NetworkChangeObserver>>(
                 base::ObserverListPolicy::EXISTING_ONLY)),
         max_bandwidth_observer_list_(
-            new base::ObserverListThreadSafe<
-                NetworkChangeNotifier::MaxBandwidthObserver>(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::MaxBandwidthObserver>>(
                 base::ObserverListPolicy::EXISTING_ONLY)),
-        network_observer_list_(new base::ObserverListThreadSafe<
-                               NetworkChangeNotifier::NetworkObserver>(
-            base::ObserverListPolicy::EXISTING_ONLY)),
+        network_observer_list_(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::NetworkObserver>>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
         connection_cost_observer_list_(
-            new base::ObserverListThreadSafe<
-                NetworkChangeNotifier::ConnectionCostObserver>(
+            base::MakeRefCounted<base::ObserverListThreadSafe<
+                NetworkChangeNotifier::ConnectionCostObserver>>(
                 base::ObserverListPolicy::EXISTING_ONLY)),
         default_network_active_observer_list_(
-            new base::ObserverListThreadSafe<DefaultNetworkActiveObserver>(
+            base::MakeRefCounted<
+                base::ObserverListThreadSafe<DefaultNetworkActiveObserver>>(
                 base::ObserverListPolicy::EXISTING_ONLY)) {}
 
   ObserverList(const ObserverList&) = delete;

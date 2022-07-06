@@ -1560,7 +1560,9 @@ SQLitePersistentReportingAndNelStore::SQLitePersistentReportingAndNelStore(
     const base::FilePath& path,
     const scoped_refptr<base::SequencedTaskRunner>& client_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
-    : backend_(new Backend(path, client_task_runner, background_task_runner)) {}
+    : backend_(base::MakeRefCounted<Backend>(path,
+                                             client_task_runner,
+                                             background_task_runner)) {}
 
 SQLitePersistentReportingAndNelStore::~SQLitePersistentReportingAndNelStore() {
   backend_->Close();

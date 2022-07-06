@@ -83,7 +83,7 @@ int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
     } while (end != value.npos);
   }
 
-  response->headers = new HttpResponseHeaders(raw_headers);
+  response->headers = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
   // When there are multiple location headers the response is a potential
   // response smuggling attack.
