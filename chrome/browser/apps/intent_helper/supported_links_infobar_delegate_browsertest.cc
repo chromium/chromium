@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
@@ -18,20 +19,20 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/cpp/preferred_apps_test_util.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SupportedLinksInfoBarDelegateBrowserTest
-    : public web_app::WebAppNavigationBrowserTest {
+    : public web_app::WebAppNavigationBrowserTest,
+      public apps::PreferredAppsListHandle::Observer {
  public:
   void SetUpOnMainThread() override {
     web_app::WebAppNavigationBrowserTest::SetUpOnMainThread();
 
     InstallTestWebApp();
-    update_waiter_ = std::make_unique<apps_util::PreferredAppUpdateWaiter>(
-        app_service_proxy()->PreferredAppsList());
+    app_service_proxy()->PreferredAppsList().AddObserver(this);
   }
 
   void TearDownOnMainThread() override {
@@ -57,11 +58,25 @@ class SupportedLinksInfoBarDelegateBrowserTest
 
   // apps::PreferredAppsListHandle::Observer:
   void WaitForPreferredAppUpdate() {
-    update_waiter_->WaitForPreferredAppUpdate(test_web_app_id());
+    wait_run_loop_ = std::make_unique<base::RunLoop>();
+    wait_run_loop_->Run();
+  }
+
+  void OnPreferredAppChanged(const std::string& app_id,
+                             bool is_preferred_app) override {
+    if (wait_run_loop_ && wait_run_loop_->running() &&
+        app_id == test_web_app_id()) {
+      wait_run_loop_->Quit();
+    }
+  }
+
+  void OnPreferredAppsListWillBeDestroyed(
+      apps::PreferredAppsListHandle* handle) override {
+    handle->RemoveObserver(this);
   }
 
  private:
-  std::unique_ptr<apps_util::PreferredAppUpdateWaiter> update_waiter_;
+  std::unique_ptr<base::RunLoop> wait_run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,

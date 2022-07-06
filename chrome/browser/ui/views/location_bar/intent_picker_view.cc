@@ -47,7 +47,7 @@ void IntentPickerView::OnExecuting(
   DCHECK(GetShowIcon());
   content::WebContents* web_contents = GetWebContents();
   const GURL& url = chrome::GetURLToBookmark(web_contents);
-  apps::ShowIntentPickerOrLaunchApp(web_contents, url);
+  apps::ShowIntentPickerBubble(web_contents, url);
 }
 
 views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {
