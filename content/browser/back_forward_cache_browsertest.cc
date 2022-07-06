@@ -2928,6 +2928,72 @@ bool BackForwardCacheBrowserTest::IsUnloadAllowedToEnterBackForwardCache() {
 #endif
 }
 
+bool BackForwardCacheBrowserTest::AddBlocklistedFeature(RenderFrameHost* rfh) {
+  return ExecJs(rfh, R"(
+    let object = document.createElement("object");
+    object.type = "application/x-blink-test-plugin";
+    document.body.appendChild(object);
+  )");
+}
+
+void BackForwardCacheBrowserTest::ExpectNotRestoredDueToBlocklistedFeature(
+    base::Location location) {
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kContainsPlugins}, {}, {},
+      {}, location);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       FrameWithBlocklistedFeatureNotCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a page that contains a blocklisted feature.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  RenderFrameHostWrapper rfh(current_frame_host());
+
+  ASSERT_TRUE(AddBlocklistedFeature(rfh.get()));
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page with the unsupported feature should be deleted (not cached).
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+
+  // Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestoredDueToBlocklistedFeature(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       SubframeWithBlocklistedFeatureNotCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a page with an iframe that contains a blocklisted feature.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+
+  RenderFrameHostWrapper rfh(
+      current_frame_host()->child_at(0)->current_frame_host());
+
+  ASSERT_TRUE(AddBlocklistedFeature(rfh.get()));
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page with the unsupported feature should be deleted (not cached).
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
+
+  // Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestoredDueToBlocklistedFeature(FROM_HERE);
+}
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, UnloadHandlerPresent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

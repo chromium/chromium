@@ -199,6 +199,17 @@ class BackForwardCacheBrowserTest
 
   bool IsUnloadAllowedToEnterBackForwardCache();
 
+  // Adds a blocklisted feature to the document to prevent caching. Currently
+  // this means adding a plugin. We expect that plugins will never become
+  // cacheable, so this should be stable (at least until plugins cease to
+  // exist). If you need the feature to be sticky, then
+  // `RenderFrameHostImpl::UseDummyStickyBackForwardCacheDisablingFeatureForTesting`
+  // provides that.
+  [[nodiscard]] bool AddBlocklistedFeature(RenderFrameHost* rfh);
+  // Check that the document was not restored for the reason added by
+  // `AddBlocklistedFeature`.
+  void ExpectNotRestoredDueToBlocklistedFeature(base::Location location);
+
   base::HistogramTester histogram_tester_;
 
   bool same_site_back_forward_cache_enabled_ = true;

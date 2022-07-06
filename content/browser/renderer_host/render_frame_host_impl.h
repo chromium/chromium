@@ -495,6 +495,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       BackForwardCacheCanStoreDocumentResultWithTree& can_store);
 
   // Only for testing sticky WebBackForwardCacheDisablingFeature.
+  // This is implemented solely in the browser and should only be used when
+  // stickiness is required, otherwise
+  // BackForwardCacheBrowserTest::AddBlocklistedFeature should be used.
   void UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // Returns the current WebPreferences for the WebContents associated with this
