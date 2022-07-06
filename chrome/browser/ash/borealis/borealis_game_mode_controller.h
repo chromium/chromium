@@ -9,7 +9,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 
@@ -49,7 +49,7 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
    private:
     static void OnSetGameMode(
         bool was_refresh,
-        absl::optional<chromeos::ResourcedClient::GameMode> previous);
+        absl::optional<ash::ResourcedClient::GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.

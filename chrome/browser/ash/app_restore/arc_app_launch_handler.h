@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -105,7 +105,7 @@ constexpr base::TimeDelta kStopRestoreDelay = base::Minutes(1);
 // phase.
 class ArcAppLaunchHandler
     : public apps::AppRegistryCache::Observer,
-      public chromeos::ResourcedClient::Observer,
+      public ResourcedClient::Observer,
       public wm::ActivationChangeObserver,
       public aura::EnvObserver,
       public aura::WindowObserver,
@@ -179,8 +179,8 @@ class ArcAppLaunchHandler
   // ARC not being ready, or the system perforamcne concern) on Chrome OS.
   void PrepareAppLaunching(const std::string& app_id);
 
-  // Override chromeos::ResourcedClient::Observer
-  void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
+  // Override ResourcedClient::Observer
+  void OnMemoryPressure(ResourcedClient::PressureLevel level,
                         uint64_t reclaim_target_kb) override;
 
   // Returns true if there are windows to be restored. Otherwise, returns false.
@@ -291,8 +291,8 @@ class ArcAppLaunchHandler
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
-  chromeos::ResourcedClient::PressureLevel pressure_level_ =
-      chromeos::ResourcedClient::PressureLevel::MODERATE;
+  ResourcedClient::PressureLevel pressure_level_ =
+      ResourcedClient::PressureLevel::MODERATE;
 
   absl::optional<bool> should_apply_cpu_restirction_;
 
@@ -312,8 +312,7 @@ class ArcAppLaunchHandler
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
-  base::ScopedObservation<chromeos::ResourcedClient,
-                          chromeos::ResourcedClient::Observer>
+  base::ScopedObservation<ResourcedClient, ResourcedClient::Observer>
       resourced_client_observer_{this};
 
   base::WeakPtrFactory<ArcAppLaunchHandler> weak_ptr_factory_{this};

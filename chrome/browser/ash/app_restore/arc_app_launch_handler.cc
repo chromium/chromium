@@ -179,9 +179,8 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
                               windows_.size() + no_stack_windows_.size());
 
   // Receive the memory pressure level.
-  if (chromeos::ResourcedClient::Get() &&
-      !resourced_client_observer_.IsObserving()) {
-    resourced_client_observer_.Observe(chromeos::ResourcedClient::Get());
+  if (ResourcedClient::Get() && !resourced_client_observer_.IsObserving()) {
+    resourced_client_observer_.Observe(ResourcedClient::Get());
   }
 
   // Receive the system CPU usage rate.
@@ -481,9 +480,8 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
   }
 }
 
-void ArcAppLaunchHandler::OnMemoryPressure(
-    chromeos::ResourcedClient::PressureLevel level,
-    uint64_t reclaim_target_kb) {
+void ArcAppLaunchHandler::OnMemoryPressure(ResourcedClient::PressureLevel level,
+                                           uint64_t reclaim_target_kb) {
   pressure_level_ = level;
 }
 
@@ -507,16 +505,15 @@ bool ArcAppLaunchHandler::CanLaunchApp() {
 
 bool ArcAppLaunchHandler::IsUnderMemoryPressure() {
   switch (pressure_level_) {
-    case chromeos::ResourcedClient::PressureLevel::NONE:
+    case ResourcedClient::PressureLevel::NONE:
       return false;
-    case chromeos::ResourcedClient::PressureLevel::MODERATE:
-    case chromeos::ResourcedClient::PressureLevel::CRITICAL: {
-      LOG(WARNING)
-          << "Stop restoring Arc apps due to memory pressure: "
-          << (pressure_level_ ==
-                      chromeos::ResourcedClient::PressureLevel::MODERATE
-                  ? "MODERATE"
-                  : "CRITICAL");
+    case ResourcedClient::PressureLevel::MODERATE:
+    case ResourcedClient::PressureLevel::CRITICAL: {
+      LOG(WARNING) << "Stop restoring Arc apps due to memory pressure: "
+                   << (pressure_level_ ==
+                               ResourcedClient::PressureLevel::MODERATE
+                           ? "MODERATE"
+                           : "CRITICAL");
       return true;
     }
   }

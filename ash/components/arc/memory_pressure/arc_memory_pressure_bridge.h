@@ -8,7 +8,7 @@
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -21,7 +21,7 @@ class ArcBridgeService;
 
 class ArcMemoryPressureBridge
     : public KeyedService,
-      public chromeos::ResourcedClient::ArcVmObserver,
+      public ash::ResourcedClient::ArcVmObserver,
       public ConnectionObserver<mojom::ProcessInstance> {
  public:
   // Returns singleton instance for the given BrowserContext,
@@ -40,7 +40,7 @@ class ArcMemoryPressureBridge
   ~ArcMemoryPressureBridge() override;
 
   // Implements ResourcedClient::ArcVmObserver.
-  void OnMemoryPressure(chromeos::ResourcedClient::PressureLevelArcVm level,
+  void OnMemoryPressure(ash::ResourcedClient::PressureLevelArcVm level,
                         uint64_t reclaim_target_kb) override;
 
   // ConnectionObserver<mojom::ProcessInstance> overrides.

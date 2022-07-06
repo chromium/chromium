@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/borealis/testing/widgets.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/resourced/fake_resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
@@ -32,7 +32,7 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
  protected:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    fake_resourced_client_ = new chromeos::FakeResourcedClient();
+    fake_resourced_client_ = new ash::FakeResourcedClient();
     profile_ = std::make_unique<TestingProfile>();
     service_fake_ = BorealisServiceFake::UseFakeForTesting(profile_.get());
     window_manager_ = std::make_unique<BorealisWindowManager>(profile_.get());
@@ -46,7 +46,7 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
   void TearDown() override {
     game_mode_controller_.reset();
     histogram_tester_.reset();
-    chromeos::ResourcedClient::Shutdown();
+    ash::ResourcedClient::Shutdown();
     ChromeAshTestBase::TearDown();
   }
 
@@ -55,7 +55,7 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
   std::unique_ptr<BorealisGameModeController> game_mode_controller_;
   std::unique_ptr<BorealisFeatures> features_;
   BorealisServiceFake* service_fake_;
-  chromeos::FakeResourcedClient* fake_resourced_client_;
+  ash::FakeResourcedClient* fake_resourced_client_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
@@ -167,7 +167,7 @@ TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
 
   // Previous game mode timed out/failed followed by refresh.
   fake_resourced_client_->set_set_game_mode_with_timeout_response(
-      chromeos::ResourcedClient::GameMode::OFF);
+      ash::ResourcedClient::GameMode::OFF);
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_EQ(3, fake_resourced_client_->get_enter_game_mode_count());
   histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
@@ -178,7 +178,7 @@ TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
   // Previous game mode timed out/failed followed by exit.
   // Should not record to histogram as it was already recorded above.
   fake_resourced_client_->set_set_game_mode_with_timeout_response(
-      chromeos::ResourcedClient::GameMode::OFF);
+      ash::ResourcedClient::GameMode::OFF);
   test_widget->SetFullscreen(false);
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());

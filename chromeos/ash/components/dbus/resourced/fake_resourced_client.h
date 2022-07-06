@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_RESOURCED_FAKE_RESOURCED_CLIENT_H_
-#define CHROMEOS_DBUS_RESOURCED_FAKE_RESOURCED_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_FAKE_RESOURCED_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_FAKE_RESOURCED_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
  public:
@@ -70,6 +70,6 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   base::ObserverList<ArcVmObserver> arcvm_observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_RESOURCED_FAKE_RESOURCED_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_FAKE_RESOURCED_CLIENT_H_

@@ -57,41 +57,41 @@ ArcMemoryPressureBridge::ArcMemoryPressureBridge(
     : arc_bridge_service_(bridge_service),
       arc_metrics_service_(ArcMetricsService::GetForBrowserContext(context)) {
   DCHECK(arc_metrics_service_ != nullptr);
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
   DCHECK(client);
   client->AddArcVmObserver(this);
   arc_bridge_service_->process()->AddObserver(this);
 }
 
 ArcMemoryPressureBridge::~ArcMemoryPressureBridge() {
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (client)
     client->RemoveArcVmObserver(this);
   arc_bridge_service_->process()->RemoveObserver(this);
 }
 
 void ArcMemoryPressureBridge::OnMemoryPressure(
-    chromeos::ResourcedClient::PressureLevelArcVm level,
+    ash::ResourcedClient::PressureLevelArcVm level,
     uint64_t reclaim_target_kb) {
   if (memory_pressure_in_flight_)
     return;
   mojom::PressureLevel arc_level;
   mojom::ProcessState arc_level_deprecated;
   switch (level) {
-    case chromeos::ResourcedClient::PressureLevelArcVm::NONE:
+    case ash::ResourcedClient::PressureLevelArcVm::NONE:
       return;
 
-    case chromeos::ResourcedClient::PressureLevelArcVm::CACHED:
+    case ash::ResourcedClient::PressureLevelArcVm::CACHED:
       arc_level = mojom::PressureLevel::kCached;
       arc_level_deprecated = mojom::ProcessState::R_CACHED_ACTIVITY_CLIENT;
       break;
 
-    case chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE:
+    case ash::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE:
       arc_level = mojom::PressureLevel::kPerceptible;
       arc_level_deprecated = mojom::ProcessState::R_TOP;
       break;
 
-    case chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND:
+    case ash::ResourcedClient::PressureLevelArcVm::FOREGROUND:
       arc_level = mojom::PressureLevel::kForeground;
       arc_level_deprecated = mojom::ProcessState::R_TOP;
       break;

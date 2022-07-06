@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
@@ -23,7 +23,7 @@ namespace memory {
 // action to reduce memory resources accordingly.
 class COMPONENT_EXPORT(ASH_MEMORY) SystemMemoryPressureEvaluator
     : public memory_pressure::SystemMemoryPressureEvaluator,
-      public chromeos::ResourcedClient::Observer {
+      public ResourcedClient::Observer {
  public:
   explicit SystemMemoryPressureEvaluator(
       std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(ASH_MEMORY) SystemMemoryPressureEvaluator
       std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
 
   // Implements ResourcedClient::Observer, protected for testing.
-  void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
+  void OnMemoryPressure(ResourcedClient::PressureLevel level,
                         uint64_t reclaim_target_kb) override;
 
  private:

@@ -36,7 +36,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
   DCHECK(g_system_evaluator == nullptr);
   g_system_evaluator = this;
 
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  ResourcedClient* client = ResourcedClient::Get();
   if (client) {
     client->AddObserver(this);
   }
@@ -44,7 +44,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   DCHECK(g_system_evaluator);
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  ResourcedClient* client = ResourcedClient::Get();
   if (client) {
     client->RemoveObserver(this);
   }
@@ -61,16 +61,16 @@ uint64_t SystemMemoryPressureEvaluator::GetCachedReclaimTargetKB() {
 }
 
 void SystemMemoryPressureEvaluator::OnMemoryPressure(
-    chromeos::ResourcedClient::PressureLevel level,
+    ResourcedClient::PressureLevel level,
     uint64_t reclaim_target_kb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::MemoryPressureListener::MemoryPressureLevel listener_level;
-  if (level == chromeos::ResourcedClient::PressureLevel::CRITICAL) {
+  if (level == ResourcedClient::PressureLevel::CRITICAL) {
     listener_level =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
     cached_reclaim_target_kb_.store(reclaim_target_kb);
-  } else if (level == chromeos::ResourcedClient::PressureLevel::MODERATE) {
+  } else if (level == ResourcedClient::PressureLevel::MODERATE) {
     listener_level =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
     cached_reclaim_target_kb_.store(0);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
-#define CHROMEOS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
@@ -15,7 +15,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // ResourcedClient is used to communicate with the org.chromium.ResourceManager
 // service. The browser uses the ResourceManager service to get resource usage
@@ -124,11 +124,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   virtual ~ResourcedClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ResourcedClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_

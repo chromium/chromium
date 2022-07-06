@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -17,7 +17,7 @@ namespace crosapi {
 // The ash-chrome implementation of the ResourceManager crosapi interface.
 // This class must only be used from the main thread.
 class ResourceManagerAsh : public mojom::ResourceManager,
-                           public chromeos::ResourcedClient::Observer {
+                           public ash::ResourcedClient::Observer {
  public:
   ResourceManagerAsh();
   ResourceManagerAsh(const ResourceManagerAsh&) = delete;
@@ -26,8 +26,8 @@ class ResourceManagerAsh : public mojom::ResourceManager,
 
   void BindReceiver(mojo::PendingReceiver<mojom::ResourceManager> receiver);
 
-  // chromeos::ResourcedClient::Observer:
-  void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
+  // ash::ResourcedClient::Observer:
+  void OnMemoryPressure(ash::ResourcedClient::PressureLevel level,
                         uint64_t reclaim_target_kb) override;
 
   // crosapi::mojom::ResourceManager:

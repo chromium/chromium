@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/resourced/fake_resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeResourcedClient::FakeResourcedClient() = default;
 FakeResourcedClient::~FakeResourcedClient() = default;
@@ -66,4 +66,4 @@ void FakeResourcedClient::FakeArcVmMemoryPressure(PressureLevelArcVm level,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

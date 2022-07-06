@@ -20,12 +20,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using PressureLevel = chromeos::ResourcedClient::PressureLevel;
-
 namespace ash {
 namespace memory {
 
 namespace {
+
+using PressureLevel = ResourcedClient::PressureLevel;
 
 // Processes PressureCallback calls by just storing the sequence of events so we
 // can validate that we received the expected pressure levels as the test runs.

@@ -8,9 +8,9 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/resourced/resourced_client.h"
 
 namespace ash {
 
@@ -179,7 +179,7 @@ void OnMemoryMarginsSet(bool result, uint64_t critical, uint64_t moderate) {
 }
 
 void ConfigureResourcedPressureThreshold() {
-  if (!chromeos::ResourcedClient::Get()) {
+  if (!ResourcedClient::Get()) {
     return;
   }
 
@@ -204,7 +204,7 @@ void ConfigureResourcedPressureThreshold() {
     LOG(WARNING) << "Overriding memory thresholds with values "
                  << (critical_bps / 100.0) << "% and " << (moderate_bps / 100.0)
                  << "%";
-    chromeos::ResourcedClient::Get()->SetMemoryMarginsBps(
+    ResourcedClient::Get()->SetMemoryMarginsBps(
         critical_bps, moderate_bps, base::BindOnce(&OnMemoryMarginsSet));
   }
 }

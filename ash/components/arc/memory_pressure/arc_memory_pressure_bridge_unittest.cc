@@ -13,7 +13,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
-#include "chromeos/dbus/resourced/fake_resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,7 +67,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
 
   ArcMemoryPressureBridge* bridge() { return bridge_; }
 
-  chromeos::FakeResourcedClient& resourced() { return fake_resourced_client_; }
+  ash::FakeResourcedClient& resourced() { return fake_resourced_client_; }
 
   FakeProcessInstance& process_instance() { return fake_process_instance_; }
 
@@ -91,7 +91,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
   }
 
   AppKillObserver kill_observer_;
-  chromeos::FakeResourcedClient fake_resourced_client_;
+  ash::FakeResourcedClient fake_resourced_client_;
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
@@ -107,7 +107,7 @@ TEST_F(ArcMemoryPressureBridgeTest, ConstructDestruct) {}
 TEST_F(ArcMemoryPressureBridgeTest, PressureNone) {
   ASSERT_NE(nullptr, bridge());
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::NONE,
+      ash::ResourcedClient::PressureLevelArcVm::NONE,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().IsLastHostMemoryPressureChecked());
 }
@@ -121,7 +121,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureCached) {
   process_instance().set_apply_host_memory_pressure_response(
       1 /* killed */, UINT64_C(5368709120) /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::CACHED,
+      ash::ResourcedClient::PressureLevelArcVm::CACHED,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kCached, 1024 /* reclaim_target */));
@@ -139,7 +139,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressurePerceptible) {
   process_instance().set_apply_host_memory_pressure_response(
       1 /* killed */, 2048 /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
+      ash::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kPerceptible, 1024 /* reclaim_target */));
@@ -157,7 +157,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureForeground) {
   process_instance().set_apply_host_memory_pressure_response(
       1 /* killed */, 2048 /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND,
+      ash::ResourcedClient::PressureLevelArcVm::FOREGROUND,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kForeground, 1024 /* reclaim_target */));
@@ -180,10 +180,10 @@ TEST_F(ArcMemoryPressureBridgeTest, DebouncePressure) {
   // FakeProcessInstance::CheckLastHostMemoryPressure is not called first. So
   // these two calls in a row will fail if they are both forwarded to Mojo.
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
+      ash::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       1 /* reclaim_target_kb */);
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
+      ash::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       2 /* reclaim_target_kb */);
 
   // Check that the first call is the most recent one, meaning the second did
@@ -201,7 +201,7 @@ TEST_F(ArcMemoryPressureBridgeTest, DebouncePressure) {
   process_instance().set_apply_host_memory_pressure_response(
       3 /* killed */, 4096 /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
-      chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
+      ash::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       3 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kPerceptible, 3072 /* reclaim_target */));
