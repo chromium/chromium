@@ -54,6 +54,8 @@ constexpr char kFakeIdToken[] = "fake-id-token";
 
 constexpr char kMojoDisconnectionsAccountManagerRemote[] =
     "AccountManager.MojoDisconnections.AccountManagerRemote";
+constexpr char kMojoDisconnectionsAccountManagerObserverReceiver[] =
+    "AccountManager.MojoDisconnections.AccountManagerObserverReceiver";
 
 void AccessTokenFetchSuccess(
     base::OnceCallback<void(crosapi::mojom::AccessTokenResultPtr)> callback) {
@@ -230,6 +232,8 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   }
 
   void ClearReceivers() { receivers_.Clear(); }
+
+  void ClearObservers() { observers_.Clear(); }
 
   int show_add_account_dialog_calls() const {
     return show_add_account_dialog_calls_;
@@ -747,6 +751,50 @@ TEST_F(AccountManagerFacadeImplTest,
   // Expect 1 disconnection.
   EXPECT_EQ(1, histogram_tester().GetTotalSum(
                    kMojoDisconnectionsAccountManagerRemote));
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       HistogramsForZeroAccountManagerObserverReceiverDisconnections) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  // Expect 0 disconnections in the default state.
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerObserverReceiver));
+
+  // Reset the facade so that histograms get logged.
+  account_manager_facade->FlushMojoForTesting();
+  account_manager_facade.reset();
+
+  // Expect 1 log - at the end of `account_manager_facade` destruction.
+  histogram_tester().ExpectTotalCount(
+      kMojoDisconnectionsAccountManagerObserverReceiver, 1);
+  // Expect 0 disconnections.
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerObserverReceiver));
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       HistogramsForAccountManagerObserverReceiverDisconnections) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  // Expect 0 disconnections in the default state.
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerObserverReceiver));
+
+  // Simulate a disconnection.
+  account_manager().ClearObservers();
+  // And reset the facade so that histograms get logged.
+  account_manager_facade->FlushMojoForTesting();
+  account_manager_facade.reset();
+
+  // Expect 1 log - at the end of `account_manager_facade` destruction.
+  histogram_tester().ExpectTotalCount(
+      kMojoDisconnectionsAccountManagerObserverReceiver, 1);
+  // Expect 1 disconnection.
+  EXPECT_EQ(1, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerObserverReceiver));
 }
 
 }  // namespace account_manager
