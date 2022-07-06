@@ -143,15 +143,11 @@ bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
                                       const LocalFrame& frame) {
   // There are two different mechanisms for tracking whether an iframe has moved
   // recently, for OOPIF and in-process iframes. For OOPIF's, frame movement is
-  // tracked in the browser process using hit test data, and it's propagated
-  // in event.GetModifiers(). For in-process iframes, frame movement is tracked
+  // tracked in the browser process using hit test data, and it's propagated in
+  // event.GetModifiers(). For in-process iframes, frame movement is tracked
   // during lifecycle updates, in FrameView::UpdateViewportIntersection, and
   // propagated via FrameView::RectInParentIsStable.
   bool should_discard = false;
-  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames so
-  // we should use IsCrossOriginToOutermostMainFrame when we intend to check if
-  // any embedded frame (eg, iframe or fenced frame) is cross-origin with
-  // respect to the outermost main frame. Follow up to confirm correctness.
   if (frame.NeedsOcclusionTracking() &&
       frame.IsCrossOriginToOutermostMainFrame()) {
     should_discard =
