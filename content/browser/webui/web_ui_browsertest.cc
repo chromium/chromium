@@ -83,15 +83,15 @@ const char kLoadDedicatedWorkerScript[] = R"(
 class TestWebUIMessageHandler : public WebUIMessageHandler {
  public:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "messageRequiringGesture",
         base::BindRepeating(&TestWebUIMessageHandler::OnMessageRequiringGesture,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "notifyFinish",
         base::BindRepeating(&TestWebUIMessageHandler::OnNotifyFinish,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "sendMessage",
         base::BindRepeating(&TestWebUIMessageHandler::OnSendMessase,
                             base::Unretained(this)));
@@ -110,16 +110,16 @@ class TestWebUIMessageHandler : public WebUIMessageHandler {
   }
 
  private:
-  void OnMessageRequiringGesture(const base::ListValue* args) {
+  void OnMessageRequiringGesture(const base::Value::List& args) {
     ++message_requiring_gesture_count_;
   }
 
-  void OnNotifyFinish(const base::ListValue* args) {
+  void OnNotifyFinish(const base::Value::List& args) {
     if (finish_closure_)
       finish_closure_.Run();
   }
 
-  void OnSendMessase(const base::ListValue* args) {
+  void OnSendMessase(const base::Value::List& args) {
     // This message will be invoked when WebContents changes the main RFH
     // and the old main RFH is still alive during navigating from WebUI page
     // to cross-site. WebUI message should be handled with old main RFH.
