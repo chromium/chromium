@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -251,6 +252,19 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             return 0;
         }
         return R.layout.powered_by_chrome_footer;
+    }
+
+    @Override
+    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
+        super.onFooterViewInflated(appMenuHandler, view);
+
+        TextView footerTextView = view.findViewById(R.id.running_in_chrome_footer_text);
+        if (footerTextView != null) {
+            String appName = view.getResources().getString(R.string.app_name);
+            String footerText =
+                    view.getResources().getString(R.string.twa_running_in_chrome_template, appName);
+            footerTextView.setText(footerText);
+        }
     }
 
     /**

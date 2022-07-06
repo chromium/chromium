@@ -1864,10 +1864,6 @@ Your Google account may have other forms of browsing history like searches and a
         Allow all sites
       </message>
 
-      <message name="IDS_POWERED_BY_CHROME_MESSAGE" desc="A message indicating that the current page is running in Chrome.">
-        Powered by Chrome
-      </message>
-
       <!-- Sync strings in account management dialog -->
       <message name="IDS_SYNC_ON" desc="The text is displayed as a gray subtitle of a settings item titled 'Sync' and indicates that sync is on.">
         On
@@ -4228,6 +4224,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <!-- WebAPK/TWA related strings -->
       <message name="IDS_TWA_RUNNING_IN_CHROME" desc="Message on a snackbar indicating that the current Activity may use Chrome data (the rest of the app may not be).">
         Running in Chrome
+      </message>
+      <message name="IDS_TWA_RUNNING_IN_CHROME_TEMPLATE" desc="Message template that used to indicating that the current Activity may use Chrome data (the rest of the app may not be). [CHAR_LIMIT=32]">
+        Running in <ph name="APP_NAME">%1$s<ex>Chromium</ex></ph>
       </message>
       <message name="IDS_TWA_RUNNING_IN_CHROME_V2" desc="Updated message on a snackbar indicating that the current Activity may use Chrome data (the rest of the app may not be).">
         You'll see your <ph name="SITE_NAME">%1$s<ex>www.youtube.com</ex></ph> sign-in status, browsing data, and site data in Chrome

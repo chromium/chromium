@@ -4,19 +4,24 @@
      found in the LICENSE file. -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="4dp" >
-    <TextView
+    android:paddingTop="4dp">
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/running_in_chrome_footer_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
+        android:paddingTop="@dimen/custom_tabs_menu_footer_margin_vertical"
+        android:paddingBottom="@dimen/custom_tabs_menu_footer_margin_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
         android:gravity="start|center_vertical"
-        android:text="@string/powered_by_chrome_message"
         android:maxLines="1"
+        android:drawableStart="@mipmap/app_icon"
+        android:drawablePadding="@dimen/custom_tabs_menu_footer_margin_horizontal"
+        app:drawableWidth="@dimen/custom_tabs_menu_footer_icon_size"
+        app:drawableHeight="@dimen/custom_tabs_menu_footer_icon_size"
         style="@style/TextAppearance.TextSmall.Secondary" />
     <View
         android:layout_width="match_parent"
