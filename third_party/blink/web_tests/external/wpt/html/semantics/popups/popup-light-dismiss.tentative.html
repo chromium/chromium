@@ -425,37 +425,37 @@ promise_test(async () => {
 </style>
 <script>
 promise_test(async () => {
-  const popup = document.querySelector('#p10');
+  const auto = document.querySelector('#p10');
   const hint = document.querySelector('#p11');
   const manual = document.querySelector('#p12');
   // All three can be open at once, if shown in this order:
-  popup.showPopUp();
+  auto.showPopUp();
   hint.showPopUp();
   manual.showPopUp();
-  assert_true(popup.matches(':top-layer'));
+  assert_true(auto.matches(':top-layer'));
   assert_true(hint.matches(':top-layer'));
   assert_true(manual.matches(':top-layer'));
-  // The hint was opened last, so clicking it shouldn't close anything:
+  // Clicking the hint will close the auto, but not the manual.
   await clickOn(hint);
-  assert_true(popup.matches(':top-layer'),'popup should stay open');
+  assert_false(auto.matches(':top-layer'),'auto should be hidden');
   assert_true(hint.matches(':top-layer'),'hint should stay open');
   assert_true(manual.matches(':top-layer'),'manual does not light dismiss');
-  // Clicking outside should close the hint and popup, but not the manual:
+  // Clicking outside should close the hint, but not the manual:
   await clickOn(outside);
-  assert_false(popup.matches(':top-layer'),'popup should close');
+  assert_false(auto.matches(':top-layer'));
   assert_false(hint.matches(':top-layer'),'hint should close');
   assert_true(manual.matches(':top-layer'),'manual does not light dismiss');
   manual.hidePopUp();
   assert_false(manual.matches(':top-layer'));
-  popup.showPopUp();
+  auto.showPopUp();
   hint.showPopUp();
-  assert_true(popup.matches(':top-layer'));
+  assert_true(auto.matches(':top-layer'));
   assert_true(hint.matches(':top-layer'));
-  // Clicking on the popup should close the hint:
-  await clickOn(popup);
-  assert_true(popup.matches(':top-layer'),'popup should stay open');
+  // Clicking on the auto should close the hint:
+  await clickOn(auto);
+  assert_true(auto.matches(':top-layer'),'auto should stay open');
   assert_false(hint.matches(':top-layer'),'hint should light dismiss');
-  popup.hidePopUp();
-  assert_false(popup.matches(':top-layer'));
+  auto.hidePopUp();
+  assert_false(auto.matches(':top-layer'));
 },'Light dismiss of mixed popup types');
 </script>

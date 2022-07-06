@@ -23,3 +23,7 @@ async function sendEscape() {
 function isElementVisible(el) {
   return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
 }
+async function finishAnimations(popUp) {
+  popUp.getAnimations({subtree: true}).forEach(animation => animation.finish());
+  await waitForRender();
+}

@@ -132,10 +132,9 @@
     t.add_cleanup(() => priorFocus.remove());
     return priorFocus;
   }
-  async function finishAnimations(popUp) {
-    popUp.getAnimations({subtree: true}).forEach(animation => animation.finish());
-    await waitForRender();
-    assert_false(isElementVisible(popUp));
+  async function finishAnimationsAndVerifyHide(popUp) {
+    await finishAnimations(popUp);
+    assert_false(isElementVisible(popUp),'After animations are finished, the pop-up should be hidden');
   }
   function activateAndVerify(popUp) {
     const testName = popUp.getAttribute('data-test');
@@ -155,7 +154,7 @@
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       popUp.hidePopUp();
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus on hide');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
 
       // Hit Escape:
       priorFocus.focus();
@@ -164,7 +163,7 @@
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       await sendEscape();
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus after Escape');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
 
       // Change the pop-up type:
       priorFocus.focus();
@@ -174,7 +173,7 @@
       popUp.popUp = 'hint';
       assert_false(popUp.matches(':top-layer'), 'Changing the pop-up type should hide the pop-up');
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus when the type is changed');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
       popUp.popUp = 'auto';
 
       // Remove from the document:
@@ -212,7 +211,7 @@
       button.click(); // Button is set to toggle the pop-up
       assert_false(popUp.matches(':top-layer'));
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus on button-toggled hide');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
     }, "Popup focus test: " + testName);
 
     promise_test(async t => {
@@ -229,7 +228,7 @@
       await clickOn(button); // This will not light dismiss, but will "toggle" the popUp.
       assert_false(popUp.matches(':top-layer'));
       assert_equals(document.activeElement, priorFocus, 'Focus should return to prior focus');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
 
       // Same thing, but the button is contained within the pop-up
       button.removeAttribute('togglepopup');
@@ -244,7 +243,7 @@
       await clickOn(button);
       assert_false(popUp.matches(':top-layer'), 'clicking button should hide the pop-up');
       assert_equals(document.activeElement, priorFocus, 'Contained button should return focus to the previously focused element');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
 
       // Same thing, but the button is unrelated (no togglepopup)
       button = document.createElement('button');
@@ -255,7 +254,7 @@
       await clickOn(button); // This will light dismiss the pop-up, focus the prior focus, then focus this button.
       assert_false(popUp.matches(':top-layer'), 'clicking button should hide the pop-up (via light dismiss)');
       assert_equals(document.activeElement, button, 'Focus should go to unrelated button on light dismiss');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
     }, "Popup button click focus test: " + testName);
 
     promise_test(async t => {
@@ -276,7 +275,7 @@
       assert_equals(document.activeElement, newFocus, 'focus should not change when prior focus is removed');
       popUp.hidePopUp();
       assert_not_equals(document.activeElement, priorFocus, 'focused element has been removed');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
       document.body.appendChild(priorFocus); // Put it back
 
       // Move the prior focus inside the (already open) pop-up
@@ -292,7 +291,7 @@
       assert_true(isElementVisible(popUp),'Animations should keep the pop-up visible');
       assert_not_equals(getComputedStyle(popUp).display,'none','Animations should keep the pop-up visible');
       assert_equals(document.activeElement, priorFocus, 'focused element gets focused');
-      await finishAnimations(popUp);
+      await finishAnimationsAndVerifyHide(popUp);
       assert_equals(getComputedStyle(popUp).display,'none','Animations have ended, pop-up should be hidden');
       assert_not_equals(document.activeElement, priorFocus, 'focused element is display:none inside the pop-up');
       document.body.appendChild(priorFocus); // Put it back

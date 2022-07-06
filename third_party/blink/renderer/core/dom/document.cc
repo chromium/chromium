@@ -7260,12 +7260,12 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-bool Document::PopupOrHintShowing() const {
-  return !popup_and_hint_stack_.IsEmpty();
-}
-bool Document::HintShowing() const {
-  return !popup_and_hint_stack_.IsEmpty() &&
-         (popup_and_hint_stack_.back()->PopupType() == PopupValueType::kHint);
+Element* Document::TopmostPopupAutoOrHint() const {
+  if (PopupHintShowing())
+    return PopupHintShowing();
+  if (PopupStack().IsEmpty())
+    return nullptr;
+  return PopupStack().back();
 }
 
 void Document::exitPointerLock() {
@@ -8019,7 +8019,8 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
-  visitor->Trace(popup_and_hint_stack_);
+  visitor->Trace(popup_hint_showing_);
+  visitor->Trace(popup_stack_);
   visitor->Trace(popups_waiting_to_hide_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);

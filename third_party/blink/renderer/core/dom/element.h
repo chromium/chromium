@@ -186,6 +186,11 @@ enum class HidePopupForcingLevel {
   kHideImmediately,
 };
 
+enum class HidePopupIndependence {
+  kLeaveUnrelated,
+  kHideUnrelated,
+};
+
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
@@ -574,7 +579,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
                          HidePopupForcingLevel forcing_level);
   void PopupHideFinishIfNeeded();
-  static const Element* NearestOpenAncestralPopup(Node* start_node);
+  static const Element* NearestOpenAncestralPopup(const Node* node,
+                                                  bool inclusive = false);
+  // Retrieves the element pointed to by this element's 'anchor' content
+  // attribute, if that element exists, and if this element is a pop-up.
+  Element* anchorElement() const;
   static void HandlePopupLightDismiss(const Event& event);
   void InvokePopup(Element* invoker);
   void SetPopupFocusOnShow();
@@ -583,7 +592,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   static void HideAllPopupsUntil(const Element*,
                                  Document&,
                                  HidePopupFocusBehavior,
-                                 HidePopupForcingLevel);
+                                 HidePopupForcingLevel,
+                                 HidePopupIndependence);
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.
@@ -1350,10 +1360,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kRebuildLayoutTree,
     kAttachLayoutTree,
   };
-
-  // Retrieves the element pointed to by this element's 'anchor' content
-  // attribute, if that element exists.
-  Element* anchorElement() const;
 
   // Special focus handling for popups.
   Element* GetPopupFocusableArea(bool autofocus_only) const;

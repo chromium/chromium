@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -1515,14 +1516,15 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  HeapVector<Member<Element>>& PopupAndHintStack() {
-    return popup_and_hint_stack_;
-  }
+  Element* PopupHintShowing() const { return popup_hint_showing_; }
+  void SetPopupHintShowing(Element* element) { popup_hint_showing_ = element; }
+  HeapVector<Member<Element>>& PopupStack() { return popup_stack_; }
+  const HeapVector<Member<Element>>& PopupStack() const { return popup_stack_; }
+  bool PopupAutoShowing() const { return !popup_stack_.IsEmpty(); }
+  Element* TopmostPopupAutoOrHint() const;
   HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
     return popups_waiting_to_hide_;
   }
-  bool PopupOrHintShowing() const;
-  bool HintShowing() const;
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -2318,12 +2320,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
 
-  // The stack of currently-displayed Popup (and Hint) elements, which are
-  // elements that have either `popup=popup` or `popup=hint`. Elements in the
-  // stack go from earliest (bottom-most) to latest (top-most). If there is a
-  // hint in the stack, it is at the top.
-  HeapVector<Member<Element>> popup_and_hint_stack_;
-
+  // The stack of currently-displayed `popup=auto` elements. Elements in the
+  // stack go from earliest (bottom-most) to latest (top-most).
+  HeapVector<Member<Element>> popup_stack_;
+  // The `popup=hint` that is currently showing, if any.
+  Member<Element> popup_hint_showing_;
   // A set of popups for which hidePopUp() has been called, but animations are
   // still running.
   HeapHashSet<Member<Element>> popups_waiting_to_hide_;
