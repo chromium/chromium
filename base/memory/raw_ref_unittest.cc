@@ -716,62 +716,62 @@ TEST(RawRef, StdLess) {
   {
     auto r1 = raw_ref<int>(i[0]);
     auto r2 = raw_ref<int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, r2));
-    EXPECT_FALSE(std::less<>()(r2, r1));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, r2));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, r1));
   }
   {
     const auto r1 = raw_ref<int>(i[0]);
     const auto r2 = raw_ref<int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, r2));
-    EXPECT_FALSE(std::less<>()(r2, r1));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, r2));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, r1));
   }
   {
     auto r1 = raw_ref<const int>(i[0]);
     auto r2 = raw_ref<const int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, r2));
-    EXPECT_FALSE(std::less<>()(r2, r1));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, r2));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, r1));
   }
   {
     auto r1 = raw_ref<const int>(i[0]);
     auto r2 = raw_ref<int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, r2));
-    EXPECT_FALSE(std::less<>()(r2, r1));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, r2));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, r1));
   }
   {
     auto r1 = raw_ref<int>(i[0]);
     auto r2 = raw_ref<const int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, r2));
-    EXPECT_FALSE(std::less<>()(r2, r1));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, r2));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, r1));
   }
   {
     auto r1 = raw_ref<int>(i[0]);
     auto r2 = raw_ref<int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, i[1]));
-    EXPECT_FALSE(std::less<>()(r2, i[0]));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, i[1]));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, i[0]));
   }
   {
     const auto r1 = raw_ref<int>(i[0]);
     const auto r2 = raw_ref<int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, i[1]));
-    EXPECT_FALSE(std::less<>()(r2, i[0]));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, i[1]));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, i[0]));
   }
   {
     auto r1 = raw_ref<const int>(i[0]);
     auto r2 = raw_ref<const int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, i[1]));
-    EXPECT_FALSE(std::less<>()(r2, i[0]));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, i[1]));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, i[0]));
   }
   {
     auto r1 = raw_ref<const int>(i[0]);
     auto r2 = raw_ref<int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, i[1]));
-    EXPECT_FALSE(std::less<>()(r2, i[0]));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, i[1]));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, i[0]));
   }
   {
     auto r1 = raw_ref<int>(i[0]);
     auto r2 = raw_ref<const int>(i[1]);
-    EXPECT_TRUE(std::less<>()(r1, i[1]));
-    EXPECT_FALSE(std::less<>()(r2, i[0]));
+    EXPECT_TRUE(std::less<raw_ref<int>>()(r1, i[1]));
+    EXPECT_FALSE(std::less<raw_ref<int>>()(r2, i[0]));
   }
 }
 
