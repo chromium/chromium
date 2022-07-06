@@ -183,13 +183,13 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
     // SelectNextTask() finds no work immediately after a wakeup, otherwise the
     // power-inefficient wakeup is invisible in tracing.
     DCHECK_GT(run_level_tracker_.num_run_levels(), 0U);
-    run_level_tracker_.OnTaskStarted();
+    run_level_tracker_.OnWorkStarted();
 
     LazyNow lazy_now(recent_time, time_source_);
     absl::optional<SequencedTaskSource::SelectedTask> selected_task =
         sequence_->SelectNextTask(lazy_now);
     if (!selected_task) {
-      run_level_tracker_.OnTaskEnded();
+      run_level_tracker_.OnWorkEnded();
       break;
     }
 
@@ -226,7 +226,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
         recent_time.reset();
       }
     }
-    run_level_tracker_.OnTaskEnded();
+    run_level_tracker_.OnWorkEnded();
 
     // NOTE: https://crbug.com/828835.
     // When we're running inside a nested RunLoop it may quit anytime, so any
@@ -312,7 +312,7 @@ void ThreadControllerImpl::RemoveNestingObserver(
 }
 
 void ThreadControllerImpl::OnBeginNestedRunLoop() {
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenTasks);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenWorkItems);
 
   // Just assume we have a pending task and post a DoWork to make sure we don't
   // grind to a halt while nested.

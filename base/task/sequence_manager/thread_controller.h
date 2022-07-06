@@ -155,58 +155,60 @@ class ThreadController {
 
   // Tracks the state of each run-level (main and nested ones) in its associated
   // ThreadController. It does so using two high-level principles:
-  //  1) #task-in-task-implies-nested :
-  //     If the |state_| is kRunningTask and another task starts
-  //     (OnTaskStarted()), it implies this inner-task is running from a nested
-  //     loop and another RunLevel is pushed onto |run_levels_|.
-  //  2) #done-task-while-not-running-implies-done-nested
-  //     If the current task completes (OnTaskEnded()) and |state_| is not
-  //     kRunningTask, the top RunLevel was an (already exited) nested loop and
-  //     will be popped off |run_levels_|.
-  // We need this logic because native nested loops can run from any task
+  //  1) #work-in-work-implies-nested :
+  //     If the |state_| is kRunningWorkItem and another work item starts
+  //     (OnWorkStarted()), it implies this inner-work-item is running from a
+  //     nested loop and another RunLevel is pushed onto |run_levels_|.
+  //  2) #done-work-while-not-running-implies-done-nested
+  //     If the current work item completes (OnWorkEnded()) and |state_| is not
+  //     kRunningWorkItem, the top RunLevel was an (already exited) nested loop
+  //     and will be popped off |run_levels_|.
+  // We need this logic because native nested loops can run from any work item
   // without a RunLoop being involved, see
   // ThreadControllerWithMessagePumpTest.ThreadControllerActive* tests for
-  // examples. Using these two heuristics is the simplest way, trying to capture
-  // all the ways in which native+application tasks can nest is harder than
-  // reacting as it happens.
+  // examples. Using these two heuristics is the simplest way, trying to
+  // capture all the ways in which work items can nest is harder than reacting
+  // as it happens.
   //
-  // Note 1: "native tasks" are only captured if the MessagePump is
+  // Note 1: "native work" is only captured if the MessagePump is
   // instrumented to see them and shares them with ThreadController (via
   // MessagePump::Delegate::OnBeginWorkItem). As such it is still possible to
-  // view trace events emanating from native tasks without "ThreadController
+  // view trace events emanating from native work without "ThreadController
   // active" being active.
-  // Note 2: Non-instrumented native tasks do not break the two high-level
+  // Note 2: Non-instrumented native work does not break the two high-level
   // principles above because:
-  //  A) If a non-instrumented task enters a nested loop, either:
-  //     i) No instrumented tasks run within the loop so it's invisible.
-  //     ii) Instrumented tasks run *and* current state is kRunningTask ((A) is
-  //         a task within an instrumented task):
-  //         #task-in-task-implies-nested triggers and the nested loop is
+  //  A) If a non-instrumented work item enters a nested loop, either:
+  //     i) No instrumented work run within the loop so it's invisible.
+  //     ii) Instrumented work runs *and* current state is kRunningWorkItem
+  //         ((A) is a work item within an instrumented work item):
+  //         #work-in-work-implies-nested triggers and the nested loop is
   //         visible.
-  //     iii) Instrumented tasks run *and* current state is kIdle or
-  //          kInBetweenTasks ((A) is a task run by a native loop):
-  //          #task-in-task-implies-nested doesn't trigger and tasks (iii) look
-  //          like a non-nested continuation of tasks at the current RunLevel.
-  //  B) When task (A) exits its nested loop and completes, respectively:
+  //     iii) Instrumented work runs *and* current state is kIdle or
+  //          kInBetweenWorkItems ((A) is a work item run by a native loop):
+  //          #work-in-work-implies-nested doesn't trigger and this instrumented
+  //          work (iii) looks like a non-nested continuation of work at the
+  //          current RunLevel.
+  //  B) When work item (A) exits its nested loop and completes, respectively:
   //     i) The loop was invisible so no RunLevel was created for it and
-  //        #done-task-while-not-running-implies-done-nested doesn't trigger so
+  //        #done-work-while-not-running-implies-done-nested doesn't trigger so
   //        it balances out.
-  //     ii) Instrumented tasks did run in which case |state_| is
-  //         kInBetweenTasks or kIdle. When the task in which (A) runs completes
-  //         #done-task-while-not-running-implies-done-nested triggers and
-  //         everything balances out.
-  //     iii) Nested instrumented tasks were visible but didn't appear nested,
-  //          state is now back to kInBetweenTasks or kIdle as before (A).
+  //     ii) Instrumented work did run in which case |state_| is
+  //         kInBetweenWorkItems or kIdle. When the work item in which (A) runs
+  //         completes, #done-work-while-not-running-implies-done-nested
+  //         triggers and everything balances out.
+  //     iii) Nested instrumented work was visible but didn't appear nested,
+  //          state is now back to kInBetweenWorkItems or kIdle as before (A).
   class BASE_EXPORT RunLevelTracker {
    public:
     enum State {
       // Waiting for work (pending wakeup).
       kIdle,
-      // Between two tasks but not idle.
-      kInBetweenTasks,
-      // Running and currently processing a unit of work (includes selecting the
-      // next task).
-      kRunningTask,
+      // Between two work items but not idle.
+      kInBetweenWorkItems,
+      // Running and currently processing a work items (includes selecting the
+      // next work item, i.e. either peeking the native work queue or selecting
+      // the next application task).
+      kRunningWorkItem,
     };
 
     explicit RunLevelTracker(const ThreadController& outer);
@@ -214,8 +216,8 @@ class ThreadController {
 
     void OnRunLoopStarted(State initial_state);
     void OnRunLoopEnded();
-    void OnTaskStarted();
-    void OnTaskEnded();
+    void OnWorkStarted();
+    void OnWorkEnded();
     void OnIdle();
 
     size_t num_run_levels() const {

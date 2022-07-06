@@ -252,7 +252,7 @@ void ThreadControllerWithMessagePumpImpl::RemoveNestingObserver(
 void ThreadControllerWithMessagePumpImpl::OnBeginWorkItem() {
   hang_watch_scope_.emplace();
   work_id_provider_->IncrementWorkId();
-  run_level_tracker_.OnTaskStarted();
+  run_level_tracker_.OnWorkStarted();
 }
 
 void ThreadControllerWithMessagePumpImpl::OnEndWorkItem() {
@@ -260,7 +260,7 @@ void ThreadControllerWithMessagePumpImpl::OnEndWorkItem() {
   // pump's overhead).
   hang_watch_scope_.emplace();
   work_id_provider_->IncrementWorkId();
-  run_level_tracker_.OnTaskEnded();
+  run_level_tracker_.OnWorkEnded();
 }
 
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
@@ -534,7 +534,7 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
       (timeout == TimeDelta::Max()) ? TimeTicks::Max()
                                     : time_source_->NowTicks() + timeout);
 
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenTasks);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenWorkItems);
 
   // Quit may have been called outside of a Run(), so |quit_pending| might be
   // true here. We can't use InTopLevelDoWork() in Quit() as this call may be

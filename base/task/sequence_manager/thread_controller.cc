@@ -40,8 +40,8 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state) {
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
   DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
-  // Normally this will occur while kIdle or kInBetweenTasks but it can also
-  // occur while kRunningTask in rare situations where the owning
+  // Normally this will occur while kIdle or kInBetweenWorkItems but it can also
+  // occur while kRunningWorkItem in rare situations where the owning
   // ThreadController is deleted from within a task. Ref.
   // SequenceManagerWithTaskRunnerTest.DeleteSequenceManagerInsideATask. Thus we
   // can't assert anything about the current state other than that it must be
@@ -50,9 +50,9 @@ void ThreadController::RunLevelTracker::OnRunLoopEnded() {
   run_levels_.pop();
 }
 
-void ThreadController::RunLevelTracker::OnTaskStarted() {
+void ThreadController::RunLevelTracker::OnWorkStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
-  // Ignore tasks outside the main run loop.
+  // Ignore work outside the main run loop.
   // The only practical case where this would happen is if a native loop is spun
   // outside the main runloop (e.g. system dialog during startup). We cannot
   // support this because we are not guaranteed to be able to observe its exit
@@ -61,29 +61,29 @@ void ThreadController::RunLevelTracker::OnTaskStarted() {
   if (run_levels_.empty())
     return;
 
-  // Already running a task?
-  if (run_levels_.top().state() == kRunningTask) {
-    // #task-in-task-implies-nested
-    run_levels_.emplace(kRunningTask, true);
+  // Already running a work item?
+  if (run_levels_.top().state() == kRunningWorkItem) {
+    // #work-in-work-implies-nested
+    run_levels_.emplace(kRunningWorkItem, true);
   } else {
-    // Going from kIdle or kInBetweenTasks to kRunningTask.
-    run_levels_.top().UpdateState(kRunningTask);
+    // Going from kIdle or kInBetweenWorkItems to kRunningWorkItem.
+    run_levels_.top().UpdateState(kRunningWorkItem);
   }
 }
 
-void ThreadController::RunLevelTracker::OnTaskEnded() {
+void ThreadController::RunLevelTracker::OnWorkEnded() {
   DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
   if (run_levels_.empty())
     return;
 
-  // #done-task-while-not-running-implies-done-nested
-  if (run_levels_.top().state() != kRunningTask)
+  // #done-work-while-not-running-implies-done-nested
+  if (run_levels_.top().state() != kRunningWorkItem)
     run_levels_.pop();
 
   // Whether we exited a nested run-level or not: the current run-level is now
-  // transitioning from kRunningTask to kInBetweenTasks.
-  DCHECK_EQ(run_levels_.top().state(), kRunningTask);
-  run_levels_.top().UpdateState(kInBetweenTasks);
+  // transitioning from kRunningWorkItem to kInBetweenWorkItems.
+  DCHECK_EQ(run_levels_.top().state(), kRunningWorkItem);
+  run_levels_.top().UpdateState(kInBetweenWorkItems);
 }
 
 void ThreadController::RunLevelTracker::OnIdle() {
@@ -91,14 +91,15 @@ void ThreadController::RunLevelTracker::OnIdle() {
   if (run_levels_.empty())
     return;
 
-  // This is similar to the logic in OnTaskStarted().
-  if (run_levels_.top().state() == kRunningTask) {
-    // #task-in-task-implies-nested
-    // While OnIdle() isn't typically thought of as a "task" it is a way to "do
-    // work" and, on platforms like Mac which uses an |idle_work_source_|,
-    // DoIdleWork() can be invoked without DoWork() being first invoked at this
-    // run-level. We need to create a nested kIdle RunLevel or we break
-    // #done-task-while-not-running-implies-done-nested.
+  // This is similar to the logic in OnWorkStarted().
+  if (run_levels_.top().state() == kRunningWorkItem) {
+    // #work-in-work-implies-nested
+    // While OnIdle() isn't typically thought of as a "work item" it is a way
+    // to "do work" and, on platforms like Mac which uses an
+    // |idle_work_source_|, DoIdleWork() can be invoked without DoWork() being
+    // first invoked at this run-level. We need to create a nested kIdle
+    // RunLevel or we break
+    // #done-work-while-not-running-implies-done-nested.
     run_levels_.emplace(kIdle, true);
   } else {
     // Simply going kIdle at the current run-level.

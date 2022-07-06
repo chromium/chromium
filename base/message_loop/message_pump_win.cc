@@ -137,9 +137,9 @@ void MessagePumpForUI::ScheduleDelayedWork(
   // (e.g. modal dialog) under a ScopedNestableTaskAllower, in which case
   // HandleWorkMessage() will be invoked when the system picks up kMsgHaveWork
   // and it will ScheduleNativeTimer() if it's out of immediate work. However,
-  // in that alternate scenario : it's possible for a Windows native task (e.g.
-  // https://docs.microsoft.com/en-us/windows/desktop/winmsg/using-hooks) to
-  // wake the native nested loop and PostDelayedTask() to the current thread
+  // in that alternate scenario : it's possible for a Windows native work item
+  // (e.g. https://docs.microsoft.com/en-us/windows/desktop/winmsg/using-hooks)
+  // to wake the native nested loop and PostDelayedTask() to the current thread
   // from it. This is the only case where we must install/adjust the native
   // timer from ScheduleDelayedWork() because if we don't, the native loop will
   // go back to sleep, unaware of the new |delayed_work_time|.
@@ -600,7 +600,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     // directly as handing it off to ProcessMessageHelper() below would cause an
     // unnecessary ScopedDoWorkItem which may incorrectly lead the Delegate's
     // heuristics to conclude that the DoWork() in HandleTimerMessage() is
-    // nested inside a native task. It's also safe to skip the below
+    // nested inside a native work item. It's also safe to skip the below
     // ScheduleWork() as it is not mandatory before invoking DoWork() and
     // HandleTimerMessage() handles re-installing the necessary followup
     // messages.

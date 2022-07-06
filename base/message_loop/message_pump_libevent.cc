@@ -207,13 +207,13 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
     //    already instantiates a ScopedDoWorkItem (and doing so twice would
     //    incorrectly appear as nested work).
     //  - "ThreadController active" is already up per the above DoWork() so this
-    //    would only be about detecting #task-in-task-implies-nested
+    //    would only be about detecting #work-in-work-implies-nested
     //    (ref. thread_controller.h).
     //  - This can result in the same work as the
     //    event_base_loop(event_base_, EVLOOP_ONCE) call at the end of this
     //    method and that call definitely can't be in a ScopedDoWorkItem as
     //    it includes sleep.
-    //  - The only downside is that, if a native task other than
+    //  - The only downside is that, if a native work item other than
     //    OnLibeventNotification() did enter a nested loop from here, it
     //    wouldn't be labeled as such in tracing by "ThreadController active".
     //    Contact gab@/scheduler-dev@ if a problematic trace emerges.
