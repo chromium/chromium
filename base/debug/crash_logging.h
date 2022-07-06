@@ -69,6 +69,7 @@ enum class CrashKeySize {
   Size32 = 32,
   Size64 = 64,
   Size256 = 256,
+  Size1024 = 1024,
 };
 
 struct CrashKeyString;
@@ -158,6 +159,10 @@ class BASE_EXPORT ScopedCrashKeyString {
 #define SCOPED_CRASH_KEY_STRING256(category, name, data)                \
   SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
                                    ::base::debug::CrashKeySize::Size256)
+
+#define SCOPED_CRASH_KEY_STRING1024(category, name, data)               \
+  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
+                                   ::base::debug::CrashKeySize::Size1024)
 
 #define SCOPED_CRASH_KEY_BOOL(category, name, data)                       \
   static_assert(std::is_same<std::decay_t<decltype(data)>, bool>::value,  \

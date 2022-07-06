@@ -131,6 +131,11 @@ TEST_F(CrashLoggingTest, Macros) {
     SCOPED_CRASH_KEY_STRING256("category", "string256-value", "餅");
     EXPECT_THAT(data(), ElementsAre(Pair("category-string256-value", "餅")));
   }
+
+  {
+    SCOPED_CRASH_KEY_STRING1024("category", "string1024-value", "餅");
+    EXPECT_THAT(data(), ElementsAre(Pair("category-string1024-value", "餅")));
+  }
 }
 
 // Test that the helper macros properly uniqify the internal variable used for

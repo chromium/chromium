@@ -45,7 +45,7 @@ void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
 
 #if !BUILDFLAG(IS_NACL)
     // Report the log message as DCHECK_MESSAGE in the dump we're about to do.
-    SCOPED_CRASH_KEY_STRING256("Logging", "DCHECK_MESSAGE", str);
+    SCOPED_CRASH_KEY_STRING1024("Logging", "DCHECK_MESSAGE", str);
 #endif  // !BUILDFLAG(IS_NACL)
 
     // Note that dumping may fail if the crash handler hasn't been set yet. In

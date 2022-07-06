@@ -42,6 +42,9 @@ struct BaseCrashKeyString : public base::debug::CrashKeyString {
     case base::debug::CrashKeySize::Size256:                                 \
       operation_prefix BaseCrashKeyString<256> operation_suffix;             \
       break;                                                                 \
+    case base::debug::CrashKeySize::Size1024:                                \
+      operation_prefix BaseCrashKeyString<1024> operation_suffix;            \
+      break;                                                                 \
   }
 
 class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
