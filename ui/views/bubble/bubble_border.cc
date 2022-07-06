@@ -41,9 +41,9 @@ namespace views {
 namespace {
 
 // GetShadowValues and GetBorderAndShadowFlags cache their results. The shadow
-// values depend on both the shadow elevation and color, so we create a tuple to
-// key the cache.
-using ShadowCacheKey = std::tuple<int, SkColor>;
+// values depend on the shadow elevation, color and shadow type, so we create a
+// tuple to key the cache.
+using ShadowCacheKey = std::tuple<int, SkColor, BubbleBorder::Shadow>;
 
 SkColor GetKeyShadowColor(int elevation,
                           const ui::ColorProvider* color_provider) {
@@ -143,7 +143,7 @@ const gfx::ShadowValues& GetShadowValues(
   // construct them once and cache.
   static base::NoDestructor<std::map<ShadowCacheKey, gfx::ShadowValues>>
       shadow_map;
-  ShadowCacheKey key(elevation.value_or(-1), color);
+  ShadowCacheKey key(elevation.value_or(-1), color, shadow_type);
 
   if (shadow_map->find(key) != shadow_map->end())
     return shadow_map->find(key)->second;
@@ -200,7 +200,8 @@ const cc::PaintFlags& GetBorderAndShadowFlags(
   // construct them once and cache.
   static base::NoDestructor<std::map<ShadowCacheKey, cc::PaintFlags>> flag_map;
   ShadowCacheKey key(elevation.value_or(-1),
-                     color_provider->GetColor(ui::kColorShadowBase));
+                     color_provider->GetColor(ui::kColorShadowBase),
+                     shadow_type);
 
   if (flag_map->find(key) != flag_map->end())
     return flag_map->find(key)->second;
