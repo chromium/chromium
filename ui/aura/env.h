@@ -193,7 +193,9 @@ class AURA_EXPORT Env : public ui::EventTarget,
   std::unique_ptr<InputStateLookup> input_state_lookup_;
   std::unique_ptr<ui::PlatformEventSource> event_source_;
 
-  raw_ptr<ui::ContextFactory, DanglingUntriaged> context_factory_ = nullptr;
+  // TODO(crbug.com/1298696): Breaks content_unittests.
+  raw_ptr<ui::ContextFactory, DanglingUntriagedDegradeToNoOpWhenMTE>
+      context_factory_ = nullptr;
 
   static bool initial_throttle_input_on_resize_;
   bool throttle_input_on_resize_ = initial_throttle_input_on_resize_;
