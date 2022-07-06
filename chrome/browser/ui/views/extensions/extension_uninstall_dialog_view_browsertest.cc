@@ -45,8 +45,9 @@ const char kReferrerId[] = "chrome-remove-extension-dialog";
 // A preference key storing the url loaded when an extension is uninstalled.
 const char kUninstallUrlPrefKey[] = "uninstall_url";
 
-scoped_refptr<const extensions::Extension> BuildTestExtension() {
-  return extensions::ExtensionBuilder("foo").Build();
+scoped_refptr<const extensions::Extension> BuildTestExtension(
+    const char* extension_name = "foo") {
+  return extensions::ExtensionBuilder(extension_name).Build();
 }
 
 std::string GetActiveUrl(Browser* browser) {
@@ -364,8 +365,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
       extensions::ExtensionSystem::Get(browser()->profile())
           ->extension_service();
 
-  scoped_refptr<const extensions::Extension> extensionA(BuildTestExtension());
-  scoped_refptr<const extensions::Extension> extensionB(BuildTestExtension());
+  scoped_refptr<const extensions::Extension> extensionA(
+      BuildTestExtension("Extension A"));
+  scoped_refptr<const extensions::Extension> extensionB(
+      BuildTestExtension("Extension B"));
   extension_service->AddExtension(extensionA.get());
   extension_service->AddExtension(extensionB.get());
 
