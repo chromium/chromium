@@ -338,7 +338,7 @@ WaylandBufferManagerGpu::GetModifiersForBufferFormat(
 }
 
 uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
-  return ++next_buffer_id_;
+  return ++next_buffer_id_ ? next_buffer_id_ : ++next_buffer_id_;
 }
 
 void WaylandBufferManagerGpu::BindHostInterface(
