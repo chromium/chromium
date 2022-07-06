@@ -112,7 +112,7 @@ class BoundedSegmentLength {
     const SegmentEventSetIterators& set_its = it->second;
     active_segments_.erase(set_its.start_it);
     active_segments_.erase(set_its.end_it);
-    segment_event_iterators_.erase(segment_id);
+    segment_event_iterators_.erase(it);
   }
 
   // Calculate the combined length of segments in the active set of segments by
@@ -247,7 +247,7 @@ void PageAdDensityTracker::RemoveRect(int rect_id) {
   const RectEventSetIterators& set_its = it->second;
   rect_events_.erase(set_its.top_it);
   rect_events_.erase(set_its.bottom_it);
-  rect_events_iterators_.erase(rect_id);
+  rect_events_iterators_.erase(it);
 }
 
 void PageAdDensityTracker::UpdateMainFrameRect(const gfx::Rect& rect) {
