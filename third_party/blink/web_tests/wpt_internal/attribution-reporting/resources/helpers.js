@@ -39,14 +39,17 @@ const pipeHeaderPattern = /[,)]/g;
 // , and ) in pipe values must be escaped with \
 const encodeForPipe = urlString => urlString.replace(pipeHeaderPattern, '\\$&');
 
-const blankURLWithHeaders = headers => {
+const blankURLWithHeaders = (headers, status) => {
   const url = blankURL();
 
-  if (headers.length > 0) {
-    url.searchParams.set(
-        'pipe',
-        headers.map(h => `header(${h.name},${encodeForPipe(h.value)})`)
-            .join('|'));
+  const parts = headers.map(h => `header(${h.name},${encodeForPipe(h.value)})`);
+
+  if (status !== undefined) {
+    parts.push(`status(${encodeForPipe(status)})`);
+  }
+
+  if (parts.length > 0) {
+    url.searchParams.set('pipe', parts.join('|'));
   }
 
   return url;
@@ -68,6 +71,7 @@ const registerAttributionSrc = async (t, {
 
   const eligible = searchParams.get('eligible');
 
+  let status;
   const headers = [];
 
   if (source) {
@@ -95,7 +99,14 @@ const registerAttributionSrc = async (t, {
                   }])));
   }
 
-  const url = blankURLWithHeaders(headers);
+  // a and open with valueless attributionsrc support registrations on all
+  // but the last request in a redirect chain, so add a no-op redirect.
+  if (eligible !== null && (method === 'a' || method === 'open')) {
+    headers.push({name: 'Location', value: blankURL().toString()});
+    status = '302';
+  }
+
+  const url = blankURLWithHeaders(headers, status);
 
   switch (method) {
     case 'img':
@@ -129,19 +140,28 @@ const registerAttributionSrc = async (t, {
       }
       return 'event';
     case 'a':
-      // TODO(apaseltiner): Support optional attributionsrc value.
       const a = document.createElement('a');
-      a.attributionSrc = url;
-      a.href = blankURL();
       a.target = '_blank';
       a.textContent = 'link';
+      if (eligible === null) {
+        a.attributionSrc = url;
+        a.href = blankURL();
+      } else {
+        a.attributionSrc = '';
+        a.href = url;
+      }
       document.body.appendChild(a);
       await test_driver.click(a);
       return 'navigation';
     case 'open':
-      // TODO(apaseltiner): Support optional attributionsrc value.
       await test_driver.bless('open window', () => {
-        open(blankURL(), '_blank', `attributionsrc=${encodeURIComponent(url)}`);
+        if (eligible === null) {
+          open(
+              blankURL(), '_blank',
+              `attributionsrc=${encodeURIComponent(url)}`);
+        } else {
+          open(url, '_blank', 'attributionsrc');
+        }
       });
       return 'navigation';
     case 'fetch':
