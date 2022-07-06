@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>pasko@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it took GmsCore to respond to the first hash-based SafeBrowsing
     request in the process lifetime. Recorded at the same time as

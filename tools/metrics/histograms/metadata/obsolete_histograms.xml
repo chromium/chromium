@@ -16423,7 +16423,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 since the data was not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates why a download is marked as DANGEROUS_FILE. Grouped by reason,
     such as Safe Browsing (SB) service is not available, and SB returns UNKOWN
@@ -17384,7 +17384,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 since the data was not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The connection security state of a download, indicating whether its final
     resolved url and the redirects before final url are secure.
@@ -55135,7 +55135,7 @@ chromium-metrics-reviews@google.com.
     PasswordProtection.RequestOutcome.ProtectedPasswordEntry.
   </obsolete>
   <owner>dvadym@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     A password reuse is an event when the user typed a string that is equal to a
     saved password on another domain, and this saved password is called reused
@@ -55673,7 +55673,7 @@ chromium-metrics-reviews@google.com.
     Removed since caching is not the root cause of time out issue.
   </obsolete>
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for PasswordProtectionService to cache a verdict.
   </summary>
@@ -55686,7 +55686,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with the chrome://settings page that displays
     the password protection warning. Logged when the page is shown and when the
@@ -55701,7 +55701,7 @@ chromium-metrics-reviews@google.com.
     histogram wasn't useful.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the DOM features were parsed successfully when returned from
     the renderer. This is logged on every PhishGuard ping.
@@ -55714,7 +55714,7 @@ chromium-metrics-reviews@google.com.
     Removed since caching is not the root cause of time out issue.
   </obsolete>
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for PasswordProtectionService to get a cached verdict.
   </summary>
@@ -55725,7 +55725,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 2019-01 due to lack of usage. https://crbug.com/915894
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     When user manually navigates to chrome://reset-password page, records how
     this user interacts with this page. Logged when the interstitial is shown
@@ -55739,7 +55739,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed since 07/2018 due to lack of usage.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Number of password protection verdicts stored in content settings of a
     profile before this profile is destructed.
@@ -55752,7 +55752,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M71+.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     We start changing the way of caching password protection verdicts in M69.
     This histogram counts the number of verdicts migrated to the new way during
@@ -55767,7 +55767,7 @@ chromium-metrics-reviews@google.com.
     Removed since May 12 2017. Replaced by
     PasswordProtection.Verdict.ProtectedPasswordEntry.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Verdict types returned by Safe Browsing server for password reuse events.
   </summary>
@@ -55779,7 +55779,7 @@ chromium-metrics-reviews@google.com.
     Removed September 18 2018. This wasn't being used, and can be recreated on
     the backend if needed.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The referrer chain size of a password protection request. This is recorded
     when Chrome receives a verdict for this request.
@@ -55792,7 +55792,7 @@ chromium-metrics-reviews@google.com.
     Removed since May 12 2017. Replaced by
     PasswordProtection.Verdict.PasswordFieldOnFocus.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Verdict types returned by Safe Browsing server for unfamiliar login pages.
   </summary>
@@ -55803,7 +55803,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed since 07/2018 due to lack of usage.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Whether the user has clicked through the Safe Browsing interstitial before
     the password protection ping is triggered on the same page. Logged right
@@ -67080,7 +67080,7 @@ chromium-metrics-reviews@google.com.
     visual features in PhishGuard pings.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the height of content area when the user opens a new browser window
     or when the user finishes resizing a browser window.
@@ -67094,7 +67094,7 @@ chromium-metrics-reviews@google.com.
     visual features in PhishGuard pings.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the width of content area when the user opens a new browser window
     or when the user finishes resizing a browser window.
@@ -67119,7 +67119,7 @@ chromium-metrics-reviews@google.com.
     Removed in M80 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Number of file types (aka file extensions) present in the FileTypePolicies
     proto loaded.
@@ -67136,7 +67136,7 @@ chromium-metrics-reviews@google.com.
     Removed in M80 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Number of file types (aka file extensions) present in the FileTypePolicies
     proto loaded.
@@ -67152,7 +67152,7 @@ chromium-metrics-reviews@google.com.
     visual features in PhishGuard pings.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Records the default font size on user startup.</summary>
 </histogram>
 
@@ -67163,7 +67163,7 @@ chromium-metrics-reviews@google.com.
     visual features in PhishGuard pings.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Records the default fixed font size on user startup.</summary>
 </histogram>
 
@@ -67173,7 +67173,7 @@ chromium-metrics-reviews@google.com.
     visual features in PhishGuard pings.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Records the minimum font size on user startup.</summary>
 </histogram>
 
@@ -67184,7 +67184,7 @@ chromium-metrics-reviews@google.com.
     visual features in PhishGuard pings.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Records the minimum logical font size on user startup.</summary>
 </histogram>
 
@@ -67243,7 +67243,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M71+.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Count of how many ResolvedIPAddresses get removed in each periodic clean up.
     This is a rough estimation of the number of IPs associated with main frame
@@ -67257,7 +67257,7 @@ chromium-metrics-reviews@google.com.
     Removed in M85+.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The net error code for failed reports sent by NotificationImageReporter, or
     net::OK if successful.
@@ -67280,7 +67280,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4Update.Parse.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the parsing results of a status 200 GetV4Update request.
   </summary>
@@ -67292,7 +67292,7 @@ chromium-metrics-reviews@google.com.
     Removed in or before M86. See SafeBrowsing.Pref.Extended
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Tracks the Extended Reporting preference transition. Suffixes track which
     opt-in text users are viewing and the values of each Extended Reporting
@@ -67320,7 +67320,7 @@ chromium-metrics-reviews@google.com.
     Removed in or before M86. See SafeBrowsing.Pref.Extended.*
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Tracks the Extended Reporting preference being changed. Suffixes track which
     Extended Reporting preference was changed, and the specific UI that the
@@ -67334,7 +67334,7 @@ chromium-metrics-reviews@google.com.
     Removed in or before M86.
   </obsolete>
   <owner>lpz@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Tracks reasons for the Extended Reporting preference transition, such as a
     user entering an experiment group or seeing a security interstitial for the
@@ -67374,7 +67374,7 @@ chromium-metrics-reviews@google.com.
     Removed 09-2020 since this is no longer recorded.
   </obsolete>
   <owner>dtrainor@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     File types that were allowed to be downloaded without verifying their
     content nor their source URLs with Safe Browsing.
@@ -67387,7 +67387,7 @@ chromium-metrics-reviews@google.com.
     Removed 09-2020 since this is no longer recorded.
   </obsolete>
   <owner>dtrainor@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     File types that were allowed to be downloaded without verifying their
     content nor their source URLs with Safe Browsing due to the requestor URL
@@ -67402,7 +67402,7 @@ chromium-metrics-reviews@google.com.
     Removed 09-2020 since this is no longer recorded.
   </obsolete>
   <owner>dtrainor@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     File types that were allowed to be downloaded without verifying their
     content nor their source URLs with Safe Browsing due to the SafeBrowsing
@@ -67430,7 +67430,7 @@ chromium-metrics-reviews@google.com.
     Removed 09-2020 since this is no longer recorded.
   </obsolete>
   <owner>dtrainor@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     File types that were blocked from downloaded without verifying their content
     nor their source URLs with Safe Browsing.
@@ -67442,7 +67442,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 04/25/2018 since it was not being used actively or monitored.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to copy the SafeBrowsing list update as a string,
     into a map which contains the hash prefixes that are looked up when a client
@@ -67455,7 +67455,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4AddUnlumpedHashes.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to copy the SafeBrowsing list update as a string,
     into a map which contains the hash prefixes that are looked up when a client
@@ -67468,7 +67468,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4*.ApplyUpdate.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of applying the update fetched from the PVer4 service for a
     particular store.
@@ -67480,7 +67480,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4ReadFromDisk.ApplyUpdate.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of applying an update read from disk after parsing it
     successfully as a protobuf.
@@ -67492,7 +67492,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4*.DecodeAdditions.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of decoding the Rice-encoded list of additions of 4-byte
     hash prefixes. This is logged once per store, per update containing
@@ -67505,7 +67505,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4*.DecodeAdditions.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to decode the Rice-encoded additions to the
     blacklist into raw format.
@@ -67517,7 +67517,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4ProcessPartialUpdate.DecodeRemovals.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of decoding the Rice-encoded list of indexes of hash
     prefixes to remove since the last update. This is logged once per store, per
@@ -67530,7 +67530,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4ProcessPartialUpdate.DecodeRemovals.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to decode the Rice-encoded removals from the
     blacklist into raw format.
@@ -67543,7 +67543,7 @@ chromium-metrics-reviews@google.com.
     Replaced by SafeBrowsing.V4GetHash.CacheHit.Result.
   </obsolete>
   <owner>kcarattini@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Track cache hits for V4 full hashes.</summary>
 </histogram>
 
@@ -67553,7 +67553,7 @@ chromium-metrics-reviews@google.com.
     Replaced by SafeBrowsing.V4GetHash.Check.Result.
   </obsolete>
   <owner>kcarattini@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Track get hash response hits for V4 full hash requests.</summary>
 </histogram>
 
@@ -67562,7 +67562,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4GetHash.Network.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it took to receive a response from the Google SafeBrowsing
     servers for a full hash request.
@@ -67574,7 +67574,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in favor of the TimeUs variant
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it took to check a URL against our in-memory database. It is
     dominated by the time to perform checks for CheckBrowseUrl.
@@ -67587,7 +67587,7 @@ chromium-metrics-reviews@google.com.
     Removed 01/2019 due to lack of use (Histogram Eraser).
   </obsolete>
   <owner>csharrison@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it took to check a URL against our in-memory database. It is
     dominated by the time to perform checks for CheckBrowseUrl. Note that this
@@ -67606,7 +67606,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4*.MergeUpdate.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to merge the existing state of the list with the
     update. The update may have been received from the server, or it may have
@@ -67620,7 +67620,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to process a SafeBrowsing list full update. It
     includes V4AddUnlumpedHashes.Time for each prefix-sized list, and
@@ -67636,7 +67636,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to decode the Rice-encoded additions to the
     blacklist into raw format when applying a full update to a store.
@@ -67648,7 +67648,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 04/25/2018 since it was not being used actively or monitored.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to merge the existing state of the list with a
     full update received from the server.
@@ -67660,7 +67660,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to process a SafeBrowsing list full update. It
     includes V4AddUnlumpedHashesTime for each prefix-sized list, and
@@ -67675,7 +67675,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to process a SafeBrowsing list partial update. It
     includes V4AddUnlumpedHashes.Time for each prefix-sized list, and
@@ -67693,7 +67693,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to decode the Rice-encoded additions to the
     blacklist into raw format when applying a partial update to a store.
@@ -67706,7 +67706,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to decode the Rice-encoded removals from the
     blacklist into raw format when applying a partial update to a store.
@@ -67718,7 +67718,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 04/25/2018 since it was not being used actively or monitored.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to merge the existing state of the list with a
     partial update received from the server.
@@ -67730,7 +67730,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to process a SafeBrowsing list partial update. It
     includes V4AddUnlumpedHashesTime for each prefix-sized list, and
@@ -67746,7 +67746,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to read, parse, and process a SafeBrowsing list
     stored on disk. This happens at Chromium start-up. It includes
@@ -67763,7 +67763,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to decode the Rice-encoded additions to the
     blacklist into raw format when reading a store file from disk.
@@ -67775,7 +67775,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 04/25/2018 since it was not being used actively or monitored.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to perform in-memory copy of the map of raw hash
     prefixes read from disk.
@@ -67787,7 +67787,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4ReadFromDisk.ApplyUpdate.Time.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes to read, parse, and process a SafeBrowsing list
     stored on disk. This happens at Chromium start-up. It includes
@@ -67803,7 +67803,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 since the histogram was very stable: crbug.com/984286.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often IsStoreAvailable fails due to an invalid store identifier.
     This is logged each time a store is checked (a few times for each download,
@@ -67816,7 +67816,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4StoreRead.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the parsing results of reading the SafeBrowsing V4 store file from
     disk. Recorded every time a store is read from disk.
@@ -67829,7 +67829,7 @@ chromium-metrics-reviews@google.com.
     Removed in M78 since there's only ever been just 1 version number.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Version of V4Store read from a store file. This would be useful in tracking
     the usage and rollout of new V4Store versions.
@@ -67841,7 +67841,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4StoreWrite.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the results of writing the SafeBrowsing V4 store file to disk.
     Recorded every time a store is written to disk.
@@ -67854,7 +67854,7 @@ chromium-metrics-reviews@google.com.
     Removed in M86. See https://crbug.com/1089439
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the presence of store files that were previously created but have been
     deprecated since so need to be removed from disk. Logged once per startup.
@@ -67866,7 +67866,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M73. See https://crbug.com/916192
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the presence of Safe Browsing list files used for PVer3, which has
     been deprecated. Logged once per startup.
@@ -67879,7 +67879,7 @@ chromium-metrics-reviews@google.com.
     Removed in M78 due to lack of use and timed out rate being less than 0.03%
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>True if a PVer4 update request timed out.</summary>
 </histogram>
 
@@ -67888,7 +67888,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4Update.Network.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Response or error codes when fetching updates from the SafeBrowsing PVer4
     service.
@@ -67900,7 +67900,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4Update.ResponseSizeKB.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the response sent by the SafeBrowsing PVer4 service, in KB.
   </summary>
@@ -67911,7 +67911,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SafeBrowsing.V4Update.Result.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track return status from V4 update attempts. The buckets of this histogram
     overlap, so the counts cannot be used as percentages.
@@ -67967,7 +67967,7 @@ chromium-metrics-reviews@google.com.
     provides the same information with a better range of durations.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This record how long it took for the request to get the FCM token. It is
     logged every time a deep scanning request successfully gets a token.
@@ -68088,7 +68088,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of add prefixes stored in the database after the last update.
   </summary>
@@ -68131,7 +68131,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 12/2014. Moved to SB2.DatabaseSizeKilobytes.Browse.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the browsing SafeBrowsing database file on disk in kilobytes,
     after an update has occurred.
@@ -68142,7 +68142,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it took to regenerate the filter after we have received all
     the update chunks.
@@ -68165,7 +68165,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of kilobytes read by the browser process during the filter
     generation phase.
@@ -68177,7 +68177,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of read operations issued by the browser process during the
     filter generation phase.
@@ -68200,7 +68200,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of kilobytes written by the browser process during the filter
     generation phase.
@@ -68212,7 +68212,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of write operations issued by the browser process during the
     filter generation phase.
@@ -68223,7 +68223,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it takes to write one redirect URL (which can contain multiple
     chunks) to the database.
@@ -68234,7 +68234,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The network time between the request and response for a chunk.
   </summary>
@@ -68244,7 +68244,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The size of one chunk URL.</summary>
 </histogram>
 
@@ -68262,7 +68262,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Track failures when updating the safe-browsing database.</summary>
 </histogram>
 
@@ -68270,7 +68270,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by SB2.BrowseDatabaseKilobytes.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the SafeBrowsing database file on disk in kilobytes.
   </summary>
@@ -68280,7 +68280,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes to initialize the SafeBrowsing storage backend, in
     milliseconds.
@@ -68305,7 +68305,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the update file before merging with the database file, in
     kilobytes.
@@ -68317,7 +68317,7 @@ chromium-metrics-reviews@google.com.
     Removed in M65. Replaced by SB2.NoUserActionResourceLoadingDelay
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that SafeBrowsing actually delayed the browsing experience. It
     records the difference between the time when Chrome would have started
@@ -68332,7 +68332,7 @@ chromium-metrics-reviews@google.com.
     Removed in M65.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that SafeBrowsing actually delayed the browsing experience. It
     records the difference between the time when Chrome would have started
@@ -68346,7 +68346,7 @@ chromium-metrics-reviews@google.com.
     Removed in M65.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that SafeBrowsing actually delayed the browsing experience. It
     records the difference between the time when Chrome would have started
@@ -68378,7 +68378,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 12/2014. Moved to SB2.DatabaseSizeKilobytes.Download.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the downloads SafeBrowsing database file on disk in kilobytes,
     after an update has occurred.
@@ -68391,7 +68391,7 @@ chromium-metrics-reviews@google.com.
     corresponding to a download, which may or may not correspond to the total
     duration of a download.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The time it takes for a download to finish.</summary>
 </histogram>
 
@@ -68400,7 +68400,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for SafeBrowsing to check hash of a download file.
   </summary>
@@ -68444,7 +68444,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in favor of SafeBrowsing.V4GetPrefixMatches.TimeUs
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it took to check a URL against our in-memory filter.
   </summary>
@@ -68463,7 +68463,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Which filter file the database loaded from disk.</summary>
 </histogram>
 
@@ -68513,7 +68513,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Collection of boolean events for SafeBrowsingFileStore instances. Includes
     corruptions detected, old versions detected, and various failures detected.
@@ -68727,7 +68727,7 @@ chromium-metrics-reviews@google.com.
     Removed in M65.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that it took to receive a response from the Google SafeBrowsing
     servers for a GetHash request.
@@ -68740,7 +68740,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 since it is fairly flat and not really useful.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total delay, in milliseconds, caused by SafeBrowsing for a resource
     load, if the SafeBrowsing interstitial page is not shown and therefore no
@@ -68755,7 +68755,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 7/2014. No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Size of v1 database deleted from client profile.</summary>
 </histogram>
 
@@ -68763,7 +68763,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates how sharded safe-browsing on-disk stores are. Values like 0 to 4
     are reasonable.
@@ -68775,7 +68775,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the PrefixSet storage in bits, divided by the number of prefixes
     represented. Should almost always be 16.
@@ -68798,7 +68798,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 01/2014. Replaced by suffixed SB2.PrefixSetSizeKilobytes.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The size of one of the PrefixSet files in kilobytes.</summary>
 </histogram>
 
@@ -68806,7 +68806,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Time to load one of the PrefixSet files.</summary>
 </histogram>
 
@@ -68837,7 +68837,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of one of the PrefixSet files in kilobytes. Logged after a database
     update has occurred and the PrefixSet has been flushed to disk (once a few
@@ -68897,7 +68897,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Version read from one of the PrefixSet files.</summary>
 </histogram>
 
@@ -68905,7 +68905,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Time to store one of the PrefixSet files.</summary>
 </histogram>
 
@@ -68915,7 +68915,7 @@ chromium-metrics-reviews@google.com.
     Removed in M84. This feature is not launched.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates whether the local Safe Browsing blacklists can be used on this
     Android device. Logged once on first URL check request.
@@ -68928,7 +68928,7 @@ chromium-metrics-reviews@google.com.
     Removed Oct 2018
   </obsolete>
   <owner>csharrison@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Wall time in microseconds for calling
     Java_SafeBrowsingApiBridge_startUriLookup. Logged at every Safe Browsing
@@ -68947,7 +68947,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M64 (Nov 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Number of outstanding calls for URLs getting classified through
     RemoteSafeBrowsingDatabaseManager. The size of the queue is logged before
@@ -68960,7 +68960,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     No longer generated. Replaced by SB2.RemoteCall.InternalErrorStatusCode2
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The status code provided by GmsCore if it is unable to respond to a URL
     check request due to incorrect initialization, not being ready, etc. Logged
@@ -68976,7 +68976,7 @@ chromium-metrics-reviews@google.com.
     Removed M81. The latency looks good, not needed anymore.
   </obsolete>
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates the time for synchronous local allowlist lookup on Java side. This
     metrics provides the evidence of whether asynchronous implementation is
@@ -68990,7 +68990,7 @@ chromium-metrics-reviews@google.com.
     Removed in M84. This feature is not launched.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates the time since the local blacklists were successfully updated
     last. Logged each time the verdict of local blacklists lookup is stale or
@@ -69005,7 +69005,7 @@ chromium-metrics-reviews@google.com.
     Removed in M84. This feature is not launched.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates the result of local Safe Browsing blacklist lookup on Android.
     Logged for each URL lookup, if the local blacklists feature is enabled (i.e.
@@ -69019,7 +69019,7 @@ chromium-metrics-reviews@google.com.
     Removed in M84. This feature is not launched.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates the result of local blacklists' update. Logged each time an update
     of local blacklists is attempted, if the local blacklists feature is enabled
@@ -69045,7 +69045,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Superseded by SB2.ResourceTypes2 in December 2015.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Resource types of resources that were inspected by Safe Browsing in the
     SafeBrowsingResourceThrottle.
@@ -69082,7 +69082,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 12/2014. Merged into SB2.PrefixSetWrite.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Time to store the Side Effect Free Whitelist PrefixSet file. Note: this
     histogram was intended to be stored as
@@ -69096,7 +69096,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 12/2014. Moved to SB2.DatabaseSizeKilobytes.SideEffectFreeWhitelist.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the Side Effect Free Whitelist SaafeBrowsing database file on
     disk in kilobytes, after an update has occurred.
@@ -69109,7 +69109,7 @@ chromium-metrics-reviews@google.com.
     Removed 12/2014. Moved to
     SB2.PrefixSetSizeKilobytes.SideEffectFreeWhitelist.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the Side Effect Free Whitelist PrefixSet file in kilobytes,
     after an udpate has occurred.
@@ -69121,7 +69121,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 12/2014. Merged into SB2.PrefixSetLoad.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Time to load the Side Effect Free Whitelist PrefixSet file.</summary>
 </histogram>
 
@@ -69130,7 +69130,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 4/2015.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The instantiation status of the SideEffectFreeWhitelist.</summary>
 </histogram>
 
@@ -69138,7 +69138,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed after the launch of PVer4 in M57.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Version read from the store file.</summary>
 </histogram>
 
@@ -69146,7 +69146,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of sub prefixes stored in the database after the last update.
   </summary>
@@ -69156,7 +69156,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time from the receipt of the update request to the receipt of the final
     update chunk.
@@ -69168,7 +69168,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The payload size of update requests to the server.</summary>
 </histogram>
 
@@ -69177,7 +69177,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Result from trying to update the SafeBrowsing data.</summary>
 </histogram>
 
@@ -69185,7 +69185,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The size of all the chunk URLs in an update response.</summary>
 </histogram>
 
@@ -69194,7 +69194,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Was used for an experiment in late 2014.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of all the chunk URLs in an update response when Chrome is in the
     background.
@@ -69206,7 +69206,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Was used for an experiment in late 2014.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of all the chunk URLs in an update response when Chrome is in the
     foreground.
@@ -69217,7 +69217,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed in M58 (Aug 2017). No longer generated.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The number of chunk URLs in an update response.</summary>
 </histogram>
 
@@ -69226,7 +69226,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     The operation this is tracking has been deleted as of 09/2014.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Older versions of the safe-browsing code incorrectly added additional
     SBPrefix items when receiving full hashes. This caused errors when
@@ -69242,7 +69242,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Records a histogram of archive file types that were found while examining a
@@ -69259,7 +69259,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 08/2020 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records a histogram of how often users download a file with a possibly
     dangerous file extension (e.g., exe, class) within an archive.
@@ -69273,7 +69273,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The original number of archived_binaries found in a DMG-like file when it's
     scanned, if at least one is found. The actual number sent in the download
@@ -69288,7 +69288,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Counts of DMG-like file types that failed to be successfully analyzed by the
     SafeBrowsing download service.
@@ -69314,7 +69314,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Counts of DMG-like file types which were analyzed by the SafeBrowsing
     download service that contained an executable file.
@@ -69328,7 +69328,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Counts of DMG-like file types which were analyzed by the SafeBrowsing
     download service that did NOT contain an executable file.
@@ -69355,7 +69355,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a given DMG download was too big to unpack, as specified by
     configuration option set in SafeBrowsing download service. This metric is
@@ -69370,7 +69370,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     A Mac-only metric that records whether a given download contains a detached
     code signature file. This metric is logged before Chrome sends SafeBrowsing
@@ -69386,7 +69386,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether download files without an Apple disk image file extension
     have a 'koly' signature. This can be used to identify distribution of disk
@@ -69402,7 +69402,7 @@ chromium-metrics-reviews@google.com.
     no near-term plan to begin using them.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the portion of the SafeBrowsing download service check starting with
@@ -69419,7 +69419,7 @@ chromium-metrics-reviews@google.com.
     no near-term plan to begin using them.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     For SafeBrowsing binary download checks which reached the
@@ -69434,7 +69434,7 @@ chromium-metrics-reviews@google.com.
     Removed in M76, replaced by SBClientDownload.ExtractDmgFeaturesTimeMedium.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
@@ -69449,7 +69449,7 @@ chromium-metrics-reviews@google.com.
     was not providing useful data.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>grt@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
@@ -69463,7 +69463,7 @@ chromium-metrics-reviews@google.com.
     Removed in M76, replaced by SBClientDownload.ExtractRarFeaturesTimeMedium.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
     info from a downloaded rar file.
@@ -69477,7 +69477,7 @@ chromium-metrics-reviews@google.com.
     no near-term plan to begin using them.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
@@ -69492,7 +69492,7 @@ chromium-metrics-reviews@google.com.
     Removed in M76, replaced by SBClientDownload.ExtractZipFeaturesTimeMedium.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
@@ -69540,7 +69540,7 @@ chromium-metrics-reviews@google.com.
     Removed 09-2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The original number of archived_binaries found in a rar-like file when it's
     scanned, if at least one is found. The actual number sent in the download
@@ -69554,7 +69554,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     For each rar file analyzed by the SafeBrowsing download service, records
     true if the rar did not contain any executables but did contain another
@@ -69568,7 +69568,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     For each rar file analyzed by the SafeBrowsing download service, records if
     the rar contained an executable file.
@@ -69581,7 +69581,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     For each rar file analyzed by the SafeBrowsing download service, records if
     the unpacking was 100% successful.
@@ -69594,7 +69594,7 @@ chromium-metrics-reviews@google.com.
     Marked obsolete 07-2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the RAR headers are encrypted, preventing any meaningful
     content analysis. This is in contrast to encryption of the content of the
@@ -69609,7 +69609,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     For each rar file analyzed by the SafeBrowsing download service, records if
     the file could be opened. This should be close to 100% success because the
@@ -69624,7 +69624,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     For each rar file analyzed by the SafeBrowsing download service, records if
     the unrar library considers this file a valid RAR archive. It includes
@@ -69640,7 +69640,7 @@ chromium-metrics-reviews@google.com.
     no near-term plan to begin using them.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the number of signed vs. unsigned executables that are downloaded.
@@ -69665,7 +69665,7 @@ chromium-metrics-reviews@google.com.
     Removed M76, since there had been no such downloads for over a year.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often different file extensions are downloaded with schemes that
     aren't supported by Safe Browsing (e.g. ftp, gopher, content, cid, etc).
@@ -69678,7 +69678,7 @@ chromium-metrics-reviews@google.com.
     Removed in M79 due to lack of use, and no future plans for use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the total uncompressed size of a ZIP overflowed our total.
     This is logged once per ZIP file scanned.
@@ -69691,7 +69691,7 @@ chromium-metrics-reviews@google.com.
     Removed in M79 due to lack of use, and no future plans for use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the compression ratio for each scanned ZIP archive. This is logged
     once per ZIP file scanned, unless
@@ -69705,7 +69705,7 @@ chromium-metrics-reviews@google.com.
     Removed in M79 due to lack of use, and no future plans for use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the uncompressed size of each entry in a scanned ZIP file. This
     histogram is logged once per entry in the ZIP.
@@ -69718,7 +69718,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The original number of archived_binaries found in a zip-like file when it's
     scanned, if at least one is found. The actual number sent in the download
@@ -69732,7 +69732,7 @@ chromium-metrics-reviews@google.com.
     Removed in 12/2018 during a refactoring. The data was not being actively
     used.
   </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     A Mac-only metric that records whether a downloaded zip file contains an
     .app directory, signifying the presence of installable software.
@@ -69746,7 +69746,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Counts of ZIP-like file types that failed to be successfully analyzed by the
     SafeBrowsing download service.
@@ -69759,7 +69759,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     For each zip file analyzed by the SafeBrowsing download service, records
@@ -69774,7 +69774,7 @@ chromium-metrics-reviews@google.com.
     This histogram was marked obsolete in 05/2020 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     For each zip file analyzed by the SafeBrowsing download service, records if
@@ -69789,7 +69789,7 @@ chromium-metrics-reviews@google.com.
     not work, so the data was not useful.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of Local File Headers (identified by their magic number) present
     in the file, that were not extracted during ZIP inspection. A non-zero entry
@@ -69806,7 +69806,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Counts of ZIP-like file types were successfully analyzed by the SafeBrowsing
     download service.
@@ -69820,7 +69820,7 @@ chromium-metrics-reviews@google.com.
     no near-term plans to begin using it.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a given ZIP download was too big to unpack, as specified by
     configuration option set in SafeBrowsing download service. This metric is
@@ -69834,7 +69834,7 @@ chromium-metrics-reviews@google.com.
     Removed in 07-2020 since the SBClientMalware feature was removed.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of pages that we could have possibly classified (essentially the
     number of top page navigations by users with SBClientMalware enabled). The
@@ -69850,7 +69850,7 @@ chromium-metrics-reviews@google.com.
     Removed in 07-2020 since the SBClientMalware feature was removed.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of malware classifications that were skipped because a
     pre-classification check failed.
@@ -69863,7 +69863,7 @@ chromium-metrics-reviews@google.com.
     Removed in 07-2020 since the SBClientMalware feature was removed.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     True if at least one resource url matched the malware IP list. Recorded when
     client side malware feature extraction is done.
@@ -69900,7 +69900,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The counts for phishing verdicts given by client side model.
   </summary>
@@ -69949,7 +69949,7 @@ chromium-metrics-reviews@google.com.
     08-2020, since that histogram is easier to reason about.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of phishing classifications that were skipped because a
     pre-classification check failed.
@@ -69962,7 +69962,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The counts for phishing verdicts given by server side model.
   </summary>
@@ -69974,7 +69974,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77 due to lack of use.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The counts for various reasons why a phishing classification is skipped.
   </summary>
@@ -69986,7 +69986,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77, since the information was not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Count of times download feedback has been started, broken down by danger
@@ -70000,7 +70000,7 @@ chromium-metrics-reviews@google.com.
     Marked obsolete 07-2020 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     When a new download feedback request is added, records the number of
@@ -70014,7 +70014,7 @@ chromium-metrics-reviews@google.com.
     Removed in M85, since the histogram is not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Count of times eligible download notifications are shown. Broken down by
@@ -70028,7 +70028,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77, since the information was not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Count of times download feedback cannot be sent due to empty file path.
   </summary>
@@ -70040,7 +70040,7 @@ chromium-metrics-reviews@google.com.
     Removed in M86, since the information was not being used.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The net error or response code that caused the TwoPhaseUploader to fail
     while uploading the file. This is logged whenever the TwoPhaseUploader fails
@@ -70054,7 +70054,7 @@ chromium-metrics-reviews@google.com.
     Removed in M86, since the information was not being used.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The net error or response code that caused the TwoPhaseUploader to fail
     while uploading metadata. This is logged whenever the TwoPhaseUploader fails
@@ -70080,7 +70080,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77, since the information was not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Size of downloads that were of the correct danger type, regardless if they
@@ -70094,7 +70094,7 @@ chromium-metrics-reviews@google.com.
     Marked obsolete 07-2020 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Size of downloads that failed to be uploaded to the feedback service.
@@ -70107,7 +70107,7 @@ chromium-metrics-reviews@google.com.
     Marked obsolete 07-2020 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Size of downloads that were successfully uploaded to the feedback service.
@@ -70120,7 +70120,7 @@ chromium-metrics-reviews@google.com.
     Removed in M77, since the information was not being used.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     For each non-SAFE file, records whether the server requested that that file
     be uploaded.
@@ -70135,7 +70135,7 @@ chromium-metrics-reviews@google.com.
     Marked obsolete 07-2020 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Final result of attempt to upload binary to download feedback service.
@@ -77586,7 +77586,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 because of lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The state of software reporter cleaner tool runs. A value of &quot;Not
     Completed&quot; can mean either the tool crashed, or the tool was still
@@ -77624,7 +77624,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The build version of the software reporter cleaner tool.</summary>
 </histogram>
 
@@ -77647,7 +77647,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time between the Chrome Cleaner dialog being shown and the dialog being
     closed.
@@ -77681,7 +77681,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Indicates the result of a reporter sequence once it ends.</summary>
 </histogram>
 
@@ -77690,7 +77690,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The amount of time it took to run the software reporter tool as reported by
     the tool itself via the registry. Logged just after the software reporter
@@ -77704,7 +77704,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Error encountered when reading the software reporter tool's start and end
     times from the registry.
@@ -77717,7 +77717,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The registration and execution steps for the software reporter.
   </summary>
@@ -77729,7 +77729,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total count of SRT log upload failures experienced by this machine for
     all time. This value is reported at startup by Chrome and is capped at 64.
@@ -77742,7 +77742,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The longest run of upload failures logged by SRT runs. This value is
     reported at startup by Chrome and is capped at 64.
@@ -77755,7 +77755,7 @@ chromium-metrics-reviews@google.com.
     Removed 07-2020 due to lack of use
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The total count of successful SRT log uploads experienced by this machine
     for all time. This value is reported at startup by Chrome and is capped at

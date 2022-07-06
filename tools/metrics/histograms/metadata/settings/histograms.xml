@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SettingsResetPrompt.PromptAccepted" enum="BooleanAccepted"
     expires_after="M95">
   <owner>proberge@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Indicates whether the user accepted the settings reset prompt. Warning: This
     histogram was expired in M90 and restored M92. Data may be missing M90-91.

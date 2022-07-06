@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     User decision when presented with a security interstitial. As of M44,
     subresource interstitials were split into their own entries. As of M52,

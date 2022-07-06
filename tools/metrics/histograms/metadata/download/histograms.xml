@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Bubble.DragInfo" enum="Download.DragInfo"
     expires_after="2022-12-22">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This tracks drag events on a complete download on the bubble, and also
     general download completion on the bubble as a point of reference. Note that
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
     expires_after="2022-12-18">
   <owner>bhatiarohit@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) the user takes to open a full view (opened
     manually) after seeing a partial view (opened by the browser for new and
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
     name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonNum}ButtonActionTime"
     units="ms" expires_after="2022-10-18">
   <owner>bhatiarohit@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) between the Download bubble warning subpage being
     shown, and one of the buttons being acted upon. The warning subpage is shown
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Bubble.SubpageAction"
     enum="DownloadBubbleSubpageAction" expires_after="2022-12-14">
   <owner>bhatiarohit@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Record the user actions taken on the Download bubble warning subpage. The
     warning subpage is shown when the user sees a download warning on the full
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
     units="ms" expires_after="2022-10-18">
   <owner>bhatiarohit@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) for which the full view (opened manually) or the
     partial view (opened by the browser for new and completed downloads) are
@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
     units="items" expires_after="2022-10-18">
   <owner>bhatiarohit@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the size of the full view (opened manually) or the partial view
     (opened by the browser for new and completed downloads). The full view
@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.DangerousFile.DownloadValidatedByType"
     enum="SBClientDownloadExtensions" expires_after="2022-11-13">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     User chose to save a download which was marked DANGEROUS_FILE. Grouped by
     the type of file.
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.DownloadDangerPrompt"
     enum="SBClientDownloadExtensions" expires_after="2022-12-18">
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records when user is shown the download danger prompt while attempting to
     recover a blocked download from chrome://downloads, grouped by the type of
@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
     expires_after="2022-12-28">
   <owner>thefrog@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the last interrupt reason for a download that has just been retried
     through the download bubble.
@@ -1160,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Shelf.DragInfo" enum="Download.DragInfo"
     expires_after="2022-12-06">
   <owner>thefrog@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This tracks drag events on a complete download on the shelf, and also
     general download completion on the shelf as a point of reference.
@@ -1170,7 +1170,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.Shelf.VisibleTime" units="ms"
     expires_after="2022-12-11">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time that the download shelf was visible until it was closed. This
     histogram excludes times when DoUnhide() and DoHide() are called (i.e., when
@@ -1256,7 +1256,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.ShelfContextMenuAction"
     enum="DownloadShelfContextMenuAction" expires_after="2022-12-11">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This histogram is used to record the different actions and events associated
     with the download shelf context menu on Linux, MacOS, and Windows. The menu
@@ -1279,7 +1279,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Download.ShowedDownloadWarning" enum="DownloadItem.DangerType"
     expires_after="2022-11-13">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     A download warning was shown in the shelf/bubble. Note that some downloads
     may not be shown on the shelf, e.g., if a download is not new, is transient,

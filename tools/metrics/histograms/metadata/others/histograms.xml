@@ -11310,7 +11310,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SB2.DownloadChecks" enum="SB2DownloadChecks"
     expires_after="2022-09-11">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records results of SafeBrowsing download url check. Warning: this histogram
     was expired from M78 to M91. Data may be missing.
@@ -11322,7 +11322,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SB2.DownloadUrlCheckDuration" units="ms"
     expires_after="2023-04-13">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for SafeBrowsing to check a download url. Warning: this
     histogram was expired from M78 to M91. Data may be missing.
@@ -11398,7 +11398,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SB2.RemoteCall.CanCheckUrl" enum="BooleanCanCheckUrl"
     expires_after="2022-11-27">
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Count of how many URLs were actually checked vs skipped via
     RemoteSafeBrowsingDatabaseManager because the scheme is not supported by
@@ -11410,7 +11410,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-01-09">
   <owner>vakh@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The microseconds between sending the Safe Browsing API call and receiving
     the response. Logged in java code and does not include any thread hops or
@@ -11427,7 +11427,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SB2.RemoteCall.Elapsed" units="ms" expires_after="2022-11-20">
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Latency of URL-classification API calls from Chrome via
     RemoteSafeBrowsingDatabaseManager, logged per-request. This includes the
@@ -11443,7 +11443,7 @@ chromium-metrics-reviews@google.com.
 Safe Browsing lookups, which is critical for security. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The status code provided by GmsCore if it is unable to respond to a URL
     check request due to incorrect initialization, not being ready, etc. Logged
@@ -11456,7 +11456,7 @@ Safe Browsing lookups, which is critical for security. -->
 <histogram name="SB2.RemoteCall.Result" enum="SB2RemoteCallResult"
     expires_after="2022-12-04">
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Result of URL-classification API calls from Chrome via
     RemoteSafeBrowsingApiHandler. Logged after each URL is judged safe/not-safe,
@@ -11471,7 +11471,7 @@ Safe Browsing lookups, which is critical for security. -->
     Removed from code Jul 2021.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The threat sub-type annotated for URLs classified as PHA via remote calls
     through RemoteSafeBrowsingApiHandler. &quot;PHA&quot; classifications
@@ -11485,7 +11485,7 @@ Safe Browsing lookups, which is critical for security. -->
     Removed from code Jul 2021.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The threat sub-type annotated returned for URLs classified as social
     engineering via remote calls through RemoteSafeBrowsingApiHandler.
@@ -11497,7 +11497,7 @@ Safe Browsing lookups, which is critical for security. -->
 <histogram base="true" name="SB2.RequestDestination" enum="RequestDestination"
     expires_after="2022-12-25">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Request destinations of resources that were inspected by Safe Browsing in
     the SafeBrowsingResourceThrottle. kDocument is for a main resource request
@@ -11512,7 +11512,7 @@ Safe Browsing lookups, which is critical for security. -->
     Removed from code in M94. Replaced with SB2.RequestDestination.
   </obsolete>
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Resource types of resources that were inspected by Safe Browsing in the
     SafeBrowsingResourceThrottle.
@@ -11530,7 +11530,7 @@ Safe Browsing lookups, which is critical for security. -->
     Removed 10-2021 due to lack of use.
   </obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for the TwoPhaseUploader to complete. This is logged on
     every upload.
@@ -11543,7 +11543,7 @@ Safe Browsing lookups, which is critical for security. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The type of incident discarded by the safe browsing incident reporting
     service as a result of profile or service destruction.
@@ -11574,7 +11574,7 @@ should be kept until we remove incident reporting. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The type of incident given to the safe browsing incident reporting service
     but dropped as a result of not participating in safe browsing.
@@ -11603,7 +11603,7 @@ should be kept until we remove incident reporting. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The type of incident included in an incident report by the safe browsing
     incident reporting service.
@@ -11624,7 +11624,7 @@ should be kept until we remove incident reporting. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The type of incident pruned by the safe browsing incident reporting service
     as a result of not having a matching binary download.
@@ -11637,7 +11637,7 @@ should be kept until we remove incident reporting. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The type of incident pruned from a report in the safe browsing incident
     reporting service as a result of having previously been reported.
@@ -11650,7 +11650,7 @@ should be kept until we remove incident reporting. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The type of incident received by the safe browsing incident reporting
     service.
@@ -11662,7 +11662,7 @@ should be kept until we remove incident reporting. -->
 should be kept until we remove incident reporting. -->
 
   <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The size, in bytes, of a safe browsing incident report.</summary>
 </histogram>
 
@@ -11710,7 +11710,7 @@ should be kept until we remove incident reporting. -->
 <histogram name="SBMultipartUploader.FailedUploadDuration" units="s"
     expires_after="2022-09-29">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the total duration (including delay due to retries) of a failed
     upload request. This is recorded after the last retry on every failed
@@ -11724,7 +11724,7 @@ should be kept until we remove incident reporting. -->
 <histogram name="SBMultipartUploader.NetworkRequestResponseCodeOrError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-09-29">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The HTTP response code or net error from each upload attempt. This is
     recorded once for each network request made as part of an upload, i.e. if an
@@ -11739,7 +11739,7 @@ should be kept until we remove incident reporting. -->
 <histogram name="SBMultipartUploader.RetriesNeeded" units="retries"
     expires_after="2022-09-29">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Counts how many retries were needed to complete the upload request. This is
     emitted for every successful upload.
@@ -11752,7 +11752,7 @@ should be kept until we remove incident reporting. -->
 <histogram name="SBMultipartUploader.SuccessfulUploadDuration" units="s"
     expires_after="2022-09-29">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the total duration (including delay due to retries) of a successful
     upload request. This is recorded for every successful upload.
@@ -11765,7 +11765,7 @@ should be kept until we remove incident reporting. -->
 <histogram name="SBMultipartUploader.UploadSize" units="bytes"
     expires_after="2022-09-29">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The size of the upload request body. This is a combination of the upload
     data and metadata. This is recorded once for each upload, regardless of
@@ -11779,7 +11779,7 @@ should be kept until we remove incident reporting. -->
 <histogram name="SBMultipartUploader.UploadSuccess" enum="BooleanSuccess"
     expires_after="2022-09-29">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Whether the overall upload request succeeded or not. This is recorded once
     for an upload request, regardless of how many retries were needed to
