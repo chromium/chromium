@@ -739,6 +739,14 @@ template <typename R, typename F>
 void FlossAdapterClient::CallAdapterMethod(ResponseCallback<R> callback,
                                            const char* member,
                                            F write_data) {
+  if (bus_ == nullptr) {
+    LOG(ERROR) << "D-Bus is not initialized, cannot call adapter method "
+               << member;
+    std::move(callback).Run(absl::nullopt,
+                            Error(kErrorUnknownAdapter, std::string()));
+    return;
+  }
+
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);
   if (!object_proxy) {
