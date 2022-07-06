@@ -196,6 +196,12 @@ const base::Feature kAutofillEnableAugmentedPhoneCountryCode{
     "AutofillEnableAugmentedPhoneCountryCode",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables parsing for birthdate fields. Filling is not supported and parsing
+// is meant to prevent false positive credit card expiration dates.
+// TODO(crbug.com/1306654): Remove once launched.
+const base::Feature kAutofillEnableBirthdateParsing{
+    "AutofillEnableBirthdateParsing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This feature guards the logic for Autofills future compatibility launch of
 // birthdates. Currently filling is not supported and this effectively
 // disables the birthdate merging logic, reads/writes to the AutofillTable and

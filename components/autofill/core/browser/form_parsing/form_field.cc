@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/form_parsing/address_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/birthdate_field.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
@@ -79,6 +80,13 @@ FieldCandidatesMap FormField::ParseFormFields(
   // Address pass.
   ParseFormFieldsPass(AddressField::Parse, processed_fields, &field_candidates,
                       page_language, pattern_source, log_manager);
+
+  // Birthdate pass.
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableBirthdateParsing)) {
+    ParseFormFieldsPass(BirthdateField::Parse, processed_fields,
+                        &field_candidates, page_language, pattern_source,
+                        log_manager);
+  }
 
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
