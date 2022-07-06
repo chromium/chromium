@@ -52,7 +52,8 @@ bool AccessibilityTreeContainsAllChildTrees(const ui::AXNode& node) {
   if (!num_children) {
     // No children. All content is contained unless there is supposed to be
     // a child tree for this node.
-    return !ui::IsChildTreeOwner(node.GetRole());
+    return !ui::IsChildTreeOwner(node.GetRole()) ||
+           node.data().GetRestriction() == ax::mojom::Restriction::kDisabled;
   }
 
   for (size_t i = 0; i < num_children; i++) {

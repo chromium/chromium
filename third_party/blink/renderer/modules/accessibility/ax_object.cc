@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -677,33 +678,6 @@ void AXObject::Init(AXObject* parent) {
     AXObjectCache().MaybeNewRelationTarget(*GetNode(), this);
 
   UpdateCachedAttributeValuesIfNeeded(false);
-
-#if defined(AX_FAIL_FAST_BUILD)
-  if (parent_ && parent_->RoleValue() == ax::mojom::blink::Role::kIframe &&
-      RoleValue() != ax::mojom::blink::Role::kDocument) {
-    // A frame/iframe can only have a document child.
-    // Make an exception for ShadowDOM based fenced frames. While they have
-    // the same role as a regular IFrame, they will have an inner iframe
-    // be the child of the outer iframe, rather than a document. This
-    // behavior is expected and the exception is carved out here.
-    if (!blink::features::IsFencedFramesEnabled() ||
-        !blink::features::IsFencedFramesShadowDOMBased() ||
-        !IsA<HTMLFencedFrameElement>(parent_->GetNode())) {
-      NOTREACHED() << "An iframe can only have a document child."
-                   << "\n* Child = " << ToString(true, true)
-                   << "\n* Parent =  " << parent_->ToString(true, true);
-    }
-  }
-
-  if (blink::features::IsFencedFramesEnabled() &&
-      blink::features::IsFencedFramesShadowDOMBased() && parent_ &&
-      IsA<HTMLFencedFrameElement>(parent_->GetNode()) &&
-      RoleValue() != ax::mojom::blink::Role::kIframe) {
-    NOTREACHED() << "A ShadowDOM fenced frame must have an iframe child."
-                 << "\n* Child = " << ToString(true, true)
-                 << "\n* Parent =  " << parent_->ToString(true, true);
-  }
-#endif
 }
 
 void AXObject::Detach() {
@@ -1324,18 +1298,33 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
 void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   // If this is an HTMLFrameOwnerElement (such as an iframe), we may need
   // to embed the ID of the child frame.
-  if (auto* html_frame_owner_element =
-          DynamicTo<HTMLFrameOwnerElement>(GetElement())) {
-    if (Frame* child_frame = html_frame_owner_element->ContentFrame()) {
-      absl::optional<base::UnguessableToken> child_token =
-          child_frame->GetEmbeddingToken();
-      if (child_token && !(IsDetached() || ChildCountIncludingIgnored())) {
-        ui::AXTreeID child_tree_id =
-            ui::AXTreeID::FromToken(child_token.value());
-        node_data->AddChildTreeId(child_tree_id);
-      }
-    }
+  if (!ui::IsChildTreeOwner(RoleValue())) {
+    DCHECK(!IsA<HTMLFrameOwnerElement>(GetElement()) || !IsFrame(GetNode()))
+        << "Element was expected to be a child tree owner: " << GetElement();
+    return;
   }
+
+  auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
+
+  Frame* child_frame = html_frame_owner_element->ContentFrame();
+  if (!child_frame) {
+    DCHECK(IsDisabled());
+    return;
+  }
+
+  absl::optional<base::UnguessableToken> child_token =
+      child_frame->GetEmbeddingToken();
+  if (!child_token)
+    return;  // No child token means that the connection isn't ready yet.
+
+  DCHECK_EQ(ChildCountIncludingIgnored(), 0)
+      << "Children won't exist until the trees are stitched together in the "
+         "browser process. A failure means that a child node was incorrectly "
+         "considered relevant by AXObjectCacheImpl. Element src = "
+      << GetAttribute(html_names::kSrcAttr);
+
+  ui::AXTreeID child_tree_id = ui::AXTreeID::FromToken(child_token.value());
+  node_data->AddChildTreeId(child_tree_id);
 }
 
 void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
@@ -4215,6 +4204,12 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
 }
 
 bool AXObject::IsDisabled() const {
+  // <embed> or <object> with unsupported plugin, or more iframes than allowed.
+  if (ui::IsChildTreeOwner(RoleValue())) {
+    auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
+    return !html_frame_owner_element->ContentFrame();
+  }
+
   // Check for HTML form control with the disabled attribute.
   if (GetElement() && GetElement()->IsDisabledFormControl())
     return true;
@@ -6000,8 +5995,11 @@ bool AXObject::IsFrame(const Node* node) {
   switch (frame_owner->OwnerType()) {
     case FrameOwnerElementType::kIframe:
     case FrameOwnerElementType::kFrame:
-    case FrameOwnerElementType::kFencedframe:
       return true;
+    case FrameOwnerElementType::kFencedframe:
+      // Shadow DOM <fencedframe>s have an <iframe> child, which will be the
+      // child tree owner.
+      return !blink::features::IsFencedFramesShadowDOMBased();
     case FrameOwnerElementType::kObject:
     case FrameOwnerElementType::kEmbed:
     case FrameOwnerElementType::kPortal:

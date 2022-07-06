@@ -1258,6 +1258,13 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsFrame(GetNode()))
     return ax::mojom::blink::Role::kIframe;
 
+  if (IsA<HTMLFencedFrameElement>(GetNode())) {
+    // Shadow DOM <fencedframe>s are marked as a group, as they are not the
+    // child tree owner. The child tree owner is their <iframe> child.
+    DCHECK(blink::features::IsFencedFramesShadowDOMBased());
+    return ax::mojom::blink::Role::kGroup;
+  }
+
   // There should only be one banner/contentInfo per page. If header/footer are
   // being used within an article or section then it should not be exposed as
   // whole page's banner/contentInfo but as a generic container role.
