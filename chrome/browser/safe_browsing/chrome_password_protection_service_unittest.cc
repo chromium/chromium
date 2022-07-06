@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
@@ -286,6 +287,9 @@ class ChromePasswordProtectionServiceTest
         ->SetTestingFactory(
             browser_context(),
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
+    enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
+        ->SetTestingFactory(browser_context(),
+                            base::BindRepeating(&BuildRealtimeReportingClient));
 #endif
 
     identity_test_env_profile_adaptor_ =

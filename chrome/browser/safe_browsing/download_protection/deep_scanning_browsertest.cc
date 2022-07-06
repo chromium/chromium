@@ -23,6 +23,7 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -158,16 +159,16 @@ class DownloadDeepScanningBrowserTestBase
     client_->SetDMToken("dm_token");
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         browser()->profile())
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
 #else
     if (connectors_machine_scope()) {
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
           browser()->profile())
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
     } else {
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
           browser()->profile())
           ->SetProfileCloudPolicyClientForTesting(client_.get());
     }

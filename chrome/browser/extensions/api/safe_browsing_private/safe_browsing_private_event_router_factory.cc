@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -35,6 +36,8 @@ SafeBrowsingPrivateEventRouterFactory::SafeBrowsingPrivateEventRouterFactory()
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
+  DependsOn(
+      enterprise_connectors::RealtimeReportingClientFactory::GetInstance());
 }
 
 SafeBrowsingPrivateEventRouterFactory::
@@ -48,6 +51,10 @@ KeyedService* SafeBrowsingPrivateEventRouterFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 SafeBrowsingPrivateEventRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile || profile->IsSystemProfile()) {
+    return nullptr;
+  }
   return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 

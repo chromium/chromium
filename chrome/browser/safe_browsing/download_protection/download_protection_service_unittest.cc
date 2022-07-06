@@ -43,6 +43,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -370,6 +371,10 @@ class DownloadProtectionServiceTestBase
         ->SetTestingFactory(
             profile(),
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
+
+    enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
+        ->SetTestingFactory(profile(),
+                            base::BindRepeating(&BuildRealtimeReportingClient));
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 
     SetDMTokenForTesting(
@@ -2778,7 +2783,8 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentImmediatelyIfVerdictDangerous) {
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+      profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
   safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
@@ -2821,7 +2827,8 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentImmediatelyIfVerdictSensitive) {
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+      profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
   safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
@@ -2874,7 +2881,8 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentAfterDangerousVerdictReceived) {
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+      profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
   safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
@@ -2922,7 +2930,8 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentAfterDlpVerdictReceived) {
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+      profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
   safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
@@ -2978,7 +2987,8 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentAfterDlpBlockVerdictReceived) {
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+      profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
   safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);

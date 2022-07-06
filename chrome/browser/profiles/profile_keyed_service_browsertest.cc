@@ -97,8 +97,8 @@ void TestKeyedProfileServicesActives(
   }
 
   EXPECT_EQ(active_services_names, expected_active_services_names)
-      << DisplaySetDifference(active_services_names,
-                              expected_active_services_names);
+      << DisplaySetDifference(expected_active_services_names,
+                              active_services_names);
 }
 
 }  // namespace
@@ -389,7 +389,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "RuntimeAPI",
     "SafeBrowsingMetricsCollector",
     "SafeBrowsingNetworkContextService",
-    "SafeBrowsingPrivateEventRouter",
     "SafeBrowsingTailoredSecurityService",
     "SecurityEventRecorder",
     "SendTabToSelfClientService",

@@ -21,6 +21,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,16 +65,6 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kActiveDirectoryPolicyClientDescription[] = "an Active Directory";
-const char kPolicyClientDescription[] = "any";
-const char kUserPolicyClientDescription[] = "a user";
-#else
-const char kChromeBrowserCloudManagementClientDescription[] =
-    "a machine-level user";
-#endif
-const char kProfilePolicyClientDescription[] = "a profile-level user";
-
 const char16_t kMaskedUsername[] = u"*****";
 
 void AddAnalysisConnectorVerdictToEvent(
@@ -104,11 +95,6 @@ std::string MalwareRuleToThreatType(const std::string& rule_name) {
   } else {
     return "UNKNOWN";
   }
-}
-
-bool IsClientValid(const std::string& dm_token,
-                   policy::CloudPolicyClient* client) {
-  return client && client->dm_token() == dm_token;
 }
 
 std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
@@ -260,14 +246,12 @@ SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
   event_router_ = EventRouter::Get(context_);
   identity_manager_ = IdentityManagerFactory::GetForProfile(
       Profile::FromBrowserContext(context_));
+  reporting_client_ =
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+          context);
 }
 
-SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() {
-  if (browser_client_)
-    browser_client_->RemoveObserver(this);
-  if (profile_client_)
-    profile_client_->RemoveObserver(this);
-}
+SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() = default;
 
 // static
 std::string SafeBrowsingPrivateEventRouter::GetBaseName(
@@ -306,7 +290,7 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
   }
 
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyPasswordReuseEvent) == 0) {
     return;
@@ -322,8 +306,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
                 warning_shown ? safe_browsing::EventResult::WARNED
                               : safe_browsing::EventResult::ALLOWED));
 
-  ReportRealtimeEvent(kKeyPasswordReuseEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
@@ -341,7 +325,7 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
   }
 
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyPasswordChangedEvent) == 0) {
     return;
@@ -351,8 +335,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
   event.Set(kKeyUserName, user_name);
   event.Set(kKeyProfileUserName, GetProfileUserName());
 
-  ReportRealtimeEvent(kKeyPasswordChangedEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
@@ -382,7 +366,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   }
 
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -409,8 +393,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     event.Set(kKeyScanId, scan_id);
   }
 
-  ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
@@ -439,7 +424,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   }
 
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
     return;
@@ -458,8 +443,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   event.Set(kKeyClickedThrough, false);
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
 
-  ReportRealtimeEvent(kKeyInterstitialEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyInterstitialEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
@@ -488,7 +473,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   }
 
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
     return;
@@ -503,8 +488,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(
                                  safe_browsing::EventResult::BYPASSED));
 
-  ReportRealtimeEvent(kKeyInterstitialEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyInterstitialEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
@@ -545,7 +530,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& evidence_locker_filepath,
     const std::string& scan_id) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -582,8 +567,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     event.Set(kKeyScanId, scan_id);
   }
 
-  ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
@@ -597,7 +583,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
     return;
@@ -625,8 +611,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
   AddAnalysisConnectorVerdictToEvent(result, event);
 
-  ReportRealtimeEvent(kKeySensitiveDataEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeySensitiveDataEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
@@ -641,7 +627,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const int64_t content_size,
     absl::optional<std::u16string> user_justification) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
     return;
@@ -672,8 +658,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
   AddAnalysisConnectorVerdictToEvent(result, event);
 
-  ReportRealtimeEvent(kKeySensitiveDataEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeySensitiveDataEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
@@ -687,7 +673,7 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyUnscannedFileEvent) == 0) {
     return;
@@ -710,8 +696,8 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
   event.Set(kKeyClickedThrough,
             event_result == safe_browsing::EventResult::BYPASSED);
 
-  ReportRealtimeEvent(kKeyUnscannedFileEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyUnscannedFileEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
@@ -738,7 +724,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -766,8 +752,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     event.Set(kKeyScanId, scan_id);
   }
 
-  ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
@@ -792,7 +779,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& scan_id,
     const int64_t content_size) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
     return;
@@ -820,8 +807,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     event.Set(kKeyScanId, scan_id);
   }
 
-  ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnLoginEvent(
@@ -830,7 +818,7 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
     const url::Origin& federated_origin,
     const std::u16string& username) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value()) {
     return;
   }
@@ -850,15 +838,15 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyLoginUserName, MaskUsername(username));
 
-  ReportRealtimeEvent(kKeyLoginEvent, std::move(settings.value()),
-                      std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      kKeyLoginEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
-      GetReportingSettings();
+      reporting_client_->GetReportingSettings();
   if (!settings.has_value()) {
     return;
   }
@@ -892,40 +880,8 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
   event.Set(kKeyPasswordBreachIdentities, std::move(identities_list));
   event.Set(kKeyProfileUserName, GetProfileUserName());
 
-  ReportRealtimeEvent(kKeyPasswordBreachEvent, std::move(settings.value()),
-                      std::move(event));
-}
-
-// static
-bool SafeBrowsingPrivateEventRouter::ShouldInitRealtimeReportingClient() {
-  if (!base::FeatureList::IsEnabled(kRealtimeReportingFeature) &&
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseConnectorsEnabled)) {
-    DVLOG(2) << "Safe browsing real-time reporting is not enabled.";
-    return false;
-  }
-
-  return true;
-}
-
-void SafeBrowsingPrivateEventRouter::SetBrowserCloudPolicyClientForTesting(
-    policy::CloudPolicyClient* client) {
-  if (client == nullptr && browser_client_)
-    browser_client_->RemoveObserver(this);
-
-  browser_client_ = client;
-  if (browser_client_)
-    browser_client_->AddObserver(this);
-}
-
-void SafeBrowsingPrivateEventRouter::SetProfileCloudPolicyClientForTesting(
-    policy::CloudPolicyClient* client) {
-  if (client == nullptr && profile_client_)
-    profile_client_->RemoveObserver(this);
-
-  profile_client_ = client;
-  if (profile_client_)
-    profile_client_->AddObserver(this);
+  reporting_client_->ReportRealtimeEvent(
+      kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(
@@ -933,293 +889,8 @@ void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(
   identity_manager_ = identity_manager;
 }
 
-void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient(
-    const enterprise_connectors::ReportingSettings& settings) {
-  // If the corresponding client is already initialized, do nothing.
-  if ((settings.per_profile &&
-       IsClientValid(settings.dm_token, profile_client_)) ||
-      (!settings.per_profile &&
-       IsClientValid(settings.dm_token, browser_client_))) {
-    DVLOG(2) << "Safe browsing real-time event reporting already initialized.";
-    return;
-  }
-
-  if (!ShouldInitRealtimeReportingClient())
-    return;
-
-  // |identity_manager_| may be null in tests. If there is no identity
-  // manager don't enable the real-time reporting API since the router won't
-  // be able to fill in all the info needed for the reports.
-  if (!identity_manager_) {
-    DVLOG(2) << "Safe browsing real-time event requires an identity manager.";
-    return;
-  }
-
-  policy::CloudPolicyClient* client = nullptr;
-  std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
-      InitBrowserReportingClient(settings.dm_token);
-#else
-  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
-      settings.per_profile ? InitProfileReportingClient(settings.dm_token)
-                           : InitBrowserReportingClient(settings.dm_token);
-#endif
-  if (!desc_and_client.second)
-    return;
-  policy_client_desc = std::move(desc_and_client.first);
-  client = std::move(desc_and_client.second);
-
-  OnCloudPolicyClientAvailable(policy_client_desc, client);
-}
-
-std::pair<std::string, policy::CloudPolicyClient*>
-SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
-    const std::string& dm_token) {
-  // |device_management_service| may be null in tests. If there is no device
-  // management service don't enable the real-time reporting API since the
-  // router won't be able to create the reporting server client below.
-  policy::DeviceManagementService* device_management_service =
-      g_browser_process->browser_policy_connector()
-          ->device_management_service();
-  std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_client_desc = kPolicyClientDescription;
-#else
-  policy_client_desc = kChromeBrowserCloudManagementClientDescription;
-#endif
-  if (!device_management_service) {
-    DVLOG(2) << "Safe browsing real-time event requires a device management "
-                "service.";
-    return {policy_client_desc, nullptr};
-  }
-
-  policy::CloudPolicyClient* client = nullptr;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const user_manager::User* user = GetChromeOSUser();
-  if (user) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-    // If primary user profile is not finalized, use the current profile.
-    if (!profile)
-      profile = Profile::FromBrowserContext(context_);
-    DCHECK(profile);
-    if (user->IsActiveDirectoryUser()) {
-      // TODO(crbug.com/1012048): Handle AD, likely through crbug.com/1012170.
-      policy_client_desc = kActiveDirectoryPolicyClientDescription;
-    } else {
-      policy_client_desc = kUserPolicyClientDescription;
-      policy::UserCloudPolicyManagerAsh* policy_manager =
-          profile->GetUserCloudPolicyManagerAsh();
-      if (policy_manager)
-        client = policy_manager->core()->client();
-    }
-  } else {
-    LOG(ERROR) << "Could not determine who the user is.";
-  }
-#else
-  std::string client_id =
-      policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* main_profile = enterprise_connectors::GetMainProfileLacros();
-  if (main_profile) {
-    // Prefer the user client id if available.
-    client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
-  }
-#endif
-
-  // Make sure DeviceManagementService has been initialized.
-  device_management_service->ScheduleInitialization(0);
-
-  browser_private_client_ = std::make_unique<policy::CloudPolicyClient>(
-      device_management_service, g_browser_process->shared_url_loader_factory(),
-      policy::CloudPolicyClient::DeviceDMTokenCallback());
-  client = browser_private_client_.get();
-
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(base::FeatureList::IsEnabled(
-  //        enterprise_connectors::kEnterpriseConnectorsEnabled));
-  if (!client->is_registered()) {
-    client->SetupRegistration(
-        dm_token, client_id,
-        /*user_affiliation_ids=*/std::vector<std::string>());
-  }
-#endif
-
-  return {policy_client_desc, client};
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-std::pair<std::string, policy::CloudPolicyClient*>
-SafeBrowsingPrivateEventRouter::InitProfileReportingClient(
-    const std::string& dm_token) {
-  policy::UserCloudPolicyManager* policy_manager =
-      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
-  if (!policy_manager || !policy_manager->core() ||
-      !policy_manager->core()->client()) {
-    return {kProfilePolicyClientDescription, nullptr};
-  }
-
-  profile_private_client_ = std::make_unique<policy::CloudPolicyClient>(
-      policy_manager->core()->client()->service(),
-      g_browser_process->shared_url_loader_factory(),
-      policy::CloudPolicyClient::DeviceDMTokenCallback());
-  policy::CloudPolicyClient* client = profile_private_client_.get();
-
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(base::FeatureList::IsEnabled(
-  //        enterprise_connectors::kEnterpriseConnectorsEnabled));
-
-  client->SetupRegistration(dm_token,
-                            policy_manager->core()->client()->client_id(),
-                            /*user_affiliation_ids*/ {});
-
-  return {kProfilePolicyClientDescription, client};
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-void SafeBrowsingPrivateEventRouter::OnCloudPolicyClientAvailable(
-    const std::string& policy_client_desc,
-    policy::CloudPolicyClient* client) {
-  if (policy_client_desc == kProfilePolicyClientDescription)
-    profile_client_ = client;
-  else
-    browser_client_ = client;
-
-  if (client == nullptr) {
-    LOG(ERROR) << "Could not obtain " << policy_client_desc
-               << " for safe browsing real-time event reporting.";
-    return;
-  }
-
-  client->AddObserver(this);
-
-  VLOG(1) << "Ready for safe browsing real-time event reporting.";
-}
-
-absl::optional<enterprise_connectors::ReportingSettings>
-SafeBrowsingPrivateEventRouter::GetReportingSettings() {
-  return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-             context_)
-      ->GetReportingSettings(
-          enterprise_connectors::ReportingConnector::SECURITY_EVENT);
-}
-
-void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
-    const std::string& name,
-    const enterprise_connectors::ReportingSettings& settings,
-    base::Value::Dict event) {
-  if (rejected_dm_token_timers_.contains(settings.dm_token)) {
-    return;
-  }
-
-#ifndef NDEBUG
-  // Make sure the event is a SAFE_BROWSING event in kAllReportingEvents array.
-  bool found = false;
-  for (const auto& event :
-       enterprise_connectors::ReportingServiceSettings::kAllReportingEvents) {
-    if (event.source == enterprise_connectors::ReportingConnectorEventSource::
-                            SAFE_BROWSING &&
-        event.name == name) {
-      found = true;
-      break;
-    }
-  }
-  DCHECK(found);
-#endif
-
-  // Make sure real-time reporting is initialized.
-  InitRealtimeReportingClient(settings);
-  if ((settings.per_profile && !profile_client_) ||
-      (!settings.per_profile && !browser_client_)) {
-    return;
-  }
-
-  // Format the current time (UTC) in RFC3339 format.
-  base::Time::Exploded now_exploded;
-  base::Time::Now().UTCExplode(&now_exploded);
-  std::string now_str = base::StringPrintf(
-      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", now_exploded.year,
-      now_exploded.month, now_exploded.day_of_month, now_exploded.hour,
-      now_exploded.minute, now_exploded.second, now_exploded.millisecond);
-
-  policy::CloudPolicyClient* client =
-      settings.per_profile ? profile_client_.get() : browser_client_.get();
-  base::Value::Dict wrapper;
-  wrapper.Set("time", now_str);
-  wrapper.Set(name, std::move(event));
-
-  auto upload_callback = base::BindOnce(
-      [](base::Value::Dict wrapper, bool per_profile, std::string dm_token,
-         bool uploaded) {
-        // Show the report on chrome://safe-browsing, if appropriate.
-        wrapper.Set("uploaded_successfully", uploaded);
-        wrapper.Set(per_profile ? "profile_dm_token" : "browser_dm_token",
-                    std::move(dm_token));
-        safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
-            std::move(wrapper));
-      },
-      wrapper.Clone(), settings.per_profile, client->dm_token());
-
-  base::Value::List event_list;
-  event_list.Append(std::move(wrapper));
-
-  Profile* profile = Profile::FromBrowserContext(context_);
-
-  client->UploadSecurityEventReport(
-      context_,
-      enterprise_connectors::IncludeDeviceInfo(profile, settings.per_profile),
-      policy::RealtimeReportingJobConfiguration::BuildReport(
-          std::move(event_list),
-          reporting::GetContext(Profile::FromBrowserContext(context_))),
-      std::move(upload_callback));
-}
-
 std::string SafeBrowsingPrivateEventRouter::GetProfileUserName() const {
   return safe_browsing::GetProfileEmail(identity_manager_);
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-const user_manager::User* SafeBrowsingPrivateEventRouter::GetChromeOSUser() {
-  return user_manager::UserManager::IsInitialized()
-             ? user_manager::UserManager::Get()->GetPrimaryUser()
-             : nullptr;
-}
-
-#endif
-
-void SafeBrowsingPrivateEventRouter::RemoveDmTokenFromRejectedSet(
-    const std::string& dm_token) {
-  rejected_dm_token_timers_.erase(dm_token);
-}
-
-void SafeBrowsingPrivateEventRouter::OnClientError(
-    policy::CloudPolicyClient* client) {
-  base::Value::Dict error_value;
-  error_value.Set("error",
-                  "An event got an error status and hasn't been reported");
-  error_value.Set("status", client->status());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
-      error_value);
-
-  // This is the status set when the server returned 403, which is what the
-  // reporting server returns when the customer is not allowed to report events.
-  if (client->status() == policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
-    // This could happen if a second event was fired before the first one
-    // returned an error.
-    if (!rejected_dm_token_timers_.contains(client->dm_token())) {
-      rejected_dm_token_timers_[client->dm_token()] =
-          std::make_unique<base::OneShotTimer>();
-      rejected_dm_token_timers_[client->dm_token()]->Start(
-          FROM_HERE, base::Hours(24),
-          base::BindOnce(
-              &SafeBrowsingPrivateEventRouter::RemoveDmTokenFromRejectedSet,
-              weak_ptr_factory_.GetWeakPtr(), client->dm_token()));
-    }
-  }
 }
 
 }  // namespace extensions

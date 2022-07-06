@@ -18,6 +18,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -276,11 +277,11 @@ class ContentAnalysisDelegateBrowserTestBase
         machine_scope_ ? kBrowserDMToken : kProfileDMToken);
 #endif
     if (machine_scope_) {
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
           browser()->profile())
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
     } else {
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
           browser()->profile())
 #if BUILDFLAG(IS_CHROMEOS_ASH)
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
