@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <script src="/resources/testharness.js"></script>
@@ -26,6 +27,12 @@
     assert_false(msg.data.access_first_navigation_to_about_blank_throws,
       "Failed to access navigation to about:blank, it is probably sandboxed"
     );
+    assert_false(msg.data.access_after_delay_initial_navigation_to_about_blank_throws,
+      "Failed to access navigation to about:blank, it is probably sandboxed"
+    );
+    assert_false(msg.data.access_after_delay_first_navigation_to_about_blank_throws,
+      "Failed to access navigation to about:blank, it is probably sandboxed"
+    );
   }, "Popup do not inherit sandbox, because of " +
      "'allow-popups-to-escape-sandbox'. The document isn't sandboxed.")
 
@@ -36,8 +43,10 @@
   <script>
     let access_initial_navigation_to_about_blank_throws = false;
     let access_first_navigation_to_about_blank_throws = false;
+    let access_after_delay_initial_navigation_to_about_blank_throws = false;
+    let access_after_delay_first_navigation_to_about_blank_throws = false;
     const initial_about_blank_window =
-      window.open('common/blank.html?pipe=status(204)');
+      window.open('/common/blank.html?pipe=status(204)');
     try {
       initial_about_blank_window.origin;
     } catch(e) {
@@ -49,12 +58,28 @@
     } catch(e) {
       access_first_navigation_to_about_blank_throws = true;
     }
-    top.postMessage({
-      'access_initial_navigation_to_about_blank_throws':
-        access_initial_navigation_to_about_blank_throws,
-      'access_first_navigation_to_about_blank_throws':
-        access_first_navigation_to_about_blank_throws
-    }, '*');
+    setTimeout(() => {
+      try {
+        initial_about_blank_window.origin;
+      } catch(e) {
+        access_after_delay_initial_navigation_to_about_blank_throws = true;
+      }
+      try {
+        renavigated_about_blank_window.origin;
+      } catch(e) {
+        access_after_delay_first_navigation_to_about_blank_throws = true;
+      }
+      top.postMessage({
+        'access_initial_navigation_to_about_blank_throws':
+          access_initial_navigation_to_about_blank_throws,
+        'access_first_navigation_to_about_blank_throws':
+          access_first_navigation_to_about_blank_throws,
+        'access_after_delay_initial_navigation_to_about_blank_throws':
+          access_after_delay_initial_navigation_to_about_blank_throws,
+        'access_after_delay_first_navigation_to_about_blank_throws':
+          access_after_delay_first_navigation_to_about_blank_throws
+      }, '*');
+    }, 500);
   </script>"
 >
 </iframe>
