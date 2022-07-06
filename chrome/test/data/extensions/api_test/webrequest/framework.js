@@ -68,6 +68,10 @@ function runTests(tests) {
       let args = JSON.parse(config.customArg);
       debug = args.debug;
       mparchEnabled = args.mparch;
+      // Because the extension runs in split mode, only the incognito context
+      // should run the tests.
+      if (args.runInIncognito && !chrome.extension.inIncognitoContext)
+        return;
     }
 
     var waitForAboutBlank = function(_, info, tab) {

@@ -14,7 +14,12 @@ function getStrippedURL(url) {
   return getServerURL('');
 }
 
-runTests([
+const scriptUrl =
+      '_test_resources/api_test/webrequest_public_session/framework.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
+  runTests([
   // Navigates to a page with a blocking handler that cancels the page request.
   // The page will not load. This tests the following:
   // - listeners can be registered on the webRequest API with empty URL
@@ -107,4 +112,4 @@ runTests([
       ['blocking']);
       navigateAndWait(targetUrl);
   },
-]);
+])});

@@ -1,8 +1,12 @@
 {
-  "name": "webRequest",
+  "name": "webrequest_public_session",
   "version": "1.0",
   "manifest_version": 2,
   "description": "Tests the webRequest API in Public Session.",
   "permissions": ["webRequest", "webRequestBlocking", "tabs",
-    "declarativeWebRequest"]
+    "declarativeWebRequest"],
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": true
+  }
 }

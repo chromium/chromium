@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -471,20 +472,17 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestApi) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_api.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_api")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestSimple) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_simple.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_simple")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestComplex) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_complex.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_complex")) << message_;
 }
 
 // This test times out regularly on ASAN/MSAN trybots. See
@@ -492,8 +490,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestComplex) {
 // TODO(crbug.com/1177120) Re-enable test
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebRequestTypes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_types.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_types")) << message_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -503,9 +500,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestPublicSession) {
   // Disable a CHECK while doing api tests.
   WebRequestPermissions::AllowAllExtensionLocationsInPublicSessionForTesting(
       true);
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest_public_session", {.page_url = "test.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest_public_session")) << message_;
   WebRequestPermissions::AllowAllExtensionLocationsInPublicSessionForTesting(
       false);
 }
@@ -528,8 +523,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebRequestTestOSDD) {
 
   search_test_utils::WaitForTemplateURLServiceToLoad(
       TemplateURLServiceFactory::GetForProfile(profile()));
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_osdd.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_osdd")) << message_;
 }
 
 // Test that the webRequest events are dispatched with the expected details when
@@ -579,8 +573,16 @@ class ExtensionWebRequestApiAuthRequiredTest
     : public ExtensionWebRequestApiTest,
       public testing::WithParamInterface<ProfileMode> {
  protected:
-  bool GetEnableIncognito() const {
+  static bool GetEnableIncognito() {
     return GetParam() == ProfileMode::kIncognito;
+  }
+
+  static std::string FormatCustomArg(const char* test_name) {
+    static constexpr char custom_arg_format[] =
+        R"({"testName": "%s", "runInIncognito": %s})";
+
+    return base::StringPrintf(custom_arg_format, test_name,
+                              GetEnableIncognito() ? "true" : "false");
   }
 };
 
@@ -590,33 +592,31 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
 
   ASSERT_TRUE(StartEmbeddedTestServer());
 
+  // If running in incognito, create an incognito browser so the test
+  // framework can create an incognito window.
+  const bool incognito = GetEnableIncognito();
+  if (incognito)
+    CreateIncognitoBrowser(profile());
+
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required.html",
-       .custom_arg = R"({"testName": "authRequiredNonBlocking"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required",
+      {.custom_arg = FormatCustomArg("authRequiredNonBlocking").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required.html",
-       .custom_arg = R"({"testName": "authRequiredSyncNoAction"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required",
+      {.custom_arg = FormatCustomArg("authRequiredSyncNoAction").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required.html",
-       .custom_arg = R"({"testName": "authRequiredSyncCancelAuth"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required",
+      {.custom_arg = FormatCustomArg("authRequiredSyncCancelAuth").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required.html",
-       .custom_arg = R"({"testName": "authRequiredSyncSetAuth"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required",
+      {.custom_arg = FormatCustomArg("authRequiredSyncSetAuth").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
 }
 
@@ -626,26 +626,26 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
 
   ASSERT_TRUE(StartEmbeddedTestServer());
 
+  // If running in incognito, create an incognito browser so the tests
+  // run in an incognito window.
+  const bool incognito = GetEnableIncognito();
+  if (incognito)
+    CreateIncognitoBrowser(profile());
+
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required_async.html",
-       .custom_arg = R"({"testName": "authRequiredAsyncNoAction"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required_async",
+      {.custom_arg = FormatCustomArg("authRequiredAsyncNoAction").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required_async.html",
-       .custom_arg = R"({"testName": "authRequiredAsyncCancelAuth"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required_async",
+      {.custom_arg = FormatCustomArg("authRequiredAsyncCancelAuth").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest",
-      {.page_url = "test_auth_required_async.html",
-       .custom_arg = R"({"testName": "authRequiredAsyncSetAuth"})",
-       .open_in_incognito = GetEnableIncognito()},
-      {.allow_in_incognito = GetEnableIncognito()}))
+      "webrequest/test_auth_required_async",
+      {.custom_arg = FormatCustomArg("authRequiredAsyncSetAuth").c_str()},
+      {.allow_in_incognito = incognito}))
       << message_;
 }
 
@@ -655,11 +655,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
                        DISABLED_WebRequestAuthRequiredParallel) {
   CancelLoginDialog login_dialog_helper;
 
+  const bool incognito = GetEnableIncognito();
+  if (incognito)
+    CreateIncognitoBrowser(profile());
+
+  const char* const custom_arg = incognito ? R"({"runInIncognito": true})"
+                                           : R"({"runInIncognito": false})";
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_auth_required_parallel.html",
-                                .open_in_incognito = GetEnableIncognito()},
-                               {.allow_in_incognito = GetEnableIncognito()}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_auth_required_parallel",
+                               {.custom_arg = custom_arg},
+                               {.allow_in_incognito = incognito}))
       << message_;
 }
 
@@ -672,9 +677,8 @@ INSTANTIATE_TEST_SUITE_P(Incognito,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestBlocking) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_blocking.html",
-                                .custom_arg = R"({"testSuite": "normal"})"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking",
+                               {.custom_arg = R"({"testSuite": "normal"})"}))
       << message_;
 }
 
@@ -693,65 +697,54 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestBlocking) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        MAYBE_WebRequestBlockingSlow) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_blocking.html",
-                                .custom_arg = R"({"testSuite": "slow"})"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking",
+                               {.custom_arg = R"({"testSuite": "slow"})"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestBlockingSetCookieHeader) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_blocking_cookie.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking_cookie")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_extra_headers.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_extra_headers")) << message_;
 }
 
 // Flaky on all platforms: https://crbug.com/1003661
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       DISABLED_WebRequestExtraHeaders_Auth) {
+                       WebRequestExtraHeaders_Auth) {
   CancelLoginDialog login_dialog_helper;
 
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_extra_headers_auth.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_extra_headers_auth"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestChangeCSPHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_change_csp_headers.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_change_csp_headers"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestCORSWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_cors.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_redirects.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_redirects.html",
-                                .custom_arg = R"({"useExtraHeaders": true})"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects",
+                               {.custom_arg = R"({"useExtraHeaders": true})"}))
       << message_;
 }
 
@@ -774,34 +767,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   std::string config_string;
   base::JSONWriter::Write(custom_args, &config_string);
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_redirects_from_secure.html",
-                                .custom_arg = config_string.c_str()}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects_from_secure",
+                               {.custom_arg = config_string.c_str()}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestSubresourceRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_subresource_redirects.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects"))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestSubresourceRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_subresource_redirects.html",
-                                .custom_arg = R"({"useExtraHeaders": true})"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects",
+                               {.custom_arg = R"({"useExtraHeaders": true})"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestNewTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_newTab.html"}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_new_tab")) << message_;
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
