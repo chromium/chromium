@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, RecentDateBucketTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfBreadcrumbs) {
-  RunTestURL("widgets/xf_breadcrumbs_unittest.js");
+  RunTestURL("widgets/xf_breadcrumb_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileGridTest) {

@@ -270,14 +270,14 @@ ts_files = [
   "file_manager/state/reducers.ts",
   "file_manager/state/actions.ts",
   "file_manager/state/file_key.ts",
-  "file_manager/widgets/breadcrumbs.ts",
-  "file_manager/containers/breadcrumbs_container.ts",
+  "file_manager/widgets/xf_breadcrumb.ts",
+  "file_manager/containers/breadcrumb_container.ts",
 ]
 
 # HTML template files that are used to generate the ".html.ts"
-ts_templates = [ "file_manager/widgets/breadcrumbs.html" ]
+ts_templates = [ "file_manager/widgets/xf_breadcrumb.html" ]
 
-ts_test_files = [ "file_manager/widgets/xf_breadcrumbs_unittest.ts" ]
+ts_test_files = [ "file_manager/widgets/xf_breadcrumb_unittest.ts" ]
 
 ts_generated_templates = []
 foreach(_t, ts_templates) {

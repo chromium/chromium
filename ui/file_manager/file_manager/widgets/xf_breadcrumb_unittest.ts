@@ -7,73 +7,68 @@ import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTr
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
-import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent, Breadcrumbs} from './breadcrumbs.js';
-
-export function testBla() {
-  console.log('ITs time!');
-  assertEquals(1, 1);
-}
+import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent, XfBreadcrumb} from './xf_breadcrumb.js';
 
 /**
- * Creates new <xf-breadcrumbs> element for each test. Asserts it has no initial
+ * Creates new <xf-breadcrumb> element for each test. Asserts it has no initial
  * path using the element.path getter.
  */
 export function setUp() {
-  document.body.innerHTML = '<xf-breadcrumbs></xf-breadcrumbs>';
-  const breadcrumbs = document.querySelector('xf-breadcrumbs');
-  assertEquals('', breadcrumbs!.path);
+  document.body.innerHTML = '<xf-breadcrumb></xf-breadcrumb>';
+  const breadcrumb = document.querySelector('xf-breadcrumb');
+  assertEquals('', breadcrumb!.path);
 }
 
-/** Returns the <xf-breadcrumbs> element. */
-function getBreadcrumbs(): Breadcrumbs {
-  const element = document.querySelector('xf-breadcrumbs');
+/** Returns the <xf-breadcrumb> element. */
+function getBreadcrumb(): XfBreadcrumb {
+  const element = document.querySelector('xf-breadcrumb');
   assertNotEquals('none', window.getComputedStyle(element!).display);
   assertFalse(element!.hasAttribute('hidden'));
   return element!;
 }
 
 /**
- * Returns the <xf-breadcrumbs> child button elements. There are 4 main buttons
+ * Returns the <xf-breadcrumb> child button elements. There are 4 main buttons
  * and one elider button (so at least 5) plus optional drop-down menu buttons.
  */
-function getAllBreadcrumbsButtons(): HTMLButtonElement[] {
-  const buttons = getBreadcrumbs().shadowRoot!.querySelectorAll('button');
+function getAllBreadcrumbButtons(): HTMLButtonElement[] {
+  const buttons = getBreadcrumb().shadowRoot!.querySelectorAll('button');
   assertGE(buttons.length, 5, 'too few buttons');
   return Array.from(buttons) as HTMLButtonElement[];
 }
 
 /**
- * Returns the not-hidden <xf-breadcrumbs> main button elements. The breadcrumb
+ * Returns the not-hidden <xf-breadcrumb> main button elements. The breadcrumb
  * main buttons have an id, all other breadcrumb buttons do not.
  */
-function getVisibleBreadcrumbsMainButtons(): HTMLButtonElement[] {
+function getVisibleBreadcrumbMainButtons(): HTMLButtonElement[] {
   const notHiddenMain = 'button[id]:not([hidden])';
-  const buttons = getBreadcrumbs().shadowRoot!.querySelectorAll(notHiddenMain);
+  const buttons = getBreadcrumb().shadowRoot!.querySelectorAll(notHiddenMain);
   return Array.from(buttons) as HTMLButtonElement[];
 }
 
-/** Returns the last not-hidden <xf-breadcrumbs> main button element. */
-function getLastVisibleBreadcrumbsMainButton(): HTMLButtonElement {
-  return getVisibleBreadcrumbsMainButtons().pop() as HTMLButtonElement;
+/** Returns the last not-hidden <xf-breadcrumb> main button element. */
+function getLastVisibleBreadcrumbMainButton(): HTMLButtonElement {
+  return getVisibleBreadcrumbMainButtons().pop() as HTMLButtonElement;
 }
 
-/** Returns the <xf-breadcrumbs> elider button element. */
-function getBreadcrumbsEliderButton(): HTMLButtonElement {
+/** Returns the <xf-breadcrumb> elider button element. */
+function getBreadcrumbEliderButton(): HTMLButtonElement {
   const elider = 'button[elider]';
-  const button = getBreadcrumbs().shadowRoot!.querySelectorAll(elider);
+  const button = getBreadcrumb().shadowRoot!.querySelectorAll(elider);
   assertEquals(1, button.length, 'invalid elider button');
   return button[0] as HTMLButtonElement;
 }
 
-/** Returns the <xf-breadcrumbs> drop-down menu button elements. */
-function getBreadcrumbsMenuButtons(): HTMLButtonElement[] {
+/** Returns the <xf-breadcrumb> drop-down menu button elements. */
+function getBreadcrumbMenuButtons(): HTMLButtonElement[] {
   const menuButton = 'cr-action-menu button';
-  const buttons = getBreadcrumbs().shadowRoot!.querySelectorAll(menuButton);
+  const buttons = getBreadcrumb().shadowRoot!.querySelectorAll(menuButton);
   return Array.from(buttons) as HTMLButtonElement[];
 }
 
 /**
- * Returns <xf-breadcrumbs> main button visual state.
+ * Returns <xf-breadcrumb> main button visual state.
  * @param button Main button (these have an id).
  * @param i Number to assign to the button.
  */
@@ -93,7 +88,7 @@ function getMainButtonState(button: HTMLButtonElement, i: number): string {
 }
 
 /**
- * Returns <xf-breadcrumbs> elider button visual state.
+ * Returns <xf-breadcrumb> elider button visual state.
  * @param button Elider button.
  * @param i Number to assign to the button.
  */
@@ -119,7 +114,7 @@ function getEliderButtonState(button: HTMLButtonElement, i: number): string {
 }
 
 /**
- * Returns <xf-breadcrumbs> drop-down menu button visual state.
+ * Returns <xf-breadcrumb> drop-down menu button visual state.
  * @param button Drop-down menu button.
  */
 function getDropDownMenuButtonState(button: HTMLButtonElement): string {
@@ -138,12 +133,12 @@ function getDropDownMenuButtonState(button: HTMLButtonElement): string {
   return result;
 }
 
-/** Returns the <xf-breadcrumbs> buttons visual state. */
-function getBreadcrumbsButtonState(): string {
+/** Returns the <xf-breadcrumb> buttons visual state. */
+function getBreadcrumbButtonState(): string {
   const parts: string[] = [];
   const menus: string[] = [];
 
-  const buttons = getAllBreadcrumbsButtons();
+  const buttons = getAllBreadcrumbButtons();
   let number = 0;
   buttons.forEach((button) => {
     if (button.id) {  // Main buttons have an id.
@@ -156,13 +151,13 @@ function getBreadcrumbsButtonState(): string {
   });
 
   // Elider should only display for paths with more than 4 parts.
-  if (!getBreadcrumbsEliderButton().hasAttribute('hidden')) {
-    assertGT(getBreadcrumbs().parts.length, 4);
+  if (!getBreadcrumbEliderButton().hasAttribute('hidden')) {
+    assertGT(getBreadcrumb().parts.length, 4);
   }
 
   // The 'last' main button displayed should always be [disabled].
-  const last = getLastVisibleBreadcrumbsMainButton();
-  if (getBreadcrumbs().path !== '') {
+  const last = getLastVisibleBreadcrumbMainButton();
+  if (getBreadcrumb().path !== '') {
     assertTrue(last.hasAttribute('disabled'));
   }
 
@@ -175,7 +170,7 @@ function getBreadcrumbsButtonState(): string {
 
 /** Sets and Waits for the path to updated in the DOM. */
 async function setAndWaitPath(path: string): Promise<void> {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
   element.path = path;
   return waitUntil(() => element.getAttribute('path')! === path);
 }
@@ -184,7 +179,7 @@ async function setAndWaitPath(path: string): Promise<void> {
  * Tests rendering an empty path.
  */
 export async function testBreadcrumbEmptyPath(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('');
@@ -199,7 +194,7 @@ export async function testBreadcrumbEmptyPath(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
@@ -208,7 +203,7 @@ export async function testBreadcrumbEmptyPath(done: () => void) {
  * Tests rendering a one element path.
  */
 export async function testBreadcrumbOnePartPath(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A');
@@ -223,14 +218,14 @@ export async function testBreadcrumbOnePartPath(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
 
 /** Tests rendering a two element path.  */
 export async function testBreadcrumbTwoPartPath(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B');
@@ -245,14 +240,14 @@ export async function testBreadcrumbTwoPartPath(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
 
 /** Tests rendering a three element path.  */
 export async function testBreadcrumbThreePartPath(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C');
@@ -267,7 +262,7 @@ export async function testBreadcrumbThreePartPath(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
@@ -276,7 +271,7 @@ export async function testBreadcrumbThreePartPath(done: () => void) {
  * Tests rendering a four element path.
  */
 export async function testBreadcrumbFourPartPath(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D');
@@ -291,7 +286,7 @@ export async function testBreadcrumbFourPartPath(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
@@ -305,13 +300,13 @@ export async function testBreadcrumbFourPartPath(done: () => void) {
  */
 export async function testBreadcrumbMoreThanFourElementPathsElide(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E/F');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
 
   // clang-format off
@@ -327,7 +322,7 @@ export async function testBreadcrumbMoreThanFourElementPathsElide(
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
@@ -341,14 +336,14 @@ export async function testBreadcrumbMoreThanFourElementPathsElide(
  * display, but are invisible because the elider drop-down menu is closed.
  */
 export async function testBreadcrumbRendersEscapedPathParts(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath(
       'A%2FA/B%2FB/C %2F/%2FD /%2F%2FE/Nexus%2FPixel %28MTP%29');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
 
   // clang-format off
@@ -364,7 +359,7 @@ export async function testBreadcrumbRendersEscapedPathParts(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
@@ -375,13 +370,13 @@ export async function testBreadcrumbRendersEscapedPathParts(done: () => void) {
  */
 export async function
 testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
 
   // Clicking the elider button should 'open' its drop-down menu.
@@ -401,7 +396,7 @@ testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(opened, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(opened, path + ' ' + getBreadcrumbButtonState());
 
   // Clicking the elider again should 'close' the drop-down menu.
   assertFalse(elider.hasAttribute('hidden'));
@@ -419,7 +414,7 @@ testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu(done: () => void) {
      ' 5: display:block id=fourth text=[E]';
   // clang-format on
 
-  assertEquals(closed, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(closed, path + ' ' + getBreadcrumbButtonState());
 
   done();
 }
@@ -430,7 +425,7 @@ testBreadcrumbElidedPathEliderButtonClicksOpenDropDownMenu(done: () => void) {
  */
 export async function testBreadcrumbMainButtonClicksEmitNumberSignal(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E/F');
@@ -448,7 +443,7 @@ export async function testBreadcrumbMainButtonClicksEmitNumberSignal(
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   let signal: number|null = null;
   element.addEventListener(
@@ -458,7 +453,7 @@ export async function testBreadcrumbMainButtonClicksEmitNumberSignal(
         signal = index;
       });
 
-  const buttons = getVisibleBreadcrumbsMainButtons();
+  const buttons = getVisibleBreadcrumbMainButtons();
   assertEquals(3, buttons.length, 'three main buttons should be visible');
 
   assert(buttons[0]);
@@ -492,13 +487,13 @@ export async function testBreadcrumbMainButtonClicksEmitNumberSignal(
  */
 export async function testBreadcrumbMenuButtonClicksEmitNumberSignal(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
 
   // Clicking the elider button should 'open' its drop-down menu.
@@ -518,7 +513,7 @@ export async function testBreadcrumbMenuButtonClicksEmitNumberSignal(
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(opened, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(opened, path + ' ' + getBreadcrumbButtonState());
 
   let signal: number|null = null;
   element.addEventListener(
@@ -528,7 +523,7 @@ export async function testBreadcrumbMenuButtonClicksEmitNumberSignal(
         signal = index;
       });
 
-  const buttons = getBreadcrumbsMenuButtons();
+  const buttons = getBreadcrumbMenuButtons();
   assertEquals(2, buttons.length, 'there should be two drop-down items');
 
   assert(buttons[0]);
@@ -554,13 +549,13 @@ export async function testBreadcrumbMenuButtonClicksEmitNumberSignal(
  */
 export async function testBreadcrumbSetPathClosesEliderButtonDropDownMenu(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
 
   // Clicking the elider button should 'open' its drop-down menu.
@@ -580,7 +575,7 @@ export async function testBreadcrumbSetPathClosesEliderButtonDropDownMenu(
   // clang-format on
 
   const first = element.parts.join('/');
-  assertEquals(opened, first + ' ' + getBreadcrumbsButtonState());
+  assertEquals(opened, first + ' ' + getBreadcrumbButtonState());
 
   // Changing the path should 'close' the drop-down menu.
   await setAndWaitPath('F/G/H');
@@ -597,17 +592,17 @@ export async function testBreadcrumbSetPathClosesEliderButtonDropDownMenu(
   // clang-format on
 
   const second = element.parts.join('/');
-  assertEquals(closed, second + ' ' + getBreadcrumbsButtonState());
+  assertEquals(closed, second + ' ' + getBreadcrumbButtonState());
 
   done();
 }
 
 /**
- * Tests that setting the path updates the <xf-breadcrumbs path> attribute.
+ * Tests that setting the path updates the <xf-breadcrumb path> attribute.
  */
 export async function testBreadcrumbSetPathChangesElementPath(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E/F');
@@ -622,17 +617,17 @@ export async function testBreadcrumbSetPathChangesElementPath(
 
 /**
  * Tests that opening and closing the elider button drop-down menu adds and
- * removes <xf-breadcrumbs checked> attribute.
+ * removes <xf-breadcrumb checked> attribute.
  */
 export async function testBreadcrumbEliderButtonOpenCloseChangesElementChecked(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E/F');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
   assertFalse(element.hasAttribute('checked'));
 
@@ -658,13 +653,13 @@ export async function testBreadcrumbEliderButtonOpenCloseChangesElementChecked(
  */
 export async function testBreadcrumbEliderButtonOpenCloseChangesGlobalState(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E/F');
 
   // Elider button drop-down menu should be in the 'closed' state.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   assertEquals('false', elider.getAttribute('aria-expanded'));
 
   // Clicking the elider button should 'open' its drop-down menu.
@@ -694,7 +689,7 @@ export async function testBreadcrumbEliderButtonOpenCloseChangesGlobalState(
  * an opportunity for adding a tooltip.
  */
 export async function testBreadcrumbPartPartsEllipsisElide(done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/VERYVERYVERYVERYWIDEPATHPART');
@@ -709,7 +704,7 @@ export async function testBreadcrumbPartPartsEllipsisElide(done: () => void) {
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   // The wide part should render its text with ellipsis.
   let ellipsis = element.getEllipsisButtons();
@@ -739,7 +734,7 @@ export async function testBreadcrumbPartPartsEllipsisElide(done: () => void) {
  */
 export async function testBreadcrumbDropDownMenuPathPartsEllipsisElide(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/VERYVERYVERYVERYWIDEPATHPARTINDEED/C/D');
@@ -757,10 +752,10 @@ export async function testBreadcrumbDropDownMenuPathPartsEllipsisElide(
   // clang-format on
 
   const path = element.parts.join('/');
-  assertEquals(expect, path + ' ' + getBreadcrumbsButtonState());
+  assertEquals(expect, path + ' ' + getBreadcrumbButtonState());
 
   // Display the dropdown menu.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   elider.click();
 
   const parts = element.parts;
@@ -792,13 +787,13 @@ export async function testBreadcrumbDropDownMenuPathPartsEllipsisElide(
  */
 export async function testBreadcrumbButtonHasToolTipAttribute(
     done: () => void) {
-  const element = getBreadcrumbs();
+  const element = getBreadcrumb();
 
   // Set path.
   await setAndWaitPath('A/B/C/D/E');
 
   // Add a tool tip to the visible main buttons.
-  getVisibleBreadcrumbsMainButtons().forEach((button) => {
+  getVisibleBreadcrumbMainButtons().forEach((button) => {
     button.setAttribute('has-tooltip', '');
   });
 
@@ -818,7 +813,7 @@ export async function testBreadcrumbButtonHasToolTipAttribute(
   assertEquals(0, element.getToolTipButtons().length);
 
   // Add tool tips to the drop-down menu buttons.
-  getBreadcrumbsMenuButtons().forEach((button) => {
+  getBreadcrumbMenuButtons().forEach((button) => {
     button.setAttribute('has-tooltip', '');
   });
 
@@ -831,7 +826,7 @@ export async function testBreadcrumbButtonHasToolTipAttribute(
   assertEquals('I', tooltips[1].textContent);
 
   // Note: tool tips can be enabled for the elider button.
-  const elider = getBreadcrumbsEliderButton();
+  const elider = getBreadcrumbEliderButton();
   elider.setAttribute('has-tooltip', '');
 
   // But getToolTipButtons() must exclude the elider (i18n).
@@ -850,7 +845,7 @@ export async function testBreadcrumbButtonHasToolTipAttribute(
   // getEllipsisButtons() must exclude the elider button.
   await setAndWaitPath(elider.getAttribute('aria-label')!);
   const ellipsis = element.getEllipsisButtons();
-  assertEquals(getVisibleBreadcrumbsMainButtons()[0], ellipsis[0]);
+  assertEquals(getVisibleBreadcrumbMainButtons()[0], ellipsis[0]);
   assertEquals(1, ellipsis.length);
   assert(ellipsis[0]);
   assertNotEquals(elider, ellipsis[0]);

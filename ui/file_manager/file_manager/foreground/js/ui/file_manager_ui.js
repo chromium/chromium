@@ -12,7 +12,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
-import {BreadcrumbsContainer} from '../../../containers/breadcrumbs_container.js';
+import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
@@ -171,7 +171,7 @@ export class FileManagerUI {
 
     /**
      * Breadcrumb controller.
-     * @type {BreadcrumbController|BreadcrumbsContainer}
+     * @type {BreadcrumbController|BreadcrumbContainer}
      */
     this.breadcrumbController = null;
 
@@ -444,7 +444,8 @@ export class FileManagerUI {
 
     // Breadcrumb controller.
     if (util.isFilesAppExperimental()) {
-      this.breadcrumbController = new BreadcrumbsContainer(
+      // TODO: Rename location-breadcrumbs to location-breadcrumb.
+      this.breadcrumbController = new BreadcrumbContainer(
           queryRequiredElement('#location-breadcrumbs', this.element));
     } else {
       this.breadcrumbController = new BreadcrumbController(

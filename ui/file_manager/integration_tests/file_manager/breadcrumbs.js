@@ -14,7 +14,7 @@ async function getBreadcrumbTagName() {
   const isFilesAppExperimental =
       await sendTestMessage({name: 'isFilesAppExperimental'}) === 'true';
 
-  return isFilesAppExperimental ? 'xf-breadcrumbs' : 'bread-crumb';
+  return isFilesAppExperimental ? 'xf-breadcrumb' : 'bread-crumb';
 }
 
 testcase.breadcrumbsNavigate = async () => {

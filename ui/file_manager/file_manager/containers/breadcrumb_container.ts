@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../widgets/breadcrumbs.js';
+import '../widgets/xf_breadcrumb.js';
 
 import {metrics} from '../common/js/metrics.js';
 import {CurrentDirectory, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/actions.js';
 import {FileKey} from '../state/file_key.js';
 import {getStore, Store} from '../state/store.js';
-import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent} from '../widgets/breadcrumbs.js';
+import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent} from '../widgets/xf_breadcrumb.js';
 
 /**
  * The controller of breadcrumb. The Breadcrumb element only renders a given
  * path. This controller component is responsible for constructing the path
  * and passing it to the Breadcrumb element.
  */
-export class BreadcrumbsContainer {
+export class BreadcrumbContainer {
   private store_: Store;
   private currentFileKey_: FileKey|null;
   private container_: HTMLElement;
@@ -45,32 +45,31 @@ export class BreadcrumbsContainer {
   }
 
   private hide_() {
-    const breadcrumbs = document.querySelector('xf-breadcrumbs');
-    if (breadcrumbs) {
-      breadcrumbs.hidden = true;
+    const breadcrumb = document.querySelector('xf-breadcrumb');
+    if (breadcrumb) {
+      breadcrumb.hidden = true;
     }
   }
 
   private show_(currentDir?: CurrentDirectory) {
-    let breadcrumbs = document.querySelector('xf-breadcrumbs');
-    if (!breadcrumbs) {
-      breadcrumbs = document.createElement('xf-breadcrumbs');
-      breadcrumbs.id = 'breadcrumbs';
-      breadcrumbs.addEventListener(
-          BREADCRUMB_CLICKED, this.breadcrumbsClick_.bind(this));
-      this.container_.appendChild(breadcrumbs);
+    let breadcrumb = document.querySelector('xf-breadcrumb');
+    if (!breadcrumb) {
+      breadcrumb = document.createElement('xf-breadcrumb');
+      breadcrumb.addEventListener(
+          BREADCRUMB_CLICKED, this.breadcrumbClick_.bind(this));
+      this.container_.appendChild(breadcrumb);
     }
 
     const path = !currentDir ?
         '' :
         currentDir.pathComponents.map(p => p.label).join('/');
-    breadcrumbs!.path = path;
+    breadcrumb!.path = path;
     this.currentFileKey_ = currentDir ? currentDir.key : null;
     this.pathKeys_ =
         currentDir ? currentDir.pathComponents.map(p => p.key) : [];
   }
 
-  private breadcrumbsClick_(event: BreadcrumbClickedEvent) {
+  private breadcrumbClick_(event: BreadcrumbClickedEvent) {
     const index = Number(event.detail.partIndex);
     if (isNaN(index) || index < 0) {
       return;

@@ -4,16 +4,16 @@
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {getTemplate} from './breadcrumbs.html.js';
+import {getTemplate} from './xf_breadcrumb.html.js';
 
 /**
- * Breadcrumbs displays the current directory path.
+ * Breadcrumb displays the current directory path.
  *
- * It emits the `BREADCRUMB_CLICKED` event when any part of the breadcrumbs is
+ * It emits the `BREADCRUMB_CLICKED` event when any part of the breadcrumb is
  * clicked.
  */
-export class Breadcrumbs extends HTMLElement {
-  /** BreadCrumb path parts.  */
+export class XfBreadcrumb extends HTMLElement {
+  /** Breadcrumb path parts.  */
   private parts_: string[];
 
   constructor() {
@@ -290,7 +290,7 @@ export class Breadcrumbs extends HTMLElement {
 export const BREADCRUMB_CLICKED = 'breadcrumb_clicked';
 
 /**
- * `partIndex` is the index of the breadcrumbs path e.g.:
+ * `partIndex` is the index of the breadcrumb path e.g.:
  * "/My files/Downloads/sub-folder" indexes:
  *   0        1         2
  */
@@ -302,8 +302,8 @@ declare global {
   }
 
   interface HTMLElementTagNameMap {
-    'xf-breadcrumbs': Breadcrumbs;
+    'xf-breadcrumb': XfBreadcrumb;
   }
 }
 
-customElements.define('xf-breadcrumbs', Breadcrumbs);
+customElements.define('xf-breadcrumb', XfBreadcrumb);
