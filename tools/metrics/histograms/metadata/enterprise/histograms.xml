@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
-    enum="DTAttestationFunnelStep" expires_after="2022-08-01">
+    enum="DTAttestationFunnelStep" expires_after="2023-08-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -716,7 +716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
-    units="ms" expires_after="2022-07-01">
+    units="ms" expires_after="2023-07-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -733,7 +733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Attestation.Result"
-    enum="DTAttestationResult" expires_after="2022-08-01">
+    enum="DTAttestationResult" expires_after="2023-08-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Key.TrustLevel" enum="DTKeyTrustLevel"
-    expires_after="2022-08-01">
+    expires_after="2023-08-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -757,7 +757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Key.Type" enum="DTKeyType"
-    expires_after="2022-08-01">
+    expires_after="2023-08-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.Key.{Variant}Result"
-    enum="DTKeyRotationResult" expires_after="2022-08-01">
+    enum="DTKeyRotationResult" expires_after="2023-08-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
-    expires_after="2022-07-01">
+    expires_after="2023-07-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.Status"
-    enum="DeviceTrustKeyRotationStatus" expires_after="2022-07-01">
+    enum="DeviceTrustKeyRotationStatus" expires_after="2023-07-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.UploadCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-07-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceTrust.SignalsDecorator.Latency.{Variant}"
-    units="ms" expires_after="2022-07-01">
+    units="ms" expires_after="2023-07-01">
   <owner>hmare@google.com</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
