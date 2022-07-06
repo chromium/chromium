@@ -1307,7 +1307,7 @@ const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRgbKeyboard = {"RgbKeyboard",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the system tray to show more information in larger screen.
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
