@@ -39,6 +39,8 @@ const char kAccountAdditionResultStatus[] =
     "AccountManager.AccountAdditionResultStatus";
 const char kGetAccountsMojoStatus[] =
     "AccountManager.FacadeGetAccountsMojoStatus";
+const char kMojoDisconnectionsAccountManagerRemote[] =
+    "AccountManager.MojoDisconnections.AccountManagerRemote";
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -279,7 +281,10 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
                      weak_factory_.GetWeakPtr()));
 }
 
-AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
+AccountManagerFacadeImpl::~AccountManagerFacadeImpl() {
+  base::UmaHistogramCounts100(kMojoDisconnectionsAccountManagerRemote,
+                              num_remote_disconnections_);
+}
 
 void AccountManagerFacadeImpl::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -563,6 +568,7 @@ void AccountManagerFacadeImpl::RunOnMojoDisconnection(
 
 void AccountManagerFacadeImpl::OnMojoError() {
   LOG(ERROR) << "Account Manager disconnected";
+  num_remote_disconnections_++;
   for (auto& cb : mojo_disconnection_handlers_) {
     std::move(cb).Run();
   }

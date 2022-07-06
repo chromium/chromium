@@ -105,6 +105,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   FRIEND_TEST_ALL_PREFIXES(
       AccountManagerFacadeImplTest,
       AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           HistogramsForZeroAccountManagerRemoteDisconnections);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           HistogramsForAccountManagerRemoteDisconnection);
 
   // Status of the mojo connection.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -177,6 +181,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   // Mojo API version on the remote (Ash) side.
   const uint32_t remote_version_;
+
+  // Number of Mojo pipe disconnections seen by `account_manager_remote_`.
+  int num_remote_disconnections_ = 0;
 
   bool is_initialized_ = false;
   std::vector<base::OnceClosure> initialization_callbacks_;

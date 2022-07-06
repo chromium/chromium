@@ -116,6 +116,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccountManager.MojoDisconnections.AccountManagerRemote"
+    units="count" expires_after="2023-01-31">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Tracks the number of Mojo pipe disconnections observed by the Account
+    Manager Mojo remote in `AccountManagerFacadeImpl`. This is logged at the end
+    of the destruction of `AccountManagerFacadeImpl`. Since
+    `AccountManagerFacadeImpl` is a singleton, this is logged once per session
+    (Per browser session for Lacros and per user session for Ash). This is
+    logged for Ash - ChromeOS and Lacros - ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="AccountManager.NumAccounts" units="count"
     expires_after="2023-01-31">
   <owner>sinhak@chromium.org</owner>
