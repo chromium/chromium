@@ -551,6 +551,14 @@ void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
   }
 }
 
+void AppListBubbleAppsPage::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (continue_label_) {
+    bubble_utils::ApplyStyle(continue_label_,
+                             bubble_utils::LabelStyle::kSubtitle);
+  }
+}
+
 void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
