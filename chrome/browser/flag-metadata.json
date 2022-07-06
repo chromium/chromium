@@ -1158,7 +1158,7 @@
   {
     "name": "default-mode-ua",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 107
   },
   {
     "name": "default-wkwebview-context-menu",
