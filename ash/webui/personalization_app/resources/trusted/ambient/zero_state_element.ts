@@ -40,8 +40,8 @@ export class AmbientZeroState extends WithPersonalizationStore {
    */
   private getImageSource_() {
     return this.isDarkModeActive_ ?
-        'chrome://personalization/common/ambient_mode_disabled_dark.svg' :
-        'chrome://personalization/common/ambient_mode_disabled.svg';
+        'chrome://personalization/images/ambient_mode_disabled_dark.svg' :
+        'chrome://personalization/images/ambient_mode_disabled.svg';
   }
 }
 

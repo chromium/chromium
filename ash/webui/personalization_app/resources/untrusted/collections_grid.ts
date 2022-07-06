@@ -381,7 +381,7 @@ export class CollectionsGrid extends PolymerElement {
   }
 
   private getImageUrlForEmptyTile_(tile: ImageTile): string {
-    return `chrome://personalization/common/${
+    return `chrome://personalization/images/${
         (this.isGooglePhotosTile_(tile) ? 'google_photos.svg' :
                                           'no_images.svg')}`;
   }

@@ -45,8 +45,8 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
 
   private getImageSource_(): string {
     return this.isDarkModeActive_ ?
-        'chrome://personalization/common/no_google_photos_images_dark.svg' :
-        'chrome://personalization/common/no_google_photos_images.svg';
+        'chrome://personalization/images/no_google_photos_images_dark.svg' :
+        'chrome://personalization/images/no_google_photos_images.svg';
   }
 }
 
