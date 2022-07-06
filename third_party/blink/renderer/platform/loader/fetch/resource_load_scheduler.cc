@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -341,12 +340,6 @@ void ResourceLoadScheduler::MaybeRun() {
   if (is_shutdown_)
     return;
 
-  // Don't run if we are still batching fetch requests.
-  if (RuntimeEnabledFeatures::BatchFetchRequestsEnabled() &&
-      pending_batch_operations_ > 0) {
-    return;
-  }
-
   // Updates the RTT before getting the next pending request in the tight mode.
   if (policy_ == ThrottlingPolicy::kTight) {
     http_rtt_ = http_rtt_for_testing_ ? http_rtt_for_testing_
@@ -478,16 +471,6 @@ void ResourceLoadScheduler::SetConnectionInfo(
     in_flight_on_multiplexed_connections_++;
   }
 
-  MaybeRun();
-}
-
-void ResourceLoadScheduler::StartBatch() {
-  pending_batch_operations_++;
-}
-
-void ResourceLoadScheduler::EndBatch() {
-  DCHECK_NE(0u, pending_batch_operations_);
-  pending_batch_operations_--;
   MaybeRun();
 }
 
