@@ -34,7 +34,7 @@ const char kStringsJsPath[] = "strings.js";
 
 class AboutUIHTMLSource : public web::URLDataSourceIOS {
  public:
-  // Construct a data source for the specified |source_name|.
+  // Construct a data source for the specified `source_name`.
   explicit AboutUIHTMLSource(const std::string& source_name);
 
   AboutUIHTMLSource(const AboutUIHTMLSource&) = delete;

@@ -36,15 +36,15 @@ using chrome_test_util::OmniboxContainingText;
 
 namespace {
 
-// Returns the url to the web ui page |host|. |url::SchemeHostPort| can not be
+// Returns the url to the web ui page `host`. `url::SchemeHostPort` can not be
 // used when this test is run using EarlGrey2 because the chrome scheme is not
-// registered in the test process and |url::SchemeHostPort| will not build an
+// registered in the test process and `url::SchemeHostPort` will not build an
 // invalid URL.
 GURL WebUIPageUrlWithHost(const std::string& host) {
   return GURL(base::StringPrintf("%s://%s", kChromeUIScheme, host.c_str()));
 }
 
-// Waits for omnibox text to equal (if |exact_match|) or contain (else) |URL|
+// Waits for omnibox text to equal (if `exact_match`) or contain (else) `URL`
 // and returns true if it was found or false on timeout. Strips trailing URL
 // slash if present as the omnibox does not display them.
 bool WaitForOmniboxURLString(std::string URL, bool exact_match = true) {

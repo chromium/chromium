@@ -52,14 +52,14 @@ class IOSTranslateInternalsHandler
       language::IOSLanguageDetectionTabHelper* tab_helper) override;
 
   // Adds this instance as an observer of the IOSLanguageDetectionTabHelper
-  // associated with |web_state|.
+  // associated with `web_state`.
   void AddLanguageDetectionObserverForWebState(web::WebState* web_state);
   // Removes this instance as an observer of the IOSLanguageDetectionTabHelper
-  // associated with |web_state|.
+  // associated with `web_state`.
   void RemoveLanguageDetectionObserverForWebState(web::WebState* web_state);
 
  private:
-  // Inner observer class, owned by the |registrar_|.
+  // Inner observer class, owned by the `registrar_`.
   class Observer : public WebStateListObserver {
    public:
     explicit Observer(IOSTranslateInternalsHandler* handler);

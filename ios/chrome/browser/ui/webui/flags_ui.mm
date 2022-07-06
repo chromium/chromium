@@ -71,7 +71,7 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
 
   // Initializes the DOM handler with the provided flags storage and flags
   // access. If there were flags experiments requested from javascript before
-  // this was called, it calls |HandleRequestExperimentalFeatures| again.
+  // this was called, it calls `HandleRequestExperimentalFeatures` again.
   void Init(std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
             flags_ui::FlagAccess access);
 

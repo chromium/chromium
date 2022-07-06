@@ -59,7 +59,7 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
   std::string call_on_load_;
   GetLogRouterFunction get_log_router_function_;
 
-  // Whether |this| is registered as a log receiver with the LogRouter.
+  // Whether `this` is registered as a log receiver with the LogRouter.
   bool registered_with_log_router_ = false;
 };
 

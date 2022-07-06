@@ -49,36 +49,36 @@ const char kLogMessageLabel[] = "LOG";
 // Label for warning console messages.
 const char kWarningMessageLabel[] = "WARN";
 
-// Text of the message emitted from the |kDebugMessageButtonId| button on
-// |kConsolePage|.
+// Text of the message emitted from the `kDebugMessageButtonId` button on
+// `kConsolePage`.
 const char kDebugMessageText[] = "This is a debug message.";
-// Text of the message emitted from the |kErrorMessageButtonId| button on
-// |kConsolePage|.
+// Text of the message emitted from the `kErrorMessageButtonId` button on
+// `kConsolePage`.
 const char kErrorMessageText[] = "This is an error message.";
-// Text of the message emitted from the |kInfoMessageButtonId| button on
-// |kConsolePage|.
+// Text of the message emitted from the `kInfoMessageButtonId` button on
+// `kConsolePage`.
 const char kInfoMessageText[] = "This is an informative message.";
-// Text of the message emitted from the |kLogMessageButtonId| button on
-// |kConsolePage|.
+// Text of the message emitted from the `kLogMessageButtonId` button on
+// `kConsolePage`.
 const char kLogMessageText[] = "This log is very round.";
-// Text of the message emitted from the |kWarningMessageButtonId| button on
-// |kConsolePage|.
+// Text of the message emitted from the `kWarningMessageButtonId` button on
+// `kConsolePage`.
 const char kWarningMessageText[] = "This is a warning message.";
 
-// Text of the message emitted from the |kDebugMessageButtonId| button within
-// the iframe on |kConsolePage|.
+// Text of the message emitted from the `kDebugMessageButtonId` button within
+// the iframe on `kConsolePage`.
 const char kIFrameDebugMessageText[] = "This is an iframe debug message.";
-// Text of the message emitted from the |kErrorMessageButtonId| button within
-// the iframe on |kConsolePage|.
+// Text of the message emitted from the `kErrorMessageButtonId` button within
+// the iframe on `kConsolePage`.
 const char kIFrameErrorMessageText[] = "This is an iframe error message.";
-// Text of the message emitted from the |kInfoMessageButtonId| button within the
-// iframe on |kConsolePage|.
+// Text of the message emitted from the `kInfoMessageButtonId` button within the
+// iframe on `kConsolePage`.
 const char kIFrameInfoMessageText[] = "This is an iframe informative message.";
-// Text of the message emitted from the |kLogMessageButtonId| button within the
-// iframe on |kConsolePage|.
+// Text of the message emitted from the `kLogMessageButtonId` button within the
+// iframe on `kConsolePage`.
 const char kIFrameLogMessageText[] = "This iframe log is very round.";
-// Text of the message emitted from the |kWarningMessageButtonId| button within
-// the iframe on |kConsolePage|.
+// Text of the message emitted from the `kWarningMessageButtonId` button within
+// the iframe on `kConsolePage`.
 const char kIFrameWarningMessageText[] = "This is an iframe warning message.";
 
 ElementSelector* StartLoggingButton() {

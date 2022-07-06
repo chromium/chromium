@@ -29,7 +29,7 @@ class IOSNTPTilesInternalsMessageHandlerBridge
     : public web::WebUIIOSMessageHandler,
       public ntp_tiles::NTPTilesInternalsMessageHandlerClient {
  public:
-  // |favicon_service| must not be null and must outlive this object.
+  // `favicon_service` must not be null and must outlive this object.
   explicit IOSNTPTilesInternalsMessageHandlerBridge(
       favicon::FaviconService* favicon_service)
       : handler_(favicon_service) {}

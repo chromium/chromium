@@ -92,8 +92,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
   for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end(); iter++)
     command_line += " " + *iter;
-  // TODO(viettrungluu): |command_line| could really have any encoding, whereas
-  // below we assumes it's UTF-8.
+  // This assumes that `command_line` uses UTF-8 encoding.
   html_source->AddString(version_ui::kCommandLine, command_line);
 
   html_source->AddLocalizedString(version_ui::kVariationsName,

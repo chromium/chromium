@@ -14,7 +14,7 @@
 // Coordinator for the Net export.
 @interface NetExportCoordinator : ChromeCoordinator
 
-// Creates a coordinator that uses |viewController|, |browser| and |context|.
+// Creates a coordinator that uses `viewController`, `browser` and `context`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                        mailComposerContext:(ShowMailComposerContext*)context;
