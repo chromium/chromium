@@ -1273,5 +1273,11 @@
       "fast/preloader"
     ],
     "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"]
+  },
+  {
+    "prefix": "coop-restrict-properties",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
+    "args": [ "--enable-features=CoopRestrictProperties" ]
   }
 ]

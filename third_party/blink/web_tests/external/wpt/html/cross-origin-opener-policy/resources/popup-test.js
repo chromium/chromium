@@ -73,6 +73,18 @@ async function popup_test(description, origin, headers, expected_opener_state) {
                     'Main page has cross origin access to the popup?');
         break;
       }
+      case 'restricted': {
+        assert_false(popup.closed, 'Popup is closed from opener?');
+        assert_true(await getPopupHasOpener(popup_token) === "true",
+                    'Popup has nulled opener?');
+        assert_false(canAccessProperty(popup, "document"),
+                     'Main page has dom access to the popup?');
+        assert_false(canAccessProperty(popup, "frames"),
+                    'Main page has cross origin access to the popup?');
+        assert_true(canAccessProperty(popup, "closed"),
+                    'Main page has limited cross origin access to the popup?');
+        break;
+      }
       case 'severed': {
         assert_true(popup.closed, 'Popup is closed from opener?');
         assert_false(await getPopupHasOpener(popup_token) === "true",
