@@ -593,17 +593,7 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
       matches_cache_(MatchesCache::NO_AUTO_EVICT) {
   AddListener(listener);
 
-  if (base::FeatureList::IsEnabled(omnibox::kDebounceDocumentProvider)) {
-    bool from_last_run = base::GetFieldTrialParamByFeatureAsBool(
-        omnibox::kDebounceDocumentProvider,
-        "DebounceDocumentProviderFromLastRun", true);
-    int delay_ms = base::GetFieldTrialParamByFeatureAsInt(
-        omnibox::kDebounceDocumentProvider, "DebounceDocumentProviderDelayMs",
-        300);
-    debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(from_last_run,
-                                                                 delay_ms);
-  } else
-    debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(false, 0);
+  debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(true, 300);
 }
 
 DocumentProvider::~DocumentProvider() = default;

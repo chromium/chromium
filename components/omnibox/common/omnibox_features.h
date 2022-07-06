@@ -65,7 +65,6 @@ extern const base::Feature kStoreTitleInContentsAndUrlInDescription;
 
 // Document provider
 extern const base::Feature kDocumentProvider;
-extern const base::Feature kDebounceDocumentProvider;
 extern const base::Feature kDocumentProviderAso;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
