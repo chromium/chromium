@@ -5,6 +5,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 
 #include "base/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/fast_checkout/proto/fast_checkout.pb.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
@@ -13,9 +14,14 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using autofill::ServerFieldType;
+
 namespace {
-constexpr char kGuid[] = "Some-Guid-String";
-constexpr char kUrl[] = "https://www.example.com";
+constexpr ServerFieldType kServerFieldType = ServerFieldType::NAME_FULL;
+constexpr char kLocale[] = "en-US";
+constexpr char16_t kName[] = u"Jane Doe";
+constexpr int kInstrumentId = 91077;
+constexpr char kProfileName[] = "SHIPPING";
 }  // namespace
 
 using DomUpdateCallback =
@@ -121,12 +127,21 @@ TEST_F(FastCheckoutExternalActionDelegateTest,
   delegate()->OnActionRequested(CreateShowBottomsheetAction(),
                                 start_dom_checks_callback.Get(),
                                 end_action_callback.Get());
-  delegate()->OnOptionsSelected(
-      std::make_unique<autofill::AutofillProfile>(kGuid, kUrl),
-      std::make_unique<autofill::CreditCard>(kGuid, kUrl));
+  auto autofill_profile = std::make_unique<autofill::AutofillProfile>();
+  autofill_profile->SetInfo(kServerFieldType, kName, kLocale);
+  auto credit_card = std::make_unique<autofill::CreditCard>();
+  credit_card->set_instrument_id(kInstrumentId);
+  delegate()->OnOptionsSelected(std::move(autofill_profile),
+                                std::move(credit_card));
 
   EXPECT_TRUE(result.has_success());
   EXPECT_TRUE(result.success());
+  EXPECT_TRUE(result.has_selected_credit_card());
+  EXPECT_EQ(result.selected_credit_card().instrument_id(), kInstrumentId);
+  EXPECT_GT(result.selected_profiles_size(), 0);
+  EXPECT_EQ(
+      result.selected_profiles().at(kProfileName).values().at(kServerFieldType),
+      base::UTF16ToUTF8(kName));
   EXPECT_FALSE(result.has_result_info());
 }
 
@@ -143,8 +158,8 @@ TEST_F(FastCheckoutExternalActionDelegateTest,
   delegate()->OnActionRequested(CreateShowBottomsheetAction(),
                                 start_dom_checks_callback.Get(),
                                 end_action_callback.Get());
-  delegate()->OnOptionsSelected(
-      nullptr, std::make_unique<autofill::CreditCard>(kGuid, kUrl));
+  delegate()->OnOptionsSelected(nullptr,
+                                std::make_unique<autofill::CreditCard>());
 
   EXPECT_TRUE(result.has_success());
   EXPECT_FALSE(result.success());

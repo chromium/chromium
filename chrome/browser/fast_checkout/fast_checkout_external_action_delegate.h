@@ -53,7 +53,7 @@ class FastCheckoutExternalActionDelegate
   // Ends the current action by notifying the `ExternalActionController` about
   // the `success` of the action. If existent, `selected_profile` and
   // `selected_credit_card` are set in the `Result` proto.
-  void EndAction(
+  void EndShowBottomSheetAction(
       bool success,
       std::unique_ptr<autofill::AutofillProfile> selected_profile = nullptr,
       std::unique_ptr<autofill::CreditCard> selected_credit_card = nullptr);
