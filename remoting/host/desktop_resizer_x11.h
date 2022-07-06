@@ -47,15 +47,14 @@ class DesktopResizerX11 : public DesktopResizer {
   ~DesktopResizerX11() override;
 
   // DesktopResizer interface
-  ScreenResolution GetCurrentResolution(
-      absl::optional<webrtc::ScreenId> screen_id) override;
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
   std::list<ScreenResolution> GetSupportedResolutions(
       const ScreenResolution& preferred,
-      absl::optional<webrtc::ScreenId> screen_id) override;
+      webrtc::ScreenId screen_id) override;
   void SetResolution(const ScreenResolution& resolution,
-                     absl::optional<webrtc::ScreenId> screen_id) override;
+                     webrtc::ScreenId screen_id) override;
   void RestoreResolution(const ScreenResolution& original,
-                         absl::optional<webrtc::ScreenId> screen_id) override;
+                         webrtc::ScreenId screen_id) override;
 
  private:
   // Add a mode matching the specified resolution and switch to it.

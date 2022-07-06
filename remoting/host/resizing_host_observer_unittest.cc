@@ -86,14 +86,13 @@ class FakeDesktopResizer : public DesktopResizer {
   }
 
   // remoting::DesktopResizer interface
-  ScreenResolution GetCurrentResolution(
-      absl::optional<webrtc::ScreenId> screen_id) override {
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override {
     ExpectValidId(screen_id);
-    return (*monitors_)[screen_id.value()];
+    return (*monitors_)[screen_id];
   }
   std::list<ScreenResolution> GetSupportedResolutions(
       const ScreenResolution& preferred,
-      absl::optional<webrtc::ScreenId> screen_id) override {
+      webrtc::ScreenId screen_id) override {
     ExpectValidId(screen_id);
     std::list<ScreenResolution> result(supported_resolutions_.begin(),
                                        supported_resolutions_.end());
@@ -103,23 +102,22 @@ class FakeDesktopResizer : public DesktopResizer {
     return result;
   }
   void SetResolution(const ScreenResolution& resolution,
-                     absl::optional<webrtc::ScreenId> screen_id) override {
+                     webrtc::ScreenId screen_id) override {
     ExpectValidId(screen_id);
-    (*monitors_)[screen_id.value()] = resolution;
+    (*monitors_)[screen_id] = resolution;
     ++call_counts_->set_resolution;
   }
   void RestoreResolution(const ScreenResolution& resolution,
-                         absl::optional<webrtc::ScreenId> screen_id) override {
+                         webrtc::ScreenId screen_id) override {
     ExpectValidId(screen_id);
-    (*monitors_)[screen_id.value()] = resolution;
+    (*monitors_)[screen_id] = resolution;
     ++call_counts_->restore_resolution;
   }
 
  private:
   // Fails the unittest if |screen_id| is not a valid monitor ID.
-  void ExpectValidId(absl::optional<webrtc::ScreenId> screen_id) {
-    ASSERT_TRUE(screen_id.has_value());
-    EXPECT_TRUE(base::Contains(*monitors_, screen_id.value()));
+  void ExpectValidId(webrtc::ScreenId screen_id) {
+    EXPECT_TRUE(base::Contains(*monitors_, screen_id));
   }
 
   bool exact_size_supported_;

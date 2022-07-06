@@ -21,26 +21,25 @@ class DesktopResizerLinux : public DesktopResizer {
   DesktopResizerLinux& operator=(const DesktopResizerLinux&) = delete;
   ~DesktopResizerLinux() override = default;
 
-  ScreenResolution GetCurrentResolution(
-      absl::optional<webrtc::ScreenId> screen_id) override {
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
     return ScreenResolution();
   }
 
   std::list<ScreenResolution> GetSupportedResolutions(
       const ScreenResolution& preferred,
-      absl::optional<webrtc::ScreenId> screen_id) override {
+      webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
     return std::list<ScreenResolution>();
   }
 
   void SetResolution(const ScreenResolution& resolution,
-                     absl::optional<webrtc::ScreenId> screen_id) override {
+                     webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
   }
 
   void RestoreResolution(const ScreenResolution& original,
-                         absl::optional<webrtc::ScreenId> screen_id) override {
+                         webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
   }
 };

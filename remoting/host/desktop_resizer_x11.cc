@@ -125,7 +125,7 @@ DesktopResizerX11::DesktopResizerX11()
 DesktopResizerX11::~DesktopResizerX11() = default;
 
 ScreenResolution DesktopResizerX11::GetCurrentResolution(
-    absl::optional<webrtc::ScreenId> screen_id) {
+    webrtc::ScreenId screen_id) {
   // Process pending events so that the connection setup data is updated
   // with the correct display metrics.
   if (has_randr_)
@@ -140,7 +140,7 @@ ScreenResolution DesktopResizerX11::GetCurrentResolution(
 
 std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
     const ScreenResolution& preferred,
-    absl::optional<webrtc::ScreenId> screen_id) {
+    webrtc::ScreenId screen_id) {
   std::list<ScreenResolution> result;
   if (!has_randr_)
     return result;
@@ -172,9 +172,8 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
   return result;
 }
 
-void DesktopResizerX11::SetResolution(
-    const ScreenResolution& resolution,
-    absl::optional<webrtc::ScreenId> screen_id) {
+void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
+                                      webrtc::ScreenId screen_id) {
   if (!has_randr_)
     return;
 
@@ -194,9 +193,8 @@ void DesktopResizerX11::SetResolution(
     SetResolutionExistingMode(resolution);
 }
 
-void DesktopResizerX11::RestoreResolution(
-    const ScreenResolution& original,
-    absl::optional<webrtc::ScreenId> screen_id) {
+void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
+                                          webrtc::ScreenId screen_id) {
   SetResolution(original, screen_id);
 }
 

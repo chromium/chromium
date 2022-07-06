@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "remoting/host/base/screen_resolution.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -29,8 +28,7 @@ class DesktopResizer {
   static std::unique_ptr<DesktopResizer> Create();
 
   // Return the current resolution of the monitor.
-  virtual ScreenResolution GetCurrentResolution(
-      absl::optional<webrtc::ScreenId> screen_id) = 0;
+  virtual ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) = 0;
 
   // Get the list of supported resolutions for the monitor, which should ideally
   // include |preferred|. Implementations will generally do one of the
@@ -43,22 +41,21 @@ class DesktopResizer {
   //   3. Return an empty list if resize is not supported.
   virtual std::list<ScreenResolution> GetSupportedResolutions(
       const ScreenResolution& preferred,
-      absl::optional<webrtc::ScreenId> screen_id) = 0;
+      webrtc::ScreenId screen_id) = 0;
 
   // Set the resolution of the monitor. |resolution| must be one of the
   // resolutions previously returned by |GetSupportedResolutions|. Note that
   // implementations should fail gracefully if the specified resolution is no
   // longer supported, since monitor configurations may change on the fly.
   virtual void SetResolution(const ScreenResolution& resolution,
-                             absl::optional<webrtc::ScreenId> screen_id) = 0;
+                             webrtc::ScreenId screen_id) = 0;
 
   // Restore the original monitor resolution. The caller must provide the
   // original resolution of the monitor, as returned by GetCurrentResolution(),
   // as a hint. However, implementations are free to ignore this. For example,
   // virtual hosts will typically ignore it to avoid unnecessary resizes.
-  virtual void RestoreResolution(
-      const ScreenResolution& original,
-      absl::optional<webrtc::ScreenId> screen_id) = 0;
+  virtual void RestoreResolution(const ScreenResolution& original,
+                                 webrtc::ScreenId screen_id) = 0;
 };
 
 }  // namespace remoting

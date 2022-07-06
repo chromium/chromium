@@ -40,15 +40,14 @@ class DesktopResizerWin : public DesktopResizer {
   ~DesktopResizerWin() override;
 
   // DesktopResizer interface.
-  ScreenResolution GetCurrentResolution(
-      absl::optional<webrtc::ScreenId> screen_id) override;
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
   std::list<ScreenResolution> GetSupportedResolutions(
       const ScreenResolution& preferred,
-      absl::optional<webrtc::ScreenId> screen_id) override;
+      webrtc::ScreenId screen_id) override;
   void SetResolution(const ScreenResolution& resolution,
-                     absl::optional<webrtc::ScreenId> screen_id) override;
+                     webrtc::ScreenId screen_id) override;
   void RestoreResolution(const ScreenResolution& original,
-                         absl::optional<webrtc::ScreenId> screen_id) override;
+                         webrtc::ScreenId screen_id) override;
 
  private:
   void UpdateBestModeForResolution(const DEVMODE& current_mode,
@@ -84,7 +83,7 @@ DesktopResizerWin::~DesktopResizerWin() {
 }
 
 ScreenResolution DesktopResizerWin::GetCurrentResolution(
-    absl::optional<webrtc::ScreenId> screen_id) {
+    webrtc::ScreenId screen_id) {
   DEVMODE current_mode;
   if (GetPrimaryDisplayMode(ENUM_CURRENT_SETTINGS, 0, &current_mode) &&
       IsModeValid(current_mode))
@@ -94,7 +93,7 @@ ScreenResolution DesktopResizerWin::GetCurrentResolution(
 
 std::list<ScreenResolution> DesktopResizerWin::GetSupportedResolutions(
     const ScreenResolution& preferred,
-    absl::optional<webrtc::ScreenId> screen_id) {
+    webrtc::ScreenId screen_id) {
   if (!IsResizeSupported())
     return std::list<ScreenResolution>();
 
@@ -121,9 +120,8 @@ std::list<ScreenResolution> DesktopResizerWin::GetSupportedResolutions(
   return resolutions;
 }
 
-void DesktopResizerWin::SetResolution(
-    const ScreenResolution& resolution,
-    absl::optional<webrtc::ScreenId> screen_id) {
+void DesktopResizerWin::SetResolution(const ScreenResolution& resolution,
+                                      webrtc::ScreenId screen_id) {
   if (best_mode_for_resolution_.count(resolution) == 0)
     return;
 
@@ -133,9 +131,8 @@ void DesktopResizerWin::SetResolution(
     LOG(ERROR) << "SetResolution failed: " << result;
 }
 
-void DesktopResizerWin::RestoreResolution(
-    const ScreenResolution& original,
-    absl::optional<webrtc::ScreenId> screen_id) {
+void DesktopResizerWin::RestoreResolution(const ScreenResolution& original,
+                                          webrtc::ScreenId screen_id) {
   // Restore the display mode based on the registry configuration.
   DWORD result = ChangeDisplaySettings(nullptr, 0);
   if (result != DISP_CHANGE_SUCCESSFUL)
