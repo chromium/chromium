@@ -280,10 +280,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1340557
   "apps.LaunchSystemWebAppsFromURL",
 
-  # https://crbug.com/1341288
-  "launcher.Smoke",
-  "launcher.BubbleSmoke",
-
   # https://crbug.com/1341074
   "launcher.BubbleLaunchApp.enable_launcher_app_sort",
 
