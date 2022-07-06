@@ -24,6 +24,7 @@ source_set("password") {
     "//components/autofill/core/common",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager/objc",
+    "//components/sync",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",

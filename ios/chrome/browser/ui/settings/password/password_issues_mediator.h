@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
@@ -25,6 +26,7 @@ class IOSChromePasswordCheckManager;
 - (instancetype)initWithPasswordCheckManager:
                     (IOSChromePasswordCheckManager*)manager
                                faviconLoader:(FaviconLoader*)faviconLoader
+                                 syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

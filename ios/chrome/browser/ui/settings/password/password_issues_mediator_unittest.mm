@@ -17,6 +17,8 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -82,6 +84,9 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     BlockCleanupTest::SetUp();
     // Create BrowserState.
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
     store_ = CreateAndUseTestPasswordStore(chrome_browser_state_.get());
@@ -95,7 +100,9 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
         initWithPasswordCheckManager:password_check_.get()
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(
-                                             chrome_browser_state_.get())];
+                                             chrome_browser_state_.get())
+                         syncService:SyncServiceFactory::GetForBrowserState(
+                                         chrome_browser_state_.get())];
     mediator_.consumer = consumer_;
   }
 
@@ -126,7 +133,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
