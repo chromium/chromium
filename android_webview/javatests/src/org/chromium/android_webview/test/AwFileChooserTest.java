@@ -24,6 +24,7 @@ import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.File;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeoutException;
  * Integration tests for the WebChromeClient.onShowFileChooser method.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Shared dependencies among the tests cause conflicts during batch testing.")
 public class AwFileChooserTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
@@ -51,6 +53,8 @@ public class AwFileChooserTest {
     private File mTestDirectory;
     private static final String TEST_DIRECTORY_PATH = PathUtils.getDataDirectory() + "/test";
     private static final String EMPTY_STRING = "";
+
+    private static final String TAG = "AwFileChooserTest";
 
     @Before
     public void setUp() throws Exception {
@@ -207,6 +211,32 @@ public class AwFileChooserTest {
         Assert.assertEquals(captureEnabled, params.isCaptureEnabled());
     }
 
+    @Test
+    @SmallTest
+    public void testInvalidUriIsCanceled() throws Throwable {
+        final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
+                /*headers=*/"",
+                /*body=*/"<input type='file' accept='.txt' id='" + FILE_CHOICE_BUTTON_ID
+                        + "' /><br><br>");
+        final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, singleFileUploadPageHtml, null);
+
+        mShowFileChooserHelper.setChosenFilesToUpload(
+                // Using one real Uri and one invalid Uri because
+                // ActivityTestRule#executeJavaScriptAndWaitForResult
+                // waits for a DOM change to occur
+                // In order for the DOM to change, we must provide
+                // at least one real Uri
+                new String[] {Uri.fromFile(mTestFile1).toString(), "/BadUri/ThatIsnt/Valid"});
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        clickSelectFileButtonAndWaitForCallback("1");
+
+        // Using two real Uris and one invalid Uri
+        mShowFileChooserHelper.setChosenFilesToUpload(
+                new String[] {Uri.fromFile(mTestFile1).toString(),
+                        Uri.fromFile(mTestFile2).toString(), "/BadUri/ThatIsnt/Valid"});
+        clickSelectFileButtonAndWaitForCallback("2");
+    }
+
     /**
      *  Simulates user clicking Choose File button.
      */
@@ -218,12 +248,12 @@ public class AwFileChooserTest {
      *  Wait until the expected string matches what
      *  value is in the DOM returned  by the JavaScript code
      */
-    private void pollJavascriptResult(String script, String expectedResult) throws Throwable {
+    private void pollJavascriptResult(String script, String expectedResult) {
         AwActivityTestRule.pollInstrumentationThread(() -> {
             try {
                 return expectedResult.equals(executeJavaScriptAndWaitForResult(script));
-            } catch (Throwable e) {
-                return false;
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
             }
         });
     }

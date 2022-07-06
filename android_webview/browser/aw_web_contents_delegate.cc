@@ -17,6 +17,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -338,8 +339,11 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
   files.reserve(file_path_str.size());
   for (size_t i = 0; i < file_path_str.size(); ++i) {
     GURL url(file_path_str[i]);
-    if (!url.is_valid())
+    if (!url.is_valid()) {
+      LOG(ERROR) << "The file choice request has an invalid Uri: "
+                 << file_path_str[i];
       continue;
+    }
     base::FilePath path;
     if (url.SchemeIsFile()) {
       if (!net::FileURLToFilePath(url, &path))
