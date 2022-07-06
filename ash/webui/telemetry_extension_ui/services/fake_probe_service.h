@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-shared.h"
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "ash/webui/telemetry_extension_ui/services/probe_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,17 +22,8 @@ class FakeProbeService : public health::mojom::ProbeService {
     Factory();
     ~Factory() override;
 
-    // Sets the one-time response of |ProbeTelemetryInfo| method.
-    void SetProbeTelemetryInfoResponseForTesting(
-        health::mojom::TelemetryInfoPtr response_info);
-
-    // Sets the one-time response of |GetOemData| method.
-    void SetOemDataResponseForTesting(health::mojom::OemDataPtr oem_data);
-
-    // Returns all categories that have been requested after the
-    // FakeProbeService has been created and invoked.
-    std::vector<health::mojom::ProbeCategoryEnum>
-    GetAndClearRequestedCategories();
+    void SetCreateInstanceResponse(
+        std::unique_ptr<FakeProbeService> fake_service);
 
    protected:
     // ProbeService::Factory:
@@ -47,34 +37,53 @@ class FakeProbeService : public health::mojom::ProbeService {
     health::mojom::OemDataPtr oem_data_{health::mojom::OemData::New()};
 
     std::vector<health::mojom::ProbeCategoryEnum> requested_categories_;
+
+   private:
+    std::unique_ptr<FakeProbeService> fake_service_;
   };
 
+  FakeProbeService();
   FakeProbeService(const FakeProbeService&) = delete;
   FakeProbeService& operator=(const FakeProbeService&) = delete;
   ~FakeProbeService() override;
 
- private:
-  explicit FakeProbeService(
-      mojo::PendingReceiver<health::mojom::ProbeService> receiver,
-      health::mojom::TelemetryInfoPtr telem_info,
-      health::mojom::OemDataPtr oem_data,
-      std::vector<health::mojom::ProbeCategoryEnum>* requested_categories);
-
+  // health::mojom::ProbeService overrides.
   void ProbeTelemetryInfo(
       const std::vector<health::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
 
   void GetOemData(GetOemDataCallback callback) override;
 
+  // Sets the return value for |ProbeTelemetryInfo|.
+  void SetProbeTelemetryInfoResponse(
+      health::mojom::TelemetryInfoPtr response_info);
+
+  // Sets the return value for |GetOemData|.
+  void SetOemDataResponse(health::mojom::OemDataPtr oem_data);
+
+  // Set expectation about the parameter that is passed to |ProbeTelemetryInfo|.
+  void SetExpectedLastRequestedCategories(
+      std::vector<health::mojom::ProbeCategoryEnum>
+          expected_requested_categories);
+
+ private:
+  void BindPendingReceiver(
+      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+
   mojo::Receiver<health::mojom::ProbeService> receiver_;
 
-  health::mojom::TelemetryInfoPtr telem_info_;
+  // Response for a call to |ProbeTelemetryInfo|.
+  health::mojom::TelemetryInfoPtr telem_info_{
+      health::mojom::TelemetryInfo::New()};
 
-  health::mojom::OemDataPtr oem_data_;
+  // Response for a call to |GetOemData|.
+  health::mojom::OemDataPtr oem_data_{health::mojom::OemData::New()};
 
-  // A pointer to the requested categories, gets filled up by
-  // |ProbeTelemetryInfo|.
-  std::vector<health::mojom::ProbeCategoryEnum>* requested_categories_;
+  // Expectation about the parameter that is passed to |ProbeTelemetryInfo|.
+  std::vector<health::mojom::ProbeCategoryEnum> actual_requested_categories_;
+
+  // Actual passed parameter.
+  std::vector<health::mojom::ProbeCategoryEnum> expected_requested_categories_;
 };
 
 }  // namespace ash

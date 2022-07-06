@@ -4,41 +4,46 @@
 
 #include "ash/webui/telemetry_extension_ui/services/fake_probe_service.h"
 
-#include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-shared.h"
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/probe_service.h"
-#include "ash/webui/telemetry_extension_ui/services/probe_service_converters.h"
 #include "base/bind.h"
-#include "base/check.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
-#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
-FakeProbeService::FakeProbeService(
-    mojo::PendingReceiver<health::mojom::ProbeService> receiver,
-    health::mojom::TelemetryInfoPtr telem_info,
-    health::mojom::OemDataPtr oem_data,
-    std::vector<health::mojom::ProbeCategoryEnum>* requested_categories)
-    : receiver_(this, std::move(receiver)),
-      telem_info_(std::move(telem_info)),
-      oem_data_(std::move(oem_data)),
-      requested_categories_(requested_categories) {}
+void FakeProbeService::Factory::SetCreateInstanceResponse(
+    std::unique_ptr<FakeProbeService> fake_service) {
+  fake_service_ = std::move(fake_service);
+}
 
-FakeProbeService::~FakeProbeService() = default;
+std::unique_ptr<health::mojom::ProbeService>
+FakeProbeService::Factory::CreateInstance(
+    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
+  fake_service_->BindPendingReceiver(std::move(receiver));
+  return std::move(fake_service_);
+}
+
+FakeProbeService::Factory::Factory() = default;
+FakeProbeService::Factory::~Factory() = default;
+
+FakeProbeService::FakeProbeService() : receiver_(this) {}
+FakeProbeService::~FakeProbeService() {
+  // Assert on the expectations.
+  EXPECT_EQ(actual_requested_categories_, expected_requested_categories_);
+}
 
 void FakeProbeService::ProbeTelemetryInfo(
     const std::vector<health::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
-  DCHECK(requested_categories_->empty());
-  requested_categories_->insert(requested_categories_->end(),
-                                categories.begin(), categories.end());
+  actual_requested_categories_.clear();
+  actual_requested_categories_.insert(actual_requested_categories_.end(),
+                                      categories.begin(), categories.end());
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), telem_info_.Clone()));
@@ -49,34 +54,24 @@ void FakeProbeService::GetOemData(GetOemDataCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), oem_data_.Clone()));
 }
 
-void FakeProbeService::Factory::SetProbeTelemetryInfoResponseForTesting(
+void FakeProbeService::SetExpectedLastRequestedCategories(
+    std::vector<health::mojom::ProbeCategoryEnum>
+        expected_requested_categories) {
+  expected_requested_categories_ = std::move(expected_requested_categories);
+}
+
+void FakeProbeService::SetProbeTelemetryInfoResponse(
     health::mojom::TelemetryInfoPtr response_info) {
   telem_info_ = std::move(response_info);
 }
 
-void FakeProbeService::Factory::SetOemDataResponseForTesting(
-    health::mojom::OemDataPtr oem_data) {
+void FakeProbeService::SetOemDataResponse(health::mojom::OemDataPtr oem_data) {
   oem_data_ = std::move(oem_data);
 }
 
-std::vector<health::mojom::ProbeCategoryEnum>
-FakeProbeService::Factory::GetAndClearRequestedCategories() {
-  return std::move(requested_categories_);
-}
-
-std::unique_ptr<health::mojom::ProbeService>
-FakeProbeService::Factory::CreateInstance(
+void FakeProbeService::BindPendingReceiver(
     mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
-  return base::WrapUnique<FakeProbeService>(
-      new FakeProbeService(std::move(receiver), telem_info_->Clone(),
-                           oem_data_.Clone(), &requested_categories_));
+  receiver_.Bind(std::move(receiver));
 }
-
-FakeProbeService::Factory::Factory() = default;
-FakeProbeService::Factory::~Factory() {
-  DCHECK(requested_categories_.empty())
-      << "FakeProbeService::Factory::CheckAndClearRequestedCategories has not "
-         "been called, you probably forgot to check the requested categories";
-};
 
 }  // namespace ash

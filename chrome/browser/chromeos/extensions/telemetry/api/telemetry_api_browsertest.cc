@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/webui/telemetry_extension_ui/services/fake_probe_service.h"
 #include "ash/webui/telemetry_extension_ui/services/probe_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,27 +28,26 @@ class TelemetryExtensionTelemetryApiBrowserTest
       const TelemetryExtensionTelemetryApiBrowserTest&) = delete;
 
  protected:
+  void SetServiceForTesting(
+      std::unique_ptr<ash::FakeProbeService> fake_diagnostics_service_impl) {
+    fake_probe_factory_.SetCreateInstanceResponse(
+        std::move(fake_diagnostics_service_impl));
+  }
+
   ash::FakeProbeService::Factory fake_probe_factory_;
 };
 
-namespace {
-
-class TestDebugDaemonClient : public FakeDebugDaemonClient {
- public:
-  TestDebugDaemonClient() = default;
-  ~TestDebugDaemonClient() override = default;
-
-  void GetLog(const std::string& log_name,
-              DBusMethodCallback<std::string> callback) override {
-    EXPECT_EQ(log_name, "oemdata");
-    std::move(callback).Run(absl::nullopt);
-  }
-};
-
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetBatteryInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kBattery});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getBatteryInfo() {
@@ -63,15 +59,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kBattery));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetBatteryInfo_Success) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
     {
@@ -104,8 +96,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(battery_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kBattery});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -135,14 +131,19 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kBattery));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetCpuInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kCpu});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getCpuInfo() {
@@ -154,15 +155,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kCpu));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetCpuInfo_Success) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
 
@@ -232,8 +229,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           ash::health::mojom::CpuResult::NewCpuInfo(std::move(cpu_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kCpu});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -285,14 +286,19 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kCpu));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMemoryInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kMemory});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getMemoryInfo() {
@@ -304,15 +310,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kMemory));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMemoryInfo_Success) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
 
@@ -332,8 +334,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(memory_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kMemory});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -349,17 +355,16 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kMemory));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Error) {
-  DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-      std::make_unique<TestDebugDaemonClient>());
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
 
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getOemData() {
@@ -375,10 +380,15 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
+  // Configure FakeProbeService.
   {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+
     auto oem_data = ash::health::mojom::OemData::New();
     oem_data->oem_data = "123456789";
-    fake_probe_factory_.SetOemDataResponseForTesting(std::move(oem_data));
+    fake_service_impl->SetOemDataResponse(std::move(oem_data));
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -395,6 +405,15 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOsVersionInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kSystem});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getOsVersionInfo() {
@@ -406,15 +425,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kSystem));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOsVersionInfo_Success) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
     {
@@ -435,8 +450,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(system_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kSystem});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -454,14 +473,19 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kSystem));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getVpdInfo() {
@@ -473,15 +497,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(fake_probe_factory_.GetAndClearRequestedCategories(),
-              std::vector<ash::health::mojom::ProbeCategoryEnum>(
-                  {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData}));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithSerialNumberPermission) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
 
@@ -496,8 +516,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           ash::health::mojom::CachedVpdResult::NewVpdInfo(std::move(vpd_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -512,14 +536,19 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(fake_probe_factory_.GetAndClearRequestedCategories(),
-              testing::ElementsAre(
-                  ash::health::mojom::ProbeCategoryEnum::kCachedVpdData));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetStatefulPartitionInfo_Error) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kStatefulPartition});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getStatefulPartitionInfo() {
@@ -531,15 +560,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(fake_probe_factory_.GetAndClearRequestedCategories(),
-              testing::ElementsAre(
-                  ash::health::mojom::ProbeCategoryEnum::kStatefulPartition));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetStatefulPartitionInfo_Success) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
     {
@@ -555,8 +580,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(stateful_part_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kStatefulPartition});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -574,10 +603,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       }
     ]);
   )");
-
-  EXPECT_THAT(fake_probe_factory_.GetAndClearRequestedCategories(),
-              testing::ElementsAre(
-                  ash::health::mojom::ProbeCategoryEnum::kStatefulPartition));
 }
 
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
@@ -621,7 +646,7 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetBatteryInfoWithoutSerialNumberPermission) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
     {
@@ -654,8 +679,12 @@ IN_PROC_BROWSER_TEST_F(
               std::move(battery_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kBattery});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -685,15 +714,17 @@ IN_PROC_BROWSER_TEST_F(
       }
     ]);
   )");
-
-  EXPECT_THAT(
-      fake_probe_factory_.GetAndClearRequestedCategories(),
-      testing::ElementsAre(ash::health::mojom::ProbeCategoryEnum::kBattery));
 }
 
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetOemDataWithoutSerialNumberPermission) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getOemData() {
@@ -711,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetVpdInfoWithoutSerialNumberPermission) {
-  // Configure fake cros_healthd response.
+  // Configure FakeProbeService.
   {
     auto telemetry_info = ash::health::mojom::TelemetryInfo::New();
 
@@ -726,8 +757,12 @@ IN_PROC_BROWSER_TEST_F(
           ash::health::mojom::CachedVpdResult::NewVpdInfo(std::move(vpd_info));
     }
 
-    fake_probe_factory_.SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData});
+
+    SetServiceForTesting(std::move(fake_service_impl));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -742,10 +777,6 @@ IN_PROC_BROWSER_TEST_F(
       }
     ]);
   )");
-
-  EXPECT_THAT(fake_probe_factory_.GetAndClearRequestedCategories(),
-              testing::ElementsAre(
-                  ash::health::mojom::ProbeCategoryEnum::kCachedVpdData));
 }
 
 }  // namespace chromeos
