@@ -294,7 +294,6 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   if (const auto* token = BreakToken())
     previously_consumed_block_size = token->ConsumedBlockSize();
 
-  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(ConstraintSpace(), Node(), BreakToken(),
                               BorderScrollbarPadding(), intrinsic_block_size_);
@@ -333,8 +332,8 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   }
 
   if (ConstraintSpace().IsTableCell()) {
-    NGTableAlgorithmUtils::FinalizeTableCellLayout(
-        unconstrained_intrinsic_block_size, &container_builder_);
+    NGTableAlgorithmUtils::FinalizeTableCellLayout(intrinsic_block_size_,
+                                                   &container_builder_);
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();

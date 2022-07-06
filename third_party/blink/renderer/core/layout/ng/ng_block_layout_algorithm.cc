@@ -917,7 +917,6 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         intrinsic_block_size_, previous_inflow_position->logical_block_offset);
   }
 
-  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
       ConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
       intrinsic_block_size_,
@@ -1022,8 +1021,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 
   // At this point, perform any final table-cell adjustments needed.
   if (ConstraintSpace().IsTableCell()) {
-    NGTableAlgorithmUtils::FinalizeTableCellLayout(
-        unconstrained_intrinsic_block_size, &container_builder_);
+    NGTableAlgorithmUtils::FinalizeTableCellLayout(intrinsic_block_size_,
+                                                   &container_builder_);
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
