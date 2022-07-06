@@ -7,10 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -19,6 +23,8 @@ namespace reporting {
 namespace {
 
 constexpr int kSignalStrength = 10;
+constexpr int kSignalStrengthRssi = -70;
+
 // Guids.
 constexpr char kWifiGuid[] = "wifi-guid";
 constexpr char kWifiIdleGuid[] = "wifi-idle-guid";
@@ -47,13 +53,16 @@ class NetworkEventsObserverTest
 
   void SetUp() override {
     ::ash::cros_healthd::FakeCrosHealthd::Initialize();
-    auto* const service_client = network_handler_test_helper_.service_test();
-    auto* const device_client = network_handler_test_helper_.device_test();
 
-    task_environment_.RunUntilIdle();
-    service_client->ClearServices();
-    device_client->ClearDevices();
-    task_environment_.RunUntilIdle();
+    ::chromeos::LoginState::Initialize();
+    ::chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+        ::chromeos::LoginState::LOGGED_IN_ACTIVE,
+        ::chromeos::LoginState::LOGGED_IN_USER_REGULAR,
+        network_handler_test_helper_.UserHash());
+
+    network_handler_test_helper_.AddDefaultProfiles();
+    network_handler_test_helper_.ResetDevicesAndServices();
+    auto* const service_client = network_handler_test_helper_.service_test();
 
     service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
                                shill::kTypeWifi, shill::kStateReady, true);
@@ -70,27 +79,40 @@ class NetworkEventsObserverTest
     task_environment_.RunUntilIdle();
   }
 
-  void TearDown() override { ::ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
+  void TearDown() override {
+    ::chromeos::LoginState::Shutdown();
+    ::ash::cros_healthd::FakeCrosHealthd::Shutdown();
+  }
 
- private:
   base::test::TaskEnvironment task_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 TEST_F(NetworkEventsObserverTest, WifiSignalStrength) {
+  std::string service_config = base::StringPrintf(
+      R"({"GUID": "%s", "Type": "wifi", "State": "ready",
+      "WiFi.SignalStrengthRssi": %d})",
+      kWifiGuid, kSignalStrengthRssi);
+  std::string service_path =
+      network_handler_test_helper_.ConfigureService(service_config);
+  ASSERT_EQ(service_path, kWifiServicePath);
+
   NetworkEventsObserver network_events_observer;
   MetricData result_metric_data;
   bool event_reported = false;
+  base::RunLoop run_loop;
   auto cb = base::BindLambdaForTesting([&](MetricData metric_data) {
     event_reported = true;
     result_metric_data = std::move(metric_data);
+    run_loop.Quit();
   });
 
   network_events_observer.SetOnEventObservedCallback(std::move(cb));
   network_events_observer.OnSignalStrengthChanged(
       kWifiGuid,
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+  run_loop.Run();
 
   ASSERT_TRUE(event_reported);
   ASSERT_TRUE(result_metric_data.has_event_data());
@@ -112,6 +134,11 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength) {
                 .network_telemetry(0)
                 .signal_strength(),
             kSignalStrength);
+  EXPECT_EQ(result_metric_data.telemetry_data()
+                .networks_telemetry()
+                .network_telemetry(0)
+                .signal_strength_dbm(),
+            kSignalStrengthRssi);
 }
 
 TEST_F(NetworkEventsObserverTest, WifiSignalStrength_NotConnected) {
@@ -124,6 +151,7 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_NotConnected) {
   network_events_observer.OnSignalStrengthChanged(
       kWifiIdleGuid,
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(event_reported);
 }
@@ -138,6 +166,7 @@ TEST_F(NetworkEventsObserverTest, CellularSignalStrength) {
   network_events_observer.OnSignalStrengthChanged(
       kCellularGuid,
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(event_reported);
 }

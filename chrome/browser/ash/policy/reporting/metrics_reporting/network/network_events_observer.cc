@@ -6,7 +6,15 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/containers/queue.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/task/bind_post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -14,13 +22,7 @@
 namespace reporting {
 namespace {
 
-bool IsConnectedWifiNetwork(const std::string& guid) {
-  const auto* network_state = ::ash::NetworkHandler::Get()
-                                  ->network_state_handler()
-                                  ->GetNetworkStateFromGuid(guid);
-  if (!network_state) {
-    return false;
-  }
+bool IsConnectedWifiNetwork(const ::chromeos::NetworkState* network_state) {
   const auto network_type =
       ::ash::NetworkTypePattern::Primitive(network_state->type());
   return network_state->IsConnectedState() &&
@@ -75,10 +77,42 @@ void NetworkEventsObserver::OnConnectionStateChanged(
 void NetworkEventsObserver::OnSignalStrengthChanged(
     const std::string& guid,
     chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
-  if (!IsConnectedWifiNetwork(guid)) {
+  const auto* network_state = ::ash::NetworkHandler::Get()
+                                  ->network_state_handler()
+                                  ->GetNetworkStateFromGuid(guid);
+  if (signal_strength.is_null()) {
+    NOTREACHED() << "Signal strength is null";
+    return;
+  }
+  if (!network_state) {
+    NOTREACHED() << "Could not find network state with guid " << guid;
+    return;
+  }
+  if (!IsConnectedWifiNetwork(network_state)) {
     return;
   }
 
+  auto wifi_signal_rssi_cb = base::BindOnce(
+      &NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived,
+      weak_ptr_factory_.GetWeakPtr(), /*guid=*/guid,
+      /*service_path=*/network_state->path(),
+      /*signal_strength_percent=*/signal_strength->value);
+  FetchWifiSignalStrengthRssi(
+      base::queue<std::string>({network_state->path()}),
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         std::move(wifi_signal_rssi_cb)));
+}
+
+void NetworkEventsObserver::AddObserver() {
+  chromeos::cros_healthd::ServiceConnection::GetInstance()->AddNetworkObserver(
+      BindNewPipeAndPassRemote());
+}
+
+void NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived(
+    const std::string& guid,
+    const std::string& service_path,
+    int signal_strength_percent,
+    base::flat_map<std::string, int> service_path_rssi_map) {
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
       MetricEventType::NETWORK_SIGNAL_STRENGTH_CHANGE);
@@ -86,13 +120,16 @@ void NetworkEventsObserver::OnSignalStrengthChanged(
                                       ->mutable_networks_telemetry()
                                       ->add_network_telemetry();
   network_telemetry->set_guid(guid);
-  network_telemetry->set_signal_strength(signal_strength->value);
+  network_telemetry->set_signal_strength(signal_strength_percent);
+  if (base::Contains(service_path_rssi_map, service_path)) {
+    network_telemetry->set_signal_strength_dbm(
+        service_path_rssi_map.at(service_path));
+  } else {
+    DVLOG(1) << "Wifi signal RSSI not found in the service to signal "
+                "map for service: "
+             << service_path << " with guid: " << guid;
+  }
   OnEventObserved(std::move(metric_data));
-}
-
-void NetworkEventsObserver::AddObserver() {
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->AddNetworkObserver(
-      BindNewPipeAndPassRemote());
 }
 
 }  // namespace reporting

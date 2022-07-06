@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_events_observer_base.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 
@@ -34,6 +36,15 @@ class NetworkEventsObserver
 
  protected:
   void AddObserver() override;
+
+ private:
+  void OnSignalStrengthChangedRssiValueReceived(
+      const std::string& guid,
+      const std::string& service_path,
+      int signal_strength_percent,
+      base::flat_map<std::string, int> service_path_rssi_map);
+
+  base::WeakPtrFactory<NetworkEventsObserver> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 
