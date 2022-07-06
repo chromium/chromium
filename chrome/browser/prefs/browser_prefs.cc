@@ -748,12 +748,8 @@ const char kStabilityRendererCrashCount[] =
     "user_experience_metrics.stability.renderer_crash_count";
 const char kStabilityExtensionRendererCrashCount[] =
     "user_experience_metrics.stability.extension_renderer_crash_count";
-
-// Deprecated 07/2022
-const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
-const char kPrivacySandboxFlocDataAccessibleSince[] =
-    "privacy_sandbox.floc_data_accessible_since";
-
+const char kPrivacySandboxPreferencesReconciled[] =
+    "privacy_sandbox.preferences_reconciled";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 #endif
@@ -761,22 +757,21 @@ const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 const char kStabilityPageLoadCount[] =
     "user_experience_metrics.stability.page_load_count";
 #endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 06/2022.
 const char kImprovedShortcutsNotificationShownCount[] =
     "ash.improved_shortcuts_notification_shown_count";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 06/2022.
-const char kPrivacySandboxPreferencesReconciled[] =
-    "privacy_sandbox.preferences_reconciled";
-
 #if BUILDFLAG(IS_ANDROID)
-// Deprecated 06/2022.
 const char kDownloadLaterPromptStatus[] =
     "download.download_later_prompt_status";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 07/2022
+const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
+const char kPrivacySandboxFlocDataAccessibleSince[] =
+    "privacy_sandbox.floc_data_accessible_since";
+const char kStabilityCrashCount[] =
+    "user_experience_metrics.stability.crash_count";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -840,6 +835,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kStabilityPageLoadCount, 0);
 #endif
+
+  // Deprecated 07/2022.
+  registry->RegisterIntegerPref(kStabilityCrashCount, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1709,6 +1707,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   local_state->ClearPref(kStabilityPageLoadCount);
 #endif
+
+  // Added 07/2002.
+  local_state->ClearPref(kStabilityCrashCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

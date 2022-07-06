@@ -57,7 +57,6 @@ StabilityMetricsProvider::~StabilityMetricsProvider() = default;
 
 // static
 void StabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kStabilityCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentFilesCount,
                                 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentSamplesCount,
@@ -83,7 +82,6 @@ void StabilityMetricsProvider::Init() {
 }
 
 void StabilityMetricsProvider::ClearSavedStabilityMetrics() {
-  local_state_->SetInteger(prefs::kStabilityCrashCount, 0);
   // The 0 is a valid value for the below prefs, clears pref instead
   // of setting to default value.
   local_state_->ClearPref(prefs::kStabilityFileMetricsUnsentFilesCount);
@@ -99,15 +97,11 @@ void StabilityMetricsProvider::ClearSavedStabilityMetrics() {
 
 void StabilityMetricsProvider::ProvideStabilityMetrics(
     SystemProfileProto* system_profile) {
+#if BUILDFLAG(IS_ANDROID)
   SystemProfileProto::Stability* stability =
       system_profile->mutable_stability();
 
   int pref_value = 0;
-
-  if (GetAndClearPrefValue(prefs::kStabilityCrashCount, &pref_value))
-    stability->set_crash_count(pref_value);
-
-#if BUILDFLAG(IS_ANDROID)
   if (GetAndClearPrefValue(prefs::kStabilityLaunchCount, &pref_value))
     stability->set_launch_count(pref_value);
   if (GetAndClearPrefValue(prefs::kStabilityCrashCountDueToGmsCoreUpdate,
@@ -136,6 +130,7 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
   }
 
 #if BUILDFLAG(IS_WIN)
+  int pref_value = 0;
   if (GetAndClearPrefValue(prefs::kStabilitySystemCrashCount, &pref_value)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.Internals.SystemCrashCount",
                                        pref_value);
@@ -154,7 +149,6 @@ void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {
     return;
   }
 #endif
-  IncrementPrefValue(prefs::kStabilityCrashCount);
   StabilityMetricsHelper::RecordStabilityEvent(
       StabilityEventType::kBrowserCrash);
 

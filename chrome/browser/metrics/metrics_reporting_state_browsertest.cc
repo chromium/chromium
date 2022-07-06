@@ -222,9 +222,9 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingStateTestParameterized,
 // metrics reporting from a settings page.
 IN_PROC_BROWSER_TEST_P(MetricsReportingStateClearDataTest,
                        ClearPreviouslyCollectedMetricsData) {
-  // Set Stablity Crash Count metric to 1.
+  // Set a stability-related count stored in Local State.
   g_browser_process->local_state()->SetInteger(
-      metrics::prefs::kStabilityCrashCount, 1);
+      metrics::prefs::kStabilityFileMetricsUnsentFilesCount, 1);
   // Emit to two histograms.
   ASSERT_FALSE(HistogramExists("Test.Before.Histogram"));
   ASSERT_FALSE(HistogramExists("Test.Before.StabilityHistogram"));
@@ -250,9 +250,9 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingStateClearDataTest,
   base::UmaHistogramBoolean("Test.After.Histogram", true);
   ASSERT_TRUE(HistogramExists("Test.After.Histogram"));
 
-  // Verify that stability metrics were cleared.
+  // Verify that the stability-related metric in Local State was cleared.
   EXPECT_EQ(0, g_browser_process->local_state()->GetInteger(
-                   metrics::prefs::kStabilityCrashCount));
+                   metrics::prefs::kStabilityFileMetricsUnsentFilesCount));
   // Verify that histogram data that came before clearing data are not included
   // in the next snapshot if metrics reporting was enabled from a settings page.
   bool called_from_settings_page =

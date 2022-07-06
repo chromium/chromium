@@ -7,14 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
@@ -36,18 +33,6 @@ namespace metrics {
 namespace {
 
 const wchar_t kDummyWindowsRegistryKey[] = L"";
-
-// Creates and returns well-formed beacon file contents with the given values.
-std::string CreateWellFormedBeaconFileContents(bool exited_cleanly,
-                                               int crash_streak) {
-  const std::string exited_cleanly_str = exited_cleanly ? "true" : "false";
-  return base::StringPrintf(
-      "{\n"
-      "  \"user_experience_metrics.stability.exited_cleanly\": %s,\n"
-      "  \"variations_crash_streak\": %s\n"
-      "}",
-      exited_cleanly_str.data(), base::NumberToString(crash_streak).data());
-}
 
 }  // namespace
 
@@ -207,12 +192,12 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "MissingCrashStreak",
             .beacon_file_exists = true,
             .beacon_file_contents =
-                "{\"user_experience_metrics.stability.exited_cleanly\": true}",
+                "{\"user_experience_metrics.stability.exited_cleanly\":true}",
             .beacon_file_state = BeaconFileState::kMissingCrashStreak},
         BadBeaconTestParams{
             .test_name = "MissingBeacon",
             .beacon_file_exists = true,
-            .beacon_file_contents = "{\"variations_crash_streak\": 1}",
+            .beacon_file_contents = "{\"variations_crash_streak\":1}",
             .beacon_file_state = BeaconFileState::kMissingBeacon}),
     [](const ::testing::TestParamInfo<BadBeaconTestParams>& params) {
       return params.param.test_name;
@@ -248,7 +233,7 @@ TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
   const int num_crashes = 2;
   ASSERT_LT(0, base::WriteFile(
                    temp_beacon_file_path,
-                   CreateWellFormedBeaconFileContents(
+                   CleanExitBeacon::CreateBeaconFileContentsForTesting(
                        /*exited_cleanly=*/true, /*crash_streak=*/num_crashes)
                        .data()));
 
@@ -269,11 +254,12 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
   const int last_session_num_crashes = 2;
-  ASSERT_LT(0, base::WriteFile(temp_beacon_file_path,
-                               CreateWellFormedBeaconFileContents(
-                                   /*exited_cleanly=*/false,
-                                   /*crash_streak=*/last_session_num_crashes)
-                                   .data()));
+  ASSERT_LT(0,
+            base::WriteFile(temp_beacon_file_path,
+                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                                /*exited_cleanly=*/false,
+                                /*crash_streak=*/last_session_num_crashes)
+                                .data()));
 
   const int updated_num_crashes = last_session_num_crashes + 1;
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
@@ -447,7 +433,7 @@ TEST_P(BeaconFileAndPlatformBeaconConsistencyTest, BeaconConsistency) {
     ASSERT_LT(
         0, base::WriteFile(
                temp_beacon_file_path,
-               CreateWellFormedBeaconFileContents(
+               CleanExitBeacon::CreateBeaconFileContentsForTesting(
                    /*exited_cleanly=*/params.beacon_file_beacon_value.value(),
                    /*crash_streak=*/0)
                    .data()));

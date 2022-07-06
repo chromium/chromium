@@ -129,6 +129,11 @@ class CleanExitBeacon {
   static void SetStabilityExitedCleanlyForTesting(PrefService* local_state,
                                                   bool exited_cleanly);
 
+  // Creates and returns a well-formed beacon file contents with the given
+  // values.
+  static std::string CreateBeaconFileContentsForTesting(bool exited_cleanly,
+                                                        int crash_streak);
+
   // Resets both Local State and NSUserDefaults beacon values.
   static void ResetStabilityExitedCleanlyForTesting(PrefService* local_state);
 

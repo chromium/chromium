@@ -136,11 +136,6 @@ const char kLastClonedResetTimestamp[] = "cloned_install.last_timestamp";
 const char kStabilityBrowserLastLiveTimeStamp[] =
     "user_experience_metrics.stability.browser_last_live_timestamp";
 
-// Number of times the application exited uncleanly since the last report.
-// On Android this does not count the ones due to Gms Core updates (below).
-const char kStabilityCrashCount[] =
-    "user_experience_metrics.stability.crash_count";
-
 // Number of times the application exited uncleanly since the last report
 // due to a gms core update.
 const char kStabilityCrashCountDueToGmsCoreUpdate[] =

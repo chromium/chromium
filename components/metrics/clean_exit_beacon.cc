@@ -18,6 +18,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -388,6 +390,19 @@ void CleanExitBeacon::SetStabilityExitedCleanlyForTesting(
 #if BUILDFLAG(IS_IOS)
   SetUserDefaultsBeacon(exited_cleanly);
 #endif  // BUILDFLAG(IS_IOS)
+}
+
+// static
+std::string CleanExitBeacon::CreateBeaconFileContentsForTesting(
+    bool exited_cleanly,
+    int crash_streak) {
+  const std::string exited_cleanly_str = exited_cleanly ? "true" : "false";
+  return base::StringPrintf(
+      "{\n"
+      "  \"user_experience_metrics.stability.exited_cleanly\":%s,\n"
+      "  \"variations_crash_streak\":%s\n"
+      "}",
+      exited_cleanly_str.data(), base::NumberToString(crash_streak).data());
 }
 
 // static

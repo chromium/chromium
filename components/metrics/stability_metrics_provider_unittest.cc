@@ -37,10 +37,12 @@ TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
   SystemProfileProto system_profile;
   provider->ProvideStabilityMetrics(&system_profile);
 
-  const SystemProfileProto_Stability& stability = system_profile.stability();
+#if BUILDFLAG(IS_ANDROID)
   // Initial log metrics: only expected if non-zero.
+  const SystemProfileProto_Stability& stability = system_profile.stability();
+  // The launch count field is used on Android only.
   EXPECT_FALSE(stability.has_launch_count());
-  EXPECT_FALSE(stability.has_crash_count());
+#endif
 
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kLaunch, 0);
@@ -62,13 +64,12 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
     SystemProfileProto system_profile;
     provider->ProvideStabilityMetrics(&system_profile);
 
-    const SystemProfileProto_Stability& stability = system_profile.stability();
-    // Initial log metrics: only expected if non-zero.
 #if BUILDFLAG(IS_ANDROID)
+    // Initial log metrics: only expected if non-zero.
+    const SystemProfileProto_Stability& stability = system_profile.stability();
     // The launch count field is populated only on Android.
     EXPECT_EQ(1, stability.launch_count());
 #endif
-    EXPECT_EQ(1, stability.crash_count());
 
     histogram_tester.ExpectBucketCount("Stability.Counts2",
                                        StabilityEventType::kLaunch, 1);
@@ -116,13 +117,9 @@ TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
     StabilityMetricsProvider stability_provider(&prefs_);
     MetricsProvider* provider = &stability_provider;
     SystemProfileProto system_profile;
-
     provider->ProvideStabilityMetrics(&system_profile);
 
-    const SystemProfileProto_Stability& stability = system_profile.stability();
     // Two crashes, one system crash.
-    EXPECT_EQ(2, stability.crash_count());
-
     histogram_tester.ExpectUniqueSample("Stability.Counts2",
                                         StabilityEventType::kBrowserCrash, 2);
     histogram_tester.ExpectTotalCount("Stability.Internals.SystemCrashCount",

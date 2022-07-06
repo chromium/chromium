@@ -11,7 +11,10 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,11 +22,13 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
@@ -31,12 +36,14 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_upload_scheduler.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/active_field_trials.h"
+#include "components/variations/service/variations_safe_mode_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -163,14 +170,17 @@ class MetricsServiceTest : public testing::Test {
 
   ~MetricsServiceTest() override {}
 
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
   MetricsStateManager* GetMetricsStateManager(
+      const base::FilePath& user_data_dir = base::FilePath(),
       StartupVisibility startup_visibility = StartupVisibility::kUnknown) {
     // Lazy-initialize the metrics_state_manager so that it correctly reads the
     // stability state from prefs after tests have a chance to initialize it.
     if (!metrics_state_manager_) {
       metrics_state_manager_ = MetricsStateManager::Create(
           GetLocalState(), enabled_state_provider_.get(), std::wstring(),
-          base::FilePath(), startup_visibility);
+          user_data_dir, startup_visibility);
       metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();
@@ -248,6 +258,8 @@ class MetricsServiceTest : public testing::Test {
     return GetHistogramSampleCount(log, kOnDidCreateMetricsLogHistogramName);
   }
 
+  const base::FilePath user_data_dir_path() { return temp_dir_.GetPath(); }
+
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
@@ -257,6 +269,7 @@ class MetricsServiceTest : public testing::Test {
   std::unique_ptr<TestEnabledStateProvider> enabled_state_provider_;
   TestingPrefServiceSimple testing_local_state_;
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
+  base::ScopedTempDir temp_dir_;
 };
 
 struct StartupVisibilityTestParams {
@@ -309,12 +322,21 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 }  // namespace
 
 TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
+  base::HistogramTester histogram_tester;
   EnableMetricsReporting();
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), true);
+  // Write a beacon file indicating that Chrome exited cleanly. Note that the
+  // crash streak value is arbitrary.
+  const base::FilePath beacon_file_path =
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
+  ASSERT_LT(0,
+            base::WriteFile(beacon_file_path,
+                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                                /*exited_cleanly=*/true, /*crash_streak=*/1)
+                                .data()));
 
   TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
+  TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
+                             &client, GetLocalState());
 
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
@@ -333,9 +355,15 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
   // stability nor regular stability metrics.
   EXPECT_FALSE(test_provider->provide_initial_stability_metrics_called());
   EXPECT_FALSE(test_provider->provide_stability_metrics_called());
+
+  // As there wasn't an unclean shutdown, no browser crash samples should have
+  // been emitted.
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kBrowserCrash, 0);
 }
 
 TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
+  base::HistogramTester histogram_tester;
   EnableMetricsReporting();
 
   // Save an existing system profile to prefs, to correspond to what would be
@@ -352,12 +380,18 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
       .SetBuildtimeAndVersion(MetricsLog::GetBuildTime(),
                               client.GetVersionString());
 
-  // Set the clean exit flag, as that will otherwise cause a stabilty
-  // log to be produced, irrespective provider requests.
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), true);
+  // Write a beacon file indicating that Chrome exited cleanly. Note that the
+  // crash streak value is arbitrary.
+  const base::FilePath beacon_file_path =
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
+  ASSERT_LT(0,
+            base::WriteFile(beacon_file_path,
+                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                                /*exited_cleanly=*/true, /*crash_streak=*/1)
+                                .data()));
 
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
+  TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
+                             &client, GetLocalState());
   // Add a metrics provider that requests a stability log.
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   test_provider->set_has_initial_stability_metrics(true);
@@ -395,8 +429,10 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
   EXPECT_EQ(0, uma_log.perf_data_size());
   CheckForNonStabilityHistograms(uma_log);
 
-  // As there wasn't an unclean shutdown, this log has zero crash count.
-  EXPECT_EQ(0, uma_log.system_profile().stability().crash_count());
+  // As there wasn't an unclean shutdown, no browser crash samples should have
+  // been emitted.
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kBrowserCrash, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -420,9 +456,19 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
+  base::HistogramTester histogram_tester;
   PrefService* local_state = GetLocalState();
   EnableMetricsReporting();
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(local_state, false);
+
+  // Write a beacon file indicating that Chrome exited uncleanly. Note that the
+  // crash streak value is arbitrary.
+  const base::FilePath beacon_file_path =
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
+  ASSERT_LT(0,
+            base::WriteFile(beacon_file_path,
+                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                                /*exited_cleanly=*/false, /*crash_streak=*/1)
+                                .data()));
 
   // Set up prefs to simulate restarting after a crash.
 
@@ -446,8 +492,9 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   client.set_version_string(kCurrentVersion);
 
   StartupVisibilityTestParams params = GetParam();
-  TestMetricsService service(GetMetricsStateManager(params.startup_visibility),
-                             &client, local_state);
+  TestMetricsService service(
+      GetMetricsStateManager(user_data_dir_path(), params.startup_visibility),
+      &client, local_state);
   // Add a provider.
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
@@ -456,12 +503,21 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
 
   // Verify that Chrome is (or is not) watching for crashes by checking the
   // beacon value.
+  std::string beacon_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(beacon_file_path, &beacon_file_contents));
+  std::string partial_expected_contents;
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(local_state->GetBoolean(prefs::kStabilityExitedCleanly),
-            params.expected_beacon_value);
+  // Whether Chrome is watching for crashes after
+  // InitializeMetricsRecordingState() depends on the type of Android Chrome
+  // session. See the comments in MetricsService::InitializeMetricsState() for
+  // more details.
+  const std::string beacon_value =
+      params.expected_beacon_value ? "true" : "false";
+  partial_expected_contents = "exited_cleanly\":" + beacon_value;
 #else
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+  partial_expected_contents = "exited_cleanly\":false";
 #endif  // BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(base::Contains(beacon_file_contents, partial_expected_contents));
 
   // The initial stability log should be generated and persisted in unsent logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();
@@ -496,7 +552,8 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   EXPECT_EQ(kCurrentVersion,
             uma_log.system_profile().log_written_by_app_version());
 
-  EXPECT_EQ(1, uma_log.system_profile().stability().crash_count());
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kBrowserCrash, 1);
 }
 
 TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
