@@ -32,9 +32,8 @@ class RgbKeyboardManagerTest : public testing::Test {
     RgbkbdClient::InitializeFake();
     client_ = static_cast<FakeRgbkbdClient*>(RgbkbdClient::Get());
     // Default capabilities to 'RgbKeyboardCapabilities::kIndividualKey'
-    client_->set_rgb_keyboard_capabilities(
+    InitializeManagerWithCapability(
         rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
-    manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   }
 
   RgbKeyboardManagerTest(const RgbKeyboardManagerTest&) = delete;
@@ -47,6 +46,14 @@ class RgbKeyboardManagerTest : public testing::Test {
   };
 
  protected:
+  void InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities capability) {
+    client_->set_rgb_keyboard_capabilities(capability);
+    // |ime_controller_| is initialized in RgbKeyboardManagerTest's ctor.
+    DCHECK(ime_controller_);
+    manager_.reset();
+    manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
+  }
   // ImeControllerImpl must be destroyed after RgbKeyboardManager.
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
@@ -57,8 +64,6 @@ class RgbKeyboardManagerTest : public testing::Test {
 };
 
 TEST_F(RgbKeyboardManagerTest, GetKeyboardCapabilities) {
-  EXPECT_EQ(manager_->GetRgbKeyboardCapabilities(),
-            rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
   EXPECT_EQ(1, client_->get_rgb_keyboard_capabilities_call_count());
 }
 
@@ -137,16 +142,12 @@ TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
   ime_controller_->SetCapsLockEnabled(/*caps_enabled=*/true);
 
   // Simulate RgbKeyboardManager starting up on login.
-  manager_.reset();
-  manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
   EXPECT_TRUE(client_->get_caps_lock_state());
 }
 
 TEST_F(RgbKeyboardManagerTest, DefaultState) {
-  // Simulate RgbKeyboardManager starting up on login.
-  manager_.reset();
-  manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
-
   const RgbColor& default_rgb_values = client_->recently_sent_rgb();
 
   EXPECT_FALSE(client_->is_rainbow_mode_set());
