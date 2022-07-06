@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "build/build_config.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -189,7 +190,14 @@ class WebHidExtensionFeatureDisabledBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, FeatureDefaultDisabled) {
+// TODO(crbug.com/1342174): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_FeatureDefaultDisabled DISABLED_FeatureDefaultDisabled
+#else
+#define MAYBE_FeatureDefaultDisabled FeatureDefaultDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
+                       MAYBE_FeatureDefaultDisabled) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -207,8 +215,14 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, FeatureDefaultDisabled) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
+// TODO(crbug.com/1342174): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
+#else
+#define MAYBE_FeatureDisabled FeatureDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
-                       FeatureDisabled) {
+                       MAYBE_FeatureDisabled) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -226,7 +240,14 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest, GetDevices) {
+// TODO(crbug.com/1342174): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GetDevices DISABLED_GetDevices
+#else
+#define MAYBE_GetDevices GetDevices
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
+                       MAYBE_GetDevices) {
   extensions::TestExtensionDir test_dir;
 
   auto device = CreateTestDeviceWithInputAndOutputReports();
@@ -247,8 +268,14 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest, GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
+// TODO(crbug.com/1342174): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RequestDevice DISABLED_RequestDevice
+#else
+#define MAYBE_RequestDevice RequestDevice
+#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
-                       RequestDevice) {
+                       MAYBE_RequestDevice) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
