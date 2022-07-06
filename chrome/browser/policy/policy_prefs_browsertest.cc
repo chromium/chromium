@@ -177,7 +177,8 @@ class SigninPolicyPrefsTest : public PolicyPrefsTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
+// TODO(crbug.com/1341434): Re-enable this test
+IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
   PrefService* signin_profile_prefs =
       ash::ProfileHelper::GetSigninProfile()->GetPrefs();
 
