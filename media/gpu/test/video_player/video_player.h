@@ -34,7 +34,6 @@ enum class VideoPlayerState : size_t {
   kUninitialized = 0,
   kIdle,
   kDecoding,
-  kDestroyed,
 };
 
 enum class VideoPlayerEvent : size_t {
@@ -128,7 +127,6 @@ class VideoPlayer {
       const VideoDecoderClientConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
-  void Destroy();
 
   // Notify the video player an event has occurred (e.g. frame decoded). Returns
   // whether the decoder client should continue decoding frames.

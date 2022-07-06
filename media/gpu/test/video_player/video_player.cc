@@ -45,7 +45,7 @@ VideoPlayer::~VideoPlayer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
 
-  Destroy();
+  decoder_client_.reset();
 }
 
 // static
@@ -70,29 +70,16 @@ bool VideoPlayer::CreateDecoderClient(
   DCHECK(frame_renderer);
   DVLOGF(4);
 
-  // base::Unretained is safe here as we will never receive callbacks after
-  // destroying the video player, since the video decoder client will be
-  // destroyed first.
+  // base::Unretained is safe here because |decoder_client_| is fully owned.
   EventCallback event_cb =
       base::BindRepeating(&VideoPlayer::NotifyEvent, base::Unretained(this));
 
   decoder_client_ = VideoDecoderClient::Create(
       event_cb, std::move(frame_renderer), std::move(frame_processors), config);
-  if (!decoder_client_) {
-    VLOGF(1) << "Failed to create video decoder client";
-    return false;
-  }
 
-  return true;
-}
-
-void VideoPlayer::Destroy() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(video_player_state_, VideoPlayerState::kDestroyed);
-  DVLOGF(4);
-
-  decoder_client_.reset();
-  video_player_state_ = VideoPlayerState::kDestroyed;
+  LOG_IF(ERROR, !decoder_client_) << __func__ << "(): "
+                                  << "Failed to create video decoder client";
+  return !!decoder_client_;
 }
 
 void VideoPlayer::SetEventWaitTimeout(base::TimeDelta timeout) {
