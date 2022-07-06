@@ -363,7 +363,9 @@ class ColumnGeometriesBuilder {
                                     column_locations[end_column_index].size -
                                     column_locations[start_column_index].offset;
     col.GetLayoutBox()->SetLogicalWidth(column_inline_size);
-    col.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
+    // Table column block-size is only set when at the last table box fragment.
+    if (table_column_block_size != kIndefiniteSize)
+      col.GetLayoutBox()->SetLogicalHeight(table_column_block_size);
     column_geometries.emplace_back(start_column_index, span,
                                    column_locations[start_column_index].offset -
                                        column_locations[0].offset,
@@ -384,7 +386,9 @@ class ColumnGeometriesBuilder {
                                column_locations[last_column_index].size -
                                column_locations[start_column_index].offset;
     colgroup.GetLayoutBox()->SetLogicalWidth(colgroup_size);
-    colgroup.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
+    // Table column block-size is only set when at the last table box fragment.
+    if (table_column_block_size != kIndefiniteSize)
+      colgroup.GetLayoutBox()->SetLogicalHeight(table_column_block_size);
     column_geometries.emplace_back(start_column_index, span,
                                    column_locations[start_column_index].offset -
                                        column_locations[0].offset,
@@ -421,12 +425,12 @@ class ColumnGeometriesBuilder {
   }
 
   ColumnGeometriesBuilder(const Vector<NGTableColumnLocation>& column_locations,
-                          LayoutUnit table_grid_block_size)
+                          LayoutUnit table_column_block_size)
       : column_locations(column_locations),
-        table_grid_block_size(table_grid_block_size) {}
+        table_column_block_size(table_column_block_size) {}
   NGTableFragmentData::ColumnGeometries column_geometries;
   const Vector<NGTableColumnLocation>& column_locations;
-  const LayoutUnit table_grid_block_size;
+  const LayoutUnit table_column_block_size;
 };
 
 LayoutUnit ComputeTableSizeFromColumns(
@@ -1010,11 +1014,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     return LayoutUnit();
   };
 
-  auto TableBoxBorderPadding = [&border_padding, &BlockStartBorderPadding]() {
-    return NGBoxStrut(border_padding.inline_start, border_padding.inline_end,
-                      BlockStartBorderPadding(), border_padding.block_end);
-  };
-
   const LayoutUnit section_inline_offset =
       border_padding.inline_start + border_spacing.inline_size;
 
@@ -1428,18 +1427,23 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     }
   }
 
-  LayoutUnit column_block_size;
+  LayoutUnit column_block_size = kIndefiniteSize;
   LogicalRect table_grid_rect;
   LayoutUnit grid_block_size;
   if (table_box_extent) {
     grid_block_size = table_box_extent->end - table_box_extent->start;
-    column_block_size = grid_block_size;
-    // TODO(mstensho): column_block_size is calculated incorrectly here, but
-    // ComputeTableSpecificFragmentData() behaves incorrectly anyway, so we need
-    // to fix that as well.
-    column_block_size -= border_spacing_before_first_section +
-                         border_spacing_after_last_section +
-                         TableBoxBorderPadding().BlockSum();
+    if (!table_box_will_continue) {
+      // We're at the last fragment for the "table box", and we can calculate
+      // the stitched-together table column / column-group sizes. Columns and
+      // column groups are special, in that they aren't actually laid out (and
+      // get no fragments), so we need to do the LayoutBox block-size write-back
+      // manually (all other nodes get this for free during layout).
+      column_block_size =
+          previously_consumed_table_box_block_size + grid_block_size;
+      // Subtract first and last border-spacing, and table border/padding.
+      column_block_size -=
+          border_spacing.block_size * 2 + border_padding.BlockSum();
+    }
 
     table_grid_rect =
         LogicalRect(LayoutUnit(), table_box_extent->start,
