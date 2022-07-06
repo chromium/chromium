@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -16,6 +17,8 @@
 #include "base/bind.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -284,6 +287,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
 
   bool used_testing_config = false;
+  // TODO(crbug/1342057): Remove this code path.
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   if (ShouldUseFieldTrialTestingConfig(command_line)) {
     ApplyFieldTrialTestingConfig(feature_list.get());
@@ -297,6 +301,11 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
                            switches::kEnableFieldTrialTestingConfig));
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+  if (command_line->HasSwitch(switches::kVariationsTestSeedPath)) {
+    LoadSeedFromFile(
+        command_line->GetSwitchValuePath(switches::kVariationsTestSeedPath));
+  }
+
   bool used_seed = false;
   if (!used_testing_config) {
     used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
@@ -665,6 +674,51 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   base::UmaHistogramTimes("Variations.SeedProcessingTime",
                           base::TimeTicks::Now() - start_time);
   return true;
+}
+
+void VariationsFieldTrialCreator::LoadSeedFromFile(
+    const base::FilePath& seed_path) {
+  JSONFileValueDeserializer file_deserializer(seed_path);
+  int error_code;
+  std::string error_message;
+  std::unique_ptr<base::Value> json_contents =
+      file_deserializer.Deserialize(&error_code, &error_message);
+
+  if (!json_contents) {
+    ExitWithMessage(base::StringPrintf("Failed to load \"%s\" %s (%i)",
+                                       seed_path.AsUTF8Unsafe().c_str(),
+                                       error_message.c_str(), error_code));
+  }
+
+  const base::Value* seed_data =
+      json_contents->GetDict().Find(prefs::kVariationsCompressedSeed);
+  const base::Value* seed_signature =
+      json_contents->GetDict().Find(prefs::kVariationsSeedSignature);
+
+  if (!seed_data || !seed_data->is_string()) {
+    ExitWithMessage(
+        base::StringPrintf("Missing or invalid seed data in contents of \"%s\"",
+                           seed_path.AsUTF8Unsafe().c_str()));
+  }
+
+  if (!seed_signature || !seed_signature->is_string()) {
+    ExitWithMessage(base::StringPrintf(
+        "Missing or invalid seed signature in contents of \"%s\"",
+        seed_path.AsUTF8Unsafe().c_str()));
+  }
+
+  // Set fail counters to 0 to make sure Chrome doesn't run in variations safe
+  // mode. This ensures that Chrome won't use the safe seed.
+  local_state()->SetInteger(prefs::kVariationsCrashStreak, 0);
+  local_state()->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
+
+  // Override Local State seed prefs.
+  local_state()->SetString(prefs::kVariationsCompressedSeed,
+                           seed_data->GetString());
+  local_state()->SetString(prefs::kVariationsSeedSignature,
+                           seed_signature->GetString());
+
+  local_state()->CommitPendingWrite();  // Schedule a write to Local State.
 }
 
 VariationsSeedStore* VariationsFieldTrialCreator::GetSeedStore() {

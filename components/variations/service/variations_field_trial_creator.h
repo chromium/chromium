@@ -224,6 +224,13 @@ class VariationsFieldTrialCreator {
       base::FeatureList* feature_list,
       SafeSeedManager* safe_seed_manager);
 
+  // Reads a seed's data and signature from the file at |seed_path| and writes
+  // them to Local State. Exits Chrome (A) if the file's contents can't be
+  // loaded or (B) if the contents do not contain |kVariationsCompressedSeed| or
+  // |kVariationsSeedSignature|. Also forces Chrome to not run in variations
+  // safe mode. Used for variations seed testing.
+  void LoadSeedFromFile(const base::FilePath& seed_path);
+
   // Returns the seed store. Virtual for testing.
   virtual VariationsSeedStore* GetSeedStore();
 

@@ -60,6 +60,11 @@ const char kForceDisableVariationIds[] = "force-disable-variation-ids";
 // across sessions.
 const char kVariationsOverrideCountry[] = "variations-override-country";
 
+// Specifies the location of a seed file for Local State's seed to be
+// populated from. The seed file must be in json format with the keys
+// |kVariationsCompressedSeed| and |kVariationsSeedSignature|.
+const char kVariationsTestSeedPath[] = "variations-test-seed-path";
+
 // Specifies a custom URL for the server which reports variation data to the
 // client. Specifying this switch enables the Variations service on
 // unofficial builds. See variations_service.cc.

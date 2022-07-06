@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <cstring>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -19,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
@@ -778,6 +780,55 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_SafeSeedForFutureMilestone) {
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
       "Variations.SeedUsage", SeedUsage::kSafeSeedForFutureMilestoneNotUsed, 1);
+}
+
+TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {
+  DisableTestingConfig();
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath test_seed_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("TEST SEED"));
+
+  // This seed contains the data for a test experiment.
+  base::WriteFile(test_seed_file,
+                  base::StringPrintf("{\"variations_compressed_seed\": \"%s\","
+                                     "\"variations_seed_signature\": \"%s\"}",
+                                     kTestSeedData.base64_compressed_data,
+                                     kTestSeedData.base64_signature));
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      variations::switches::kVariationsTestSeedPath, test_seed_file);
+
+  // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
+  // the VariationsSeedStore::LoadSeed() logic.
+  TestVariationsServiceClient variations_service_client;
+  auto seed_store = std::make_unique<VariationsSeedStore>(local_state());
+  VariationsFieldTrialCreator field_trial_creator(
+      &variations_service_client, std::move(seed_store), UIStringOverrider());
+  metrics::TestEnabledStateProvider enabled_state_provider(
+      /*consent=*/true,
+      /*enabled=*/true);
+  auto metrics_state_manager = metrics::MetricsStateManager::Create(
+      local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
+
+  TestPlatformFieldTrials platform_field_trials;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+
+  ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
+
+  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
+      /*variation_ids=*/{},
+      /*command_line_variation_ids=*/std::string(),
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
+      metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
+      /*low_entropy_source_value=*/absl::nullopt));
+
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kVariationsFailedToFetchSeedStreak), 0);
+  EXPECT_EQ(local_state()->GetInteger(prefs::kVariationsCrashStreak), 0);
 }
 
 #if BUILDFLAG(IS_ANDROID)
