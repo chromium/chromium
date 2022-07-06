@@ -28,8 +28,12 @@ void PostAnnouncementNotification(NSString* announcement,
       notification_info);
 }
 void NotifyMacEvent(AXPlatformNodeCocoa* target, ax::mojom::Event event_type) {
-  if (![target AXWindow])
+  if (![target AXWindow]) {
+    // A child tree is not attached to the window. Return early, otherwise
+    // AppKit will hang trying to reach the root, resulting in a bug where
+    // VoiceOver keeps repeating "[appname] is not responding".
     return;
+  }
   NSString* notification =
       [AXPlatformNodeCocoa nativeNotificationFromAXEvent:event_type];
   if (notification)

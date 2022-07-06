@@ -149,7 +149,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
   // Add the child tree.
   std::unique_ptr<TestBrowserAccessibilityDelegate> child_tree_delegate =
       std::make_unique<TestBrowserAccessibilityDelegate>();
-  child_tree_delegate->is_root_frame_ = true;
+  child_tree_delegate->is_root_frame_ = false;
   child_tree_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
       BrowserAccessibilityManager::Create(child_tree_update,

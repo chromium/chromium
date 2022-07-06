@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
@@ -99,6 +100,7 @@ ui::AXTreeUpdate MakeAXTreeUpdate(
   ui::AXTreeData tree_data;
   tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   tree_data.focused_tree_id = tree_data.tree_id;
+  tree_data.parent_tree_id = ui::AXTreeIDUnknown();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = node1.id;
@@ -160,6 +162,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
     ui::AXTreeID ax_tree_id) {
+  DCHECK(ax_tree_id != ui::AXTreeIDUnknown());
   return static_cast<BrowserAccessibilityManager*>(
       ui::AXTreeManagerMap::GetInstance().GetManager(ax_tree_id));
 }
@@ -275,6 +278,9 @@ ui::AXTreeUpdate BrowserAccessibilityManager::GetEmptyDocument() {
 }
 
 void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
+  if (!CanFireEvents())
+    return;
+
   BrowserAccessibility* focus = GetFocus();
   // If |focus| is nullptr it means that we have no way of knowing where the
   // focus is.
@@ -310,7 +316,41 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
 }
 
 bool BrowserAccessibilityManager::CanFireEvents() const {
-  return true;
+  // Delay events until it makes sense to fire them.
+  // Events that are generated while waiting until CanFireEvents() returns true
+  // are dropped by design. Any events after the page is ready for events will
+  // be relative to that initial tree.
+
+  // Fire events only when the root of the tree is reachable, to avoid a bug
+  // in AppKit that gets stuck in an infinite loop trying to find the root,
+  // causing VoiceOver to get stuck announcing "Chrome is not responding".
+  BrowserAccessibilityManager* root_manager = GetRootManager();
+  if (!root_manager)
+    return false;
+
+  // Make sure that nodes can be traversed to the root.
+  const BrowserAccessibilityManager* ancestor_manager = this;
+  while (!ancestor_manager->IsRootTree()) {
+    BrowserAccessibility* host_node =
+        ancestor_manager->GetParentNodeFromParentTree();
+    if (!host_node)
+      return false;  // Host node not ready yet.
+    ancestor_manager = host_node->manager();
+  }
+
+  // Do not fire events if a page is obscured by an interstitial page -- see
+  // crbug.com/730910.
+  // TODO(accessibility) Look into what happens if an interstitial page is only
+  // hiding an iframe.
+  if (root_manager->hidden_by_interstitial_page())
+    return false;
+
+  // Do not fire events when the page is frozen inside the back/forward cache.
+  // Rationale for the back/forward cache behavior:
+  // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
+  return !delegate_ ||  // Can be null in unit tests.
+         !delegate_->AccessibilityRenderFrameHost() ||
+         !delegate_->AccessibilityRenderFrameHost()->IsInBackForwardCache();
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::RetargetForEvents(
@@ -358,17 +398,27 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromID(int32_t id) const {
 BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
     const {
   ui::AXNode* parent = GetParentNodeFromParentTreeAsAXNode();
-  ui::AXTreeID parent_tree_id = GetParentTreeID();
-  BrowserAccessibilityManager* parent_manager =
-      BrowserAccessibilityManager::FromID(parent_tree_id);
-  return parent && parent_manager ? parent_manager->GetFromAXNode(parent)
-                                  : nullptr;
+  if (!parent)
+    return nullptr;
+
+  // TODO(accessibility) Try to remove this redundant lookup. The call to
+  // GetParentNodeFromParentTreeAsAXNode() already retrieved the parent manager.
+  BrowserAccessibilityManager* parent_manager = GetParentManager();
+  DCHECK(parent_manager) << "Impossible to have null parent_manager if we "
+                            "already have a parent AXNode.";
+  BrowserAccessibility* parent_node = parent_manager->GetFromAXNode(parent);
+  DCHECK_EQ(parent_node->manager(), parent_manager);
+  DCHECK_NE(parent_node->manager(), this);
+  return parent_node;
 }
 
 void BrowserAccessibilityManager::ParentConnectionChanged(
     BrowserAccessibility* parent) {
-  if (!parent)
+  if (!parent) {
+    connected_to_parent_tree_node_ = false;
     return;
+  }
+  connected_to_parent_tree_node_ = true;
   parent->OnDataChanged();
   parent->UpdatePlatformAttributes();
   BrowserAccessibilityManager* parent_manager = parent->manager();
@@ -376,6 +426,20 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
       parent, RetargetEventType::RetargetEventTypeGenerated);
   parent_manager->FireGeneratedEvent(
       ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+}
+
+void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
+  BrowserAccessibility* parent = GetParentNodeFromParentTree();
+  if (parent) {
+    if (!connected_to_parent_tree_node_) {
+      ParentConnectionChanged(parent);
+    }
+  } else if (connected_to_parent_tree_node_) {
+    // This manager was previously connected to a parent manager but now became
+    // the new root manager.
+    CHECK(IsRootTree());
+    connected_to_parent_tree_node_ = false;
+  }
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
@@ -474,39 +538,46 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
   }
 
-  // If this page is hidden by an interstitial or frozen inside the
-  // back/forward cache, suppress all the events. If/when the page becomes
-  // visible, the correct set of accessibility events will be generated.
-  //
-  // Rationale for the back/forward cache behavior:
-  // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
-  BrowserAccessibilityManager* root_manager = GetRootManager();
-  bool rfh_in_bfcache = false;
-  // |delegate_| can be nullptr in unittests.
-  if (delegate_) {
-    RenderFrameHostImpl* rfh = delegate_->AccessibilityRenderFrameHost();
-    rfh_in_bfcache = rfh ? rfh->IsInBackForwardCache() : false;
-  }
-  if ((root_manager && root_manager->hidden_by_interstitial_page()) ||
-      rfh_in_bfcache) {
+  EnsureParentConnectionIfNotRootManager();
+
+  if (!CanFireEvents()) {
+    // TODO(accessibility) Change AXEventGenerator() to avoid doing any work
+    // and avoid queuing any events when CanFireEvents() is false.
     event_generator().ClearEvents();
     return true;
   }
 
+  BrowserAccessibilityManager* root_manager = GetRootManager();
+  DCHECK(root_manager) << "Cannot have detached document here, as "
+                          "CanFireEvents() must return false in that case.";
+
+#if defined(AX_FAIL_FAST_BUILD)
+  ui::AXTreeID parent_id = GetParentTreeID();
+  bool has_parent_id = parent_id != ui::AXTreeIDUnknown();
+  BrowserAccessibilityManager* parent_manager =
+      has_parent_id ? BrowserAccessibilityManager::FromID(parent_id) : nullptr;
+  if (IsRootTree()) {
+    CHECK(!has_parent_id) << "The root frame must be parentless, root url = "
+                          << GetTreeData().url << "\nSupposed parent = "
+                          << (parent_manager
+                                  ? parent_manager->GetTreeData().url
+                                  : "[not in map for parent_tree_id]");
+    CHECK(!connected_to_parent_tree_node_)
+        << "Root manager must not be connected to a parent tree node.";
+  } else {
+    CHECK(parent_manager) << "Non-root trees must have a parent manager to "
+                             "reach this code, otherwise CanFireEvents() "
+                             "should have returned false, has_parent_id = "
+                          << has_parent_id
+                          << "\nCurrent url = " << GetTreeData().url;
+    CHECK(connected_to_parent_tree_node_)
+        << "Must be connected to parent tree node, otherwise could not reach "
+           "here, due to CanFireEvents() check above.";
+  }
+#endif
+
   // Allow derived classes to do event pre-processing.
   BeforeAccessibilityEvents();
-
-  // If the root's parent is in another accessibility tree but it wasn't
-  // previously connected, post the proper notifications on the parent.
-  BrowserAccessibility* parent = GetParentNodeFromParentTree();
-  if (parent) {
-    if (!connected_to_parent_tree_node_) {
-      ParentConnectionChanged(parent);
-      connected_to_parent_tree_node_ = true;
-    }
-  } else {
-    connected_to_parent_tree_node_ = false;
-  }
 
   // Fire any events related to changes to the tree that come from ancestors of
   // the currently-focused node. We do this so that screen readers are made
@@ -551,10 +622,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // need the top document's delegate to check if its view has focus.
   //
   // If this manager is disconnected from the top document, then root_manager
-  // will be a null pointer and FireFocusEventsIfNeeded won't be able to
-  // retrieve the global focus (not firing an event anyway).
-  if (root_manager)
-    root_manager->FireFocusEventsIfNeeded();
+  // will be a null pointer and this code will not be reached.
+  root_manager->FireFocusEventsIfNeeded();
 
   // Now fire all of the rest of the generated events we previously deferred.
   for (const auto& targeted_event : deferred_events) {
@@ -585,7 +654,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (!retargeted || !retargeted->CanFireEvents())
       continue;
 
-    if (root_manager && event.event_type == ax::mojom::Event::kHover)
+    if (event.event_type == ax::mojom::Event::kHover)
       root_manager->CacheHitTestResult(event_target);
 
     // TODO(accessibility): No platform is doing anything with kLoadComplete
@@ -1576,7 +1645,8 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
     const ui::AXTreeID tree_id,
     const ui::AXNodeID node_id) const {
   auto* manager = BrowserAccessibilityManager::FromID(tree_id);
-  return manager ? manager->GetNodeFromTree(node_id) : nullptr;
+  CHECK(manager);
+  return manager->GetNodeFromTree(node_id);
 }
 
 ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
@@ -1624,35 +1694,34 @@ ui::AXNode* BrowserAccessibilityManager::GetRootAsAXNode() const {
 
 ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
     const {
-  if (!GetRootAsAXNode())
-    return nullptr;
-
-  ui::AXTreeID parent_tree_id = GetParentTreeID();
-  BrowserAccessibilityManager* parent_manager =
-      BrowserAccessibilityManager::FromID(parent_tree_id);
+  BrowserAccessibilityManager* parent_manager = GetParentManager();
   if (!parent_manager)
     return nullptr;
 
+  DCHECK(GetRootAsAXNode());
+
   std::set<int32_t> host_node_ids =
       parent_manager->ax_tree()->GetNodeIdsForChildTreeId(ax_tree_id_);
-
-#if !defined(NDEBUG)
-  if (host_node_ids.size() > 1)
-    DLOG(WARNING) << "Multiple nodes claim the same child tree id.";
-#endif
-
-  for (int32_t host_node_id : host_node_ids) {
-    ui::AXNode* parent_node =
-        parent_manager->GetNodeFromTree(parent_tree_id, host_node_id);
-    if (parent_node) {
-      DCHECK_EQ(ax_tree_id_,
-                ui::AXTreeID::FromString(parent_node->GetStringAttribute(
-                    ax::mojom::StringAttribute::kChildTreeId)));
-      return parent_node;
-    }
+  if (host_node_ids.empty()) {
+    // Parent tree has host node but the change has not been serialized yet.
+    // For example, this could happen if an <iframe> or <portal> was added to
+    // the parent's DOM.
+    return nullptr;
   }
 
-  return nullptr;
+  CHECK_EQ(host_node_ids.size(), 1U)
+      << "Multiple nodes cannot claim the same child tree ID.";
+
+  ui::AXNode* parent_node =
+      parent_manager->GetNodeFromTree(*(host_node_ids.begin()));
+  DCHECK(parent_node);
+  DCHECK_EQ(ax_tree_id_,
+            ui::AXTreeID::FromString(parent_node->GetStringAttribute(
+                ax::mojom::StringAttribute::kChildTreeId)))
+      << "A node that hosts a child tree should expose its tree ID in its "
+         "`kChildTreeId` attribute.";
+
+  return parent_node;
 }
 
 void BrowserAccessibilityManager::WillBeRemovedFromMap() {
@@ -1664,16 +1733,42 @@ void BrowserAccessibilityManager::WillBeRemovedFromMap() {
 
 BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
     const {
-  BrowserAccessibility* parent = GetParentNodeFromParentTree();
-  if (parent)
-    return parent->manager() ? parent->manager()->GetRootManager() : nullptr;
-
   if (IsRootTree())
     return const_cast<BrowserAccessibilityManager*>(this);
 
-  // The current tree is disconnected from its parent, so we can't retrieve the
-  // root manager yet.
-  return nullptr;
+  BrowserAccessibilityManager* parent_manager = GetParentManager();
+  if (!parent_manager)
+    return nullptr;
+
+  return parent_manager->GetRootManager();
+}
+
+BrowserAccessibilityManager* BrowserAccessibilityManager::GetParentManager()
+    const {
+  ui::AXTreeID parent_tree_id = GetParentTreeID();
+  if (parent_tree_id == ui::AXTreeIDUnknown())
+    return nullptr;  // Not connected yet.
+
+  DCHECK(!IsRootTree());
+
+  // This can still return null if the parent frame has not yet been serialized.
+  // We can't prevent a child frame from serializing before the parent frame
+  // does, because the child frame does not have access to the parent in the
+  // case of remote frames, aka Out-Of-Process Iframes, aka OOPIFs.
+  BrowserAccessibilityManager* parent =
+      BrowserAccessibilityManager::FromID(parent_tree_id);
+#if DCHECK_IS_ON()
+  DCHECK(parent || !connected_to_parent_tree_node_);
+  // delegate_ is null during unit tests.
+  if (parent && delegate_ && delegate_->AccessibilityRenderFrameHost()) {
+    DCHECK(delegate_->AccessibilityRenderFrameHost()
+               ->GetParentOrOuterDocumentOrEmbedder() ==
+           parent->delegate()->AccessibilityRenderFrameHost())
+        << "RenderFrameHost parent should match BrowserAccessibilityManager's "
+           "parent's RenderFrameHost.";
+  }
+#endif
+  return parent;
 }
 
 BrowserAccessibilityDelegate*
@@ -1685,8 +1780,14 @@ BrowserAccessibilityManager::GetDelegateFromRootManager() const {
 }
 
 bool BrowserAccessibilityManager::IsRootTree() const {
-  return delegate_ && delegate_->AccessibilityIsMainFrame() &&
-         GetTreeData().parent_tree_id == ui::AXTreeIDUnknown();
+  // delegate_ can be null in unit tests.
+  if (!delegate_)
+    return GetTreeData().parent_tree_id == ui::AXTreeIDUnknown();
+
+  bool is_root_tree = delegate_ && delegate_->AccessibilityIsMainFrame();
+  DCHECK(!is_root_tree || GetParentTreeID() == ui::AXTreeIDUnknown())
+      << "Root tree has parent tree id of: " << GetParentTreeID();
+  return is_root_tree;
 }
 
 // static
@@ -1706,6 +1807,13 @@ void BrowserAccessibilityManager::SetLastFocusedNode(
 BrowserAccessibility* BrowserAccessibilityManager::GetLastFocusedNode() {
   if (last_focused_node_id_) {
     DCHECK(last_focused_node_tree_id_);
+    // TODO(yuzus) This should not fail in
+    // All/BackForwardCacheBrowserTestWithFlagForScreenReader.
+    //   DoNotEvictOnAccessibilityEvents/1.
+    // We should fix and replace the early return with the DCHECK().
+    // DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
+    if (last_focused_node_tree_id_ == ui::AXTreeIDUnknown())
+      return nullptr;
     if (BrowserAccessibilityManager* last_focused_manager =
             FromID(last_focused_node_tree_id_.value()))
       return last_focused_manager->GetFromID(last_focused_node_id_.value());
