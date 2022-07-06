@@ -231,8 +231,9 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
+// Disabled because of flakiness: crbug.com/1342138.
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
-                       ParameterizedAttributesIntWrongParameters) {
+                       DISABLED_ParameterizedAttributesIntWrongParameters) {
   TestWrongParameters(R"~~(<p contentEditable="true">Text</p>)~~",
                       {"1, 2", "NaN"}, ":2;AXLineForIndex(Argument)=*",
                       R"~~(AXWebArea
@@ -265,8 +266,10 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
-                       ParameterizedAttributesIntArrayWrongParameters) {
+// Disabled because of flakiness: crbug.com/1342138.
+IN_PROC_BROWSER_TEST_F(
+    AXTreeFormatterMacBrowserTest,
+    DISABLED_ParameterizedAttributesIntArrayWrongParameters) {
   TestWrongParameters(
       R"~~(<table role="grid"><tr><td>CELL</td></tr></table>)~~",
       {"0, 0", "{1, 2}", "[1, NaN]", "[NaN, 1]"},
@@ -302,8 +305,9 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
+// Disabled because of flakiness: crbug.com/1342138.
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
-                       ParameterizedAttributesNSRangeWrongParameters) {
+                       DISABLED_ParameterizedAttributesNSRangeWrongParameters) {
   TestWrongParameters(R"~~(<p contentEditable="true">Text</p>)~~",
                       {"1, 2", "[]", "{loc: 1, leno: 2}", "{loco: 1, len: 2}",
                        "{loc: NaN, len: 2}", "{loc: 2, len: NaN}"},
@@ -322,8 +326,10 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
-                       ParameterizedAttributesUIElementWrongParameters) {
+// Disabled because of flakiness: crbug.com/1342138.
+IN_PROC_BROWSER_TEST_F(
+    AXTreeFormatterMacBrowserTest,
+    DISABLED_ParameterizedAttributesUIElementWrongParameters) {
   TestWrongParameters(R"~~(<p contentEditable="true">Text</p>)~~",
                       {"1, 2", "2", ":4"},
                       ":2;AXIndexForChildUIElement(Argument)=*",
@@ -342,8 +348,10 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
-                       ParameterizedAttributesTextMarkerWrongParameters) {
+// Disabled because of flakiness: crbug.com/1342138.
+IN_PROC_BROWSER_TEST_F(
+    AXTreeFormatterMacBrowserTest,
+    DISABLED_ParameterizedAttributesTextMarkerWrongParameters) {
   TestWrongParameters(
       R"~~(<p>Text</p>)~~",
       {"1, 2", "2", "{2, 1, down}", "{:2, NaN, down}", "{:2, 1, hoho}"},
