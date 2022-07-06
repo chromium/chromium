@@ -24,6 +24,15 @@
 // BatteryLevelProvider::Create().
 class BatteryLevelProvider {
  public:
+  // The three possible units of data returned by OS battery query functions,
+  // kMWh and kMAh are self-explanatory and the desired state of things, while
+  // kRelative occurs when Windows returns imprecise battery counters.
+  enum class BatteryLevelUnit {
+    kMWh,
+    kMAh,
+    kRelative,
+  };
+
   // Represents an aggregated state of all the batteries on the system at a
   // certain point in time.
   struct BatteryState {
@@ -39,6 +48,10 @@ class BatteryLevelProvider {
 
     // Fully charged battery capacity. nullopt if `battery_count` != 1.
     absl::optional<uint64_t> full_charged_capacity;
+
+    // The unit of the battery's charge. (MAh on Mac and MWh or Relative on
+    // Windows). nullopt if `battery_count` != 1.
+    absl::optional<BatteryLevelUnit> charge_unit;
 
     // The time at which the battery state capture took place.
     base::TimeTicks capture_time;
@@ -72,6 +85,9 @@ class BatteryLevelProvider {
 
     // The battery's fully charged capacity.
     uint64_t full_charged_capacity;
+
+    // The battery's unit of charge.
+    BatteryLevelUnit charge_unit;
   };
 
   // Constructs a `BatteryState` from a list of `BatteryDetails`. The list can

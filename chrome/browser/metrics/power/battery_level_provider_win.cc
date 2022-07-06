@@ -229,7 +229,11 @@ BatteryLevelProviderWin::GetBatteryStateImpl() {
         {.is_external_power_connected =
              !!(battery_status->PowerState & BATTERY_POWER_ON_LINE),
          .current_capacity = battery_status->Capacity,
-         .full_charged_capacity = battery_information->FullChargedCapacity}));
+         .full_charged_capacity = battery_information->FullChargedCapacity,
+         .charge_unit =
+             ((battery_information->Capabilities & BATTERY_CAPACITY_RELATIVE)
+                  ? BatteryLevelUnit::kRelative
+                  : BatteryLevelUnit::kMWh)}));
   }
 
   return MakeBatteryState(battery_details_list);

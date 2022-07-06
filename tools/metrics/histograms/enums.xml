@@ -10691,6 +10691,9 @@ Called by update_bad_message_reasons.py.-->
              charged"/>
   <int value="8" label="More than 1 battery"/>
   <int value="9" label="The battery's fully charged capacity is 0."/>
+  <int value="10"
+      label="The battery capacity is reported with insufficient resolution by
+             the OS."/>
 </enum>
 
 <enum name="BatteryInfoSampleResult">

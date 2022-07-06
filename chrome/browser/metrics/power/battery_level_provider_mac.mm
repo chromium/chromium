@@ -128,5 +128,6 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   return MakeBatteryState({BatteryDetails{
       .is_external_power_connected = external_connected.value(),
       .current_capacity = static_cast<uint64_t>(current_capacity.value()),
-      .full_charged_capacity = static_cast<uint64_t>(max_capacity.value())}});
+      .full_charged_capacity = static_cast<uint64_t>(max_capacity.value()),
+      .charge_unit = BatteryLevelUnit::kMAh}});
 }

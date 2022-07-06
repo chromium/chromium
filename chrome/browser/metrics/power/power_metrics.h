@@ -36,7 +36,8 @@ enum class BatteryDischargeMode {
   kMacFullyCharged = 7,
   kMultipleBatteries = 8,
   kFullChargedCapacityIsZero = 9,
-  kMaxValue = kFullChargedCapacityIsZero
+  kInsufficientResolution = 10,
+  kMaxValue = kInsufficientResolution,
 };
 
 struct BatteryDischarge {

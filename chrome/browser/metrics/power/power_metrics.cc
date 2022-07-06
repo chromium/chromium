@@ -87,6 +87,12 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   if (new_battery_state->battery_count > 1) {
     return {BatteryDischargeMode::kMultipleBatteries, absl::nullopt};
   }
+  if ((previous_battery_state->charge_unit ==
+       BatteryLevelProvider::BatteryLevelUnit::kRelative) ||
+      (new_battery_state->charge_unit ==
+       BatteryLevelProvider::BatteryLevelUnit::kRelative)) {
+    return {BatteryDischargeMode::kInsufficientResolution, absl::nullopt};
+  }
 
   // TODO(crbug.com/1191045): Change CHECK to DCHECK in October 2022 after
   // verifying that there are no crash reports.

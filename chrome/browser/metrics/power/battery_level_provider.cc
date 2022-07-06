@@ -26,6 +26,10 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
       battery_details.size() == 1
           ? absl::make_optional(battery_details.front().full_charged_capacity)
           : absl::nullopt;
+  state.charge_unit =
+      battery_details.size() == 1
+          ? absl::make_optional(battery_details.front().charge_unit)
+          : absl::nullopt;
   state.capture_time = base::TimeTicks::Now();
 
   return state;
