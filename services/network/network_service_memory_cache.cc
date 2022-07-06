@@ -17,6 +17,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service_memory_cache_url_loader.h"
 #include "services/network/network_service_memory_cache_writer.h"
+#include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/url_loader.h"
@@ -172,7 +173,8 @@ void NetworkServiceMemoryCache::StoreResponse(
 
 absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     const ResourceRequest& resource_request,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkIsolationKey& network_isolation_key,
+    const CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
   // TODO(https://crbug.com/1339708): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
@@ -192,8 +194,6 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     return absl::nullopt;
   }
 
-  // TODO(https://crbug.com/1339708): Perform CORP checks.
-
   std::string cache_key = GenerateCacheKeyForResourceRequest(
       resource_request, network_isolation_key);
 
@@ -202,6 +202,16 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     return absl::nullopt;
 
   const mojom::URLResponseHeadPtr& response = it->second->response_head;
+
+  absl::optional<mojom::BlockedByResponseReason> blocked_reason =
+      CrossOriginResourcePolicy::IsBlocked(
+          /*request_url=*/url, /*original_url=*/url,
+          resource_request.request_initiator, *response, resource_request.mode,
+          resource_request.destination, cross_origin_embedder_policy,
+          /*reporter=*/nullptr);
+  if (blocked_reason.has_value())
+    return absl::nullopt;
+
   net::ValidationType validation_type = response->headers->RequiresValidation(
       response->request_time, response->response_time, GetCurrentTime());
   if (validation_type != net::VALIDATION_NONE) {

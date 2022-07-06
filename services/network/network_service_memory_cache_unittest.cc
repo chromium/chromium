@@ -24,6 +24,7 @@
 #include "services/network/network_service.h"
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -196,13 +197,23 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     net::SchemefulSite site(request.url);
     net::NetworkIsolationKey network_isolation_key(/*top_frame_site=*/site,
                                                    /*frame_site=*/site);
-    return memory_cache().CanServe(request, network_isolation_key).has_value();
+    return CanServeFromMemoryCache(request, network_isolation_key);
   }
 
   bool CanServeFromMemoryCache(
       const ResourceRequest& request,
       net::NetworkIsolationKey& network_isolation_key) {
-    return memory_cache().CanServe(request, network_isolation_key).has_value();
+    return CanServeFromMemoryCache(request, network_isolation_key,
+                                   CrossOriginEmbedderPolicy());
+  }
+
+  bool CanServeFromMemoryCache(
+      const ResourceRequest& request,
+      net::NetworkIsolationKey& network_isolation_key,
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
+    return memory_cache()
+        .CanServe(request, network_isolation_key, cross_origin_embedder_policy)
+        .has_value();
   }
 
  private:
@@ -408,6 +419,26 @@ TEST_F(NetworkServiceMemoryCacheTest,
       CanServeFromMemoryCache(request, other_site_network_isolation_key));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_CorpBlocked) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator =
+      url::Origin::Create(GURL("https://other-origin.test/"));
+
+  net::SchemefulSite site(request.url);
+  net::NetworkIsolationKey network_isolation_key(/*top_frame_site=*/site,
+                                                 /*frame_site=*/site);
+
+  CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  cross_origin_embedder_policy.value =
+      mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request, network_isolation_key,
+                                       cross_origin_embedder_policy));
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
   ResourceRequest request = CreateRequest("/cacheable");
 
@@ -417,8 +448,8 @@ TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
   net::NetworkIsolationKey network_isolation_key(/*top_frame_site=*/site,
                                                  /*frame_site=*/site);
 
-  absl::optional<std::string> cache_key =
-      memory_cache().CanServe(request, network_isolation_key);
+  absl::optional<std::string> cache_key = memory_cache().CanServe(
+      request, network_isolation_key, CrossOriginEmbedderPolicy());
   ASSERT_TRUE(cache_key.has_value());
   mojom::URLResponseHeadPtr response =
       memory_cache().GetResponseHeadForTesting(*cache_key);

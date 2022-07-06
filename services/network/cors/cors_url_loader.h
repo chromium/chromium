@@ -15,6 +15,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -67,7 +68,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
-      NetworkServiceMemoryCache* memory_cache);
+      NetworkServiceMemoryCache* memory_cache,
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -273,6 +275,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Outlives `this`, or nullptr when the in-memory cache is disabled.
   const raw_ptr<NetworkServiceMemoryCache> memory_cache_;
+
+  const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
   bool has_authorization_covered_by_wildcard_ = false;
 

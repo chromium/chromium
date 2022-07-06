@@ -31,6 +31,7 @@ namespace network {
 
 class NetworkServiceMemoryCacheURLLoader;
 class NetworkServiceMemoryCacheWriter;
+struct CrossOriginEmbedderPolicy;
 struct ResourceRequest;
 
 // An in-memory HTTP cache. NetworkContext owns the in-memory cache.
@@ -69,7 +70,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // used synchronously.
   absl::optional<std::string> CanServe(
       const ResourceRequest& resource_request,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkIsolationKey& network_isolation_key,
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
 
   // Creates and starts a custom URLLoader that serves a response from the
   // in-memory cache, instead of creating a network::URLLoader. Must be called

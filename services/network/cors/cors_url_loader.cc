@@ -258,7 +258,8 @@ CorsURLLoader::CorsURLLoader(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     const mojom::ClientSecurityState* factory_client_security_state,
-    NetworkServiceMemoryCache* memory_cache)
+    NetworkServiceMemoryCache* memory_cache,
+    const CrossOriginEmbedderPolicy& cross_origin_embedder_policy)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -279,6 +280,7 @@ CorsURLLoader::CorsURLLoader(
       isolation_info_(isolation_info),
       factory_client_security_state_(factory_client_security_state),
       memory_cache_(memory_cache),
+      cross_origin_embedder_policy_(cross_origin_embedder_policy),
       devtools_observer_(std::move(devtools_observer)),
       // CORS preflight related events are logged in a series of URL_REQUEST
       // logs.
@@ -845,8 +847,9 @@ void CorsURLLoader::StartNetworkRequest() {
   // Check whether a fresh entry exists in the in-memory cache.
   absl::optional<std::string> cache_key;
   if (memory_cache_) {
-    cache_key = memory_cache_->CanServe(
-        request_, isolation_info_.network_isolation_key());
+    cache_key = memory_cache_->CanServe(request_,
+                                        isolation_info_.network_isolation_key(),
+                                        cross_origin_embedder_policy_);
   }
 
   if (cache_key.has_value()) {
