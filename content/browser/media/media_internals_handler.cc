@@ -27,14 +27,14 @@ void MediaInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   proxy_->Attach(this);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getEverything",
       base::BindRepeating(&MediaInternalsMessageHandler::OnGetEverything,
                           base::Unretained(this)));
 }
 
 void MediaInternalsMessageHandler::OnGetEverything(
-    const base::ListValue* list) {
+    const base::Value::List& list) {
   page_load_complete_ = true;
   proxy_->GetEverything();
 }
