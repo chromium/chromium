@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -206,6 +207,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // For the actual request.
   mojo::Remote<mojom::URLLoader> network_loader_;
+  base::TimeTicks network_loader_start_time_;
   // `sync_client_receiver_factory_` should be invalidated if this is ever
   // reset.
   mojo::Receiver<mojom::URLLoaderClient> network_client_receiver_{this};
@@ -275,6 +277,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Outlives `this`, or nullptr when the in-memory cache is disabled.
   const raw_ptr<NetworkServiceMemoryCache> memory_cache_;
+  // True when `network_loader_` is bound to a URLLoader that serves response
+  // from `memory_cache_`.
+  bool memory_cache_was_used_ = false;
 
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 

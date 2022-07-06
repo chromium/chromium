@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -234,7 +235,15 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
   return absl::nullopt;
 }
 
+void RecordNetworkLoaderCompletionTime(const char* suffix,
+                                       base::TimeDelta elapsed) {
+  base::UmaHistogramTimes(
+      base::StrCat({"NetworkService.NetworkLoaderCompletionTime.", suffix}),
+      elapsed);
+}
+
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
+
 }  // namespace
 
 CorsURLLoader::CorsURLLoader(
@@ -844,6 +853,8 @@ void CorsURLLoader::StartNetworkRequest() {
   // |network_client_receiver_| shares this object's lifetime.
   network_loader_.reset();
 
+  network_loader_start_time_ = base::TimeTicks::Now();
+
   // Check whether a fresh entry exists in the in-memory cache.
   absl::optional<std::string> cache_key;
   if (memory_cache_) {
@@ -857,6 +868,7 @@ void CorsURLLoader::StartNetworkRequest() {
         network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
         *cache_key, request_,
         network_client_receiver_.BindNewPipeAndPassRemote());
+    memory_cache_was_used_ = true;
   } else if (sync_network_loader_factory_ &&
              base::FeatureList::IsEnabled(features::kURLLoaderSyncClient)) {
     sync_network_loader_factory_->CreateLoaderAndStartWithSyncClient(
@@ -880,6 +892,19 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
     HistogramTrustTokenOperationNetError(request_.trust_token_params->type,
                                          status.trust_token_operation_status,
                                          status.error_code);
+  }
+
+  if (status.error_code == net::OK) {
+    DCHECK_GT(status.completion_time, network_loader_start_time_);
+    base::TimeDelta elapsed =
+        status.completion_time - network_loader_start_time_;
+    if (memory_cache_was_used_) {
+      RecordNetworkLoaderCompletionTime("MemoryCache", elapsed);
+    } else if (status.exists_in_cache) {
+      RecordNetworkLoaderCompletionTime("DiskCache", elapsed);
+    } else {
+      RecordNetworkLoaderCompletionTime("Network", elapsed);
+    }
   }
 
   if (devtools_observer_ && status.cors_error_status) {
