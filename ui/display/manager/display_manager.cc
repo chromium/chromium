@@ -989,6 +989,9 @@ void DisplayManager::UpdateDisplaysWith(
         metrics |= DisplayObserver::DISPLAY_METRIC_INTERLACED;
       }
 
+      if (current_display.label() != new_display.label())
+        metrics |= DisplayObserver::DISPLAY_METRIC_LABEL;
+
       if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
         display_changes.insert(
             std::pair<size_t, uint32_t>(new_displays.size(), metrics));
@@ -2085,6 +2088,9 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.set_touch_support(display_info.touch_support());
   new_display.set_maximum_cursor_size(display_info.maximum_cursor_size());
   new_display.set_color_spaces(display_info.display_color_spaces());
+  new_display.set_display_frequency(display_info.refresh_rate());
+  new_display.set_label(display_info.name());
+
   constexpr uint32_t kNormalBitDepthNumBitsPerChannel = 8u;
   if (display_info.bits_per_channel() > kNormalBitDepthNumBitsPerChannel) {
     new_display.set_depth_per_component(display_info.bits_per_channel());
@@ -2092,8 +2098,6 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
     new_display.set_color_depth(display_info.bits_per_channel() *
                                 kRGBNumChannels);
   }
-  new_display.set_display_frequency(display_info.refresh_rate());
-
   if (internal_display_has_accelerometer_ && IsInternalDisplayId(id)) {
     new_display.set_accelerometer_support(
         Display::AccelerometerSupport::AVAILABLE);
@@ -2119,6 +2123,7 @@ Display DisplayManager::CreateMirroringDisplayFromDisplayInfoById(
   new_display.set_maximum_cursor_size(display_info.maximum_cursor_size());
   new_display.set_rotation(display_info.GetActiveRotation());
   new_display.set_panel_rotation(display_info.GetLogicalActiveRotation());
+  new_display.set_label(display_info.name());
   return new_display;
 }
 

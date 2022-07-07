@@ -65,6 +65,7 @@ class DisplayObserverImpl : public DisplayObserver {
                   "scale_factor", &parts);
     AddPartChange(changed_metrics, DISPLAY_METRIC_ROTATION, "rotation", &parts);
     AddPartChange(changed_metrics, DISPLAY_METRIC_PRIMARY, "primary", &parts);
+    AddPartChange(changed_metrics, DISPLAY_METRIC_LABEL, "label", &parts);
 
     AddChange("Changed id=" + base::NumberToString(display.id()) + parts);
   }
@@ -86,6 +87,15 @@ TEST(DisplayListTest, AddUpdateRemove) {
     updated_display.set_bounds(gfx::Rect(0, 0, 803, 802));
     display_list.UpdateDisplay(updated_display, DisplayList::Type::PRIMARY);
     EXPECT_EQ("Changed id=2 bounds", observer.GetAndClearChanges());
+  }
+
+  // Update the label.
+  {
+    Display updated_display = *(display_list.displays().begin());
+    updated_display.set_label("new_label");
+    display_list.UpdateDisplay(updated_display, DisplayList::Type::PRIMARY);
+    EXPECT_EQ("Changed id=2 label", observer.GetAndClearChanges());
+    EXPECT_EQ("new_label", display_list.FindDisplayById(2)->label());
   }
 
   // Add another.

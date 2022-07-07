@@ -71,6 +71,7 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   // Overridable for testing.
   virtual void XdgOutputSendLogicalPosition(const gfx::Point& position);
   virtual void XdgOutputSendLogicalSize(const gfx::Size& size);
+  virtual void XdgOutputSendDescription(const std::string& desc);
 
  private:
   // Overridden from WaylandDisplayObserver:

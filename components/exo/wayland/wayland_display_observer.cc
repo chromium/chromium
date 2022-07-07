@@ -151,6 +151,10 @@ void WaylandDisplayHandler::XdgOutputSendLogicalSize(const gfx::Size& size) {
                                    size.height());
 }
 
+void WaylandDisplayHandler::XdgOutputSendDescription(const std::string& desc) {
+  zxdg_output_v1_send_description(xdg_output_resource_, desc.c_str());
+}
+
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                                                uint32_t changed_metrics) {
   if (!output_resource_)
@@ -219,6 +223,7 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   if (xdg_output_resource_) {
     XdgOutputSendLogicalPosition(origin);
     XdgOutputSendLogicalSize(display.bounds().size());
+    XdgOutputSendDescription(display.label());
   } else {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {

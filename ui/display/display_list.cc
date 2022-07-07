@@ -92,6 +92,10 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
     local_display->set_color_depth(display.color_depth());
     changed_values |= DisplayObserver::DISPLAY_METRIC_COLOR_SPACE;
   }
+  if (local_display->label() != display.label()) {
+    local_display->set_label(display.label());
+    changed_values |= DisplayObserver::DISPLAY_METRIC_LABEL;
+  }
   if (local_display->GetSizeInPixel() != display.GetSizeInPixel()) {
     local_display->set_size_in_pixels(display.GetSizeInPixel());
   }
