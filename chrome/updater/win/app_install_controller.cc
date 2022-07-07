@@ -574,23 +574,11 @@ void AppInstallControllerImpl::DoInstallApp() {
                      tag_args && tag_args->usage_stats_enable &&
                          *tag_args->usage_stats_enable),
       base::BindOnce(
-          &UpdateService::RegisterApp, update_service_, request,
-          base::BindOnce(
-              [](scoped_refptr<AppInstallControllerImpl> self,
-                 const RegistrationResponse& response) {
-                DCHECK(response.status_code == kRegistrationSuccess ||
-                       response.status_code == kRegistrationAlreadyRegistered);
-                self->update_service_->Update(
-                    self->app_id_,
-                    GetInstallDataIndexFromAppArgs(self->app_id_),
-                    UpdateService::Priority::kForeground,
-                    UpdateService::PolicySameVersionUpdate::kAllowed,
-                    base::BindRepeating(&AppInstallControllerImpl::StateChange,
-                                        self),
-                    base::BindOnce(&AppInstallControllerImpl::InstallComplete,
-                                   self));
-              },
-              base::WrapRefCounted(this))));
+          &UpdateService::Install, update_service_, request,
+          GetInstallDataIndexFromAppArgs(app_id_),
+          UpdateService::Priority::kForeground,
+          base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
+          base::BindOnce(&AppInstallControllerImpl::InstallComplete, this)));
 }
 
 void AppInstallControllerImpl::InstallAppOffline(

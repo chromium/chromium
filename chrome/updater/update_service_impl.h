@@ -80,17 +80,15 @@ class UpdateServiceImpl : public UpdateService {
   // Pops `tasks_`, and calls TaskStart.
   void TaskDone();
 
-  bool IsUpdateDisabledByPolicy(
-      const std::string& app_id,
-      Priority priority,
-      PolicySameVersionUpdate policy_same_version_update,
-      int& policy);
-  void HandleUpdateDisabledByPolicy(
-      const std::string& app_id,
-      int policy,
-      PolicySameVersionUpdate policy_same_version_update,
-      StateChangeCallback state_update,
-      Callback callback);
+  bool IsUpdateDisabledByPolicy(const std::string& app_id,
+                                Priority priority,
+                                bool is_install,
+                                int& policy);
+  void HandleUpdateDisabledByPolicy(const std::string& app_id,
+                                    int policy,
+                                    bool is_install,
+                                    StateChangeCallback state_update,
+                                    Callback callback);
 
   void OnShouldBlockUpdateForMeteredNetwork(
       StateChangeCallback state_update,
