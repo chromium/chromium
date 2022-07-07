@@ -2116,12 +2116,12 @@ ExtensionPrefs::GetDNREnabledStaticRulesets(
 void ExtensionPrefs::SetDNREnabledStaticRulesets(
     const ExtensionId& extension_id,
     const std::set<declarative_net_request::RulesetID>& ids) {
-  std::vector<base::Value> ids_list;
+  base::Value::List ids_list;
   for (const auto& id : ids)
-    ids_list.push_back(base::Value(id.value()));
+    ids_list.Append(id.value());
 
   UpdateExtensionPref(extension_id, kDNREnabledStaticRulesetIDs,
-                      std::make_unique<base::Value>(ids_list));
+                      std::make_unique<base::Value>(std::move(ids_list)));
 }
 
 bool ExtensionPrefs::GetDNRUseActionCountAsBadgeText(

@@ -288,12 +288,12 @@ FileManagerPrivateSetPreferencesFunction::Run() {
         *params->change_info.arc_removable_media_access_enabled);
   }
   if (params->change_info.folder_shortcuts) {
-    std::vector<base::Value> folder_shortcuts;
+    base::Value::List folder_shortcuts;
     for (auto& shortcut : *params->change_info.folder_shortcuts) {
-      folder_shortcuts.push_back(base::Value(shortcut));
+      folder_shortcuts.Append(shortcut);
     }
-    service->Set(ash::prefs::kFilesAppFolderShortcuts,
-                 base::Value(std::move(folder_shortcuts)));
+    service->SetList(ash::prefs::kFilesAppFolderShortcuts,
+                     std::move(folder_shortcuts));
   }
 
   return RespondNow(NoArguments());

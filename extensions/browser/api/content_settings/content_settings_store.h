@@ -15,14 +15,11 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "extensions/browser/extension_prefs_scope.h"
-
-namespace base {
-class Value;
-}
 
 namespace content_settings {
 class OriginIdentifierValueMap;
@@ -91,14 +88,13 @@ class ContentSettingsStore
 
   // Serializes all content settings set by the extension with ID |extension_id|
   // and returns them as a list of Values.
-  std::vector<base::Value> GetSettingsForExtension(
-      const std::string& extension_id,
-      ExtensionPrefsScope scope) const;
+  base::Value::List GetSettingsForExtension(const std::string& extension_id,
+                                            ExtensionPrefsScope scope) const;
 
   // Deserializes content settings rules from |list| and applies them as set by
   // the extension with ID |extension_id|.
   void SetExtensionContentSettingFromList(const std::string& extension_id,
-                                          base::Value::ConstListView list,
+                                          const base::Value::List& list,
                                           ExtensionPrefsScope scope);
 
   // //////////////////////////////////////////////////////////////////////////

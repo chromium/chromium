@@ -89,17 +89,12 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
         ->set_test_mode(true);
   }
 
-  bool RunAutotestPrivateExtensionTest(const std::string& test_suite) {
-    return RunAutotestPrivateExtensionTest(
-        test_suite,
-        /*suite_args=*/std::vector<base::Value>());
-  }
-
-  bool RunAutotestPrivateExtensionTest(const std::string& test_suite,
-                                       std::vector<base::Value> suite_args) {
-    base::DictionaryValue custom_args;
-    custom_args.SetKey("testSuite", base::Value(test_suite));
-    custom_args.SetKey("args", base::Value(suite_args));
+  bool RunAutotestPrivateExtensionTest(
+      const std::string& test_suite,
+      base::Value::List suite_args = base::Value::List()) {
+    base::Value::Dict custom_args;
+    custom_args.Set("testSuite", test_suite);
+    custom_args.Set("args", std::move(suite_args));
 
     std::string json;
     if (!base::JSONWriter::Write(custom_args, &json)) {
@@ -219,10 +214,10 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
 
   const bool mark_time_of_first_add = GetParam();
 
-  base::DictionaryValue options;
-  options.SetBoolKey("markTimeOfFirstAdd", mark_time_of_first_add);
-  std::vector<base::Value> suite_args;
-  suite_args.emplace_back(std::move(options));
+  base::Value::Dict options;
+  options.Set("markTimeOfFirstAdd", mark_time_of_first_add);
+  base::Value::List suite_args;
+  suite_args.Append(std::move(options));
 
   ASSERT_TRUE(
       RunAutotestPrivateExtensionTest("holdingSpace", std::move(suite_args)))

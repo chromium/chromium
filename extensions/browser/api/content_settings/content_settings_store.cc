@@ -266,7 +266,7 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     NotifyOfContentSettingChanged(ext_id, scope != kExtensionPrefsScopeRegular);
 }
 
-std::vector<base::Value> ContentSettingsStore::GetSettingsForExtension(
+base::Value::List ContentSettingsStore::GetSettingsForExtension(
     const std::string& extension_id,
     ExtensionPrefsScope scope) const {
   base::AutoLock lock(lock_);
@@ -274,7 +274,7 @@ std::vector<base::Value> ContentSettingsStore::GetSettingsForExtension(
   if (!map)
     return {};
 
-  std::vector<base::Value> settings;
+  base::Value::List settings;
   for (const auto& it : *map) {
     const auto& key = it.first;
     std::unique_ptr<RuleIterator> rule_iterator(
@@ -285,12 +285,10 @@ std::vector<base::Value> ContentSettingsStore::GetSettingsForExtension(
 
     while (rule_iterator->HasNext()) {
       const Rule& rule = rule_iterator->Next();
-      base::Value setting_dict(base::Value::Type::DICTIONARY);
-      setting_dict.SetStringKey(kPrimaryPatternKey,
-                                rule.primary_pattern.ToString());
-      setting_dict.SetStringKey(kSecondaryPatternKey,
-                                rule.secondary_pattern.ToString());
-      setting_dict.SetStringKey(
+      base::Value::Dict setting_dict;
+      setting_dict.Set(kPrimaryPatternKey, rule.primary_pattern.ToString());
+      setting_dict.Set(kSecondaryPatternKey, rule.secondary_pattern.ToString());
+      setting_dict.Set(
           kContentSettingsTypeKey,
           content_settings_helpers::ContentSettingsTypeToString(key));
       ContentSetting content_setting =
@@ -301,29 +299,30 @@ std::vector<base::Value> ContentSettingsStore::GetSettingsForExtension(
           content_settings::ContentSettingToString(content_setting);
       DCHECK(!setting_string.empty());
 
-      setting_dict.SetStringKey(kContentSettingKey, setting_string);
-      settings.push_back(std::move(setting_dict));
+      setting_dict.Set(kContentSettingKey, setting_string);
+      settings.Append(std::move(setting_dict));
     }
   }
   return settings;
 }
 
-#define LOG_INVALID_EXTENSION_PREFERENCE_DETAILS         \
-  LOG(ERROR) << "Found invalid extension pref: " << dict \
+#define LOG_INVALID_EXTENSION_PREFERENCE_DETAILS          \
+  LOG(ERROR) << "Found invalid extension pref: " << value \
              << " extension id: " << extension_id
 
 void ContentSettingsStore::SetExtensionContentSettingFromList(
     const std::string& extension_id,
-    base::Value::ConstListView list,
+    const base::Value::List& list,
     ExtensionPrefsScope scope) {
-  for (const base::Value& dict : list) {
-    if (!dict.is_dict()) {
+  for (const base::Value& value : list) {
+    if (!value.is_dict()) {
       LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;
     }
 
+    const base::Value::Dict& dict = value.GetDict();
     const std::string* primary_pattern_str =
-        dict.FindStringKey(kPrimaryPatternKey);
+        dict.FindString(kPrimaryPatternKey);
     if (!primary_pattern_str) {
       LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;
@@ -336,7 +335,7 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
     }
 
     const std::string* secondary_pattern_str =
-        dict.FindStringKey(kSecondaryPatternKey);
+        dict.FindString(kSecondaryPatternKey);
     if (!secondary_pattern_str) {
       LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;
@@ -348,8 +347,7 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
       continue;
     }
 
-    auto* content_settings_type_str =
-        dict.FindStringKey(kContentSettingsTypeKey);
+    auto* content_settings_type_str = dict.FindString(kContentSettingsTypeKey);
     if (!content_settings_type_str) {
       LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;
@@ -392,7 +390,7 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
 
     ContentSetting setting;
     const std::string* content_setting_str =
-        dict.FindStringKey(kContentSettingKey);
+        dict.FindString(kContentSettingKey);
     if (!content_setting_str) {
       LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;

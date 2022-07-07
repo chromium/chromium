@@ -46,14 +46,13 @@ void ContentSettingsService::OnExtensionPrefsLoaded(
   if (prefs->ReadPrefAsList(
           extension_id, pref_names::kPrefContentSettings, &content_settings)) {
     content_settings_store_->SetExtensionContentSettingFromList(
-        extension_id, content_settings->GetListDeprecated(),
-        kExtensionPrefsScopeRegular);
+        extension_id, content_settings->GetList(), kExtensionPrefsScopeRegular);
   }
   if (prefs->ReadPrefAsList(extension_id,
                             pref_names::kPrefIncognitoContentSettings,
                             &content_settings)) {
     content_settings_store_->SetExtensionContentSettingFromList(
-        extension_id, content_settings->GetListDeprecated(),
+        extension_id, content_settings->GetList(),
         kExtensionPrefsScopeIncognitoPersistent);
   }
 }

@@ -92,52 +92,52 @@ std::vector<uint8_t> ToByteVector(const std::string& in) {
 }
 
 base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("id", relying_party.id);
+  base::Value::Dict value;
+  value.Set("id", relying_party.id);
   // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
   // mojo struct.
-  value.SetKey("name", base::Value(relying_party.name.value_or("")));
-  return value;
+  value.Set("name", relying_party.name.value_or(""));
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(const device::PublicKeyCredentialUserEntity& user) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("id", Base64UrlEncode(user.id));
+  base::Value::Dict value;
+  value.Set("id", Base64UrlEncode(user.id));
   // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
   // mojo struct.
-  value.SetKey("name", base::Value(user.name.value_or("")));
+  value.Set("name", user.name.value_or(""));
   if (user.display_name) {
-    value.SetKey("displayName", base::Value(*user.display_name));
+    value.Set("displayName", *user.display_name);
   }
-  return value;
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(
     const device::PublicKeyCredentialParams::CredentialInfo& params) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   switch (params.type) {
     case device::CredentialType::kPublicKey:
-      value.SetKey("type", base::Value(device::kPublicKey));
+      value.Set("type", device::kPublicKey);
   }
-  value.SetIntKey("alg", params.algorithm);
-  return value;
+  value.Set("alg", params.algorithm);
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(const device::PublicKeyCredentialDescriptor& descriptor) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   switch (descriptor.credential_type) {
     case device::CredentialType::kPublicKey:
-      value.SetKey("type", base::Value(device::kPublicKey));
+      value.Set("type", device::kPublicKey);
   }
-  value.SetStringKey("id", Base64UrlEncode(descriptor.id));
-  std::vector<base::Value> transports;
+  value.Set("id", Base64UrlEncode(descriptor.id));
+  base::Value::List transports;
   for (const device::FidoTransportProtocol& transport : descriptor.transports) {
-    transports.emplace_back(base::Value(ToString(transport)));
+    transports.Append(ToString(transport));
   }
   if (!transports.empty()) {
-    value.SetKey("transports", base::Value(std::move(transports)));
+    value.Set("transports", std::move(transports));
   }
-  return value;
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(
@@ -180,17 +180,17 @@ base::Value ToValue(
 
 base::Value ToValue(
     const device::AuthenticatorSelectionCriteria& authenticator_selection) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   absl::optional<std::string> attachment;
   if (authenticator_selection.authenticator_attachment !=
       device::AuthenticatorAttachment::kAny) {
-    value.SetKey("authenticatorAttachment",
-                 ToValue(authenticator_selection.authenticator_attachment));
+    value.Set("authenticatorAttachment",
+              ToValue(authenticator_selection.authenticator_attachment));
   }
-  value.SetKey("residentKey", ToValue(authenticator_selection.resident_key));
-  value.SetKey("userVerification",
-               ToValue(authenticator_selection.user_verification_requirement));
-  return value;
+  value.Set("residentKey", ToValue(authenticator_selection.resident_key));
+  value.Set("userVerification",
+            ToValue(authenticator_selection.user_verification_requirement));
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(const device::AttestationConveyancePreference&
@@ -211,12 +211,11 @@ base::Value ToValue(const device::AttestationConveyancePreference&
 
 base::Value ToValue(const blink::mojom::RemoteDesktopClientOverride&
                         remote_desktop_client_override) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("origin",
-                     remote_desktop_client_override.origin.Serialize());
-  value.SetBoolKey("sameOriginWithAncestors",
-                   remote_desktop_client_override.same_origin_with_ancestors);
-  return value;
+  base::Value::Dict value;
+  value.Set("origin", remote_desktop_client_override.origin.Serialize());
+  value.Set("sameOriginWithAncestors",
+            remote_desktop_client_override.same_origin_with_ancestors);
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(const blink::mojom::ProtectionPolicy policy) {
@@ -246,35 +245,30 @@ base::Value ToValue(const device::LargeBlobSupport large_blob) {
 }
 
 base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   switch (cable_authentication.version) {
     case device::CableDiscoveryData::Version::INVALID:
       NOTREACHED();
       break;
     case device::CableDiscoveryData::Version::V1:
-      value.SetKey("version", base::Value(1));
-      value.SetKey(
-          "clientEid",
-          base::Value(Base64UrlEncode(cable_authentication.v1->client_eid)));
-      value.SetKey("authenticatorEid",
-                   base::Value(Base64UrlEncode(
-                       cable_authentication.v1->authenticator_eid)));
-      value.SetKey("sessionPreKey",
-                   base::Value(Base64UrlEncode(
-                       cable_authentication.v1->session_pre_key)));
+      value.Set("version", 1);
+      value.Set("clientEid",
+                Base64UrlEncode(cable_authentication.v1->client_eid));
+      value.Set("authenticatorEid",
+                Base64UrlEncode(cable_authentication.v1->authenticator_eid));
+      value.Set("sessionPreKey",
+                Base64UrlEncode(cable_authentication.v1->session_pre_key));
       break;
     case device::CableDiscoveryData::Version::V2:
-      value.SetKey("version", base::Value(2));
-      value.SetKey(
-          "clientEid",
-          base::Value(Base64UrlEncode(cable_authentication.v2->experiments)));
-      value.SetKey("authenticatorEid", base::Value(""));
-      value.SetKey("sessionPreKey",
-                   base::Value(Base64UrlEncode(
-                       cable_authentication.v2->server_link_data)));
+      value.Set("version", 2);
+      value.Set("clientEid",
+                Base64UrlEncode(cable_authentication.v2->experiments));
+      value.Set("authenticatorEid", "");
+      value.Set("sessionPreKey",
+                Base64UrlEncode(cable_authentication.v2->server_link_data));
       break;
   }
-  return value;
+  return base::Value(std::move(value));
 }
 
 absl::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
@@ -308,32 +302,30 @@ NullableAuthenticatorAttachmentFromValue(const base::Value& value) {
 
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey("rp", ToValue(options->relying_party));
-  value.SetKey("user", ToValue(options->user));
-  value.SetStringKey("challenge", Base64UrlEncode(options->challenge));
-  std::vector<base::Value> public_key_parameters;
+  base::Value::Dict value;
+  value.Set("rp", ToValue(options->relying_party));
+  value.Set("user", ToValue(options->user));
+  value.Set("challenge", Base64UrlEncode(options->challenge));
+  base::Value::List public_key_parameters;
   for (const device::PublicKeyCredentialParams::CredentialInfo& params :
        options->public_key_parameters) {
-    public_key_parameters.push_back(ToValue(params));
+    public_key_parameters.Append(ToValue(params));
   }
-  value.SetKey("pubKeyCredParams",
-               base::Value(std::move(public_key_parameters)));
-  std::vector<base::Value> exclude_credentials;
+  value.Set("pubKeyCredParams", std::move(public_key_parameters));
+  base::Value::List exclude_credentials;
   for (const device::PublicKeyCredentialDescriptor& descriptor :
        options->exclude_credentials) {
-    exclude_credentials.push_back(ToValue(descriptor));
+    exclude_credentials.Append(ToValue(descriptor));
   }
-  value.SetKey("excludeCredentials",
-               base::Value(std::move(exclude_credentials)));
+  value.Set("excludeCredentials", std::move(exclude_credentials));
   if (options->authenticator_selection) {
-    value.SetKey("authenticatorSelection",
-                 ToValue(*options->authenticator_selection));
+    value.Set("authenticatorSelection",
+              ToValue(*options->authenticator_selection));
   }
-  value.SetKey("attestation", ToValue(options->attestation));
+  value.Set("attestation", ToValue(options->attestation));
 
   base::Value::Dict& extensions =
-      value.GetDict().Set("extensions", base::Value::Dict())->GetDict();
+      value.Set("extensions", base::Value::Dict())->GetDict();
 
   if (options->hmac_create_secret) {
     extensions.Set("hmacCreateSecret", true);
@@ -344,21 +336,20 @@ base::Value ToValue(
     extensions.Set("credentialProtectionPolicy",
                    ToValue(options->protection_policy));
     extensions.Set("enforceCredentialProtectionPolicy",
-                   base::Value(options->enforce_protection_policy));
+                   options->enforce_protection_policy);
   }
 
   if (options->appid_exclude) {
-    extensions.Set("appIdExclude", base::Value(*options->appid_exclude));
+    extensions.Set("appIdExclude", *options->appid_exclude);
   }
 
   if (options->cred_props) {
-    extensions.Set("credProps", base::Value(true));
+    extensions.Set("credProps", true);
   }
 
   if (options->large_blob_enable != device::LargeBlobSupport::kNotRequested) {
-    base::Value large_blob_value(base::Value::Type::DICTIONARY);
-    large_blob_value.GetDict().Set("support",
-                                   ToValue(options->large_blob_enable));
+    base::Value::Dict large_blob_value;
+    large_blob_value.Set("support", ToValue(options->large_blob_enable));
     extensions.Set("largeBlob", std::move(large_blob_value));
   }
 
@@ -369,11 +360,11 @@ base::Value ToValue(
   }
 
   if (options->google_legacy_app_id_support) {
-    extensions.Set("googleLegacyAppidSupport", base::Value(true));
+    extensions.Set("googleLegacyAppidSupport", true);
   }
 
   if (options->min_pin_length_requested) {
-    extensions.Set("minPinLength", base::Value(true));
+    extensions.Set("minPinLength", true);
   }
 
   if (options->remote_desktop_client_override) {
@@ -383,39 +374,38 @@ base::Value ToValue(
 
   DCHECK(!options->prf_enable);
 
-  return value;
+  return base::Value(std::move(value));
 }
 
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("challenge", Base64UrlEncode(options->challenge));
-  value.SetStringKey("rpId", options->relying_party_id);
+  base::Value::Dict value;
+  value.Set("challenge", Base64UrlEncode(options->challenge));
+  value.Set("rpId", options->relying_party_id);
 
-  std::vector<base::Value> allow_credentials;
+  base::Value::List allow_credentials;
   for (const device::PublicKeyCredentialDescriptor& descriptor :
        options->allow_credentials) {
-    allow_credentials.push_back(ToValue(descriptor));
+    allow_credentials.Append(ToValue(descriptor));
   }
-  value.SetKey("allowCredentials", base::Value(std::move(allow_credentials)));
+  value.Set("allowCredentials", std::move(allow_credentials));
 
-  value.SetKey("userVerification", ToValue(options->user_verification));
+  value.Set("userVerification", ToValue(options->user_verification));
 
   base::Value::Dict& extensions =
-      value.GetDict().Set("extensions", base::Value::Dict())->GetDict();
+      value.Set("extensions", base::Value::Dict())->GetDict();
 
   if (options->appid) {
-    extensions.Set("appid", base::Value(*options->appid));
+    extensions.Set("appid", *options->appid);
   }
 
-  std::vector<base::Value> cable_authentication_data;
+  base::Value::List cable_authentication_data;
   for (const device::CableDiscoveryData& cable :
        options->cable_authentication_data) {
-    cable_authentication_data.push_back(ToValue(cable));
+    cable_authentication_data.Append(ToValue(cable));
   }
   if (!cable_authentication_data.empty()) {
-    extensions.Set("cableAuthentication",
-                   base::Value(std::move(cable_authentication_data)));
+    extensions.Set("cableAuthentication", std::move(cable_authentication_data));
   }
 
   if (options->get_cred_blob) {
@@ -423,13 +413,13 @@ base::Value ToValue(
   }
 
   if (options->large_blob_read || options->large_blob_write) {
-    base::Value large_blob_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict large_blob_value;
     if (options->large_blob_read) {
-      large_blob_value.GetDict().Set({"read"}, base::Value(true));
+      large_blob_value.Set("read", true);
     }
     if (options->large_blob_write) {
-      large_blob_value.GetDict().Set(
-          {"write"}, base::Value(Base64UrlEncode(*options->large_blob_write)));
+      large_blob_value.Set("write",
+                           Base64UrlEncode(*options->large_blob_write));
     }
     extensions.Set("largeBlob", std::move(large_blob_value));
   }
@@ -441,7 +431,7 @@ base::Value ToValue(
 
   DCHECK(!options->prf);
 
-  return value;
+  return base::Value(std::move(value));
 }
 
 std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
