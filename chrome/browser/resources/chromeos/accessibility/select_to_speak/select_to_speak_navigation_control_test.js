@@ -923,11 +923,13 @@ AX_TEST_F(
 AX_TEST_F(
     'SelectToSpeakNavigationControlTest',
     'AutoDismissesIfNavigationControlsDisabled', async function() {
-      // Disable navigation controls via settings.
-      chrome.storage.sync.set({'navigationControls': false});
       const bodyHtml = '<p id="p1">Paragraph 1</p>';
       await this.runWithLoadedTree(
           this.generateHtmlWithSelectedElement('p1', bodyHtml));
+
+      // Disable navigation controls.
+      selectToSpeak.prefsManager_.navigationControlsEnabled_ = false;
+
       // Simulate starting and completing TTS.
       this.triggerReadSelectedText();
       this.mockTts.finishPendingUtterance();
