@@ -99,7 +99,6 @@ class ExtensionDialog : public views::DialogDelegate,
   // extensions::ExtensionHostObserver:
   void OnExtensionHostDidStopFirstLoad(
       const extensions::ExtensionHost* host) override;
-  void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
 
   // extensions::ProcessManagerObserver:
   void OnExtensionProcessTerminated(
@@ -119,6 +118,9 @@ class ExtensionDialog : public views::DialogDelegate,
                   const InitParams& init_params);
 
   void OnWindowClosing();
+
+  // Handles a signal from the `host` to close.
+  void HandleCloseExtensionHost(extensions::ExtensionHost* host);
 
   // Window Title
   std::u16string window_title_;

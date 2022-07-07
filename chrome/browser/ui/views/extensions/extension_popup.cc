@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 
+#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -198,7 +199,6 @@ void ExtensionPopup::OnExtensionUnloaded(
     // try to access the host during Widget closure, destroy it immediately.
     RemoveChildViewT(extension_view_.get());
 
-    extension_host_observation_.Reset();
     // Note: it's important that we unregister the devtools observation *before*
     // we destroy `host_`. Otherwise, destroying `host_` can synchronously cause
     // the associated WebContents to be destroyed, which will cause devtools to
@@ -243,12 +243,6 @@ void ExtensionPopup::DevToolsAgentHostDetached(
     show_action_ = PopupShowAction::kShow;
 }
 
-void ExtensionPopup::OnExtensionHostShouldClose(
-    extensions::ExtensionHost* host) {
-  DCHECK_EQ(host, host_.get());
-  GetWidget()->Close();
-}
-
 ExtensionPopup::ExtensionPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
@@ -284,8 +278,11 @@ ExtensionPopup::ExtensionPopup(
       std::make_unique<ScopedDevToolsAgentHostObservation>(this);
   host_->browser()->tab_strip_model()->AddObserver(this);
 
-  // Listen for the containing view calling window.close();
-  extension_host_observation_.Observe(host_.get());
+  // Handle the containing view calling window.close();
+  // The base::Unretained() below is safe because this object owns `host_`, so
+  // the callback will never fire if `this` is deleted.
+  host_->SetCloseHandler(base::BindOnce(
+      &ExtensionPopup::HandleCloseExtensionHost, base::Unretained(this)));
 
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(host_->browser_context()));
@@ -321,6 +318,11 @@ void ExtensionPopup::ShowBubble() {
 void ExtensionPopup::CloseUnlessUnderInspection() {
   if (show_action_ != PopupShowAction::kShowAndInspect)
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+}
+
+void ExtensionPopup::HandleCloseExtensionHost(extensions::ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  GetWidget()->Close();
 }
 
 BEGIN_METADATA(ExtensionPopup, views::BubbleDialogDelegateView)

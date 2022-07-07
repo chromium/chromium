@@ -283,7 +283,6 @@ class ProcessManager : public KeyedService,
 
   // ExtensionHostObserver:
   void OnExtensionHostDestroyed(ExtensionHost* host) override;
-  void OnExtensionHostShouldClose(ExtensionHost* host) override;
 
   // Extra information we keep for each extension's background page.
   struct BackgroundPageData;
@@ -298,6 +297,10 @@ class ProcessManager : public KeyedService,
 
   // Called just after |host| is created so it can be registered in our lists.
   void OnBackgroundHostCreated(ExtensionHost* host);
+
+  // Handles a request from a created extension host to close the contents.
+  // This happens in cases such as the contents calling `window.close()`.
+  void HandleCloseExtensionHost(ExtensionHost* host);
 
   // Close the given |host| iff it's a background page.
   void CloseBackgroundHost(ExtensionHost* host);

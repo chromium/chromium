@@ -382,6 +382,9 @@ bool ProcessManager::CreateBackgroundHost(const Extension* extension,
   ExtensionHost* host =
       new ExtensionHost(extension, GetSiteInstanceForURL(url).get(), url,
                         mojom::ViewType::kExtensionBackgroundPage);
+  host->SetCloseHandler(
+      base::BindOnce(&ProcessManager::HandleCloseExtensionHost,
+                     weak_ptr_factory_.GetWeakPtr()));
   host->CreateRendererSoon();
   OnBackgroundHostCreated(host);
   return true;
@@ -1017,11 +1020,12 @@ void ProcessManager::OnExtensionHostDestroyed(ExtensionHost* host) {
       std::make_unique<base::ElapsedTimer>();
 }
 
-void ProcessManager::OnExtensionHostShouldClose(ExtensionHost* host) {
+void ProcessManager::HandleCloseExtensionHost(ExtensionHost* host) {
   TRACE_EVENT0("browser,startup", "ProcessManager::OnExtensionHostShouldClose");
-  DCHECK(host->extension_host_type() ==
-         mojom::ViewType::kExtensionBackgroundPage);
+  DCHECK_EQ(mojom::ViewType::kExtensionBackgroundPage,
+            host->extension_host_type());
   CloseBackgroundHost(host);
+  // WARNING: `host` is deleted at this point!
 }
 
 void ProcessManager::UnregisterServiceWorker(const WorkerId& worker_id) {

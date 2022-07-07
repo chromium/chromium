@@ -142,8 +142,17 @@ void ExtensionHost::CreateRendererNow() {
 }
 
 void ExtensionHost::Close() {
-  for (auto& observer : observer_list_)
-    observer.OnExtensionHostShouldClose(this);
+  // Some ways of closing the host may be asynchronous, which would allow the
+  // contents to call Close() multiple times. If we've already called the
+  // handler once, ignore subsequent calls. If we haven't called the handler
+  // once, the handler should be present.
+  DCHECK(close_handler_ || called_close_handler_);
+  if (called_close_handler_)
+    return;
+
+  called_close_handler_ = true;
+  std::move(close_handler_).Run(this);
+  // NOTE: `this` may be deleted at this point!
 }
 
 void ExtensionHost::AddObserver(ExtensionHostObserver* observer) {
@@ -170,6 +179,12 @@ void ExtensionHost::OnNetworkRequestStarted(uint64_t request_id) {
 void ExtensionHost::OnNetworkRequestDone(uint64_t request_id) {
   for (auto& observer : observer_list_)
     observer.OnNetworkRequestDone(this, request_id);
+}
+
+void ExtensionHost::SetCloseHandler(CloseHandler close_handler) {
+  DCHECK(!close_handler_);
+  DCHECK(!called_close_handler_);
+  close_handler_ = std::move(close_handler);
 }
 
 bool ExtensionHost::ShouldAllowNavigations() const {

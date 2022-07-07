@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -86,6 +87,12 @@ void ExtensionDialog::OnWindowClosing() {
     observer_->ExtensionDialogClosing(this);
 }
 
+void ExtensionDialog::HandleCloseExtensionHost(
+    extensions::ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  GetWidget()->Close();
+}
+
 void ExtensionDialog::OnExtensionHostDidStopFirstLoad(
     const extensions::ExtensionHost* host) {
   DCHECK_EQ(host, host_.get());
@@ -95,12 +102,6 @@ void ExtensionDialog::OnExtensionHostDidStopFirstLoad(
   // The render view is created during the LoadURL(), so we should
   // set the focus to the view if nobody else takes the focus.
   MaybeFocusRenderer();
-}
-
-void ExtensionDialog::OnExtensionHostShouldClose(
-    extensions::ExtensionHost* host) {
-  DCHECK_EQ(host, host_.get());
-  GetWidget()->Close();
 }
 
 void ExtensionDialog::OnExtensionProcessTerminated(
@@ -139,6 +140,11 @@ ExtensionDialog::ExtensionDialog(
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowTitle(!init_params.title.empty());
   SetTitle(init_params.title);
+
+  // The base::Unretained() below is safe because this object owns `host_`, so
+  // the callback will never fire if `this` is deleted.
+  host_->SetCloseHandler(base::BindOnce(
+      &ExtensionDialog::HandleCloseExtensionHost, base::Unretained(this)));
 
   extension_view_ =
       SetContentsView(std::make_unique<ExtensionViewViews>(host_.get()));

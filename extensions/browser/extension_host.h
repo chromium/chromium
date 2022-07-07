@@ -11,6 +11,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -49,6 +50,8 @@ class ExtensionHost : public DeferredStartRenderHost,
                       public ExtensionFunctionDispatcher::Delegate,
                       public ExtensionRegistryObserver {
  public:
+  using CloseHandler = base::OnceCallback<void(ExtensionHost*)>;
+
   ExtensionHost(const Extension* extension,
                 content::SiteInstance* site_instance,
                 const GURL& url,
@@ -75,6 +78,14 @@ class ExtensionHost : public DeferredStartRenderHost,
   content::BrowserContext* browser_context() { return browser_context_; }
 
   mojom::ViewType extension_host_type() const { return extension_host_type_; }
+
+  // Sets the callback responsible for closing the ExtensionHost in response to
+  // a WebContents::CloseContents() call (which is triggered from e.g.
+  // calling `window.close()`). This is done separately from the constructor as
+  // some callsites create an ExtensionHost prior to the object that is
+  // responsible for later closing it, but must be done before `CloseContents()`
+  // can be called.
+  void SetCloseHandler(CloseHandler close_handler);
 
   // Returns the last committed URL of the associated WebContents.
   const GURL& GetLastCommittedURL() const;
@@ -236,6 +247,10 @@ class ExtensionHost : public DeferredStartRenderHost,
   // Measures how long since the initial URL started loading. This timer is
   // started only once the ExtensionHost has exited the ExtensionHostQueue.
   std::unique_ptr<base::ElapsedTimer> load_start_;
+
+  CloseHandler close_handler_;
+  // Whether the close handler has been previously invoked.
+  bool called_close_handler_ = false;
 
   base::ObserverList<ExtensionHostObserver>::Unchecked observer_list_;
 
