@@ -149,18 +149,7 @@ TEST_F(PDFiumPrintTest, Basic) {
   }
 }
 
-// Tests fail on mac11-arm-64-rel-tests (https://crbug.com/1291973)
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AlterScalingDefault DISABLED_AlterScalingDefault
-#define MAYBE_AlterScalingFitPaper DISABLED_AlterScalingFitPaper
-#define MAYBE_AlterScalingFitPrintable DISABLED_AlterScalingFitPrintable
-#else
-#define MAYBE_AlterScalingDefault AlterScalingDefault
-#define MAYBE_AlterScalingFitPaper AlterScalingFitPaper
-#define MAYBE_AlterScalingFitPrintable AlterScalingFitPrintable
-#endif
-
-TEST_F(PDFiumPrintTest, MAYBE_AlterScalingDefault) {
+TEST_F(PDFiumPrintTest, AlterScalingDefault) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
@@ -185,7 +174,7 @@ TEST_F(PDFiumPrintTest, MAYBE_AlterScalingDefault) {
                     "alter_scaling_default_raster.png");
 }
 
-TEST_F(PDFiumPrintTest, MAYBE_AlterScalingFitPaper) {
+TEST_F(PDFiumPrintTest, AlterScalingFitPaper) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
@@ -212,7 +201,7 @@ TEST_F(PDFiumPrintTest, MAYBE_AlterScalingFitPaper) {
                     "alter_scaling_fit-paper_raster.png");
 }
 
-TEST_F(PDFiumPrintTest, MAYBE_AlterScalingFitPrintable) {
+TEST_F(PDFiumPrintTest, AlterScalingFitPrintable) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
