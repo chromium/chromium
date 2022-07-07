@@ -1086,6 +1086,7 @@ ci.builder(
     os = os.LINUX_DEFAULT,
     cores = 16,
     ssd = True,
+    use_clang_coverage = True,
 )
 
 # Sync specs with win10_chromium_x64_rel_ng-compilator
@@ -1105,6 +1106,7 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     cores = 32,
     ssd = True,
+    use_clang_coverage = True,
 )
 
 ci.builder(
