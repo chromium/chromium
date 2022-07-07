@@ -110,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
 
   base::HistogramTester histograms;
 
-  ASSERT_TRUE(SetupSync());
+  // Commit sequentially to make sure there is no race condition.
+  SetupSyncOneClientAfterAnother();
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/2U).Wait());
 
   // The order of events is roughly: First client (whichever that happens to be)
@@ -170,7 +171,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
 
   AddProfile(0, profile0);
   AddProfile(1, profile1);
-  ASSERT_TRUE(SetupSync());
+  // Commit sequentially to make sure there is no race condition.
+  SetupSyncOneClientAfterAnother();
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   EXPECT_EQ(verified_origin, GetAllAutoFillProfiles(0)[0]->origin());
@@ -250,7 +252,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   ASSERT_NE(GetAllAutoFillProfiles(0)[0]->guid(),
             GetAllAutoFillProfiles(1)[0]->guid());
 
-  ASSERT_TRUE(SetupSync());
+  // Commit sequentially to make sure there is no race condition.
+  SetupSyncOneClientAfterAnother();
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Make sure that they have the same GUID.

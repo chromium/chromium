@@ -77,14 +77,19 @@ class MigrationTest : public SyncTest {
 
   enum TriggerMethod { MODIFY_PREF, MODIFY_BOOKMARK, TRIGGER_REFRESH };
 
-  // Initialize all MigrationWatchers. This helps ensure that all migration
-  // events are captured, even if they were to occur before a test calls
-  // AwaitMigration for a specific profile.
-  void Initialize() {
+  // Set up sync for all profiles and initialize all MigrationWatchers. This
+  // helps ensure that all migration events are captured, even if they were to
+  // occur before a test calls AwaitMigration for a specific profile.
+  bool SetupSync() override {
+    if (!SyncTest::SetupSync()) {
+      return false;
+    }
+
     for (int i = 0; i < num_clients(); ++i) {
       migration_watchers_.push_back(
           std::make_unique<MigrationWatcher>(GetClient(i)));
     }
+    return true;
   }
 
   syncer::ModelTypeSet GetPreferredDataTypes() {
@@ -211,7 +216,6 @@ class MigrationSingleClientTest : public MigrationTest {
   void RunSingleClientMigrationTest(const MigrationList& migration_list,
                                     TriggerMethod trigger_method) {
     ASSERT_TRUE(SetupSync());
-    Initialize();
     RunMigrationTest(migration_list, trigger_method);
   }
 };
@@ -321,7 +325,6 @@ class MigrationTwoClientTest : public MigrationTest {
   void RunTwoClientMigrationTest(const MigrationList& migration_list,
                                  TriggerMethod trigger_method) {
     ASSERT_TRUE(SetupSync());
-    Initialize();
 
     // Make sure pref sync works before running the migration test.
     VerifyPrefSync();

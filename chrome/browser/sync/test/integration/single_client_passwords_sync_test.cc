@@ -300,7 +300,6 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-    SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
