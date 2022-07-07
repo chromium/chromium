@@ -82207,6 +82207,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Incompatible, duration below threshold"/>
 </enum>
 
+<enum name="RemotingStartFailReason">
+  <int value="0" label="Cannot start multiple sessions"/>
+  <int value="1" label="Route terminated"/>
+  <int value="2" label="Invalid ANSWER message"/>
+  <int value="3" label="Remoting not permitted from the dialog"/>
+</enum>
+
 <enum name="RemotingStartTrigger">
   <int value="0" label="Unknown start trigger"/>
   <int value="1" label="Entered fullscreen"/>

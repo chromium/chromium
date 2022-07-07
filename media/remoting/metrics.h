@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "media/base/pipeline_metadata.h"
+#include "media/mojo/mojom/remoting_common.mojom.h"
 #include "media/remoting/triggers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -62,6 +63,7 @@ class SessionMetricsRecorder {
   // session ends.
   void WillStartSession(StartTrigger trigger);
   void DidStartSession();
+  void StartSessionFailed(mojom::RemotingStartFailReason reason);
   void WillStopSession(StopTrigger trigger);
 
   // These may be called before, during, or after a remoting session.

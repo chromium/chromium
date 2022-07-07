@@ -164,6 +164,7 @@ void RendererController::OnStartFailed(mojom::RemotingStartFailReason reason) {
   VLOG(1) << "Failed to start remoting:" << reason;
   if (remote_rendering_started_) {
     metrics_recorder_.WillStopSession(START_RACE);
+    metrics_recorder_.StartSessionFailed(reason);
     remote_rendering_started_ = false;
   }
 }

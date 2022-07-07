@@ -15,11 +15,13 @@ enum RemotingStopReason {
   USER_DISABLED,  // Media Remoting was disabled by user.
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum RemotingStartFailReason {
-  CANNOT_START_MULTIPLE,  // Remoting was already active.
-  ROUTE_TERMINATED,  // User-initated disconnect while starting remoting.
-  INVALID_ANSWER_MESSAGE,  // Invalid ANSWER message.
-  REMOTING_NOT_PERMITTED,  // Remoter does not have dialog permission.
+  CANNOT_START_MULTIPLE = 0,  // Remoting was already active.
+  ROUTE_TERMINATED = 1,  // User-initated disconnect while starting remoting.
+  INVALID_ANSWER_MESSAGE = 2,  // Invalid ANSWER message.
+  REMOTING_NOT_PERMITTED = 3,  // Remoter does not have dialog permission.
 };
 
 enum RemotingSinkFeature {

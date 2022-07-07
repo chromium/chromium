@@ -3996,6 +3996,13 @@ chromium-metrics-reviews@google.com.
   <summary>Measures the duration of each remoting session.</summary>
 </histogram>
 
+<histogram name="Media.Remoting.SessionStartFailedReason"
+    enum="RemotingStartFailReason" expires_after="2022-12-26">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>Tracks the reason that a session failed to start.</summary>
+</histogram>
+
 <histogram name="Media.Remoting.SessionStartTrigger"
     enum="RemotingStartTrigger" expires_after="2022-12-25">
   <owner>jophba@chromium.org</owner>
