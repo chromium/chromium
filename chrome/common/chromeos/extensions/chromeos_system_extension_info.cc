@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 
 namespace chromeos {
 
@@ -35,12 +36,13 @@ using ChromeOSSystemExtensionInfos =
 const ChromeOSSystemExtensionInfos& getMap() {
   static const ChromeOSSystemExtensionInfos kExtensionIdToExtensionInfoMap{
       {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-       {/*manufacturer=*/"HP", /*pwa_origin=*/"*://www.google.com/*"}},
+       {/*manufacturers=*/{"HP", "ASUS"},
+        /*pwa_origin=*/"*://www.google.com/*"}},
       {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
-       {/*manufacturer=*/"HP",
+       {/*manufacturers=*/{"HP"},
         /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*"}},
       {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
-       {/*manufacturer=*/"ASUS",
+       {/*manufacturers=*/{"ASUS"},
         /*pwa_origin=*/"https://dlcdnccls.asus.com/*"}}};
 
   return kExtensionIdToExtensionInfoMap;
@@ -49,9 +51,9 @@ const ChromeOSSystemExtensionInfos& getMap() {
 }  // namespace
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
-    const std::string& manufacturer,
+    base::flat_set<std::string> manufacturers,
     const std::string& pwa_origin)
-    : manufacturer(manufacturer), pwa_origin(pwa_origin) {}
+    : manufacturers(std::move(manufacturers)), pwa_origin(pwa_origin) {}
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
     const ChromeOSSystemExtensionInfo& other) = default;
 ChromeOSSystemExtensionInfo::~ChromeOSSystemExtensionInfo() = default;
@@ -75,8 +77,8 @@ ChromeOSSystemExtensionInfo GetChromeOSExtensionInfoForId(
 
   if (command_line->HasSwitch(
           switches::kTelemetryExtensionManufacturerOverrideForTesting)) {
-    info.manufacturer = command_line->GetSwitchValueASCII(
-        switches::kTelemetryExtensionManufacturerOverrideForTesting);
+    info.manufacturers = {command_line->GetSwitchValueASCII(
+        switches::kTelemetryExtensionManufacturerOverrideForTesting)};
   }
 
   return info;

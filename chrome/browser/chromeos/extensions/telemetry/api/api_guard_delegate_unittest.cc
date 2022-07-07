@@ -49,12 +49,18 @@ struct ExtensionInfoTestParams {
 };
 
 const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
+    // Make sure the Google extension is allowed for every OEM.
     ExtensionInfoTestParams(
         /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
         /*pwa_page_url=*/"https://www.google.com",
         /*matches_origin=*/"*://www.google.com/*",
-        /*manufacturer=*/"HP"),  // TODO(http://b/237059912): Refactor this as
-                                 // soon as it becomes a set.
+        /*manufacturer=*/"HP"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
+        /*pwa_page_url=*/"https://www.google.com",
+        /*matches_origin=*/"*://www.google.com/*",
+        /*manufacturer=*/"ASUS"),
+    // Make sure the extensions of each OEM are allowed on their device.
     ExtensionInfoTestParams(
         /*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
         /*pwa_page_url=*/"https://hpcs-appschr.hpcloud.hp.com",
@@ -227,7 +233,7 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   // Make sure device manufacturer is not allowed.
-  SetDeviceManufacturer("GOOGLE");
+  SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::string> future;
@@ -338,7 +344,7 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, ManufacturerNotAllowed) {
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   // Make sure device manufacturer is not allowed.
-  SetDeviceManufacturer("GOOGLE");
+  SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::string> future;

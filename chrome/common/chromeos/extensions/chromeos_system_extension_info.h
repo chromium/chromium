@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <string>
 
+#include "base/containers/flat_set.h"
+
 namespace chromeos {
 
 namespace switches {
@@ -18,12 +20,12 @@ extern const char kTelemetryExtensionPwaOriginOverrideForTesting[];
 }  // namespace switches
 
 struct ChromeOSSystemExtensionInfo {
-  ChromeOSSystemExtensionInfo(const std::string& manufacturer,
+  ChromeOSSystemExtensionInfo(base::flat_set<std::string> manufacturers,
                               const std::string& pwa_origin);
   ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo& other);
   ~ChromeOSSystemExtensionInfo();
 
-  std::string manufacturer;
+  base::flat_set<std::string> manufacturers;
   std::string pwa_origin;
 };
 

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
@@ -34,9 +35,10 @@ namespace chromeos {
 
 namespace {
 
-std::string OnGetManufacturer(const std::string& expected_manufacturer,
-                              std::string actual_manufacturer) {
-  return actual_manufacturer == expected_manufacturer
+std::string OnGetManufacturer(
+    base::flat_set<std::string> expected_manufacturers,
+    std::string actual_manufacturer) {
+  return expected_manufacturers.contains(actual_manufacturer)
              ? ""
              : "This extension is not allowed to access the API on this "
                "device";
@@ -135,7 +137,7 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
   void VerifyManufacturer(const extensions::Extension* extension,
                           CanAccessApiCallback callback) {
     const auto extension_info = GetChromeOSExtensionInfoForId(extension->id());
-    const std::string& expected_manufacturer = extension_info.manufacturer;
+    const auto expected_manufacturers = extension_info.manufacturers;
 
     // We can expect VerifyManufacturer() to be called at most once for the
     // lifetime of the ApiGuardDelegateImpl because CanAccessApi() can be called
@@ -144,7 +146,7 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
     // is safe to instantiate |hardware_info_delegate_| here (vs in the ctor).
     hardware_info_delegate_ = HardwareInfoDelegate::Factory::Create();
     hardware_info_delegate_->GetManufacturer(
-        base::BindOnce(&OnGetManufacturer, expected_manufacturer)
+        base::BindOnce(&OnGetManufacturer, expected_manufacturers)
             .Then(std::move(callback)));
   }
 
