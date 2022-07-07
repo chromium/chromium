@@ -362,7 +362,7 @@ public class TabListMediatorUnitTest {
 
         doNothing()
                 .when(mTabContentManager)
-                .getTabThumbnailWithCallback(anyInt(), any(), anyBoolean(), anyBoolean());
+                .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         doReturn(tabModelList).when(mTabModelSelector).getModels();
 

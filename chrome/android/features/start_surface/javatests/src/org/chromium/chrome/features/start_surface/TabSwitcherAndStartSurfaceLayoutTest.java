@@ -1986,7 +1986,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         TabModel currentModel = mActivityTestRule.getActivity().getCurrentTabModel();
         for (int i = 0; i < currentModel.getCount(); i++) {
             Tab tab = currentModel.getTabAt(i);
-            Bitmap bitmap = TabContentManager.getJpegForTab(tab.getId());
+            Bitmap bitmap = TabContentManager.getJpegForTab(tab.getId(), null);
             bitmap = Bitmap.createScaledBitmap(
                     bitmap, bitmap.getWidth(), (int) (bitmap.getWidth() * 1.0 / 0.75), false);
             encodeJpeg(tab, bitmap);
@@ -2004,7 +2004,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         TabModel currentModel = mActivityTestRule.getActivity().getCurrentTabModel();
         for (int i = 0; i < currentModel.getCount(); i++) {
             Tab tab = currentModel.getTabAt(i);
-            Bitmap bitmap = TabContentManager.getJpegForTab(tab.getId());
+            Bitmap bitmap = TabContentManager.getJpegForTab(tab.getId(), null);
             double bitmapRatio = bitmap.getWidth() * 1.0 / bitmap.getHeight();
             assertTrue("Actual ratio: " + bitmapRatio + "; Expected ratio: " + ratio,
                     Math.abs(bitmapRatio - ratio) <= TabContentManager.ASPECT_RATIO_PRECISION);

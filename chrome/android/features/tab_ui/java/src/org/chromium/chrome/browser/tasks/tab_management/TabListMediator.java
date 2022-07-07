@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.util.Size;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -124,8 +125,8 @@ class TabListMediator {
         /**
          * @see TabContentManager#getTabThumbnailWithCallback
          */
-        void getTabThumbnailWithCallback(
-                int tabId, Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache);
+        void getTabThumbnailWithCallback(int tabId, Size thumbnailSize, Callback<Bitmap> callback,
+                boolean forceUpdate, boolean writeToCache);
     }
 
     /**
@@ -289,14 +290,14 @@ class TabListMediator {
             mWriteToCache = writeToCache;
         }
 
-        void fetch(Callback<Bitmap> callback) {
+        void fetch(Callback<Bitmap> callback, Size thumbnailSize) {
             Callback<Bitmap> forking = (bitmap) -> {
                 if (sBitmapCallbackForTesting != null) sBitmapCallbackForTesting.onResult(bitmap);
                 callback.onResult(bitmap);
             };
             sFetchCountForTesting++;
             mThumbnailProvider.getTabThumbnailWithCallback(
-                    mId, forking, mForceUpdate, mWriteToCache);
+                    mId, thumbnailSize, forking, mForceUpdate, mWriteToCache);
         }
     }
 

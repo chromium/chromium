@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -176,8 +177,8 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
                 @Override
-                public void getTabThumbnailWithCallback(int tabId, Callback<Bitmap> callback,
-                        boolean forceUpdate, boolean writeToCache) {
+                public void getTabThumbnailWithCallback(int tabId, Size thumbnailSize,
+                        Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache) {
                     Bitmap bitmap = mShouldReturnBitmap
                             ? Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
                             : null;

@@ -370,13 +370,15 @@ class TabGridViewBinder {
         thumbnail.setColorThumbnailPlaceHolder(
                 model.get(TabProperties.IS_INCOGNITO), model.get(TabProperties.IS_SELECTED));
 
+        final Size thumbnailSize =
+                TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
+                ? TabUtils.deriveThumbnailSize(model.get(TabProperties.GRID_CARD_WIDTH),
+                        model.get(TabProperties.GRID_CARD_HEIGHT), view.getContext())
+                : null;
         Callback<Bitmap> callback = result -> {
             if (result != null) {
                 if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())) {
                     // Adjust bitmap to thumbnail.
-                    final Size thumbnailSize =
-                            TabUtils.deriveThumbnailSize(model.get(TabProperties.GRID_CARD_WIDTH),
-                                    model.get(TabProperties.GRID_CARD_HEIGHT), view.getContext());
                     updateThumbnailMatrix(thumbnail, result, thumbnailSize);
                 } else {
                     thumbnail.setScaleType(ScaleType.FIT_CENTER);
@@ -386,9 +388,9 @@ class TabGridViewBinder {
             }
         };
         if (TabUiFeatureUtilities.isLaunchPolishEnabled() && sThumbnailFetcherForTesting != null) {
-            sThumbnailFetcherForTesting.fetch(callback);
+            sThumbnailFetcherForTesting.fetch(callback, thumbnailSize);
         } else {
-            fetcher.fetch(callback);
+            fetcher.fetch(callback, thumbnailSize);
         }
     }
 

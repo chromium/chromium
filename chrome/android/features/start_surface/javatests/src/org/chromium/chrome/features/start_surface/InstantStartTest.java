@@ -169,7 +169,8 @@ public class InstantStartTest {
 
         final Bitmap thumbnailBitmap =
                 StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(tabId);
-        tabContentManager.getTabThumbnailWithCallback(tabId, thumbnailFetchListener, false, false);
+        tabContentManager.getTabThumbnailWithCallback(
+                tabId, null, thumbnailFetchListener, false, false);
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(mThumbnailFetchCount, greaterThan(0)));
 

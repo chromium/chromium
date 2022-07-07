@@ -62,8 +62,9 @@ public class TabSwitcherThumbnailTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private TabListMediator.ThumbnailFetcher mNullThumbnailProvider =
-            new TabListMediator.ThumbnailFetcher((tabId, callback, forceUpdate, writeToCache)
-                                                         -> callback.onResult(null),
+            new TabListMediator.ThumbnailFetcher(
+                    (tabId, thumbnailSize, callback, forceUpdate, writeToCache)
+                            -> callback.onResult(null),
                     Tab.INVALID_TAB_ID, false, false);
 
     @Before

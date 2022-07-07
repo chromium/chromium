@@ -112,7 +112,7 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
-        verify(mFetcher).fetch(mCallbackCaptor.capture());
+        verify(mFetcher).fetch(mCallbackCaptor.capture(), any());
         mCallbackCaptor.getValue().onResult(mBitmap);
 
         verify(mThumbnailView).setScaleType(ScaleType.FIT_CENTER);
@@ -139,7 +139,7 @@ public final class TabGridViewBinderUnitTest {
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
-        verify(mFetcher).fetch(mCallbackCaptor.capture());
+        verify(mFetcher).fetch(mCallbackCaptor.capture(), any());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
         mCallbackCaptor.getValue().onResult(mBitmap);
@@ -179,7 +179,7 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         assertThat(thumbnailParams.height, equalTo(LayoutParams.MATCH_PARENT));
-        verify(mFetcher).fetch(mCallbackCaptor.capture());
+        verify(mFetcher).fetch(mCallbackCaptor.capture(), any());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
         mCallbackCaptor.getValue().onResult(mBitmap);
