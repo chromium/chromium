@@ -709,6 +709,7 @@ void TextFinder::UpdateFindMatchRects() {
   find_match_rects_are_valid_ = true;
 }
 
+#if BUILDFLAG(IS_ANDROID)
 gfx::RectF TextFinder::ActiveFindMatchRect() {
   if (!current_active_match_frame_ || !active_match_)
     return gfx::RectF();
@@ -828,6 +829,7 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
 
   return active_match_index_ + 1;
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TextFinder::TextFinder(WebLocalFrameImpl& owner_frame)
     : owner_frame_(&owner_frame),

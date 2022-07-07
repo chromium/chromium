@@ -5119,6 +5119,7 @@ class TestFindInPageClient : public mojom::blink::FindInPageClient {
   mojo::Receiver<mojom::blink::FindInPageClient> receiver_{this};
 };
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(WebFrameTest, FindInPageMatchRects) {
   RegisterMockedHttpURLLoad("find_in_page_frame.html");
 
@@ -5196,6 +5197,7 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
   EXPECT_TRUE(main_frame->GetFindInPage()->FindMatchMarkersVersion() !=
               rects_version);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(WebFrameTest, FindInPageActiveIndex) {
   RegisterMockedHttpURLLoad("find_match_count.html");
@@ -12123,6 +12125,7 @@ TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
   EXPECT_EQ(gfx::Point(800, 2000), original_tickmarks[0].origin());
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
@@ -12198,6 +12201,7 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
       << frame_view->GetScrollableArea()->VisibleContentRect().ToString()
       << "]";
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Check that removing an element whilst focusing it does not cause a null
 // pointer deference. This test passes if it does not crash.

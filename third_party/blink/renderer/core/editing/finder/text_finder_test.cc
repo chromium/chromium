@@ -331,6 +331,7 @@ TEST_F(TextFinderTest, FindTextInShadowDOM) {
   EXPECT_EQ(3u, active_match->endOffset());
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TextFinderTest, ScopeTextMatchesSimple) {
   GetDocument().body()->setInnerHTML("XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -602,6 +603,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOMAfterNoMatches) {
   EXPECT_EQ(FindInPageRect(text_in_i_element, 2, text_in_i_element, 8),
             match_rects[0]);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(TextFinderTest, ScopeWithTimeouts) {
   // Make a long string.

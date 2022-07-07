@@ -81,6 +81,7 @@ class FindInPageCallbackReceiver {
   bool is_called;
 };
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
   GetDocument().body()->setInnerHTML("aAaAbBaBbAaAaA");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -105,6 +106,7 @@ TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
                      GetTextFinder().ActiveFindMatchRect()));
   EXPECT_TRUE(callback_receiver.IsCalled());
 }
+#endif
 
 TEST_F(FindInPageTest, FindAllAs) {
   std::ostringstream str;
