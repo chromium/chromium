@@ -285,8 +285,7 @@ double KeyboardShortcutResult::CalculateRelevance(
   }
 
   TokenizedStringMatch match;
-  match.Calculate(query_tokenized, target_tokenized);
-  return match.relevance();
+  return match.Calculate(query_tokenized, target_tokenized);
 }
 
 void KeyboardShortcutResult::UpdateIcon() {

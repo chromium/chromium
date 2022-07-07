@@ -212,8 +212,7 @@ class AppSearchProvider::App {
     if (use_exact_match) {
       TokenizedStringMatch match;
       for (auto& curr_text : tokenized_indexed_searchable_text_) {
-        match.Calculate(query, *curr_text);
-        if (match.relevance() > relevance_threshold())
+        if (match.Calculate(query, *curr_text) > relevance_threshold())
           return true;
       }
     } else {
@@ -585,23 +584,23 @@ void AppSearchProvider::UpdateQueriedResults() {
     TokenizedString* indexed_name = app->GetTokenizedIndexedName();
     if (use_exact_match) {
       TokenizedStringMatch match;
-      if (match.Calculate(query_terms, *indexed_name)) {
-        // Exact matches should be shown even if the threshold isn't reached,
-        // e.g. due to a localized name being particularly short.
-        if (match.relevance() <= app->relevance_threshold() &&
-            !app->MatchSearchableText(query_terms, use_exact_match)) {
-          continue;
-        }
-      } else if (!app->MatchSearchableText(query_terms, use_exact_match)) {
+      double relevance = match.Calculate(query_terms, *indexed_name);
+
+      // N.B. Exact matches should be shown even if the threshold isn't reached,
+      // e.g. due to a localized name being particularly short.
+      const bool keep = relevance > app->relevance_threshold() ||
+                        app->MatchSearchableText(query_terms, use_exact_match);
+
+      if (!keep)
         continue;
-      }
+
       std::unique_ptr<AppResult> result =
           app->data_source()->CreateResult(app->id(), list_controller_, false);
 
       // Update result from match.
       result->SetTitle(indexed_name->text());
       result->SetTitleTags(CalculateTags(query_, indexed_name->text()));
-      result->set_relevance(match.relevance());
+      result->set_relevance(relevance);
 
       MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
     } else {

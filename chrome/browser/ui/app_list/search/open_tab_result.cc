@@ -66,8 +66,7 @@ OpenTabResult::OpenTabResult(Profile* profile,
   // result.
   TokenizedStringMatch string_match;
   TokenizedString title(match_.description);
-  string_match.Calculate(query, title);
-  set_relevance(string_match.relevance());
+  set_relevance(string_match.Calculate(query, title));
 
   UpdateText();
   UpdateIcon();

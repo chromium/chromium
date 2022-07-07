@@ -27,8 +27,8 @@ TokenizedStringMatch::TokenizedStringMatch() : relevance_(kNoMatchScore) {}
 
 TokenizedStringMatch::~TokenizedStringMatch() = default;
 
-bool TokenizedStringMatch::Calculate(const TokenizedString& query,
-                                     const TokenizedString& text) {
+double TokenizedStringMatch::Calculate(const TokenizedString& query,
+                                       const TokenizedString& text) {
   relevance_ = kNoMatchScore;
   hits_.clear();
 
@@ -73,11 +73,11 @@ bool TokenizedStringMatch::Calculate(const TokenizedString& query,
   // other.
   relevance_ = 1.0 - std::pow(0.5, relevance_);
 
-  return relevance_ > kNoMatchScore;
+  return relevance_;
 }
 
-bool TokenizedStringMatch::Calculate(const std::u16string& query,
-                                     const std::u16string& text) {
+double TokenizedStringMatch::Calculate(const std::u16string& query,
+                                       const std::u16string& text) {
   const TokenizedString tokenized_query(query);
   const TokenizedString tokenized_text(text);
   return Calculate(tokenized_query, tokenized_text);

@@ -197,9 +197,9 @@ double FileResult::CalculateRelevance(
     return kDefaultRelevance;
 
   TokenizedStringMatch match;
-  match.Calculate(query.value(), title);
+  const double relevance = match.Calculate(query.value(), title);
   if (!last_accessed)
-    return match.relevance();
+    return relevance;
 
   // Apply a gaussian penalty based on the time delta. `time_delta` is converted
   // into millisecond fractions of a day for numerical stability.
@@ -211,7 +211,7 @@ double FileResult::CalculateRelevance(
       kMaxPenalty +
       (1.0 - kMaxPenalty) * std::exp(-kPenaltyCoeff * time_delta * time_delta);
   DCHECK(penalty > 0.0 && penalty <= 1.0);
-  return match.relevance() * penalty;
+  return relevance * penalty;
 }
 
 void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
