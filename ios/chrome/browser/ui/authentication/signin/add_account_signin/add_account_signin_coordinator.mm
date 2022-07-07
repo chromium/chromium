@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
@@ -50,11 +49,6 @@ using signin_metrics::PromoAction;
 @property(nonatomic, assign, readonly) AddAccountSigninIntent signinIntent;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-// Activity overlay coordinator needed while waiting for the add account sign-in
-// manager to be presented. This is needed if the network is slow or not
-// responding.
-@property(nonatomic, strong)
-    ActivityOverlayCoordinator* activityOverlayCoordinator;
 
 @end
 
@@ -110,10 +104,6 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
-  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
-  [self.activityOverlayCoordinator start];
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -137,9 +127,6 @@ using signin_metrics::PromoAction;
 
 - (void)stop {
   [super stop];
-  DCHECK(self.activityOverlayCoordinator);
-  [self.activityOverlayCoordinator stop];
-  self.activityOverlayCoordinator = nil;
   // If one of those 3 DCHECK() fails, -[AddAccountSigninCoordinator
   // runCompletionCallbackWithSigninResult] has not been called.
   DCHECK(!self.addAccountSigninManager);
