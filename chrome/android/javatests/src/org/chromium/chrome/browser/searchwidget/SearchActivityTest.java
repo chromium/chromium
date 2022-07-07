@@ -389,6 +389,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // see crbug.com/1177417
+    @DisabledTest(message = "https://crbug.com/1311737")
     public void testTypeBeforeDeferredInitialization() throws Exception {
         // Start the Activity.  It should pause and assume that a promo dialog has appeared.
         mTestDelegate.shouldDelayDeferredInitialization = true;
