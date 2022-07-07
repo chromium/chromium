@@ -247,19 +247,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_30000_dialogV2_2022-04-18",
-                    "params": {
-                        "autodismiss_duration_ms_SaveCard": "30000",
-                        "save_card_dialog_v2_enabled": "true",
-                        "save_card_message_use_followup_button_text": "false",
-                        "save_card_message_use_gpay_icon": "true"
-                    },
-                    "enable_features": [
-                        "MessagesForAndroidInfrastructure",
-                        "MessagesForAndroidSaveCard"
-                    ]
-                },
-                {
                     "name": "Enabled_60000_dialogV2_2022-04-18",
                     "params": {
                         "autodismiss_duration_ms_SaveCard": "60000",
