@@ -215,16 +215,17 @@ void VideoDecoderClient::InitializeDecoderTask(const Video* video,
   ASSERT_TRUE(decoder_) << "Can't initialize decoder: not created yet";
   ASSERT_TRUE(video);
 
-  video_ = video;
   encoded_data_helper_ =
-      std::make_unique<EncodedDataHelper>(video_->Data(), video_->Codec());
+      std::make_unique<EncodedDataHelper>(video->Data(), video->Codec());
 
   // (Re-)initialize the decoder.
   VideoDecoderConfig config(
-      video_->Codec(), video_->Profile(),
+      video->Codec(), video->Profile(),
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
-      kNoTransformation, video_->Resolution(), gfx::Rect(video_->Resolution()),
-      video_->Resolution(), std::vector<uint8_t>(0), EncryptionScheme());
+      kNoTransformation, video->Resolution(), gfx::Rect(video->Resolution()),
+      video->Resolution(), std::vector<uint8_t>(0), EncryptionScheme());
+  input_video_codec_ = video->Codec();
+  input_video_profile_ = video->Profile();
 
   VideoDecoder::InitCB init_cb = base::BindOnce(
       CallbackThunk<decltype(&VideoDecoderClient::DecoderInitializedTask),
@@ -305,11 +306,11 @@ void VideoDecoderClient::DecodeNextFragmentTask() {
   bitstream_buffer->set_timestamp(base::TimeTicks::Now().since_origin());
 
   bool has_config_info = false;
-  if (video_->Codec() == media::VideoCodec::kH264 ||
-      video_->Codec() == media::VideoCodec::kHEVC) {
+  if (input_video_codec_ == media::VideoCodec::kH264 ||
+      input_video_codec_ == media::VideoCodec::kHEVC) {
     has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
         bitstream_buffer->data(), bitstream_buffer->data_size(),
-        video_->Profile());
+        input_video_profile_);
   }
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(
