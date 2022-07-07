@@ -16,7 +16,7 @@ class BASE_EXPORT JavaRuntime {
  public:
   // Fills the total memory used and memory allocated for objects by the java
   // heap in the current process. Returns true on success.
-  static void GetMemoryUsage(long* total_memory, long* free_memory);
+  static void GetMemoryUsage(uint64_t* total_memory, uint64_t* free_memory);
 };
 
 }  // namespace android

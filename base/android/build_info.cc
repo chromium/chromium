@@ -21,11 +21,11 @@ namespace android {
 namespace {
 
 // We are leaking these strings.
-const char* StrDupParam(const std::vector<std::string>& params, int index) {
+const char* StrDupParam(const std::vector<std::string>& params, size_t index) {
   return strdup(params[index].c_str());
 }
 
-int GetIntParam(const std::vector<std::string>& params, int index) {
+int GetIntParam(const std::vector<std::string>& params, size_t index) {
   int ret = 0;
   bool success = StringToInt(params[index], &ret);
   DCHECK(success);

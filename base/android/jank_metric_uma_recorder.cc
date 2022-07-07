@@ -23,7 +23,7 @@ namespace {
 
 void AddFrameToTrace(int64_t timestamp_ns, int64_t durations_ns) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-  auto t = perfetto::Track(timestamp_ns);
+  auto t = perfetto::Track(checked_cast<uint64_t>(timestamp_ns));
   TRACE_EVENT_BEGIN(
       "ui", "AndroidFrameVsync", t, [&](perfetto::EventContext ctx) {
         ctx.event()->set_timestamp_absolute_us(timestamp_ns / 1000);
@@ -75,7 +75,7 @@ void RecordJankMetrics(
   std::string missed_frames_histogram_name =
       base::StrCat({"Android.Jank.MissedFrames.", scenario_name});
 
-  for (unsigned i = 0; i < timestamps_ns.size(); ++i) {
+  for (size_t i = 0; i < timestamps_ns.size(); ++i) {
     AddFrameToTrace(timestamps_ns[i], durations_ns[i]);
   }
 

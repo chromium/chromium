@@ -15,7 +15,7 @@ jint JNI_CpuFeatures_GetCoreCount(JNIEnv*) {
 }
 
 jlong JNI_CpuFeatures_GetCpuFeatures(JNIEnv*) {
-  return android_getCpuFeatures();
+  return static_cast<jlong>(android_getCpuFeatures());
 }
 
 }  // namespace android

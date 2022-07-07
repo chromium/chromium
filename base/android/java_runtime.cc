@@ -5,16 +5,20 @@
 #include "base/android/java_runtime.h"
 
 #include "base/android_runtime_jni_headers/Runtime_jni.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 namespace android {
 
-void JavaRuntime::GetMemoryUsage(long* total_memory, long* free_memory) {
+void JavaRuntime::GetMemoryUsage(uint64_t* total_memory,
+                                 uint64_t* free_memory) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> runtime =
       JNI_Runtime::Java_Runtime_getRuntime(env);
-  *total_memory = JNI_Runtime::Java_Runtime_totalMemory(env, runtime);
-  *free_memory = JNI_Runtime::Java_Runtime_freeMemory(env, runtime);
+  *total_memory = checked_cast<uint64_t>(
+      JNI_Runtime::Java_Runtime_totalMemory(env, runtime));
+  *free_memory = checked_cast<uint64_t>(
+      JNI_Runtime::Java_Runtime_freeMemory(env, runtime));
 }
 
 }  // namespace android

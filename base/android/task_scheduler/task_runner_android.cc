@@ -33,9 +33,10 @@ class AndroidTaskTraits {
       jboolean may_block,
       jbyte extension_id,
       const base::android::JavaParamRef<jbyteArray>& extension_data) {
-    return TaskTraits(static_cast<TaskPriority>(priority), may_block,
-                      TaskTraitsExtensionStorage(
-                          extension_id, GetExtensionData(env, extension_data)));
+    return TaskTraits(
+        static_cast<TaskPriority>(priority), may_block,
+        TaskTraitsExtensionStorage(static_cast<uint8_t>(extension_id),
+                                   GetExtensionData(env, extension_data)));
   }
 
  private:

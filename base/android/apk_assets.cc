@@ -29,7 +29,8 @@ int OpenApkAsset(const std::string& file_path,
   CHECK_EQ(3U, results.size());
   int fd = static_cast<int>(results[0]);
   region->offset = results[1];
-  region->size = results[2];
+  // Not a checked_cast because open() may return -1.
+  region->size = static_cast<size_t>(results[2]);
   return fd;
 }
 

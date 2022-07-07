@@ -16,15 +16,17 @@ ScopedJavaLocalRef<jobject> UnguessableTokenAndroid::Create(
   const uint64_t low = token.GetLowForSerialization();
   DCHECK(high);
   DCHECK(low);
-  return Java_UnguessableToken_create(env, high, low);
+  return Java_UnguessableToken_create(env, static_cast<jlong>(high),
+                                      static_cast<jlong>(low));
 }
 
 base::UnguessableToken UnguessableTokenAndroid::FromJavaUnguessableToken(
     JNIEnv* env,
     const JavaRef<jobject>& token) {
-  const uint64_t high =
-      Java_UnguessableToken_getHighForSerialization(env, token);
-  const uint64_t low = Java_UnguessableToken_getLowForSerialization(env, token);
+  const uint64_t high = static_cast<uint64_t>(
+      Java_UnguessableToken_getHighForSerialization(env, token));
+  const uint64_t low = static_cast<uint64_t>(
+      Java_UnguessableToken_getLowForSerialization(env, token));
   DCHECK(high);
   DCHECK(low);
   return base::UnguessableToken::Deserialize(high, low);

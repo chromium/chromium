@@ -166,7 +166,8 @@ class ReachedCodeProfiler {
     // Start the interval timer.
     struct itimerspec its;
     memset(&its, 0, sizeof(its));
-    its.it_interval.tv_nsec = sampling_interval.InNanoseconds();
+    its.it_interval.tv_nsec =
+        checked_cast<long>(sampling_interval.InNanoseconds());
     its.it_value = its.it_interval;
     ret = timer_settime(timerid, 0, &its, nullptr);
     if (ret) {

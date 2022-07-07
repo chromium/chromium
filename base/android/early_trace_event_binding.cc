@@ -106,7 +106,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP_AND_FLAGS0(
-      internal::kJavaTraceCategory, name.c_str(), TRACE_ID_LOCAL(id),
+      internal::kJavaTraceCategory, name.c_str(),
+      TRACE_ID_LOCAL(static_cast<uint64_t>(id)),
       TimeTicks::FromJavaNanoTime(time_ns),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
@@ -119,7 +120,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(
   std::string name = ConvertJavaStringToUTF8(env, jname);
 
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP_AND_FLAGS0(
-      internal::kJavaTraceCategory, name.c_str(), TRACE_ID_LOCAL(id),
+      internal::kJavaTraceCategory, name.c_str(),
+      TRACE_ID_LOCAL(static_cast<uint64_t>(id)),
       TimeTicks::FromJavaNanoTime(time_ns),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }

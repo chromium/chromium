@@ -40,21 +40,21 @@ class BASE_EXPORT ThreadInstructionCount {
   static bool IsSupported();
 
   // Returns the number of retired instructions relative to some epoch count,
-  // or -1 if getting the current instruction count failed / is disabled.
+  // or 0 if getting the current instruction count failed / is disabled.
   static ThreadInstructionCount Now();
 
-  constexpr ThreadInstructionCount() : value_(-1) {}
-  explicit constexpr ThreadInstructionCount(int64_t value) : value_(value) {}
+  explicit constexpr ThreadInstructionCount(uint64_t value = 0)
+      : value_(value) {}
 
   constexpr ThreadInstructionDelta operator-(
       ThreadInstructionCount other) const {
-    return ThreadInstructionDelta(value_ - other.value_);
+    return ThreadInstructionDelta(static_cast<int64_t>(value_ - other.value_));
   }
 
-  constexpr int64_t ToInternalValue() const { return value_; }
+  constexpr uint64_t ToInternalValue() const { return value_; }
 
  private:
-  int64_t value_;
+  uint64_t value_;
 };
 
 }  // namespace android
