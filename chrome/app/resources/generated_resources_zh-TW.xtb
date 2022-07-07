@@ -1814,7 +1814,7 @@
 <translation id="270921614578699633">平均取樣數：</translation>
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="2710101514844343743">使用狀況與診斷資料</translation>
-<translation id="271033894570825754">新</translation>
+<translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用</translation>
 <translation id="2712173769900027643">要求權限</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
@@ -4688,7 +4688,7 @@
     <ph name="BEGIN_PARAGRAPH2" />即使關閉這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新與安全服務) 所需的資訊。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />裝置擁有者如要管理這項功能，可依序前往 [設定] &gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google]。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />如果你另外開啟了「網路和應用程式活動」設定，這項資料可能會儲存在你的 Google 帳戶中。如要查看/刪除你的資料，或是變更帳戶設定，請前往 account.google.com。<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5585019845078534178">卡片</translation>
+<translation id="5585019845078534178">資訊卡</translation>
 <translation id="5585118885427931890">無法建立書籤資料夾。</translation>
 <translation id="558563010977877295">開啟某個特定網頁或一組網頁</translation>
 <translation id="5585898376467608182">你的裝置儲存空間不足。使用「<ph name="APP_NAME" />」至少需要 <ph name="MINIMUM_SPACE" /> 的可用空間。如要增加可用空間，請刪除裝置中的檔案。</translation>

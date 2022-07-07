@@ -166,7 +166,7 @@
 <translation id="7052633198403197513">F1</translation>
 <translation id="7170202025028120564">Aplikazioaren bistaratze-ezarpenek aplikazioa berrabiarazten denean izango dute eragina.</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238427729722629793">{MINUTES,plural, =1{1 minutu gelditzen da}other{# minutu gelditzen dira}}</translation>
+<translation id="7238427729722629793">{MINUTES,plural, =1{1 min gelditzen da}other{# min gelditzen dira}}</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Duela 1 min}other{Duela # min}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minutu bat gelditzen da}other{# minutu gelditzen dira}}</translation>
