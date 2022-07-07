@@ -83,8 +83,6 @@ void SandboxedDMGAnalyzer::ReportFileFailure(
 
 void SandboxedDMGAnalyzer::AnalyzeFile(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::UmaHistogramBoolean("SBClientDownload.DmgAnalysisRemoteValid",
-                            remote_analyzer_.is_bound());
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeDmgFile(
         std::move(file),

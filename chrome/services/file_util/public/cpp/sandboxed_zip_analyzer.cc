@@ -86,8 +86,6 @@ void SandboxedZipAnalyzer::ReportFileFailure(
 
 void SandboxedZipAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::UmaHistogramBoolean("SBClientDownload.ZipAnalysisRemoteValid",
-                            remote_analyzer_.is_bound());
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeZipFile(
         std::move(file), std::move(temp_file),

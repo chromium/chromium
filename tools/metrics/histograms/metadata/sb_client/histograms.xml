@@ -458,22 +458,6 @@ chromium-metrics-reviews@google.com.
   <token key="Action" variants="DownloadWarningAction"/>
 </histogram>
 
-<histogram name="SBClientDownload.{Analyzer}AnalysisRemoteValid"
-    enum="BooleanValid" expires_after="2022-08-08">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the analyzer for {Analyzer} is valid at the time of
-    analysis. Recorded once for each download with the appropriate file type.
-  </summary>
-  <token key="Analyzer">
-    <variant name="Dmg" summary=".dmg files"/>
-    <variant name="Document" summary="office documents"/>
-    <variant name="Rar" summary=".rar files"/>
-    <variant name="Zip" summary=".zip files"/>
-  </token>
-</histogram>
-
 <histogram name="SBClientDownload.{ArchiveType}ArchiveAnalysisResult"
     enum="ArchiveAnalysisResult" expires_after="2022-10-26">
   <owner>drubery@chromium.org</owner>

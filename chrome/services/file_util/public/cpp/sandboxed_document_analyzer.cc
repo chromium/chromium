@@ -68,8 +68,6 @@ void SandboxedDocumentAnalyzer::AnalyzeDocument(
     const base::FilePath& file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::UmaHistogramBoolean("SBClientDownload.DocumentAnalysisRemoteValid",
-                            remote_analyzer_.is_bound());
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeDocument(
         std::move(file), target_file_path_,

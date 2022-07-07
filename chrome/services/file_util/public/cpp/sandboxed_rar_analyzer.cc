@@ -49,8 +49,6 @@ SandboxedRarAnalyzer::~SandboxedRarAnalyzer() = default;
 void SandboxedRarAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!file_path_.value().empty());
-  base::UmaHistogramBoolean("SBClientDownload.RarAnalysisRemoteValid",
-                            remote_analyzer_.is_bound());
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeRarFile(
         std::move(file), std::move(temp_file),
