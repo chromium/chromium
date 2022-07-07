@@ -37,6 +37,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
@@ -55,41 +56,6 @@ namespace extensions {
 namespace permissions = api::permissions;
 
 namespace {
-
-// Returns a PermissionSet that has the active permissions of the extension,
-// bounded to its current manifest.
-std::unique_ptr<const PermissionSet> GetBoundedActivePermissions(
-    const Extension* extension,
-    const PermissionSet* active_permissions) {
-  // If the extension has used the optional permissions API, it will have a
-  // custom set of active permissions defined in the extension prefs. Here,
-  // we update the extension's active permissions based on the prefs.
-  if (!active_permissions)
-    return extension->permissions_data()->active_permissions().Clone();
-
-  const PermissionSet& required_permissions =
-      PermissionsParser::GetRequiredPermissions(extension);
-
-  // We restrict the active permissions to be within the bounds defined in the
-  // extension's manifest.
-  //  a) active permissions must be a subset of optional + default permissions
-  //  b) active permissions must contains all default permissions
-  std::unique_ptr<const PermissionSet> total_permissions =
-      PermissionSet::CreateUnion(
-          required_permissions,
-          PermissionsParser::GetOptionalPermissions(extension));
-
-  // Make sure the active permissions contain no more than optional + default.
-  std::unique_ptr<const PermissionSet> adjusted_active =
-      PermissionSet::CreateIntersection(*total_permissions,
-                                        *active_permissions);
-
-  // Make sure the active permissions contain the default permissions.
-  adjusted_active =
-      PermissionSet::CreateUnion(required_permissions, *adjusted_active);
-
-  return adjusted_active;
-}
 
 std::unique_ptr<PermissionsUpdater::Delegate>& GetDelegateWrapper() {
   static base::NoDestructor<std::unique_ptr<PermissionsUpdater::Delegate>>
@@ -515,24 +481,27 @@ void PermissionsUpdater::GrantActivePermissions(const Extension* extension) {
 }
 
 void PermissionsUpdater::InitializePermissions(const Extension* extension) {
-  std::unique_ptr<const PermissionSet> bounded_wrapper;
-  const PermissionSet* bounded_active = nullptr;
+  std::unique_ptr<const PermissionSet> desired_permissions_wrapper;
+  const PermissionSet* desired_permissions = nullptr;
+
+  PermissionsManager* permissions_manager =
+      PermissionsManager::Get(browser_context_);
+  DCHECK(permissions_manager);
+
   // If |extension| is a transient dummy extension, we do not want to look for
   // it in preferences.
   if (init_flag_ & INIT_FLAG_TRANSIENT) {
-    bounded_active = &extension->permissions_data()->active_permissions();
+    desired_permissions = &extension->permissions_data()->active_permissions();
   } else {
-    ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-    std::unique_ptr<const PermissionSet> active_permissions =
-        prefs->GetActivePermissions(extension->id());
-    bounded_wrapper =
-        GetBoundedActivePermissions(extension, active_permissions.get());
-    bounded_active = bounded_wrapper.get();
+    desired_permissions_wrapper =
+        PermissionsManager::Get(browser_context_)
+            ->GetExtensionDesiredPermissionsFromPrefs(*extension);
+    desired_permissions = desired_permissions_wrapper.get();
   }
 
   std::unique_ptr<const PermissionSet> granted_permissions =
-      ScriptingPermissionsModifier(browser_context_, extension)
-          .WithholdPermissionsIfNecessary(*bounded_active);
+      permissions_manager->GetEffectivePermissionsToGrant(*extension,
+                                                          *desired_permissions);
 
   if (GetDelegate())
     GetDelegate()->InitializePermissions(extension, &granted_permissions);

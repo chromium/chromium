@@ -13,6 +13,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
+#include "extensions/common/permissions/permission_set.h"
 
 namespace extensions {
 
@@ -172,6 +173,13 @@ ExtensionsBrowserClient::GetRelatedContextsForExtension(
     content::BrowserContext* browser_context,
     const Extension& extension) const {
   return {browser_context};
+}
+
+std::unique_ptr<const PermissionSet>
+ExtensionsBrowserClient::AddAdditionalAllowedHosts(
+    const PermissionSet& desired_permissions,
+    const PermissionSet& granted_permissions) const {
+  return granted_permissions.Clone();
 }
 
 }  // namespace extensions

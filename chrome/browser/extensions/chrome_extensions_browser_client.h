@@ -193,6 +193,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::vector<content::BrowserContext*> GetRelatedContextsForExtension(
       content::BrowserContext* browser_context,
       const Extension& extension) const override;
+  std::unique_ptr<const PermissionSet> AddAdditionalAllowedHosts(
+      const PermissionSet& desired_permissions,
+      const PermissionSet& granted_permissions) const override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;

@@ -79,6 +79,7 @@ class ExtensionSystem;
 class ExtensionSystemProvider;
 class ExtensionWebContentsObserver;
 class KioskDelegate;
+class PermissionSet;
 class ProcessManagerDelegate;
 class ProcessMap;
 class RuntimeAPIDelegate;
@@ -442,6 +443,12 @@ class ExtensionsBrowserClient {
   virtual std::vector<content::BrowserContext*> GetRelatedContextsForExtension(
       content::BrowserContext* browser_context,
       const Extension& extension) const;
+
+  // Adds any hosts that should be automatically considered "granted" if
+  // requested, returning a modified permission set.
+  virtual std::unique_ptr<const PermissionSet> AddAdditionalAllowedHosts(
+      const PermissionSet& desired_permissions,
+      const PermissionSet& granted_permissions) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

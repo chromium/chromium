@@ -7655,6 +7655,7 @@ test("unit_tests") {
       "../browser/extensions/permission_message_combinations_unittest.cc",
       "../browser/extensions/permission_messages_unittest.cc",
       "../browser/extensions/permissions_based_management_policy_provider_unittest.cc",
+      "../browser/extensions/permissions_manager_unittest.cc",
       "../browser/extensions/permissions_updater_unittest.cc",
       "../browser/extensions/policy_handlers_unittest.cc",
       "../browser/extensions/preinstalled_apps_unittest.cc",

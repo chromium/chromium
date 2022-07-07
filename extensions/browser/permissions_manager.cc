@@ -443,6 +443,119 @@ PermissionsManager::GetRuntimePermissionsFromPrefs(
       std::move(new_explicit_hosts), permissions->scriptable_hosts().Clone());
 }
 
+std::unique_ptr<const PermissionSet>
+PermissionsManager::GetExtensionDesiredPermissionsFromPrefs(
+    const Extension& extension) const {
+  // Determine the extension's "required" permissions (though even these can
+  // be withheld).
+  const PermissionSet& required_permissions =
+      PermissionsParser::GetRequiredPermissions(&extension);
+
+  // Retrieve the desired permissions from prefs. "Desired permissions" here
+  // are the permissions the extension most recently set for itself.  This
+  // might not be all granted permissions, since extensions can revoke their
+  // own permissions via chrome.permissions.remove() (which removes the
+  // permission from the active set, but not the granted set).
+  std::unique_ptr<const PermissionSet> desired_active_permissions =
+      extension_prefs_->GetActivePermissions(extension.id());
+  // The stored desired permissions may be null if the extension has never
+  // used the permissions API to modify its active permissions. In this case,
+  // the desired permissions are simply the set of required permissions.
+  if (!desired_active_permissions)
+    return required_permissions.Clone();
+
+  // Otherwise, the extension has stored a set of desired permissions. This
+  // could actually be a superset *or* a subset of requested permissions by the
+  // extension (depending on how its permissions have changed).
+  // Start by calculating the set of all current potentially-desired
+  // permissions by combining the required and optional permissions.
+  std::unique_ptr<const PermissionSet> requested_permissions =
+      PermissionSet::CreateUnion(
+          required_permissions,
+          PermissionsParser::GetOptionalPermissions(&extension));
+
+  // Now, take the intersection of the requested permissions and the stored
+  // permissions. This filters out any previously-stored permissions that are
+  // no longer used (which we continue to store in prefs in case the extension
+  // wants them back in the future).
+  std::unique_ptr<const PermissionSet> bounded_desired =
+      PermissionSet::CreateIntersection(*desired_active_permissions,
+                                        *requested_permissions);
+
+  // Additionally, we ensure that all "required" permissions are included in
+  // this desired set (to guard against any pref corruption - this ensures at
+  // least everything is in a "sane" state).
+  // TODO(https://crbug.com/1341118): Maddeningly, the order of the arguments
+  // passed to CreateUnion() here is *important*. Passing `bounded_desired` as
+  // the first param results in the valid schemes being removed.
+  bounded_desired =
+      PermissionSet::CreateUnion(required_permissions, *bounded_desired);
+
+  return bounded_desired;
+}
+
+std::unique_ptr<const PermissionSet>
+PermissionsManager::GetEffectivePermissionsToGrant(
+    const Extension& extension,
+    const PermissionSet& desired_permissions) const {
+  if (!util::CanWithholdPermissionsFromExtension(extension)) {
+    // The withhold creation flag should never have been set in cases where
+    // withholding isn't allowed.
+    DCHECK(!(extension.creation_flags() & Extension::WITHHOLD_PERMISSIONS));
+    return desired_permissions.Clone();
+  }
+
+  if (desired_permissions.effective_hosts().is_empty())
+    return desired_permissions.Clone();  // No hosts to withhold.
+
+  // Determine if we should withhold host permissions. This is different for
+  // extensions that are being newly-installed and extensions that have already
+  // been installed; this is indicated by the extension creation flags.
+  bool should_withhold = false;
+  if (extension.creation_flags() & Extension::WITHHOLD_PERMISSIONS)
+    should_withhold = true;
+  else
+    should_withhold = HasWithheldHostPermissions(extension.id());
+
+  if (!should_withhold)
+    return desired_permissions.Clone();
+
+  // Otherwise, permissions should be withheld according to the user-granted
+  // permission set.
+
+  // Determine the permissions granted by the user at runtime. If none are found
+  // in prefs, default it to an empty set.
+  std::unique_ptr<const PermissionSet> granted_permissions =
+      GetRuntimePermissionsFromPrefs(extension);
+  if (!granted_permissions)
+    granted_permissions = std::make_unique<PermissionSet>();
+
+  // Add any additional hosts that should be auto-granted.
+  granted_permissions =
+      ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
+          desired_permissions, *granted_permissions);
+
+  // Host permissions may be withheld. The resulting set is the intersection of
+  // the hosts the extension desires and the user has approved or should always
+  // be granted.
+  URLPatternSet new_scriptable_hosts = URLPatternSet::CreateIntersection(
+      desired_permissions.scriptable_hosts(),
+      granted_permissions->scriptable_hosts(),
+      URLPatternSet::IntersectionBehavior::kDetailed);
+  URLPatternSet new_explicit_hosts = URLPatternSet::CreateIntersection(
+      desired_permissions.explicit_hosts(),
+      granted_permissions->explicit_hosts(),
+      URLPatternSet::IntersectionBehavior::kDetailed);
+
+  // The total resulting permissions set includes the new host permissions and
+  // the originally-requested API and manifest permissions (which are never
+  // currently withheld).
+  return std::make_unique<PermissionSet>(
+      desired_permissions.apis().Clone(),
+      desired_permissions.manifest_permissions().Clone(),
+      std::move(new_explicit_hosts), std::move(new_scriptable_hosts));
+}
+
 void PermissionsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
