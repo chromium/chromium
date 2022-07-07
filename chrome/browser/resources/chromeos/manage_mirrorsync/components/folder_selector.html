@@ -1,0 +1,62 @@
+<!--
+  -- Copyright 2022 The Chromium Authors. All rights reserved.
+  -- Use of this source code is governed by a BSD-style license that can be
+  -- found in the LICENSE file.
+  -->
+<style>
+  #select-folders {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 8px;
+    margin-bottom: 28px;
+    margin-inline: 48px;
+    margin-top: 22px;
+    max-height: 168px;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+
+  #select-folders ul {
+    list-style-type: none;
+    margin: 0;
+    padding-inline-start: 16px;
+  }
+
+  #select-folders li {
+    padding-top: 16px;
+  }
+</style>
+<div id="select-folders">
+  <ul>
+    <li>
+      <label>
+        <input type="checkbox" name="folders" value="/My files" id="/My files">
+        My files
+      </label>
+    </li>
+    <ul>
+      <li>
+        <label>
+          <input type="checkbox" name="folders"
+              value="/My files/Downloads" id="/My files/Downloads">
+          Downloads
+        </label>
+      </li>
+      <ul>
+        <li>
+          <label>
+            <input type="checkbox" name="folders"
+                value="/My files/Downloads/FolderB"
+                id="/My files/Downloads/FolderB">
+            FolderB
+          </label>
+        </li>
+      </ul>
+    </ul>
+    <li>
+      <label>
+        <input type="checkbox" name="folders" value="/Foo" id="/Foo">
+        Foo
+      </label>
+    </li>
+  </ul>
+</div>
