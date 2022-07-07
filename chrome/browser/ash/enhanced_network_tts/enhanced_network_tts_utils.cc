@@ -187,11 +187,9 @@ mojom::TtsResponsePtr GetResultOnError(
   return mojom::TtsResponse::NewErrorCode(error_code);
 }
 
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
+mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
                                          const int start_index,
                                          const bool is_last_request) {
-  base::Value::ConstListView list_data = json_data.GetListDeprecated();
-
   // Depending on the size of input text (n), the list size should be 1 + 2n.
   // The first item in the list is "metadata", then each input text has one
   // dictionary for "text" and another dictionary for "audio". Since we only
@@ -216,29 +214,27 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
   //   ...
   // ]
   std::vector<mojom::TimingInfoPtr> timing_infos;
-  const base::Value& text_dict = list_data[1];
-  const base::Value* timing_info_ptr =
-      text_dict.FindListPath("text.timingInfo");
-  if (timing_info_ptr == nullptr) {
+  const base::Value::Dict& text_dict = list_data[1].GetDict();
+  const base::Value::List* timing_info_list =
+      text_dict.FindListByDottedPath("text.timingInfo");
+  if (timing_info_list == nullptr) {
     DVLOG(1) << "HTTP response for Enhance Network TTS has unexpected timing "
                 "info data.";
     return GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData);
   }
 
-  base::Value::ConstListView timing_info_list =
-      timing_info_ptr->GetListDeprecated();
-  for (size_t i = 0; i < timing_info_list.size(); ++i) {
-    const base::Value& timing_info = timing_info_list[i];
-    const std::string* timing_info_text_ptr = timing_info.FindStringKey("text");
+  for (size_t i = 0; i < timing_info_list->size(); ++i) {
+    const base::Value::Dict& timing_info = (*timing_info_list)[i].GetDict();
+    const std::string* timing_info_text_ptr = timing_info.FindString("text");
     const std::string* timing_info_timeoffset_ptr =
-        timing_info.FindStringPath("location.timeLocation.timeOffset");
+        timing_info.FindStringByDottedPath("location.timeLocation.timeOffset");
     const std::string* timing_info_duration_ptr =
-        timing_info.FindStringPath("location.timeLocation.duration");
+        timing_info.FindStringByDottedPath("location.timeLocation.duration");
     // If the first item in the timing_info_list does not have a text offset,
     // we default that to 0. If the first item starts with whitespaces, the
     // server will send back the text offset for the item.
     absl::optional<int> timing_info_text_offset =
-        timing_info.FindIntPath("location.textLocation.offset");
+        timing_info.FindIntByDottedPath("location.textLocation.offset");
     if (timing_info_text_offset == absl::nullopt && i == 0) {
       timing_info_text_offset = 0;
     }
@@ -255,8 +251,9 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
   }
 
   // Decode audio data.
-  const base::Value& audio_dict = list_data[2];
-  const std::string* audio_bytes_ptr = audio_dict.FindStringPath("audio.bytes");
+  const base::Value::Dict& audio_dict = list_data[2].GetDict();
+  const std::string* audio_bytes_ptr =
+      audio_dict.FindStringByDottedPath("audio.bytes");
   if (audio_bytes_ptr == nullptr) {
     DVLOG(1) << "HTTP response for Enhance Network TTS has unexpected audio "
                 "bytes data.";

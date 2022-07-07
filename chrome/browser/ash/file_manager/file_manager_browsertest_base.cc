@@ -258,10 +258,10 @@ struct AddEntriesMessage {
   std::vector<std::unique_ptr<struct TestEntryInfo>> entries;
 
   // Converts |value| to an AddEntriesMessage: true on success.
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                AddEntriesMessage* message) {
     base::JSONValueConverter<AddEntriesMessage> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   // Registers AddEntriesMessage member info to the |converter|.
@@ -675,10 +675,10 @@ void UnblockFileTaskRunner()
 }
 
 struct ExpectFileTasksMessage {
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                ExpectFileTasksMessage* message) {
     base::JSONValueConverter<ExpectFileTasksMessage> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   static void RegisterJSONConverter(
@@ -712,10 +712,10 @@ struct ExpectFileTasksMessage {
 };
 
 struct GetHistogramCountMessage {
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                GetHistogramCountMessage* message) {
     base::JSONValueConverter<GetHistogramCountMessage> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   static void RegisterJSONConverter(
@@ -730,10 +730,10 @@ struct GetHistogramCountMessage {
 };
 
 struct GetTotalHistogramSum {
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                GetTotalHistogramSum* message) {
     base::JSONValueConverter<GetTotalHistogramSum> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   static void RegisterJSONConverter(
@@ -746,10 +746,10 @@ struct GetTotalHistogramSum {
 };
 
 struct ExpectHistogramTotalCountMessage {
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                ExpectHistogramTotalCountMessage* message) {
     base::JSONValueConverter<ExpectHistogramTotalCountMessage> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   static void RegisterJSONConverter(
@@ -765,10 +765,10 @@ struct ExpectHistogramTotalCountMessage {
 };
 
 struct GetUserActionCountMessage {
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                GetUserActionCountMessage* message) {
     base::JSONValueConverter<GetUserActionCountMessage> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   static void RegisterJSONConverter(
@@ -781,10 +781,10 @@ struct GetUserActionCountMessage {
 };
 
 struct GetLocalPathMessage {
-  static bool ConvertJSONValue(const base::DictionaryValue& value,
+  static bool ConvertJSONValue(const base::Value::Dict& value,
                                GetLocalPathMessage* message) {
     base::JSONValueConverter<GetLocalPathMessage> converter;
-    return converter.Convert(value, message);
+    return converter.Convert(base::Value(value.Clone()), message);
   }
 
   static void RegisterJSONConverter(
@@ -2228,11 +2228,15 @@ void FileManagerBrowserTestBase::RunTestMessageLoop() {
 
     // If the message in JSON format has no command, ignore it
     // but note a reply is required: use std::string().
-    const auto json = base::JSONReader::ReadDeprecated(message.message);
-    const base::DictionaryValue* dictionary = nullptr;
+    absl::optional<base::Value> json = base::JSONReader::Read(message.message);
+    if (!json) {
+      message.function->Reply(std::string());
+      continue;
+    }
+
+    base::Value::Dict* dictionary = json->GetIfDict();
     const std::string* command = nullptr;
-    if (!json || !json->GetAsDictionary(&dictionary) ||
-        !(command = dictionary->FindStringKey("name"))) {
+    if (!dictionary || !(command = dictionary->FindString("name"))) {
       message.function->Reply(std::string());
       continue;
     }
@@ -2254,7 +2258,7 @@ void FileManagerBrowserTestBase::RunTestMessageLoop() {
 // NO_THREAD_SAFETY_ANALYSIS: Locking depends on runtime commands, the static
 // checker cannot assess it.
 void FileManagerBrowserTestBase::OnCommand(const std::string& name,
-                                           const base::DictionaryValue& value,
+                                           const base::Value::Dict& value,
                                            std::string* output)
     NO_THREAD_SAFETY_ANALYSIS {
   const Options options = GetOptions();
@@ -2286,7 +2290,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "showItemInFolder") {
-    const std::string* relative_path = value.FindStringKey("localPath");
+    const std::string* relative_path = value.FindString("localPath");
     ASSERT_TRUE(relative_path);
     base::FilePath full_path =
         file_manager::util::GetMyFilesFolderForProfile(profile());
@@ -2311,16 +2315,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "launchFileManagerSwa") {
-    const std::string* launch_dir = value.FindStringKey("launchDir");
-    base::DictionaryValue arg_value;
+    const std::string* launch_dir = value.FindString("launchDir");
+    base::Value::Dict arg_value;
     if (launch_dir)
-      arg_value.SetStringKey("currentDirectoryURL", *launch_dir);
+      arg_value.Set("currentDirectoryURL", *launch_dir);
 
-    const std::string* type = value.FindStringKey("type");
+    const std::string* type = value.FindString("type");
     if (type)
-      arg_value.SetStringKey("type", *type);
+      arg_value.Set("type", *type);
     std::string search;
-    if (arg_value.FindKey("currentDirectoryURL") || arg_value.FindKey("type")) {
+    if (launch_dir || type) {
       std::string json_args;
       base::JSONWriter::Write(arg_value, &json_args);
       search = base::StrCat(
@@ -2377,7 +2381,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "expectWindowURL") {
-    const std::string* expected_url = value.FindStringKey("expectedUrl");
+    const std::string* expected_url = value.FindString("expectedUrl");
     EXPECT_TRUE(expected_url);
     for (auto* web_contents : GetAllWebContents()) {
       const std::string& url = web_contents->GetVisibleURL().spec();
@@ -2397,9 +2401,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     // this, which would potentially create a security vulnerability, we
     // short-circuit sending messages by directly invoking dedicated function in
     // Files SWA.
-    const std::string* data = value.FindStringKey("data");
+    const std::string* data = value.FindString("data");
     ASSERT_TRUE(data);
-    const std::string* app_id = value.FindStringKey("appId");
+    const std::string* app_id = value.FindString("appId");
 
     content::WebContents* web_contents;
     if (app_id && !app_id->empty()) {
@@ -2425,11 +2429,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getWindowsSWA") {
-    absl::optional<bool> is_swa = value.FindBoolKey("isSWA");
+    absl::optional<bool> is_swa = value.FindBool("isSWA");
     ASSERT_TRUE(is_swa.has_value());
     ASSERT_TRUE(is_swa.value());
 
-    base::DictionaryValue dictionary;
+    base::Value::Dict dictionary;
 
     int counter = 0;
     for (auto* web_contents : GetAllWebContents()) {
@@ -2441,7 +2445,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         for (const auto& pair : swa_web_contents_) {
           if (pair.second == web_contents) {
             app_id = pair.first;
-            dictionary.SetStringPath(app_id, app_id);
+            dictionary.SetByDottedPath(app_id, app_id);
             found = true;
             break;
           }
@@ -2450,7 +2454,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         if (!found) {
           app_id =
               base::StrCat({"unknow-id-", base::NumberToString(counter++)});
-          dictionary.SetStringPath(app_id, app_id);
+          dictionary.SetByDottedPath(app_id, app_id);
         }
       }
     }
@@ -2464,12 +2468,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       bool found = false;
       web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
           base::BindRepeating(
-              [](const base::DictionaryValue& value, bool& found,
+              [](const base::Value::Dict& value, bool& found,
                  std::string* output, content::RenderFrameHost* frame) {
                 const url::Origin origin = frame->GetLastCommittedOrigin();
                 if (origin.GetURL() ==
                     ash::file_manager::kChromeUIFileManagerUntrustedURL) {
-                  const std::string* script = value.FindStringKey("data");
+                  const std::string* script = value.FindString("data");
                   EXPECT_TRUE(script);
                   CHECK(ExecuteScriptAndExtractString(frame, *script, output));
                   found = true;
@@ -2512,8 +2516,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     const auto downloads_root =
         util::GetDownloadsMountPointName(profile()) + "/Downloads";
 
-    base::DictionaryValue dictionary;
-    dictionary.SetStringKey("downloads", "/" + downloads_root);
+    base::Value::Dict dictionary;
+    dictionary.Set("downloads", "/" + downloads_root);
 
     if (!profile()->IsGuestSession()) {
       auto* drive_integration_service =
@@ -2521,12 +2525,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       if (drive_integration_service->IsMounted()) {
         const auto drive_mount_name =
             drive_integration_service->GetMountPointPath().BaseName();
-        dictionary.SetStringKey(
-            "drive", base::StrCat({"/", drive_mount_name.value(), "/root"}));
+        dictionary.Set("drive",
+                       base::StrCat({"/", drive_mount_name.value(), "/root"}));
       }
       if (android_files_volume_) {
-        dictionary.SetStringKey("android_files",
-                                "/" + util::GetAndroidFilesMountPointName());
+        dictionary.Set("android_files",
+                       "/" + util::GetAndroidFilesMountPointName());
       }
     }
     base::JSONWriter::Write(dictionary, output);
@@ -2547,9 +2551,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     if (*origin.rbegin() == '/')  // Strip origin trailing '/'.
       origin.resize(origin.length() - 1);
 
-    base::DictionaryValue dictionary;
-    dictionary.SetStringKey("url", url.spec());
-    dictionary.SetStringKey("origin", origin);
+    base::Value::Dict dictionary;
+    dictionary.Set("url", url.spec());
+    dictionary.Set("origin", origin);
 
     base::JSONWriter::Write(dictionary, output);
     return;
@@ -2649,7 +2653,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "mountFakeUsb" || name == "mountFakeUsbEmpty" ||
       name == "mountFakeUsbDcim") {
     std::string file_system = "ext4";
-    const std::string* file_system_param = value.FindStringKey("filesystem");
+    const std::string* file_system_param = value.FindString("filesystem");
     if (file_system_param) {
       file_system = *file_system_param;
     }
@@ -2813,7 +2817,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "setDriveEnabled") {
-    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
                                       !enabled.value());
@@ -2821,7 +2825,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "setPdfPreviewEnabled") {
-    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(prefs::kPluginsAlwaysOpenPdfExternally,
                                       !enabled.value());
@@ -2829,7 +2833,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "setCrostiniEnabled") {
-    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                       enabled.value());
@@ -2837,14 +2841,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "setCrostiniRootAccessAllowed") {
-    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     crostini_features_.set_root_access_allowed(enabled.value());
     return;
   }
 
   if (name == "setCrostiniExportImportAllowed") {
-    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     crostini_features_.set_export_import_ui_allowed(enabled.value());
     return;
@@ -2859,9 +2863,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "clickNotificationButton") {
-    const std::string* extension_id = value.FindStringKey("extensionId");
+    const std::string* extension_id = value.FindString("extensionId");
     ASSERT_TRUE(extension_id);
-    const std::string* notification_id = value.FindStringKey("notificationId");
+    const std::string* notification_id = value.FindString("notificationId");
     ASSERT_TRUE(notification_id);
 
     const std::string delegate_id = *extension_id + "-" + *notification_id;
@@ -2869,7 +2873,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         display_service_->GetNotification(delegate_id);
     EXPECT_TRUE(notification);
 
-    absl::optional<int> index = value.FindIntKey("index");
+    absl::optional<int> index = value.FindInt("index");
     ASSERT_TRUE(index);
     display_service_->SimulateClick(NotificationHandler::Type::EXTENSION,
                                     delegate_id, *index, absl::nullopt);
@@ -2877,7 +2881,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "launchProviderExtension") {
-    const std::string* manifest = value.FindStringKey("manifest");
+    const std::string* manifest = value.FindString("manifest");
     ASSERT_TRUE(manifest);
     LaunchExtension(base::FilePath(FILE_PATH_LITERAL(
                         "ui/file_manager/integration_tests/testing_provider")),
@@ -2894,8 +2898,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "dispatchTabKey") {
     // Read optional modifier parameter |shift|.
-    absl::optional<bool> shift_opt = value.FindBoolKey("shift");
-    bool shift = shift_opt.value_or(false);
+    bool shift = value.FindBool("shift").value_or(false);
 
     int flag = shift ? ui::EF_SHIFT_DOWN : 0;
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, flag);
@@ -2905,11 +2908,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "simulateClick") {
-    absl::optional<int> click_x = value.FindIntKey("clickX");
-    absl::optional<int> click_y = value.FindIntKey("clickY");
+    absl::optional<int> click_x = value.FindInt("clickX");
+    absl::optional<int> click_y = value.FindInt("clickY");
     ASSERT_TRUE(click_x);
     ASSERT_TRUE(click_y);
-    const std::string* app_id = value.FindStringKey("appId");
+    const std::string* app_id = value.FindString("appId");
     ASSERT_TRUE(app_id);
 
     const Options& options = GetOptions();
@@ -2928,7 +2931,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getAppWindowId") {
-    const std::string* window_url = value.FindStringKey("windowUrl");
+    const std::string* window_url = value.FindString("windowUrl");
     ASSERT_TRUE(window_url);
 
     const auto& app_windows =
@@ -2948,7 +2951,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "hasSwaStarted") {
-    const std::string* swa_app_id = value.FindStringKey("swaAppId");
+    const std::string* swa_app_id = value.FindString("swaAppId");
     ASSERT_TRUE(swa_app_id);
 
     *output = "false";
@@ -2974,7 +2977,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "countAppWindows") {
-    const std::string* app_id = value.FindStringKey("appId");
+    const std::string* app_id = value.FindString("appId");
     ASSERT_TRUE(app_id);
 
     const auto& app_windows =
@@ -2990,11 +2993,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "runJsInAppWindow") {
-    const std::string* window_id_str = value.FindStringKey("windowId");
+    const std::string* window_id_str = value.FindString("windowId");
     ASSERT_TRUE(window_id_str);
     int window_id = 0;
     ASSERT_TRUE(base::StringToInt(*window_id_str, &window_id));
-    const std::string* script = value.FindStringKey("script");
+    const std::string* script = value.FindString("script");
     ASSERT_TRUE(script);
 
     const auto& app_windows =
@@ -3078,7 +3081,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "switchLanguage") {
-    const std::string* language = value.FindStringKey("language");
+    const std::string* language = value.FindString("language");
     ASSERT_TRUE(language);
     base::RunLoop run_loop;
     ash::locale_util::SwitchLanguage(
@@ -3208,12 +3211,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
 bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     const std::string& name,
-    const base::DictionaryValue& value,
+    const base::Value::Dict& value,
     std::string* output) {
   if (name == "registerMountableGuest") {
-    auto* displayName = value.GetDict().FindString("displayName");
-    auto* canMount = value.GetDict().Find("canMount");
-    auto* vmType = value.GetDict().FindString("vmType");
+    const std::string* displayName = value.FindString("displayName");
+    const base::Value* canMount = value.Find("canMount");
+    const std::string* vmType = value.FindString("vmType");
     CHECK(displayName != nullptr);
     // TODO(davidmunro): Merge with in-constructor derivation.
     // auto id = guest_os::GuestId(guest_os::VmType::UNKNOWN, *displayName,
@@ -3238,7 +3241,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
   }
   if (name == "unregisterMountableGuest") {
     int id;
-    auto* str = value.GetDict().FindString("guestId");
+    const std::string* str = value.FindString("guestId");
     CHECK(str != nullptr);
     CHECK(base::StringToInt(*str, &id));
     auto* registry = guest_os::GuestOsService::GetForProfile(profile())
@@ -3248,7 +3251,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
   }
   if (name == "unmountGuest") {
     int id;
-    auto* str = value.GetDict().FindString("guestId");
+    const std::string* str = value.FindString("guestId");
     CHECK(str != nullptr);
     CHECK(base::StringToInt(*str, &id));
     auto* registry = guest_os::GuestOsService::GetForProfile(profile())

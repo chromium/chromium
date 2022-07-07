@@ -97,15 +97,15 @@ std::string CreateServerResponse(const std::vector<uint8_t>& expected_output) {
 }
 
 bool AreRequestsEqual(const std::string& json_a, const std::string& json_b) {
-  const std::unique_ptr<base::Value> dict_a =
-      base::JSONReader::ReadDeprecated(json_a);
-  const std::unique_ptr<base::Value> dict_b =
-      base::JSONReader::ReadDeprecated(json_b);
+  absl::optional<base::Value> parsed_a = base::JSONReader::Read(json_a);
+  absl::optional<base::Value> parsed_b = base::JSONReader::Read(json_b);
+  base::Value::Dict& dict_a = parsed_a->GetDict();
+  base::Value::Dict& dict_b = parsed_b->GetDict();
 
   const absl::optional<double> rate_a =
-      dict_a->FindDoublePath(kSpeechFactorPath);
+      dict_a.FindDoubleByDottedPath(kSpeechFactorPath);
   const absl::optional<double> rate_b =
-      dict_b->FindDoublePath(kSpeechFactorPath);
+      dict_b.FindDoubleByDottedPath(kSpeechFactorPath);
   // Speech rates should have only one decimal digit.
   if (!HasOneDecimalDigit(rate_a) || !HasOneDecimalDigit(rate_b))
     return false;
@@ -114,9 +114,9 @@ bool AreRequestsEqual(const std::string& json_a, const std::string& json_b) {
     return false;
 
   // Compare the dicts without the speech rates.
-  dict_a->RemovePath(kSpeechFactorPath);
-  dict_b->RemovePath(kSpeechFactorPath);
-  return *dict_a == *dict_b;
+  dict_a.RemoveByDottedPath(kSpeechFactorPath);
+  dict_b.RemoveByDottedPath(kSpeechFactorPath);
+  return dict_a == dict_b;
 }
 
 }  // namespace enhanced_network_tts

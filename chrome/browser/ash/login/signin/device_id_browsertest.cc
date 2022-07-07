@@ -148,12 +148,11 @@ class DeviceIDTest : public OobeBaseTest,
     if (!base::ReadFileToString(GetRefreshTokenToDeviceIdMapFilePath(),
                                 &file_contents))
       return;
-    std::unique_ptr<base::Value> value(
-        base::JSONReader::ReadDeprecated(file_contents));
-    base::DictionaryValue* dictionary;
-    EXPECT_TRUE(value->GetAsDictionary(&dictionary));
+    absl::optional<base::Value> value = base::JSONReader::Read(file_contents);
+    EXPECT_TRUE(value->is_dict());
+    base::Value::Dict& dictionary = value->GetDict();
     FakeGaia::RefreshTokenToDeviceIdMap map;
-    for (auto item : dictionary->DictItems()) {
+    for (auto item : dictionary) {
       ASSERT_TRUE(item.second.is_string());
       map[item.first] = item.second.GetString();
     }
@@ -161,10 +160,10 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   void SaveRefreshTokenToDeviceIdMap() {
-    base::DictionaryValue dictionary;
+    base::Value::Dict dictionary;
     for (const auto& kv :
          fake_gaia_.fake_gaia()->refresh_token_to_device_id_map())
-      dictionary.SetKey(kv.first, base::Value(kv.second));
+      dictionary.Set(kv.first, kv.second);
     std::string json;
     EXPECT_TRUE(base::JSONWriter::Write(dictionary, &json));
     EXPECT_TRUE(base::WriteFile(GetRefreshTokenToDeviceIdMapFilePath(), json));

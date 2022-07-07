@@ -243,16 +243,14 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
     test::OobeJS().ExpectVisiblePath(kAdUnlockConfigurationStep);
   }
 
-  void CheckAttributeValue(const base::Value* config_value,
+  void CheckAttributeValue(const std::string* config_value,
                            const std::string& default_value,
                            const std::string& js_element) {
-    std::string expected_value(default_value);
-    if (config_value)
-      expected_value = config_value->GetString();
+    std::string expected_value(config_value ? *config_value : default_value);
     test::OobeJS().ExpectTrue(js_element + " === '" + expected_value + "'");
   }
 
-  void CheckAttributeValueAndDisabled(const base::Value* config_value,
+  void CheckAttributeValueAndDisabled(const std::string* config_value,
                                       const std::string& default_value,
                                       const std::string& js_element) {
     CheckAttributeValue(config_value, default_value, js_element + ".value");
@@ -262,13 +260,12 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
 
   // Checks pattern attribute on the machine name input field. If `config_value`
   // is nullptr the attribute should be undefined.
-  void CheckPatternAttribute(const base::Value* config_value) {
+  void CheckPatternAttribute(const std::string* config_value) {
     if (config_value) {
       std::string escaped_pattern;
       // Escape regex pattern.
-      EXPECT_TRUE(base::EscapeJSONString(config_value->GetString(),
-                                         false /* put_in_quotes */,
-                                         &escaped_pattern));
+      EXPECT_TRUE(base::EscapeJSONString(
+          *config_value, false /* put_in_quotes */, &escaped_pattern));
       test::OobeJS().ExpectTrue(test::GetOobeElementPath(kAdMachineNameInput) +
                                 ".pattern  === '" + escaped_pattern + "'");
     } else {
@@ -283,42 +280,41 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
   // input fields are set correctly. Also checks if there is a "Custom" option
   // which does not set any fields.
   void CheckPossibleConfiguration(const std::string& configuration) {
-    std::unique_ptr<base::ListValue> options =
-        base::ListValue::From(base::JSONReader::ReadDeprecated(
-            configuration,
-            base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
-    base::DictionaryValue custom_option;
-    custom_option.SetKey("name", base::Value("Custom"));
-    options->Append(std::move(custom_option));
-    for (size_t i = 0; i < options->GetListDeprecated().size(); ++i) {
-      const base::Value& option = options->GetListDeprecated()[i];
+    absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+        configuration, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+    DCHECK(parsed_json);
+    base::Value::List& options = parsed_json->GetList();
+    base::Value::Dict custom_option;
+    custom_option.Set("name", "Custom");
+    options.Append(std::move(custom_option));
+    for (size_t i = 0; i < options.size(); ++i) {
+      const base::Value::Dict& option = options[i].GetDict();
       // Select configuration value.
       test::OobeJS().SelectElementInPath(base::NumberToString(i),
                                          kAdConfigurationSelect);
 
-      CheckAttributeValue(
-          option.FindKeyOfType("name", base::Value::Type::STRING), "",
-          test::GetOobeElementPath(kAdConfigurationSelect) +
-              ".selectedOptions[0].label");
+      CheckAttributeValue(option.FindString("name"), "",
+                          test::GetOobeElementPath(kAdConfigurationSelect) +
+                              ".selectedOptions[0].label");
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("ad_username", base::Value::Type::STRING), "",
+          option.FindString("ad_username"), "",
           test::GetOobeElementPath(kAdUsernameInput));
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("ad_password", base::Value::Type::STRING), "",
+          option.FindString("ad_password"), "",
           test::GetOobeElementPath(kAdPasswordInput));
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("computer_ou", base::Value::Type::STRING), "",
+          option.FindString("computer_ou"), "",
           test::GetOobeElementPath(kAdMachineOrgUnitInput));
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("encryption_types", base::Value::Type::STRING),
-          "strong", test::GetOobeElementPath(kAdEncryptionTypesSelect));
+          option.FindString("encryption_types"), "strong",
+          test::GetOobeElementPath(kAdEncryptionTypesSelect));
 
-      CheckPatternAttribute(option.FindKeyOfType(
-          "computer_name_validation_regex", base::Value::Type::STRING));
+      CheckPatternAttribute(
+          option.FindString("computer_name_validation_regex"));
     }
   }
 

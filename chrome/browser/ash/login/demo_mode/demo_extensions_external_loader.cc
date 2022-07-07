@@ -46,8 +46,7 @@ absl::optional<base::Value> LoadPrefsFromDisk(
     return absl::nullopt;
   }
 
-  std::unique_ptr<base::Value> prefs_value =
-      base::JSONReader::ReadDeprecated(prefs_str);
+  absl::optional<base::Value> prefs_value = base::JSONReader::Read(prefs_str);
   if (!prefs_value) {
     LOG(ERROR) << "Unable to parse demo extensions prefs.";
     return absl::nullopt;
@@ -58,7 +57,7 @@ absl::optional<base::Value> LoadPrefsFromDisk(
     return absl::nullopt;
   }
 
-  return base::Value::FromUniquePtrValue(std::move(prefs_value));
+  return prefs_value;
 }
 
 }  // namespace

@@ -196,9 +196,9 @@ void EnhancedNetworkTtsImpl::OnResponseJsonParsed(
     const bool is_last_request,
     data_decoder::DataDecoder::ValueOrError result) {
   // Extract results for the request.
-  if (result.value) {
-    SendResponse(
-        UnpackJsonResponse(*result.value, start_index, is_last_request));
+  if (result.value && result.value->is_list()) {
+    SendResponse(UnpackJsonResponse(result.value->GetList(), start_index,
+                                    is_last_request));
     // Only start the next request after finishing the current one. This method
     // will also reset the internal state if there is no more request.
     ProcessNextServerRequest();

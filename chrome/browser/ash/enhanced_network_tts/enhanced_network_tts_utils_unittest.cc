@@ -146,18 +146,17 @@ TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
 TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   const std::vector<uint8_t> response_data = {1, 2, 5};
   const std::string server_response = CreateServerResponse(response_data);
-  const std::unique_ptr<base::Value> json =
-      base::JSONReader::ReadDeprecated(server_response);
+  absl::optional<base::Value> json = base::JSONReader::Read(server_response);
 
-  mojom::TtsResponsePtr result = UnpackJsonResponse(*json, 0 /* start_index */,
-                                                    true /* is_last_request */);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(
+      json->GetList(), 0 /* start_index */, true /* is_last_request */);
 
   EXPECT_TRUE(result->is_data());
   EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
   EXPECT_TRUE(result->get_data()->last_data);
   EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 0u);
 
-  result = UnpackJsonResponse(*json, 4 /* start_index */,
+  result = UnpackJsonResponse(json->GetList(), 4 /* start_index */,
                               true /* is_last_request */);
 
   EXPECT_TRUE(result->is_data());
@@ -165,7 +164,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   EXPECT_TRUE(result->get_data()->last_data);
   EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4u);
 
-  result = UnpackJsonResponse(*json, 4 /* start_index */,
+  result = UnpackJsonResponse(json->GetList(), 4 /* start_index */,
                               false /* is_last_request */);
 
   EXPECT_TRUE(result->is_data());
@@ -177,11 +176,10 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
 TEST_F(EnhancedNetworkTtsUtilsTest,
        UnpackJsonResponseFailsWithWrongResponseFormat) {
   const std::string encoded_response = "[{}, {}, {}]";
-  const std::unique_ptr<base::Value> json =
-      base::JSONReader::ReadDeprecated(encoded_response);
+  absl::optional<base::Value> json = base::JSONReader::Read(encoded_response);
 
-  mojom::TtsResponsePtr result = UnpackJsonResponse(*json, 0 /* start_index */,
-                                                    true /* is_last_request */);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(
+      json->GetList(), 0 /* start_index */, true /* is_last_request */);
 
   EXPECT_TRUE(result->is_error_code());
   EXPECT_EQ(result->get_error_code(),
@@ -195,11 +193,10 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   const std::string encoded_data(response_data.begin(), response_data.end());
   const std::string encoded_response =
       base::StringPrintf(kTemplateResponse, encoded_data.c_str());
-  const std::unique_ptr<base::Value> json =
-      base::JSONReader::ReadDeprecated(encoded_response);
+  absl::optional<base::Value> json = base::JSONReader::Read(encoded_response);
 
-  mojom::TtsResponsePtr result = UnpackJsonResponse(*json, 0 /* start_index */,
-                                                    true /* is_last_request */);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(
+      json->GetList(), 0 /* start_index */, true /* is_last_request */);
 
   EXPECT_TRUE(result->is_error_code());
   EXPECT_EQ(result->get_error_code(),
