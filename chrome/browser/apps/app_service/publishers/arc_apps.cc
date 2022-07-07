@@ -49,7 +49,6 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -222,66 +221,66 @@ apps::Permissions CreatePermissions(
 }
 
 absl::optional<arc::UserInteractionType> GetUserInterationType(
-    apps::mojom::LaunchSource launch_source) {
+    apps::LaunchSource launch_source) {
   auto user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
   switch (launch_source) {
     // kUnknown is not set anywhere, this case is not valid.
-    case apps::mojom::LaunchSource::kUnknown:
+    case apps::LaunchSource::kUnknown:
       return absl::nullopt;
-    case apps::mojom::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromChromeInternal:
       user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
       break;
-    case apps::mojom::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGrid:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER;
       break;
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER_CONTEXT_MENU;
       break;
-    case apps::mojom::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQuery:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER_SEARCH;
       break;
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
       user_interaction_type = arc::UserInteractionType::
           APP_STARTED_FROM_LAUNCHER_SEARCH_CONTEXT_MENU;
       break;
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromAppListRecommendation:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER_SUGGESTED_APP;
       break;
-    case apps::mojom::LaunchSource::kFromParentalControls:
+    case apps::LaunchSource::kFromParentalControls:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_SETTINGS;
       break;
-    case apps::mojom::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromShelf:
       user_interaction_type = arc::UserInteractionType::APP_STARTED_FROM_SHELF;
       break;
-    case apps::mojom::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromFileManager:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_FILE_MANAGER;
       break;
-    case apps::mojom::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromLink:
       user_interaction_type = arc::UserInteractionType::APP_STARTED_FROM_LINK;
       break;
-    case apps::mojom::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromOmnibox:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_OMNIBOX;
       break;
-    case apps::mojom::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kFromSharesheet:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_SHARESHEET;
       break;
-    case apps::mojom::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromFullRestore:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_FULL_RESTORE;
       break;
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
       user_interaction_type = arc::UserInteractionType::
           APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU;
       break;
-    case apps::mojom::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromOtherApp:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP;
       break;
@@ -475,6 +474,25 @@ void OnContentUrlResolved(const base::FilePath& file_path,
 // Sets the session id for |window_info|. If the full restore feature is
 // disabled, or the session id has been set, returns |window_info|. Otherwise,
 // fetches a new ARC session id, and sets to window_id for |window_info|.
+apps::WindowInfoPtr SetSessionId(apps::WindowInfoPtr window_info) {
+  if (!window_info) {
+    window_info = std::make_unique<apps::WindowInfo>();
+    window_info->display_id = display::kInvalidDisplayId;
+  }
+
+  if (window_info->window_id != -1) {
+    return window_info;
+  }
+
+  window_info->window_id =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  return window_info;
+}
+
+// Sets the session id for |window_info|. If the full restore feature is
+// disabled, or the session id has been set, returns |window_info|. Otherwise,
+// fetches a new ARC session id, and sets to window_id for |window_info|.
+// TODO(crbug.com/1253250): Remove. Prefer the non mojom SetSessionId.
 apps::mojom::WindowInfoPtr SetSessionId(
     apps::mojom::WindowInfoPtr window_info) {
   if (!window_info) {
@@ -703,6 +721,33 @@ void ArcApps::LoadIcon(const std::string& app_id,
   }
 }
 
+void ArcApps::Launch(const std::string& app_id,
+                     int32_t event_flags,
+                     LaunchSource launch_source,
+                     WindowInfoPtr window_info) {
+  auto user_interaction_type = GetUserInterationType(launch_source);
+  if (!user_interaction_type.has_value()) {
+    return;
+  }
+
+  if (app_id == arc::kPlayStoreAppId &&
+      apps_util::IsHumanLaunch(launch_source)) {
+    arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
+                                          /*launched=*/true);
+  }
+
+  auto new_window_info = SetSessionId(std::move(window_info));
+  int32_t session_id = new_window_info->window_id;
+  int64_t display_id = new_window_info->display_id;
+
+  arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
+                 MakeArcWindowInfo(std::move(new_window_info)));
+
+  full_restore::SaveAppLaunchInfo(
+      profile_->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
+                               app_id, event_flags, session_id, display_id));
+}
+
 void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
                                   LaunchCallback callback) {
   auto event_flags = apps::GetEventFlags(params.disposition,
@@ -768,7 +813,8 @@ void ArcApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::mojom::LaunchSource launch_source,
                      apps::mojom::WindowInfoPtr window_info) {
-  auto user_interaction_type = GetUserInterationType(launch_source);
+  auto user_interaction_type = GetUserInterationType(
+      ConvertMojomLaunchSourceToLaunchSource(launch_source));
   if (!user_interaction_type.has_value()) {
     return;
   }
@@ -798,7 +844,8 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
                                   apps::mojom::LaunchSource launch_source,
                                   apps::mojom::WindowInfoPtr window_info,
                                   LaunchAppWithIntentCallback callback) {
-  auto user_interaction_type = GetUserInterationType(launch_source);
+  auto user_interaction_type = GetUserInterationType(
+      ConvertMojomLaunchSourceToLaunchSource(launch_source));
   if (!user_interaction_type.has_value()) {
     std::move(callback).Run(/*success=*/false);
     return;

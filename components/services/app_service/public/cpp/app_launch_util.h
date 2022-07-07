@@ -6,6 +6,8 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace apps {
 
@@ -70,6 +72,16 @@ enum class LaunchContainer {
   // enumerator value.
   kMaxValue = kLaunchContainerNone,
 };
+
+// The window information to launch an app.
+struct WindowInfo {
+  int32_t window_id = -1;
+  int32_t state = 0;
+  int32_t display_id = -1;
+  absl::optional<gfx::Rect> bounds;
+};
+
+using WindowInfoPtr = std::unique_ptr<WindowInfo>;
 
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.

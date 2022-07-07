@@ -88,6 +88,9 @@ apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper to convert apps::mojom::WindowInfoPtr to arc::mojom::WindowInfoPtr.
+arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info);
+
+// TODO(crbug.com/1253250): Remove. Prefer the non mojom MakeArcWindowInfo.
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

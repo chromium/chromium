@@ -527,6 +527,8 @@ struct Rect {
 };
 
 // The window information to launch an app.
+// DEPRECATED. Please use the WindowInfo struct in
+// components/services/app_service/public/cpp/app_launch_util.h.
 struct WindowInfo {
   int32 window_id = -1;
   int32 state = 0;
