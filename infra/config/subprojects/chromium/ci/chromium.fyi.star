@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "goma", "os", "xcode")
+load("//lib/builders.star", "builders", "cpu", "goma", "os", "xcode")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
@@ -880,6 +880,7 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 80,
     os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(
@@ -897,6 +898,7 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
     os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(
@@ -994,6 +996,7 @@ ci.builder(
     reclient_instance = rbe_instance.TEST_CQ,
     reclient_jobs = 80,
     os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(

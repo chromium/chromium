@@ -302,7 +302,6 @@ ci.builder(
     ),
     os = os.WINDOWS_ANY,
     free_space = builders.free_space.high,
-    ssd = True,
 )
 
 ci.builder(
@@ -340,6 +339,7 @@ ci.builder(
         short_name = "dbg",
     ),
     os = os.WINDOWS_ANY,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(
@@ -349,6 +349,7 @@ ci.builder(
         short_name = "dll",
     ),
     os = os.WINDOWS_ANY,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(

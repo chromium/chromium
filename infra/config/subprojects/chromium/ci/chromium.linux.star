@@ -5,7 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "sheriff_rotations")
+load("//lib/builders.star", "builders", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
@@ -164,6 +164,8 @@ ci.builder(
     tree_closing = False,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
     reclient_jobs = rbe_jobs.DEFAULT,
+    free_space = builders.free_space.high,
+    ssd = True,
 )
 
 ci.builder(

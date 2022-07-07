@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "goma", "os")
+load("//lib/builders.star", "builders", "cpu", "goma", "os")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -419,6 +419,7 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
     reclient_instance = rbe_instance.DEFAULT,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(
