@@ -85,8 +85,6 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
       size_(size),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr),
-      random_generator_((uint32_t)base::RandUint64()),
-      bernoulli_distribution_(kRasterMetricProbability),
       last_recording_(nullptr) {
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
   TRACE_EVENT_INSTANT0("test_gpu", "Canvas2DLayerBridgeCreation",
@@ -553,8 +551,9 @@ void Canvas2DLayerBridge::FlushRecording(bool printing) {
 
   // We are using @dont_use_idle_scheduling_for_testing_ temporarily to always
   // measure while testing.
-  const bool will_measure = dont_use_idle_scheduling_for_testing_ ||
-                            bernoulli_distribution_(random_generator_);
+  const bool will_measure =
+      dont_use_idle_scheduling_for_testing_ ||
+      metrics_subsampler_.ShouldSample(kRasterMetricProbability);
   const bool measure_raster_metric =
       (raster_interface || !IsAccelerated()) && will_measure;
 
