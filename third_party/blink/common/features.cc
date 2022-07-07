@@ -227,7 +227,7 @@ const base::FeatureParam<FencedFramesImplementationType>::Option
 const base::FeatureParam<FencedFramesImplementationType>
     kFencedFramesImplementationTypeParam{
         &kFencedFrames, "implementation_type",
-        FencedFramesImplementationType::kShadowDOM,
+        FencedFramesImplementationType::kMPArch,
         &fenced_frame_implementation_types};
 
 // Enable the shared storage API. Note that enabling this feature does not
