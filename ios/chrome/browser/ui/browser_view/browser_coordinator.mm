@@ -339,6 +339,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObservation;
   BrowserViewControllerDependencies _viewControllerDependencies;
+  KeyCommandsProvider* _keyCommandsProvider;
   PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
   NewTabPageCoordinator* _ntpCoordinator;
@@ -511,7 +512,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   BrowserViewControllerHelper* browserViewControllerHelper =
       [[BrowserViewControllerHelper alloc] init];
-  KeyCommandsProvider* keyCommandsProvider = [[KeyCommandsProvider alloc] init];
 
   _viewController = [[BrowserViewController alloc]
                      initWithBrowser:self.browser
@@ -519,7 +519,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                                          .viewController
          browserViewControllerHelper:browserViewControllerHelper
                           dispatcher:self.dispatcher
-                 keyCommandsProvider:keyCommandsProvider
+                 keyCommandsProvider:_keyCommandsProvider
                         dependencies:_viewControllerDependencies];
 
   WebNavigationBrowserAgent::FromBrowser(self.browser)
@@ -566,6 +566,15 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   }
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  _keyCommandsProvider =
+      [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
+  _keyCommandsProvider.dispatcher =
+      static_cast<id<ApplicationCommands, BrowserCommands,
+                     BrowserCoordinatorCommands, FindInPageCommands>>(
+          _dispatcher);
+  _keyCommandsProvider.omniboxHandler =
+      static_cast<id<OmniboxCommands>>(_dispatcher);
 
   _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
   if (!browserState->IsOffTheRecord()) {
@@ -684,6 +693,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 }
 
 - (void)updateViewControllerDependencies {
+  _keyCommandsProvider.baseViewController = self.viewController;
+
   _bookmarkInteractionController.parentController = self.viewController;
 
   _bubblePresenter.delegate = self.viewController;
@@ -755,6 +766,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [_ntpCoordinator stop];
   _ntpCoordinator = nil;
 
+  _keyCommandsProvider = nil;
   _dispatcher = nil;
 }
 

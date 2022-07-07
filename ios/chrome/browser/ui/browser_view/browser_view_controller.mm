@@ -17,7 +17,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -27,7 +26,6 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
-#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
@@ -41,7 +39,6 @@
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -51,7 +48,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
-#import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -122,7 +118,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
@@ -241,7 +236,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 @interface BrowserViewController () <CRWWebStateObserver,
                                      FindBarPresentationDelegate,
                                      FullscreenUIElement,
-                                     KeyCommandsPlumbing,
                                      MainContentUI,
                                      SideSwipeControllerDelegate,
                                      TabStripPresentation,
@@ -790,7 +784,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener {
   NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-  BOOL offTheRecord = self.isOffTheRecord;
+  BOOL offTheRecord = _isOffTheRecord;
   ProceduralBlock oldForegroundTabWasAddedCompletionBlock =
       self.foregroundTabWasAddedCompletionBlock;
   id<OmniboxCommands> omniboxCommandHandler = self.omniboxHandler;
@@ -831,7 +825,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-  params.in_incognito = self.isOffTheRecord;
+  params.in_incognito = _isOffTheRecord;
   params.inherit_opener = inheritOpener;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
@@ -981,7 +975,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     BackgroundTabAnimationView* animatedView =
         [[BackgroundTabAnimationView alloc]
             initWithFrame:CGRectMake(0, 0, kAnimatedViewSize, kAnimatedViewSize)
-                incognito:self.isOffTheRecord];
+                incognito:_isOffTheRecord];
     __weak UIView* weakAnimatedView = animatedView;
     auto completionBlock = ^() {
       self.inNewTabAnimation = NO;
@@ -1051,27 +1045,18 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return YES;
 }
 
-- (NSArray*)keyCommands {
+- (NSArray<UIKeyCommand*>*)keyCommands {
   if (![self shouldRegisterKeyboardCommands]) {
     return nil;
   }
 
   UIResponder* firstResponder = GetFirstResponder();
-  // TODO(crbug.com/1329100): Inject the key commands provider.
-  WebNavigationBrowserAgent* navigationAgent =
-      WebNavigationBrowserAgent::FromBrowser(self.browser);
-  return [_keyCommandsProvider
-      keyCommandsForConsumer:self
-          baseViewController:self
-                  dispatcher:self.dispatcher
-             navigationAgent:navigationAgent
-              omniboxHandler:self.omniboxHandler
-                 editingText:[firstResponder
-                                 isKindOfClass:[UITextField class]] ||
-                             [firstResponder
-                                 isKindOfClass:[UITextView class]] ||
-                             [[KeyboardObserverHelper sharedKeyboardObserver]
-                                 isKeyboardOnScreen]];
+  BOOL isEditingText =
+      [firstResponder isKindOfClass:[UITextField class]] ||
+      [firstResponder isKindOfClass:[UITextView class]] ||
+      [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardOnScreen];
+
+  return [_keyCommandsProvider keyCommandsWithEditingText:isEditingText];
 }
 
 #pragma mark - UIResponder helpers
@@ -2181,7 +2166,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Add toolbar margin to the frame for every scenario except compact-width
   // non-otr, as that is the only case where there isn't a primary toolbar.
   // (see crbug.com/1063173)
-  if (!IsSplitToolbarMode(self) || self.isOffTheRecord) {
+  if (!IsSplitToolbarMode(self) || _isOffTheRecord) {
     viewportInsets.top = [self expandedTopToolbarHeight];
   }
   return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
@@ -2742,7 +2727,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // If the NTP is active, then it's used as the base view for snapshotting.
     // When the tab strip is visible, or for the incognito NTP, the NTP is laid
     // out between the toolbars, so it should not be inset while snapshotting.
-    if ([self canShowTabStrip] || self.isOffTheRecord) {
+    if ([self canShowTabStrip] || _isOffTheRecord) {
       return UIEdgeInsetsZero;
     }
 
@@ -2931,8 +2916,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (isUserInitiated) {
     // Send either the "New Tab Opened" or "New Incognito Tab" opened to the
     // feature_engagement::Tracker based on `inIncognito`.
-    feature_engagement::NotifyNewTabEvent(self.browserState,
-                                          self.isOffTheRecord);
+    feature_engagement::NotifyNewTabEvent(self.browserState, _isOffTheRecord);
   }
 }
 
@@ -3044,7 +3028,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       base::RecordAction(base::UserMetricsAction("MobilePullGestureNewTab"));
       [self.dispatcher
           openURLInNewTab:[OpenNewTabCommand
-                              commandWithIncognito:self.isOffTheRecord]];
+                              commandWithIncognito:_isOffTheRecord]];
       break;
     case OverscrollAction::CLOSE_TAB:
       base::RecordAction(base::UserMetricsAction("MobilePullGestureCloseTab"));
@@ -3330,102 +3314,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       CGRectGetMinY(viewportFrame), CGRectGetMinX(viewportFrame),
       CGRectGetMaxY(view.bounds) - CGRectGetMaxY(viewportFrame),
       CGRectGetMaxX(view.bounds) - CGRectGetMaxX(viewportFrame));
-}
-
-#pragma mark - KeyCommandsPlumbing
-
-// TODO(crbug.com/1329100): Add isOffTheRecord as a property of the key commands
-// provider.
-- (BOOL)isOffTheRecord {
-  return _isOffTheRecord;
-}
-
-// TODO(crbug.com/1329100): Add isFindInPageAvailable as a property of the key
-// commands provider.
-- (BOOL)isFindInPageAvailable {
-  if (!self.currentWebState) {
-    return NO;
-  }
-
-  FindTabHelper* helper = FindTabHelper::FromWebState(self.currentWebState);
-  return (helper && helper->CurrentPageSupportsFindInPage());
-}
-
-// TODO(crbug.com/1329100): Add tabsCount as a property of the key commands
-// provider.
-- (NSUInteger)tabsCount {
-  if (_isShutdown)
-    return 0;
-  return self.browser->GetWebStateList()->count();
-}
-
-// TODO(crbug.com/1329100): FocusTabAtIndex can be executed by the key command
-// provider directly.
-- (void)focusTabAtIndex:(NSUInteger)index {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  if (webStateList->ContainsIndex(index)) {
-    webStateList->ActivateWebStateAt(static_cast<int>(index));
-  }
-}
-
-// TODO(crbug.com/1329100): focusNextTab can be executed by the key command
-// provider directly.
-- (void)focusNextTab {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  if (!webStateList)
-    return;
-
-  int activeIndex = webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex)
-    return;
-
-  // If the active index isn't the last index, activate the next index.
-  // (the last index is always `count() - 1`).
-  // Otherwise activate the first index.
-  if (activeIndex < (webStateList->count() - 1)) {
-    webStateList->ActivateWebStateAt(activeIndex + 1);
-  } else {
-    webStateList->ActivateWebStateAt(0);
-  }
-}
-
-// TODO(crbug.com/1329100): focusPreviousTab can be executed by the key command
-// provider directly.
-- (void)focusPreviousTab {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  if (!webStateList)
-    return;
-
-  int activeIndex = webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex)
-    return;
-
-  // If the active index isn't the first index, activate the prior index.
-  // Otherwise index the last index (`count() - 1`).
-  if (activeIndex > 0) {
-    webStateList->ActivateWebStateAt(activeIndex - 1);
-  } else {
-    webStateList->ActivateWebStateAt(webStateList->count() - 1);
-  }
-}
-
-// TODO(crbug.com/1329100): reopenClosedTab can be executed by the key command
-// provider directly.
-- (void)reopenClosedTab {
-  sessions::TabRestoreService* const tabRestoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(self.browserState);
-  if (!tabRestoreService || tabRestoreService->entries().empty())
-    return;
-
-  const std::unique_ptr<sessions::TabRestoreService::Entry>& entry =
-      tabRestoreService->entries().front();
-  // Only handle the TAB type.
-  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-  if (entry->type != sessions::TabRestoreService::TAB)
-    return;
-
-  [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
-  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, self.browser);
 }
 
 #pragma mark - MainContentUI

@@ -194,7 +194,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     container_ = [[BrowserContainerViewController alloc] init];
     bvc_helper_ = [[BrowserViewControllerHelper alloc] init];
-    key_commands_provider_ = [[KeyCommandsProvider alloc] init];
+    key_commands_provider_ =
+        [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
 
     fake_prerender_service_ = std::make_unique<FakePrerenderService>();
 
@@ -313,32 +314,6 @@ TEST_F(BrowserViewControllerTest, TestClearPresentedState) {
         this->OnCompletionCalled();
       }
                          dismissOmnibox:YES];
-}
-
-// Verifies the the next/previous tab commands from the keyboard work OK.
-TEST_F(BrowserViewControllerTest, TestFocusNextPrevious) {
-  // Add more web states.
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  // This test assumes there are exactly three web states in the list.
-  ASSERT_EQ(web_state_list->count(), 3);
-
-  ASSERT_TRUE([bvc_ conformsToProtocol:@protocol(KeyCommandsPlumbing)]);
-
-  id<KeyCommandsPlumbing> keyHandler =
-      static_cast<id<KeyCommandsPlumbing>>(bvc_);
-
-  [keyHandler focusNextTab];
-  EXPECT_EQ(web_state_list->active_index(), 1);
-  [keyHandler focusNextTab];
-  EXPECT_EQ(web_state_list->active_index(), 2);
-  [keyHandler focusNextTab];
-  EXPECT_EQ(web_state_list->active_index(), 0);
-  [keyHandler focusPreviousTab];
-  EXPECT_EQ(web_state_list->active_index(), 2);
-  [keyHandler focusPreviousTab];
-  EXPECT_EQ(web_state_list->active_index(), 1);
-  [keyHandler focusPreviousTab];
-  EXPECT_EQ(web_state_list->active_index(), 0);
 }
 
 // Tests that WebState::WasShown() and WebState::WasHidden() is properly called

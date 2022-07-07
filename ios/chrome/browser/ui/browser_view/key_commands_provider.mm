@@ -4,46 +4,56 @@
 
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 
-#include "components/strings/grit/components_strings.h"
+#import "components/sessions/core/tab_restore_service_helper.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+@interface KeyCommandsProvider ()
+
+@property(nonatomic, assign) Browser* browser;
+@property(nonatomic, assign, readonly)
+    WebNavigationBrowserAgent* navigationAgent;
+
+@end
+
 @implementation KeyCommandsProvider
 
-- (NSArray*)keyCommandsForConsumer:(id<KeyCommandsPlumbing>)consumer
-                baseViewController:(UIViewController*)baseViewController
-                        dispatcher:(id<ApplicationCommands,
-                                       BrowserCommands,
-                                       BrowserCoordinatorCommands,
-                                       FindInPageCommands,
-                                       OmniboxCommands>)dispatcher
-                   navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
-                    omniboxHandler:(id<OmniboxCommands>)omniboxHandler
-                       editingText:(BOOL)editingText {
-  __weak id<KeyCommandsPlumbing> weakConsumer = consumer;
-  __weak UIViewController* weakBaseViewController = baseViewController;
-  __weak id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-            FindInPageCommands>
-      weakDispatcher = dispatcher;
-  __weak id<OmniboxCommands> weakOmniboxHandler = omniboxHandler;
+- (instancetype)initWithBrowser:(Browser*)browser {
+  DCHECK(browser);
+  self = [super init];
+  if (self) {
+    _browser = browser;
+  }
+  return self;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommandsWithEditingText:(BOOL)editingText {
+  __weak __typeof(self) weakSelf = self;
 
   // Block to have the tab model open the tab at `index`, if there is one.
   void (^focusTab)(NSUInteger) = ^(NSUInteger index) {
-    [weakConsumer focusTabAtIndex:index];
+    [weakSelf focusTabAtIndex:index];
   };
 
-  const BOOL hasTabs = [consumer tabsCount] > 0;
+  const BOOL hasTabs = [self tabsCount] > 0;
 
   const BOOL useRTLLayout = UseRTLLayout();
 
@@ -52,21 +62,25 @@
   void (^browseRight)();
   if (useRTLLayout) {
     browseLeft = ^{
-      if (navigationAgent->CanGoForward())
-        navigationAgent->GoForward();
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf.navigationAgent->CanGoForward())
+        strongSelf.navigationAgent->GoForward();
     };
     browseRight = ^{
-      if (navigationAgent->CanGoBack())
-        navigationAgent->GoBack();
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf.navigationAgent->CanGoBack())
+        strongSelf.navigationAgent->GoBack();
     };
   } else {
     browseLeft = ^{
-      if (navigationAgent->CanGoBack())
-        navigationAgent->GoBack();
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf.navigationAgent->CanGoBack())
+        strongSelf.navigationAgent->GoBack();
     };
     browseRight = ^{
-      if (navigationAgent->CanGoForward())
-        navigationAgent->GoForward();
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf.navigationAgent->CanGoForward())
+        strongSelf.navigationAgent->GoForward();
     };
   }
 
@@ -75,17 +89,17 @@
   void (^focusTabRight)();
   if (useRTLLayout) {
     focusTabLeft = ^{
-      [weakConsumer focusNextTab];
+      [weakSelf focusNextTab];
     };
     focusTabRight = ^{
-      [weakConsumer focusPreviousTab];
+      [weakSelf focusPreviousTab];
     };
   } else {
     focusTabLeft = ^{
-      [weakConsumer focusPreviousTab];
+      [weakSelf focusPreviousTab];
     };
     focusTabRight = ^{
-      [weakConsumer focusNextTab];
+      [weakSelf focusNextTab];
     };
   }
 
@@ -93,14 +107,14 @@
   void (^newTab)() = ^{
     OpenNewTabCommand* newTabCommand = [OpenNewTabCommand command];
     newTabCommand.shouldFocusOmnibox = YES;
-    [weakDispatcher openURLInNewTab:newTabCommand];
+    [weakSelf.dispatcher openURLInNewTab:newTabCommand];
   };
 
   void (^newIncognitoTab)() = ^{
     OpenNewTabCommand* newIncognitoTabCommand =
         [OpenNewTabCommand incognitoTabCommand];
     newIncognitoTabCommand.shouldFocusOmnibox = YES;
-    [weakDispatcher openURLInNewTab:newIncognitoTabCommand];
+    [weakSelf.dispatcher openURLInNewTab:newIncognitoTabCommand];
   };
 
   const int browseLeftDescriptionID = useRTLLayout
@@ -111,7 +125,8 @@
                                            : IDS_IOS_KEYBOARD_HISTORY_FORWARD;
 
   // Initialize the array of commands with an estimated capacity.
-  NSMutableArray* keyCommands = [NSMutableArray arrayWithCapacity:32];
+  NSMutableArray<UIKeyCommand*>* keyCommands =
+      [NSMutableArray arrayWithCapacity:32];
 
   // List the commands that always appear in the HUD. They appear in the HUD
   // since they have titles.
@@ -133,14 +148,14 @@
                          title:l10n_util::GetNSStringWithFixup(
                                    IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB)
                         action:^{
-                          [weakConsumer reopenClosedTab];
+                          [weakSelf reopenClosedTab];
                         }],
   ]];
 
   // List the commands that only appear when there is at least a tab. When they
   // appear, they are in the HUD since they have titles.
   if (hasTabs) {
-    if ([consumer isFindInPageAvailable]) {
+    if ([self isFindInPageAvailable]) {
       [keyCommands addObjectsFromArray:@[
 
         [UIKeyCommand
@@ -149,20 +164,21 @@
                              title:l10n_util::GetNSStringWithFixup(
                                        IDS_IOS_TOOLS_MENU_FIND_IN_PAGE)
                             action:^{
-                              [weakDispatcher openFindInPage];
+                              [weakSelf.dispatcher openFindInPage];
                             }],
-        [UIKeyCommand cr_keyCommandWithInput:@"g"
-                               modifierFlags:UIKeyModifierCommand
-                                       title:nil
-                                      action:^{
-                                        [weakDispatcher findNextStringInPage];
-                                      }],
+        [UIKeyCommand
+            cr_keyCommandWithInput:@"g"
+                     modifierFlags:UIKeyModifierCommand
+                             title:nil
+                            action:^{
+                              [weakSelf.dispatcher findNextStringInPage];
+                            }],
         [UIKeyCommand
             cr_keyCommandWithInput:@"g"
                      modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
                              title:nil
                             action:^{
-                              [weakDispatcher findPreviousStringInPage];
+                              [weakSelf.dispatcher findPreviousStringInPage];
                             }]
       ]];
     }
@@ -173,7 +189,7 @@
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_IOS_KEYBOARD_OPEN_LOCATION)
                                     action:^{
-                                      [weakOmniboxHandler focusOmnibox];
+                                      [weakSelf.omniboxHandler focusOmnibox];
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"w"
                              modifierFlags:UIKeyModifierCommand
@@ -186,10 +202,10 @@
                                       // registered with the dispatcher anymore.
                                       // Check if it's still available. See
                                       // crbug.com/967637 for context.
-                                      if ([weakDispatcher
+                                      if ([weakSelf.dispatcher
                                               respondsToSelector:@selector
                                               (closeCurrentTab)]) {
-                                        [weakDispatcher closeCurrentTab];
+                                        [weakSelf.dispatcher closeCurrentTab];
                                       }
                                     }],
     ]];
@@ -236,14 +252,14 @@
                            title:l10n_util::GetNSStringWithFixup(
                                      IDS_IOS_KEYBOARD_BOOKMARK_THIS_PAGE)
                           action:^{
-                            [weakDispatcher bookmarkCurrentPage];
+                            [weakSelf.dispatcher bookmarkCurrentPage];
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"r"
                              modifierFlags:UIKeyModifierCommand
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_IOS_ACCNAME_RELOAD)
                                     action:^{
-                                      navigationAgent->Reload();
+                                      weakSelf.navigationAgent->Reload();
                                     }],
     ]];
 
@@ -272,31 +288,31 @@
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_HISTORY_SHOW_HISTORY)
                                     action:^{
-                                      [weakDispatcher showHistory];
+                                      [weakSelf.dispatcher showHistory];
                                     }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"."
                    modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
                            title:voiceSearchTitle
                           action:^{
-                            UIView* baseView = baseViewController.view;
+                            UIView* baseView = weakSelf.baseViewController.view;
                             [[NamedGuide guideWithName:kVoiceSearchButtonGuide
                                                   view:baseView]
                                 resetConstraints];
-                            [weakDispatcher startVoiceSearch];
+                            [weakSelf.dispatcher startVoiceSearch];
                           }],
     ]];
   }
 
   if (self.canDismissModals) {
     [keyCommands
-        addObject:[UIKeyCommand
-                      cr_keyCommandWithInput:UIKeyInputEscape
-                               modifierFlags:Cr_UIKeyModifierNone
-                                       title:nil
-                                      action:^{
-                                        [weakDispatcher dismissModalDialogs];
-                                      }]];
+        addObject:[UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
+                                         modifierFlags:Cr_UIKeyModifierNone
+                                                 title:nil
+                                                action:^{
+                                                  [weakSelf.dispatcher
+                                                          dismissModalDialogs];
+                                                }]];
   }
 
   // List the commands that don't appear in the HUD but are always present.
@@ -309,9 +325,9 @@
                            modifierFlags:UIKeyModifierCommand
                                    title:nil
                                   action:^{
-                                    [weakDispatcher
+                                    [weakSelf.dispatcher
                                         showSettingsFromViewController:
-                                            weakBaseViewController];
+                                            weakSelf.baseViewController];
                                   }],
   ]];
 
@@ -331,20 +347,20 @@
                              modifierFlags:UIKeyModifierCommand
                                      title:nil
                                     action:^{
-                                      navigationAgent->StopLoading();
+                                      weakSelf.navigationAgent->StopLoading();
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"?"
                              modifierFlags:UIKeyModifierCommand
                                      title:nil
                                     action:^{
-                                      [weakDispatcher showHelpPage];
+                                      [weakSelf.dispatcher showHelpPage];
                                     }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"l"
                    modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
                            title:nil
                           action:^{
-                            [weakDispatcher showDownloadsFolder];
+                            [weakSelf.dispatcher showDownloadsFolder];
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"1"
                              modifierFlags:UIKeyModifierCommand
@@ -398,25 +414,108 @@
                              modifierFlags:UIKeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab([weakConsumer tabsCount] - 1);
+                                      focusTab([weakSelf tabsCount] - 1);
                                     }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"\t"
                    modifierFlags:UIKeyModifierControl | UIKeyModifierShift
                            title:nil
                           action:^{
-                            [weakConsumer focusPreviousTab];
+                            [weakSelf focusPreviousTab];
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"\t"
                              modifierFlags:UIKeyModifierControl
                                      title:nil
                                     action:^{
-                                      [weakConsumer focusNextTab];
+                                      [weakSelf focusNextTab];
                                     }],
     ]];
   }
 
-  return keyCommands;
+  return [keyCommands copy];
+}
+
+#pragma mark - Private
+
+- (WebNavigationBrowserAgent*)navigationAgent {
+  return WebNavigationBrowserAgent::FromBrowser(self.browser);
+}
+
+- (BOOL)isFindInPageAvailable {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return NO;
+  }
+
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
+  return (helper && helper->CurrentPageSupportsFindInPage());
+}
+
+- (NSUInteger)tabsCount {
+  return self.browser->GetWebStateList()->count();
+}
+
+- (void)focusTabAtIndex:(NSUInteger)index {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  if (webStateList->ContainsIndex(index)) {
+    webStateList->ActivateWebStateAt(static_cast<int>(index));
+  }
+}
+
+- (void)focusNextTab {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  if (!webStateList)
+    return;
+
+  int activeIndex = webStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex)
+    return;
+
+  // If the active index isn't the last index, activate the next index.
+  // (the last index is always `count() - 1`).
+  // Otherwise activate the first index.
+  if (activeIndex < (webStateList->count() - 1)) {
+    webStateList->ActivateWebStateAt(activeIndex + 1);
+  } else {
+    webStateList->ActivateWebStateAt(0);
+  }
+}
+
+- (void)focusPreviousTab {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  if (!webStateList)
+    return;
+
+  int activeIndex = webStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex)
+    return;
+
+  // If the active index isn't the first index, activate the prior index.
+  // Otherwise index the last index (`count() - 1`).
+  if (activeIndex > 0) {
+    webStateList->ActivateWebStateAt(activeIndex - 1);
+  } else {
+    webStateList->ActivateWebStateAt(webStateList->count() - 1);
+  }
+}
+
+- (void)reopenClosedTab {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  sessions::TabRestoreService* const tabRestoreService =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
+  if (!tabRestoreService || tabRestoreService->entries().empty())
+    return;
+
+  const std::unique_ptr<sessions::TabRestoreService::Entry>& entry =
+      tabRestoreService->entries().front();
+  // Only handle the TAB type.
+  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
+  if (entry->type != sessions::TabRestoreService::TAB)
+    return;
+
+  [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
+  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, self.browser);
 }
 
 @end
