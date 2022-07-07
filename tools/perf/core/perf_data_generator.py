@@ -1347,6 +1347,31 @@ BUILDERS = {
             'device_type': 'eve',
         },
     },
+    'lacros-x86-perf': {
+        'tests': [
+            {
+                'isolate':
+                'performance_test_suite_octopus',
+                'extra_args': [
+                    # The magic hostname that resolves to a CrOS device in the test lab
+                    '--remote=variable_chromeos_device_hostname',
+                ],
+            },
+        ],
+        'platform':
+        'lacros',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # chromium_swarming recipe_module ignore this dimension.
+            'gpu': None,
+            'os': 'ChromeOS',
+            'device_status': 'available',
+            'device_type': 'grabbiter',
+        },
+    },
 }
 
 # pylint: enable=line-too-long
@@ -1531,6 +1556,7 @@ TELEMETRY_PERF_BENCHMARKS = _get_telemetry_perf_benchmarks_metadata()
 PERFORMANCE_TEST_SUITES = [
     'performance_test_suite',
     'performance_test_suite_eve',
+    'performance_test_suite_octopus',
     'performance_webview_test_suite',
     'performance_weblayer_test_suite',
 ]

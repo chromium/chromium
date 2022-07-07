@@ -1488,6 +1488,10 @@
     "label": "//chrome/test:performance_test_suite_eve",
     "type": "generated_script",
   },
+  "performance_test_suite_octopus": {
+    "label": "//chrome/test:performance_test_suite_octopus",
+    "type": "generated_script",
+  },
   "performance_web_engine_test_suite": {
     "args": [
       "../../content/test/gpu/run_telemetry_benchmark_fuchsia.py",

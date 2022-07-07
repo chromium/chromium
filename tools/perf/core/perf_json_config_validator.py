@@ -48,6 +48,7 @@ _VALID_WEBVIEW_BROWSERS = {
 _PERFORMANCE_TEST_SUITES = {
     'performance_test_suite',
     'performance_test_suite_eve',
+    'performance_test_suite_octopus',
     'performance_webview_test_suite',
 }
 for suffix in android_browser_types.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:

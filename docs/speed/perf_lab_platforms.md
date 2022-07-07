@@ -26,6 +26,7 @@
 ## Chromeos
 
  * [lacros-eve-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-eve-perf): .
+ * [lacros-x86-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-x86-perf): .
 
 ## Linux
 
