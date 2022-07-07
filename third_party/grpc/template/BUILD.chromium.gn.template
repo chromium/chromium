@@ -335,7 +335,7 @@
 
   cares_sources = glob.glob('third_party/cares/cares/include/*.h') + \
     glob.glob('third_party/cares/cares/src/lib/*.c')
-  # cares is only used in eureka. Use chromium/src/third_party/cares in eureka.
+  # cares is only used in chromecast. Use chromium/src/third_party/cares in chromecast
   cares_sources = gn_sort([s.replace('third_party/cares/cares', '//third_party/cares')
                            for s in cares_sources])
   cares_sources = [s for s in cares_sources if s not in (
