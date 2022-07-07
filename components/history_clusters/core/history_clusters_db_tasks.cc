@@ -261,8 +261,17 @@ void GetAnnotatedVisitsToCluster::IncrementContinuationParams(
         annotated_visits_.back().visit_row.visit_time;
     continuation_params_.is_partial_day = true;
   } else {
+    DCHECK(!continuation_params_.exhausted_unclustered_visits || recent_first_);
+    // Prepare `continuation_time` for the next day of visits. It will include
+    // all unclustered visits iterated. Except, if `exhausted_unclustered_visits
+    // is true, which is only possible if `recent_first_` is true and it just
+    // reached the clustering boundary, then prepare `continuation_time` to
+    // re-iterate the last iterated day, as the to include the clustered visits
+    // of that day.
     continuation_params_.continuation_time =
-        recent_first_ ? options.begin_time : options.end_time;
+        (recent_first_ && !continuation_params_.exhausted_unclustered_visits)
+            ? options.begin_time
+            : options.end_time;
     continuation_params_.is_partial_day = false;
 
     // We've exhausted history if we've reached `begin_time_limit_` (bound to be

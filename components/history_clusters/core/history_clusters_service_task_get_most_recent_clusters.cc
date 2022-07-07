@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time_to_iso8601.h"
 #include "components/history/core/browser/history_service.h"
@@ -18,6 +19,19 @@
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 
 namespace history_clusters {
+
+namespace {
+
+// Get the most recent `ClusterVisit` in `cluster`.
+history::ClusterVisit GetMostRecentClusterVisit(history::Cluster cluster) {
+  return *base::ranges::min_element(
+      cluster.visits, [](auto time1, auto time2) { return time1 < time2; },
+      [](const auto& cluster_visit) {
+        return cluster_visit.annotated_visit.visit_row.visit_time;
+      });
+}
+
+}  // namespace
 
 HistoryClustersServiceTaskGetMostRecentClusters::
     HistoryClustersServiceTaskGetMostRecentClusters(
@@ -51,14 +65,13 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
   DCHECK(!continuation_params_.exhausted_all_visits);
 
   if (!backend_ || continuation_params_.exhausted_unclustered_visits) {
-    // Early exit if we won't be able to cluster visits, either because null
-    // `backend_` or all unclustered visits have already been clustered and
-    // returned.
+    // If visits can't be clustered, either because `backend_` is null, or all
+    // unclustered visits have already been clustered and returned, then return
+    // persisted clusters.
     weak_history_clusters_service_->NotifyDebugMessage(
         "HistoryClustersService::QueryClusters Error: ClusteringBackend is "
         "nullptr. Returning empty cluster vector.");
-    done_ = true;
-    std::move(callback_).Run({}, QueryClustersContinuationParams::DoneParams());
+    ReturnMostRecentPersistedClusters(continuation_params_.continuation_time);
 
   } else {
     history_service_get_annotated_visits_to_cluster_start_time_ =
@@ -102,9 +115,9 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
           history_service_get_annotated_visits_to_cluster_start_time_);
 
   if (annotated_visits.empty()) {
-    // Early exit without calling backend if there's no annotated visits.
-    done_ = true;
-    std::move(callback_).Run({}, QueryClustersContinuationParams::DoneParams());
+    // If there're no unclustered visits to cluster, then return persisted
+    // clusters.
+    ReturnMostRecentPersistedClusters(continuation_params.continuation_time);
 
   } else {
     if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
@@ -145,6 +158,28 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
         GetDebugJSONForClusters(clusters));
   }
 
+  done_ = true;
+  std::move(callback_).Run(clusters, continuation_params);
+}
+
+void HistoryClustersServiceTaskGetMostRecentClusters::
+    ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
+  history_service_->GetMostRecentClusters(
+      begin_time_, exclusive_max_time, 1,
+      base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
+                         OnGotMostRecentPersistedClusters,
+                     weak_ptr_factory_.GetWeakPtr()),
+      &task_tracker_);
+}
+
+void HistoryClustersServiceTaskGetMostRecentClusters::
+    OnGotMostRecentPersistedClusters(std::vector<history::Cluster> clusters) {
+  auto continuation_params =
+      clusters.empty() ? QueryClustersContinuationParams::DoneParams()
+                       : QueryClustersContinuationParams{
+                             GetMostRecentClusterVisit(clusters[0])
+                                 .annotated_visit.visit_row.visit_time,
+                             true, false, true, false};
   done_ = true;
   std::move(callback_).Run(clusters, continuation_params);
 }

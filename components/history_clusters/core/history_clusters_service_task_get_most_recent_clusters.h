@@ -10,15 +10,25 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_types.h"
+
+namespace history {
+class HistoryService;
+}
 
 namespace history_clusters {
 
 class HistoryClustersService;
 
+// `HistoryClustersServiceTaskGetMostRecentClusters` 1st gets newly generated
+// clusters from the clustering backend using unclustered visits from the
+// history backend. Then, once the unclustered visits are exhausted, it switches
+// to getting persisted clusters from the history backend.
+// It is an extension of `HistoryClustersService`; rather than pollute the
+// latter's namespace with a bunch of callbacks, this class groups those
+// callbacks.
 class HistoryClustersServiceTaskGetMostRecentClusters {
  public:
   HistoryClustersServiceTaskGetMostRecentClusters(
@@ -35,6 +45,19 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   bool Done() { return done_; }
 
  private:
+  // When there remain unclustered visits, cluster unclustered visits (possibly
+  // in combination with clustered visits) and return the newly created
+  // clusters:
+  //   Start() ->
+  //   OnGotAnnotatedVisitsToCluster() ->
+  //   OnGotModelClusters()
+  // But when unclustered visits are or were exhausted, return persisted
+  // clusters:
+  //   Start() ->
+  //   [optional] OnGotAnnotatedVisitsToCluster() ->
+  //   ReturnMostRecentPersistedClusters() ->
+  //   OnGotMostRecentPersistedClusters()
+
   // Invoked during construction. Will asyncly request annotated visits from
   // `GetAnnotatedVisitsToCluster`.
   void Start();
@@ -48,9 +71,17 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
       QueryClustersContinuationParams continuation_params);
 
   // Invoked after `OnGotAnnotatedVisitsToCluster()` asyncly obtains clusters.
-  // Will synchronously invoke `callback_`.
+  // Will syncly invoke `callback_`.
   void OnGotModelClusters(QueryClustersContinuationParams continuation_params,
                           std::vector<history::Cluster> clusters);
+
+  // Invoked syncly when there are no unclustered visits to cluster. Will
+  // asyncly request existing (i.e. persisted) clusters from `HistoryService`.
+  void ReturnMostRecentPersistedClusters(base::Time exclusive_max_time);
+
+  // Invoked after `ReturnMostRecentPersistedClusters()` asyncly fetches
+  // clusters. Will syncly invoke `callback_`.
+  void OnGotMostRecentPersistedClusters(std::vector<history::Cluster> clusters);
 
   // Never nullptr.
   base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;

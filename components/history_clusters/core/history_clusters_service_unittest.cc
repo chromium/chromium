@@ -272,7 +272,9 @@ class HistoryClustersServiceTestBase : public testing::Test {
     // Persisted visits are ordered before incomplete visits. Persisted visits
     // are ordered newest first. Incomplete visits are ordered the same as they
     // were sent to the `HistoryClustersService`.
-    return {clusters, test_clustering_backend_->LastClusteredVisits()};
+    return {clusters, expect_clustering_backend_call
+                          ? test_clustering_backend_->LastClusteredVisits()
+                          : std::vector<history::AnnotatedVisit>{}};
   };
 
   // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster` and return
@@ -308,19 +310,18 @@ class HistoryClustersServiceTestBase : public testing::Test {
   // unique day with at least 1 visit; i.e. `number_of_days_with_visits`.
   void FlushKeywordRequests(std::vector<history::Cluster> clusters,
                             size_t number_of_days_with_visits) {
-    test_clustering_backend_->WaitForGetClustersCall();
-    test_clustering_backend_->FulfillCallback(clusters);
-
     // `Does[Query|URL]MatchAnyCluster()` will continue making history and
     // cluster backend requests until it has exhausted history. We have to flush
     // out these requests before it will populate the cache.
-    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
+    for (size_t i = 0; i < number_of_days_with_visits; ++i) {
       test_clustering_backend_->WaitForGetClustersCall();
-      history::BlockUntilHistoryProcessesPendingRequests(
-          history_service_.get());
-      test_clustering_backend_->FulfillCallback({});
+      test_clustering_backend_->FulfillCallback(
+          i == 0 ? clusters : std::vector<history::Cluster>{});
     }
-    // One last wait to flush out the last, empty history request.
+    // Flush out the last, empty history requests. There'll be 2 history
+    // requests: the 1st to exhaust visits to cluster requests, and the 2nd to
+    // exhaust persisted cluster requests.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   };
 
@@ -503,12 +504,42 @@ TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_NoMixedDays) {
     EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
-  // 3rd query should set `exhausted_unclustered_visits` and
-  // `exhausted_all_visits`. No clusters should be returned (not implemented
-  // yet).
+  // Next 3 queries should return the persisted clusters. They should not make
+  // requests to the clustering backend. And they should set
+  // `exhausted_unclustered_visits`.
   {
-    const auto clusters = NextQueryClusters(continuation_params, false).first;
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(3));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(2));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(4));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(3));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(5));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // The last query should set `exhausted_all_visits`.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
     EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_TRUE(continuation_params.exhausted_all_visits);
   }
@@ -554,11 +585,33 @@ TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_MixedDay) {
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
-  // 3rd query should set `exhausted_all_visits`. No clusters should be returned
-  // (not implemented yet).
+  // 3rd query should return the 1st cluster from 2 days ago; it shouldn't be
+  // skipped even though the 2nd query already returned a visit from 2 days ago.
   {
-    const auto clusters = NextQueryClusters(continuation_params, false).first;
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(3));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // 4th query should return the non-mixed cluster.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(2));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(4));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // Last query should set `exhausted_all_visits`.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
     EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_TRUE(continuation_params.exhausted_all_visits);
   }
@@ -1200,11 +1253,6 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   AddIncompleteVisit(6, 6, yesterday);
   AddIncompleteVisit(7, 7, yesterday);
 
-  // Kick off cluster request.
-  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
-  test_clustering_backend_->WaitForGetClustersCall();
-  ASSERT_EQ(test_clustering_backend_->LastClusteredVisits().size(), 7u);
-
   // Create 4 clusters:
   std::vector<history::AnnotatedVisit> visits =
       test_clustering_backend_->LastClusteredVisits();
@@ -1212,11 +1260,7 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   // 1) A cluster with 4 phrases and 6 words. The next cluster's keywords should
   // also be cached since we have less than 5 phrases.
   clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(1),
-                           test_clustering_backend_->GetVisitById(2),
-                       },
+      history::Cluster(0, {{}, {}},
                        {{u"one", history::ClusterKeywordData()},
                         {u"two", history::ClusterKeywordData()},
                         {u"three", history::ClusterKeywordData()},
@@ -1225,35 +1269,26 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   // 2) The 2nd cluster has only 1 visit. Since it's keywords won't be cached,
   // they should not affect the max.
   clusters.push_back(history::Cluster(
-      0,
-      {
-          test_clustering_backend_->GetVisitById(3),
-      },
+      0, {{}},
       {{u"ignored not cached", history::ClusterKeywordData()},
        {u"elephant penguin kangaroo", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
   // 3) With this 3rd cluster, we'll have 5 phrases and 7 words. Now that we've
   // reached 5 phrases, the next cluster's keywords should not be cached.
   clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(4),
-                           test_clustering_backend_->GetVisitById(5),
-                       },
-                       {{u"seven", history::ClusterKeywordData()}},
+      history::Cluster(0, {{}, {}}, {{u"seven", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   // 4) The 4th cluster's keywords should not be cached since we've reached 5
   // phrases.
   clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(6),
-                           test_clustering_backend_->GetVisitById(7),
-                       },
-                       {{u"eight", history::ClusterKeywordData()}},
+      history::Cluster(0, {{}, {}}, {{u"eight", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
-  test_clustering_backend_->FulfillCallback(clusters);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  // Kick off cluster request.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+  FlushKeywordRequests(clusters, 1);
+
+  ASSERT_EQ(test_clustering_backend_->LastClusteredVisits().size(), 7u);
 
   // The 1st cluster's phrases should always be cached.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("one"));
