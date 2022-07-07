@@ -398,15 +398,15 @@ void URLRequestContextConfig::SetContextConfigExperimentalOptions() {
 void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
     net::URLRequestContextBuilder* context_builder,
     net::HttpNetworkSessionParams* session_params,
-    net::QuicParams* quic_params) {
-  if (experimental_options.empty())
-    return;
-
+    net::QuicParams* quic_params,
+    net::NetworkChangeNotifier::NetworkHandle bound_network) {
   bool async_dns_enable = false;
   bool stale_dns_enable = false;
   bool host_resolver_rules_enable = false;
   bool disable_ipv6_on_wifi = false;
   bool nel_enable = false;
+  bool is_network_bound =
+      bound_network != net::NetworkChangeNotifier::kInvalidNetworkHandle;
 
   StaleHostResolver::StaleOptions stale_dns_options;
   const std::string* host_resolver_rules_string;
@@ -765,31 +765,42 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   }
 
   if (async_dns_enable || stale_dns_enable || host_resolver_rules_enable ||
-      disable_ipv6_on_wifi) {
-    std::unique_ptr<net::HostResolver> host_resolver;
+      disable_ipv6_on_wifi || is_network_bound) {
     net::HostResolver::ManagerOptions host_resolver_manager_options;
     host_resolver_manager_options.insecure_dns_client_enabled =
         async_dns_enable;
     host_resolver_manager_options.check_ipv6_on_wifi = !disable_ipv6_on_wifi;
-    // TODO(crbug.com/934402): Consider using a shared HostResolverManager for
-    // Cronet HostResolvers.
-    if (stale_dns_enable) {
-      DCHECK(!disable_ipv6_on_wifi);
-      host_resolver = std::make_unique<StaleHostResolver>(
-          net::HostResolver::CreateStandaloneContextResolver(
-              net::NetLog::Get(), std::move(host_resolver_manager_options)),
-          stale_dns_options);
+
+    if (!is_network_bound) {
+      std::unique_ptr<net::HostResolver> host_resolver;
+      // TODO(crbug.com/934402): Consider using a shared HostResolverManager for
+      // Cronet HostResolvers.
+      if (stale_dns_enable) {
+        DCHECK(!disable_ipv6_on_wifi);
+        host_resolver = std::make_unique<StaleHostResolver>(
+            net::HostResolver::CreateStandaloneContextResolver(
+                net::NetLog::Get(), std::move(host_resolver_manager_options)),
+            stale_dns_options);
+      } else {
+        host_resolver = net::HostResolver::CreateStandaloneResolver(
+            net::NetLog::Get(), std::move(host_resolver_manager_options));
+      }
+      if (host_resolver_rules_enable) {
+        std::unique_ptr<net::MappedHostResolver> remapped_resolver(
+            new net::MappedHostResolver(std::move(host_resolver)));
+        remapped_resolver->SetRulesFromString(*host_resolver_rules_string);
+        host_resolver = std::move(remapped_resolver);
+      }
+      context_builder->set_host_resolver(std::move(host_resolver));
     } else {
-      host_resolver = net::HostResolver::CreateStandaloneResolver(
-          net::NetLog::Get(), std::move(host_resolver_manager_options));
+      // `stale_dns_enable` and `host_resolver_rules_enable` are purposefully
+      // ignored. Implementing them requires instantiating a special
+      // HostResolver that wraps the real underlying resolver: that isn't
+      // possible at the moment for network-bound contexts as they create a
+      // special HostResolver internally and don't expose that.
+      context_builder->BindToNetwork(bound_network,
+                                     std::move(host_resolver_manager_options));
     }
-    if (host_resolver_rules_enable) {
-      std::unique_ptr<net::MappedHostResolver> remapped_resolver(
-          new net::MappedHostResolver(std::move(host_resolver)));
-      remapped_resolver->SetRulesFromString(*host_resolver_rules_string);
-      host_resolver = std::move(remapped_resolver);
-    }
-    context_builder->set_host_resolver(std::move(host_resolver));
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -811,7 +822,8 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 }
 
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
-    net::URLRequestContextBuilder* context_builder) {
+    net::URLRequestContextBuilder* context_builder,
+    net::NetworkChangeNotifier::NetworkHandle bound_network) {
   std::string config_cache;
   if (http_cache != DISABLED) {
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
@@ -843,7 +855,7 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   }
 
   SetContextBuilderExperimentalOptions(context_builder, &session_params,
-                                       quic_context->params());
+                                       quic_context->params(), bound_network);
 
   context_builder->set_http_network_session_params(session_params);
   context_builder->set_quic_context(std::move(quic_context));

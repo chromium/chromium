@@ -354,12 +354,14 @@ class NET_EXPORT URLRequestContextBuilder {
 
   // Binds the context to `network`. All requests scheduled through the context
   // built by this builder will be sent using `network`. Requests will fail if
-  // `network` disconnects.
+  // `network` disconnects. `options` allows to specify the ManagerOptions that
+  // will be passed to the special purpose HostResolver created internally.
   // This also imposes some limitations on the context capabilities:
-  // * Currently, URLs will only be resolved using the System DNS.
   // * By design, QUIC connection migration will be turned off.
   // Only implemented for Android (API level > 23).
-  void BindToNetwork(NetworkChangeNotifier::NetworkHandle network);
+  void BindToNetwork(
+      NetworkChangeNotifier::NetworkHandle network,
+      absl::optional<HostResolver::ManagerOptions> options = absl::nullopt);
 
   // Creates a mostly self-contained URLRequestContext. May only be called once
   // per URLRequestContextBuilder. After this is called, the Builder can be
@@ -418,6 +420,9 @@ class NET_EXPORT URLRequestContextBuilder {
 
   NetworkChangeNotifier::NetworkHandle bound_network_ =
       NetworkChangeNotifier::kInvalidNetworkHandle;
+  // Used only if the context is bound to a network to customize the
+  // HostResolver created internally.
+  HostResolver::ManagerOptions manager_options_;
 
   HttpCacheParams http_cache_params_;
   HttpNetworkSessionParams http_network_session_params_;

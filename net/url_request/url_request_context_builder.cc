@@ -310,7 +310,8 @@ void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
 }
 
 void URLRequestContextBuilder::BindToNetwork(
-    NetworkChangeNotifier::NetworkHandle network) {
+    NetworkChangeNotifier::NetworkHandle network,
+    absl::optional<HostResolver::ManagerOptions> options) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
   // DNS lookups for this context will need to target `network`. NDK to do that
@@ -321,6 +322,7 @@ void URLRequestContextBuilder::BindToNetwork(
   CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
         base::android::SDK_VERSION_MARSHMALLOW);
   bound_network_ = network;
+  manager_options_ = options.value_or(manager_options_);
 #else
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -371,11 +373,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     set_client_socket_factory(client_socket_factory.get());
     storage->set_client_socket_factory(std::move(client_socket_factory));
 
-    HostResolver::ManagerOptions manager_options;
-    manager_options.insecure_dns_client_enabled = false;
-    manager_options.additional_types_via_insecure_dns_enabled = false;
     host_resolver_ = HostResolver::CreateStandaloneNetworkBoundResolver(
-        context->net_log(), bound_network_, manager_options);
+        context->net_log(), bound_network_, manager_options_);
 
     if (!quic_context_)
       set_quic_context(std::make_unique<QuicContext>());

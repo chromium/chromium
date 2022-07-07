@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/hash_value.h"
+#include "net/base/network_change_notifier.h"
 #include "net/cert/cert_verifier.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -103,7 +104,9 @@ struct URLRequestContextConfig {
 
   // Configures |context_builder| based on |this|.
   void ConfigureURLRequestContextBuilder(
-      net::URLRequestContextBuilder* context_builder);
+      net::URLRequestContextBuilder* context_builder,
+      net::NetworkChangeNotifier::NetworkHandle bound_network =
+          net::NetworkChangeNotifier::kInvalidNetworkHandle);
 
   // Enable QUIC.
   const bool enable_quic;
@@ -266,7 +269,8 @@ struct URLRequestContextConfig {
   void SetContextBuilderExperimentalOptions(
       net::URLRequestContextBuilder* context_builder,
       net::HttpNetworkSessionParams* session_params,
-      net::QuicParams* quic_params);
+      net::QuicParams* quic_params,
+      net::NetworkChangeNotifier::NetworkHandle bound_network);
 };
 
 // Stores intermediate state for URLRequestContextConfig.  Initializes with

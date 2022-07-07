@@ -356,6 +356,7 @@ CronetContext::NetworkTasks::BuildDefaultURLRequestContext(
   DCHECK(!network_quality_estimator_);
   DCHECK(!cronet_prefs_manager_);
   net::URLRequestContextBuilder context_builder;
+  context_config_->ConfigureURLRequestContextBuilder(&context_builder);
   SetSharedURLRequestContextBuilderConfig(&context_builder);
 
   context_builder.set_proxy_resolution_service(
@@ -425,19 +426,9 @@ std::unique_ptr<net::URLRequestContext>
 CronetContext::NetworkTasks::BuildNetworkBoundURLRequestContext(
     net::NetworkChangeNotifier::NetworkHandle network) {
   net::URLRequestContextBuilder context_builder;
+  context_config_->ConfigureURLRequestContextBuilder(&context_builder, network);
   SetSharedURLRequestContextBuilderConfig(&context_builder);
 
-  // URLRequestContexts that are bound to a network cannot specify a
-  // HostResolver in any way (URLRequestContextBuilder will internally pick
-  // one that support per-network lookups). Hence, if options for this are
-  // specified in Cronet's configuration, they should apply only to the default
-  // context.
-  context_builder.set_host_resolver(nullptr);
-  context_builder.set_host_mapping_rules(std::string());
-  context_builder.set_host_resolver_manager(nullptr);
-  context_builder.set_host_resolver_factory(nullptr);
-
-  context_builder.BindToNetwork(network);
   // On Android, Cronet doesn't handle PAC URL processing, instead it defers
   // that to the OS (which sets up a local proxy configured correctly w.r.t.
   // Android settings). See crbug.com/432539.
@@ -459,7 +450,6 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextBuilderConfig(
   context_builder->set_network_delegate(
       std::make_unique<BasicNetworkDelegate>());
   context_builder->set_net_log(g_net_log.Get().net_log());
-  context_config_->ConfigureURLRequestContextBuilder(context_builder);
 
   // Explicitly disable the persister for Cronet to avoid persistence of dynamic
   // HPKP. This is a safety measure ensuring that nobody enables the persistence

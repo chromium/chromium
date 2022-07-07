@@ -325,6 +325,38 @@ TEST_F(URLRequestContextBuilderTest, BindToNetworkFinalConfiguration) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+TEST_F(URLRequestContextBuilderTest, BindToNetworkCustomManagerOptions) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "BindToNetwork is supported starting from Android Marshmallow";
+  }
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // check that all the pieces are in place and configured correctly.
+  constexpr NetworkChangeNotifier::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  test::MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  // Set non-default value for check_ipv6_on_wifi and check that this is what
+  // HostResolverManager receives.
+  HostResolver::ManagerOptions options;
+  options.check_ipv6_on_wifi = !options.check_ipv6_on_wifi;
+  builder_.BindToNetwork(network, options);
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+  EXPECT_EQ(context->host_resolver()
+                ->GetManagerForTesting()
+                ->check_ipv6_on_wifi_for_testing(),
+            options.check_ipv6_on_wifi);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "BindToNetwork is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 }  // namespace net
