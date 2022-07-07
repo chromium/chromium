@@ -785,6 +785,9 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   for (const auto& [primary_key, form] : key_to_form_map) {
     form->password_value = u"<redacted>";
     const std::string storage_key = base::NumberToString(primary_key.value());
+    for (PasswordNote& note : form->notes) {
+      note.value = u"<redacted>";
+    }
     batch->Put(storage_key,
                CreateEntityData(*form, GetPossiblyTrimmedPasswordSpecificsData(
                                            storage_key)));
