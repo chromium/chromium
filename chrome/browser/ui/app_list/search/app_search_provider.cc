@@ -218,10 +218,9 @@ class AppSearchProvider::App {
     } else {
       FuzzyTokenizedStringMatch match;
       for (auto& curr_text : tokenized_indexed_searchable_text_) {
-        if (match.IsRelevant(query, *curr_text, kRelevanceThreshold,
-                             kUseWeightedRatio, kUseEditDistance,
-                             kPartialMatchPenaltyRate) &&
-            match.relevance() >= relevance_threshold()) {
+        if (match.Relevance(query, *curr_text, kUseWeightedRatio,
+                            kUseEditDistance, kPartialMatchPenaltyRate) >=
+            std::max(kRelevanceThreshold, relevance_threshold())) {
           return true;
         }
       }
@@ -605,9 +604,10 @@ void AppSearchProvider::UpdateQueriedResults() {
       MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
     } else {
       FuzzyTokenizedStringMatch match;
-      if (match.IsRelevant(query_terms, *indexed_name, kRelevanceThreshold,
-                           kUseWeightedRatio, kUseEditDistance,
-                           kPartialMatchPenaltyRate) ||
+      const double relevance =
+          match.Relevance(query_terms, *indexed_name, kUseWeightedRatio,
+                          kUseEditDistance, kPartialMatchPenaltyRate);
+      if (relevance >= kRelevanceThreshold ||
           app->MatchSearchableText(query_terms, use_exact_match)) {
         std::unique_ptr<AppResult> result = app->data_source()->CreateResult(
             app->id(), list_controller_, false);
@@ -615,7 +615,7 @@ void AppSearchProvider::UpdateQueriedResults() {
         // Update result from match.
         result->SetTitle(indexed_name->text());
         result->SetTitleTags(CalculateTags(query_, indexed_name->text()));
-        result->set_relevance(match.relevance());
+        result->set_relevance(relevance);
 
         MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
       }

@@ -94,23 +94,13 @@ class FuzzyTokenizedStringMatch {
   static double PrefixMatcher(const TokenizedString& query,
                               const TokenizedString& text);
 
-  // TODO(crbug.com/1336160): Consider refactoring this method to directly
-  // return the relevance score, instead of a bool. This would remove the need
-  // to subsequently call relevance().
-  //
-  // Calculates the relevance score of |query| relative to |text|.
-  //
-  // Returns true if two strings are somewhat matched, i.e. relevance score is
-  // greater than |relevance_threshold|. The actual relevance score may
-  // subsequently be retrieved by calling relevance().
-  bool IsRelevant(const TokenizedString& query,
-                  const TokenizedString& text,
-                  double relevance_threshold,
-                  bool use_weighted_ratio,
-                  bool use_edit_distance,
-                  double partial_match_penalty_rate,
-                  double num_matching_blocks_penalty = 0.0);
-  double relevance() const { return relevance_; }
+  // Calculates and returns the relevance score of |query| relative to |text|.
+  double Relevance(const TokenizedString& query,
+                   const TokenizedString& text,
+                   bool use_weighted_ratio,
+                   bool use_edit_distance,
+                   double partial_match_penalty_rate,
+                   double num_matching_blocks_penalty = 0.0);
   const Hits& hits() const { return hits_; }
 
  private:

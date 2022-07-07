@@ -60,12 +60,8 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
   }
 
   FuzzyTokenizedStringMatch match;
-  // The return parameter is ignored here, but this method also implicitly
-  // calculates the match relevance.
-  match.IsRelevant(tokenized_query, tokenized_title, kRelevanceThreshold,
-                   kUseWeightedRatio, kUseEditDistance,
-                   kPartialMatchPenaltyRate);
-  return match.relevance();
+  return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio,
+                         kUseEditDistance, kPartialMatchPenaltyRate);
 }
 
 std::vector<std::pair<const apps::Result*, double>> SearchGames(

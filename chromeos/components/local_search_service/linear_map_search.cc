@@ -52,11 +52,12 @@ bool IsItemRelevant(const TokenizedString& query,
 
   for (const auto& tag : search_tags) {
     FuzzyTokenizedStringMatch match;
-    if (match.IsRelevant(query, *(tag.second), relevance_threshold,
-                         true /* use_weighted_ratio */,
-                         false /* use_edit_distance */,
-                         0.9 /* partial_match_penalty_rate */, 0.1)) {
-      *relevance_score = match.relevance();
+    const double relevance =
+        match.Relevance(query, *(tag.second), true /* use_weighted_ratio */,
+                        false /* use_edit_distance */,
+                        0.9 /* partial_match_penalty_rate */, 0.1);
+    if (relevance >= relevance_threshold) {
+      *relevance_score = relevance;
       Position position;
       position.content_id = tag.first;
       positions->push_back(position);

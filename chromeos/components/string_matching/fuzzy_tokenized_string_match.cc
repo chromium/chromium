@@ -250,13 +250,13 @@ double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
   return 1.0 - std::pow(0.5, match.relevance());
 }
 
-bool FuzzyTokenizedStringMatch::IsRelevant(const TokenizedString& query,
-                                           const TokenizedString& text,
-                                           double relevance_threshold,
-                                           bool use_weighted_ratio,
-                                           bool use_edit_distance,
-                                           double partial_match_penalty_rate,
-                                           double num_matching_blocks_penalty) {
+double FuzzyTokenizedStringMatch::Relevance(
+    const TokenizedString& query,
+    const TokenizedString& text,
+    bool use_weighted_ratio,
+    bool use_edit_distance,
+    double partial_match_penalty_rate,
+    double num_matching_blocks_penalty) {
   // If there is an exact match, relevance will be 1.0 and there is only 1 hit
   // that is the entire text/query.
   const auto& query_text = query.text();
@@ -307,7 +307,7 @@ bool FuzzyTokenizedStringMatch::IsRelevant(const TokenizedString& query,
         2;
   }
 
-  return relevance_ >= relevance_threshold;
+  return relevance_;
 }
 
 }  // namespace string_matching
