@@ -115,6 +115,17 @@
     width: var(--work-icon-size);
   }
 
+  #headerV2 .work-badge {
+    --badge-width: 18px;
+    border: 1px solid var(--google-grey-300);
+    bottom: -3px;
+    right: -9px;
+  }
+
+  #headerV2 .work-badge > iron-icon {
+    --work-icon-size: 12px;
+  }
+
   #body {
     color: var(--cr-secondary-text-color);
     flex-grow: 1;
@@ -187,6 +198,10 @@
   @media (prefers-color-scheme: dark) {
     #interceptDialog [slot=footer] {
       background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+    }
+
+    #headerV2 .work-badge {
+      border: 1px solid var(--google-grey-500);
     }
 
     #managedDisclaimer {

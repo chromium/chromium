@@ -51,13 +51,14 @@
     border-radius: 50%;
     bottom: var(--badge-offset);
     height: var(--badge-width);
-    inset-inline-end: var(--badge-offset);
     position: absolute;
+    right: var(--badge-offset);
     width: var(--badge-width);
   }
 
   .in-dialog-design .work-badge {
-    --badge-width: 24px;
+    --badge-width: 26px;
+    border: 1px solid var(--google-grey-300);
     bottom: 0;
   }
 
@@ -142,6 +143,12 @@
   .in-dialog-design #skipButton {
     margin-inline-end: 12px;
     width: 76px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .in-dialog-design .work-badge {
+      border: 1px solid var(--google-grey-500);
+    }
   }
 </style>
 
