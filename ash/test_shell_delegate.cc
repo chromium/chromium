@@ -115,4 +115,8 @@ void TestShellDelegate::SetLastCommittedURLForWindow(const GURL& url) {
   last_committed_url_ = url;
 }
 
+version_info::Channel TestShellDelegate::GetChannel() {
+  return channel_;
+}
+
 }  // namespace ash

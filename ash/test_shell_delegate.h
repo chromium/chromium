@@ -64,6 +64,9 @@ class TestShellDelegate : public ShellDelegate {
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackPageForPersistentDesksBar() override {}
   void SetLastCommittedURLForWindow(const GURL& url);
+  version_info::Channel GetChannel() override;
+
+  void set_channel(version_info::Channel channel) { channel_ = channel; }
 
  private:
   // True if the current top window can go back.
@@ -84,6 +87,8 @@ class TestShellDelegate : public ShellDelegate {
   MultiDeviceSetupBinder multidevice_setup_binder_;
 
   GURL last_committed_url_ = GURL::EmptyGURL();
+
+  version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 };
 
 }  // namespace ash

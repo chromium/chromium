@@ -9,7 +9,6 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "base/strings/string_piece.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
-#include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -67,7 +66,6 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
                          const base::Time& date,
                          bool& opened_pwa,
                          GURL& final_event_url) override;
-  version_info::Channel GetChannel() override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;
@@ -119,8 +117,6 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return last_network_settings_network_id_;
   }
 
-  void set_channel(version_info::Channel channel) { channel_ = channel; }
-
  private:
   int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;
@@ -136,7 +132,6 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   std::string last_bluetooth_settings_device_id_;
   std::string last_network_settings_network_id_;
   std::string last_network_type_;
-  version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 };
 
 }  // namespace ash

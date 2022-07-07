@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/channel_indicator/channel_indicator.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
@@ -186,10 +187,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)),
-      channel_indicator_view_(features::IsReleaseTrackUiEnabled()
-                                  ? new ChannelIndicatorView(shelf)
-                                  : nullptr) {
+      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)) {
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -234,8 +232,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddTrayItemToContainer(network_tray_view_);
   AddTrayItemToContainer(new PowerTrayView(shelf));
 
-  if (features::IsReleaseTrackUiEnabled())
+  if (features::IsReleaseTrackUiEnabled()) {
+    channel_indicator_view_ = new ChannelIndicatorView(
+        shelf, Shell::Get()->shell_delegate()->GetChannel());
     AddTrayItemToContainer(channel_indicator_view_);
+  }
 
   auto vertical_clock_padding = std::make_unique<views::View>();
   vertical_clock_padding->SetPreferredSize(gfx::Size(

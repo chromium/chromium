@@ -12,6 +12,7 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "chromeos/ui/base/window_pin_type.h"
+#include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
@@ -140,6 +141,9 @@ class ASH_EXPORT ShellDelegate {
   // Returns the last committed URL from the web contents if the given |window|
   // contains a browser frame, otherwise returns GURL::EmptyURL().
   virtual const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window);
+
+  // Retrieves the release track on which the device resides.
+  virtual version_info::Channel GetChannel() = 0;
 };
 
 }  // namespace ash

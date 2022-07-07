@@ -104,7 +104,6 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                          const base::Time& date,
                          bool& opened_pwa,
                          GURL& finalized_event_url) override;
-  version_info::Channel GetChannel() override;
 
  protected:
   // Used by mocks in tests.

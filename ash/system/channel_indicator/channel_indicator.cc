@@ -11,7 +11,6 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -92,9 +91,12 @@ int GetStringResource(version_info::Channel channel) {
 
 }  // namespace
 
-ChannelIndicatorView::ChannelIndicatorView(Shelf* shelf) : TrayItemView(shelf) {
+ChannelIndicatorView::ChannelIndicatorView(Shelf* shelf,
+                                           version_info::Channel channel)
+    : TrayItemView(shelf), channel_(channel) {
   SetVisible(false);
   CreateImageView();
+  Update(channel_);
 }
 
 ChannelIndicatorView::~ChannelIndicatorView() = default;
@@ -128,14 +130,6 @@ void ChannelIndicatorView::OnThemeChanged() {
 
 void ChannelIndicatorView::HandleLocaleChange() {
   Update(channel_);
-}
-
-void ChannelIndicatorView::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  if (state == session_manager::SessionState::ACTIVE) {
-    channel_ = Shell::Get()->system_tray_model()->client()->GetChannel();
-    Update(channel_);
-  }
 }
 
 void ChannelIndicatorView::Update(version_info::Channel channel) {

@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
@@ -336,4 +337,8 @@ const GURL& ChromeShellDelegate::GetLastCommittedURLForWindowIfAny(
   }
 
   return contents ? contents->GetLastCommittedURL() : GURL::EmptyGURL();
+}
+
+version_info::Channel ChromeShellDelegate::GetChannel() {
+  return chrome::GetChannel();
 }

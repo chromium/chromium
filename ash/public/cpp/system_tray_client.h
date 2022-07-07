@@ -159,9 +159,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
                                  bool& opened_pwa,
                                  GURL& finalized_event_url) = 0;
 
-  // Retrieves the release track on which the device resides.
-  virtual version_info::Channel GetChannel() = 0;
-
  protected:
   SystemTrayClient() {}
 };

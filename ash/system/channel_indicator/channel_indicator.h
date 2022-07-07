@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_CHANNEL_INDICATOR_CHANNEL_INDICATOR_H_
 #define ASH_SYSTEM_CHANNEL_INDICATOR_CHANNEL_INDICATOR_H_
 
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "components/version_info/channel.h"
 
@@ -13,10 +12,9 @@ namespace ash {
 
 // A view that resides in the system tray, to make it obvious to the user when a
 // device is running on a release track other than "stable."
-class ChannelIndicatorView : public TrayItemView, public SessionObserver {
+class ChannelIndicatorView : public TrayItemView {
  public:
-  explicit ChannelIndicatorView(Shelf* shelf);
-
+  ChannelIndicatorView(Shelf* shelf, version_info::Channel channel);
   ChannelIndicatorView(const ChannelIndicatorView&) = delete;
   ChannelIndicatorView& operator=(const ChannelIndicatorView&) = delete;
 
@@ -33,9 +31,6 @@ class ChannelIndicatorView : public TrayItemView, public SessionObserver {
   // TrayItemView:
   void HandleLocaleChange() override;
 
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-
  private:
   // Functions called downstream from Update(), that make no assumptions about
   // the value of the `channel_` member variable.
@@ -46,8 +41,7 @@ class ChannelIndicatorView : public TrayItemView, public SessionObserver {
 
   std::u16string accessible_name_;
   std::u16string tooltip_;
-  version_info::Channel channel_ = version_info::Channel::UNKNOWN;
-  ScopedSessionObserver session_observer_{this};
+  version_info::Channel channel_;
 };
 
 }  // namespace ash

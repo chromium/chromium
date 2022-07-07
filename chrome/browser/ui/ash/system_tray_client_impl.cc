@@ -750,10 +750,6 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   opened_pwa = true;
 }
 
-version_info::Channel SystemTrayClientImpl::GetChannel() {
-  return chrome::GetChannel();
-}
-
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
     : system_tray_(nullptr) {
   DCHECK(!g_system_tray_client_instance);
