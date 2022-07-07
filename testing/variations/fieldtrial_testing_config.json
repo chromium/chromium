@@ -9333,7 +9333,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "base_url": "true",
                         "gesture": "true",
                         "http_status_code": "true",
                         "intended_as_new_entry": "true",
@@ -9341,7 +9340,9 @@
                         "method": "true",
                         "origin": "true",
                         "post_id": "true",
+                        "should_replace_current_entry": "true",
                         "should_update_history": "true",
+                        "url": "true",
                         "url_is_unreachable": "true"
                     },
                     "enable_features": [
