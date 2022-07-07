@@ -17,6 +17,7 @@ import {isVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
 const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
+const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
 
 const HelpBubbleMixinTestElementBase = HelpBubbleMixin(PolymerElement) as {
   new (): PolymerElement & HelpBubbleMixinInterface,
@@ -58,7 +59,7 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
 
 
   getHelpBubbleFor(anchorId: string): HelpBubbleElement|null {
-    return this.shadowRoot!.querySelector<HelpBubbleElement>(
+    return this.shadowRoot!.querySelector(
         `help-bubble[anchor-id='${anchorId}']`);
   }
 }
@@ -127,6 +128,19 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   let testProxy: TestHelpBubbleProxy;
   let container: HelpBubbleMixinTestElement;
 
+  /**
+   * Waits for the current frame to render, which queues intersection events,
+   * and then waits for the intersection events to propagate to listeners, which
+   * triggers visibility messages.
+   *
+   * This takes a total of two frames. A single frame will cause the layout to
+   * be updated, but will not actually propagate the events.
+   */
+  async function waitForVisibilityEvents() {
+    await waitAfterNextRender(container);
+    return waitAfterNextRender(container);
+  }
+
   setup(() => {
     testProxy = new TestHelpBubbleProxy();
     HelpBubbleProxyImpl.setInstance(testProxy);
@@ -134,7 +148,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     document.body.innerHTML = '';
     container = document.createElement('help-bubble-mixin-test-element');
     document.body.appendChild(container);
-    return waitAfterNextRender(container);
+    return waitForVisibilityEvents();
   });
 
   test('help bubble mixin reports bubble closed', () => {
@@ -143,6 +157,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
 
   const defaultParams: HelpBubbleParams = new HelpBubbleParams();
   defaultParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
+  defaultParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
   defaultParams.position = HelpBubblePosition.ABOVE;
   defaultParams.bodyText = 'This is a help bubble.';
   defaultParams.buttons = [];
@@ -207,6 +222,16 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         assertTrue(isVisible(bubble));
       });
 
+  test('help bubble mixin uses close button alt text', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    const bubble = container.getHelpBubbleFor('p1')!;
+    const closeButton = bubble.shadowRoot!.querySelector<HTMLElement>('#close');
+    assertTrue(!!closeButton);
+    assertEquals(CLOSE_BUTTON_ALT_TEXT, closeButton.getAttribute('aria-label'));
+  });
+
   test(
       'help bubble mixin hides help bubble when called via proxy', async () => {
         testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
@@ -232,6 +257,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
       async () => {
         const params: HelpBubbleParams = new HelpBubbleParams();
         params.nativeIdentifier = 'This is an unregistered identifier';
+        params.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
         params.position = HelpBubblePosition.ABOVE;
         params.bodyText = 'This is a help bubble.';
         params.buttons = [];
@@ -278,16 +304,8 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   });
 
   test('help bubble mixin sends event on lost visibility', async () => {
-    // Already waited for the container to render, but intersection events won't
-    // be sent until the following frame.
-    await waitAfterNextRender(container);
-
     container.style.display = 'none';
-
-    // The same applies here.
-    await waitAfterNextRender(container);
-    await waitAfterNextRender(container);
-
+    await waitForVisibilityEvents();
     assertEquals(
         6,
         testProxy.getHandler().getCallCount(
@@ -307,17 +325,11 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   test(
       'help bubble mixin sends event on closed due to anchor losing visibility',
       async () => {
-        // Already waited for the container to render, but intersection events
-        // won't be sent until the following frame.
-        await waitAfterNextRender(container);
         container.showHelpBubble('p1', defaultParams);
 
         // Hiding the container will cause the bubble to be closed.
         container.$.p1.style.display = 'none';
-
-        // The same applies here.
-        await waitAfterNextRender(container);
-        await waitAfterNextRender(container);
+        await waitForVisibilityEvents();
 
         assertEquals(
             1, testProxy.getHandler().getCallCount('helpBubbleClosed'));
@@ -327,22 +339,14 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         assertFalse(container.isHelpBubbleShowing());
       });
 
-
   test(
       'help bubble mixin does not send event when non-anchor loses visibility',
       async () => {
-        // Already waited for the container to render, but intersection events
-        // won't be sent until the following frame.
-        await waitAfterNextRender(container);
         container.showHelpBubble('p1', defaultParams);
 
         // This is not the current bubble anchor, so should not send an event.
         container.$.title.style.display = 'none';
-
-        // The same applies here.
-        await waitAfterNextRender(container);
-        await waitAfterNextRender(container);
-
+        await waitForVisibilityEvents();
         assertEquals(
             0, testProxy.getHandler().getCallCount('helpBubbleClosed'));
         assertTrue(container.isHelpBubbleShowing());
@@ -367,6 +371,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
 
   const secondParams: HelpBubbleParams = new HelpBubbleParams();
   secondParams.nativeIdentifier = TITLE_NATIVE_ID;
+  secondParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
   secondParams.position = HelpBubblePosition.BELOW;
   secondParams.bodyText = 'This is another help bubble.';
   secondParams.buttons = [];
@@ -408,5 +413,18 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertFalse(container.isHelpBubbleShowing());
     assertEquals(null, container.getHelpBubbleFor('title'));
     assertEquals(null, container.getHelpBubbleFor('p1'));
+  });
+
+  test('help bubble mixin sends event on closed via button', async () => {
+    container.showHelpBubble('p1', defaultParams);
+
+    // Click the close button.
+    container.shadowRoot!.querySelector('help-bubble')!.$.close.click();
+    await waitForVisibilityEvents();
+    assertEquals(1, testProxy.getHandler().getCallCount('helpBubbleClosed'));
+    assertDeepEquals(
+        [[PARAGRAPH_NATIVE_ID, true]],
+        testProxy.getHandler().getArgs('helpBubbleClosed'));
+    assertFalse(container.isHelpBubbleShowing());
   });
 });

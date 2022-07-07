@@ -6,7 +6,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
@@ -15,6 +17,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom-forward.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom-shared.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 namespace user_education {
@@ -81,6 +85,24 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
     testing::StrictMock<MockHelpBubbleClient> client_;
   };
 };
+
+MATCHER_P(MatchesHelpBubbleParams, expected, "") {
+  EXPECT_EQ(expected->body_text, arg->body_text);
+  EXPECT_EQ(expected->close_button_alt_text, arg->close_button_alt_text);
+  EXPECT_EQ(expected->native_identifier, arg->native_identifier);
+  EXPECT_EQ(expected->position, arg->position);
+  EXPECT_EQ(expected->title_text, arg->title_text);
+
+  EXPECT_EQ(expected->buttons.size(), arg->buttons.size());
+  if (expected->buttons.size() == arg->buttons.size()) {
+    for (size_t i = 0; i < expected->buttons.size(); ++i) {
+      EXPECT_EQ(expected->buttons[i]->text, arg->buttons[i]->text);
+      EXPECT_EQ(expected->buttons[i]->is_default, arg->buttons[i]->is_default);
+    }
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -187,9 +209,20 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   ASSERT_NE(nullptr, element);
   HelpBubbleParams params;
   params.body_text = u"Help bubble body.";
+  params.close_button_alt_text = u"Close button alt text.";
   params.arrow = HelpBubbleArrow::kTopCenter;
 
-  EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
+  // Check the parameters passed to the ShowHelpBubble mojo method.
+  help_bubble::mojom::HelpBubbleParamsPtr expected =
+      help_bubble::mojom::HelpBubbleParams::New();
+  expected->native_identifier = element->identifier().GetName();
+  expected->body_text = base::UTF16ToUTF8(params.body_text);
+  expected->close_button_alt_text =
+      base::UTF16ToUTF8(params.close_button_alt_text);
+  expected->position = help_bubble::mojom::HelpBubblePosition::BELOW;
+
+  EXPECT_CALL(test_handler_->mock(),
+              ShowHelpBubble(MatchesHelpBubbleParams(expected.get())));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_)).Times(0);

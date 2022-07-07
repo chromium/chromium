@@ -38,6 +38,7 @@ struct HelpBubbleParams {
   HelpBubblePosition position = HelpBubblePosition.BELOW;
   string? title_text;
   string body_text;
+  string close_button_alt_text;
   array<HelpBubbleButtonParams> buttons;
 };
 

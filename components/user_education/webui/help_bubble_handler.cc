@@ -123,6 +123,8 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   auto mojom_params = help_bubble::mojom::HelpBubbleParams::New();
   mojom_params->native_identifier = identifier.GetName();
   mojom_params->body_text = base::UTF16ToUTF8(data.params->body_text);
+  mojom_params->close_button_alt_text =
+      base::UTF16ToUTF8(data.params->close_button_alt_text);
   mojom_params->position = HelpBubbleArrowToPosition(data.params->arrow);
   if (!data.params->title_text.empty()) {
     mojom_params->title_text = base::UTF16ToUTF8(data.params->title_text);

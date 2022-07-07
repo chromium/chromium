@@ -45,11 +45,21 @@
     top: calc(50% - 8px);
   }
 
-  .body {
+  #topContainer {
+    align-items: flex-start;
+    display: flex;
+  }
+
+  #body {
+    flex: auto;
     font-size: 14px;
   }
 
-  .help-bubble {
+  /* Note: help bubbles have the same color treatment in both light and dark
+   * themes, which is why the values below do not change based on theme
+   * preference. */
+
+   .help-bubble {
     --help-bubble-background: var(--google-blue-700);
     --help-bubble-text-color: var(--google-grey-200);
     background-color: var(--help-bubble-background);
@@ -58,9 +68,33 @@
     padding: 12px 16px;
     width: 362px;
   }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--help-bubble-text-color);
+    --cr-icon-button-hover-background-color:
+        rgba(var(--google-blue-300-rgb), .3);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 20px;
+    --cr-icon-button-stroke-color: var(--help-bubble-text-color);
+    display: block;
+    flex: none;
+    float: right;
+    margin: 0;
+    margin-inline-end: 4px;
+    margin-inline-start: 12px;
+  }
+
+  cr-icon-button:focus {
+    border: 2px solid var(--help-bubble-text-color);
+  }
 </style>
 
 <div class="help-bubble">
-  <div class="body">[[body]]</div>
+  <div id="topContainer">
+    <div id="body">[[body]]</div>
+    <cr-icon-button id="close" iron-icon="cr:close"
+        aria-label="[[closeText]]" on-click="dismiss_">
+    </cr-icon-button>
+  </div>
   <div class="arrow"></div>
 </div>

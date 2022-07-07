@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
-import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import {HelpBubbleDismissedEventDetail, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -45,10 +45,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(
         document.querySelector<HTMLElement>('#p1'),
         helpBubble.getAnchorElement());
-    assertEquals(
-        HELP_BUBBLE_BODY,
-        helpBubble.shadowRoot!.querySelector<HTMLElement>(
-                                  'div.body')!.textContent);
+    assertEquals(HELP_BUBBLE_BODY, helpBubble.$.body.textContent);
     assertTrue(isVisible(helpBubble));
   });
 
@@ -77,10 +74,31 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(
         document.querySelector<HTMLElement>('#title'),
         helpBubble.getAnchorElement());
-    assertEquals(
-        HELP_BUBBLE_BODY,
-        helpBubble.shadowRoot!.querySelector<HTMLElement>(
-                                  'div.body')!.textContent);
+    assertEquals(HELP_BUBBLE_BODY, helpBubble.$.body.textContent);
     assertTrue(isVisible(helpBubble));
+  });
+
+  test('help bubble close button has correct alt text', () => {
+    const CLOSE_TEXT: string = 'Close button text.';
+    helpBubble.closeText = CLOSE_TEXT;
+    assertEquals(CLOSE_TEXT, helpBubble.$.close.getAttribute('aria-label'));
+  });
+
+  test('help bubble click close button generates event', () => {
+    let clicked: number = 0;
+    const callback = (e: CustomEvent<HelpBubbleDismissedEventDetail>) => {
+      assertEquals('title', e.detail.anchorId);
+      assertFalse(e.detail.fromActionButton);
+      ++clicked;
+    };
+    helpBubble.addEventListener('help-bubble-dismissed', callback);
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.body = HELP_BUBBLE_BODY;
+    helpBubble.show();
+    const closeButton = helpBubble.$.close;
+    assertEquals(0, clicked);
+    closeButton.click();
+    assertEquals(1, clicked);
   });
 });

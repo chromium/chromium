@@ -8,7 +8,10 @@
  * implementation detail and subject to change (you should not add them to your
  * components directly).
  */
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 
+import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -16,6 +19,19 @@ import {getTemplate} from './help_bubble.html.js';
 import {HelpBubblePosition} from './help_bubble.mojom-webui.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
+
+export type HelpBubbleDismissedEventDetail = {
+  anchorId: string,
+  fromActionButton: boolean,
+  buttonIndex?: number,
+};
+
+export interface HelpBubbleElement {
+  $: {
+    body: HTMLElement,
+    close: CrIconButtonElement,
+  };
+}
 
 export class HelpBubbleElement extends PolymerElement {
   static get is() {
@@ -33,11 +49,14 @@ export class HelpBubbleElement extends PolymerElement {
         value: '',
         reflectToAttribute: true,
       },
+      body: String,
+      closeText: String,
     };
   }
 
   anchorId: string;
   body: string;
+  closeText: string;
   position: HelpBubblePosition;
 
   /**
@@ -81,6 +100,16 @@ export class HelpBubbleElement extends PolymerElement {
    */
   getAnchorElement(): HTMLElement|null {
     return this.anchorElement_;
+  }
+
+  private dismiss_() {
+    assert(this.anchorId);
+    this.dispatchEvent(new CustomEvent('help-bubble-dismissed', {
+      detail: {
+        anchorId: this.anchorId,
+        fromActionButton: false,
+      },
+    }));
   }
 
   /**
@@ -154,5 +183,8 @@ customElements.define(HelpBubbleElement.is, HelpBubbleElement);
 declare global {
   interface HTMLElementTagNameMap {
     'help-bubble': HelpBubbleElement;
+  }
+  interface HTMLElementEventMap {
+    'help-bubble-dismissed': CustomEvent<HelpBubbleDismissedEventDetail>;
   }
 }
