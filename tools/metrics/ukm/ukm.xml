@@ -6060,6 +6060,72 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.Redirect" singular="True">
+  <owner>rtarpine@google.com</owner>
+  <summary>
+    Recorded on every HTTP redirect or client-side bounce, where a client-side
+    bounce is a non-user-initiated navigation starting soon after the previous
+    navigation committed.
+  </summary>
+  <metric name="ClientBounceDelay">
+    <summary>
+      Populated for client redirects only. The time in seconds (capped at 10)
+      between the page committing and the redirect navigation starting. An int
+      in the range [0, 10].
+    </summary>
+  </metric>
+  <metric name="CookieAccessType" enum="CookieAccessType">
+    <summary>
+      Whether the redirect read cookies, wrote cookies, both, or neither.
+    </summary>
+  </metric>
+  <metric name="HasStickyActivation" enum="BooleanHasUserActivation">
+    <summary>
+      Populated for client redirects only. Whether the user ever interacted with
+      the page. (See the HTML spec for a definition.)
+    </summary>
+  </metric>
+  <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
+    <summary>
+      True when the site before the redirect chain is the same as the site at
+      the end of the chain.
+    </summary>
+  </metric>
+  <metric name="RedirectAndFinalSiteSame" enum="BooleanSameSite">
+    <summary>
+      True when the redirect site is the same as the site at the end of the
+      redirect chain.
+    </summary>
+  </metric>
+  <metric name="RedirectAndInitialSiteSame" enum="BooleanSameSite">
+    <summary>
+      True when the redirect site is the same as the site before the redirect
+      chain.
+    </summary>
+  </metric>
+  <metric name="RedirectChainIndex">
+    <summary>
+      0-based index of this individual redirect within its chain.
+    </summary>
+  </metric>
+  <metric name="RedirectChainLength">
+    <summary>
+      The length of the overall redirect chain.
+    </summary>
+  </metric>
+  <metric name="RedirectType" enum="DIPSRedirectType">
+    <summary>
+      The type of the redirect: client or server.
+    </summary>
+  </metric>
+  <metric name="SiteEngagementLevel" enum="SiteEngagementLevel">
+    <summary>
+      The site engagement level of the redirect URL, at the time the redirect
+      took place.
+    </summary>
+  </metric>
+</event>
+
 <event name="Document.OutliveTimeAfterShutdown">
   <obsolete>
     Removed January 2021

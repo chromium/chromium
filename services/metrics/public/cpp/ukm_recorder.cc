@@ -61,6 +61,14 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
                                                SourceIdType::WEB_IDENTITY_ID);
 }
 
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
+    base::PassKey<DIPSBounceDetector>,
+    const GURL& redirect_url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(redirect_url,
+                                               SourceIdType::REDIRECT_ID);
+}
+
 void UkmRecorder::RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url) {
   UpdateSourceURL(source_id.ToInt64(), url);
 }

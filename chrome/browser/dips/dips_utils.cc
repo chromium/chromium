@@ -4,8 +4,10 @@
 
 #include "chrome/browser/dips/dips_utils.h"
 
+#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 
 // CookieAccessType:
 base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
@@ -96,4 +98,8 @@ const char* DIPSRedirectTypeToString(DIPSRedirectType type) {
 
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type) {
   return os << DIPSRedirectTypeToString(type);
+}
+
+int64_t BucketizeBounceDelay(base::TimeDelta delta) {
+  return base::clamp(delta.InSeconds(), INT64_C(0), INT64_C(10));
 }

@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
 #define CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/gurl.h"
 
 namespace base {
 class TickClock;
@@ -43,6 +47,62 @@ class ClientBounceDetectionState {
   CookieAccessType cookie_access_type = CookieAccessType::kNone;
 };
 
+// Properties of a redirect chain common to all the URLs within the chain.
+struct DIPSRedirectChainInfo {
+ public:
+  DIPSRedirectChainInfo(const GURL& initial_url,
+                        const GURL& final_url,
+                        int length);
+  ~DIPSRedirectChainInfo();
+
+  const GURL initial_url;
+  // The eTLD+1 of initial_url, cached.
+  const std::string initial_site;
+  const GURL final_url;
+  // The eTLD+1 of final_url, cached.
+  const std::string final_site;
+  // initial_site == final_site, cached.
+  const bool initial_and_final_sites_same;
+  const int length;
+};
+
+// Properties of one URL within a redirect chain.
+struct DIPSRedirectInfo {
+ public:
+  // Constructor for server-side redirects.
+  DIPSRedirectInfo(const GURL& url,
+                   DIPSRedirectType redirect_type,
+                   CookieAccessType access_type,
+                   int index,
+                   ukm::SourceId source_id);
+  // Constructor for client-side redirects.
+  DIPSRedirectInfo(const GURL& url,
+                   DIPSRedirectType redirect_type,
+                   CookieAccessType access_type,
+                   int index,
+                   ukm::SourceId source_id,
+                   base::TimeDelta client_bounce_delay,
+                   bool has_sticky_activation);
+  ~DIPSRedirectInfo();
+
+  // These properties are required for all redirects:
+
+  const GURL url;
+  const DIPSRedirectType redirect_type;
+  const CookieAccessType access_type;
+  // Index of this URL within the overall chain.
+  const int index;
+  const ukm::SourceId source_id;
+
+  // The following properties are only applicable for client-side redirects:
+
+  // For client redirects, the time between the previous page committing
+  // and the redirect navigation starting. (For server redirects, zero)
+  const base::TimeDelta client_bounce_delay;
+  // For client redirects, whether the user ever interacted with the page.
+  const bool has_sticky_activation;
+};
+
 class DIPSBounceDetector
     : public content::WebContentsObserver,
       public content::WebContentsUserData<DIPSBounceDetector> {
@@ -51,35 +111,12 @@ class DIPSBounceDetector
   DIPSBounceDetector(const DIPSBounceDetector&) = delete;
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
 
-  using RedirectHandler = base::RepeatingCallback<void(const GURL&,
-                                                       const GURL&,
-                                                       const GURL&,
-                                                       CookieAccessType,
-                                                       DIPSRedirectType)>;
+  using RedirectHandler =
+      base::RepeatingCallback<void(const DIPSRedirectInfo&,
+                                   const DIPSRedirectChainInfo&)>;
 
-  using ClientRedirectHandler = base::RepeatingCallback<void(const GURL&,
-                                                             const GURL&,
-                                                             const GURL&,
-                                                             base::TimeDelta,
-                                                             CookieAccessType)>;
-
-  using ServerRedirectHandler = base::RepeatingCallback<
-      void(const GURL&, content::NavigationHandle*, int, CookieAccessType)>;
-
-  using Type = network::mojom::CookieAccessDetails::Type;
-
-  void SetStatefulClientRedirectHandlerForTesting(
-      ClientRedirectHandler handler) {
-    stateful_client_redirect_handler_ = handler;
-  }
-
-  void SetStatefulServerRedirectHandlerForTesting(
-      ServerRedirectHandler handler) {
-    stateful_server_redirect_handler_ = handler;
-  }
-
-  void SetStatefulRedirectHandlerForTesting(RedirectHandler handler) {
-    stateful_redirect_handler_ = handler;
+  void SetRedirectHandlerForTesting(RedirectHandler handler) {
+    redirect_handler_ = handler;
   }
 
   // This must be called prior to the DIPSBounceDetector being constructed.
@@ -91,27 +128,13 @@ class DIPSBounceDetector
   friend class content::WebContentsUserData<DIPSBounceDetector>;
 
   DIPSCookieMode GetCookieMode() const;
-
-  // Called when any stateful redirect is detected.
-  //
-  // `prev_url` is the page previously committed before starting the chain of
-  // redirects. `url` is the redirect URL itself (possibly one of many).
-  // `next_url` is the final URL after the chain of redirects completes.
-  void HandleStatefulRedirect(const GURL& prev_url,
-                              const GURL& url,
-                              const GURL& next_url,
-                              CookieAccessType access,
-                              DIPSRedirectType type);
-  void HandleStatefulClientRedirect(const GURL& prev_url,
-                                    const GURL& url,
-                                    const GURL& next_url,
-                                    base::TimeDelta bounce_time,
-                                    CookieAccessType access);
-  void HandleStatefulServerRedirect(
-      const GURL& prev_url,
+  ukm::SourceId GetRedirectSourceId(
       content::NavigationHandle* navigation_handle,
-      int redirect_index,
-      CookieAccessType access);
+      int index);
+
+  // Called when any redirect is detected.
+  void HandleRedirect(const DIPSRedirectInfo& redirect,
+                      const DIPSRedirectChainInfo& chain);
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -131,15 +154,9 @@ class DIPSBounceDetector
   // raw_ptr<> is safe here for the same reasons as above.
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   absl::optional<ClientBounceDetectionState> client_detection_state_;
-  // By default, this just calls this->HandleStatefulClientRedirect(), but it
+  // By default, this just calls this->HandleRedirect(), but it
   // can be overridden for tests.
-  ClientRedirectHandler stateful_client_redirect_handler_;
-  // By default, this just calls this->HandleStatefulServerRedirect(), but it
-  // can be overridden for tests.
-  ServerRedirectHandler stateful_server_redirect_handler_;
-  // By default, this just calls this->HandleStatefulRedirect(), but it
-  // can be overridden for tests.
-  RedirectHandler stateful_redirect_handler_;
+  RedirectHandler redirect_handler_;
   raw_ptr<const base::TickClock> clock_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

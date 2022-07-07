@@ -7,6 +7,7 @@ source_set("unit_tests") {
   sources = [
     "cookie_access_filter_unittest.cc",
     "dips_storage_unittest.cc",
+    "dips_utils_unittest.cc",
   ]
 
   deps = [
@@ -30,6 +31,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//components/ukm:test_support",
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",

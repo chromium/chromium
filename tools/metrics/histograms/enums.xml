@@ -12291,6 +12291,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has token"/>
 </enum>
 
+<enum name="BooleanHasUserActivation">
+  <int value="0" label="Does not have user activation"/>
+  <int value="1" label="Has user activation"/>
+</enum>
+
 <enum name="BooleanHasUserGesture">
   <int value="0" label="Does not have user gesture"/>
   <int value="1" label="Has user gesture"/>
@@ -12896,6 +12901,11 @@ Called by update_bad_message_reasons.py.-->
   </obsolete>
   <int value="0" label="Regular mode"/>
   <int value="1" label="Safe mode"/>
+</enum>
+
+<enum name="BooleanSameSite">
+  <int value="0" label="Not same site"/>
+  <int value="1" label="Same site"/>
 </enum>
 
 <enum name="BooleanSaved">
@@ -18982,6 +18992,13 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Enqueued"/>
   <int value="3" label="Processed with delay"/>
   <int value="4" label="Flushed"/>
+</enum>
+
+<enum name="CookieAccessType">
+  <int value="0" label="Did not read or write any cookies"/>
+  <int value="1" label="Only read cookie(s)"/>
+  <int value="2" label="Only wrote cookie(s)"/>
+  <int value="3" label="Both read and wrote cookies"/>
 </enum>
 
 <enum name="CookieCacheLookupResult">
@@ -25640,6 +25657,11 @@ Called by update_debug_scenarios.py.-->
   <int value="6" label="Cookies only written; site has previous engagement"/>
   <int value="7"
       label="Cookies read and written; site has previous engagement"/>
+</enum>
+
+<enum name="DIPSRedirectType">
+  <int value="0" label="Client redirect"/>
+  <int value="1" label="Server redirect"/>
 </enum>
 
 <enum name="DircryptoMigrationEndStatus">
