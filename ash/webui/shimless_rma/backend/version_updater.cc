@@ -4,6 +4,7 @@
 
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -50,10 +51,18 @@ bool IsUpdateAllowed() {
 }  // namespace
 
 VersionUpdater::VersionUpdater() {
+  if (!features::IsShimlessRMAOsUpdateEnabled()) {
+    return;
+  }
+
   UpdateEngineClient::Get()->AddObserver(this);
 }
 
 VersionUpdater::~VersionUpdater() {
+  if (!features::IsShimlessRMAOsUpdateEnabled()) {
+    return;
+  }
+
   UpdateEngineClient::Get()->RemoveObserver(this);
 }
 

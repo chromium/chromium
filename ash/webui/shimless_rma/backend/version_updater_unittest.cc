@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -207,6 +208,10 @@ TEST_F(VersionUpdaterTest, WithMeteredNetworkUpdateOsFails) {
 }
 
 TEST_F(VersionUpdaterTest, CallbackFiresWhenUpdateEngineStatusChanges) {
+  if (!features::IsShimlessRMAOsUpdateEnabled()) {
+    return;
+  }
+
   SetCallback();
   SetupWiFiNetwork();
   update_engine::StatusResult status;
