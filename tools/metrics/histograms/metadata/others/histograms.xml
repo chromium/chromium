@@ -3050,6 +3050,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextMenu.iOS.LensWebUploadTime" units="ms"
+    expires_after="2023-06-28">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Logs the time it takes to upload image data to the Lens Web servers.
+    Recorded only when the Lens feature is triggered via the context menu entry
+    from an image long-press.
+  </summary>
+</histogram>
+
 <histogram name="ContextMenu.LensChip.Event" enum="LensChipEvent"
     expires_after="2022-08-07">
   <owner>yusuyoutube@google.com</owner>
