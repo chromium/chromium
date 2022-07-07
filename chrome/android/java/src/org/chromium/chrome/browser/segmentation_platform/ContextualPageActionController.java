@@ -22,7 +22,7 @@ import org.chromium.content_public.browser.WebContents;
  * button data to the toolbar when asked for it.
  */
 public class ContextualPageActionController {
-    private static final String CONTEXTUAL_PAGE_ACTION_SEGMENTATION_KEY = "contextual_page_action";
+    private static final String CONTEXTUAL_PAGE_ACTION_SEGMENTATION_KEY = "contextual_page_actions";
 
     private SegmentationPlatformService mSegmentationPlatformService;
     private final ObservableSupplier<Tab> mTabSupplier;

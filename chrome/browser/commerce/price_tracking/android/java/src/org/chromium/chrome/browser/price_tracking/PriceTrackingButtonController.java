@@ -40,10 +40,11 @@ public class PriceTrackingButtonController implements ButtonDataProvider {
 
         // TODO(shaktisahu): Provide accurate icon and string.
         mButtonData = new ButtonDataImpl(/*canShow=*/true,
-                AppCompatResources.getDrawable(mActivity, R.drawable.ic_toolbar_share_offset_24dp),
+                AppCompatResources.getDrawable(mActivity, R.drawable.price_tracking_disabled),
                 view
                 -> onPriceTrackingClicked(tabSupplier.get()),
-                R.string.share, /*supportsTinting=*/true, /*iphCommandBuilder*/ null,
+                R.string.enable_price_tracking_menu_item, /*supportsTinting=*/true,
+                /*iphCommandBuilder*/ null,
                 /*isEnabled=*/true, AdaptiveToolbarButtonVariant.PRICE_TRACKING);
     }
 
