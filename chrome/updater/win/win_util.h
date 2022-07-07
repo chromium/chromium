@@ -168,6 +168,10 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();
 
+// Sets `is_token_admin` to `true` if the token is an elevated administrator. If
+// `token` is `NULL`, the current thread token is used.
+HRESULT IsTokenAdmin(HANDLE token, bool& is_token_admin);
+
 // Sets `is_user_admin` to true if the user is running as an elevated
 // administrator.
 HRESULT IsUserAdmin(bool& is_user_admin);

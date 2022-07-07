@@ -510,8 +510,7 @@ bool PathOwnedByUser(const base::FilePath& path) {
   return true;
 }
 
-// TODO(crbug.com/1212187): maybe handle filtered tokens.
-HRESULT IsUserAdmin(bool& is_user_admin) {
+HRESULT IsTokenAdmin(HANDLE token, bool& is_token_admin) {
   SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
   PSID administrators_group = nullptr;
   if (!::AllocateAndInitializeSid(&nt_authority, 2, SECURITY_BUILTIN_DOMAIN_RID,
@@ -522,10 +521,15 @@ HRESULT IsUserAdmin(bool& is_user_admin) {
   base::ScopedClosureRunner free_sid(
       base::BindOnce([](PSID sid) { ::FreeSid(sid); }, administrators_group));
   BOOL is_member = false;
-  if (!::CheckTokenMembership(NULL, administrators_group, &is_member))
+  if (!::CheckTokenMembership(token, administrators_group, &is_member))
     return HRESULTFromLastError();
-  is_user_admin = is_member;
+  is_token_admin = is_member;
   return S_OK;
+}
+
+// TODO(crbug.com/1212187): maybe handle filtered tokens.
+HRESULT IsUserAdmin(bool& is_user_admin) {
+  return IsTokenAdmin(NULL, is_user_admin);
 }
 
 HRESULT IsUserNonElevatedAdmin(bool& is_user_non_elevated_admin) {
