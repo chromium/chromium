@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
+#include "base/values.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -324,10 +325,12 @@ SavedPasswordsCapabilitiesFetcher::GetDebugInformationForInternals() const {
 
 base::Value::List SavedPasswordsCapabilitiesFetcher::GetCacheEntries() const {
   base::Value::List cache_entries;
-  for (const auto& [origin, capabilities] : cache_) {
+  for (const auto& [origin, _] : cache_) {
     base::Value::Dict entry;
     entry.Set("url", origin.Serialize());
-    entry.Set("has_script", capabilities.has_script);
+    // Use `IsScriptAvailable` instead of reading it from the value directly
+    // to allow overriding by `kForceEnablePasswordDomainCapabilities`.
+    entry.Set("has_script", IsScriptAvailable(origin));
     cache_entries.Append(std::move(entry));
   }
 

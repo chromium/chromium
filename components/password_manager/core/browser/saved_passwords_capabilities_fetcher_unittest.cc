@@ -5,12 +5,14 @@
 #include "components/password_manager/core/browser/saved_passwords_capabilities_fetcher.h"
 
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "components/password_manager/core/browser/capabilities_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -28,6 +30,7 @@ using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::SaveArg;
 using ::testing::SaveArgPointee;
+using ::testing::StaticAssertTypeEq;
 using ::testing::UnorderedElementsAre;
 using testing::WithArgs;
 
@@ -608,8 +611,8 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, CheckCacheEntries) {
 
   std::vector<std::string> urls;
   // Only `kOriginWithoutScript` is not expected to have a script.
-  for (auto it = cache_entries.begin(); it != cache_entries.end(); ++it) {
-    base::Value::Dict& entry = it->GetDict();
+  for (const auto& element : cache_entries) {
+    const base::Value::Dict& entry = element.GetDict();
     const std::string* url = entry.FindString("url");
     absl::optional<bool> has_script = entry.FindBool("has_script");
     EXPECT_TRUE(url);
@@ -622,6 +625,18 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, CheckCacheEntries) {
   EXPECT_THAT(urls,
               UnorderedElementsAre(kOriginWithoutScript, kOriginWithScript1,
                                    kOriginWithScript2, kOriginWithScript3));
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kForceEnablePasswordDomainCapabilities);
+  // Now all domains should return available scripts.
+  cache_entries = fetcher_->GetCacheEntries();
+  EXPECT_EQ(cache_entries.size(), 4u);
+  EXPECT_TRUE(base::ranges::all_of(
+      cache_entries.cbegin(), cache_entries.cend(),
+      [](const base::Value& element) {
+        return element.GetDict().FindBool("has_script").value_or(false);
+      }));
 }
 
 }  // namespace password_manager
