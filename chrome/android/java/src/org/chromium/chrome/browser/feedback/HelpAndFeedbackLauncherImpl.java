@@ -90,8 +90,10 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public void show(final Activity activity, final String helpContext, Profile profile,
             @Nullable String url) {
         RecordUserAction.record("MobileHelpAndFeedback");
-        showFeedback(activity, profile, url, /* categoryTag= */ null, ScreenshotMode.DEFAULT,
-                helpContext);
+        new ChromeFeedbackCollector(activity, null /* categoryTag */, null /* description */,
+                new ScreenshotTask(activity),
+                new ChromeFeedbackCollector.InitParams(profile, url, helpContext),
+                collector -> show(activity, helpContext, collector), profile);
     }
 
     /**
