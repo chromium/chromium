@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "media/base/android/media_codec_util.h"
@@ -441,6 +442,14 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
   }
 
   base::AutoLock l(lock_);
+
+  // Adding a scoped crash key here to detect the cause of gpu hang.
+  // crbug.com/1292936.
+  static auto* kCrashKey_1 = base::debug::AllocateCrashKeyString(
+      "acquired_lock_inside_codecwrapperimpl_releasecodecoutputbuffer",
+      base::debug::CrashKeySize::Size256);
+  base::debug::ScopedCrashKeyString scoped_crash_key_1(kCrashKey_1, "1");
+
   if (!codec_ || state_ == State::kError)
     return false;
 
@@ -452,7 +461,17 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
     return false;
 
   int index = buffer_it->second;
-  codec_->ReleaseOutputBuffer(index, render);
+
+  {
+    // Adding another scoped crash key here to detect the cause of gpu hang.
+    // crbug.com/1292936.
+    static auto* kCrashKey_2 = base::debug::AllocateCrashKeyString(
+        "executing_mediacodec_releaseoutputbuffer",
+        base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString scoped_crash_key_2(kCrashKey_2, "1");
+    codec_->ReleaseOutputBuffer(index, render);
+  }
+
   buffer_ids_.erase(buffer_it);
   if (output_buffer_release_cb_) {
     output_buffer_release_cb_.Run(state_ == State::kDrained ||
