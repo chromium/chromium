@@ -26,7 +26,6 @@ class DBusThreadManagerSetter;
 class DebugDaemonClient;
 class EasyUnlockClient;
 class GnubbyClient;
-class ImageBurnerClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
@@ -72,7 +71,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();
   GnubbyClient* GetGnubbyClient();
-  ImageBurnerClient* GetImageBurnerClient();
 
  private:
   DBusThreadManager();
@@ -94,7 +92,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   void SetCrosDisksClient(std::unique_ptr<CrosDisksClient> client);
   void SetDebugDaemonClient(std::unique_ptr<DebugDaemonClient> client);
   void SetGnubbyClient(std::unique_ptr<GnubbyClient> client);
-  void SetImageBurnerClient(std::unique_ptr<ImageBurnerClient> client);
 
  private:
   friend class DBusThreadManager;
@@ -108,7 +105,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   std::unique_ptr<CrosDisksClient> cros_disks_client_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<GnubbyClient> gnubby_client_;
-  std::unique_ptr<ImageBurnerClient> image_burner_client_;
 };
 
 }  // namespace chromeos

@@ -22,10 +22,24 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) ImageBurnerClient
     : public DBusClient {
  public:
+  // Returns the global instance if initialized. May return null.
+  static ImageBurnerClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Sets a temporary instance for testing. Overrides the existing
+  // global instance, if any.
+  static void SetInstanceForTest(ImageBurnerClient* client);
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   ImageBurnerClient(const ImageBurnerClient&) = delete;
   ImageBurnerClient& operator=(const ImageBurnerClient&) = delete;
-
-  ~ImageBurnerClient() override;
 
   // A callback to be called when DBus method call fails.
   using ErrorCallback = base::OnceCallback<void()>;
@@ -59,13 +73,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) ImageBurnerClient
   // signals are received.
   virtual void ResetEventHandlers() = 0;
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<ImageBurnerClient> Create();
-
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   ImageBurnerClient();
+  ~ImageBurnerClient() override;
 };
 
 }  // namespace chromeos

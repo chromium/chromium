@@ -30,6 +30,10 @@
 namespace extensions {
 namespace image_writer {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ImageWriterFakeImageBurnerClient;
+#endif
+
 const char kDummyExtensionId[] = "DummyExtension";
 
 // Default file size to use in tests.  Currently 32kB.
@@ -186,7 +190,9 @@ class ImageWriterTestUtils {
   base::FilePath test_image_path_;
   base::FilePath test_device_path_;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ImageWriterFakeImageBurnerClient> image_burner_client_;
+#else
   scoped_refptr<FakeImageWriterClient> client_;
   ImageWriterUtilityClient::ImageWriterUtilityClientFactory
       utility_client_factory_;

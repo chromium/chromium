@@ -1601,6 +1601,7 @@ source_set("ash") {
     "//chromeos/dbus/debug_daemon",
     "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/gnubby",
+    "//chromeos/dbus/image_burner",
     "//chromeos/dbus/missive",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

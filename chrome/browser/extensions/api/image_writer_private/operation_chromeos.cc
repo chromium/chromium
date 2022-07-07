@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,9 +30,7 @@ void ClearImageBurner() {
     return;
   }
 
-  chromeos::DBusThreadManager::Get()->
-      GetImageBurnerClient()->
-      ResetEventHandlers();
+  chromeos::ImageBurnerClient::Get()->ResetEventHandlers();
 }
 
 }  // namespace
@@ -95,8 +92,7 @@ void Operation::StartWriteOnUIThread(const std::string& target_path,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(haven): Image Burner cannot handle multiple burns. crbug.com/373575
-  ImageBurnerClient* burner =
-      chromeos::DBusThreadManager::Get()->GetImageBurnerClient();
+  ImageBurnerClient* burner = chromeos::ImageBurnerClient::Get();
 
   burner->SetEventHandlers(
       base::BindOnce(&Operation::OnBurnFinished, this, std::move(continuation)),

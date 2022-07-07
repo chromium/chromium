@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "chromeos/dbus/image_burner/fake_image_burner_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -18,6 +18,13 @@
 namespace chromeos {
 
 namespace {
+
+// NOTE: This does not use the typical pattern of a single `g_instance` variable
+// due to test utilities shared between unit_tests and browser_tests, which have
+// different initialization patterns. It's simplest to allow a test-only
+// override.
+ImageBurnerClient* g_instance = nullptr;
+ImageBurnerClient* g_instance_for_test = nullptr;
 
 // The ImageBurnerClient implementation.
 class ImageBurnerClientImpl : public ImageBurnerClient {
@@ -58,7 +65,6 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
     burn_progress_update_handler_.Reset();
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ =
         bus->GetObjectProxy(imageburn::kImageBurnServiceName,
@@ -137,13 +143,42 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
 
 }  // namespace
 
+// static
+ImageBurnerClient* ImageBurnerClient::Get() {
+  if (g_instance_for_test)
+    return g_instance_for_test;
+  return g_instance;
+}
+
+// static
+void ImageBurnerClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  CHECK(!g_instance);
+  g_instance = new ImageBurnerClientImpl();
+  g_instance->Init(bus);
+}
+
+// static
+void ImageBurnerClient::InitializeFake() {
+  CHECK(!g_instance);
+  g_instance = new FakeImageBurnerClient();
+  g_instance->Init(nullptr);
+}
+
+// static
+void ImageBurnerClient::SetInstanceForTest(ImageBurnerClient* client) {
+  g_instance_for_test = client;
+}
+
+// static
+void ImageBurnerClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+  g_instance = nullptr;
+}
+
 ImageBurnerClient::ImageBurnerClient() = default;
 
 ImageBurnerClient::~ImageBurnerClient() = default;
-
-// static
-std::unique_ptr<ImageBurnerClient> ImageBurnerClient::Create() {
-  return std::make_unique<ImageBurnerClientImpl>();
-}
 
 }  // namespace chromeos

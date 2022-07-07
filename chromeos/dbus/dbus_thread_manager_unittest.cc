@@ -25,7 +25,6 @@ TEST(DBusThreadManagerTest, Initialize) {
   EXPECT_TRUE(manager->GetCrosDisksClient());
   EXPECT_TRUE(manager->GetDebugDaemonClient());
   EXPECT_TRUE(manager->GetEasyUnlockClient());
-  EXPECT_TRUE(manager->GetImageBurnerClient());
 
   DBusThreadManager::Shutdown();
   EXPECT_FALSE(DBusThreadManager::IsInitialized());
