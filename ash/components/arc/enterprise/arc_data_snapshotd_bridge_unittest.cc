@@ -94,15 +94,16 @@ class ArcDataSnapshotdBridgeTest : public testing::Test {
   ArcDataSnapshotdBridgeTest() {
     chromeos::DBusThreadManager::Initialize();
     EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
+    chromeos::ArcDataSnapshotdClient::InitializeFake();
   }
 
   ~ArcDataSnapshotdBridgeTest() override {
+    chromeos::ArcDataSnapshotdClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
   chromeos::FakeArcDataSnapshotdClient* dbus_client() {
-    auto* client =
-        chromeos::DBusThreadManager::Get()->GetArcDataSnapshotdClient();
+    auto* client = chromeos::ArcDataSnapshotdClient::Get();
     DCHECK(client);
     return static_cast<chromeos::FakeArcDataSnapshotdClient*>(client);
   }

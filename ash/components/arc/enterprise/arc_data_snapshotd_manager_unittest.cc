@@ -166,6 +166,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     // Initialize fake D-Bus client.
     chromeos::DBusThreadManager::Initialize();
     EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
+    chromeos::ArcDataSnapshotdClient::InitializeFake();
 
     fake_user_manager_ = new user_manager::FakeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -192,6 +193,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   }
 
   ~ArcDataSnapshotdManagerBasicTest() override {
+    chromeos::ArcDataSnapshotdClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -219,7 +221,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
 
   void SetDBusClientAvailability(bool is_available) {
     auto* client = static_cast<chromeos::FakeArcDataSnapshotdClient*>(
-        chromeos::DBusThreadManager::Get()->GetArcDataSnapshotdClient());
+        chromeos::ArcDataSnapshotdClient::Get());
     DCHECK(client);
     client->set_available(is_available);
   }
@@ -313,7 +315,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
 
   chromeos::FakeArcDataSnapshotdClient* client() const {
     return static_cast<chromeos::FakeArcDataSnapshotdClient*>(
-        chromeos::DBusThreadManager::Get()->GetArcDataSnapshotdClient());
+        chromeos::ArcDataSnapshotdClient::Get());
   }
 
  protected:

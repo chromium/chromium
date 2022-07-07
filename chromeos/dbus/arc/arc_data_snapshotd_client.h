@@ -20,7 +20,17 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcDataSnapshotdClient
     : public DBusClient {
  public:
-  ~ArcDataSnapshotdClient() override;
+  // Returns the global instance if initialized. May return null.
+  static ArcDataSnapshotdClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
 
   ArcDataSnapshotdClient(const ArcDataSnapshotdClient&) = delete;
   ArcDataSnapshotdClient& operator=(const ArcDataSnapshotdClient&) = delete;
@@ -67,8 +77,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcDataSnapshotdClient
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   ArcDataSnapshotdClient();
+  ~ArcDataSnapshotdClient() override;
 };
 
 }  // namespace chromeos

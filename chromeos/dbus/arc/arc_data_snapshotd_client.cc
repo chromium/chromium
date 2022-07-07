@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/arc-data-snapshotd/dbus-constants.h"
@@ -18,6 +19,8 @@
 namespace chromeos {
 
 namespace {
+
+ArcDataSnapshotdClient* g_instance = nullptr;
 
 void OnBoolMethodCallback(VoidDBusMethodCallback callback,
                           dbus::Response* response) {
@@ -142,7 +145,6 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         arc::data_snapshotd::kArcDataSnapshotdServiceName,
@@ -184,12 +186,36 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
 
 }  // namespace
 
-ArcDataSnapshotdClient::ArcDataSnapshotdClient() = default;
+// static
+ArcDataSnapshotdClient* ArcDataSnapshotdClient::Get() {
+  return g_instance;
+}
 
-ArcDataSnapshotdClient::~ArcDataSnapshotdClient() = default;
+// static
+void ArcDataSnapshotdClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ArcDataSnapshotdClientImpl())->Init(bus);
+}
 
-std::unique_ptr<ArcDataSnapshotdClient> ArcDataSnapshotdClient::Create() {
-  return std::make_unique<ArcDataSnapshotdClientImpl>();
+// static
+void ArcDataSnapshotdClient::InitializeFake() {
+  (new FakeArcDataSnapshotdClient())->Init(nullptr);
+}
+
+// static
+void ArcDataSnapshotdClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ArcDataSnapshotdClient::ArcDataSnapshotdClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ArcDataSnapshotdClient::~ArcDataSnapshotdClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

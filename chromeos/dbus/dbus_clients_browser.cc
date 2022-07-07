@@ -5,13 +5,9 @@
 #include "chromeos/dbus/dbus_clients_browser.h"
 
 #include "base/check.h"
-#include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
-#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/dbus/arc/arc_midis_client.h"
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
-#include "chromeos/dbus/arc/fake_arc_appfuse_provider_client.h"
-#include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/fake_arc_keymaster_client.h"
 #include "chromeos/dbus/arc/fake_arc_midis_client.h"
 #include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
@@ -44,8 +40,6 @@ namespace chromeos {
 #endif  // USE_REAL_DBUS_CLIENTS
 
 DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
-  arc_data_snapshotd_client_ =
-      CREATE_DBUS_CLIENT(ArcDataSnapshotdClient, use_real_clients);
   arc_keymaster_client_ =
       CREATE_DBUS_CLIENT(ArcKeymasterClient, use_real_clients);
   arc_midis_client_ = CREATE_DBUS_CLIENT(ArcMidisClient, use_real_clients);
@@ -65,7 +59,6 @@ DBusClientsBrowser::~DBusClientsBrowser() = default;
 void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   DCHECK(DBusThreadManager::IsInitialized());
 
-  arc_data_snapshotd_client_->Init(system_bus);
   arc_keymaster_client_->Init(system_bus);
   arc_midis_client_->Init(system_bus);
   arc_obb_mounter_client_->Init(system_bus);

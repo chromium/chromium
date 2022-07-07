@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
-#include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/dbus/arc/arc_midis_client.h"
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
@@ -42,11 +41,6 @@ DBusThreadManager::~DBusThreadManager() {
   return (g_setter && g_setter->name) \
              ? g_setter->name.get()   \
              : (clients_browser_ ? clients_browser_->name.get() : nullptr)
-
-ArcDataSnapshotdClient* DBusThreadManager::GetArcDataSnapshotdClient() {
-  return clients_browser_ ? clients_browser_->arc_data_snapshotd_client_.get()
-                          : nullptr;
-}
 
 ArcKeymasterClient* DBusThreadManager::GetArcKeymasterClient() {
   return clients_browser_ ? clients_browser_->arc_keymaster_client_.get()
