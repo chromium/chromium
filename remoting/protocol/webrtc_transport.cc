@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -33,6 +34,7 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
@@ -252,7 +254,10 @@ class RtcEventLogOutput : public webrtc::RtcEventLogOutput {
   // webrtc::RtcEventLogOutput interface
   bool IsActive() const override { return true; }
   bool Write(const std::string& output) override {
-    event_log_data_.Write(output);
+    return Write(absl::string_view(output));
+  }
+  bool Write(absl::string_view output) override {
+    event_log_data_.Write(base::StringViewToStringPiece(output));
     return true;
   }
 

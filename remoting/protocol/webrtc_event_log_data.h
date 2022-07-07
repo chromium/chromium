@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/strings/string_piece.h"
 
 namespace remoting {
 namespace protocol {
@@ -43,14 +44,14 @@ class WebrtcEventLogData {
   // than RTCP packets). If that ever happens, the log_event will be stored in
   // a new section anyway - the buffer's reserved capacity may be exceeded and
   // re-allocation may occur.
-  void Write(const std::string& log_event);
+  void Write(base::StringPiece log_event);
 
   // Removes all event data, so the instance can be reused.
   void Clear();
 
  private:
   // Returns true if a new section must be created to store the event.
-  bool NeedNewSection(const std::string& log_event) const;
+  bool NeedNewSection(size_t log_event_size) const;
 
   // Appends a new section of zero size to the end of the list, removing the
   // oldest one if necessary. On return, the section at the end (the list's
