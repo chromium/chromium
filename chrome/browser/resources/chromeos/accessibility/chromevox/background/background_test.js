@@ -37,6 +37,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
     await importModule(
         'CustomAutomationEvent',
         '/chromevox/common/custom_automation_event.js');
@@ -560,7 +561,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldNotFocusIframe', async function() {
     didFocus = true;
   });
   const b = ChromeVoxState.instance;
-  b.currentRange_ = cursors.Range.fromNode(button);
+  b.currentRange_ = CursorRange.fromNode(button);
   doCmd('previousElement');
   assertFalse(didFocus);
 });
@@ -582,7 +583,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldFocusLink', async function() {
     // Success
   }));
   const b = ChromeVoxState.instance;
-  b.currentRange_ = cursors.Range.fromNode(button);
+  b.currentRange_ = CursorRange.fromNode(button);
   doCmd('previousElement');
 });
 
@@ -965,7 +966,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'OptionChildIndexCount', async function() {
   mockFeedback
       .call(
           () => ChromeVoxState.instance.setCurrentRange(
-              cursors.Range.fromNode(firstChild)))
+              CursorRange.fromNode(firstChild)))
       .call(doCmd('nextObject'))
       .expectSpeech('List box')
       .expectSpeech('Fruits')
@@ -1358,7 +1359,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NodeVsSubnode', async function() {
   function outputLinkRange(start, end) {
     return function() {
       new Output()
-          .withSpeech(new cursors.Range(
+          .withSpeech(new CursorRange(
               new cursors.Cursor(link, start), new cursors.Cursor(link, end)))
           .go();
     };
@@ -2262,14 +2263,14 @@ AX_TEST_F(
       mockFeedback
           .call(() => {
             ChromeVoxState.instance.setCurrentRange(
-                cursors.Range.fromNode(blueberries));
+                CursorRange.fromNode(blueberries));
           })
           .call(doCmd('nextObject'))
           .expectSpeech(
               '◦ Raspberries', 'List item', 'List end', 'nested level 2')
           .call(() => {
             ChromeVoxState.instance.setCurrentRange(
-                cursors.Range.fromNode(grapefruits));
+                CursorRange.fromNode(grapefruits));
           })
           .call(doCmd('nextObject'))
           .expectSpeech(

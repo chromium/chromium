@@ -27,6 +27,7 @@ import {RangeAutomationHandler} from '/chromevox/background/range_automation_han
 import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {JaPhoneticMap} from '/chromevox/third_party/tamachiyomi/ja_phonetic_map.js';
+import {CursorRange} from '/common/cursors/range.js';
 import {InstanceChecker} from '/common/instance_checker.js';
 
 
@@ -47,7 +48,7 @@ export class Background extends ChromeVoxState {
     /** @private {TtsBackground} */
     this.backgroundTts_ = null;
 
-    /** @private {cursors.Range} */
+    /** @private {CursorRange} */
     this.currentRange_ = null;
 
     /** @private {!AbstractEarcons} */
@@ -59,10 +60,10 @@ export class Background extends ChromeVoxState {
     /** @private {string|undefined} */
     this.lastClipboardEvent_;
 
-    /** @private {cursors.Range} */
+    /** @private {CursorRange} */
     this.pageSel_ = null;
 
-    /** @private {cursors.Range} */
+    /** @private {CursorRange} */
     this.previousRange_ = null;
 
     /** @private {boolean} */
@@ -152,7 +153,7 @@ export class Background extends ChromeVoxState {
   }
 
   /**
-   * @param {cursors.Range} newRange The new range.
+   * @param {CursorRange} newRange The new range.
    * @param {boolean=} opt_fromEditing
    * @override
    */
@@ -224,7 +225,7 @@ export class Background extends ChromeVoxState {
 
   /**
    * Navigate to the given range - it both sets the range and outputs it.
-   * @param {!cursors.Range} range The new range.
+   * @param {!CursorRange} range The new range.
    * @param {boolean=} opt_focus Focus the range; defaults to true.
    * @param {Object=} opt_speechProps Speech properties.
    * @param {boolean=} opt_skipSettingSelection If true, does not set
@@ -291,7 +292,7 @@ export class Background extends ChromeVoxState {
         const wasBackwardSel =
             this.pageSel_.start.compare(this.pageSel_.end) === Dir.BACKWARD ||
             dir === Dir.BACKWARD;
-        this.pageSel_ = new cursors.Range(
+        this.pageSel_ = new CursorRange(
             this.pageSel_.start, wasBackwardSel ? range.start : range.end);
         if (this.pageSel_) {
           this.pageSel_.select();
@@ -381,17 +382,18 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   async setCurrentRangeToFocus_() {
-    const focus = await new Promise(chrome.automation.getFocus);
+    const focus =
+        await new Promise(resolve => chrome.automation.getFocus(resolve));
     if (focus) {
-      this.setCurrentRange(cursors.Range.fromNode(focus));
+      this.setCurrentRange(CursorRange.fromNode(focus));
     } else {
       this.setCurrentRange(null);
     }
   }
 
   /**
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @private
    */
   setFocusToRange_(range, prevRange) {

@@ -7,6 +7,7 @@
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 // setTimeout and its clean-up are referencing each other. So, we need to set
 // "ignoreReadBeforeAssign" in this file. ESLint doesn't support per-line rule
@@ -27,7 +28,7 @@ export class AutoScrollHandler {
     /** @private {AutomationNode} */
     this.scrollingNode_ = null;
 
-    /** @private {cursors.Range} */
+    /** @private {CursorRange} */
     this.rangeBeforeScroll_ = null;
 
     /** @private {!Date} */
@@ -48,7 +49,7 @@ export class AutoScrollHandler {
   /**
    * This should be called before any command triggers ChromeVox navigation.
    *
-   * @param {!cursors.Range} target The range that is going to be navigated
+   * @param {!CursorRange} target The range that is going to be navigated
    *     before scrolling.
    * @param {constants.Dir} dir The direction to navigate.
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
@@ -102,7 +103,7 @@ export class AutoScrollHandler {
   }
 
   /**
-   * @param {!cursors.Range} target The range that is going to be navigated
+   * @param {!CursorRange} target The range that is going to be navigated
    *     before scrolling.
    * @return {?AutomationNode}
    */
@@ -120,7 +121,7 @@ export class AutoScrollHandler {
   }
 
   /**
-   * @param {!cursors.Range} target
+   * @param {!CursorRange} target
    * @param {constants.Dir} dir
    * @param {AutomationNode} scrollable
    * @return {AutomationNode}
@@ -145,7 +146,7 @@ export class AutoScrollHandler {
   }
 
   /**
-   * @param {!cursors.Range} target The range that is going to be navigated
+   * @param {!CursorRange} target The range that is going to be navigated
    *     before scrolling.
    * @param {constants.Dir} dir The direction to navigate.
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
@@ -277,13 +278,13 @@ export class AutoScrollHandler {
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
    *     the current navigation root.
    * @param {!AutomationNode} scrollable
-   * @return {?cursors.Range}
+   * @return {?CursorRange}
    * @private
    */
   handleScrollingInAndroidRecyclerView_(pred, unit, dir, rootPred, scrollable) {
     let nextRange = null;
     if (!pred && unit) {
-      nextRange = cursors.Range.fromNode(scrollable).sync(unit, dir);
+      nextRange = CursorRange.fromNode(scrollable).sync(unit, dir);
       if (unit === cursors.Unit.NODE) {
         nextRange = CommandHandlerInterface.instance.skipLabelOrDescriptionFor(
             nextRange, dir);
@@ -297,7 +298,7 @@ export class AutoScrollHandler {
         node = AutomationUtil.findNodePost(this.scrollingNode_, dir, pred);
       }
       if (node) {
-        nextRange = cursors.Range.fromNode(node);
+        nextRange = CursorRange.fromNode(node);
       }
     }
     return nextRange;

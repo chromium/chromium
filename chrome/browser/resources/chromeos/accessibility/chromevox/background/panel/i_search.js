@@ -7,6 +7,7 @@
  */
 import {Output} from '/chromevox/background/output/output.js';
 import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const Dir = constants.Dir;
 

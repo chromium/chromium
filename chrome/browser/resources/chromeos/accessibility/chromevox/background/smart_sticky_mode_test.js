@@ -16,6 +16,7 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
         'ChromeVoxBackground', '/chromevox/background/classic_background.js');
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
     await importModule(
         'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js');
     this.ssm_ = new SmartStickyMode();
@@ -25,12 +26,12 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   }
 
   assertDidTurnOffForNode(node) {
-    this.ssm_.onCurrentRangeChanged(cursors.Range.fromNode(node));
+    this.ssm_.onCurrentRangeChanged(CursorRange.fromNode(node));
     assertTrue(this.ssm_.didTurnOffStickyMode_);
   }
 
   assertDidNotTurnOffForNode(node) {
-    this.ssm_.onCurrentRangeChanged(cursors.Range.fromNode(node));
+    this.ssm_.onCurrentRangeChanged(CursorRange.fromNode(node));
     assertFalse(this.ssm_.didTurnOffStickyMode_);
   }
 
@@ -85,9 +86,9 @@ AX_TEST_F(
       // Mix in calls to turn on / off sticky mode while moving the range
       // around.
       this.assertDidTurnOffForNode(input);
-      this.ssm_.onStickyModeCommand(cursors.Range.fromNode(input));
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
       this.assertDidNotTurnOffForNode(input);
-      this.ssm_.onStickyModeCommand(cursors.Range.fromNode(input));
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
       this.assertDidNotTurnOffForNode(input);
       this.assertDidNotTurnOffForNode(input.firstChild);
       this.assertDidNotTurnOffForNode(p);
@@ -100,20 +101,20 @@ AX_TEST_F(
       // Mix in more sticky mode user commands and move to related nodes.
       this.assertDidTurnOffForNode(contenteditable);
       this.assertDidTurnOffForNode(ul2);
-      this.ssm_.onStickyModeCommand(cursors.Range.fromNode(ul2));
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(ul2));
       this.assertDidNotTurnOffForNode(ul2);
       this.assertDidNotTurnOffForNode(ul2.firstChild);
       this.assertDidNotTurnOffForNode(contenteditable);
-      this.ssm_.onStickyModeCommand(cursors.Range.fromNode(input));
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(input));
       this.assertDidNotTurnOffForNode(ul2);
       this.assertDidNotTurnOffForNode(ul2.firstChild);
       this.assertDidNotTurnOffForNode(contenteditable);
 
       // Finally, verify sticky mode isn't impacted on non-editables.
       this.assertDidNotTurnOffForNode(p);
-      this.ssm_.onStickyModeCommand(cursors.Range.fromNode(p));
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(p));
       this.assertDidNotTurnOffForNode(p);
-      this.ssm_.onStickyModeCommand(cursors.Range.fromNode(p));
+      this.ssm_.onStickyModeCommand(CursorRange.fromNode(p));
       this.assertDidNotTurnOffForNode(p);
     });
 

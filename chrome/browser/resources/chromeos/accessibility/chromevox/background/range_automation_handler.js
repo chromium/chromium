@@ -10,6 +10,7 @@ import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chro
 import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';
 import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -46,7 +47,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
   }
 
   /**
-   * @param {cursors.Range} newRange
+   * @param {CursorRange} newRange
    * @param {boolean=} opt_fromEditing
    */
   onCurrentRangeChanged(newRange, opt_fromEditing) {
@@ -122,7 +123,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
 
     // TODO: we need more fine grained filters for attribute changes.
-    if (prev.contentEquals(cursors.Range.fromNode(evt.target)) ||
+    if (prev.contentEquals(CursorRange.fromNode(evt.target)) ||
         evt.target.state.focused) {
       const prevTarget = this.lastAttributeTarget_;
 
@@ -130,7 +131,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       const prevOutput = this.lastAttributeOutput_;
       this.lastAttributeTarget_ = evt.target.activeDescendant || evt.target;
       this.lastAttributeOutput_ = new Output().withRichSpeechAndBraille(
-          cursors.Range.fromNode(this.lastAttributeTarget_), prev,
+          CursorRange.fromNode(this.lastAttributeTarget_), prev,
           OutputEventType.NAVIGATE);
       if (this.lastAttributeTarget_ === prevTarget && prevOutput &&
           prevOutput.equals(this.lastAttributeOutput_)) {

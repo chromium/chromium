@@ -108,6 +108,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('Output', '/chromevox/background/output/output.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
   }
 };
 
@@ -115,7 +116,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
 AX_TEST_F('ChromeVoxOutputE2ETest', 'Links', async function() {
   const root = await this.runWithLoadedTree('<a href="#">Click here</a>');
   const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
+  const range = CursorRange.fromNode(el);
   const o = new Output().withSpeechAndBraille(range, null, 'navigate');
   assertEqualsJSON(
       {
@@ -139,7 +140,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Links', async function() {
 AX_TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', async function() {
   const root = await this.runWithLoadedTree('<input type="checkbox">');
   const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
+  const range = CursorRange.fromNode(el);
   const o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       '|Check box|Not checked|Press Search+Space to toggle',
@@ -159,7 +160,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree('<p>OK');
       let el = root.firstChild.firstChild.firstChild;
       assertEquals('inlineTextBox', el.role);
-      let range = cursors.Range.fromNode(el);
+      let range = CursorRange.fromNode(el);
       let o = new Output().withSpeechAndBraille(range, null, 'navigate');
       assertEqualsJSON(
           {
@@ -175,7 +176,7 @@ AX_TEST_F(
 
       el = root.firstChild.firstChild;
       assertEquals('staticText', el.role);
-      range = cursors.Range.fromNode(el);
+      range = CursorRange.fromNode(el);
       o = new Output().withSpeechAndBraille(range, null, 'navigate');
       assertEqualsJSON(
           {
@@ -196,7 +197,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Headings', async function() {
       <h1><a href="a.com">b</a></h1> `);
   let el = root.firstChild;
   for (let i = 1; i <= 6; ++i) {
-    const range = cursors.Range.fromNode(el);
+    const range = CursorRange.fromNode(el);
     const o = new Output().withSpeechAndBraille(range, null, 'navigate');
     const letter = String.fromCharCode('a'.charCodeAt(0) + i - 1);
     assertEqualsJSON(
@@ -214,7 +215,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Headings', async function() {
     el = el.nextSibling;
   }
 
-  range = cursors.Range.fromNode(el);
+  range = CursorRange.fromNode(el);
   o = new Output().withSpeechAndBraille(range, null, 'navigate');
   assertEqualsJSON(
       {
@@ -241,7 +242,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', async function() {
   const root =
       await this.runWithLoadedTree('<audio src="foo.mp3" controls></audio>');
   let el = root.find({role: RoleType.BUTTON});
-  let range = cursors.Range.fromNode(el);
+  let range = CursorRange.fromNode(el);
   let o =
       new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
 
@@ -264,7 +265,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', async function() {
   // TODO(dtseng): Replace with a query.
   el = el.nextSibling.nextSibling.nextSibling;
   const prevRange = range;
-  range = cursors.Range.fromNode(el);
+  range = CursorRange.fromNode(el);
   o = new Output().withoutHints().withSpeechAndBraille(
       range, prevRange, 'navigate');
   checkSpeechOutput(
@@ -341,7 +342,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
 
   let el = root.firstChild.firstChild;
   expectedSpeechValues.forEach(function(expectedValue) {
-    const range = cursors.Range.fromNode(el);
+    const range = CursorRange.fromNode(el);
     const o = new Output().withoutHints().withSpeechAndBraille(
         range, null, 'navigate');
     let expectedSpansForValue = null;
@@ -359,7 +360,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
 
   el = root.firstChild.firstChild;
   expectedBrailleValues.forEach(function(expectedValue) {
-    const range = cursors.Range.fromNode(el);
+    const range = CursorRange.fromNode(el);
     const o = new Output().withoutHints().withBraille(range, null, 'navigate');
     if (typeof expectedValue === 'string') {
       checkBrailleOutput(
@@ -389,7 +390,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'List', async function() {
   const root = await this.runWithLoadedTree(
       '<ul aria-label="first"><li aria-label="a">a<li>b<li>c</ul>');
   const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
+  const range = CursorRange.fromNode(el);
   const o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'a|List item|first|List|with 3 items',
@@ -418,7 +419,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
     </ul>
   `);
   let el = root.firstChild.children[0].firstChild;
-  let range = cursors.Range.fromNode(el);
+  let range = CursorRange.fromNode(el);
   let o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'a|Tree item|Expanded| 1 of 3 | level 1 |Tree|with 3 items',
@@ -438,7 +439,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
       o);
 
   el = root.firstChild.children[1].firstChild;
-  range = cursors.Range.fromNode(el);
+  range = CursorRange.fromNode(el);
   o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'b|Tree item| 2 of 3 | level 1 |Tree|with 3 items',
@@ -456,7 +457,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
       o);
 
   el = root.firstChild.children[2].firstChild;
-  range = cursors.Range.fromNode(el);
+  range = CursorRange.fromNode(el);
   o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'c|Tree item|Collapsed| 3 of 3 | level 1 |Tree|with 3 items',
@@ -487,7 +488,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
   `;
   const root = await this.runWithLoadedTree(site);
   let el = root.firstChild.firstChild;
-  let range = cursors.Range.fromNode(el);
+  let range = CursorRange.fromNode(el);
   let o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'a|Menu item| 1 of 3 |Menu',
@@ -503,7 +504,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
 
   // Ancestry.
   el = root.firstChild;
-  range = cursors.Range.fromNode(el);
+  range = CursorRange.fromNode(el);
   o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'Menu|with 3 items|' +
@@ -515,7 +516,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Menu', async function() {
       o);
 
   el = root.lastChild;
-  range = cursors.Range.fromNode(el);
+  range = CursorRange.fromNode(el);
   o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'Menu bar|Press left or right arrow to navigate; enter to activate',
@@ -534,7 +535,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ListBox', async function() {
     </select>
   `);
   const el = root.firstChild.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
+  const range = CursorRange.fromNode(el);
   const o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       '1|List item| 1 of 2 |Not selected|List box|with 2 items',
@@ -648,7 +649,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', async function() {
     <div role='group'><div>nested content</div></div>
   `);
   const el = root.firstChild.firstChild;
-  const range = cursors.Range.fromNode(el);
+  const range = CursorRange.fromNode(el);
   const o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'that has content', [{value: 'name', start: 0, end: 16}], o);
@@ -666,9 +667,9 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'LessVerboseAncestry', async function() {
   const first = root.children[0].firstChild;
   const second = root.children[1].firstChild;
   const third = root.children[2].firstChild;
-  const firstRange = cursors.Range.fromNode(first);
-  const secondRange = cursors.Range.fromNode(second);
-  const thirdRange = cursors.Range.fromNode(third);
+  const firstRange = CursorRange.fromNode(first);
+  const secondRange = CursorRange.fromNode(second);
+  const thirdRange = CursorRange.fromNode(third);
 
   const oWithoutPrev = new Output().withSpeech(firstRange, null, 'navigate');
   const oWithPrev =
@@ -689,7 +690,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Brief', async function() {
     <div role="article"><p>inside</p></div>
   `);
   const node = root.children[0].firstChild;
-  const range = cursors.Range.fromNode(node);
+  const range = CursorRange.fromNode(node);
 
   localStorage['useVerboseMode'] = 'false';
   const oWithoutPrev = new Output().withSpeech(range, null, 'navigate');
@@ -705,7 +706,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'AuralStyledHeadings', async function() {
       <h1><a href="a.com">b</a></h1> `);
   let el = root.firstChild;
   for (let i = 1; i <= 6; ++i) {
-    const range = cursors.Range.fromNode(el);
+    const range = CursorRange.fromNode(el);
     const o = new Output().withRichSpeech(range, null, 'navigate');
     const letter = String.fromCharCode('a'.charCodeAt(0) + i - 1);
     assertEqualsJSON(
@@ -730,7 +731,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', async function() {
   const root = await this.runWithLoadedTree(`
       <div role="button" aria-pressed="true">Subscribe</div>`);
   const el = root.firstChild;
-  const o = new Output().withSpeechAndBraille(cursors.Range.fromNode(el));
+  const o = new Output().withSpeechAndBraille(CursorRange.fromNode(el));
   assertEqualsJSON(
       {
         string_:
@@ -769,7 +770,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ComplexDiv', async function() {
       <div><button>ok</button></div>
     `);
   const div = root.find({role: RoleType.GENERIC_CONTAINER});
-  const o = new Output().withSpeech(cursors.Range.fromNode(div));
+  const o = new Output().withSpeech(CursorRange.fromNode(div));
   assertEquals('ok', o.speechOutputForTest.string_);
 });
 
@@ -780,8 +781,8 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ContainerFocus', async function() {
         <div role="row" tabindex=0 aria-label="end"></div>
       </div>
     `);
-  const r1 = cursors.Range.fromNode(root.firstChild.firstChild);
-  const r2 = cursors.Range.fromNode(root.firstChild.lastChild);
+  const r1 = CursorRange.fromNode(root.firstChild.firstChild);
+  const r2 = CursorRange.fromNode(root.firstChild.lastChild);
   assertEquals(
       'start|Row', new Output().withSpeech(r1, r2).speechOutputForTest.string_);
 });
@@ -792,7 +793,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', async function() {
   `);
   const start = root.firstChild.firstChild;
   const end = root.firstChild.lastChild;
-  const range = new cursors.Range(
+  const range = new CursorRange(
       cursors.Cursor.fromNode(start), cursors.Cursor.fromNode(end));
   const o = new Output().withBraille(range, null, 'navigate');
   checkBrailleOutput(
@@ -815,7 +816,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', async function() {
   const text = link.find({role: RoleType.INLINE_TEXT_BOX});
   const listItem = root.find({role: RoleType.LIST_ITEM});
   const list = root.find({role: RoleType.LIST});
-  let range = cursors.Range.fromNode(text);
+  let range = CursorRange.fromNode(text);
   let o = new Output().withBraille(range, null, 'navigate');
   checkBrailleOutput(
       'test lnk lstitm lst end',
@@ -829,7 +830,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', async function() {
 
   // Now, test the "bullet" which comes before the above.
   const bullet = root.find({role: RoleType.LIST_MARKER});
-  range = cursors.Range.fromNode(bullet);
+  range = CursorRange.fromNode(bullet);
   o = new Output().withBraille(range, null, 'navigate');
   checkBrailleOutput(
       '\u2022 lstitm lst +1',
@@ -853,7 +854,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
                            aria-valuenow="2" aria-label="volume"></div>
   `);
   let obj = root.find({role: RoleType.SLIDER});
-  let o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+  let o = new Output().withoutHints().withSpeech(CursorRange.fromNode(obj));
   checkSpeechOutput(
       'volume|Slider|2|Min 1|Max 10',
       [
@@ -864,7 +865,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
       o);
 
   obj = root.find({role: RoleType.PROGRESS_INDICATOR});
-  o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+  o = new Output().withoutHints().withSpeech(CursorRange.fromNode(obj));
   checkSpeechOutput(
       'volume|Progress indicator|2|Min 1|Max 10',
       [
@@ -874,7 +875,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
       o);
 
   obj = root.find({role: RoleType.METER});
-  o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+  o = new Output().withoutHints().withSpeech(CursorRange.fromNode(obj));
   checkSpeechOutput(
       'volume|Meter|2|Min 1|Max 10',
       [
@@ -884,7 +885,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', async function() {
       o);
 
   obj = root.find({role: RoleType.SPIN_BUTTON});
-  o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+  o = new Output().withoutHints().withSpeech(CursorRange.fromNode(obj));
   checkSpeechOutput(
       'volume|Spin button|2|Min 1|Max 10',
       [
@@ -900,7 +901,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', async function() {
     <div aria-label="hi" role="button" aria-roledescription="foo"></div>
   `);
   const obj = root.find({role: RoleType.BUTTON});
-  const o = new Output().withoutHints().withSpeech(cursors.Range.fromNode(obj));
+  const o = new Output().withoutHints().withSpeech(CursorRange.fromNode(obj));
   checkSpeechOutput(
       'hi|foo',
       [
@@ -1060,7 +1061,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', async function() {
     </table>
   `);
   const obj = root.find({role: RoleType.CELL});
-  const o = new Output().withRichSpeechAndBraille(cursors.Range.fromNode(obj));
+  const o = new Output().withRichSpeechAndBraille(CursorRange.fromNode(obj));
   assertEquals(
       'Name|row 1 column 1|Table , 1 by 3', o.speechOutputForTest.string_);
   assertEquals(
@@ -1079,13 +1080,12 @@ AX_TEST_F(
       // True even though |text| does not have editable state.
       assertTrue(AutomationPredicate.editText(text));
 
-      let o =
-          new Output().withRichSpeechAndBraille(cursors.Range.fromNode(text));
+      let o = new Output().withRichSpeechAndBraille(CursorRange.fromNode(text));
       assertEquals('|square', o.speechOutputForTest.string_);
       assertEquals('square', o.brailleOutputForTest.string_);
 
       const region = root.find({role: RoleType.REGION});
-      o = new Output().withRichSpeechAndBraille(cursors.Range.fromNode(region));
+      o = new Output().withRichSpeechAndBraille(CursorRange.fromNode(region));
       assertEquals('circle', o.speechOutputForTest.string_);
       assertEquals('circle', o.brailleOutputForTest.string_);
     });
@@ -1107,52 +1107,52 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
   const innerList = lists[1];
 
   let el = outerList.children[0];
-  let startRange = cursors.Range.fromNode(el);
+  let startRange = CursorRange.fromNode(el);
   let o = new Output().withSpeech(startRange, null, 'navigate');
   assertEquals('schedule|Tree|with 3 items', o.speechOutputForTest.string_);
 
   el = outerList.children[1];
-  startRange = cursors.Range.fromNode(el);
+  startRange = CursorRange.fromNode(el);
   o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[0]), 'navigate');
+      startRange, CursorRange.fromNode(outerList.children[0]), 'navigate');
   assertEquals(
       'wake up|Tree item|Not selected| 1 of 3 | level 1 ',
       o.speechOutputForTest.string_);
 
   el = outerList.children[2];
-  startRange = cursors.Range.fromNode(el);
+  startRange = CursorRange.fromNode(el);
   o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[0]), 'navigate');
+      startRange, CursorRange.fromNode(outerList.children[0]), 'navigate');
   assertEquals(
       'drink coffee|Tree item|Not selected| 2 of 3 | level 1 ',
       o.speechOutputForTest.string_);
 
   el = outerList.children[3];
-  startRange = cursors.Range.fromNode(el);
+  startRange = CursorRange.fromNode(el);
   o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[0]), 'navigate');
+      startRange, CursorRange.fromNode(outerList.children[0]), 'navigate');
   assertEquals(
       'cook dinner|Tree item|Not selected| 3 of 3 | level 1 ',
       o.speechOutputForTest.string_);
 
   el = innerList.children[0];
-  startRange = cursors.Range.fromNode(el);
+  startRange = CursorRange.fromNode(el);
   o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(outerList.children[2]), 'navigate');
+      startRange, CursorRange.fromNode(outerList.children[2]), 'navigate');
   assertEquals('tasks|Tree|with 2 items', o.speechOutputForTest.string_);
 
   el = innerList.children[1];
-  startRange = cursors.Range.fromNode(el);
+  startRange = CursorRange.fromNode(el);
   o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(innerList.children[0]), 'navigate');
+      startRange, CursorRange.fromNode(innerList.children[0]), 'navigate');
   assertEquals(
       'meeting|Tree item|Not selected| 1 of 2 | level 2 ',
       o.speechOutputForTest.string_);
 
   el = innerList.children[2];
-  startRange = cursors.Range.fromNode(el);
+  startRange = CursorRange.fromNode(el);
   o = new Output().withSpeech(
-      startRange, cursors.Range.fromNode(innerList.children[0]), 'navigate');
+      startRange, CursorRange.fromNode(innerList.children[0]), 'navigate');
   assertEquals(
       'lunch|Tree item|Not selected| 2 of 2 | level 2 ',
       o.speechOutputForTest.string_);
@@ -1169,14 +1169,14 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
   `);
   const title = root.children[0];
   let o =
-      new Output().withSpeech(cursors.Range.fromNode(title), null, 'navigate');
+      new Output().withSpeech(CursorRange.fromNode(title), null, 'navigate');
   assertEqualsJSON(
       {string_: 'title', spans_: [{value: 'name', start: 0, end: 5}]},
       o.speechOutputForTest);
 
   const labelTitle = root.children[1];
   o = new Output().withSpeech(
-      cursors.Range.fromNode(labelTitle), null, 'navigate');
+      CursorRange.fromNode(labelTitle), null, 'navigate');
   assertEqualsJSON(
       {
         string_: 'label|title',
@@ -1189,7 +1189,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
 
   const describedByTitle = root.children[2];
   o = new Output().withSpeech(
-      cursors.Range.fromNode(describedByTitle), null, 'navigate');
+      CursorRange.fromNode(describedByTitle), null, 'navigate');
   assertEqualsJSON(
       {
         string_: 'title|describedby',
@@ -1202,7 +1202,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
 
   const labelDescribedByTitle = root.children[3];
   o = new Output().withSpeech(
-      cursors.Range.fromNode(labelDescribedByTitle), null, 'navigate');
+      CursorRange.fromNode(labelDescribedByTitle), null, 'navigate');
   assertEqualsJSON(
       {
         string_: 'label|describedby',
@@ -1219,8 +1219,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
   const tooltip = root.children[4];
   Object.defineProperty(root.children[4], 'tooltip', {get: () => 'tooltip'});
 
-  o = new Output().withSpeech(
-      cursors.Range.fromNode(tooltip), null, 'navigate');
+  o = new Output().withSpeech(CursorRange.fromNode(tooltip), null, 'navigate');
   assertEqualsJSON(
       {
         string_: 'tooltip',
@@ -1239,8 +1238,7 @@ AX_TEST_F(
         this.currentProperties.push(properties);
       };
 
-      const o =
-          new Output().withSpeech(cursors.Range.fromNode(root.firstChild));
+      const o = new Output().withSpeech(CursorRange.fromNode(root.firstChild));
       o.go();
       assertEqualsJSON([{category: TtsCategory.NAV}], this.currentProperties);
       this.currentProperties = [];
@@ -1267,7 +1265,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', async function() {
   const focusableDiv = root.firstChild;
   assertEquals(RoleType.GENERIC_CONTAINER, focusableDiv.role);
   assertEquals(chrome.automation.NameFromType.CONTENTS, focusableDiv.nameFrom);
-  const o = new Output().withSpeech(cursors.Range.fromNode(focusableDiv));
+  const o = new Output().withSpeech(CursorRange.fromNode(focusableDiv));
   assertEquals('hello there world', o.speechOutputForTest.string_);
 });
 
@@ -1281,7 +1279,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', async function() {
   assertEquals(
       chrome.automation.AriaCurrentState.PAGE, currentDiv.ariaCurrentState);
   const o = new Output().withSpeech(
-      cursors.Range.fromNode(currentDiv), null, 'navigate');
+      CursorRange.fromNode(currentDiv), null, 'navigate');
   assertEquals('Home|Current page', o.speechOutputForTest.string_);
 });
 
@@ -1291,7 +1289,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', async function() {
     <div id="error" aria-label="error"></div>
   `);
   const div = root.children[0];
-  const range = cursors.Range.fromNode(div);
+  const range = CursorRange.fromNode(div);
 
   let o = new Output().withSpeech(range, null, 'navigate');
   assertEqualsJSON(
@@ -1336,15 +1334,12 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
   const button = root.find({role: RoleType.BUTTON});
 
   // Triggers drawing of the focus ring.
-  new Output().withSpeech(cursors.Range.fromNode(button)).go();
+  new Output().withSpeech(CursorRange.fromNode(button)).go();
   assertTrue(called);
   called = false;
 
   // Does not trigger drawing of the focus ring.
-  new Output()
-      .withSpeech(cursors.Range.fromNode(button))
-      .withoutFocusRing()
-      .go();
+  new Output().withSpeech(CursorRange.fromNode(button)).withoutFocusRing().go();
   assertFalse(called);
 });
 
@@ -1355,7 +1350,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', async function() {
   Object.defineProperty(
       checkbox, 'checkedStateDescription',
       {get: () => 'checked state description'});
-  const range = cursors.Range.fromNode(checkbox);
+  const range = CursorRange.fromNode(checkbox);
   const o =
       new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
@@ -1374,7 +1369,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', async function() {
   Object.defineProperty(actionable, 'customActions', {
     get: () => [{id: 0, description: 'custom action description'}],
   });
-  const range = cursors.Range.fromNode(actionable);
+  const range = CursorRange.fromNode(actionable);
   const o = new Output().withSpeechAndBraille(range, null, 'navigate');
   checkSpeechOutput(
       'test|Actions available. Press Search+Ctrl+A to view',
@@ -1389,20 +1384,20 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', async function() {
   this.resetContextualOutput();
   const root =
       await this.runWithLoadedTree('<p>test</p><div role="menu">a</div>');
-  let o = new Output().withSpeech(cursors.Range.fromNode(root));
+  let o = new Output().withSpeech(CursorRange.fromNode(root));
   assertEquals('last', o.contextOrder_);
 
   const p = root.find({role: RoleType.PARAGRAPH});
   const menu = root.find({role: RoleType.MENU});
   o = new Output().withSpeech(
-      cursors.Range.fromNode(p), cursors.Range.fromNode(menu));
+      CursorRange.fromNode(p), CursorRange.fromNode(menu));
   assertEquals('last', o.contextOrder_);
 
   o = new Output().withSpeech(
-      cursors.Range.fromNode(menu), cursors.Range.fromNode(p));
+      CursorRange.fromNode(menu), CursorRange.fromNode(p));
   assertEquals('first', o.contextOrder_);
 
   o = new Output().withSpeech(
-      cursors.Range.fromNode(menu.firstChild), cursors.Range.fromNode(p));
+      CursorRange.fromNode(menu.firstChild), CursorRange.fromNode(p));
   assertEquals('first', o.contextOrder_);
 });

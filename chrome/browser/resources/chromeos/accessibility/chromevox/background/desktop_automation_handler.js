@@ -15,6 +15,7 @@ import {EventSourceState} from '/chromevox/background/event_source.js';
 import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -187,7 +188,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // Even though we usually don't output events from actions, hit test
       // results should generate output.
-      const range = cursors.Range.fromNode(focus);
+      const range = CursorRange.fromNode(focus);
       ChromeVoxState.instance.setCurrentRange(range);
       output.withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
           .go();
@@ -212,7 +213,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       }
     }
 
-    const range = cursors.Range.fromNode(node);
+    const range = CursorRange.fromNode(node);
     const output = new Output()
                        .withSpeechCategory(TtsCategory.LIVE)
                        .withSpeechAndBraille(range, null, evt.type);
@@ -361,7 +362,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       output
           .withRichSpeechAndBraille(
-              cursors.Range.fromNode(evt.target), null, evt.type)
+              CursorRange.fromNode(evt.target), null, evt.type)
           .withSpeechCategory(TtsCategory.LIVE);
       if (liveRegionChange &&
           output.toString() === this.lastLiveRegionChangeText_) {
@@ -421,7 +422,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       if (localStorage['autoRead'] === 'true' &&
           AutomationUtil.getTopLevelRoot(evt.target) === evt.target) {
         ChromeVoxState.instance.setCurrentRange(
-            cursors.Range.fromNode(evt.target));
+            CursorRange.fromNode(evt.target));
         ChromeVox.tts.stop();
         CommandHandlerInterface.instance.onCommand('readFromHere');
         return;
@@ -499,8 +500,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     if (!ChromeVoxState.instance.currentRange) {
       this.onEventDefault(evt);
-      ChromeVoxState.instance.setCurrentRange(
-          cursors.Range.fromNode(evt.target));
+      ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(evt.target));
     }
 
     // Sync the ChromeVox range to the editable, if a selection exists.
@@ -511,7 +511,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     if (selectionStartObject && selectionEndObject) {
       // Sync to the selection's deep equivalent especially in editables, where
       // selection is often on the root text field with a child offset.
-      const selectedRange = new cursors.Range(
+      const selectedRange = new CursorRange(
           new cursors.WrappingCursor(selectionStartObject, selectionStartOffset)
               .deepEquivalent,
           new cursors.WrappingCursor(selectionEndObject, selectionEndOffset)
@@ -580,7 +580,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     if (fromDesktop &&
         (!this.lastValueTarget_ || this.lastValueTarget_ !== target)) {
-      const range = cursors.Range.fromNode(target);
+      const range = CursorRange.fromNode(target);
       output.withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE);
       this.lastValueTarget_ = target;
     } else {
@@ -654,7 +654,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         const currentRange = ChromeVoxState.instance.currentRange;
         if (currentRange && currentRange.start && currentRange.start.node &&
             currentRange.start.node.className === 'OmniboxViewViews') {
-          const range = cursors.Range.fromNode(target);
+          const range = CursorRange.fromNode(target);
           new Output()
               .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
               .go();
@@ -732,7 +732,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         // Directly output the node here; do not go through |onFocus| as it
         // contains a lot of logic that can move the selection (if in an
         // editable).
-        const range = cursors.Range.fromNode(focus);
+        const range = CursorRange.fromNode(focus);
         new Output()
             .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
             .go();
@@ -864,7 +864,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       o.format('$name', focusedRoot);
     }
 
-    ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(focus));
+    ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(focus));
 
     o.withRichSpeechAndBraille(
          ChromeVoxState.instance.currentRange, null, evt.type)

@@ -9,6 +9,7 @@
  * of a line get saved.
  */
 import {Output} from '/chromevox/background/output/output.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -653,8 +654,8 @@ export class EditableLine {
       }
 
       o.withRichSpeech(
-           cursors.Range.fromNode(cur),
-           prev ? cursors.Range.fromNode(prev) : cursors.Range.fromNode(cur),
+           CursorRange.fromNode(cur),
+           prev ? CursorRange.fromNode(prev) : CursorRange.fromNode(cur),
            OutputEventType.NAVIGATE)
           .onSpeechEnd(() => {
             speakNodeAtIndex(++index, cur);
@@ -675,7 +676,7 @@ export class EditableLine {
   /**
    * Creates a range around the character to the right of the line's starting
    * position.
-   * @return {!cursors.Range}
+   * @return {!CursorRange}
    */
   createCharRange() {
     const start = this.start_;
@@ -689,12 +690,12 @@ export class EditableLine {
         start.equals(end)) {
       end = new cursors.Cursor(start.node, start.index + 1);
     }
-    return new cursors.Range(start, end);
+    return new CursorRange(start, end);
   }
 
   /**
    * @param {boolean} shouldMoveToPreviousWord
-   * @return {!cursors.Range}
+   * @return {!CursorRange}
    */
   createWordRange(shouldMoveToPreviousWord) {
     const pos = this.start_;
@@ -707,6 +708,6 @@ export class EditableLine {
         shouldMoveToPreviousWord ? Movement.DIRECTIONAL : Movement.BOUND,
         Dir.BACKWARD);
     const end = start.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
-    return new cursors.Range(start, end);
+    return new CursorRange(start, end);
   }
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CursorRange} from '/common/cursors/range.js';
+
 export class CommandHandlerInterface {
   /**
    * Handles ChromeVox commands.
@@ -13,9 +15,9 @@ export class CommandHandlerInterface {
   /**
    * A helper to object navigation to skip all static text nodes who have
    * label/description for on ancestor nodes.
-   * @param {cursors.Range} current
+   * @param {CursorRange} current
    * @param {constants.Dir} dir
-   * @return {cursors.Range} The resulting range.
+   * @return {CursorRange} The resulting range.
    */
   skipLabelOrDescriptionFor(current, dir) {}
 }

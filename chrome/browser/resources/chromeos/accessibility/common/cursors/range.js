@@ -7,25 +7,16 @@
  * the automation tree.
  */
 
-goog.provide('cursors.Range');
-
-goog.require('AutomationUtil');
-goog.require('constants');
-goog.require('cursors.Cursor');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-
 
 /**
  * Represents a range in the automation tree. There is no visible selection on
  * the page caused by usage of this object.
  * It is assumed that the caller provides |start| and |end| in document order.
  */
-cursors.Range = class {
+export class CursorRange {
   /**
    * @param {!cursors.Cursor} start
    * @param {!cursors.Cursor} end
@@ -40,34 +31,34 @@ cursors.Range = class {
   /**
    * Convenience method to construct a Range surrounding one node.
    * @param {!AutomationNode} node
-   * @return {!cursors.Range}
+   * @return {!CursorRange}
    */
   static fromNode(node) {
     const cursor = cursors.WrappingCursor.fromNode(node);
-    return new cursors.Range(cursor, cursor);
+    return new CursorRange(cursor, cursor);
   }
 
   /**
-   * Given |rangeA| and |rangeB| in order, determine which |Dir|
+   * Given |rangeA| and |rangeB| in order, determine which |constants.Dir|
    * relates them.
-   * @param {!cursors.Range} rangeA
-   * @param {!cursors.Range} rangeB
-   * @return {Dir}
+   * @param {!CursorRange} rangeA
+   * @param {!CursorRange} rangeB
+   * @return {constants.Dir}
    */
   static getDirection(rangeA, rangeB) {
     if (!rangeA || !rangeB) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     if (!rangeA.start.node || !rangeA.end.node || !rangeB.start.node ||
         !rangeB.end.node) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     // They are the same range.
     if (rangeA.start.node === rangeB.start.node &&
         rangeB.end.node === rangeA.end.node) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     const testDirA =
@@ -76,10 +67,10 @@ cursors.Range = class {
         AutomationUtil.getDirection(rangeB.start.node, rangeA.end.node);
 
     // The two ranges are either partly overlapping or non overlapping.
-    if (testDirA === Dir.FORWARD && testDirB === Dir.BACKWARD) {
-      return Dir.FORWARD;
-    } else if (testDirA === Dir.BACKWARD && testDirB === Dir.FORWARD) {
-      return Dir.BACKWARD;
+    if (testDirA === constants.Dir.FORWARD && testDirB === constants.Dir.BACKWARD) {
+      return constants.Dir.FORWARD;
+    } else if (testDirA === constants.Dir.BACKWARD && testDirB === constants.Dir.FORWARD) {
+      return constants.Dir.BACKWARD;
     } else {
       return testDirA;
     }
@@ -88,7 +79,7 @@ cursors.Range = class {
   /**
    * Returns true if |rhs| is equal to this range.
    * Use this for strict equality between ranges.
-   * @param {!cursors.Range} rhs
+   * @param {!CursorRange} rhs
    * @return {boolean}
    */
   equals(rhs) {
@@ -99,7 +90,7 @@ cursors.Range = class {
   /**
    * Similar to above equals(), but does not trigger recovery in either start or
    * end cursor. Use this for strict equality between ranges.
-   * @param {!cursors.Range} rhs
+   * @param {!CursorRange} rhs
    * @return {boolean}
    */
   equalsWithoutRecovery(rhs) {
@@ -110,7 +101,7 @@ cursors.Range = class {
   /**
    * Returns true if |rhs| is equal to this range.
    * Use this for loose equality between ranges.
-   * @param {!cursors.Range} rhs
+   * @param {!CursorRange} rhs
    * @return {boolean}
    */
   contentEquals(rhs) {
@@ -120,13 +111,13 @@ cursors.Range = class {
 
   /**
    * Gets the directed end cursor of this range.
-   * @param {Dir} dir Which endpoint cursor to return;
-   *     Dir.FORWARD for end,
-   * Dir.BACKWARD for start.
+   * @param {constants.Dir} dir Which endpoint cursor to return;
+   *     constants.Dir.FORWARD for end,
+   * constants.Dir.BACKWARD for start.
    * @return {!cursors.Cursor}
    */
   getBound(dir) {
-    return dir === Dir.FORWARD ? this.end_ : this.start_;
+    return dir === constants.Dir.FORWARD ? this.end_ : this.start_;
   }
 
   /**
@@ -178,8 +169,8 @@ cursors.Range = class {
    * Makes a Range which has been moved from this range by the given unit and
    * direction.
    * @param {cursors.Unit} unit
-   * @param {Dir} dir
-   * @return {cursors.Range}
+   * @param {constants.Dir} dir
+   * @return {CursorRange}
    */
   move(unit, dir) {
     let newStart = this.start_;
@@ -191,7 +182,7 @@ cursors.Range = class {
     switch (unit) {
       case cursors.Unit.CHARACTER:
         newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
-        newEnd = newStart.move(unit, cursors.Movement.DIRECTIONAL, Dir.FORWARD);
+        newEnd = newStart.move(unit, cursors.Movement.DIRECTIONAL, constants.Dir.FORWARD);
         // Character crossed a node; collapses to the end of the node.
         if (newStart.node !== newEnd.node) {
           newEnd = new cursors.Cursor(newStart.node, newStart.index + 1);
@@ -200,8 +191,8 @@ cursors.Range = class {
       case cursors.Unit.WORD:
       case cursors.Unit.LINE:
         newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
-        newStart = newStart.move(unit, cursors.Movement.BOUND, Dir.BACKWARD);
-        newEnd = newStart.move(unit, cursors.Movement.BOUND, Dir.FORWARD);
+        newStart = newStart.move(unit, cursors.Movement.BOUND, constants.Dir.BACKWARD);
+        newEnd = newStart.move(unit, cursors.Movement.BOUND, constants.Dir.FORWARD);
         break;
       case cursors.Unit.NODE:
       case cursors.Unit.GESTURE_NODE:
@@ -211,7 +202,7 @@ cursors.Range = class {
       default:
         throw Error('Invalid unit: ' + unit);
     }
-    return new cursors.Range(newStart, newEnd);
+    return new CursorRange(newStart, newEnd);
   }
 
   /**
@@ -219,7 +210,7 @@ cursors.Range = class {
    */
   select() {
     let start = this.start_, end = this.end_;
-    if (this.start.compare(this.end) === Dir.BACKWARD) {
+    if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
       start = this.end;
       end = this.start;
     }
@@ -269,8 +260,8 @@ cursors.Range = class {
    * Note that there is a chance that new range's end spans beyond the current
    * end when the given unit is larger than the current range.
    * @param {cursors.Unit} unit
-   * @param {Dir} dir
-   * @return {cursors.Range}
+   * @param {constants.Dir} dir
+   * @return {CursorRange}
    */
   sync(unit, dir) {
     switch (unit) {
@@ -279,9 +270,9 @@ cursors.Range = class {
         let startCursor = this.start;
         if (!AutomationPredicate.leafWithWordStop(startCursor.node)) {
           let startNode = startCursor.node;
-          if (dir === Dir.FORWARD) {
+          if (dir === constants.Dir.FORWARD) {
             startNode = AutomationUtil.findNextNode(
-                startNode, Dir.FORWARD, AutomationPredicate.leafWithWordStop,
+                startNode, constants.Dir.FORWARD, AutomationPredicate.leafWithWordStop,
                 {skipInitialSubtree: false});
           } else {
             startNode = AutomationUtil.findNodePost(
@@ -297,16 +288,16 @@ cursors.Range = class {
         if (!start) {
           return null;
         }
-        let end = start.move(unit, cursors.Movement.BOUND, Dir.FORWARD);
+        let end = start.move(unit, cursors.Movement.BOUND, constants.Dir.FORWARD);
         if (start.node !== end.node || start.equals(end)) {
           // Character crossed a node or reached the end.
           // Collapses to the end of the node.
           end = new cursors.WrappingCursor(start.node, start.getText().length);
         }
-        return new cursors.Range(start, end);
+        return new CursorRange(start, end);
       case cursors.Unit.LINE:
         let newNode;
-        if (dir === Dir.FORWARD) {
+        if (dir === constants.Dir.FORWARD) {
           newNode = AutomationUtil.findNodeUntil(
               this.start.node, dir, AutomationPredicate.linebreak);
         } else {
@@ -316,15 +307,15 @@ cursors.Range = class {
         if (!newNode) {
           return null;
         }
-        return cursors.Range.fromNode(newNode);
+        return CursorRange.fromNode(newNode);
       case cursors.Unit.TEXT:
       case cursors.Unit.NODE:
       case cursors.Unit.GESTURE_NODE:
         const pred = cursors.Cursor.getLeafPredForUnit(unit);
         let node;
-        if (dir === Dir.FORWARD) {
+        if (dir === constants.Dir.FORWARD) {
           node = AutomationUtil.findNextNode(
-              this.start.node, Dir.FORWARD, pred, {skipInitialSubtree: false});
+              this.start.node, constants.Dir.FORWARD, pred, {skipInitialSubtree: false});
         } else {
           node = AutomationUtil.findNodePost(this.start.node, dir, pred);
         }
@@ -332,7 +323,7 @@ cursors.Range = class {
           return null;
         }
 
-        return cursors.Range.fromNode(node);
+        return CursorRange.fromNode(node);
       default:
         throw Error('Invalid unit: ' + unit);
     }
@@ -358,10 +349,10 @@ cursors.Range = class {
 
   /**
    * Compares this range with |rhs|.
-   * @param {cursors.Range} rhs
-   * @return {Dir|undefined} Dir.BACKWARD if |rhs| comes
+   * @param {CursorRange} rhs
+   * @return {constants.Dir|undefined} constants.Dir.BACKWARD if |rhs| comes
    *     before this range in
-   * document order. Dir.FORWARD if |rhs| comes after this range.
+   * document order. constants.Dir.FORWARD if |rhs| comes after this range.
    * Undefined otherwise.
    */
   compare(rhs) {
@@ -376,11 +367,11 @@ cursors.Range = class {
 
   /**
    * Returns an undirected version of this range.
-   * @return {!cursors.Range}
+   * @return {!CursorRange}
    */
   normalize() {
-    if (this.start.compare(this.end) === Dir.BACKWARD) {
-      return new cursors.Range(this.end, this.start);
+    if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
+      return new CursorRange(this.end, this.start);
     }
     return this;
   }
@@ -394,5 +385,4 @@ cursors.Range = class {
   get wrapped() {
     return this.start_.wrapped || this.end_.wrapped;
   }
-};
-});  // goog.scope
+}

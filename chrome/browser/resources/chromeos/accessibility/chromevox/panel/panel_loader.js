@@ -36,7 +36,6 @@ goog.require('ValueSpan');
 
 goog.require('constants');
 goog.require('cursors.Cursor');
-goog.require('cursors.Range');
 goog.require('cursors.Unit');
 goog.require('goog.i18n.MessageFormat');
 

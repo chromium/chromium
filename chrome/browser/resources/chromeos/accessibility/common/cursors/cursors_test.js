@@ -20,7 +20,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     return 'cursor';
   }
 
-  /** Test cursors.Range. @const {string} */
+  /** Test CursorRange. @const {string} */
   get RANGE() {
     return 'range';
   }
@@ -38,6 +38,12 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     window.BOUND = cursors.Movement.BOUND;
     window.DIRECTIONAL = cursors.Movement.DIRECTIONAL;
     window.SYNC = cursors.Movement.SYNC;
+  }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('CursorRange', '/common/cursors/range.js');
   }
 
   /**
@@ -62,7 +68,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
 
   /**
    * Performs a series of operations on a range and asserts the result.
-   * @param {cursors.Range} range The starting range.
+   * @param {CursorRange} range The starting range.
    * @param {!Array<Array<
    *         cursors.Unit|
    *         constants.Dir|
@@ -122,7 +128,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
       const cursor = new cursors.Cursor(start, 0);
       this.cursorMoveAndAssert(cursor, moves);
     } else if (opt_testType === this.RANGE) {
-      const range = new cursors.Range(cursor, cursor);
+      const range = new CursorRange(cursor, cursor);
       this.rangeMoveAndAssert(range, moves);
     }
   }
@@ -411,8 +417,8 @@ AX_TEST_F(
     'AccessibilityExtensionCursorsTest', 'IsInWebRange', async function() {
       const root = await this.runWithLoadedTree(this.simpleDoc);
       const para = root.firstChild;
-      const webRange = cursors.Range.fromNode(para);
-      const auraRange = cursors.Range.fromNode(root.parent);
+      const webRange = CursorRange.fromNode(para);
+      const auraRange = CursorRange.fromNode(root.parent);
       assertFalse(auraRange.isWebRange());
       assertTrue(webRange.isWebRange());
     });
@@ -434,10 +440,10 @@ AX_TEST_F(
       const p1 = root.find({role: RoleType.PARAGRAPH});
       const p2 = p1.nextSibling;
 
-      const singleSel = new cursors.Range(
+      const singleSel = new CursorRange(
           new cursors.Cursor(link, 0), new cursors.Cursor(link, 1));
 
-      const multiSel = new cursors.Range(
+      const multiSel = new CursorRange(
           new cursors.Cursor(p1.firstChild, 2),
           new cursors.Cursor(p2.firstChild, 4));
 
@@ -499,7 +505,7 @@ AX_TEST_F(
       assertEquals(RoleType.STATIC_TEXT, curIntoO.selectionNode.role);
       assertEquals(1, curIntoO.selectionIndex);
 
-      const oRange = new cursors.Range(cur, curIntoO);
+      const oRange = new CursorRange(cur, curIntoO);
       oRange.select();
     });
 
@@ -515,10 +521,10 @@ AX_TEST_F(
       const inlineTextBox = staticText.firstChild;
       assertEquals(RoleType.INLINE_TEXT_BOX, inlineTextBox.role);
 
-      const rootRange = cursors.Range.fromNode(root);
-      const regionRange = cursors.Range.fromNode(region);
-      const staticTextRange = cursors.Range.fromNode(staticText);
-      const inlineTextBoxRange = cursors.Range.fromNode(inlineTextBox);
+      const rootRange = CursorRange.fromNode(root);
+      const regionRange = CursorRange.fromNode(region);
+      const staticTextRange = CursorRange.fromNode(staticText);
+      const inlineTextBoxRange = CursorRange.fromNode(inlineTextBox);
 
       // Positive cases.
       assertTrue(regionRange.contentEquals(staticTextRange));
@@ -663,7 +669,7 @@ TEST_F('AccessibilityExtensionCursorsTest', 'CopiedSelection', function() {
     assertEquals('hello', hello.name);
     assertEquals('world', world.name);
 
-    const range = new cursors.Range(
+    const range = new CursorRange(
         cursors.Cursor.fromNode(hello), cursors.Cursor.fromNode(world));
     range.select();
 

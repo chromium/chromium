@@ -7,6 +7,7 @@
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {Output} from '/chromevox/background/output/output.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
@@ -163,7 +164,7 @@ export class LiveRegions {
    * @private
    */
   outputLiveRegionChangeForNode_(node, opt_prependFormatStr) {
-    const range = cursors.Range.fromNode(node);
+    const range = CursorRange.fromNode(node);
     const output = new Output();
     output.withSpeechCategory(TtsCategory.LIVE);
 

@@ -11,6 +11,7 @@ import {ISearch} from '/chromevox/background/panel/i_search.js';
 import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
 import {PanelNodeMenuBackground} from '/chromevox/background/panel/panel_node_menu_background.js';
 import {PanelTabMenuBackground} from '/chromevox/background/panel/panel_tab_menu_background.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 
@@ -210,7 +211,7 @@ export class PanelBackground {
     if (!node) {
       return;
     }
-    ChromeVoxState.instance.navigateToRange(cursors.Range.fromNode(node));
+    ChromeVoxState.instance.navigateToRange(CursorRange.fromNode(node));
   }
 
   /** @override */
@@ -242,11 +243,11 @@ export class PanelBackground {
       o.format('$role', node);
     } else {
       o.withRichSpeechAndBraille(
-          cursors.Range.fromNode(node), null, OutputEventType.NAVIGATE);
+          CursorRange.fromNode(node), null, OutputEventType.NAVIGATE);
     }
     o.go();
 
-    ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(node));
+    ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
   }
 
   /** @private */

@@ -16,6 +16,7 @@ import {ISearchUI} from '/chromevox/panel/i_search_ui.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from '/chromevox/panel/panel_menu.js';
 import {PanelMode, PanelModeInfo} from '/chromevox/panel/panel_mode.js';
+import {CursorRange} from '/common/cursors/range.js';
 import {EventGenerator} from '/common/event_generator.js';
 
 /**

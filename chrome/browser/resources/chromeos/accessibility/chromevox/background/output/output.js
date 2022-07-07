@@ -11,6 +11,7 @@ import {OutputFormatParser, OutputFormatParserObserver} from '/chromevox/backgro
 import {OutputFormatTree} from '/chromevox/background/output/output_format_tree.js';
 import {OutputRulesStr} from '/chromevox/background/output/output_logger.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -23,7 +24,7 @@ const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
 /**
- * An Output object formats a cursors.Range into speech, braille, or both
+ * An Output object formats a CursorRange into speech, braille, or both
  * representations. This is typically a |Spannable|.
  * The translation from Range to these output representations rely upon format
  * rules which specify how to convert AutomationNode objects into annotated
@@ -202,8 +203,8 @@ export class Output {
 
   /**
    * Specify ranges for speech.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @return {!Output}
    */
@@ -217,8 +218,8 @@ export class Output {
 
   /**
    * Specify ranges for aurally styled speech.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @return {!Output}
    */
@@ -232,8 +233,8 @@ export class Output {
 
   /**
    * Specify ranges for braille.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @return {!Output}
    */
@@ -253,8 +254,8 @@ export class Output {
       while (end.lastChild) {
         end = end.lastChild;
       }
-      prevRange = cursors.Range.fromNode(range.start.node.parent);
-      range = new cursors.Range(
+      prevRange = CursorRange.fromNode(range.start.node.parent);
+      range = new CursorRange(
           cursors.Cursor.fromNode(start), cursors.Cursor.fromNode(end));
     }
     this.render_(
@@ -264,8 +265,8 @@ export class Output {
 
   /**
    * Specify ranges for location.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @return {!Output}
    */
@@ -280,8 +281,8 @@ export class Output {
 
   /**
    * Specify the same ranges for speech and braille.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @return {!Output}
    */
@@ -293,8 +294,8 @@ export class Output {
 
   /**
    * Specify the same ranges for aurally styled speech and braille.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @return {!Output}
    */
@@ -612,8 +613,8 @@ export class Output {
   /**
    * Renders the given range using optional context previous range and event
    * type.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputRulesStr} ruleStr
@@ -1149,12 +1150,12 @@ export class Output {
       return;
     }
 
-    const subrange = new cursors.Range(
+    const subrange = new CursorRange(
         new cursors.Cursor(leftmost, cursors.NODE_INDEX),
         new cursors.Cursor(rightmost, cursors.NODE_INDEX));
     let prev = null;
     if (node) {
-      prev = cursors.Range.fromNode(node);
+      prev = CursorRange.fromNode(node);
     }
     ruleStr.writeToken(token);
     this.render_(
@@ -1643,8 +1644,8 @@ export class Output {
   }
 
   /**
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} rangeBuff
    * @param {!OutputRulesStr} ruleStr
@@ -1657,7 +1658,7 @@ export class Output {
     }
 
     if (!prevRange && range.start.node.root) {
-      prevRange = cursors.Range.fromNode(range.start.node.root);
+      prevRange = CursorRange.fromNode(range.start.node.root);
     } else if (!prevRange) {
       return;
     }
@@ -1731,7 +1732,7 @@ export class Output {
            AutomationUtil.getDirection(node, range.end.node) === Dir.FORWARD) {
       if (hasPartialNodeStart && node === range.start.node) {
         if (range.start.index !== range.start.node.name.length) {
-          const partialRange = new cursors.Range(
+          const partialRange = new CursorRange(
               new cursors.Cursor(node, range.start.index),
               new cursors.Cursor(
                   node, node.name.length, {preferNodeStartEquivalent: true}));
@@ -1739,7 +1740,7 @@ export class Output {
         }
       } else if (hasPartialNodeEnd && node === range.end.node) {
         if (range.end.index !== 0) {
-          const partialRange = new cursors.Range(
+          const partialRange = new CursorRange(
               new cursors.Cursor(node, 0),
               new cursors.Cursor(node, range.end.index));
           this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
@@ -2003,8 +2004,8 @@ export class Output {
   }
 
   /**
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @private
@@ -2013,7 +2014,7 @@ export class Output {
     if (!prevRange) {
       prevRange = range;
     }
-    const dir = cursors.Range.getDirection(prevRange, range);
+    const dir = CursorRange.getDirection(prevRange, range);
     const node = range.start.node;
     const prevNode = prevRange.getBound(dir).node;
     if (!node || !prevNode) {
@@ -2102,7 +2103,7 @@ export class Output {
    * additions. Rendering processes these two methods in order. The only
    * distinction is a small delay gets introduced before the first hint in
    * |computeDelayedHints_|.
-   * @param {!cursors.Range} range
+   * @param {!CursorRange} range
    * @param {!Array<AutomationNode>} uniqueAncestors
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.

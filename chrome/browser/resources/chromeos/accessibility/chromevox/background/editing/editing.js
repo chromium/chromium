@@ -15,6 +15,7 @@ import {IntentHandler} from '/chromevox/background/editing/intent_handler.js';
 import {Output} from '/chromevox/background/output/output.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationIntent = chrome.automation.AutomationIntent;
@@ -23,7 +24,7 @@ const Cursor = cursors.Cursor;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const FormType = LibLouis.FormType;
-const Range = cursors.Range;
+const Range = CursorRange;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 const Movement = cursors.Movement;
@@ -142,7 +143,7 @@ export class TextEditHandler {
                       this.node_, Dir.FORWARD, AutomationPredicate.object,
                       {skipInitialSubtree: true}) ||
         this.node_;
-    ChromeVoxState.instance.navigateToRange(cursors.Range.fromNode(after));
+    ChromeVoxState.instance.navigateToRange(CursorRange.fromNode(after));
   }
 
   /**
@@ -981,7 +982,7 @@ class EditingChromeVoxStateObserver {
   }
 
   /**
-   * @param {cursors.Range} range
+   * @param {CursorRange} range
    * @param {boolean=} opt_fromEditing
    * @override
    */

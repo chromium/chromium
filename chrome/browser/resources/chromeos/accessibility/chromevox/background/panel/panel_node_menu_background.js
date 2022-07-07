@@ -8,6 +8,7 @@
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {Output} from '/chromevox/background/output/output.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 
@@ -42,7 +43,7 @@ export class PanelNodeMenuBackground {
         callbackNodeIndex >= PanelNodeMenuBackground.callbackNodes_.length) {
       return;
     }
-    ChromeVoxState.instance.navigateToRange(cursors.Range.fromNode(
+    ChromeVoxState.instance.navigateToRange(CursorRange.fromNode(
         PanelNodeMenuBackground.callbackNodes_[callbackNodeIndex]));
   }
 
@@ -87,7 +88,7 @@ export class PanelNodeMenuBackground {
       if (this.pred_(node)) {
         this.isEmpty_ = false;
         const output = new Output();
-        const range = cursors.Range.fromNode(node);
+        const range = CursorRange.fromNode(node);
         output.withoutHints();
         output.withSpeech(range, range, OutputEventType.NAVIGATE);
         const title = output.toString();

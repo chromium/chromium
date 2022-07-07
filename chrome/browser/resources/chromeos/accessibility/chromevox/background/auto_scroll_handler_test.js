@@ -24,6 +24,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
         'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js');
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
   }
 
   /** @return {chrome.automation.AutomationNode} */
@@ -175,8 +176,8 @@ AX_TEST_F(
       const handler = new AutoScrollHandler();
 
       const list = root.find({role: RoleType.LIST});
-      const firstItemCursor = cursors.Range.fromNode(list.firstChild);
-      const lastItemCursor = cursors.Range.fromNode(list.lastChild);
+      const firstItemCursor = CursorRange.fromNode(list.firstChild);
+      const lastItemCursor = CursorRange.fromNode(list.lastChild);
 
       ChromeVoxState.instance.navigateToRange(firstItemCursor);
 
@@ -192,9 +193,9 @@ AX_TEST_F(
       const handler = new AutoScrollHandler();
 
       const list = root.find({role: RoleType.LIST});
-      const rootCursor = cursors.Range.fromNode(root);
-      const firstItemCursor = cursors.Range.fromNode(list.firstChild);
-      const lastItemCursor = cursors.Range.fromNode(list.lastChild);
+      const rootCursor = CursorRange.fromNode(root);
+      const firstItemCursor = CursorRange.fromNode(list.firstChild);
+      const lastItemCursor = CursorRange.fromNode(list.lastChild);
 
       ChromeVoxState.instance.navigateToRange(lastItemCursor);
 
