@@ -902,4 +902,23 @@ void IterateSlotSpans(uintptr_t super_page,
 
 }  // namespace partition_alloc::internal
 
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::AllocationStateMap;
+using ::partition_alloc::internal::CommittedStateBitmapSize;
+using ::partition_alloc::internal::IterateSlotSpans;
+using ::partition_alloc::internal::PartitionPage;
+using ::partition_alloc::internal::PartitionSuperPageExtentEntry;
+using ::partition_alloc::internal::PartitionSuperPageToExtent;
+using ::partition_alloc::internal::PartitionSuperPageToMetadataArea;
+using ::partition_alloc::internal::ReservedStateBitmapSize;
+using ::partition_alloc::internal::SlotSpanMetadata;
+using ::partition_alloc::internal::StateBitmapFromAddr;
+using ::partition_alloc::internal::SuperPageStateBitmap;
+using ::partition_alloc::internal::SuperPageStateBitmapAddr;
+
+}  // namespace base::internal
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_

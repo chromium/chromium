@@ -135,7 +135,7 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
     // Try to reserve as much address space as we reasonably can.
     const size_t kMB = 1024 * 1024;
     for (size_t size = 512 * kMB; size >= 32 * kMB; size -= 16 * kMB) {
-      if (partition_alloc::ReserveAddressSpace(size)) {
+      if (base::ReserveAddressSpace(size)) {
         break;
       }
     }

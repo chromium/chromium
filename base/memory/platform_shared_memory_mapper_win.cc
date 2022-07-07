@@ -37,7 +37,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
         static_cast<DWORD>(offset >> 32), static_cast<DWORD>(offset), size);
     if (address)
       break;
-    partition_alloc::ReleaseReservation();
+    ReleaseReservation();
   }
   if (!address) {
     DPLOG(ERROR) << "Failed executing MapViewOfFile";

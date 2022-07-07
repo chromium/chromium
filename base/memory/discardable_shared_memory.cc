@@ -486,7 +486,7 @@ void DiscardableSharedMemory::ReleaseMemoryIfPossible(size_t offset,
     DPLOG(ERROR) << "madvise() failed";
   }
 #else   // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-  partition_alloc::DiscardSystemPages(
+  DiscardSystemPages(
       static_cast<char*>(shared_memory_mapping_.memory()) + offset, length);
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 }

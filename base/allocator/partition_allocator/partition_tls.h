@@ -140,4 +140,18 @@ PA_ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
 
 }  // namespace partition_alloc::internal
 
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::PartitionTlsCreate;
+using ::partition_alloc::internal::PartitionTlsGet;
+using ::partition_alloc::internal::PartitionTlsKey;
+using ::partition_alloc::internal::PartitionTlsSet;
+#if BUILDFLAG(IS_WIN)
+using ::partition_alloc::internal::PartitionTlsSetOnDllProcessDetach;
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace base::internal
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TLS_H_

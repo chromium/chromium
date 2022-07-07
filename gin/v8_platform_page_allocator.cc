@@ -74,14 +74,13 @@ void* PageAllocator::AllocatePages(void* address,
                                    size_t length,
                                    size_t alignment,
                                    v8::PageAllocator::Permission permissions) {
-  partition_alloc::PageAccessibilityConfiguration config =
-      GetPageConfig(permissions);
-  return partition_alloc::AllocPages(address, length, alignment, config,
-                                     partition_alloc::PageTag::kV8);
+  base::PageAccessibilityConfiguration config = GetPageConfig(permissions);
+  return base::AllocPages(address, length, alignment, config,
+                          base::PageTag::kV8);
 }
 
 bool PageAllocator::FreePages(void* address, size_t length) {
-  partition_alloc::FreePages(address, length);
+  base::FreePages(address, length);
   return true;
 }
 
@@ -93,12 +92,12 @@ bool PageAllocator::ReleasePages(void* address,
   size_t release_size = length - new_length;
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On POSIX, we can unmap the trailing pages.
-  partition_alloc::FreePages(release_base, release_size);
+  base::FreePages(release_base, release_size);
 #elif BUILDFLAG(IS_WIN)
   // On Windows, we can only de-commit the trailing pages. FreePages() will
   // still free all pages in the region including the released tail, so it's
   // safe to just decommit the tail.
-  partition_alloc::DecommitSystemPages(
+  base::DecommitSystemPages(
       release_base, release_size,
       ::partition_alloc::PageAccessibilityDisposition::kRequireUpdate);
 #else
@@ -116,39 +115,38 @@ bool PageAllocator::SetPermissions(void* address,
     // optimization, to avoid perf regression (see crrev.com/c/2563038 for
     // details). This may cause the memory region to still be accessible on
     // certain platforms, but at least the physical pages will be discarded.
-    partition_alloc::DecommitSystemPages(
+    base::DecommitSystemPages(
         address, length,
         ::partition_alloc::PageAccessibilityDisposition::kAllowKeepForPerf);
     return true;
   } else {
-    return partition_alloc::TrySetSystemPagesAccess(address, length,
-                                                    GetPageConfig(permissions));
+    return base::TrySetSystemPagesAccess(address, length,
+                                         GetPageConfig(permissions));
   }
 }
 
 bool PageAllocator::RecommitPages(void* address,
                                   size_t length,
                                   Permission permissions) {
-  partition_alloc::RecommitSystemPages(
+  base::RecommitSystemPages(
       reinterpret_cast<uintptr_t>(address), length, GetPageConfig(permissions),
-      partition_alloc::PageAccessibilityDisposition::kAllowKeepForPerf);
+      base::PageAccessibilityDisposition::kAllowKeepForPerf);
   return true;
 }
 
 bool PageAllocator::DiscardSystemPages(void* address, size_t size) {
-  partition_alloc::DiscardSystemPages(address, size);
+  base::DiscardSystemPages(address, size);
   return true;
 }
 
 bool PageAllocator::DecommitPages(void* address, size_t size) {
   // V8 expects the pages to be inaccessible and zero-initialized upon next
   // access.
-  partition_alloc::DecommitAndZeroSystemPages(address, size);
+  base::DecommitAndZeroSystemPages(address, size);
   return true;
 }
 
-partition_alloc::PageAccessibilityConfiguration
-PageAllocator::GetPageConfigForTesting(
+base::PageAccessibilityConfiguration PageAllocator::GetPageConfigForTesting(
     v8::PageAllocator::Permission permission) {
   return GetPageConfig(permission);
 }

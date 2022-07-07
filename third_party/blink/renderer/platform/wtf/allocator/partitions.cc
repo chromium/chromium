@@ -421,7 +421,7 @@ void Partitions::FastFree(void* p) {
 // static
 void Partitions::HandleOutOfMemory(size_t size) {
   volatile size_t total_usage = TotalSizeOfCommittedPages();
-  uint32_t alloc_page_error_code = partition_alloc::GetAllocPageErrorCode();
+  uint32_t alloc_page_error_code = base::GetAllocPageErrorCode();
   base::debug::Alias(&alloc_page_error_code);
 
   // Report the total mapped size from PageAllocator. This is intended to
@@ -434,8 +434,7 @@ void Partitions::HandleOutOfMemory(size_t size) {
   char value[24];
   // %d works for 64 bit types as well with SafeSPrintf(), see its unit tests
   // for an example.
-  base::strings::SafeSPrintf(value, "%d",
-                             partition_alloc::GetTotalMappedSize());
+  base::strings::SafeSPrintf(value, "%d", base::GetTotalMappedSize());
   static crash_reporter::CrashKeyString<24> g_page_allocator_mapped_size(
       "page-allocator-mapped-size");
   g_page_allocator_mapped_size.Set(value);
