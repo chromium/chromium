@@ -859,7 +859,7 @@ TEST_F(AppListPeriodicMetricsTest, PeriodicAppListMetrics_NumberOfApps) {
 
   // Create a folder and add 3 items to it.
   const std::string folder_id = "folder_id";
-  model->AddFolderItemForTest(folder_id);
+  model->CreateFolderItem(folder_id);
   for (int i = 0; i < 3; i++) {
     auto item =
         std::make_unique<AppListItem>(base::StringPrintf("id_in_folder_%d", i));

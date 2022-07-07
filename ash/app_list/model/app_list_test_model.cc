@@ -89,8 +89,9 @@ void AppListTestModel::RequestPositionUpdate(
 
 void AppListTestModel::RequestMoveItemToFolder(std::string id,
                                                const std::string& folder_id) {
-  // Copy the logic of `ChromeAppListModelUpdater::HandleMoveItemToFolder()`.
-  AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);
+  // Copy the logic of `ChromeAppListModelUpdater::RequestMoveItemToFolder()`.
+  AppListFolderItem* dest_folder = FindFolderItem(folder_id);
+  DCHECK(dest_folder);
   const syncer::StringOrdinal target_position =
       dest_folder->item_list()->CreatePositionBefore(syncer::StringOrdinal());
 
@@ -103,7 +104,7 @@ void AppListTestModel::RequestMoveItemToFolder(std::string id,
 void AppListTestModel::RequestMoveItemToRoot(
     std::string id,
     syncer::StringOrdinal target_position) {
-  // Copy the logic of `ChromeAppListModelUpdater::HandleMoveItemToRoot()`.
+  // Copy the logic of `ChromeAppListModelUpdater::RequestMoveItemToRoot()`.
   auto metadata = FindItem(id)->CloneMetadata();
   metadata->folder_id = "";
   metadata->position = target_position;

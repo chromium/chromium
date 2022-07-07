@@ -725,7 +725,7 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   // Add a folder, whose AppListItemList the AppListModel will observe.
   AppListModel* model = GetAppListModel();
   const std::string folder_id("folder_1");
-  model->AddFolderItemForTest(folder_id);
+  model->CreateFolderItem(folder_id);
 
   for (int i = 0; i < 2; ++i) {
     auto item = std::make_unique<AppListItem>(base::StringPrintf("app_%d", i));

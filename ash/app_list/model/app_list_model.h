@@ -51,6 +51,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Find a folder item matching |id|.
   AppListFolderItem* FindFolderItem(const std::string& id);
 
+  // Creates and adds an empty folder item with the provided ID.
+  AppListFolderItem* CreateFolderItem(const std::string& folder_id);
+
   // Adds |item| to the model. The model takes ownership of |item|. Returns a
   // pointer to the item that is safe to use (e.g. after passing ownership).
   AppListItem* AddItem(std::unique_ptr<AppListItem> item);
@@ -117,9 +120,6 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // appropriate folder.
   void DeleteItem(const std::string& id);
 
-  // Creates and adds an empty folder item with the provided ID.
-  void AddFolderItemForTest(const std::string& folder_id);
-
   AppListModelDelegate* delegate() { return delegate_; }
 
   AppListItemList* top_level_item_list() const {
@@ -127,10 +127,6 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   }
 
   AppListModelStatus status() const { return status_; }
-
- protected:
-  // Returns an existing folder matching |folder_id| or creates a new folder.
-  AppListFolderItem* FindOrCreateFolderItem(const std::string& folder_id);
 
  private:
   enum class ReparentItemReason {
