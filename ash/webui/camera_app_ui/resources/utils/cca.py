@@ -134,7 +134,7 @@ def deploy(args):
     run_node([
         'typescript/bin/tsc',
         '--project',
-        os.path.join(gen_dir, 'js/tsconfig.json'),
+        os.path.join(gen_dir, 'js/tsconfig_build_ts.json'),
         # For better debugging experience on DUT.
         '--inlineSourceMap',
         '--inlineSources',
