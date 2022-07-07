@@ -164,9 +164,10 @@ class VideoDecoderClient {
   // Decoder client state, should only be accessed on the decoder client thread.
   VideoDecoderClientState decoder_client_state_;
 
-  // Index of the frame that's currently being decoded.
+  // Decoded video frame index.
   size_t current_frame_index_ = 0;
-  // The current number of outgoing bitstream buffers decode requests.
+  // The current number of decode requests in |decoder_|, for DCHECK purposes.
+  // Increased in DecodeNextFragmentTask() and decreased in DecodeDoneTask().
   size_t num_outstanding_decode_requests_ = 0;
 
   // TODO(dstaessens@) Replace with StreamParser.

@@ -380,12 +380,25 @@ void VideoDecoderClient::DecodeDoneTask(DecoderStatus status) {
   num_outstanding_decode_requests_--;
 
   // Queue the next fragment to be decoded.
-  decoder_client_thread_.task_runner()->PostTask(
+  // TODO(mcasas): Introduce a minor delay here to avoid overrunning the driver;
+  // this is a provision for Mediatek devices and for the erroneous behaviour
+  // of feeding more encoded chunk here (the driver has likely not seen any
+  // encoded chunk enqueued at this point) and not in FrameReadyTask as it
+  // should (naively moving this task there doesn't work because it prevents the
+  // V4L2VideoDecoder backend from polling the device driver).
+  decoder_client_thread_.task_runner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&VideoDecoderClient::DecodeNextFragmentTask, weak_this_));
+      base::BindOnce(&VideoDecoderClient::DecodeNextFragmentTask, weak_this_),
+#if BUILDFLAG(USE_V4L2_CODEC)
+      base::Milliseconds(1)
+#else
+      base::Milliseconds(0)
+#endif
+  );
 }
 
 void VideoDecoderClient::FrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
+  DVLOGF(4) << current_frame_index_;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK(video_frame->metadata().power_efficient);
 
