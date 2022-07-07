@@ -599,66 +599,56 @@ std::string CanonicalURL(const GURL& url) {
                           "");
 }
 
-const WebString& GetProductExtractionScript(
+const WebString GetProductExtractionScript(
     const std::string& product_id_json_component,
     const std::string& cart_extraction_script_component) {
-  static base::NoDestructor<WebString> script(
-      [product_id_json_component, cart_extraction_script_component] {
-        std::string script_string;
-        if (cart_extraction_script_component.empty()) {
-          script_string =
-              ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                  IDR_CART_PRODUCT_EXTRACTION_JS);
-          if (IsCartHeuristicsImprovementEnabled()) {
-            script_string =
-                "var isImprovementEnabled = true;\n" + script_string;
-          }
-          const std::string config =
-              "var kSleeperMinTaskTimeMs = " +
-              base::NumberToString(
-                  kCartExtractionMinTaskTime.Get().InMillisecondsF()) +
-              ";\n" + "var kSleeperDutyCycle = " +
-              base::NumberToString(kCartExtractionDutyCycle.Get()) + ";\n" +
-              "var kTimeoutMs = " +
-              base::NumberToString(
-                  kCartExtractionTimeout.Get().InMillisecondsF()) +
-              ";\n";
-          DVLOG(2) << config;
-          script_string = config + script_string;
-          CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
-              CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
-                  FROM_RESOURCE);
-        } else {
-          script_string = cart_extraction_script_component;
-          CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
-              CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
-                  FROM_COMPONENT);
-        }
+  std::string script_string;
+  if (cart_extraction_script_component.empty()) {
+    script_string =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_CART_PRODUCT_EXTRACTION_JS);
+    if (IsCartHeuristicsImprovementEnabled()) {
+      script_string = "var isImprovementEnabled = true;\n" + script_string;
+    }
+    const std::string config =
+        "var kSleeperMinTaskTimeMs = " +
+        base::NumberToString(
+            kCartExtractionMinTaskTime.Get().InMillisecondsF()) +
+        ";\n" + "var kSleeperDutyCycle = " +
+        base::NumberToString(kCartExtractionDutyCycle.Get()) + ";\n" +
+        "var kTimeoutMs = " +
+        base::NumberToString(kCartExtractionTimeout.Get().InMillisecondsF()) +
+        ";\n";
+    DVLOG(2) << config;
+    script_string = config + script_string;
+    CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE);
+  } else {
+    script_string = cart_extraction_script_component;
+    CommerceHeuristicsDataMetricsHelper::RecordCartExtractionScriptSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT);
+  }
 
-        if (!product_id_json_component.empty()) {
-          script_string = "var idExtractionMap = " + product_id_json_component +
-                          ";\n" + script_string;
-          return WebString::FromUTF8(std::move(script_string));
-        }
-        const std::string id_extraction_map =
-            kProductIdPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance()
-                      .LoadDataResourceString(
-                          IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON)
-                : kProductIdPatternMapping.Get();
-        script_string = "var idExtractionMap = " + id_extraction_map + ";\n" +
-                        script_string;
+  if (!product_id_json_component.empty()) {
+    script_string = "var idExtractionMap = " + product_id_json_component +
+                    ";\n" + script_string;
+    return WebString::FromUTF8(std::move(script_string));
+  }
+  const std::string id_extraction_map =
+      kProductIdPatternMapping.Get().empty()
+          ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON)
+          : kProductIdPatternMapping.Get();
+  script_string =
+      "var idExtractionMap = " + id_extraction_map + ";\n" + script_string;
 
-        const std::string coupon_id_extraction_map =
-            kCouponProductIdPatternMapping.Get();
-        if (!coupon_id_extraction_map.empty()) {
-          script_string =
-              "var couponIdExtractionMap = " + coupon_id_extraction_map +
-              ";\n" + script_string;
-        }
-        return WebString::FromUTF8(std::move(script_string));
-      }());
-  return *script;
+  const std::string coupon_id_extraction_map =
+      kCouponProductIdPatternMapping.Get();
+  if (!coupon_id_extraction_map.empty()) {
+    script_string = "var couponIdExtractionMap = " + coupon_id_extraction_map +
+                    ";\n" + script_string;
+  }
+  return WebString::FromUTF8(std::move(script_string));
 }
 
 }  // namespace
