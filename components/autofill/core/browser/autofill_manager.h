@@ -231,8 +231,8 @@ class AutofillManager
       translate::TranslateDriver* translate_driver) override;
   // Invoked when the language has been detected by the Translate component.
   // As this usually happens after Autofill has parsed the forms for the first
-  // time, the heuristics need to be re-run by this function in order to run
-  // use language-specific patterns.
+  // time, the heuristics need to be re-run by this function in order to use
+  // language-specific patterns.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
