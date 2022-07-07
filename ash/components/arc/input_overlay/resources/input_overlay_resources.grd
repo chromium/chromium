@@ -44,6 +44,7 @@
        <include name="IDR_IO_COM_TOHSOFT_ARASHI_NINJA_SHADOW" file="com.tohsoft.arashi.ninja.shadow.json" type="BINDATA" />
        <include name="IDR_IO_COM_GAMEHIVECORP_TAPTITANS2" file="com.gamehivecorp.taptitans2.json" type="BINDATA" />
        <include name="IDR_IO_COM_ODDROK_POWERHOVER" file="com.oddrok.powerhover.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ROBTOPX_GEOMETRYJUMPLITE" file="com.robtopx.geometryjumplite.json" type="BINDATA" />
     </includes>
   </release>
 </grit>
