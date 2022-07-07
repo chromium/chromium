@@ -542,18 +542,15 @@ void ExtensionActionRunner::DidFinishNavigation(
   declarative_net_request::RulesMonitorService* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context_);
 
-  const bool has_committed = navigation_handle->HasCommitted();
-
-  if (navigation_handle->IsInMainFrame() && !has_committed &&
-      rules_monitor_service) {
-    // Clean up any pending actions recorded in the action tracker for this
-    // navigation.
-    rules_monitor_service->action_tracker().ClearPendingNavigation(
-        navigation_handle->GetNavigationId());
-  }
-
-  if (!navigation_handle->IsInPrimaryMainFrame() || !has_committed ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
+    if (rules_monitor_service && !navigation_handle->IsSameDocument()) {
+      // Clean up any pending actions recorded in the action tracker for this
+      // navigation.
+      rules_monitor_service->action_tracker().ClearPendingNavigation(
+          navigation_handle->GetNavigationId());
+    }
     return;
   }
 
