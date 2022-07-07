@@ -1150,7 +1150,8 @@ class DemoSetupBlazeyDeviceTest : public DemoSetupArcSupportedTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1342461): Flaky on release bots.
+#if defined(ADDRESS_SANITIZER) || defined(NDEBUG)
 #define MAYBE_DeviceIsBlazeyEnabledDevice DISABLED_DeviceIsBlazeyEnabledDevice
 #else
 #define MAYBE_DeviceIsBlazeyEnabledDevice DeviceIsBlazeyEnabledDevice
