@@ -10,6 +10,10 @@
 namespace photo_picker {
 namespace features {
 
+// Whether to use the Android stock media picker instead of the Chrome picker.
+extern const base::Feature kAndroidMediaPickerSupport;
+
+// Whether the media picker supports videos.
 extern const base::Feature kPhotoPickerVideoSupport;
 
 }  // namespace features

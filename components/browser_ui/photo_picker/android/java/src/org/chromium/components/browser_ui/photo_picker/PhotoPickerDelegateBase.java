@@ -18,4 +18,9 @@ public abstract class PhotoPickerDelegateBase implements PhotoPickerDelegate {
     public boolean supportsVideos() {
         return PhotoPickerFeatures.PHOTO_PICKER_VIDEO_SUPPORT.isEnabled();
     }
+
+    @Override
+    public boolean preferAndroidMediaPicker() {
+        return PhotoPickerFeatures.ANDROID_MEDIA_PICKER_SUPPORT.isEnabled();
+    }
 }

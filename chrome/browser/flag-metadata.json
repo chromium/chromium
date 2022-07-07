@@ -163,6 +163,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "android-media-picker",
+    "owners": [ "finnur@google.com", "beverloo@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "android-picture-in-picture-api",
     "owners": [ "steimel", "jazzhsu", "media-dev" ],
     "expiry_milestone": 120

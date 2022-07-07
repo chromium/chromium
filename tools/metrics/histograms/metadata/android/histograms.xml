@@ -2124,6 +2124,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MediaPickerShown" enum="MediaPickerShown"
+    expires_after="2023-06-01">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Recorded once per batch of files uploaded, when Chrome has made the
+    determination of what media picker to show to the user.
+  </summary>
+</histogram>
+
 <histogram name="Android.MemoryPressureMonitor.GetMyMemoryState.Failed.Time"
     units="microseconds" expires_after="M77">
   <owner>ssid@chromium.org</owner>

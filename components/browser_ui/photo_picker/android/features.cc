@@ -16,10 +16,14 @@ namespace {
 // in other locations in the code base (e.g. content_features.h), and must be
 // replicated in the same order in PhotoPickerFeatures.java.
 const base::Feature* kFeaturesExposedToJava[] = {
+    &kAndroidMediaPickerSupport,
     &kPhotoPickerVideoSupport,
 };
 
 }  // namespace
+
+const base::Feature kAndroidMediaPickerSupport{
+    "AndroidMediaPickerSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPhotoPickerVideoSupport{"PhotoPickerVideoSupport",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

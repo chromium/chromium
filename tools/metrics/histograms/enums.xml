@@ -55238,6 +55238,7 @@ from previous Chrome versions.
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097515669" label="disable-cast"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
+  <int value="-2094986558" label="AndroidMediaPickerSupport:enabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
   <int value="-2093047873"
       label="AbusiveOriginNotificationPermissionRevocation:enabled"/>
@@ -60154,6 +60155,7 @@ from previous Chrome versions.
   <int value="1047110483" label="ShelfHotseat:disabled"/>
   <int value="1049339770" label="AppMenuMobileSiteOption:enabled"/>
   <int value="1049346775" label="OmniboxDocumentProviderAso:disabled"/>
+  <int value="1049475027" label="AndroidMediaPickerSupport:disabled"/>
   <int value="1049885154" label="OfflinePagesPrefetching:disabled"/>
   <int value="1050048304" label="enable-font-cache-scaling"/>
   <int value="1050321458" label="new-profile-management"/>
@@ -64086,6 +64088,12 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Failed to parse media file"/>
   <int value="8" label="Successfully parsed media file"/>
   <int value="9" label="Timeout and failed"/>
+</enum>
+
+<enum name="MediaPickerShown">
+  <int value="0" label="Chrome Media Picker"/>
+  <int value="1" label="Android Media Picker"/>
+  <int value="2" label="None (null delegate)"/>
 </enum>
 
 <enum name="MediaPlaybackPowerTypes">

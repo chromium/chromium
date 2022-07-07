@@ -52,6 +52,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -93,6 +94,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     static final int SELECT_FILE_DIALOG_SCOPE_IMAGES_AND_VIDEOS = 3;
     static final int SELECT_FILE_DIALOG_SCOPE_COUNT =
             SELECT_FILE_DIALOG_SCOPE_IMAGES_AND_VIDEOS + 1;
+
+    /**
+     * The Android Media Picker enumerations, used to measure which type of picker is shown to the
+     * user. Values must be kept in sync with their definition in
+     * //tools/metrics/histograms/histograms.xml, and both the numbering and meaning of the values
+     * must remain constant as they're recorded by UMA.
+     */
+    static final int SHOWING_CHROME_PICKER = 0;
+    static final int SHOWING_ANDROID_PICKER = 1;
+    static final int SHOWING_SUPPRESSED = 2;
+    static final int SHOWING_ENUM_COUNT = SHOWING_SUPPRESSED + 1;
 
     /**
      * The FileSelectAction tracks how many media files were uploaded, using either the MediaPicker
@@ -430,11 +442,15 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         // Use the new photo picker, if available.
         List<String> imageMimeTypes = convertToSupportedPhotoPickerTypes(mFileTypes);
         if (shouldUsePhotoPicker()
-                && showPhotoPicker(mWindowAndroid, this, mAllowMultiple, imageMimeTypes)) {
+                && showPhotoPicker(mWindowAndroid, /* intentCallback= */ this, /* listener= */ this,
+                        mAllowMultiple, imageMimeTypes)) {
             mMediaPickerWasUsed = true;
             return;
         } else {
             mMediaPickerWasUsed = false;
+            if (!shouldUsePhotoPicker()) {
+                logMediaPickerShown(SHOWING_SUPPRESSED);
+            }
         }
 
         showExternalPicker(camera, videoCapture, soundRecorder);
@@ -497,7 +513,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /**
      * Determines whether the photo picker should be used for this select file request.  To be
      * applicable for the photo picker, the following must be true:
-     *   1.) Only image types were requested in the file request
+     *   1.) Only media types were requested in the file request
      *   2.) The file request did not explicitly ask to capture camera directly.
      *   3.) The photo picker is supported by the embedder (i.e. Chrome).
      *   4.) There is a valid Android Activity associated with the file request.
@@ -1212,7 +1228,92 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         return sPhotoPickerDelegate.supportsVideos();
     }
 
+    private static boolean preferAndroidMediaPicker() {
+        if (!BuildInfo.isAtLeastT()) return false;
+        if (!shouldShowPhotoPicker()) return false;
+        return sPhotoPickerDelegate.preferAndroidMediaPicker();
+    }
+
+    /**
+     * The Android media picker currently doesn't fully support multiple mime types. It can only do
+     * a single specific mime type, all images, all videos, or all media (images/videos).
+     */
+    private static String singleMimeTypeForAndroidPicker(List<String> mimeTypes) {
+        if (mimeTypes.size() == 1) {
+            return mimeTypes.get(0);
+        }
+
+        boolean showImages = false;
+        boolean showVideos = false;
+        for (String mimeType : mimeTypes) {
+            String type = mimeType.toLowerCase(Locale.ROOT);
+            if (type.startsWith(IMAGE_TYPE)) {
+                showImages = true;
+            } else if (type.startsWith(VIDEO_TYPE)) {
+                showVideos = true;
+            }
+
+            if (showImages && showVideos) break;
+        }
+
+        if (showImages && showVideos) {
+            return ALL_TYPES;
+        } else if (showVideos) {
+            return VIDEO_TYPE + "/*";
+        } else if (showImages) {
+            return IMAGE_TYPE + "/*";
+        } else {
+            return "";
+        }
+    }
+
+    private static void logMediaPickerShown(int value) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.MediaPickerShown", value, SHOWING_ENUM_COUNT);
+    }
+
     private static boolean showPhotoPicker(WindowAndroid windowAndroid,
+            WindowAndroid.IntentCallback intentCallback, PhotoPickerListener listener,
+            boolean allowMultiple, List<String> mimeTypes) {
+        if (preferAndroidMediaPicker()) {
+            logMediaPickerShown(SHOWING_ANDROID_PICKER);
+            return showAndroidMediaPicker(windowAndroid, intentCallback, allowMultiple, mimeTypes);
+        } else {
+            logMediaPickerShown(SHOWING_CHROME_PICKER);
+            return showChromeMediaPicker(windowAndroid, listener, allowMultiple, mimeTypes);
+        }
+    }
+
+    private static boolean showAndroidMediaPicker(WindowAndroid windowAndroid,
+            WindowAndroid.IntentCallback intentCallback, boolean allowMultiple,
+            List<String> mimeTypes) {
+        // Switch to MediaStore.ACTION_PICK_IMAGES when available in new SDK.
+        String actionPickImages = "android.provider.action.PICK_IMAGES";
+        // Switch to MediaStore.EXTRA_PICK_IMAGES_MAX when available in new SDK.
+        String extraPickImagesMax = "android.provider.extra.PICK_IMAGES_MAX";
+        // Switch to MediaStore.getPickImagesMaxLimit() when available in new SDK.
+        int maxImagesForUpload = 50;
+
+        Intent intent = new Intent(actionPickImages);
+        if (allowMultiple) {
+            intent.putExtra(extraPickImagesMax, maxImagesForUpload);
+        }
+
+        String mimeType = singleMimeTypeForAndroidPicker(mimeTypes);
+        if (mimeType.isEmpty()) {
+            return false;
+        }
+        intent.setType(mimeType);
+
+        if (!windowAndroid.showIntent(
+                    intent, intentCallback, /* errorId= */ R.string.opening_android_media_picker)) {
+            Log.e(TAG, "showIntent call failed for Android Media Picker");
+        }
+
+        return true;
+    }
+
+    private static boolean showChromeMediaPicker(WindowAndroid windowAndroid,
             PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
         if (sPhotoPickerDelegate == null) return false;
         assert sPhotoPicker == null;
