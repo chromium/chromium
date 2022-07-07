@@ -1310,14 +1310,12 @@ CSSCustomIdentValue* ConsumeCustomIdentConservatively(
 
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange& range,
                                         const CSSParserContext& context) {
-  CSSCustomIdentValue* custom_ident = ConsumeCustomIdent(range, context);
-  if (!custom_ident)
+  if (range.Peek().GetType() != kIdentToken)
+    return nullptr;
+  if (!range.Peek().Value().ToString().StartsWith(kTwoDashes))
     return nullptr;
 
-  if (!custom_ident->Value().StartsWith(kTwoDashes))
-    return nullptr;
-
-  return custom_ident;
+  return ConsumeCustomIdent(range, context);
 }
 
 CSSStringValue* ConsumeString(CSSParserTokenRange& range) {
