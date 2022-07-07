@@ -447,6 +447,7 @@ class IntentPickerDialogTest : public DialogBrowserTest {
 #define MAYBE_InvokeUi_default InvokeUi_default
 #endif
 IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, MAYBE_InvokeUi_default) {
+  set_baseline("3742640");
   ShowAndVerifyUi();
 }
 
@@ -481,6 +482,6 @@ class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IntentPickerDialogGridViewTest, InvokeUi_default) {
-  set_baseline("3652664");
+  set_baseline("3742640");
   ShowAndVerifyUi();
 }
