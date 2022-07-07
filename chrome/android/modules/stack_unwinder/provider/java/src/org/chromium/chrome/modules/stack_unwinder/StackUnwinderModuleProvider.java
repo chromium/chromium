@@ -21,7 +21,7 @@ public class StackUnwinderModuleProvider {
      */
     @CalledByNative
     public static void installModule() {
-        StackUnwinderModule.install((boolean success) -> {});
+        StackUnwinderModule.installDeferred();
     }
 
     /**
