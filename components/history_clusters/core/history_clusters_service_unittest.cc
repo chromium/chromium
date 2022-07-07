@@ -244,8 +244,46 @@ class HistoryClustersServiceTestBase : public testing::Test {
     //  the HistoryService test methods to support that field.
   }
 
-  // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster` return the
-  // visits it returns.
+  // Helper to repeatedly call `QueryClusters` and return the clusters it
+  // returns as well as the visits that were sent to `ClusteringBackend`. Will
+  // verify a request to the clustering backend is or is NOT made depending on
+  // `expect_clustering_backend_call`.
+  std::pair<std::vector<history::Cluster>, std::vector<history::AnnotatedVisit>>
+  NextQueryClusters(QueryClustersContinuationParams& continuation_params,
+                    bool expect_clustering_backend_call = true) {
+    std::vector<history::Cluster> clusters;
+    base::RunLoop loop;
+    const auto task = history_clusters_service_->QueryClusters(
+        ClusteringRequestSource::kJourneysPage,
+        /*begin_time=*/base::Time(), continuation_params,
+        base::BindLambdaForTesting(
+            [&](std::vector<history::Cluster> clusters_temp,
+                QueryClustersContinuationParams continuation_params_temp) {
+              loop.Quit();
+              clusters = clusters_temp;
+              continuation_params = continuation_params_temp;
+            }));
+
+    // If we expect a clustering call, expect a request and return no clusters.
+    if (expect_clustering_backend_call) {
+      test_clustering_backend_->WaitForGetClustersCall();
+      test_clustering_backend_->FulfillCallback({});
+    }
+
+    // Wait for all the async stuff to complete.
+    loop.Run();
+
+    // Give history a chance to flush out the task to avoid memory leaks.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+    // Persisted visits are ordered before incomplete visits. Persisted visits
+    // are ordered newest first. Incomplete visits are ordered the same as they
+    // were sent to the `HistoryClustersService`.
+    return {clusters, test_clustering_backend_->LastClusteredVisits()};
+  };
+
+  // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster` and return
+  // the clusters and visits it returns.
   std::pair<std::vector<int64_t>, std::vector<history::AnnotatedVisit>>
   NextVisits(QueryClustersContinuationParams& continuation_params,
              bool recent_first,
@@ -370,56 +408,145 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
       10, 10, DaysAgo(1),
       ui::PageTransitionFromInt(805306372));  // Non-visible page transition.
 
-  // Helper to repeatedly call `QueryClusters()`, with the continuation time
-  // returned from the previous call, and return the visits sent to the
-  // clustering backend.
   QueryClustersContinuationParams continuation_params = {};
   continuation_params.continuation_time = base::Time::Now();
-  const auto next_query_clusters = [&]() {
-    const auto task = history_clusters_service_->QueryClusters(
-        ClusteringRequestSource::kJourneysPage,
-        /*begin_time=*/base::Time(), continuation_params,
-        base::BindLambdaForTesting(
-            [&](std::vector<history::Cluster> clusters,
-                QueryClustersContinuationParams continuation_params_temp) {
-              continuation_params = continuation_params_temp;
-            }));
-
-    test_clustering_backend_->WaitForGetClustersCall();
-    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-
-    // Persisted visits are ordered before incomplete visits. Persisted visits
-    // are ordered newest first. Incomplete visits are ordered the same as they
-    // were sent to the `HistoryClustersService`.
-    test_clustering_backend_->FulfillCallback({});
-    return test_clustering_backend_->LastClusteredVisits();
-  };
 
   // 1st query should return visits 2, 5, & 6, the good, 1-day-old visits.
   // Visits 3, 0, and 10, also 1-day-old, are excluded since they're synced,
   // missing history rows, and non-visible transition respectively.
-  auto visits = next_query_clusters();
-  EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2, 6));
-  EXPECT_TRUE(continuation_params.is_continuation);
-  EXPECT_FALSE(continuation_params.is_partial_day);
-
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2, 6));
+    EXPECT_TRUE(continuation_params.is_continuation);
+    EXPECT_FALSE(continuation_params.is_partial_day);
+  }
   // 2nd query should return visit 1, a 2-day-old complete visit.
-  visits = next_query_clusters();
-  EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
-
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
+  }
   // 3rd query should return visit 4, a 30-day-old complete visit, since there
   // are no 3-to-29-day-old visits.
-  visits = next_query_clusters();
-  EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(4));
-  EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
-  EXPECT_FALSE(continuation_params.exhausted_all_visits);
-
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(4));
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
   // 4th query should return visit 7, a 90-day-old incomplete visit, since there
   // are no 31-to-89-day-old visits.
-  visits = next_query_clusters();
-  EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(7));
-  EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
-  EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(7));
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  }
+}
+
+TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_NoMixedDays) {
+  // Test the case where there are persisted clusters but none on a day also
+  // containing unclustered visits.
+
+  // 2 unclustered visits.
+  AddCompleteVisit(1, DaysAgo(1));
+  AddCompleteVisit(2, DaysAgo(2));
+
+  // 2 clustered visits; i.e. persisted clusters.
+  AddCompleteVisit(3, DaysAgo(3));
+  AddCompleteVisit(4, DaysAgo(4));
+  AddCluster({3});
+  AddCluster({4});
+
+  // Another clustered visit with a gap.
+  AddCompleteVisit(5, DaysAgo(10));
+  AddCluster({5});
+
+  // The DB looks like:
+  // Days ago: 10 9 8 7 6 5 4 3 2 1
+  // Visit:    C            C C U U
+  // Where C & U are clustered & unclustered visits.
+
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
+
+  // 1st 2 queries should return the 2 unclustered visits.
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2));
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // 3rd query should set `exhausted_unclustered_visits` and
+  // `exhausted_all_visits`. No clusters should be returned (not implemented
+  // yet).
+  {
+    const auto clusters = NextQueryClusters(continuation_params, false).first;
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  }
+}
+
+TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_MixedDay) {
+  // Test the case where there are persisted clusters on a day also containing
+  // unclustered visits.
+
+  // 2 unclustered visits.
+  AddCompleteVisit(1, DaysAgo(1));
+  AddCompleteVisit(2, DaysAgo(2));
+
+  // 2 clustered visits; i.e. persisted clusters.
+  AddCompleteVisit(3, DaysAgo(2));
+  AddCompleteVisit(4, DaysAgo(3));
+  AddCluster({3});
+  AddCluster({4});
+
+  // The DB looks like:
+  // Days ago: 3 2 1
+  // Visit:    C M U
+  // Where C, U, & M are days containing clustered, unclustered, and mixed
+  // visits.
+
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
+
+  // 1st query should return the unclustered visit.
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // 2nd query should return only the unclustered visit. Should also set
+  // `exhausted_unclustered_visits`.
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2));
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // 3rd query should set `exhausted_all_visits`. No clusters should be returned
+  // (not implemented yet).
+  {
+    const auto clusters = NextQueryClusters(continuation_params, false).first;
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  }
 }
 
 TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
@@ -443,9 +570,7 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
 
   {
     // 1st query should return the oldest, 60-day-old visit.
-    const auto clusters_and_visits = NextVisits(continuation_params, false, 0);
-    const auto& clusters = clusters_and_visits.first;
-    const auto& visits = clusters_and_visits.second;
+    const auto [clusters, visits] = NextVisits(continuation_params, false, 0);
     EXPECT_TRUE(clusters.empty());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(4));
     EXPECT_TRUE(continuation_params.is_continuation);
@@ -455,9 +580,7 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
   }
   {
     // 2nd query should return the next oldest, 2-day-old visit.
-    const auto clusters_and_visits = NextVisits(continuation_params, false, 0);
-    const auto& clusters = clusters_and_visits.first;
-    const auto& visits = clusters_and_visits.second;
+    const auto [clusters, visits] = NextVisits(continuation_params, false, 0);
     EXPECT_TRUE(clusters.empty());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
     EXPECT_TRUE(continuation_params.is_continuation);
@@ -467,9 +590,7 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
   {
     // 3rd query should return the next oldest, 1-day-old visits. Visit 3 is
     // excluded as it's from sync.
-    const auto clusters_and_visits = NextVisits(continuation_params, false, 0);
-    const auto& clusters = clusters_and_visits.first;
-    const auto& visits = clusters_and_visits.second;
+    const auto [clusters, visits] = NextVisits(continuation_params, false, 0);
     EXPECT_TRUE(clusters.empty());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2));
     EXPECT_TRUE(continuation_params.is_continuation);
@@ -478,9 +599,7 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
   }
   {
     // 4th query should return no visits; all visits were exhausted.
-    const auto clusters_and_visits = NextVisits(continuation_params, false, 0);
-    const auto& clusters = clusters_and_visits.first;
-    const auto& visits = clusters_and_visits.second;
+    const auto [clusters, visits] = NextVisits(continuation_params, false, 0);
     EXPECT_TRUE(clusters.empty());
     EXPECT_TRUE(visits.empty());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
@@ -506,9 +625,7 @@ TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
   {
     // 1st query should get the newest, 1-day-old, visit. There are no adjacent
     // clusters to get.
-    const auto clusters_and_visits = NextVisits(continuation_params, true, 1);
-    const auto& clusters = clusters_and_visits.first;
-    const auto& visits = clusters_and_visits.second;
+    const auto [clusters, visits] = NextVisits(continuation_params, true, 1);
     EXPECT_TRUE(clusters.empty());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
     EXPECT_TRUE(continuation_params.is_continuation);
@@ -520,9 +637,7 @@ TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
     // 2nd query should get the 2-day-old visit and the adjacent
     // 3-day-old clustered visit. Should not get the 3-day-old or older
     // unclustered visits.
-    const auto clusters_and_visits = NextVisits(continuation_params, true, 1);
-    const auto& clusters = clusters_and_visits.first;
-    const auto& visits = clusters_and_visits.second;
+    const auto [clusters, visits] = NextVisits(continuation_params, true, 1);
     EXPECT_THAT(clusters, testing::ElementsAre(1));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2, 5));
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);

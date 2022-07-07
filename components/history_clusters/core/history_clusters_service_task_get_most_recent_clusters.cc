@@ -50,8 +50,10 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
   // Shouldn't request more clusters if history has been exhausted.
   DCHECK(!continuation_params_.exhausted_all_visits);
 
-  if (!backend_) {
-    // Early exit if we won't be able to cluster visits.
+  if (!backend_ || continuation_params_.exhausted_unclustered_visits) {
+    // Early exit if we won't be able to cluster visits, either because null
+    // `backend_` or all unclustered visits have already been clustered and
+    // returned.
     weak_history_clusters_service_->NotifyDebugMessage(
         "HistoryClustersService::QueryClusters Error: ClusteringBackend is "
         "nullptr. Returning empty cluster vector.");

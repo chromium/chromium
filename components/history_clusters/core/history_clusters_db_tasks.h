@@ -63,6 +63,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // from `backend` to `annotated_visits_`. Returns whether the visits were
   // limited by `options.max_count`.
   bool AddUnclusteredVisits(history::HistoryBackend* backend,
+                            history::HistoryDatabase* db,
                             history::QueryOptions options);
 
   // Helper for `RunOnDBThread()` that adds incomplete visits from

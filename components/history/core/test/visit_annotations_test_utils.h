@@ -21,6 +21,10 @@ std::vector<VisitID> GetVisitIds(
 std::vector<VisitID> GetVisitIds(
     const std::vector<ClusterVisit>& cluster_visits);
 
+// Extract cluster IDs from `Cluster`s.
+std::vector<int64_t> GetClusterIds(
+    const std::vector<history::Cluster>& clusters);
+
 // Construct a `Cluster` containing `visit_ids`.
 Cluster CreateCluster(const std::vector<VisitID>& visit_ids);
 

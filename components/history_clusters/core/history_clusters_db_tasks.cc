@@ -68,10 +68,9 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
   base::ElapsedThreadTimer query_visits_timer;
 
   history::QueryOptions options;
-
   // Accumulate 1 day at a time of visits to avoid breaking up clusters.
   while (annotated_visits_.empty() &&
-         !continuation_params_.exhausted_all_visits) {
+         !continuation_params_.exhausted_unclustered_visits) {
     // Because `base::Time::Now()` may change during the async history request,
     // and because determining whether history was exhausted depends on whether
     // the query reached `Now()`, `now` tracks `Now()` at the time the query
@@ -81,9 +80,13 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     options = GetHistoryQueryOptions(backend, now);
     DCHECK(!options.begin_time.is_null());
     DCHECK(!options.end_time.is_null());
+
+    // TODO(manukh): Revisit this and make sure `break` is sufficient. We might
+    //   also need to conditionally set `exhausted_unclustered_visits` or
+    //   something else.
     if (options.begin_time == options.end_time)
       break;
-    bool limited_by_max_count = AddUnclusteredVisits(backend, options);
+    bool limited_by_max_count = AddUnclusteredVisits(backend, db, options);
     AddIncompleteVisits(backend, options.begin_time, options.end_time);
     IncrementContinuationParams(options, limited_by_max_count, now);
   }
@@ -147,6 +150,7 @@ history::QueryOptions GetAnnotatedVisitsToCluster::GetHistoryQueryOptions(
 
 bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     history::HistoryBackend* backend,
+    history::HistoryDatabase* db,
     history::QueryOptions options) {
   bool limited_by_max_count = false;
 
@@ -155,7 +159,10 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     // Filter out visits from sync.
     // TODO(manukh): Consider allowing the clustering backend to handle sync
     //  visits.
-    if (visit.source != history::SOURCE_SYNCED)
+    const bool is_clustered = db->IsVisitClustered(visit.visit_row.visit_id);
+    if (is_clustered && recent_first_)
+      continuation_params_.exhausted_unclustered_visits = true;
+    if (!is_clustered && visit.source != history::SOURCE_SYNCED)
       annotated_visits_.push_back(std::move(visit));
   }
 
