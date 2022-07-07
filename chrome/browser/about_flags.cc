@@ -7111,13 +7111,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherHideContinueSectionName,
      flag_descriptions::kLauncherHideContinueSectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLauncherHideContinueSection)},
-    {"launcher-nudge", flag_descriptions::kLauncherNudgeName,
-     flag_descriptions::kLauncherNudgeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kShelfLauncherNudge)},
-    {"launcher-nudge-short-interval",
-     flag_descriptions::kLauncherNudgeShortIntervalName,
-     flag_descriptions::kLauncherNudgeShortIntervalDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLauncherNudgeShortInterval)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

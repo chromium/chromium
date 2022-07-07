@@ -3281,12 +3281,6 @@ extern const char kLauncherGameSearchDescription[];
 extern const char kLauncherHideContinueSectionName[];
 extern const char kLauncherHideContinueSectionDescription[];
 
-extern const char kLauncherNudgeName[];
-extern const char kLauncherNudgeDescription[];
-
-extern const char kLauncherNudgeShortIntervalName[];
-extern const char kLauncherNudgeShortIntervalDescription[];
-
 extern const char kLauncherPulsingBlocksRefreshName[];
 extern const char kLauncherPulsingBlocksRefreshDescription[];
 

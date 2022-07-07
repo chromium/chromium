@@ -5721,15 +5721,6 @@ const char kLauncherHideContinueSectionDescription[] =
     "Adds a 'Hide all suggestions' option to the continue section item "
     "right-click menus.";
 
-const char kLauncherNudgeName[] = "Enable launcher nudge";
-const char kLauncherNudgeDescription[] =
-    "Enables nudges that bring new users' attention to the launcher button.";
-
-const char kLauncherNudgeShortIntervalName[] =
-    "Enable short intervals for launcher nudge";
-const char kLauncherNudgeShortIntervalDescription[] =
-    "Enables short intervals for launcher nudge for testing";
-
 const char kLauncherPulsingBlocksRefreshName[] =
     "Launcher pulsing blocks' new UI";
 const char kLauncherPulsingBlocksRefreshDescription[] =

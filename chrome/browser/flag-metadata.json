@@ -4060,16 +4060,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "launcher-nudge",
-    "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 104
-  },
-  {
-    "name": "launcher-nudge-short-interval",
-    "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "launcher-play-store-search",
     "owners": [ "amandadeacon", "tby", "wrong" ],
     "expiry_milestone": 105
