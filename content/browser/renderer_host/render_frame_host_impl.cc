@@ -1942,10 +1942,11 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::EnterBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
   DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kActive);
+  bool was_in_primary_main_frame = IsInPrimaryMainFrame();
   SetLifecycleState(LifecycleStateImpl::kInBackForwardCache);
   // Pages in the back-forward cache are automatically evicted after a certain
   // time.
-  if (!GetParent())
+  if (was_in_primary_main_frame)
     StartBackForwardCacheEvictionTimer();
   for (auto& child : children_)
     child->current_frame_host()->DidEnterBackForwardCache();
