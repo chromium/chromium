@@ -102,7 +102,6 @@ bool VideoPlayer::Initialize(const Video* video) {
   if (!WaitForEvent(VideoPlayerEvent::kInitialized))
     return false;
 
-  video_ = video;
   video_player_state_ = VideoPlayerState::kIdle;
   return true;
 }
@@ -119,7 +118,6 @@ void VideoPlayer::Play() {
 void VideoPlayer::PlayUntil(VideoPlayerEvent event, size_t event_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(video_player_state_, VideoPlayerState::kIdle);
-  DCHECK(video_);
   DVLOGF(4);
 
   // Start decoding the video.
@@ -140,23 +138,6 @@ void VideoPlayer::Flush() {
   DVLOGF(4);
 
   decoder_client_->Flush();
-}
-
-base::TimeDelta VideoPlayer::GetCurrentTime() const {
-  NOTIMPLEMENTED();
-  return base::TimeDelta();
-}
-
-size_t VideoPlayer::GetCurrentFrame() const {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
-VideoPlayerState VideoPlayer::GetState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::AutoLock auto_lock(event_lock_);
-  return video_player_state_;
 }
 
 bool VideoPlayer::WaitForEvent(VideoPlayerEvent event, size_t times) {

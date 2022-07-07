@@ -92,13 +92,6 @@ class VideoPlayer {
   // Flush the decoder.
   void Flush();
 
-  // Get current media time.
-  base::TimeDelta GetCurrentTime() const;
-  // Get the current frame number.
-  size_t GetCurrentFrame() const;
-  // Get the current state of the video player.
-  VideoPlayerState GetState() const;
-
   // Wait for an event to occur the specified number of times. All events that
   // occurred since last calling this function will be taken into account. All
   // events with different types will be consumed. Will return false if the
@@ -132,7 +125,6 @@ class VideoPlayer {
   // whether the decoder client should continue decoding frames.
   bool NotifyEvent(VideoPlayerEvent event);
 
-  raw_ptr<const Video> video_ = nullptr;
   VideoPlayerState video_player_state_ = VideoPlayerState::kUninitialized;
   std::unique_ptr<VideoDecoderClient> decoder_client_;
 
