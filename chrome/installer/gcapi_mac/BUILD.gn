@@ -15,13 +15,13 @@ config("gcapi_config") {
   cflags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),
-    "-mmacosx-version-min=$min_version",
+    "-mmacos-version-min=$min_version",
     "-stdlib=libc++",  # TODO(thakis): Remove once min_version >= 10.9.
   ]
   ldflags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),
-    "-mmacosx-version-min=$min_version",
+    "-mmacos-version-min=$min_version",
     "-stdlib=libc++",  # TODO(thakis): Remove once min_version >= 10.9.
   ]
 }
@@ -36,7 +36,7 @@ static_library("gcapi_lib") {
 
   frameworks = [ "Cocoa.framework" ]
 
-  # Don't use runtime_library, to be able to pick a custom mmacosx-version-min.
+  # Don't use runtime_library, to be able to pick a custom mmacos-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
 
@@ -48,7 +48,7 @@ executable("gcapi_example") {
 
   deps = [ ":gcapi_lib" ]
 
-  # Don't use runtime_library, to be able to pick a custom mmacosx-version-min.
+  # Don't use runtime_library, to be able to pick a custom mmacos-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
 

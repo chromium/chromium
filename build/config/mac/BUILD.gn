@@ -65,7 +65,7 @@ config("runtime_library") {
   common_flags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),
-    "-mmacosx-version-min=$mac_deployment_target",
+    "-mmacos-version-min=$mac_deployment_target",
   ]
 
   asmflags = common_flags
