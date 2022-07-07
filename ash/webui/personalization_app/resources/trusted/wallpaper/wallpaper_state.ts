@@ -11,8 +11,8 @@ import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, Google
  * |images| is a mapping of collection id to the list of images.
  */
 export interface BackdropState {
-  collections: Array<WallpaperCollection>|null;
-  images: Record<WallpaperCollection['id'], Array<WallpaperImage>|null>;
+  collections: WallpaperCollection[]|null;
+  images: Record<WallpaperCollection['id'], WallpaperImage[]|null>;
 }
 
 /**

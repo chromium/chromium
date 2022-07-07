@@ -88,7 +88,7 @@ export class SettingsEditDictionaryPageElement extends
 
   private newWordValue_: string;
   subpageRoute: Route;
-  private words_: Array<string>;
+  private words_: string[];
   private hasWords_: boolean;
   private languageSettingsPrivate_:
       (typeof chrome.languageSettingsPrivate)|null = null;
@@ -172,8 +172,7 @@ export class SettingsEditDictionaryPageElement extends
    * Handles updates to the word list. Additions are unshifted to the top
    * of the list so that users can see them easily.
    */
-  private onCustomDictionaryChanged_(
-      added: Array<string>, removed: Array<string>) {
+  private onCustomDictionaryChanged_(added: string[], removed: string[]) {
     const wasEmpty = this.words_.length === 0;
 
     for (const word of removed) {

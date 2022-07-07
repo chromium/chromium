@@ -166,11 +166,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('removeSavedPassword', id);
   }
 
-  movePasswordsToAccount(ids: Array<number>) {
+  movePasswordsToAccount(ids: number[]) {
     this.methodCalled('movePasswordsToAccount', ids);
   }
 
-  removeSavedPasswords(ids: Array<number>) {
+  removeSavedPasswords(ids: number[]) {
     this.actual_.removed.passwords += ids.length;
     this.methodCalled('removeSavedPasswords', ids);
   }
@@ -196,7 +196,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('removeException', id);
   }
 
-  removeExceptions(ids: Array<number>) {
+  removeExceptions(ids: number[]) {
     this.actual_.removed.exceptions += ids.length;
     this.methodCalled('removeExceptions', ids);
   }
@@ -356,7 +356,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   }
 
   changeSavedPassword(
-      ids: Array<number>,
+      ids: number[],
       params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
     this.methodCalled('changeSavedPassword', {ids, params});
     return Promise.resolve();

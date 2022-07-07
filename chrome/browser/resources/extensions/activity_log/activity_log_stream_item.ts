@@ -78,7 +78,7 @@ export class ActivityLogStreamItemElement extends PolymerElement {
   }
 
   data: StreamItem;
-  private argsList_: Array<StreamArgItem>;
+  private argsList_: StreamArgItem[];
   private isExpandable_: boolean;
 
   private computeIsExpandable_(): boolean {
@@ -112,7 +112,7 @@ export class ActivityLogStreamItemElement extends PolymerElement {
     return !!this.data.webRequestInfo && this.data.webRequestInfo !== '{}';
   }
 
-  private computeArgsList_(): Array<StreamArgItem> {
+  private computeArgsList_(): StreamArgItem[] {
     const parsedArgs = JSON.parse(this.data.args);
     if (!Array.isArray(parsedArgs)) {
       return [];

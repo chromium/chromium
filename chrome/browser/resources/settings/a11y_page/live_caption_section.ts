@@ -36,7 +36,7 @@ type LiveCaptionLanguage = {
   downloadProgress: string,
 };
 
-type LiveCaptionLanguageList = Array<LiveCaptionLanguage>;
+type LiveCaptionLanguageList = LiveCaptionLanguage[];
 
 const SettingsLiveCaptionElementBase =
     WebUIListenerMixin(PrefsMixin(PolymerElement));

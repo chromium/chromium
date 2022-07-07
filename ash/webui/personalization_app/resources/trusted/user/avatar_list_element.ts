@@ -108,7 +108,7 @@ export class AvatarList extends WithPersonalizationStore {
     ];
   }
 
-  private defaultUserImages_: Array<DefaultUserImage>|null;
+  private defaultUserImages_: DefaultUserImage[]|null;
   private profileImage_: Url|null;
   private isCameraPresent_: boolean;
   private cameraMode_: AvatarCameraMode|null;

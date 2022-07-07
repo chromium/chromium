@@ -221,7 +221,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
    *     |categoryList| will be hidden.
    */
   private updatePermissions_(
-      categoryList: Array<ContentSettingsTypes>, hideOthers: boolean) {
+      categoryList: ContentSettingsTypes[], hideOthers: boolean) {
     const permissionsMap: {[key: string]: SiteDetailsPermissionElement} =
         Array.prototype.reduce.call(
             this.shadowRoot!.querySelectorAll('site-details-permission'),

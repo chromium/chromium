@@ -14,7 +14,7 @@ import {TestMetricsProxy} from './test_metrics_proxy.js';
 import {TestNtpBackgroundProxy} from './test_ntp_background_proxy.js';
 
 suite('NuxNtpBackgroundTest', function() {
-  const backgrounds: Array<NtpBackgroundData> = [
+  const backgrounds: NtpBackgroundData[] = [
     {
       id: 0,
       title: 'Art',

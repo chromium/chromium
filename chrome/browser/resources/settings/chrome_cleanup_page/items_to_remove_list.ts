@@ -101,10 +101,10 @@ export class ItemsToRemoveListElement extends PolymerElement {
   }
 
   override title: string;
-  itemsToShow: Array<ChromeCleanupRemovalListItem>;
+  itemsToShow: ChromeCleanupRemovalListItem[];
   private expanded_: boolean;
-  private initialItems_: Array<ChromeCleanupRemovalListItem>|null;
-  private remainingItems_: Array<ChromeCleanupRemovalListItem>|null;
+  private initialItems_: ChromeCleanupRemovalListItem[]|null;
+  private remainingItems_: ChromeCleanupRemovalListItem[]|null;
   private moreItemsLinkText_: string;
 
   private expandList_() {
@@ -123,8 +123,7 @@ export class ItemsToRemoveListElement extends PolymerElement {
    * to the user will contain exactly |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|
    *    elements, and the last one will be the "show more" link.
    */
-  private updateVisibleState_(itemsToShow:
-                                  Array<ChromeCleanupRemovalListItem>) {
+  private updateVisibleState_(itemsToShow: ChromeCleanupRemovalListItem[]) {
     // Start expanded if there are less than
     // |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items to show.
     this.expanded_ = itemsToShow.length <= CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW;

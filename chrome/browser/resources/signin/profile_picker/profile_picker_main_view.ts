@@ -78,7 +78,7 @@ export class ProfilePickerMainViewElement extends
     };
   }
 
-  private profilesList_: Array<ProfileState>;
+  private profilesList_: ProfileState[];
   private profilesListLoaded_: boolean;
   private hideAskOnStartup_: boolean;
   private askOnStartup_: boolean;
@@ -136,7 +136,7 @@ export class ProfilePickerMainViewElement extends
   /**
    * Handler for when the profiles list are updated.
    */
-  private handleProfilesListChanged_(profilesList: Array<ProfileState>) {
+  private handleProfilesListChanged_(profilesList: ProfileState[]) {
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
   }

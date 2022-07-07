@@ -63,7 +63,7 @@ export type OriginInfo = {
 export type SiteGroup = {
   etldPlus1: string,
   numCookies: number,
-  origins: Array<OriginInfo>,
+  origins: OriginInfo[],
   hasInstalledPWA: boolean,
 };
 
@@ -109,7 +109,7 @@ export type SiteException = {
 export type RecentSitePermissions = {
   origin: string,
   incognito: boolean,
-  recentPermissions: Array<RawSiteException>,
+  recentPermissions: RawSiteException[],
 };
 
 /**
@@ -120,7 +120,7 @@ export type RawChooserException = {
   chooserType: ChooserType,
   displayName: string,
   object: Object,
-  sites: Array<RawSiteException>,
+  sites: RawSiteException[],
 };
 
 /**
@@ -131,7 +131,7 @@ export type ChooserException = {
   chooserType: ChooserType,
   displayName: string,
   object: Object,
-  sites: Array<SiteException>,
+  sites: SiteException[],
 };
 
 export type DefaultContentSetting = {
@@ -184,7 +184,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Gets a list of sites, grouped by eTLD+1, affected by any content settings
    * that should be visible to the user.
    */
-  getAllSites(): Promise<Array<SiteGroup>>;
+  getAllSites(): Promise<SiteGroup[]>;
 
   /**
    * Returns a list of content settings types that are controlled via a standard
@@ -192,7 +192,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param origin The associated origin for which categories should be shown or
    *     hidden.
    */
-  getCategoryList(origin: string): Promise<Array<ContentSettingsTypes>>;
+  getCategoryList(origin: string): Promise<ContentSettingsTypes[]>;
 
   /**
    * Get the string which describes the current effective cookie setting.
@@ -207,14 +207,14 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param numSources Maximum number of different sources to return
    */
   getRecentSitePermissions(numSources: number):
-      Promise<Array<RecentSitePermissions>>;
+      Promise<RecentSitePermissions[]>;
 
   /**
    * Gets the chooser exceptions for a particular chooser type.
    * @param chooserType The chooser type to grab exceptions from.
    */
   getChooserExceptionList(chooserType: ChooserType):
-      Promise<Array<RawChooserException>>;
+      Promise<RawChooserException[]>;
 
   /**
    * Converts a given number of bytes into a human-readable format, with data
@@ -227,7 +227,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param contentType The name of the category to query.
    */
   getExceptionList(contentType: ContentSettingsTypes):
-      Promise<Array<RawSiteException>>;
+      Promise<RawSiteException[]>;
 
   /**
    * Gets a list of category permissions for a given origin. Note that this
@@ -237,9 +237,8 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param contentTypes A list of categories to retrieve the ContentSetting
    *     for.
    */
-  getOriginPermissions(
-      origin: string, contentTypes: Array<ContentSettingsTypes>):
-      Promise<Array<RawSiteException>>;
+  getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]):
+      Promise<RawSiteException[]>;
 
   /**
    * Resets the permissions for a list of categories for a given origin. This
@@ -478,8 +477,7 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     return sendWithPromise('getExceptionList', contentType);
   }
 
-  getOriginPermissions(
-      origin: string, contentTypes: Array<ContentSettingsTypes>) {
+  getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
     return sendWithPromise('getOriginPermissions', origin, contentTypes);
   }
 

@@ -118,10 +118,10 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       PrivacySandboxBrowserProxyImpl.getInstance();
   private privacySandboxSettings3Enabled_: boolean;
   privacySandboxSettingsView: PrivacySandboxSettingsView;
-  private topTopics_: Array<PrivacySandboxInterest>;
-  private blockedTopics_: Array<PrivacySandboxInterest>;
-  private joiningSites_: Array<PrivacySandboxInterest>;
-  private blockedSites_: Array<PrivacySandboxInterest>;
+  private topTopics_: PrivacySandboxInterest[];
+  private blockedTopics_: PrivacySandboxInterest[];
+  private joiningSites_: PrivacySandboxInterest[];
+  private blockedSites_: PrivacySandboxInterest[];
 
   override ready() {
     super.ready();

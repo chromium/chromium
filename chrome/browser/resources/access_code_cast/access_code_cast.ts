@@ -76,7 +76,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     };
   }
 
-  private listenerIds: Array<number>;
+  private listenerIds: number[];
   private router: PageCallbackRouter;
 
   private static readonly ACCESS_CODE_LENGTH = 6;

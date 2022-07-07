@@ -35,11 +35,11 @@ export type SearchEngine = {
 };
 
 export type SearchEnginesInfo = {
-  defaults: Array<SearchEngine>,
-  actives: Array<SearchEngine>,
-  others: Array<SearchEngine>,
-  extensions: Array<SearchEngine>,
-  [key: string]: Array<SearchEngine>,
+  defaults: SearchEngine[],
+  actives: SearchEngine[],
+  others: SearchEngine[],
+  extensions: SearchEngine[],
+  [key: string]: SearchEngine[],
 };
 
 /**

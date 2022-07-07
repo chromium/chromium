@@ -107,15 +107,15 @@ export class SiteDataDetailsSubpageElement extends
     }
     this.browserProxy_.getCookieDetails(this.site_)
         .then(
-            (cookies: Array<CookieDetails>) => this.onCookiesLoaded_(cookies),
+            (cookies: CookieDetails[]) => this.onCookiesLoaded_(cookies),
             () => this.onCookiesLoadFailed_());
   }
 
-  private getCookieNodes_(node: CookieDetails): Array<CookieDataForDisplay> {
+  private getCookieNodes_(node: CookieDetails): CookieDataForDisplay[] {
     return getCookieData(node);
   }
 
-  private onCookiesLoaded_(cookies: Array<CookieDetails>) {
+  private onCookiesLoaded_(cookies: CookieDetails[]) {
     this.entries_ = cookies.map(c => {
       // Set up flag for expanding cookie details.
       (c as CookieDetails & {expanded_: boolean}).expanded_ = false;

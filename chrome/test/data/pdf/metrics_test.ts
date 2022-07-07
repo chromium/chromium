@@ -53,7 +53,7 @@ chrome.test.runTests(function() {
       chrome.metricsPrivate =
           mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
 
-      const keys = (Object.keys(UserAction) as (keyof typeof UserAction)[])
+      const keys = (Object.keys(UserAction) as Array<keyof typeof UserAction>)
                        .filter(key => Number.isInteger(UserAction[key]))
                        .filter(key => {
                          return key !== 'DOCUMENT_OPENED' &&

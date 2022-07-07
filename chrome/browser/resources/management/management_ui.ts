@@ -90,13 +90,13 @@ class ManagementUiElement extends ManagementUiElementBase {
     };
   }
 
-  private browserReportingInfo_: Array<BrowserReportingData>|null;
-  private extensions_: Array<Extension>|null;
+  private browserReportingInfo_: BrowserReportingData[]|null;
+  private extensions_: Extension[]|null;
   private managedWebsites_: string[]|null;
   private managedWebsitesSubtitle_: string;
 
   // <if expr="chromeos_ash">
-  private deviceReportingInfo_: Array<DeviceReportingResponse>|null;
+  private deviceReportingInfo_: DeviceReportingResponse[]|null;
   private localTrustRoots_: string;
   private customerLogo_: string;
   private managementOverview_: string;
@@ -129,7 +129,7 @@ class ManagementUiElement extends ManagementUiElementBase {
 
     this.addWebUIListener(
         'browser-reporting-info-updated',
-        (reportingInfo: Array<BrowserReportingResponse>) =>
+        (reportingInfo: BrowserReportingResponse[]) =>
             this.onBrowserReportingInfoReceived_(reportingInfo));
 
     // <if expr="chromeos_ash">
@@ -161,7 +161,7 @@ class ManagementUiElement extends ManagementUiElementBase {
   }
 
   private onBrowserReportingInfoReceived_(reportingInfo:
-                                              Array<BrowserReportingResponse>) {
+                                              BrowserReportingResponse[]) {
     const reportingInfoMap = reportingInfo.reduce((info, response) => {
       info[response.reportingType] = info[response.reportingType] || {
         icon: this.getIconForReportingType_(response.reportingType),

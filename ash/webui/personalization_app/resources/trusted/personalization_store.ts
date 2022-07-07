@@ -65,7 +65,7 @@ interface PersonalizationStoreClientPrivate {
       this: PolymerElement&PersonalizationStoreClientPrivate,
       newState: PersonalizationState): void;
   watch_: typeof PersonalizationStoreClientImpl['watch'];
-  watches_: Array<PropertyWatch>;
+  watches_: PropertyWatch[];
 }
 
 const PersonalizationStoreClientImpl: PersonalizationStoreClient&

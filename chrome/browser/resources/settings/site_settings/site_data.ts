@@ -106,7 +106,7 @@ export class SiteDataElement extends SiteDataElementBase {
   filter: string;
   focusConfig: FocusConfig;
   private isLoading_: boolean;
-  sites: Array<LocalDataItem>;
+  sites: LocalDataItem[];
   subpageRoute: Route;
   private listBlurred_: boolean;
   private browserProxy_: LocalDataBrowserProxy =

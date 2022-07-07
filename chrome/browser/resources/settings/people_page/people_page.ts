@@ -197,7 +197,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private profileName_: String;
 
   // <if expr="not chromeos_ash">
-  storedAccounts: Array<StoredAccount>|null;
+  storedAccounts: StoredAccount[]|null;
   private shouldShowGoogleAccount_: boolean;
   private showImportDataDialog_: boolean;
   // </if>
@@ -235,7 +235,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
     // <if expr="not chromeos_ash">
-    const handleStoredAccounts = (accounts: Array<StoredAccount>) => {
+    const handleStoredAccounts = (accounts: StoredAccount[]) => {
       this.storedAccounts = accounts;
     };
     this.syncBrowserProxy_.getStoredAccounts().then(handleStoredAccounts);

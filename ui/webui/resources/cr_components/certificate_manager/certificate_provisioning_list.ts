@@ -52,7 +52,7 @@ export class CertificateProvisioningListElement extends
     };
   }
 
-  private provisioningProcesses_: Array<CertificateProvisioningProcess>;
+  private provisioningProcesses_: CertificateProvisioningProcess[];
   private provisioningDetailsDialogModel_: CertificateProvisioningProcess|null;
   private showProvisioningDetailsDialog_: boolean;
   private previousAnchor_: HTMLElement|null = null;
@@ -63,7 +63,7 @@ export class CertificateProvisioningListElement extends
    * @return Whether |provisioningProcesses| contains at least one entry.
    */
   private hasCertificateProvisioningEntries_(
-      provisioningProcesses: Array<CertificateProvisioningProcess>): boolean {
+      provisioningProcesses: CertificateProvisioningProcess[]): boolean {
     return provisioningProcesses.length !== 0;
   }
 
@@ -72,7 +72,7 @@ export class CertificateProvisioningListElement extends
    *     provisioning processes
    */
   private onCertificateProvisioningProcessesChanged_(
-      certProvisioningProcesses: Array<CertificateProvisioningProcess>) {
+      certProvisioningProcesses: CertificateProvisioningProcess[]) {
     this.provisioningProcesses_ = certProvisioningProcesses;
 
     // If a cert provisioning process details dialog is being shown, update its

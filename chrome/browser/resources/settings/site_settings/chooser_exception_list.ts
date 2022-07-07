@@ -77,7 +77,7 @@ export class ChooserExceptionListElement extends
     };
   }
 
-  chooserExceptions: Array<ChooserException>;
+  chooserExceptions: ChooserException[];
   chooserType: ChooserType;
   private emptyListMessage_: string;
   private hasIncognito_: boolean;
@@ -195,7 +195,7 @@ export class ChooserExceptionListElement extends
   /**
    * Process the chooser exception list returned from the native layer.
    */
-  private processExceptions_(exceptionList: Array<RawChooserException>) {
+  private processExceptions_(exceptionList: RawChooserException[]) {
     const exceptions = exceptionList.map(exception => {
       const sites = exception.sites.map(site => this.expandSiteException(site));
       return Object.assign(exception, {sites});

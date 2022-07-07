@@ -62,7 +62,7 @@ export class DownloadsToolbarElement extends PolymerElement {
   private mojoHandler_: PageHandlerInterface|null = null;
   hasClearableDownloads: boolean = false;
   spinnerActive: boolean;
-  items: Array<MojomData> = [];
+  items: MojomData[] = [];
 
   /** @override */
   override ready() {

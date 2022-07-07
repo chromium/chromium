@@ -24,7 +24,7 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
     function testButtonClick(buttonSelector: string) {
       const allButtons =
           Array.from(app.shadowRoot!.querySelectorAll('cr-button')) as
-          Array<CrButtonElement>;
+          CrButtonElement[];
       const actionButton =
           app.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
       const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');

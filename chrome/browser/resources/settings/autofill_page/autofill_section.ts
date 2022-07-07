@@ -76,7 +76,7 @@ export class SettingsAutofillSectionElement extends
   }
 
   prefs: {[key: string]: any};
-  addresses: Array<chrome.autofillPrivate.AddressEntry>;
+  addresses: chrome.autofillPrivate.AddressEntry[];
   activeAddress: chrome.autofillPrivate.AddressEntry|null;
   private showAddressDialog_: boolean;
   private showAddressRemoveConfirmationDialog_: boolean;
@@ -105,7 +105,7 @@ export class SettingsAutofillSectionElement extends
 
     // Create listener functions.
     const setAddressesListener =
-        (addressList: Array<chrome.autofillPrivate.AddressEntry>) => {
+        (addressList: chrome.autofillPrivate.AddressEntry[]) => {
           this.addresses = addressList;
         };
 
@@ -201,7 +201,7 @@ export class SettingsAutofillSectionElement extends
   /**
    * @return Whether the list exists and has items.
    */
-  private hasSome_(list: Array<Object>): boolean {
+  private hasSome_(list: Object[]): boolean {
     return !!(list && list.length);
   }
 

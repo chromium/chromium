@@ -24,7 +24,7 @@ export class CrMenuSelector extends HTMLElement {
     this.setAttribute('role', 'menu');
   }
 
-  private getItems_(): Array<HTMLElement> {
+  private getItems_(): HTMLElement[] {
     return Array.from(
         this.querySelectorAll('[role=menuitem]:not([disabled]):not([hidden])'));
   }

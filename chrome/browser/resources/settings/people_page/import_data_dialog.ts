@@ -86,7 +86,7 @@ export class SettingsImportDataDialogElement extends
     };
   }
 
-  private browserProfiles_: Array<BrowserProfile>;
+  private browserProfiles_: BrowserProfile[];
   private selected_: BrowserProfile;
   private noImportDataTypeSelected_: boolean;
   private importStatus_: ImportDataStatus;

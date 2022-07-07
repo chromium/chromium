@@ -173,7 +173,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     ];
   }
 
-  private activeDialogAnchorStack_: Array<HTMLElement>;
+  private activeDialogAnchorStack_: HTMLElement[];
   private toastText_: string;
   credential: MultiStorePasswordUiEntry|null;
   private inAccount_: boolean|undefined;

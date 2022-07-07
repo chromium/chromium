@@ -26,7 +26,7 @@ export interface ManageProfileBrowserProxy {
   /**
    * Gets the available profile icons to choose from.
    */
-  getAvailableIcons(): Promise<Array<AvatarIcon>>;
+  getAvailableIcons(): Promise<AvatarIcon[]>;
 
   /**
    * Sets the profile's icon to the GAIA avatar.

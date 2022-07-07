@@ -75,7 +75,7 @@ export class SettingsAddLanguagesDialogElement extends
     };
   }
 
-  languages: Array<chrome.languageSettingsPrivate.Language>;
+  languages: chrome.languageSettingsPrivate.Language[];
   private languagesToAdd_: Set<string>;
   private disableActionButton_: boolean;
   private filterValue_: string;
@@ -110,7 +110,7 @@ export class SettingsAddLanguagesDialogElement extends
   /**
    * @return A list of languages to be displayed.
    */
-  private getLanguages_(): Array<chrome.languageSettingsPrivate.Language> {
+  private getLanguages_(): chrome.languageSettingsPrivate.Language[] {
     if (!this.filterValue_) {
       return this.languages;
     }

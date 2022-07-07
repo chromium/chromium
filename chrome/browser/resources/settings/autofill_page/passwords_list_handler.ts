@@ -152,7 +152,7 @@ export class PasswordsListHandlerElement extends
     };
   }
 
-  savedPasswords: Array<MultiStorePasswordUiEntry>;
+  savedPasswords: MultiStorePasswordUiEntry[];
   isAccountStoreUser: boolean;
   allowMoveToAccountOption: boolean;
 
@@ -177,7 +177,7 @@ export class PasswordsListHandlerElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    const extractFirstAccountEmail = (accounts: Array<StoredAccount>) => {
+    const extractFirstAccountEmail = (accounts: StoredAccount[]) => {
       this.firstSignedInAccountEmail_ =
           accounts.length > 0 ? accounts[0].email : '';
     };

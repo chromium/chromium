@@ -24,7 +24,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 async function createPasswordsDeviceSection(
     syncBrowserProxy: TestSyncBrowserProxy,
     passwordManager: TestPasswordManagerProxy,
-    passwordList: Array<chrome.passwordsPrivate.PasswordUiEntry>):
+    passwordList: chrome.passwordsPrivate.PasswordUiEntry[]):
     Promise<PasswordsDeviceSectionElement> {
   passwordManager.data.passwords = passwordList;
   Router.getInstance().setCurrentRoute(
@@ -49,7 +49,7 @@ async function createPasswordsDeviceSection(
  */
 function validatePasswordsSubsection(
     subsection: IronListElement,
-    expectedPasswords: Array<MultiStorePasswordUiEntry>) {
+    expectedPasswords: MultiStorePasswordUiEntry[]) {
   assertDeepEquals(expectedPasswords, subsection.items);
   const listItemElements = subsection.querySelectorAll('password-list-item');
   for (let index = 0; index < expectedPasswords.length; ++index) {

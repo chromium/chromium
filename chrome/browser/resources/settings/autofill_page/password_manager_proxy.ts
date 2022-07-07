@@ -7,11 +7,11 @@
  * chrome.passwordsPrivate which facilitates testing.
  */
 
-type InsecureCredentials = Array<chrome.passwordsPrivate.InsecureCredential>;
+type InsecureCredentials = chrome.passwordsPrivate.InsecureCredential[];
 export type SavedPasswordListChangedListener =
-    (entries: Array<chrome.passwordsPrivate.PasswordUiEntry>) => void;
+    (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordExceptionListChangedListener =
-    (entries: Array<chrome.passwordsPrivate.ExceptionEntry>) => void;
+    (entries: chrome.passwordsPrivate.ExceptionEntry[]) => void;
 export type PasswordsFileExportProgressListener =
     (progress: chrome.passwordsPrivate.PasswordExportProgress) => void;
 export type AccountStorageOptInStateChangedListener = (optInState: boolean) =>
@@ -80,7 +80,7 @@ export interface PasswordManagerProxy {
    * @return A promise that resolves when the password is updated for all ids.
    */
   changeSavedPassword(
-      ids: Array<number>,
+      ids: number[],
       params: chrome.passwordsPrivate.ChangeSavedPasswordParams): Promise<void>;
 
   /**
@@ -95,13 +95,13 @@ export interface PasswordManagerProxy {
    * @param ids The ids for the password entries being removed. Any id not in
    *    the list is ignored.
    */
-  removeSavedPasswords(ids: Array<number>): void;
+  removeSavedPasswords(ids: number[]): void;
 
   /**
    * Moves a list of passwords from the device to the account
    * @param ids The ids for the password entries being moved.
    */
-  movePasswordsToAccount(ids: Array<number>): void;
+  movePasswordsToAccount(ids: number[]): void;
 
   /**
    * Add an observer to the list of password exceptions.
@@ -134,7 +134,7 @@ export interface PasswordManagerProxy {
    * @param ids The ids for the exception url entries being removed. Any |id|
    *     not in the list is ignored.
    */
-  removeExceptions(ids: Array<number>): void;
+  removeExceptions(ids: number[]): void;
 
   /**
    * Should undo the last saved password or exception removal and notify that
@@ -415,7 +415,7 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   changeSavedPassword(
-      ids: Array<number>,
+      ids: number[],
       params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
     return new Promise<void>(resolve => {
       chrome.passwordsPrivate.changeSavedPassword(ids, params, resolve);
@@ -426,11 +426,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.removeSavedPassword(id);
   }
 
-  removeSavedPasswords(ids: Array<number>) {
+  removeSavedPasswords(ids: number[]) {
     chrome.passwordsPrivate.removeSavedPasswords(ids);
   }
 
-  movePasswordsToAccount(ids: Array<number>) {
+  movePasswordsToAccount(ids: number[]) {
     chrome.passwordsPrivate.movePasswordsToAccount(ids);
   }
 
@@ -454,7 +454,7 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.removePasswordException(id);
   }
 
-  removeExceptions(ids: Array<number>) {
+  removeExceptions(ids: number[]) {
     chrome.passwordsPrivate.removePasswordExceptions(ids);
   }
 

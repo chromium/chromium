@@ -22,7 +22,7 @@ export type HistoryEntryDebug = {
  * chrome/browser/ui/webui/browsing_history_handler.cc: HistoryEntryToValue()
  */
 export type HistoryEntry = {
-  allTimestamps: Array<number>,
+  allTimestamps: number[],
   remoteIconUrlForUma: string,
   isUrlInRemoteUserData: boolean,
   blockedVisit: boolean,
@@ -76,7 +76,7 @@ export type ForeignSessionTab = {
 export type ForeignSessionWindow = {
   timestamp: number,
   sessionId: number,
-  tabs: Array<ForeignSessionTab>,
+  tabs: ForeignSessionTab[],
 };
 
 /**
@@ -90,7 +90,7 @@ export type ForeignSession = {
   modifiedTime: string,
   tag: string,
   timestamp: number,
-  windows: Array<ForeignSessionWindow>,
+  windows: ForeignSessionWindow[],
 };
 
 export type QueryState = {
@@ -101,6 +101,6 @@ export type QueryState = {
 
 export type QueryResult = {
   info?: HistoryQuery,
-  results?: Array<HistoryEntry>,
-  sessionList?: Array<ForeignSession>,
+  results?: HistoryEntry[],
+  sessionList?: ForeignSession[],
 };

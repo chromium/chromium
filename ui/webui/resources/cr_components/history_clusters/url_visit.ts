@@ -125,7 +125,7 @@ class VisitRowElement extends MenuContainerElementBase {
 
   query: string;
   visit: URLVisit;
-  private annotations_: Array<string>;
+  private annotations_: string[];
   private allowDeletingHistory_: boolean;
   private debugInfo_: string;
   private unusedTitle_: string;
@@ -191,7 +191,7 @@ class VisitRowElement extends MenuContainerElementBase {
   // Helper methods
   //============================================================================
 
-  private computeAnnotations_(): Array<string> {
+  private computeAnnotations_(): string[] {
     return this.visit.annotations
         .map((annotation: number) => annotationToStringId.get(annotation))
         .filter(

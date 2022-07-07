@@ -23,8 +23,8 @@ import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_brow
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 type SpellCheckLanguages = {
-  on: Array<SpellCheckLanguageState>,
-  off: Array<SpellCheckLanguageState>,
+  on: SpellCheckLanguageState[],
+  off: SpellCheckLanguageState[],
 };
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
@@ -52,12 +52,12 @@ const kTranslateLanguageSynonyms: {[key: string]: string} = {
 const kArcImeLanguage: string = '_arc_ime_language_';
 
 type ModelArgs = {
-  supportedLanguages: Array<chrome.languageSettingsPrivate.Language>,
+  supportedLanguages: chrome.languageSettingsPrivate.Language[],
   translateTarget: string,
-  alwaysTranslateCodes: Array<string>,
-  neverTranslateCodes: Array<string>,
+  alwaysTranslateCodes: string[],
+  neverTranslateCodes: string[],
   startingUILanguage: string,
-  supportedInputMethods?: Array<chrome.languageSettingsPrivate.InputMethod>,
+  supportedInputMethods?: chrome.languageSettingsPrivate.InputMethod[],
   currentInputMethodId?: string,
 };
 
@@ -167,9 +167,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
   // <if expr="not is_macosx">
   private boundOnSpellcheckDictionariesChanged_:
-      ((statuses:
-            Array<chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>) =>
-           void)|null = null;
+      ((statuses: chrome.languageSettingsPrivate
+            .SpellcheckDictionaryStatus[]) => void)|null = null;
   // </if>
 
   private browserProxy_: LanguagesBrowserProxy =
@@ -210,7 +209,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
     // Get the language list.
     promises.push(
-        new Promise<Array<chrome.languageSettingsPrivate.Language>>(resolve => {
+        new Promise<chrome.languageSettingsPrivate.Language[]>(resolve => {
           this.languageSettingsPrivate_.getLanguageList(resolve);
         }).then(result => {
           args.supportedLanguages = result;
@@ -223,7 +222,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
                   }).then(result => args.translateTarget = result));
 
     // Get the list of language-codes to always translate.
-    promises.push(new Promise<Array<string>>(resolve => {
+    promises.push(new Promise<string[]>(resolve => {
                     this.languageSettingsPrivate_.getAlwaysTranslateLanguages(
                         resolve);
                   }).then(result => {
@@ -231,7 +230,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     }));
 
     // Get the list of language-codes to never translate.
-    promises.push(new Promise<Array<string>>(resolve => {
+    promises.push(new Promise<string[]>(resolve => {
                     this.languageSettingsPrivate_.getNeverTranslateLanguages(
                         resolve);
                   }).then(result => {
@@ -366,7 +365,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
    *     this.languages.supported.
    */
   private getSpellCheckLanguages_(
-      supportedLanguages: Array<chrome.languageSettingsPrivate.Language>):
+      supportedLanguages: chrome.languageSettingsPrivate.Language[]):
       SpellCheckLanguages {
     // The spell check preferences are prioritised in this order:
     // forced_dictionaries, blocked_dictionaries, dictionaries.
@@ -378,7 +377,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
      * Gets the list of language codes indicated by the preference name, and
      * de-duplicates it with all other language codes.
      */
-    const getPrefAndDedupe = (prefName: string): Array<string> => {
+    const getPrefAndDedupe = (prefName: string): string[] => {
       const result =
           this.getPref(prefName).value.filter((x: string) => !seenCodes.has(x));
       result.forEach((code: string) => seenCodes.add(code));
@@ -476,7 +475,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     }
 
     const translateBlockedPrefValue =
-        this.getPref('translate_blocked_languages').value as Array<string>;
+        this.getPref('translate_blocked_languages').value as string[];
     const translateBlockedSet =
         this.makeSetFromArray_(translateBlockedPrefValue);
 
@@ -565,7 +564,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
    */
   private getEnabledLanguageStates_(
       translateTarget: string,
-      prospectiveUILanguage: string|undefined): Array<LanguageState> {
+      prospectiveUILanguage: string|undefined): LanguageState[] {
     assert(CrSettingsPrefs.isInitialized);
 
     const pref = this.getPref('intl.accept_languages');
@@ -584,11 +583,11 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
         this.makeSetFromArray_(spellCheckBlockedPref.value);
 
     const translateBlockedPrefValue =
-        this.getPref('translate_blocked_languages').value as Array<string>;
+        this.getPref('translate_blocked_languages').value as string[];
     const translateBlockedSet =
         this.makeSetFromArray_(translateBlockedPrefValue);
 
-    const enabledLanguageStates: Array<LanguageState> = [];
+    const enabledLanguageStates: LanguageState[] = [];
 
     for (let i = 0; i < enabledLanguageCodes.length; i++) {
       const code = enabledLanguageCodes[i];
@@ -644,8 +643,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
    * to track the number of times a spell check dictionary download has failed.
    */
   private onSpellcheckDictionariesChanged_(
-      statuses:
-          Array<chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>) {
+      statuses: chrome.languageSettingsPrivate.SpellcheckDictionaryStatus[]) {
     const statusMap = new Map();
     statuses.forEach(status => {
       statusMap.set(status.languageCode, status);
@@ -700,7 +698,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   /**
    * Creates a Set from the elements of the array.
    */
-  private makeSetFromArray_<T>(list: Array<T>): Set<T> {
+  private makeSetFromArray_<T>(list: T[]): Set<T> {
     return new Set(list);
   }
 

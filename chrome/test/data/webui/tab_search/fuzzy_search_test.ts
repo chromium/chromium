@@ -25,7 +25,7 @@ function assertSearchOrders(
   }
 }
 
-function assertResults(expectedRecords: Array<any>, actualRecords: TabData[]) {
+function assertResults(expectedRecords: any[], actualRecords: TabData[]) {
   assertEquals(expectedRecords.length, actualRecords.length);
   expectedRecords.forEach((expected, i) => {
     const actual = actualRecords[i]!;

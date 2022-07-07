@@ -95,7 +95,7 @@ function initialize() {
       });
 
   getProxy().getCallbackRouter().onClientInfoAvailable.addListener(
-      (clientInfos: Array<ClientInfo>) => {
+      (clientInfos: ClientInfo[]) => {
         const parent = $('client-container');
         // Remove all current children.
         while (parent.firstChild) {

@@ -218,8 +218,8 @@ export class ExtensionsManagerElement extends PolymerElement {
   private detailViewItem_?: chrome.developerPrivate.ExtensionInfo;
   private activityLogItem_?: chrome.developerPrivate.ExtensionInfo|
       ActivityLogExtensionPlaceholder;
-  private extensions_: Array<chrome.developerPrivate.ExtensionInfo>;
-  private apps_: Array<chrome.developerPrivate.ExtensionInfo>;
+  private extensions_: chrome.developerPrivate.ExtensionInfo[];
+  private apps_: chrome.developerPrivate.ExtensionInfo[];
   private didInitPage_: boolean;
   private showDrawer_: boolean;
   private showLoadErrorDialog_: boolean;
@@ -422,8 +422,8 @@ export class ExtensionsManagerElement extends PolymerElement {
    * Categorizes |extensionsAndApps| to apps and extensions and initializes
    * those lists.
    */
-  private initExtensionsAndApps_(
-      extensionsAndApps: Array<chrome.developerPrivate.ExtensionInfo>) {
+  private initExtensionsAndApps_(extensionsAndApps:
+                                     chrome.developerPrivate.ExtensionInfo[]) {
     extensionsAndApps.sort(compareExtensions);
     const apps: chrome.developerPrivate.ExtensionInfo[] = [];
     const extensions: chrome.developerPrivate.ExtensionInfo[] = [];
@@ -659,7 +659,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     }
   }
 
-  private onShowInstallWarnings_(e: CustomEvent<Array<string>>) {
+  private onShowInstallWarnings_(e: CustomEvent<string[]>) {
     // Leverage Polymer data bindings instead of just assigning the
     // installWarnings on the dialog since the dialog hasn't been stamped
     // in the DOM yet.

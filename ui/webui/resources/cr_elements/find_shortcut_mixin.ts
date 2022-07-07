@@ -19,7 +19,7 @@ export const FindShortcutManager = (() => {
   /**
    * Stack of listeners. Only the top listener will handle the shortcut.
    */
-  const listeners: Array<FindShortcutMixinInterface> = [];
+  const listeners: FindShortcutMixinInterface[] = [];
 
   /**
    * Tracks if any modal context is open in settings. This assumes only one

@@ -11,7 +11,7 @@ export interface Column<T> {
 }
 
 export class TableModel<T> {
-  cols: Column<T>[] = [];
+  cols: Array<Column<T>> = [];
   emptyRowText: string = '';
   sortIdx: number = -1;
   rowsChangedListeners: Set<() => void>;

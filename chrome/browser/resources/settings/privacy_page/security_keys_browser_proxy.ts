@@ -178,14 +178,14 @@ export interface SecurityKeysCredentialBrowserProxy {
    * previously been supplied via providePIN() before this
    * method may be called.
    */
-  enumerateCredentials(): Promise<Array<Credential>>;
+  enumerateCredentials(): Promise<Credential[]>;
 
   /**
    * Deletes the credentials with the given IDs from the security key.
    * @return An object with a success boolean and a localized response
    *     message to display to the user (on either success or error)
    */
-  deleteCredentials(ids: Array<string>): Promise<CredentialManagementResponse>;
+  deleteCredentials(ids: string[]): Promise<CredentialManagementResponse>;
 
   /**
    * Updates the credentials with the given ID from the security key
@@ -231,7 +231,7 @@ export interface SecurityKeysBioEnrollProxy {
    * @return Resolves when the handler is ready for the
    *     authentcation PIN to be provided.
    */
-  startBioEnroll(): Promise<Array<number>>;
+  startBioEnroll(): Promise<number[]>;
 
   /**
    * Provides a PIN for a biometric enrollment operation. The startBioEnroll()
@@ -252,7 +252,7 @@ export interface SecurityKeysBioEnrollProxy {
    * Enumerates enrollments on the authenticator. A correct PIN must have
    * previously been supplied via providePIN() before this method may be called.
    */
-  enumerateEnrollments(): Promise<Array<Enrollment>>;
+  enumerateEnrollments(): Promise<Enrollment[]>;
 
   /**
    * Move the operation into enrolling mode, which instructs the authenticator
@@ -281,14 +281,14 @@ export interface SecurityKeysBioEnrollProxy {
    *
    * @return The remaining enrollments.
    */
-  deleteEnrollment(id: string): Promise<Array<Enrollment>>;
+  deleteEnrollment(id: string): Promise<Enrollment[]>;
 
   /**
    * Renames the enrollment with the given ID.
    *
    * @return The updated list of enrollments.
    */
-  renameEnrollment(id: string, name: string): Promise<Array<Enrollment>>;
+  renameEnrollment(id: string, name: string): Promise<Enrollment[]>;
 
   /** Cancels all outstanding operations. */
   close(): void;
@@ -312,8 +312,7 @@ export type SecurityKeysPhone = {
  * been linked by scanning a QR code. Only elements from the latter can be
  * passed to |delete| or |rename| in |SecurityKeysPhonesBrowserProxy|.
  */
-export type SecurityKeysPhonesList =
-    [Array<SecurityKeysPhone>, Array<SecurityKeysPhone>];
+export type SecurityKeysPhonesList = [SecurityKeysPhone[], SecurityKeysPhone[]];
 
 export interface SecurityKeysPhonesBrowserProxy {
   /**
@@ -374,7 +373,7 @@ export class SecurityKeysCredentialBrowserProxyImpl implements
     return sendWithPromise('securityKeyCredentialManagementEnumerate');
   }
 
-  deleteCredentials(ids: Array<string>) {
+  deleteCredentials(ids: string[]) {
     return sendWithPromise('securityKeyCredentialManagementDelete', ids);
   }
 

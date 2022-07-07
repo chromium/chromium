@@ -39,7 +39,7 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('remove', id);
   }
 
-  getDownloads(_searchTerms: Array<string>) {}
+  getDownloads(_searchTerms: string[]) {}
   openFileRequiringGesture(_id: string) {}
   drag(_id: string) {}
   saveDangerousRequiringGesture(_id: string) {}

@@ -147,7 +147,7 @@ export class SettingsSyncAccountControlElement extends
   promoSecondaryLabelWithAccount: string;
   promoSecondaryLabelWithNoAccount: string;
   private signedIn_: boolean;
-  private storedAccounts_: Array<StoredAccount>;
+  private storedAccounts_: StoredAccount[];
   private shownAccount_: StoredAccount|null;
   showingPromo: boolean;
   embeddedInSubpage: boolean;
@@ -335,7 +335,7 @@ export class SettingsSyncAccountControlElement extends
     return !this.syncStatus.signedIn;
   }
 
-  private handleStoredAccounts_(accounts: Array<StoredAccount>) {
+  private handleStoredAccounts_(accounts: StoredAccount[]) {
     this.storedAccounts_ = accounts;
   }
 

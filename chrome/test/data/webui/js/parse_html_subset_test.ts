@@ -13,7 +13,7 @@ declare global {
 
 suite('ParseHtmlSubsetModuleTest', function() {
   function parseAndAssertThrows(
-      s: string, extraTags?: Array<string>, extraAttrs?: Array<string>) {
+      s: string, extraTags?: string[], extraAttrs?: string[]) {
     assertThrows(function() {
       parseHtmlSubset(s, extraTags, extraAttrs);
     });

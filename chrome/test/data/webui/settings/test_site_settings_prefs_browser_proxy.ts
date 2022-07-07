@@ -451,8 +451,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  getOriginPermissions(
-      origin: string, contentTypes: Array<ContentSettingsTypes>) {
+  getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
     this.methodCalled('getOriginPermissions', [origin, contentTypes]);
 
     const exceptionList: RawSiteException[] = [];

@@ -33,7 +33,7 @@ class ExtensionsInstallWarningsDialogElement extends PolymerElement {
     };
   }
 
-  installWarnings: Array<string>;
+  installWarnings: string[];
 
   override connectedCallback() {
     super.connectedCallback();

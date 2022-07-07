@@ -96,7 +96,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     return ['itemsChanged_(items_.*)'];
   }
 
-  private items_: Array<MojomData>;
+  private items_: MojomData[];
   private hasDownloads_: boolean;
   private hasShadow_: boolean;
   private inSearchMode_: boolean;
@@ -107,7 +107,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private mojoEventTarget_: PageCallbackRouter;
   private searchService_: SearchService = SearchService.getInstance();
   private loaded_: PromiseResolver<void> = new PromiseResolver();
-  private listenerIds_: Array<number>;
+  private listenerIds_: number[];
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
@@ -186,7 +186,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
   }
 
-  private insertItems_(index: number, items: Array<MojomData>) {
+  private insertItems_(index: number, items: MojomData[]) {
     // Insert |items| at the given |index| via Array#splice().
     if (items.length > 0) {
       this.items_.splice(index, 0, ...items);

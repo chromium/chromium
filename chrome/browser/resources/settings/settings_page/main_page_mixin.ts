@@ -169,8 +169,7 @@ export const MainPageMixin = dedupingMixin(
          * event is fired (necessary to avoid flashing). Callers are responsible
          * for firing a 'show-container' event.
          */
-        private ensureSectionsForRoute_(route: Route):
-            Promise<Array<HTMLElement>> {
+        private ensureSectionsForRoute_(route: Route): Promise<HTMLElement[]> {
           const sections = this.querySettingsSections_(route.section);
           if (sections.length > 0) {
             return Promise.resolve(sections);
@@ -409,8 +408,7 @@ export const MainPageMixin = dedupingMixin(
         /*
          * @param sectionName Section name of the element to get.
          */
-        private querySettingsSections_(sectionName: string):
-            Array<HTMLElement> {
+        private querySettingsSections_(sectionName: string): HTMLElement[] {
           const result = [];
           const section = this.getSection(sectionName);
 

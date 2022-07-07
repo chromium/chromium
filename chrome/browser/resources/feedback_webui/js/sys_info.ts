@@ -11,7 +11,7 @@ import {$} from 'chrome://resources/js/util.m.js';
  * A queue of a sequence of closures that will incrementally build the sys info
  * html table.
  */
-const tableCreationClosuresQueue: (() => void)[] = [];
+const tableCreationClosuresQueue: Array<() => void> = [];
 
 /**
  * The time used to post delayed tasks in MS. Currently set to be enough for two

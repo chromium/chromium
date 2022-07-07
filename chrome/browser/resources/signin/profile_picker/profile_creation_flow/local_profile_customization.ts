@@ -158,7 +158,7 @@ export class LocalProfileCustomizationElement extends
   private selectedTheme_: Theme;
   private disableSelectedThemeUpdates_: boolean;
   private genericDefaultAvatar_: AvatarIcon;
-  private availableIcons_: Array<AvatarIcon>;
+  private availableIcons_: AvatarIcon[];
   private selectedAvatar_: AvatarIcon|null;
   private profileName_: string;
   private createShortcut_: boolean;
@@ -286,7 +286,7 @@ export class LocalProfileCustomizationElement extends
     }
   }
 
-  private setAvailableIcons_(icons: Array<AvatarIcon>) {
+  private setAvailableIcons_(icons: AvatarIcon[]) {
     if (!this.genericDefaultAvatar_) {
       this.availableIcons_ = icons;
       return;

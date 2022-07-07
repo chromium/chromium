@@ -74,7 +74,7 @@ export function listenForPrivilegedLinkClicks() {
         return;
       }
 
-      const eventPath = e.composedPath() as Array<HTMLElement>;
+      const eventPath = e.composedPath() as HTMLElement[];
       let anchor: HTMLAnchorElement|null = null;
       if (eventPath) {
         for (let i = 0; i < eventPath.length; i++) {
@@ -239,8 +239,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private selectedPage_: Page;
   private selectedTab_: number;
   private showHistoryClusters_: boolean;
-  private tabsIcons_: Array<string>;
-  private tabsNames_: Array<string>;
+  private tabsIcons_: string[];
+  private tabsNames_: string[];
   private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
 
@@ -272,7 +272,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
             this.onHasOtherFormsChanged_(hasOtherForms));
     this.addWebUIListener(
         'foreign-sessions-changed',
-        (sessionList: Array<ForeignSession>) =>
+        (sessionList: ForeignSession[]) =>
             this.setForeignSessions_(sessionList));
     this.browserService_ = BrowserServiceImpl.getInstance();
     this.shadowRoot!.querySelector('history-query-manager')!.initialize();
@@ -449,7 +449,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * @param sessionList Array of objects describing the sessions from other
    *     devices.
    */
-  private setForeignSessions_(sessionList: Array<ForeignSession>) {
+  private setForeignSessions_(sessionList: ForeignSession[]) {
     this.set('queryResult_.sessionList', sessionList);
   }
 
@@ -560,7 +560,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * first time. Otherwise the fallback selection will continue to be used after
    * the corresponding item is added as a child of iron-pages.
    */
-  private getSelectedPage_(selectedPage: string, _items: Array<any>): string {
+  private getSelectedPage_(selectedPage: string, _items: any[]): string {
     return selectedPage;
   }
 

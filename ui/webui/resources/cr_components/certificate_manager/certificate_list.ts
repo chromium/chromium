@@ -73,7 +73,7 @@ export class CertificateListElement extends CertificateListElementBase {
     };
   }
 
-  certificates: Array<CertificatesOrgGroup>;
+  certificates: CertificatesOrgGroup[];
   certificateType: CertificateType;
   importAllowed: boolean;
   // <if expr="chromeos_ash or chromeos_lacros">

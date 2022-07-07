@@ -109,7 +109,7 @@ export class SettingsManageProfileElement extends
   private profileAvatar_: AvatarIcon;
   profileName: string;
   private hasProfileShortcut_: boolean;
-  availableIcons: Array<AvatarIcon>;
+  availableIcons: AvatarIcon[];
   syncStatus: SyncStatus|null;
   private isProfileShortcutSettingVisible_: boolean;
   private pattern_: string;
@@ -119,7 +119,7 @@ export class SettingsManageProfileElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    const setIcons = (icons: Array<AvatarIcon>) => {
+    const setIcons = (icons: AvatarIcon[]) => {
       this.availableIcons = icons;
     };
 

@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 export type SanitizeInnerHtmlOpts = {
-  substitutions?: Array<string>,
-  attrs?: Array<string>,
-  tags?: Array<string>,
+  substitutions?: string[],
+  attrs?: string[],
+  tags?: string[],
 };
 
 export function sanitizeInnerHtml(
     rawString: string, opts?: SanitizeInnerHtmlOpts): string;
 export function parseHtmlSubset(
-    s: string, extraTags?: Array<string>,
-    extraAttrs?: Array<string>): DocumentFragment;
+    s: string, extraTags?: string[], extraAttrs?: string[]): DocumentFragment;

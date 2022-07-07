@@ -56,15 +56,14 @@ class MediaPickerElement extends MediaPickerElementBase {
 
   type: string;
   label: string;
-  devices: Array<MediaPickerEntry>;
+  devices: MediaPickerEntry[];
 
   override ready() {
     super.ready();
 
     this.addWebUIListener(
         'updateDevicesMenu',
-        (type: string, devices: Array<MediaPickerEntry>,
-         defaultDevice: string) =>
+        (type: string, devices: MediaPickerEntry[], defaultDevice: string) =>
             this.updateDevicesMenu_(type, devices, defaultDevice));
     this.browserProxy.getDefaultCaptureDevices(this.type);
   }
@@ -76,7 +75,7 @@ class MediaPickerElement extends MediaPickerElementBase {
    * @param defaultDevice The unique id of the current default device.
    */
   private updateDevicesMenu_(
-      type: string, devices: Array<MediaPickerEntry>, defaultDevice: string) {
+      type: string, devices: MediaPickerEntry[], defaultDevice: string) {
     if (type !== this.type) {
       return;
     }

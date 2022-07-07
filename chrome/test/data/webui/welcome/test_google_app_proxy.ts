@@ -10,7 +10,7 @@ import {BookmarkListItem} from 'chrome://welcome/shared/nux_types.js';
 export class TestGoogleAppProxy extends TestBrowserProxy implements
     GoogleAppProxy {
   providerSelectedCount: number = 0;
-  private appList_: Array<BookmarkListItem> = [];
+  private appList_: BookmarkListItem[] = [];
 
   constructor() {
     super([
@@ -34,7 +34,7 @@ export class TestGoogleAppProxy extends TestBrowserProxy implements
     this.providerSelectedCount++;
   }
 
-  setAppList(appList: Array<BookmarkListItem>) {
+  setAppList(appList: BookmarkListItem[]) {
     this.appList_ = appList;
   }
 }

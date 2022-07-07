@@ -59,7 +59,7 @@ export class SettingsStartupUrlsPageElement extends
   }
 
   prefs: Object;
-  private startupPages_: Array<StartupPageInfo>;
+  private startupPages_: StartupPageInfo[];
   private showStartupUrlDialog_: boolean;
   private startupUrlDialogModel_: StartupPageInfo|null;
   private lastFocused_: HTMLElement;
@@ -81,7 +81,7 @@ export class SettingsStartupUrlsPageElement extends
     super.connectedCallback();
 
     this.addWebUIListener(
-        'update-startup-pages', (startupPages: Array<StartupPageInfo>) => {
+        'update-startup-pages', (startupPages: StartupPageInfo[]) => {
           // If an "edit" URL dialog was open, close it, because the underlying
           // page might have just been removed (and model indices have changed
           // anyway).

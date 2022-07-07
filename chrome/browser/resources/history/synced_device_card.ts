@@ -80,9 +80,9 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
     };
   }
 
-  tabs: Array<ForeignSessionTab> = [];
+  tabs: ForeignSessionTab[] = [];
   opened: boolean;
-  separatorIndexes: Array<number>;
+  separatorIndexes: number[];
   sessionTag: string;
 
   override ready() {
@@ -99,7 +99,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
    * Create FocusRows for this card. One is always made for the card heading and
    * one for each result if the card is open.
    */
-  createFocusRows(): Array<FocusRow> {
+  createFocusRows(): FocusRow[] {
     const titleRow = new FocusRow(this.$['card-heading'], null);
     titleRow.addItem('menu', '#menu-button');
     titleRow.addItem('collapse', '#collapse-button');

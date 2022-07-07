@@ -54,14 +54,14 @@ export interface ClearBrowsingDataBrowserProxy {
    *     user about other forms of browsing history.
    */
   clearBrowsingData(
-      dataTypes: Array<string>, timePeriod: number,
-      installedApps: Array<InstalledApp>): Promise<ClearBrowsingDataResult>;
+      dataTypes: string[], timePeriod: number,
+      installedApps: InstalledApp[]): Promise<ClearBrowsingDataResult>;
 
   /**
    * @return A promise resolved after fetching all installed apps. The array
    *     will contain a list of origins for which there are installed apps.
    */
-  getInstalledApps(timePeriod: number): Promise<Array<InstalledApp>>;
+  getInstalledApps(timePeriod: number): Promise<InstalledApp[]>;
 
   /**
    * Kick off counter updates and return initial state.
@@ -78,8 +78,7 @@ export interface ClearBrowsingDataBrowserProxy {
 export class ClearBrowsingDataBrowserProxyImpl implements
     ClearBrowsingDataBrowserProxy {
   clearBrowsingData(
-      dataTypes: Array<string>, timePeriod: number,
-      installedApps: Array<InstalledApp>) {
+      dataTypes: string[], timePeriod: number, installedApps: InstalledApp[]) {
     return sendWithPromise(
         'clearBrowsingData', dataTypes, timePeriod, installedApps);
   }

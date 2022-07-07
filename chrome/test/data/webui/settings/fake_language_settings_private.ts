@@ -11,7 +11,7 @@ import {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-type StringArrayCallback = (strings: Array<string>) => void;
+type StringArrayCallback = (strings: string[]) => void;
 
 /**
  * Fake of the chrome.languageSettingsPrivate API.
@@ -196,7 +196,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    */
   getLanguageList(
       callback:
-          (languages: Array<chrome.languageSettingsPrivate.Language>) => void) {
+          (languages: chrome.languageSettingsPrivate.Language[]) => void) {
     setTimeout(() => {
       callback(JSON.parse(JSON.stringify(this.languages)));
     });
@@ -361,8 +361,8 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * Gets the current status of the chosen spell check dictionaries.
    */
   getSpellcheckDictionaryStatuses(
-      callback: (statuses: Array<chrome.languageSettingsPrivate
-                                     .SpellcheckDictionaryStatus>) => void) {
+      callback: (statuses: chrome.languageSettingsPrivate
+                     .SpellcheckDictionaryStatus[]) => void) {
     callback([]);
   }
 

@@ -277,8 +277,8 @@ export class SettingsClearBrowsingDataDialogElement extends
   private isSyncPaused_: boolean;
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
-  private tabsNames_: Array<string>;
-  private installedApps_: Array<InstalledApp>;
+  private tabsNames_: string[];
+  private installedApps_: InstalledApp[];
   private installedAppsFlagEnabled_: boolean;
   private googleSearchHistoryString_: string;
   private isNonGoogleDse_: boolean;
@@ -407,9 +407,9 @@ export class SettingsClearBrowsingDataDialogElement extends
   /**
    * @return A list of selected data types.
    */
-  private getSelectedDataTypes_(tab: HTMLElement): Array<string> {
+  private getSelectedDataTypes_(tab: HTMLElement): string[] {
     const checkboxes = tab.querySelectorAll('settings-checkbox');
-    const dataTypes: Array<string> = [];
+    const dataTypes: string[] = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {
         dataTypes.push(checkbox.pref!.key);

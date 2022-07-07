@@ -42,7 +42,7 @@ export const HelpBubbleMixin = dedupingMixin(
          *   "kHeightenSecuritySettingsElementId" => "toggleSecureMode"
          */
         private helpBubbleNativeToTargetId_: Map<string, string> = new Map();
-        private listenerIds_: Array<number> = [];
+        private listenerIds_: number[] = [];
         private helpBubbleTargetObserver_: IntersectionObserver|null = null;
         /**
          * Tracks the last known visibility of any element registered via

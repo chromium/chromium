@@ -195,7 +195,7 @@ export class SettingsPasswordCheckElement extends
     };
   }
 
-  private storedAccounts_: Array<StoredAccount>;
+  private storedAccounts_: StoredAccount[];
   private title_: string;
   private mutedPasswordsTitle_: string;
   private isSignedOut_: boolean;
@@ -221,7 +221,7 @@ export class SettingsPasswordCheckElement extends
   private showPasswordPromptDialog_: boolean;
   // </if>
 
-  private activeDialogAnchorStack_: Array<HTMLElement>|null;
+  private activeDialogAnchorStack_: HTMLElement[]|null;
   private activeListItem_: PasswordCheckListItemElement|null;
   startCheckAutomaticallySucceeded: boolean = false;
   private setSavedPasswordsListener_: SavedPasswordListChangedListener|null;
@@ -293,7 +293,7 @@ export class SettingsPasswordCheckElement extends
 
     // For non-ChromeOS, also check whether accounts are available.
     // <if expr="not (chromeos_ash or chromeos_lacros)">
-    const storedAccountsChanged = (accounts: Array<StoredAccount>) =>
+    const storedAccountsChanged = (accounts: StoredAccount[]) =>
         this.storedAccounts_ = accounts;
     syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
     this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);

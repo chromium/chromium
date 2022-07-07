@@ -56,7 +56,7 @@ export class LauncherResultsTableElement extends PolymerElement {
     this.headerCells.clear();
   }
 
-  addResults(newResults: Array<Result>) {
+  addResults(newResults: Result[]) {
     for (const result of newResults) {
       this.results.set(result.id, result);
       this.addHeaders(Object.keys(result.rankerScores));
@@ -66,7 +66,7 @@ export class LauncherResultsTableElement extends PolymerElement {
 
   // Appends any new headers to the end of the header row. All new headers
   // should support sort-on-click.
-  private addHeaders(newHeaders: Array<string>) {
+  private addHeaders(newHeaders: string[]) {
     for (const header of newHeaders) {
       if (this.headerCells.has(header)) {
         continue;
@@ -124,7 +124,7 @@ export class LauncherResultsTableElement extends PolymerElement {
 
   // Converts ranker scores into an array of scores in string form and ordered
   // according to the current headers.
-  private flattenScores(inputScores: {[key: string]: number}): Array<string> {
+  private flattenScores(inputScores: {[key: string]: number}): string[] {
     const outputScores = [];
     for (const header of this.headerCells.keys()) {
       const score = inputScores[header];

@@ -88,7 +88,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     };
   }
 
-  extensions: Array<chrome.developerPrivate.ExtensionInfo>;
+  extensions: chrome.developerPrivate.ExtensionInfo[];
   delegate: ToolbarDelegate;
   inDevMode: boolean;
   devModeControlledByPolicy: boolean;

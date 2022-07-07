@@ -194,7 +194,7 @@ export interface SyncBrowserProxy {
   /**
    * Gets a list of stored accounts.
    */
-  getStoredAccounts(): Promise<Array<StoredAccount>>;
+  getStoredAccounts(): Promise<StoredAccount[]>;
 
   /**
    * Function to invoke when the sync page has been navigated to. This

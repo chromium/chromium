@@ -64,7 +64,7 @@ function getActivityGroupKeysForContentScript(
  * group keys if possible.
  */
 function getActivityGroupKeysForWebRequest(
-    activity: chrome.activityLogPrivate.ExtensionActivity): Array<string> {
+    activity: chrome.activityLogPrivate.ExtensionActivity): string[] {
   assert(
       activity.activityType ===
       chrome.activityLogPrivate.ExtensionActivityType.WEB_REQUEST);
@@ -94,7 +94,7 @@ function getActivityGroupKeysForWebRequest(
  * matches to one activity type.
  */
 function groupActivities(
-    activityData: Array<chrome.activityLogPrivate.ExtensionActivity>):
+    activityData: chrome.activityLogPrivate.ExtensionActivity[]):
     Map<string, ActivityGroup> {
   const groupedActivities = new Map();
 
@@ -148,7 +148,7 @@ function groupActivities(
  * ties by the alphabetical order of the key.
  */
 function sortActivitiesByCallCount(
-    groupedActivities: Map<string, ActivityGroup>): Array<ActivityGroup> {
+    groupedActivities: Map<string, ActivityGroup>): ActivityGroup[] {
   return Array.from(groupedActivities.values()).sort((a, b) => {
     if (a.count !== b.count) {
       return b.count - a.count;
@@ -165,7 +165,7 @@ function sortActivitiesByCallCount(
 
 declare global {
   interface HTMLElementEventMap {
-    'delete-activity-log-item': CustomEvent<Array<string>>;
+    'delete-activity-log-item': CustomEvent<string[]>;
   }
 }
 
@@ -207,7 +207,7 @@ export class ActivityLogHistoryElement extends PolymerElement {
 
   extensionId: string;
   delegate: ActivityLogDelegate;
-  private activityData_: Array<ActivityGroup>;
+  private activityData_: ActivityGroup[];
   private pageState_: ActivityLogPageState;
   private lastSearch_: string;
   private dataFetchedResolver_: PromiseResolver<void>|null;
@@ -303,7 +303,7 @@ export class ActivityLogHistoryElement extends PolymerElement {
     this.delegate.downloadActivities(this.rawActivities_, fileName);
   }
 
-  private deleteItem_(e: CustomEvent<Array<string>>) {
+  private deleteItem_(e: CustomEvent<string[]>) {
     const activityIds = e.detail;
     this.delegate.deleteActivitiesById(activityIds).then(() => {
       // It is possible for multiple activities displayed to have the same
@@ -315,7 +315,7 @@ export class ActivityLogHistoryElement extends PolymerElement {
   }
 
   private processActivities_(
-      activityData: Array<chrome.activityLogPrivate.ExtensionActivity>) {
+      activityData: chrome.activityLogPrivate.ExtensionActivity[]) {
     this.pageState_ = ActivityLogPageState.LOADED;
 
     // Sort |activityData| in ascending order based on the activity's

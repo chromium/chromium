@@ -141,8 +141,8 @@ export class SettingsPaymentsSectionElement extends
   }
 
   prefs: {[key: string]: any};
-  creditCards: Array<chrome.autofillPrivate.CreditCardEntry>;
-  upiIds: Array<string>;
+  creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  upiIds: string[];
   private userIsFidoVerifiable_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private showCreditCardDialog_: boolean;
@@ -181,7 +181,7 @@ export class SettingsPaymentsSectionElement extends
 
     // Create listener function.
     const setCreditCardsListener =
-        (cardList: Array<chrome.autofillPrivate.CreditCardEntry>) => {
+        (cardList: chrome.autofillPrivate.CreditCardEntry[]) => {
           this.creditCards = cardList;
         };
 
@@ -199,7 +199,7 @@ export class SettingsPaymentsSectionElement extends
           this.creditCards = cardList;
         };
 
-    const setUpiIdsListener = (upiIdList: Array<string>) => {
+    const setUpiIdsListener = (upiIdList: string[]) => {
       this.upiIds = upiIdList;
     };
 
@@ -365,7 +365,7 @@ export class SettingsPaymentsSectionElement extends
    * @return Whether to show the migration button.
    */
   private checkIfMigratable_(
-      creditCards: Array<chrome.autofillPrivate.CreditCardEntry>,
+      creditCards: chrome.autofillPrivate.CreditCardEntry[],
       creditCardEnabled: boolean): boolean {
     // If migration prerequisites are not met, return false.
     if (!this.migrationEnabled_) {

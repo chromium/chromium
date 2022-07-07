@@ -211,9 +211,9 @@ export class PasswordsDeviceSectionElement extends
 
   subpageRoute: Route;
   filter: string;
-  private deviceOnlyPasswords_: Array<MultiStorePasswordUiEntry>;
-  private deviceAndAccountPasswords_: Array<MultiStorePasswordUiEntry>;
-  private allDevicePasswords_: Array<MultiStorePasswordUiEntry>;
+  private deviceOnlyPasswords_: MultiStorePasswordUiEntry[];
+  private deviceAndAccountPasswords_: MultiStorePasswordUiEntry[];
+  private allDevicePasswords_: MultiStorePasswordUiEntry[];
   private shouldShowMoveMultiplePasswordsBanner_: boolean;
   private lastFocused_: MultiStorePasswordUiEntry;
   private listBlurred_: boolean;
@@ -235,7 +235,7 @@ export class PasswordsDeviceSectionElement extends
     this.addListenersForAccountStorageRequirements_();
     this.currentRoute_ = Router.getInstance().currentRoute;
 
-    const extractFirstStoredAccountEmail = (accounts: Array<StoredAccount>) => {
+    const extractFirstStoredAccountEmail = (accounts: StoredAccount[]) => {
       this.accountEmail_ = accounts.length > 0 ? accounts[0].email : '';
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(
@@ -269,17 +269,16 @@ export class PasswordsDeviceSectionElement extends
     this.accountStorageOptInStateListener_ = null;
   }
 
-  private computeAllDevicePasswords_(): Array<MultiStorePasswordUiEntry> {
+  private computeAllDevicePasswords_(): MultiStorePasswordUiEntry[] {
     return this.savedPasswords.filter(p => p.isPresentOnDevice());
   }
 
-  private computeDeviceOnlyPasswords_(): Array<MultiStorePasswordUiEntry> {
+  private computeDeviceOnlyPasswords_(): MultiStorePasswordUiEntry[] {
     return this.savedPasswords.filter(
         p => p.isPresentOnDevice() && !p.isPresentInAccount());
   }
 
-  private computeDeviceAndAccountPasswords_():
-      Array<MultiStorePasswordUiEntry> {
+  private computeDeviceAndAccountPasswords_(): MultiStorePasswordUiEntry[] {
     return this.savedPasswords.filter(
         p => p.isPresentOnDevice() && p.isPresentInAccount());
   }
@@ -334,7 +333,7 @@ export class PasswordsDeviceSectionElement extends
     SyncBrowserProxyImpl.getInstance().getSyncStatus().then(setSyncDisabled);
     this.addWebUIListener('sync-status-changed', setSyncDisabled);
 
-    const setSignedIn = (storedAccounts: Array<StoredAccount>) => {
+    const setSignedIn = (storedAccounts: StoredAccount[]) => {
       this.signedIn_ = storedAccounts.length > 0;
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setSignedIn);
@@ -350,13 +349,13 @@ export class PasswordsDeviceSectionElement extends
     this.accountStorageOptInStateListener_ = setOptedIn;
   }
 
-  private isNonEmpty_(passwords: Array<MultiStorePasswordUiEntry>): boolean {
+  private isNonEmpty_(passwords: MultiStorePasswordUiEntry[]): boolean {
     return passwords.length > 0;
   }
 
   private getFilteredPasswords_(
-      passwords: Array<MultiStorePasswordUiEntry>,
-      filter: string): Array<MultiStorePasswordUiEntry> {
+      passwords: MultiStorePasswordUiEntry[],
+      filter: string): MultiStorePasswordUiEntry[] {
     if (!filter) {
       return passwords.slice();
     }

@@ -8,7 +8,7 @@ import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
-  timestamps: Array<number>,
+  timestamps: number[],
 }>;
 
 export type QueryResult = {

@@ -124,7 +124,7 @@ class TestSecurityKeysCredentialBrowserProxy extends
     return this.handleMethod('enumerateCredentials');
   }
 
-  deleteCredentials(ids: Array<string>) {
+  deleteCredentials(ids: string[]) {
     return this.handleMethod('deleteCredentials', ids);
   }
 
@@ -714,7 +714,7 @@ suite('SecurityKeysCredentialManagement', function() {
 
     // Check that the edit button is disabled.
     flush();
-    const editButtons: Array<CrIconButtonElement> =
+    const editButtons: CrIconButtonElement[] =
         Array.from(dialog.$.credentialList.querySelectorAll('.edit-button'));
     assertEquals(editButtons.length, 1);
     assertTrue(editButtons[0]!.hidden);
@@ -789,7 +789,7 @@ suite('SecurityKeysCredentialManagement', function() {
 
     // Update a credential
     flush();
-    const editButtons: Array<CrIconButtonElement> =
+    const editButtons: CrIconButtonElement[] =
         Array.from(dialog.$.credentialList.querySelectorAll('.edit-button'));
     assertEquals(editButtons.length, 3);
     editButtons.forEach(button => assertFalse(button.hidden));
@@ -806,7 +806,7 @@ suite('SecurityKeysCredentialManagement', function() {
 
     // Delete a credential.
     flush();
-    const deleteButtons: Array<CrIconButtonElement> =
+    const deleteButtons: CrIconButtonElement[] =
         Array.from(dialog.$.credentialList.querySelectorAll('.delete-button'));
     assertEquals(deleteButtons.length, 3);
     deleteButtons[0]!.click();

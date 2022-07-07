@@ -24,10 +24,10 @@ export class AppServiceInternalsElement extends PolymerElement {
   }
 
   /** List containing debug information for all installed apps. */
-  private appList_: Array<AppInfo> = [];
+  private appList_: AppInfo[] = [];
   private hashChangeListener_ = () => this.onHashChanged_();
   /** List containing preferred app debug information for installed apps. */
-  private preferredAppList_: Array<PreferredAppInfo> = [];
+  private preferredAppList_: PreferredAppInfo[] = [];
 
   override ready() {
     super.ready();

@@ -36,9 +36,9 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
           };
         }
 
-        savedPasswords: Array<MultiStorePasswordUiEntry> = [];
+        savedPasswords: MultiStorePasswordUiEntry[] = [];
         private setSavedPasswordsListener_:
-            ((entries: Array<chrome.passwordsPrivate.PasswordUiEntry>) =>
+            ((entries: chrome.passwordsPrivate.PasswordUiEntry[]) =>
                  void)|null = null;
 
         override connectedCallback() {
@@ -76,8 +76,8 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
         }
 
         private mergePasswordsStoreDuplicates_(
-            passwordList: Array<chrome.passwordsPrivate.PasswordUiEntry>):
-            Array<MultiStorePasswordUiEntry> {
+            passwordList: chrome.passwordsPrivate.PasswordUiEntry[]):
+            MultiStorePasswordUiEntry[] {
           const multiStoreEntries: MultiStorePasswordUiEntry[] = [];
           const frontendIdToMergedEntry =
               new Map<number, MultiStorePasswordUiEntry>();
@@ -109,5 +109,5 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
 
 export interface MergePasswordsStoreCopiesMixinInterface extends
     ListPropertyUpdateMixinInterface {
-  savedPasswords: Array<MultiStorePasswordUiEntry>;
+  savedPasswords: MultiStorePasswordUiEntry[];
 }

@@ -27,7 +27,7 @@ export type CookieDataForDisplay = {
 // 1) to list what subset of the cookie data we want to show in the UI.
 // 2) What order to show it in.
 // 3) What user friendly label to prefix the data with.
-export const cookieInfo: {[key: string]: Array<Array<string>>} = {
+export const cookieInfo: {[key: string]: string[][]} = {
   'cookie': [
     ['name', 'cookieName'], ['content', 'cookieContent'],
     ['domain', 'cookieDomain'], ['path', 'cookiePath'],
@@ -71,9 +71,8 @@ export const cookieInfo: {[key: string]: Array<Array<string>>} = {
  * Get cookie data for a given HTML node.
  * @param data The contents of the cookie.
  */
-export function getCookieData(data: CookieDetails):
-    Array<CookieDataForDisplay> {
-  const out: Array<CookieDataForDisplay> = [];
+export function getCookieData(data: CookieDetails): CookieDataForDisplay[] {
+  const out: CookieDataForDisplay[] = [];
   const fields = cookieInfo[data.type];
   for (let i = 0; i < fields.length; i++) {
     const field = fields[i];

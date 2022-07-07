@@ -128,11 +128,11 @@ export class TabSearchAppElement extends PolymerElement {
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private metricsReporter_: MetricsReporter|null;
   private useMetricsReporter_: boolean;
-  private listenerIds_: Array<number> = [];
+  private listenerIds_: number[] = [];
   private tabGroupsMap_: Map<string, TabGroup> = new Map();
-  private recentlyClosedTabGroups_: Array<TabGroupData> = [];
-  private openTabs_: Array<TabData> = [];
-  private recentlyClosedTabs_: Array<TabData> = [];
+  private recentlyClosedTabGroups_: TabGroupData[] = [];
+  private openTabs_: TabData[] = [];
+  private recentlyClosedTabs_: TabData[] = [];
   private windowShownTimestamp_: number = Date.now();
   private mediaTabsTitleItem_: TitleItem;
   private openTabsTitleItem_: TitleItem;
@@ -520,7 +520,7 @@ export class TabSearchAppElement extends PolymerElement {
         (acc, {active, tabs}) => acc.concat(tabs.map(
             tab => this.tabData_(
                 tab, active, TabItemType.OPEN_TAB, this.tabGroupsMap_))),
-        [] as Array<TabData>);
+        [] as TabData[]);
     this.recentlyClosedTabs_ = profileData.recentlyClosedTabs.map(
         tab => this.tabData_(
             tab, false, TabItemType.RECENTLY_CLOSED_TAB, this.tabGroupsMap_));
@@ -673,7 +673,7 @@ export class TabSearchAppElement extends PolymerElement {
           0;
     });
 
-    let mediaTabs: Array<TabData> = [];
+    let mediaTabs: TabData[] = [];
     // Audio & Video section will not be added when search criteria is applied.
     // Show media tabs in Open Tabs.
     if (this.searchText_.length === 0) {

@@ -153,16 +153,16 @@ export class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
-  defaultEngines: Array<SearchEngine>;
-  activeEngines: Array<SearchEngine>;
-  otherEngines: Array<SearchEngine>;
-  extensions: Array<SearchEngine>;
+  defaultEngines: SearchEngine[];
+  activeEngines: SearchEngine[];
+  otherEngines: SearchEngine[];
+  extensions: SearchEngine[];
   private showExtensionsList_: boolean;
   filter: string;
-  private matchingDefaultEngines_: Array<SearchEngine>;
-  private matchingActiveEngines_: Array<SearchEngine>;
-  private matchingOtherEngines_: Array<SearchEngine>;
-  private matchingExtensions_: Array<SearchEngine>;
+  private matchingDefaultEngines_: SearchEngine[];
+  private matchingActiveEngines_: SearchEngine[];
+  private matchingOtherEngines_: SearchEngine[];
+  private matchingExtensions_: SearchEngine[];
   private omniboxExtensionlastFocused_: HTMLElement;
   private omniboxExtensionListBlurred_: boolean;
   private dialogModel_: SearchEngine|null;
@@ -258,8 +258,7 @@ export class SettingsSearchEnginesPageElement extends
   /**
    * Filters the given list based on the currently existing filter string.
    */
-  private computeMatchingEngines_(list: Array<SearchEngine>):
-      Array<SearchEngine> {
+  private computeMatchingEngines_(list: SearchEngine[]): SearchEngine[] {
     if (this.filter === '') {
       return list;
     }
@@ -277,7 +276,7 @@ export class SettingsSearchEnginesPageElement extends
    * @return Whether to show the "no results" message.
    */
   private showNoResultsMessage_(
-      list: Array<SearchEngine>, filteredList: Array<SearchEngine>): boolean {
+      list: SearchEngine[], filteredList: SearchEngine[]): boolean {
     return list.length > 0 && filteredList.length === 0;
   }
 

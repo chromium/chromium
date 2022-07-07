@@ -25,7 +25,7 @@ export interface ActivityLogEventDelegate {
  * the activity for every script invoked.
  */
 function processActivityForStream(
-    activity: chrome.activityLogPrivate.ExtensionActivity): Array<StreamItem> {
+    activity: chrome.activityLogPrivate.ExtensionActivity): StreamItem[] {
   const activityType = activity.activityType;
   const timestamp = activity.time!;
   const isContentScript = activityType ===
@@ -97,8 +97,8 @@ export class ActivityLogStreamElement extends PolymerElement {
   extensionId: string;
   delegate: ActivityLogEventDelegate;
   private isStreamOn_: boolean;
-  private activityStream_: Array<StreamItem>;
-  private filteredActivityStream_: Array<StreamItem>;
+  private activityStream_: StreamItem[];
+  private filteredActivityStream_: StreamItem[];
   private lastSearch_: string;
   private listenerInstance_:
       (type: chrome.activityLogPrivate.ExtensionActivity) => void;
@@ -194,7 +194,7 @@ export class ActivityLogStreamElement extends PolymerElement {
     this.lastSearch_ = searchTerm;
   }
 
-  private computeFilteredActivityStream_(): Array<StreamItem> {
+  private computeFilteredActivityStream_(): StreamItem[] {
     if (!this.lastSearch_) {
       return this.activityStream_.slice();
     }

@@ -31,7 +31,7 @@ export interface AccountManagerBrowserProxy {
   /**
    * Returns a Promise for the list of GAIA accounts held in AccountManager.
    */
-  getAccounts(): Promise<Array<Account>>;
+  getAccounts(): Promise<Account[]>;
 }
 
 export class AccountManagerBrowserProxyImpl implements

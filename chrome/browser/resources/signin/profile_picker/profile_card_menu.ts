@@ -132,7 +132,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
   profileState: ProfileState;
   private statistics_: {[key: string]: number};
-  private profileStatistics_: Array<ProfileStatistics>;
+  private profileStatistics_: ProfileStatistics[];
   private removeWarningText_: string;
   private removeWarningTitle_: string;
   // <if expr="chromeos_lacros">

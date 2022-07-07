@@ -43,7 +43,7 @@ type ThreatProtectionPermission = {
 };
 
 export type ThreatProtectionInfo = {
-  info: Array<ThreatProtectionPermission>,
+  info: ThreatProtectionPermission[],
   description: string,
 };
 
@@ -81,9 +81,9 @@ export type DeviceReportingResponse = {
 
 /** @interface */
 export interface ManagementBrowserProxy {
-  getExtensions(): Promise<Array<Extension>>;
+  getExtensions(): Promise<Extension[]>;
 
-  getManagedWebsites(): Promise<Array<string>>;
+  getManagedWebsites(): Promise<string[]>;
 
   // <if expr="chromeos_ash">
   /**
@@ -94,7 +94,7 @@ export interface ManagementBrowserProxy {
   /**
    * @return List of items to display in device reporting section.
    */
-  getDeviceReportingInfo(): Promise<Array<DeviceReportingResponse>>;
+  getDeviceReportingInfo(): Promise<DeviceReportingResponse[]>;
 
   /**
    * @return Whether the Plugin VM data collection is enabled or not.
@@ -109,7 +109,7 @@ export interface ManagementBrowserProxy {
   /**
    * @return The list of browser reporting info messages.
    */
-  initBrowserReportingInfo(): Promise<Array<BrowserReportingResponse>>;
+  initBrowserReportingInfo(): Promise<BrowserReportingResponse[]>;
 }
 
 export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {

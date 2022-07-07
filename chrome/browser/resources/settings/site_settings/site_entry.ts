@@ -137,8 +137,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private cookieString_: string;
   listIndex: number;
   private overallUsageString_: string;
-  private originUsages_: Array<string>;
-  private cookiesNum_: Array<string>;
+  private originUsages_: string[];
+  private cookiesNum_: string[];
   sortMethod?: SortMethod;
   private enableConsolidatedSiteStorageControls_: boolean;
 
@@ -323,8 +323,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * @param change The change record for the array.
    * @param index The index of the array item.
    */
-  private originUsagesItem_(change: {base: Array<string>}, index: number):
-      string {
+  private originUsagesItem_(change: {base: string[]}, index: number): string {
     return change.base[index];
   }
 
@@ -333,8 +332,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * @param change The change record for the array.
    * @param index The index of the array item.
    */
-  private originCookiesItem_(change: {base: Array<string>}, index: number):
-      string {
+  private originCookiesItem_(change: {base: string[]}, index: number): string {
     return change.base[index];
   }
 

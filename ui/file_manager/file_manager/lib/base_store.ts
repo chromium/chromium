@@ -37,7 +37,7 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
   private initialized_: boolean = false;
 
   /** Queues actions while the Store un-initialized. */
-  private queuedActions_: Array<ActionType>;
+  private queuedActions_: ActionType[];
 
   /**
    * Observers that are notified when the State is updated by Action/Reducer.

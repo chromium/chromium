@@ -20,8 +20,8 @@ export type ProfileState = {
   isOmitted: boolean,
   isEphemeral: boolean,
   userAcceptedAccountManagement: boolean,
-  keepAlives: Array<KeepAlive>,
-  signedAccounts: Array<string>,
+  keepAlives: KeepAlive[],
+  signedAccounts: string[],
   isLoaded: boolean,
   hasOffTheRecord: boolean,
 };

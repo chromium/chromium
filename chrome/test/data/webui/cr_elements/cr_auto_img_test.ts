@@ -9,7 +9,7 @@ import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_au
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 async function waitForAttributeChange(
-    element: HTMLElement, attribute: string): Promise<Array<MutationRecord>> {
+    element: HTMLElement, attribute: string): Promise<MutationRecord[]> {
   return new Promise(resolve => {
     const observer = new MutationObserver((mutations, obs) => {
       obs.disconnect();
@@ -43,7 +43,7 @@ suite('CrAutoImgElementTest', () => {
     ['data:imge/png;base64,abc', 'data:imge/png;base64,abc'],
     ['', ''],
     ['chrome-untrusted://foo/img.png', ''],
-  ] as [string, string][])
+  ] as Array<[string, string]>)
       .forEach(([autoSrc, src]) => {
         test(`setting autoSrc to '${autoSrc}' sets src to '${src}'`, () => {
           // Act.

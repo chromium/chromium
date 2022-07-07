@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 export type PersonalDataChangedListener =
-    (addresses: Array<chrome.autofillPrivate.AddressEntry>,
-     creditCards: Array<chrome.autofillPrivate.CreditCardEntry>) => void;
+    (addresses: chrome.autofillPrivate.AddressEntry[],
+     creditCards: chrome.autofillPrivate.CreditCardEntry[]) => void;
 
 /**
  * Interface for all callbacks to the autofill API.
@@ -25,8 +25,7 @@ export interface AutofillManagerProxy {
    * Request the list of addresses.
    */
   getAddressList(
-      callback: (entries: Array<chrome.autofillPrivate.AddressEntry>) => void):
-      void;
+      callback: (entries: chrome.autofillPrivate.AddressEntry[]) => void): void;
 
   /**
    * Saves the given address.
@@ -50,7 +49,7 @@ export class AutofillManagerImpl implements AutofillManagerProxy {
   }
 
   getAddressList(
-      callback: (entries: Array<chrome.autofillPrivate.AddressEntry>) => void) {
+      callback: (entries: chrome.autofillPrivate.AddressEntry[]) => void) {
     chrome.autofillPrivate.getAddressList(callback);
   }
 

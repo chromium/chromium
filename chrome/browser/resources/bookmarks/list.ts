@@ -82,7 +82,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
     };
   }
 
-  private displayedList_: {id: string}[];
+  private displayedList_: Array<{id: string}>;
   private displayedIds_: string[];
   private eventTracker_: EventTracker = new EventTracker();
   private searchTerm_: string;

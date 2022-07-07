@@ -40,7 +40,7 @@ export const SiteSettingsMixin = dedupingMixin(
         }
 
         category: ContentSettingsTypes;
-        private contentTypes_: Array<ContentSettingsTypes>;
+        private contentTypes_: ContentSettingsTypes[];
         browserProxy: SiteSettingsPrefsBrowserProxy;
 
         constructor(...args: any[]) {

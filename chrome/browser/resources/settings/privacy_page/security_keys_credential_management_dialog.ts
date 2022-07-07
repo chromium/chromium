@@ -122,7 +122,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
   private confirmButtonVisible_: boolean;
   private confirmMsg_: string;
   private credentialIdToDelete_: string;
-  private credentials_: Array<Credential>;
+  private credentials_: Credential[];
   private dialogPage_: CredentialManagementDialogPage;
   private dialogTitle_: string;
   private displayNameInputError_: string;
@@ -174,7 +174,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
             () => {
               // Leave confirm button disabled while enumerating credentials.
               this.browserProxy_.enumerateCredentials().then(
-                  (credentials: Array<Credential>) =>
+                  (credentials: Credential[]) =>
                       this.onCredentials_(credentials));
             },
             () => {
@@ -183,7 +183,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
             });
   }
 
-  private onCredentials_(credentials: Array<Credential>) {
+  private onCredentials_(credentials: Credential[]) {
     this.credentials_ = credentials;
     this.$.credentialList.fire('iron-resize');
     this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;

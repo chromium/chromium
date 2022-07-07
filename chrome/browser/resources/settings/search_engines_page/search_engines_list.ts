@@ -104,9 +104,9 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     };
   }
 
-  engines: Array<SearchEngine>;
-  visibleEngines: Array<SearchEngine>;
-  collapsedEngines: Array<SearchEngine>;
+  engines: SearchEngine[];
+  visibleEngines: SearchEngine[];
+  collapsedEngines: SearchEngine[];
   visibleEnginesSize: number;
   fixedHeight: boolean;
   showShortcut: boolean;
@@ -117,7 +117,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 
-  private computeVisibleEngines_(engines: Array<SearchEngine>) {
+  private computeVisibleEngines_(engines: SearchEngine[]) {
     if (!engines || !engines.length) {
       return;
     }
@@ -125,7 +125,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     return engines.slice(0, this.visibleEnginesSize);
   }
 
-  private computeCollapsedEngines_(engines: Array<SearchEngine>) {
+  private computeCollapsedEngines_(engines: SearchEngine[]) {
     if (!engines || !engines.length) {
       return;
     }

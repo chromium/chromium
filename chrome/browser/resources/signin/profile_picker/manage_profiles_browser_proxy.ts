@@ -121,7 +121,7 @@ export interface ManageProfilesBrowserProxy {
   /**
    * Retrieves custom avatar list for the select avatar dialog.
    */
-  getAvailableIcons(): Promise<Array<AvatarIcon>>;
+  getAvailableIcons(): Promise<AvatarIcon[]>;
 
   /**
    * Creates local profile

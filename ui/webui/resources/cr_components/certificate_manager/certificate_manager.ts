@@ -147,10 +147,10 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   }
 
   selected: number;
-  personalCerts: Array<CertificatesOrgGroup>;
-  serverCerts: Array<CertificatesOrgGroup>;
-  caCerts: Array<CertificatesOrgGroup>;
-  otherCerts: Array<CertificatesOrgGroup>;
+  personalCerts: CertificatesOrgGroup[];
+  serverCerts: CertificatesOrgGroup[];
+  caCerts: CertificatesOrgGroup[];
+  otherCerts: CertificatesOrgGroup[];
   clientImportAllowed: boolean;
   caImportAllowed: boolean;
   private showCaTrustEditDialog_: boolean;
@@ -265,7 +265,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
     }, 0);
   }
 
-  private computeTabNames_(): Array<string> {
+  private computeTabNames_(): string[] {
     return [
       loadTimeData.getString('certificateManagerYourCertificates'),
       ...(this.isKiosk_ ?

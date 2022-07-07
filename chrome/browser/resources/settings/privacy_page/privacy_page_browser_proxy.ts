@@ -59,7 +59,7 @@ export interface PrivacyPageBrowserProxy {
   // </if>
 
   setBlockAutoplayEnabled(enabled: boolean): void;
-  getSecureDnsResolverList(): Promise<Array<ResolverOption>>;
+  getSecureDnsResolverList(): Promise<ResolverOption[]>;
   getSecureDnsSetting(): Promise<SecureDnsSetting>;
 
   /**

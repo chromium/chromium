@@ -9,7 +9,7 @@ import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_inter
 
 // Contains all the log events received when the internals page is open.
 const logMessages:
-    {eventTime: string, sourceLocation: string, message: string}[] = [];
+    Array<{eventTime: string, sourceLocation: string, message: string}> = [];
 
 /**
  * Converts a mojo time to a JS time.

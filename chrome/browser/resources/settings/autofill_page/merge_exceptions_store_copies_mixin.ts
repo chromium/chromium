@@ -18,7 +18,7 @@ import {PasswordExceptionListChangedListener, PasswordManagerImpl} from './passw
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface MergeExceptionsStoreCopiesMixinInterface {
-  passwordExceptions: Array<MultiStoreExceptionEntry>;
+  passwordExceptions: MultiStoreExceptionEntry[];
 }
 
 export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
@@ -35,7 +35,7 @@ export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
           };
         }
 
-        passwordExceptions: Array<MultiStoreExceptionEntry>;
+        passwordExceptions: MultiStoreExceptionEntry[];
         private setPasswordExceptionsListener_:
             PasswordExceptionListChangedListener|null = null;
 
@@ -66,9 +66,9 @@ export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
     });
 
 function mergeExceptionsStoreDuplicates(
-    exceptionList: Array<chrome.passwordsPrivate.ExceptionEntry>):
-    Array<MultiStoreExceptionEntry> {
-  const multiStoreEntries: Array<MultiStoreExceptionEntry> = [];
+    exceptionList: chrome.passwordsPrivate.ExceptionEntry[]):
+    MultiStoreExceptionEntry[] {
+  const multiStoreEntries: MultiStoreExceptionEntry[] = [];
   const frontendIdToMergedEntry: Map<number, MultiStoreExceptionEntry> =
       new Map();
   for (const entry of exceptionList) {

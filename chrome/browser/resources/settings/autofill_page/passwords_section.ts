@@ -308,7 +308,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shownPasswordsCount_: number;
   private shownExceptionsCount_: number;
 
-  private storedAccounts_: Array<StoredAccount>;
+  private storedAccounts_: StoredAccount[];
   private signedIn_: boolean;
   private eligibleForAccountStorage_: boolean;
   private hasNeverCheckedPasswords_: boolean;
@@ -339,7 +339,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private showAddPasswordDialog_: boolean;
   private showAddPasswordButton_: boolean;
 
-  private activeDialogAnchorStack_: Array<HTMLElement>;
+  private activeDialogAnchorStack_: HTMLElement[];
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
   private setIsOptedInForAccountStorageListener_:
@@ -423,7 +423,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
     // For non-ChromeOS, non-Lacros, also check whether accounts are available.
     // <if expr="not (chromeos_ash or chromeos_lacros)">
-    const storedAccountsChanged = (accounts: Array<StoredAccount>) =>
+    const storedAccountsChanged = (accounts: StoredAccount[]) =>
         this.storedAccounts_ = accounts;
     syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
     this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
@@ -629,7 +629,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onRemoveExceptionButtonTap_(
       e: DomRepeatEvent<MultiStoreExceptionEntry>) {
     const exception = e.model.item;
-    const allExceptionIds: Array<number> = [];
+    const allExceptionIds: number[] = [];
     if (exception.isPresentInAccount()) {
       allExceptionIds.push(exception.accountId!);
     }

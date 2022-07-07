@@ -16,7 +16,7 @@ suite('CrModuleSendWithPromiseTest', function() {
   function whenChromeSendCalled(_name: string): Promise<any[]> {
     assertEquals(originalChromeSend, chrome.send);
     return new Promise(function(resolve) {
-      chrome.send = (_msg: string, args?: Array<any>) => {
+      chrome.send = (_msg: string, args?: any[]) => {
         resolve(args!);
       };
     });

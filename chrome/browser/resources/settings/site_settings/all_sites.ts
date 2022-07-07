@@ -198,7 +198,7 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   siteGroupMap: Map<string, SiteGroup>;
-  private filteredList_: Array<SiteGroup>;
+  private filteredList_: SiteGroup[];
   subpageRoute: Route;
   filter: string;
   private selectedItem_: SelectedItem|null;
@@ -273,7 +273,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * may be overlap between the existing sites.
    * @param list The list of sites using storage.
    */
-  onStorageListFetched(list: Array<SiteGroup>) {
+  onStorageListFetched(list: SiteGroup[]) {
     // Create a new map to make an observable change.
     const newMap = new Map(this.siteGroupMap);
     list.forEach(storageSiteGroup => {
@@ -307,8 +307,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * @param searchQuery The filter text.
    */
   private filterPopulatedList_(
-      siteGroupMap: Map<string, SiteGroup>,
-      searchQuery: string): Array<SiteGroup> {
+      siteGroupMap: Map<string, SiteGroup>, searchQuery: string): SiteGroup[] {
     const result = [];
     for (const [_etldPlus1, siteGroup] of siteGroupMap) {
       if (siteGroup.origins.find(
@@ -323,8 +322,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * Sorts the given SiteGroup list with the currently selected sort method.
    * @param siteGroupList The list of sites to sort.
    */
-  private sortSiteGroupList_(siteGroupList: Array<SiteGroup>):
-      Array<SiteGroup> {
+  private sortSiteGroupList_(siteGroupList: SiteGroup[]): SiteGroup[] {
     const sortMethod = this.$.sortMethod.value;
     if (!sortMethod) {
       return siteGroupList;
@@ -807,7 +805,7 @@ export class AllSitesElement extends AllSitesElementBase {
         this.i18n('siteSettingsSiteGroupDeleteSignOut');
   }
 
-  private recordUserAction_(scopes: Array<string>) {
+  private recordUserAction_(scopes: string[]) {
     chrome.metricsPrivate.recordUserAction(
         ['AllSites', ...scopes].filter(Boolean).join('_'));
   }
@@ -976,7 +974,7 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private onClearData_(e: Event) {
     const {index, actionScope, origin} = this.actionMenuModel_!;
-    const scopes: Array<string> = [AllSitesDialog.CLEAR_DATA];
+    const scopes: string[] = [AllSitesDialog.CLEAR_DATA];
 
     if (actionScope === 'origin') {
       this.browserProxy.recordAction(AllSitesAction2.CLEAR_ORIGIN_DATA);

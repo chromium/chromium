@@ -36,7 +36,7 @@ export class AnimationThemeList extends WithPersonalizationStore {
     };
   }
 
-  animationThemes: Array<AnimationTheme>;
+  animationThemes: AnimationTheme[];
   private selectedAnimationTheme: AnimationTheme;
 
   private getAriaChecked_(

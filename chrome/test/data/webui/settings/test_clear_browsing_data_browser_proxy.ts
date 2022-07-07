@@ -35,8 +35,7 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
   }
 
   clearBrowsingData(
-      dataTypes: Array<string>, timePeriod: number,
-      installedApps: Array<InstalledApp>) {
+      dataTypes: string[], timePeriod: number, installedApps: InstalledApp[]) {
     this.methodCalled(
         'clearBrowsingData', [dataTypes, timePeriod, installedApps]);
     webUIListenerCallback('browsing-data-removing', true);

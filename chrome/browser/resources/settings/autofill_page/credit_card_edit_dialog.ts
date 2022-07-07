@@ -109,8 +109,8 @@ export class SettingsCreditCardEditDialogElement extends
 
   creditCard: chrome.autofillPrivate.CreditCardEntry;
   private title_: string;
-  private monthList_: Array<string>;
-  private yearList_: Array<string>;
+  private monthList_: string[];
+  private yearList_: string[];
   private expirationYear_?: string;
   private expirationMonth_?: string;
   private nicknameInvalid_: boolean;

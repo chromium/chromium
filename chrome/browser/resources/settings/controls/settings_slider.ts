@@ -95,7 +95,7 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
   }
 
   pref: chrome.settingsPrivate.PrefObject;
-  ticks: Array<SliderTick>|Array<number>;
+  ticks: SliderTick[]|number[];
   scale: number;
   min: number;
   max: number;

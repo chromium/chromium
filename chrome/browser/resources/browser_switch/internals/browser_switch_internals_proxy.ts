@@ -35,8 +35,8 @@ export type RuleSetList = {
 };
 
 export type RuleSet = {
-  sitelist: Array<string>,
-  greylist: Array<string>,
+  sitelist: string[],
+  greylist: string[],
 };
 
 /** @interface */

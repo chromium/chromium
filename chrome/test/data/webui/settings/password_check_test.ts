@@ -180,7 +180,7 @@ function getElementsByType(
  */
 function validateInsecurePasswordsList(
     checkPasswordSection: SettingsPasswordCheckElement,
-    insecureCredentials: Array<chrome.passwordsPrivate.InsecureCredential>,
+    insecureCredentials: chrome.passwordsPrivate.InsecureCredential[],
     isCompromised: boolean, isMuted: boolean = false) {
   const listElements =
       getElementsByType(checkPasswordSection, isCompromised, isMuted);
@@ -220,7 +220,7 @@ function validateInsecurePasswordsList(
  */
 function validateLeakedPasswordsList(
     checkPasswordSection: SettingsPasswordCheckElement,
-    compromisedCredentials: Array<chrome.passwordsPrivate.InsecureCredential>,
+    compromisedCredentials: chrome.passwordsPrivate.InsecureCredential[],
     isMuted = false) {
   validateInsecurePasswordsList(
       checkPasswordSection, compromisedCredentials, /*isCompromised*/ true,

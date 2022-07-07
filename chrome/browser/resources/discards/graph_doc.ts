@@ -206,7 +206,7 @@ class ToolTip {
     tr = this.div_.selectAll('tr');
     tr.select('td').attr('colspan', function(_d: any) {
       return ((d3.select((this as HTMLElement).parentElement!).datum() as
-               Array<any>)[1] === null) ?
+               any[])[1] === null) ?
           2 :
           null;
     });
@@ -564,8 +564,8 @@ class Graph implements GraphChangeStreamInterface {
       SVGGElement, d3.SimulationLinkDatum<GraphNode>, null, undefined>|null =
       null;
   private nodes_: Map<bigint, GraphNode> = new Map();
-  private links_: d3.SimulationLinkDatum<GraphNode>[] = [];
-  private dashedLinks_: d3.SimulationLinkDatum<GraphNode>[] = [];
+  private links_: Array<d3.SimulationLinkDatum<GraphNode>> = [];
+  private dashedLinks_: Array<d3.SimulationLinkDatum<GraphNode>> = [];
   private hostWindow_: Window|null = null;
   /** The interval timer used to poll for node descriptions. */
   private pollDescriptionsInterval_: number = 0;

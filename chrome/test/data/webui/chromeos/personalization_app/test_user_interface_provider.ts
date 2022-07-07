@@ -9,7 +9,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestUserProvider extends
     TestBrowserProxy<UserProviderInterface> implements UserProviderInterface {
-  public defaultUserImages: Array<DefaultUserImage> = [
+  public defaultUserImages: DefaultUserImage[] = [
     {
       index: 8,
       title: {data: 'Test title'.split('').map(ch => ch.charCodeAt(0))},
@@ -54,7 +54,7 @@ export class TestUserProvider extends
   }
 
   async getDefaultUserImages():
-      Promise<{defaultUserImages: Array<DefaultUserImage>}> {
+      Promise<{defaultUserImages: DefaultUserImage[]}> {
     this.methodCalled('getDefaultUserImages');
     return Promise.resolve({defaultUserImages: this.defaultUserImages});
   }

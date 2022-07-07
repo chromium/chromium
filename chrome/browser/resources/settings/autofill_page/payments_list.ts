@@ -72,8 +72,8 @@ class SettingsPaymentsListElement extends PolymerElement {
     };
   }
 
-  creditCards: Array<chrome.autofillPrivate.CreditCardEntry>;
-  upiIds: Array<string>;
+  creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  upiIds: string[];
   private enableUpiIds_: boolean;
   private showCreditCardUpiSeparator_: boolean;
   private showAnyPaymentMethods_: boolean;
@@ -81,7 +81,7 @@ class SettingsPaymentsListElement extends PolymerElement {
   /**
    * @return Whether the list exists and has items.
    */
-  private hasSome_(list: Array<any>): boolean {
+  private hasSome_(list: any[]): boolean {
     return !!(list && list.length);
   }
 

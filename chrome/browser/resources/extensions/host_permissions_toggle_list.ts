@@ -97,7 +97,7 @@ export class ExtensionsHostPermissionsToggleListElement extends
    * @return A lexicographically-sorted list of the hosts associated with this
    *     item.
    */
-  private getSortedHosts_(): Array<chrome.developerPrivate.SiteControl> {
+  private getSortedHosts_(): chrome.developerPrivate.SiteControl[] {
     return this.permissions.hosts.sort((a, b) => {
       if (a.host < b.host) {
         return -1;

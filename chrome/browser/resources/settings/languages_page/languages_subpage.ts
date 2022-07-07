@@ -140,7 +140,7 @@ export class SettingsLanguagesSubpageElement extends
   private showAddAlwaysTranslateDialog_: boolean;
   private showAddNeverTranslateDialog_: boolean;
   private addLanguagesDialogLanguages_:
-      Array<chrome.languageSettingsPrivate.Language>|null;
+      chrome.languageSettingsPrivate.Language[]|null;
   private focusConfig_: FocusConfig;
   private showManagedLanguageDialog_: boolean;
   private enableDesktopDetailedLanguageSettings_: boolean;
@@ -174,7 +174,7 @@ export class SettingsLanguagesSubpageElement extends
     focusWithoutInk(toFocus);
   }
 
-  private onLanguagesAdded_(e: CustomEvent<Array<string>>) {
+  private onLanguagesAdded_(e: CustomEvent<string[]>) {
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.enableLanguage(languageCode);
@@ -208,7 +208,7 @@ export class SettingsLanguagesSubpageElement extends
    * Helper function fired by the add dialog's on-languages-added event. Adds
    * selected languages to the always-translate languages list.
    */
-  private onAlwaysTranslateLanguagesAdded_(e: CustomEvent<Array<string>>) {
+  private onAlwaysTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.setLanguageAlwaysTranslateState(languageCode, true);
@@ -255,7 +255,7 @@ export class SettingsLanguagesSubpageElement extends
     focusWithoutInk(toFocus);
   }
 
-  private onNeverTranslateLanguagesAdded_(e: CustomEvent<Array<string>>) {
+  private onNeverTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.disableTranslateLanguage(languageCode);
@@ -609,7 +609,7 @@ export class SettingsLanguagesSubpageElement extends
   /**
    * @return Whether the list is non-null and has items.
    */
-  private hasSome_(list: Array<any>): boolean {
+  private hasSome_(list: any[]): boolean {
     return !!(list && list.length);
   }
 
@@ -617,7 +617,7 @@ export class SettingsLanguagesSubpageElement extends
    * Gets the list of languages that chrome can translate
    */
   private getTranslatableLanguages_():
-      Array<chrome.languageSettingsPrivate.Language> {
+      chrome.languageSettingsPrivate.Language[] {
     return this.languages!.supported.filter(language => {
       return this.languageHelper.isLanguageTranslatable(language);
     });

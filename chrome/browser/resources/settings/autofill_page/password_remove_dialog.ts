@@ -111,7 +111,7 @@ export class PasswordRemoveDialogElement extends
   }
 
   private onRemoveButtonClick_() {
-    const idsToRemove: Array<number> = [];
+    const idsToRemove: number[] = [];
     if (this.removeFromAccountChecked_) {
       idsToRemove.push(this.duplicatedPassword.accountId!);
     }

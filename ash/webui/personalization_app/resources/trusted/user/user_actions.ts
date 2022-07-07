@@ -48,11 +48,11 @@ export function setUserImageAction(image: UserImage): SetUserImageAction {
 
 export type SetDefaultUserImagesAction = Action&{
   name: UserActionName.SET_DEFAULT_USER_IMAGES,
-  defaultUserImages: Array<DefaultUserImage>,
+  defaultUserImages: DefaultUserImage[],
 };
 
 export function setDefaultUserImagesAction(
-    defaultUserImages: Array<DefaultUserImage>): SetDefaultUserImagesAction {
+    defaultUserImages: DefaultUserImage[]): SetDefaultUserImagesAction {
   return {
     name: UserActionName.SET_DEFAULT_USER_IMAGES,
     defaultUserImages,

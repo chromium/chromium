@@ -271,7 +271,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   accountEmail: string|null;
   readonly storeOptionAccountValue: string;
   readonly storeOptionDeviceValue: string;
-  savedPasswords: Array<MultiStorePasswordUiEntry>;
+  savedPasswords: MultiStorePasswordUiEntry[];
   private usernamesByOrigin_: Map<string, Set<string>>|null = null;
   dialogMode: PasswordDialogMode;
   private isInFederatedViewMode_: boolean;

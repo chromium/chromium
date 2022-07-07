@@ -43,7 +43,7 @@ export class StepIndicator extends StepIndicatorBase {
   }
 
   model: StepIndicatorModel;
-  private dots_: Array<void>;
+  private dots_: void[];
 
   /**
    * @return the screenreader label for this element.
@@ -53,7 +53,7 @@ export class StepIndicator extends StepIndicatorBase {
         'privacyGuideSteps', this.model.active + 1, this.model.total);
   }
 
-  private computeDots_(): Array<void> {
+  private computeDots_(): void[] {
     // If total is 1, show nothing.
     return new Array(this.model.total > 1 ? this.model.total : 0);
   }

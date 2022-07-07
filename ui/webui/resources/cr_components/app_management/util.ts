@@ -26,7 +26,7 @@ export function createEmptyState(): AppManagementPageState {
   };
 }
 
-export function createInitialState(apps: Array<App>): AppManagementPageState {
+export function createInitialState(apps: App[]): AppManagementPageState {
   const initialState = createEmptyState();
 
   for (const app of apps) {

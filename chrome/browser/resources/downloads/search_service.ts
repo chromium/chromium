@@ -8,7 +8,7 @@ import {BrowserProxy} from './browser_proxy.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 
 export class SearchService {
-  private searchTerms_: Array<string> = [];
+  private searchTerms_: string[] = [];
   private mojoHandler_: PageHandlerInterface =
       BrowserProxy.getInstance().handler;
 
@@ -16,7 +16,7 @@ export class SearchService {
    * @param searchText Input typed by the user into a search box.
    * @return A list of terms extracted from |searchText|.
    */
-  static splitTerms(searchText: string): Array<string> {
+  static splitTerms(searchText: string): string[] {
     // Split quoted terms (e.g., 'The "lazy" dog' => ['The', 'lazy', 'dog']).
     return searchText.split(/"([^"]*)"/).map(s => s.trim()).filter(s => !!s);
   }

@@ -745,7 +745,7 @@ export class DestinationStore extends EventTarget {
    * Inserts multiple {@code destinations} to the data store and dispatches
    * single DESTINATIONS_INSERTED event.
    */
-  private insertDestinations_(destinations: (Destination|null)[]) {
+  private insertDestinations_(destinations: Array<Destination|null>) {
     let inserted = false;
     destinations.forEach(destination => {
       if (destination) {

@@ -75,7 +75,7 @@ function cloneTabDataObj<T extends ItemData>(tabData: T): T {
  * ranges {start:start1, length:length1}, {start:start2, length:length2} ...
  * to be used by search_highlight_utils.js
  */
-function convertToRanges(matches: ReadonlyArray<Fuse.RangeTuple>):
+function convertToRanges(matches: readonly Fuse.RangeTuple[]):
     Array<{start: number, length: number}> {
   return matches.map(
       ([start, end]) => ({start: start, length: end - start + 1}));

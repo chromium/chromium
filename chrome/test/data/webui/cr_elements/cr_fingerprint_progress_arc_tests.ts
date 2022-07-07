@@ -133,7 +133,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
     // top of the circle (3pi/2 rad). In the verification step, a test case
     // checks the colors drawn at angles 7pi/4, pi/4, 3pi/4, and 5pi/4 rad
     // (respectively 12.5%, 37.5%, 62.5%, and 87.5% progress completed).
-    static progressCheckPoints: [Point, number][] = [
+    static progressCheckPoints: Array<[Point, number]> = [
       [{x: 185, y: 40} /**  7pi/4 rad */, 12.5],
       [{x: 185, y: 110} /**  pi/4 rad */, 37.5],
       [{x: 115, y: 110} /** 3pi/4 rad */, 62.5],

@@ -34,7 +34,7 @@ class LauncherInternalsElement extends PolymerElement {
   }
 
   private query: string;
-  private listenerIds: Array<number>;
+  private listenerIds: number[];
   private router: PageCallbackRouter;
 
   constructor() {
@@ -55,7 +55,7 @@ class LauncherInternalsElement extends PolymerElement {
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }
 
-  private updateResults(query: string, results: Array<Result>) {
+  private updateResults(query: string, results: Result[]) {
     if (query === '') {
       this.$.zeroStateResults.clearResults();
       this.$.zeroStateResults.addResults(results);

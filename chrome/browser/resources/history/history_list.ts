@@ -107,7 +107,7 @@ export class HistoryListElement extends HistoryListElementBase {
     };
   }
 
-  private historyData_: Array<HistoryEntry>;
+  private historyData_: HistoryEntry[];
   private canDeleteHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   private actionMenuModel_: ActionMenuModel|null = null;
@@ -155,7 +155,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * @param info An object containing information about the query.
    * @param results A list of results.
    */
-  historyResult(info: HistoryQuery, results: Array<HistoryEntry>) {
+  historyResult(info: HistoryQuery, results: HistoryEntry[]) {
     this.initializeResults_(info, results);
     this.closeMenu_();
 
@@ -177,8 +177,7 @@ export class HistoryListElement extends HistoryListElementBase {
    *     loading should be disabled.
    */
   addNewResults(
-      historyResults: Array<HistoryEntry>, incremental: boolean,
-      finished: boolean) {
+      historyResults: HistoryEntry[], incremental: boolean, finished: boolean) {
     const results = historyResults.slice();
     this.$['scroll-threshold'].clearTriggers();
 
@@ -318,8 +317,8 @@ export class HistoryListElement extends HistoryListElementBase {
    * single large notification to Polymer, rather than many small notifications,
    * which greatly improves performance.
    */
-  private removeItemsByIndex_(indices: Array<number>) {
-    const splices: Array<any> = [];
+  private removeItemsByIndex_(indices: number[]) {
+    const splices: any[] = [];
     indices.sort(function(a, b) {
       // Sort in reverse numerical order.
       return b - a;
@@ -337,7 +336,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.notifySplices('historyData_', splices);
   }
 
-  removeItemsByIndexForTesting(indices: Array<number>) {
+  removeItemsByIndexForTesting(indices: number[]) {
     this.removeItemsByIndex_(indices);
   }
 
@@ -427,7 +426,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.closeMenu_();
   }
 
-  private deleteItems_(items: Array<HistoryEntry>): Promise<void> {
+  private deleteItems_(items: HistoryEntry[]): Promise<void> {
     const removalList = items.map(item => ({
                                     url: item.url,
                                     timestamps: item.allTimestamps,
@@ -576,7 +575,7 @@ export class HistoryListElement extends HistoryListElementBase {
     return searchedTerm === '' || searchedTerm !== domain;
   }
 
-  private initializeResults_(info: HistoryQuery, results: Array<HistoryEntry>) {
+  private initializeResults_(info: HistoryQuery, results: HistoryEntry[]) {
     if (results.length === 0) {
       return;
     }

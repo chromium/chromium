@@ -114,7 +114,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
   private deleteInProgress_: boolean;
   private dialogPage_: BioEnrollDialogPage;
   private doneButtonVisible_: boolean;
-  private enrollments_: Array<Enrollment>;
+  private enrollments_: Enrollment[];
   private minPinLength_: number;
   private progressArcLabel_: string;
   private recentEnrollmentName_: string;
@@ -181,7 +181,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
             });
   }
 
-  private onEnrollments_(enrollments: Array<Enrollment>) {
+  private onEnrollments_(enrollments: Enrollment[]) {
     this.enrollments_ =
         enrollments.slice().sort((a, b) => a.name.localeCompare(b.name));
     this.$.enrollmentList.fire('iron-resize');
@@ -425,7 +425,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
   /**
    * @return The header label for the enrollments page.
    */
-  private enrollmentsHeader_(enrollments: Array<Enrollment>|null): string {
+  private enrollmentsHeader_(enrollments: Enrollment[]|null): string {
     return this.i18n(
         enrollments && enrollments.length ?
             'securityKeysBioEnrollmentEnrollmentsLabel' :

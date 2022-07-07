@@ -35,7 +35,7 @@ export interface ImportDataBrowserProxy {
   /**
    * Returns the source profiles available for importing from other browsers.
    */
-  initializeImportDialog(): Promise<Array<BrowserProfile>>;
+  initializeImportDialog(): Promise<BrowserProfile[]>;
 
   /**
    * Starts importing data for the specified source browser profile. The C++

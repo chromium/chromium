@@ -30,9 +30,9 @@ type ForeignDeviceInternal = {
   device: string,
   lastUpdateTime: string,
   opened: boolean,
-  separatorIndexes: Array<number>,
+  separatorIndexes: number[],
   timestamp: number,
-  tabs: Array<ForeignSessionTab>,
+  tabs: ForeignSessionTab[],
   tag: string,
 };
 
@@ -95,7 +95,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   private focusGrid_: FocusGrid|null = null;
-  private syncedDevices_: Array<ForeignDeviceInternal> = [];
+  private syncedDevices_: ForeignDeviceInternal[] = [];
   private hasSeenForeignData_: boolean;
   private fetchingSyncedTabs_: boolean = false;
   private actionMenuModel_: string|null = null;
@@ -105,7 +105,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
 
   signInState: boolean;
   searchTerm: string;
-  sessionList: Array<ForeignSession>;
+  sessionList: ForeignSession[];
 
   override ready() {
     super.ready();
@@ -145,7 +145,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
 
   private createInternalDevice_(session: ForeignSession):
       ForeignDeviceInternal {
-    let tabs: Array<ForeignSessionTab> = [];
+    let tabs: ForeignSessionTab[] = [];
     const separatorIndexes = [];
     for (let i = 0; i < session.windows.length; i++) {
       const windowId = session.windows[i].sessionId;
@@ -225,7 +225,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
           this.shadowRoot!.querySelectorAll('history-synced-device-card');
       Array.from(cards)
           .reduce(
-              (prev: Array<FocusRow>, cur: HistorySyncedDeviceCardElement) =>
+              (prev: FocusRow[], cur: HistorySyncedDeviceCardElement) =>
                   prev.concat(cur.createFocusRows()),
               [])
           .forEach((row) => {
@@ -304,7 +304,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
    * about updating individual tabs rather than replacing whole sessions, but
    * this approach seems to have acceptable performance.
    */
-  updateSyncedDevices(sessionList: Array<ForeignSession>) {
+  updateSyncedDevices(sessionList: ForeignSession[]) {
     this.fetchingSyncedTabs_ = false;
 
     if (!sessionList) {
@@ -318,7 +318,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
           SyncedTabsHistogram.LIMIT);
     }
 
-    const devices: Array<ForeignDeviceInternal> = [];
+    const devices: ForeignDeviceInternal[] = [];
     sessionList.forEach((session) => {
       const device = this.createInternalDevice_(session);
       if (device.tabs.length !== 0) {

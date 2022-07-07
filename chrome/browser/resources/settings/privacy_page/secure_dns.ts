@@ -137,7 +137,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private secureDnsToggle_: chrome.settingsPrivate.PrefObject;
   private showRadioGroup_: boolean;
   private secureDnsRadio_: SecureDnsMode;
-  private resolverOptions_: Array<ResolverOption>;
+  private resolverOptions_: ResolverOption[];
   private lastResolverOption_: string;
   private privacyPolicyString_: string;
   private secureDnsInputValue_: string;

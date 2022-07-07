@@ -93,7 +93,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
     super.connectedCallback();
     this.addWebUIListener(
         'available-accounts-changed',
-        (accounts: Array<AvailableAccount>) =>
+        (accounts: AvailableAccount[]) =>
             this.handleAvailableAccountsChanged_(accounts));
     this.manageProfilesBrowserProxy_.getAvailableAccounts();
   }
@@ -153,7 +153,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
 
   // <if expr="chromeos_lacros">
   private handleAvailableAccountsChanged_(availableAccounts:
-                                              Array<AvailableAccount>) {
+                                              AvailableAccount[]) {
     this.hasAvailableAccounts_ = availableAccounts.length > 0;
   }
   // </if>

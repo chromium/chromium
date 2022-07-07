@@ -34,7 +34,7 @@ type DropdownMenuOption = {
   value: number|string,
 };
 
-export type DropdownMenuOptionList = Array<DropdownMenuOption>;
+export type DropdownMenuOptionList = DropdownMenuOption[];
 
 export interface SettingsDropdownMenuElement {
   $: {

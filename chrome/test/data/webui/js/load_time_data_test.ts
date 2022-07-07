@@ -12,8 +12,8 @@ suite('LoadTimeDataModuleTest', function() {
 
   test('getStringPieces', function() {
     function assertSubstitutedPieces(
-        expected: {value: string, arg: (null|string)}[], label: string,
-        ...args: (string|number)[]) {
+        expected: Array<{value: string, arg: (null | string)}>, label: string,
+        ...args: Array<string|number>) {
       const pieces = loadTimeData.getSubstitutedStringPieces(label, ...args);
       assertDeepEquals(expected, pieces);
 

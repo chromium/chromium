@@ -10,7 +10,7 @@ export class TestBrowserProxy<T = any> {
   resetResolver(methodName: keyof T): void;
   reset(): void;
   getCallCount(methodName: keyof T): number;
-  getArgs(methodName: keyof T): Array<any>;
+  getArgs(methodName: keyof T): any[];
   setResultMapperFor(methodName: keyof T, resultMapper: Function): void;
   setResultFor(methodName: keyof T, value: any): void;
 }

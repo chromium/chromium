@@ -42,7 +42,7 @@ export type CertificatesOrgGroup = {
   id: string,
   name: string,
   containsPolicyCerts: boolean,
-  subnodes: Array<CertificateSubnode>,
+  subnodes: CertificateSubnode[],
 };
 
 export type CaTrustInfo = {

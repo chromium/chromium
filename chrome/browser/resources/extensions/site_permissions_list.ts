@@ -70,7 +70,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   delegate: SiteSettingsDelegate;
   header: string;
   siteSet: chrome.developerPrivate.UserSiteSet;
-  sites: Array<string>;
+  sites: string[];
   private showEditSiteUrlDialog_: boolean;
   private showEditSitePermissionsDialog_: boolean;
   private siteToEdit_: string|null;

@@ -51,13 +51,13 @@ export type SpellCheckLanguageState = {
  *     not in use, including the languages force-disabled by policy.
  */
 export type LanguagesModel = {
-  supported: Array<chrome.languageSettingsPrivate.Language>,
-  enabled: Array<LanguageState>,
+  supported: chrome.languageSettingsPrivate.Language[],
+  enabled: LanguageState[],
   translateTarget: string,
-  alwaysTranslate: Array<chrome.languageSettingsPrivate.Language>,
-  neverTranslate: Array<chrome.languageSettingsPrivate.Language>,
-  spellCheckOnLanguages: Array<SpellCheckLanguageState>,
-  spellCheckOffLanguages: Array<SpellCheckLanguageState>,
+  alwaysTranslate: chrome.languageSettingsPrivate.Language[],
+  neverTranslate: chrome.languageSettingsPrivate.Language[],
+  spellCheckOnLanguages: SpellCheckLanguageState[],
+  spellCheckOffLanguages: SpellCheckLanguageState[],
   // TODO(dpapad): Wrap prospectiveUILanguage with if expr "is_win" block.
   prospectiveUILanguage?: string,
 };

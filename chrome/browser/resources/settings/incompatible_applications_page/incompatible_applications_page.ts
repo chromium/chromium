@@ -90,7 +90,7 @@ export class SettingsIncompatibleApplicationsPageElement extends
   }
 
   private hasAdminRights_: boolean;
-  private applications_: Array<IncompatibleApplication>;
+  private applications_: IncompatibleApplication[];
   private isDone_: boolean;
   private subtitleText_: string;
   private subtitleNoAdminRightsText_: string;

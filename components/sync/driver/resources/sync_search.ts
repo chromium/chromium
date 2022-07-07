@@ -11,7 +11,7 @@ const SELECTED_ATTR: string = 'selected';
 
 export class SyncSearchManager {
   private currSearchId_: number = 0;
-  private resultsData_: Array<object> = [];
+  private resultsData_: object[] = [];
   private selected_: HTMLElement|null = null;
   private selectedIndex_: number = -1;
   private resultsControl_: HTMLElement;
@@ -171,7 +171,7 @@ export class SyncSearchManager {
     }
   }
 
-  setDataForTest(data: Array<object>) {
+  setDataForTest(data: object[]) {
     this.resultsData_ = data;
     this.drawResultsList_();
   }

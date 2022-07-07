@@ -155,7 +155,7 @@ suite('CrActionMenu', function() {
       [false, true],
       [true, false],
       [true, true],
-    ] as [boolean, boolean][])
+    ] as Array<[boolean, boolean]>)
         .forEach(([disabled, hidden]) => {
           crCheckbox.disabled = disabled;
           crCheckbox.hidden = hidden;

@@ -23,7 +23,7 @@ enum ErrorMessage {
 
 export class ErrorMessageElement extends PolymerElement {
   private static readonly ADD_RESULT_MESSAGE_CODES:
-      [ErrorMessage, AddSinkResultCode[]][] = [
+      Array<[ErrorMessage, AddSinkResultCode[]]> = [
         [ErrorMessage.NO_ERROR, [AddSinkResultCode.OK]],
         [
           ErrorMessage.GENERIC,
@@ -58,7 +58,7 @@ export class ErrorMessageElement extends PolymerElement {
       ];
 
   private static readonly CAST_RESULT_MESSAGE_CODES:
-      [ErrorMessage, RouteRequestResultCode[]][] = [
+      Array<[ErrorMessage, RouteRequestResultCode[]]> = [
         [ErrorMessage.NO_ERROR, [RouteRequestResultCode.OK]],
         [
           ErrorMessage.GENERIC,

@@ -117,8 +117,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
   /**
    * @param results List of results with information about the query.
    */
-  private onQueryResult_(results:
-                             {info: HistoryQuery, value: Array<HistoryEntry>}) {
+  private onQueryResult_(results: {info: HistoryQuery, value: HistoryEntry[]}) {
     this.set('queryState.querying', false);
     this.set('queryResult.info', results.info);
     this.set('queryResult.results', results.value);

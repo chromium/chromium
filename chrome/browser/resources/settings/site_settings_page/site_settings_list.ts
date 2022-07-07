@@ -82,7 +82,7 @@ class SettingsSiteSettingsListElement extends
     ];
   }
 
-  categoryList: Array<CategoryListItem>;
+  categoryList: CategoryListItem[];
   focusConfig: FocusConfig;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();

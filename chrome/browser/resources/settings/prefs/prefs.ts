@@ -46,7 +46,7 @@ function deepEqual(val1: any, val2: any): boolean {
 /**
  * @return Whether the arrays are recursively equal.
  */
-function arraysEqual(arr1: Array<any>, arr2: Array<any>): boolean {
+function arraysEqual(arr1: any[], arr2: any[]): boolean {
   if (arr1.length !== arr2.length) {
     return false;
   }
@@ -98,7 +98,7 @@ function deepCopy(val: any): any {
 /**
  * @return Deep copy of the array.
  */
-function deepCopyArray(arr: Array<any>): Array<any> {
+function deepCopyArray(arr: any[]): any[] {
   const copy = [];
   for (let i = 0; i < arr.length; i++) {
     copy.push(deepCopy(arr[i]));
@@ -159,7 +159,7 @@ export class SettingsPrefsElement extends PolymerElement {
   private settingsApi_: typeof chrome.settingsPrivate = chrome.settingsPrivate;
   private initialized_: boolean = false;
   private boundPrefsChanged_:
-      (prefs: Array<chrome.settingsPrivate.PrefObject>) => void;
+      (prefs: chrome.settingsPrivate.PrefObject[]) => void;
 
   constructor() {
     super();
@@ -230,7 +230,7 @@ export class SettingsPrefsElement extends PolymerElement {
    * Called when prefs in the underlying Chrome pref store are changed.
    */
   private onSettingsPrivatePrefsChanged_(
-      prefs: Array<chrome.settingsPrivate.PrefObject>) {
+      prefs: chrome.settingsPrivate.PrefObject[]) {
     if (CrSettingsPrefs.isInitialized) {
       this.updatePrefs_(prefs);
     }
@@ -240,7 +240,7 @@ export class SettingsPrefsElement extends PolymerElement {
    * Called when prefs are fetched from settingsPrivate.
    */
   private onSettingsPrivatePrefsFetched_(
-      prefs: Array<chrome.settingsPrivate.PrefObject>) {
+      prefs: chrome.settingsPrivate.PrefObject[]) {
     this.updatePrefs_(prefs);
     CrSettingsPrefs.setInitialized();
   }
@@ -294,7 +294,7 @@ export class SettingsPrefsElement extends PolymerElement {
   /**
    * Updates the prefs model with the given prefs.
    */
-  private updatePrefs_(newPrefs: Array<chrome.settingsPrivate.PrefObject>) {
+  private updatePrefs_(newPrefs: chrome.settingsPrivate.PrefObject[]) {
     // Use the existing prefs object or create it.
     const prefs = this.prefs || {};
     newPrefs.forEach((newPrefObj) => {

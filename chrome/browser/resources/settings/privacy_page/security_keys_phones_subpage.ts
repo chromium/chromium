@@ -30,8 +30,8 @@ export class SecurityKeysPhonesSubpageElement extends PolymerElement {
     return getTemplate();
   }
 
-  private syncedPhones_: Array<SecurityKeysPhone>;
-  private linkedPhones_: Array<SecurityKeysPhone>;
+  private syncedPhones_: SecurityKeysPhone[];
+  private linkedPhones_: SecurityKeysPhone[];
   private showDialog_: boolean;
   private dialogName_: string;
   private dialogPublicKey_: string;

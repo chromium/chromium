@@ -101,8 +101,8 @@ export type ChromeCleanupFilePath = {
 };
 
 export type ChromeCleanerScannerResults = {
-  files: Array<ChromeCleanupFilePath>,
-  registryKeys: Array<string>,
+  files: ChromeCleanupFilePath[],
+  registryKeys: string[],
 };
 
 /**
@@ -709,13 +709,13 @@ export class SettingsChromeCleanupPageElement extends
     ]);
   }
 
-  private getListEntriesFromStrings_(list: Array<string>):
-      Array<ChromeCleanupRemovalListItem> {
+  private getListEntriesFromStrings_(list: string[]):
+      ChromeCleanupRemovalListItem[] {
     return list.map(entry => ({text: entry, highlightSuffix: null}));
   }
 
-  private getListEntriesFromFilePaths_(paths: Array<ChromeCleanupFilePath>):
-      Array<ChromeCleanupRemovalListItem> {
+  private getListEntriesFromFilePaths_(paths: ChromeCleanupFilePath[]):
+      ChromeCleanupRemovalListItem[] {
     return paths.map(
         path => ({text: path.dirname, highlightSuffix: path.basename}));
   }

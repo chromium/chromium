@@ -54,7 +54,7 @@ export class ExtensionsKeyboardShortcutsElement extends
   }
 
   delegate: KeyboardShortcutDelegate;
-  items: Array<chrome.developerPrivate.ExtensionInfo>;
+  items: chrome.developerPrivate.ExtensionInfo[];
 
   override ready() {
     super.ready();
@@ -65,7 +65,7 @@ export class ExtensionsKeyboardShortcutsElement extends
     chrome.metricsPrivate.recordUserAction('Options_ExtensionCommands');
   }
 
-  private calculateShownItems_(): Array<chrome.developerPrivate.ExtensionInfo> {
+  private calculateShownItems_(): chrome.developerPrivate.ExtensionInfo[] {
     return this.items.filter(function(item) {
       return item.commands.length > 0;
     });

@@ -34,13 +34,13 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
 
   private profileInternalsBrowserProxy_: ProfileInternalsBrowserProxy =
       ProfileInternalsBrowserProxyImpl.getInstance();
-  private profilesList_: Array<ProfileStateElement>;
+  private profilesList_: ProfileStateElement[];
 
   override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
         'profiles-list-changed',
-        (profilesList: Array<ProfileState>) =>
+        (profilesList: ProfileState[]) =>
             this.handleProfilesListChanged_(profilesList));
     this.profileInternalsBrowserProxy_.getProfilesList();
   }
@@ -48,7 +48,7 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
   /**
    * Handler for when the profiles list are updated.
    */
-  private handleProfilesListChanged_(profilesList: Array<ProfileState>) {
+  private handleProfilesListChanged_(profilesList: ProfileState[]) {
     const profilesExpanded = new Map(this.profilesList_.map(
         item => [item.profileState.profilePath, item.expanded]));
     this.profilesList_ = profilesList.map(

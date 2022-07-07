@@ -66,8 +66,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     };
   }
 
-  apps: Array<chrome.developerPrivate.ExtensionInfo>;
-  extensions: Array<chrome.developerPrivate.ExtensionInfo>;
+  apps: chrome.developerPrivate.ExtensionInfo[];
+  extensions: chrome.developerPrivate.ExtensionInfo[];
   delegate: ItemDelegate;
   inDevMode: boolean;
   filter: string;

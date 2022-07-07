@@ -51,7 +51,7 @@ export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
     };
   }
 
-  passwordsToMove: Array<MultiStorePasswordUiEntry>;
+  passwordsToMove: MultiStorePasswordUiEntry[];
   accountEmail: string;
 
   /** @return Whether the user confirmed the dialog. */
@@ -71,7 +71,7 @@ export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
 
   private onMoveButtonClick_() {
     const checkboxes = this.$.dialog.querySelectorAll('cr-checkbox');
-    const selectedPasswords: Array<number> = [];
+    const selectedPasswords: number[] = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked) {
         selectedPasswords.push(Number(checkbox.dataset['id']));

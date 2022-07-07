@@ -30,8 +30,7 @@ export class IFrameApi {
   /**
    * Send an array of wallpaper collections collections grid..
    */
-  sendCollections(
-      target: CollectionsGrid, collections: Array<WallpaperCollection>) {
+  sendCollections(target: CollectionsGrid, collections: WallpaperCollection[]) {
     const event: constants.SendCollectionsEvent = {
       type: constants.EventType.SEND_COLLECTIONS,
       collections
@@ -153,8 +152,8 @@ export class IFrameApi {
       data: constants.Events, choices: WallpaperImage[]|null): WallpaperImage;
   validateReceivedSelection(
       data: constants.Events,
-      choices: (WallpaperCollection|WallpaperImage)[]|null): WallpaperCollection
-      |WallpaperImage {
+      choices: Array<WallpaperCollection|WallpaperImage>|
+      null): WallpaperCollection|WallpaperImage {
     assert(isNonEmptyArray(choices), 'choices must be a non-empty array');
 
     let selected: WallpaperCollection|WallpaperImage|undefined = undefined;

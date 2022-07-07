@@ -57,7 +57,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // them to a corresponding class style in app.html. Must stay in-sync with
   // the names set in read_anything_font_model.cc.
   private defaultFontName: string = 'standard';
-  private validFontNames: {name: string, cssClass: string}[] = [
+  private validFontNames: Array<{name: string, cssClass: string}> = [
     {name: 'Standard font', cssClass: 'standard'},
     {name: 'Serif', cssClass: 'serif'},
     {name: 'Sans-serif', cssClass: 'sans-serif'},

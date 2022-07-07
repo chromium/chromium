@@ -42,7 +42,7 @@ class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    const setAvatarUrl = (accounts: Array<StoredAccount>) => {
+    const setAvatarUrl = (accounts: StoredAccount[]) => {
       this.avatarUrl_ = (accounts.length > 0 && !!accounts[0].avatarImage) ?
           accounts[0].avatarImage :
           'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';

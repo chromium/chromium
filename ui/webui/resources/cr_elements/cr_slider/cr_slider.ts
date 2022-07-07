@@ -194,7 +194,7 @@ export class CrSliderElement extends CrSliderElementBase {
   min: number;
   noKeybindings: boolean;
   snaps: boolean;
-  ticks: Array<SliderTick>|Array<number>;
+  ticks: SliderTick[]|number[];
   value: number;
 
   private disabled_: boolean;

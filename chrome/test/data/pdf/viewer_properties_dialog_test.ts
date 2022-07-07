@@ -54,7 +54,7 @@ const tests = [
       ['page-count', '1'],
       ['page-size', '2.78 × 2.78 in (square)'],
       ['fast-web-view', 'No'],
-    ] as [string, string][])
+    ] as Array<[string, string]>)
         .forEach(([field, expectedValue]) => assertField(field, expectedValue));
 
     await ensurePropertiesDialogClose();

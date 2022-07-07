@@ -38,7 +38,7 @@ export class TopicSourceList extends WithPersonalizationStore {
     };
   }
 
-  topicSources: Array<TopicSource>;
+  topicSources: TopicSource[];
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
 

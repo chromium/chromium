@@ -320,8 +320,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
   return categoryItemMap;
 }
 
-function buildItemListFromIds(orderedIdList: Array<ContentSettingsTypes>):
-    Array<CategoryListItem> {
+function buildItemListFromIds(orderedIdList: ContentSettingsTypes[]):
+    CategoryListItem[] {
   const map = getCategoryItemMap();
   const orderedList = [];
   for (const id of orderedIdList) {
@@ -419,11 +419,11 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
   private noRecentSitePermissions_: boolean;
 
   private lists_: {
-    all: Array<CategoryListItem>,
-    permissionsBasic: Array<CategoryListItem>,
-    permissionsAdvanced: Array<CategoryListItem>,
-    contentBasic: Array<CategoryListItem>,
-    contentAdvanced: Array<CategoryListItem>,
+    all: CategoryListItem[],
+    permissionsBasic: CategoryListItem[],
+    permissionsAdvanced: CategoryListItem[],
+    contentBasic: CategoryListItem[],
+    contentAdvanced: CategoryListItem[],
   };
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {

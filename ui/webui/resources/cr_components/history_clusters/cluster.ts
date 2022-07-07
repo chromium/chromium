@@ -116,10 +116,10 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   query: string;
   private callbackRouter_: PageCallbackRouter;
   private expanded_: boolean;
-  private hiddenVisits_: Array<URLVisit>;
+  private hiddenVisits_: URLVisit[];
   private onVisitsRemovedListenerId_: number|null = null;
   private unusedLabel_: string;
-  private visibleVisits_: Array<URLVisit>;
+  private visibleVisits_: URLVisit[];
 
   //============================================================================
   // Overridden methods
@@ -243,7 +243,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
    * multiple Clusters, all Clusters receive this callback in order to get a
    * chance to remove their matching visits.
    */
-  private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
+  private onVisitsRemoved_(removedVisits: URLVisit[]) {
     const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
         if (visit.normalizedUrl.url !== removedVisit.normalizedUrl.url) {
@@ -287,7 +287,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     }));
   }
 
-  private computeHiddenVisits_(): Array<URLVisit> {
+  private computeHiddenVisits_(): URLVisit[] {
     return this.cluster.visits.filter((visit: URLVisit) => {
       return visit.hidden;
     });
@@ -305,7 +305,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     return this.cluster.label!;
   }
 
-  private computeVisibleVisits_(): Array<URLVisit> {
+  private computeVisibleVisits_(): URLVisit[] {
     return this.cluster.visits.filter((visit: URLVisit) => {
       return !visit.hidden;
     });

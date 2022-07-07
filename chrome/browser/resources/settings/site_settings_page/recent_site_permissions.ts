@@ -77,7 +77,7 @@ export class SettingsRecentSitePermissionsElement extends
 
   noRecentPermissions: boolean;
   private shouldFocusAfterPopulation_: boolean;
-  private recentSitePermissionsList_: Array<RecentSitePermissions>;
+  private recentSitePermissionsList_: RecentSitePermissions[];
   focusConfig: FocusConfig;
   private lastSelected_: {origin: string, incognito: boolean, index: number}|
       null;
@@ -264,7 +264,7 @@ export class SettingsRecentSitePermissionsElement extends
    *    together and applies the appropriate description based on |setting|.
    */
   private getPermissionGroupText_(
-      setting: string, exceptions: Array<RawSiteException>): string {
+      setting: string, exceptions: RawSiteException[]): string {
     const typeStrings = exceptions.map(
         exception => this.getI18nContentTypeString_(
             exception.type as ContentSettingsTypes));

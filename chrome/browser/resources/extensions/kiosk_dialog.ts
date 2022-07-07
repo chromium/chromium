@@ -62,7 +62,7 @@ export class ExtensionsKioskDialogElement extends
       KioskBrowserProxyImpl.getInstance();
 
   private addAppInput_: string|null;
-  private apps_: Array<KioskApp>;
+  private apps_: KioskApp[];
   private bailoutDisabled_: boolean;
   private canEditAutoLaunch_: boolean;
   private canEditBailout_: boolean;

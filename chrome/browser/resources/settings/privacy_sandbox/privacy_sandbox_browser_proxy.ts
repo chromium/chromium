@@ -16,8 +16,8 @@ export type PrivacySandboxInterest = {
 };
 
 export type FledgeState = {
-  joiningSites: Array<string>,
-  blockedSites: Array<string>,
+  joiningSites: string[],
+  blockedSites: string[],
 };
 
 /**
@@ -31,8 +31,8 @@ export type CanonicalTopic = {
 };
 
 export type TopicsState = {
-  topTopics: Array<CanonicalTopic>,
-  blockedTopics: Array<CanonicalTopic>,
+  topTopics: CanonicalTopic[],
+  blockedTopics: CanonicalTopic[],
 };
 
 export interface PrivacySandboxBrowserProxy {

@@ -105,7 +105,7 @@ export class DiscountConsentCard extends I18nMixin
   currentStep: number;
   // Whether the 'x' button is shown.
   private showCloseButton_: boolean;
-  private steps_: Array<Step>;
+  private steps_: Step[];
   // This is a Finch parameter that decides whether we should change container
   // background color.
   private colorConsentContainer_: boolean;
@@ -132,7 +132,7 @@ export class DiscountConsentCard extends I18nMixin
   }
 
   private computeSteps_(
-      showCloseButton: boolean, stepOneContent: string): Array<Step> {
+      showCloseButton: boolean, stepOneContent: string): Step[] {
     const steps = [];
     steps.push({
       id: 'step1',

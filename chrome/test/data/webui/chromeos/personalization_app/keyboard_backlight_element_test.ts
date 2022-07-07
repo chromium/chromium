@@ -130,7 +130,8 @@ suite('KeyboardBacklightTest', function() {
   test('automatically dismisses toast after 3 seconds', async () => {
     // Spy on calls to |window.setTimeout|.
     const setTimeout = window.setTimeout;
-    const setTimeoutCalls: {handler: Function|string, delay?: number}[] = [];
+    const setTimeoutCalls: Array<{handler: Function | string, delay?: number}> =
+        [];
     window.setTimeout =
         (handler: Function|string, delay?: number, ...args: any[]): number => {
           setTimeoutCalls.push({handler, delay});

@@ -23,7 +23,7 @@ export type KioskApp = {
 };
 
 export type KioskAppSettings = {
-  apps: Array<KioskApp>,
+  apps: KioskApp[],
   disableBailout: boolean,
   hasAutoLaunchApp: boolean,
 };

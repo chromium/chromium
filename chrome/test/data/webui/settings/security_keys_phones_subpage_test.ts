@@ -25,7 +25,7 @@ class TestSecurityKeysPhonesBrowserProxy extends TestBrowserProxy implements
   // `delete`.
   private nextPhonesList_: SecurityKeysPhonesList|null = null;
 
-  setNextPhonesList(syncedPhones: Array<string>, linkedPhones: Array<string>) {
+  setNextPhonesList(syncedPhones: string[], linkedPhones: string[]) {
     this.nextPhonesList_ =
         [syncedPhones.map(this.toPhone_), linkedPhones.map(this.toPhone_)];
     this.resetResolver('enumerate');
