@@ -4358,6 +4358,7 @@ Unknown properties are collapsed to zero. -->
   <int value="36" label="IPsec IKE2 Android VPN connection (VpnManager)"/>
   <int value="37" label="Android VPN IPv6 provisioning"/>
   <int value="38" label="Android VPN IPv4 provisioning"/>
+  <int value="39" label="Disconnect host VPN"/>
 </enum>
 
 <enum name="ArcNoWindowReason">

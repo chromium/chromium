@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 24
+// Next MinVersion: 25
 
 module arc.mojom;
 
@@ -158,6 +158,7 @@ enum ArcNetworkEvent {
   [MinVersion=19] kAndroidIpsecIke2VpnConnection = 36,
   [MinVersion=22] kAndroidVpnIpv6Provisioned = 37,
   [MinVersion=22] kAndroidVpnIpv4Provisioned = 38,
+  [MinVersion=24] kAndroidDisconnectHostVpn = 39,
 };
 
 // These enum values are persisted to metrics thus must be treated as

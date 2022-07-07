@@ -99,6 +99,8 @@ class ArcNetHostImpl : public KeyedService,
   std::unique_ptr<base::DictionaryValue> TranslateVpnConfigurationToOnc(
       const mojom::AndroidVpnConfiguration& cfg);
 
+  void DisconnectHostVpn() override;
+
   // Overridden from chromeos::NetworkStateHandlerObserver.
   void ScanCompleted(const chromeos::DeviceState* /*unused*/) override;
   void OnShuttingDown() override;

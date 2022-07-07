@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -567,7 +567,7 @@ struct ArcPingTestResult {
   int64 duration_ms;
 };
 
-// Next Method ID: 17
+// Next Method ID: 18
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 interface NetHost {
   // Sends a request to get enabled / disabled status of WiFi.
@@ -638,6 +638,12 @@ interface NetHost {
   // the app has configured Passpoint.
   [MinVersion=17] RemovePasspointCredentials@16(
       PasspointRemovalProperties properties);
+
+  // Disconnect the current ChromeOS VPN network if one exists. If ChromeOS has
+  // a network that represents an Android VPN, the network doesn't count as a
+  // ChromeOS VPN network and won't be disconnected. If the default network
+  // isn't a ChromeOS VPN network, then nothing happens.
+  [MinVersion=18] DisconnectHostVpn@17();
 };
 
 // Next Method ID: 11
