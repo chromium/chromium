@@ -81,136 +81,132 @@ base::ProcessId GetRealProcessId(int process_host_id) {
   return base::GetProcId(handle);
 }
 
-void UpdateVersionInfo(const ServiceWorkerVersionInfo& version, Value* info) {
+base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
+  base::Value::Dict info;
   switch (version.running_status) {
     case EmbeddedWorkerStatus::STOPPED:
-      info->SetStringKey("running_status", "STOPPED");
+      info.Set("running_status", "STOPPED");
       break;
     case EmbeddedWorkerStatus::STARTING:
-      info->SetStringKey("running_status", "STARTING");
+      info.Set("running_status", "STARTING");
       break;
     case EmbeddedWorkerStatus::RUNNING:
-      info->SetStringKey("running_status", "RUNNING");
+      info.Set("running_status", "RUNNING");
       break;
     case EmbeddedWorkerStatus::STOPPING:
-      info->SetStringKey("running_status", "STOPPING");
+      info.Set("running_status", "STOPPING");
       break;
   }
 
   switch (version.status) {
     case ServiceWorkerVersion::NEW:
-      info->SetStringKey("status", "NEW");
+      info.Set("status", "NEW");
       break;
     case ServiceWorkerVersion::INSTALLING:
-      info->SetStringKey("status", "INSTALLING");
+      info.Set("status", "INSTALLING");
       break;
     case ServiceWorkerVersion::INSTALLED:
-      info->SetStringKey("status", "INSTALLED");
+      info.Set("status", "INSTALLED");
       break;
     case ServiceWorkerVersion::ACTIVATING:
-      info->SetStringKey("status", "ACTIVATING");
+      info.Set("status", "ACTIVATING");
       break;
     case ServiceWorkerVersion::ACTIVATED:
-      info->SetStringKey("status", "ACTIVATED");
+      info.Set("status", "ACTIVATED");
       break;
     case ServiceWorkerVersion::REDUNDANT:
-      info->SetStringKey("status", "REDUNDANT");
+      info.Set("status", "REDUNDANT");
       break;
   }
 
   switch (version.fetch_handler_existence) {
     case ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN:
-      info->SetStringKey("fetch_handler_existence", "UNKNOWN");
+      info.Set("fetch_handler_existence", "UNKNOWN");
       break;
     case ServiceWorkerVersion::FetchHandlerExistence::EXISTS:
-      info->SetStringKey("fetch_handler_existence", "EXISTS");
+      info.Set("fetch_handler_existence", "EXISTS");
       break;
     case ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST:
-      info->SetStringKey("fetch_handler_existence", "DOES_NOT_EXIST");
+      info.Set("fetch_handler_existence", "DOES_NOT_EXIST");
       break;
   }
 
-  info->SetStringKey("script_url", version.script_url.spec());
-  info->SetStringKey("version_id", base::NumberToString(version.version_id));
-  info->SetIntKey("process_id",
-                  static_cast<int>(GetRealProcessId(version.process_id)));
-  info->SetIntKey("process_host_id", version.process_id);
-  info->SetIntKey("thread_id", version.thread_id);
-  info->SetIntKey("devtools_agent_route_id", version.devtools_agent_route_id);
+  info.Set("script_url", version.script_url.spec());
+  info.Set("version_id", base::NumberToString(version.version_id));
+  info.Set("process_id",
+           static_cast<int>(GetRealProcessId(version.process_id)));
+  info.Set("process_host_id", version.process_id);
+  info.Set("thread_id", version.thread_id);
+  info.Set("devtools_agent_route_id", version.devtools_agent_route_id);
 
-  base::Value::ListStorage clients;
+  base::Value::List clients;
   for (auto& it : version.clients) {
-    base::Value client(base::Value::Type::DICTIONARY);
-    client.SetStringKey("client_id", it.first);
+    base::Value::Dict client;
+    client.Set("client_id", it.first);
     if (it.second.type() == blink::mojom::ServiceWorkerClientType::kWindow) {
       RenderFrameHost* render_frame_host =
           RenderFrameHost::FromID(it.second.GetRenderFrameHostId());
       if (render_frame_host) {
-        client.SetStringKey("url",
-                            render_frame_host->GetLastCommittedURL().spec());
+        client.Set("url", render_frame_host->GetLastCommittedURL().spec());
       }
     }
-    clients.emplace_back(std::move(client));
+    clients.Append(std::move(client));
   }
-  info->SetKey("clients", base::Value(std::move(clients)));
+  info.Set("clients", std::move(clients));
+  return info;
 }
 
-base::Value::ListStorage GetRegistrationListValue(
+base::Value::List GetRegistrationListValue(
     const std::vector<ServiceWorkerRegistrationInfo>& registrations) {
-  base::Value::ListStorage result;
+  base::Value::List result;
   for (const auto& registration : registrations) {
-    base::Value registration_info(base::Value::Type::DICTIONARY);
-    registration_info.SetStringKey("scope", registration.scope.spec());
-    registration_info.SetBoolKey(
+    base::Value::Dict registration_info;
+    registration_info.Set("scope", registration.scope.spec());
+    registration_info.Set(
         "third_party_storage_partitioning_enabled",
         registration.key.IsThirdPartyStoragePartitioningEnabled());
-    registration_info.SetStringKey(
-        "ancestor_chain_bit", registration.key.ancestor_chain_bit() ==
-                                      blink::mojom::AncestorChainBit::kCrossSite
-                                  ? "CrossSite"
-                                  : "SameSite");
-    registration_info.SetStringKey("nonce",
-                                   registration.key.nonce().has_value()
+    registration_info.Set("ancestor_chain_bit",
+                          registration.key.ancestor_chain_bit() ==
+                                  blink::mojom::AncestorChainBit::kCrossSite
+                              ? "CrossSite"
+                              : "SameSite");
+    registration_info.Set("nonce", registration.key.nonce().has_value()
                                        ? registration.key.nonce()->ToString()
                                        : "<null>");
-    registration_info.SetStringKey("origin",
-                                   registration.key.origin().GetDebugString());
-    registration_info.SetStringKey(
-        "top_level_site", registration.key.top_level_site().Serialize());
-    registration_info.SetStringKey("storage_key", registration.key.Serialize());
-    registration_info.SetStringKey(
-        "registration_id", base::NumberToString(registration.registration_id));
-    registration_info.SetBoolKey("navigation_preload_enabled",
-                                 registration.navigation_preload_enabled);
-    registration_info.SetIntKey("navigation_preload_header_length",
-                                registration.navigation_preload_header_length);
+    registration_info.Set("origin", registration.key.origin().GetDebugString());
+    registration_info.Set("top_level_site",
+                          registration.key.top_level_site().Serialize());
+    registration_info.Set("storage_key", registration.key.Serialize());
+    registration_info.Set("registration_id",
+                          base::NumberToString(registration.registration_id));
+    registration_info.Set("navigation_preload_enabled",
+                          registration.navigation_preload_enabled);
+    registration_info.Set(
+        "navigation_preload_header_length",
+        static_cast<int>(registration.navigation_preload_header_length));
 
     if (registration.active_version.version_id !=
         blink::mojom::kInvalidServiceWorkerVersionId) {
-      base::Value active_info(base::Value::Type::DICTIONARY);
-      UpdateVersionInfo(registration.active_version, &active_info);
-      registration_info.SetKey("active", std::move(active_info));
+      registration_info.Set("active",
+                            UpdateVersionInfo(registration.active_version));
     }
 
     if (registration.waiting_version.version_id !=
         blink::mojom::kInvalidServiceWorkerVersionId) {
-      base::Value waiting_info(base::Value::Type::DICTIONARY);
-      UpdateVersionInfo(registration.waiting_version, &waiting_info);
-      registration_info.SetKey("waiting", std::move(waiting_info));
+      registration_info.Set("waiting",
+                            UpdateVersionInfo(registration.waiting_version));
     }
 
-    result.emplace_back(std::move(registration_info));
+    result.Append(std::move(registration_info));
   }
   return result;
 }
 
-base::Value::ListStorage GetVersionListValue(
+base::Value::List GetVersionListValue(
     const std::vector<ServiceWorkerVersionInfo>& versions) {
-  base::Value::ListStorage result;
+  base::Value::List result;
   for (const auto& version : versions) {
-    base::Value info(base::Value::Type::DICTIONARY);
-    UpdateVersionInfo(version, &info);
-    result.emplace_back(std::move(info));
+    result.Append(UpdateVersionInfo(version));
   }
   return result;
 }
@@ -291,14 +287,14 @@ class ServiceWorkerInternalsHandler::PartitionObserver
     if (!handler_) {
       return;
     }
-    base::Value details(base::Value::Type::DICTIONARY);
-    details.SetStringKey("message", info.error_message);
-    details.SetIntKey("lineNumber", info.line_number);
-    details.SetIntKey("columnNumber", info.column_number);
-    details.SetStringKey("sourceURL", info.source_url.spec());
+    base::Value::Dict details;
+    details.Set("message", info.error_message);
+    details.Set("lineNumber", info.line_number);
+    details.Set("columnNumber", info.column_number);
+    details.Set("sourceURL", info.source_url.spec());
 
     handler_->OnErrorEvent("error-reported", partition_id_, version_id,
-                           std::move(details));
+                           base::Value(std::move(details)));
   }
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
@@ -308,14 +304,14 @@ class ServiceWorkerInternalsHandler::PartitionObserver
     if (!handler_) {
       return;
     }
-    base::Value details(base::Value::Type::DICTIONARY);
-    details.SetIntKey("sourceIdentifier", static_cast<int>(message.source));
-    details.SetIntKey("message_level", static_cast<int>(message.message_level));
-    details.SetStringKey("message", message.message);
-    details.SetIntKey("lineNumber", message.line_number);
-    details.SetStringKey("sourceURL", message.source_url.spec());
+    base::Value::Dict details;
+    details.Set("sourceIdentifier", static_cast<int>(message.source));
+    details.Set("message_level", static_cast<int>(message.message_level));
+    details.Set("message", message.message);
+    details.Set("lineNumber", message.line_number);
+    details.Set("sourceURL", message.source_url.spec());
     handler_->OnErrorEvent("console-message-reported", partition_id_,
-                           version_id, std::move(details));
+                           version_id, base::Value(std::move(details)));
   }
   void OnRegistrationCompleted(int64_t registration_id,
                                const GURL& scope,
@@ -446,16 +442,13 @@ void ServiceWorkerInternalsHandler::OnDidGetRegistrations(
     const std::vector<ServiceWorkerRegistrationInfo>& live_registrations,
     const std::vector<ServiceWorkerVersionInfo>& live_versions,
     const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
-  base::Value registrations(base::Value::Type::DICTIONARY);
-  registrations.SetKey(
-      "liveRegistrations",
-      base::Value(GetRegistrationListValue(live_registrations)));
-  registrations.SetKey("liveVersions",
-                       base::Value(GetVersionListValue(live_versions)));
-  registrations.SetKey(
-      "storedRegistrations",
-      base::Value(GetRegistrationListValue(stored_registrations)));
-  FireWebUIListener("partition-data", std::move(registrations),
+  base::Value::Dict registrations;
+  registrations.Set("liveRegistrations",
+                    GetRegistrationListValue(live_registrations));
+  registrations.Set("liveVersions", GetVersionListValue(live_versions));
+  registrations.Set("storedRegistrations",
+                    GetRegistrationListValue(stored_registrations));
+  FireWebUIListener("partition-data", base::Value(std::move(registrations)),
                     base::Value(partition_id),
                     base::Value(context_path.AsUTF8Unsafe()));
 }

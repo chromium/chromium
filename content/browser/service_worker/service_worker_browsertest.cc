@@ -274,40 +274,39 @@ void StoreString(std::string* result,
   std::move(callback).Run();
 }
 
-int GetInt(const base::DictionaryValue& dict, base::StringPiece key) {
-  absl::optional<int> out = dict.FindIntKey(key);
+int GetInt(const base::Value::Dict& dict, base::StringPiece key) {
+  absl::optional<int> out = dict.FindInt(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(0);
 }
 
-std::string GetString(const base::DictionaryValue& dict,
-                      base::StringPiece key) {
-  const std::string* out = dict.FindStringKey(key);
+std::string GetString(const base::Value::Dict& dict, base::StringPiece key) {
+  const std::string* out = dict.FindString(key);
   EXPECT_TRUE(out);
   return out ? *out : std::string();
 }
 
-bool GetBoolean(const base::DictionaryValue& dict, base::StringPiece key) {
-  absl::optional<bool> out = dict.FindBoolKey(key);
+bool GetBoolean(const base::Value::Dict& dict, base::StringPiece key) {
+  absl::optional<bool> out = dict.FindBool(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(false);
 }
 
-bool CheckHeader(const base::DictionaryValue& dict,
+bool CheckHeader(const base::Value::Dict& dict,
                  base::StringPiece header_name,
                  base::StringPiece header_value) {
-  const base::Value* headers = dict.FindListKey("headers");
+  const base::Value::List* headers = dict.FindList("headers");
   if (!headers) {
     ADD_FAILURE();
     return false;
   }
 
-  for (const auto& header : headers->GetListDeprecated()) {
+  for (const auto& header : *headers) {
     if (!header.is_list()) {
       ADD_FAILURE();
       return false;
     }
-    base::Value::ConstListView name_value_pair = header.GetListDeprecated();
+    const base::Value::List& name_value_pair = header.GetList();
     if (name_value_pair.size() != 2u) {
       ADD_FAILURE();
       return false;
@@ -330,20 +329,19 @@ bool CheckHeader(const base::DictionaryValue& dict,
   return false;
 }
 
-bool HasHeader(const base::DictionaryValue& dict,
-               base::StringPiece header_name) {
-  const base::Value* headers = dict.FindListKey("headers");
+bool HasHeader(const base::Value::Dict& dict, base::StringPiece header_name) {
+  const base::Value::List* headers = dict.FindList("headers");
   if (!headers) {
     ADD_FAILURE();
     return false;
   }
 
-  for (const auto& header : headers->GetListDeprecated()) {
+  for (const auto& header : *headers) {
     if (!header.is_list()) {
       ADD_FAILURE();
       return false;
     }
-    base::Value::ConstListView name_value_pair = header.GetListDeprecated();
+    const base::Value::List& name_value_pair = header.GetList();
     if (name_value_pair.size() != 2u) {
       ADD_FAILURE();
       return false;
@@ -1943,14 +1941,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
 
-  std::unique_ptr<base::Value> result = base::JSONReader::ReadDeprecated(
+  absl::optional<base::Value> result = base::JSONReader::Read(
       LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
 
   // The page request must be sent only once, since the worker responded with
   // a generated Response.
   EXPECT_EQ(1, GetRequestCount(kPageUrl));
-  base::DictionaryValue* dict = nullptr;
-  ASSERT_TRUE(result->GetAsDictionary(&dict));
+  base::Value::Dict* dict = result->GetIfDict();
+  ASSERT_TRUE(dict);
   EXPECT_EQ("basic", GetString(*dict, "type"));
   EXPECT_EQ(page_url, GURL(GetString(*dict, "url")));
   EXPECT_EQ(200, GetInt(*dict, "status"));
@@ -1997,14 +1995,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
 
-  std::unique_ptr<base::Value> result = base::JSONReader::ReadDeprecated(
+  absl::optional<base::Value> result = base::JSONReader::Read(
       LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
 
   // The page request must be sent only once, since the worker responded with
   // a generated Response.
   EXPECT_EQ(1, GetRequestCount(kPageUrl));
-  base::DictionaryValue* dict = nullptr;
-  ASSERT_TRUE(result->GetAsDictionary(&dict));
+  base::Value::Dict* dict = result->GetIfDict();
+  ASSERT_TRUE(dict);
   EXPECT_EQ("basic", GetString(*dict, "type"));
   EXPECT_EQ(page_url, GURL(GetString(*dict, "url")));
   EXPECT_EQ(201, GetInt(*dict, "status"));
@@ -2905,8 +2903,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
   ASSERT_TRUE(result.error.empty());
-  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(result.ExtractString()));
+  absl::optional<base::Value> parsed_result =
+      base::JSONReader::Read(result.ExtractString());
+  ASSERT_TRUE(parsed_result);
+  base::Value::Dict* dict = parsed_result->GetIfDict();
   ASSERT_TRUE(dict);
 
   // Default headers are present.
@@ -2956,9 +2956,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
 
   // Ensure the service worker did not see a fetch event for the PlzRedirect
   // URL, since throttles should have redirected before interception.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(redirect_url.spec());
-  EXPECT_EQ(list,
+  EXPECT_EQ(base::Value(std::move(list)),
             EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script));
 
   SetBrowserClientForTesting(old_content_browser_client);
