@@ -246,11 +246,13 @@ enum class NGBreakStatus {
 };
 
 // Update and write fragmentation information to the fragment builder after
-// layout. This will update the block-size stored in the builder. When
-// calculating the block-size, a layout algorithm will include the accumulated
-// block-size of all fragments generated for this node - as if they were all
-// stitched together as one tall fragment. This is the most convenient thing to
-// do, since any block-size specified in CSS applies to the entire box,
+// layout. This will update the block-size stored in the builder. It may also
+// update the stored intrinsic block-size.
+//
+// When calculating the block-size, a layout algorithm will include the
+// accumulated block-size of all fragments generated for this node - as if they
+// were all stitched together as one tall fragment. This is the most convenient
+// thing to do, since any block-size specified in CSS applies to the entire box,
 // regardless of fragmentation. This function will update the block-size to the
 // actual fragment size, by examining possible breakpoints, if necessary.
 //

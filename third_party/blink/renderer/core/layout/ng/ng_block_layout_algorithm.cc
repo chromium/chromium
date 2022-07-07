@@ -1011,6 +1011,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
       DCHECK_EQ(status, NGBreakStatus::kDisableFragmentation);
       return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
     }
+
+    // Read the intrinsic block-size back, since it may have been reduced due to
+    // fragmentation.
+    intrinsic_block_size_ = container_builder_.IntrinsicBlockSize();
   } else {
 #if DCHECK_IS_ON()
   // If we're not participating in a fragmentation context, no block
