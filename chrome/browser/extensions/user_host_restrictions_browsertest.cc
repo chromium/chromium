@@ -56,6 +56,36 @@ class UserHostRestrictionsBrowserTest
     return sessions::SessionTabHelper::IdForTab(GetActiveTab()).id();
   }
 
+  // Withholds host permissions from `extension` and waits for the withholding
+  // to take effect.
+  void WithholdExtensionPermissions(const Extension& extension) {
+    // Withhold extension host permissions. Wait for the notification to be
+    // fired to ensure all renderers and services have been properly updated.
+    auto is_update_for_extension =
+        [&extension](const content::NotificationSource& source,
+                     const content::NotificationDetails& details) {
+          UpdatedExtensionPermissionsInfo* info =
+              content::Details<UpdatedExtensionPermissionsInfo>(details).ptr();
+          return info->extension->id() == extension.id();
+        };
+    content::WindowedNotificationObserver permissions_observer(
+        NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+        base::BindLambdaForTesting(is_update_for_extension));
+    ScriptingPermissionsModifier(profile(), &extension)
+        .SetWithholdHostPermissions(true);
+    permissions_observer.Wait();
+  }
+
+  // Adds `url` as a new user-permitted site and waits for the change to take
+  // effect.
+  void AddUserPermittedSite(const GURL& url) {
+    PermissionsManager* permissions_manager =
+        PermissionsManager::Get(profile());
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserPermittedSite(url::Origin::Create(url));
+    waiter.WaitForPermissionsChange();
+  };
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -295,23 +325,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
   const GURL unrequested_url =
       embedded_test_server()->GetURL("unrequested.example", "/title3.html");
 
-  {
-    // Withhold extension host permissions. Wait for the notification to be
-    // fired to ensure all renderers and services have been properly updated.
-    auto is_update_for_extension =
-        [extension](const content::NotificationSource& source,
-                    const content::NotificationDetails& details) {
-          UpdatedExtensionPermissionsInfo* info =
-              content::Details<UpdatedExtensionPermissionsInfo>(details).ptr();
-          return info->extension->id() == extension->id();
-        };
-    content::WindowedNotificationObserver permissions_observer(
-        NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-        base::BindLambdaForTesting(is_update_for_extension));
-    ScriptingPermissionsModifier(profile(), extension)
-        .SetWithholdHostPermissions(true);
-    permissions_observer.Wait();
-  }
+  WithholdExtensionPermissions(*extension);
 
   const int kTabId = extension_misc::kUnknownTabId;
 
@@ -333,14 +347,8 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
 
   // Next, simulate the user granting all extensions access to `allowed_url` and
   // `unrequested_url`.
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  auto add_user_permitted_site = [permissions_manager](const GURL& url) {
-    PermissionsManagerWaiter waiter(permissions_manager);
-    permissions_manager->AddUserPermittedSite(url::Origin::Create(url));
-    waiter.WaitForPermissionsChange();
-  };
-  add_user_permitted_site(allowed_url);
-  add_user_permitted_site(unrequested_url);
+  AddUserPermittedSite(allowed_url);
+  AddUserPermittedSite(unrequested_url);
 
   // Now, the extension should be allowed to run on the `allowed_url`, but
   // `restricted_url` should remain withheld.
@@ -376,6 +384,8 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
   // only had access to this URL via it being a user-permitted URL (and not
   // via an explicit grant), the extension should lose access to the URL.
   {
+    PermissionsManager* permissions_manager =
+        PermissionsManager::Get(profile());
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->RemoveUserPermittedSite(
         url::Origin::Create(allowed_url));
@@ -398,6 +408,65 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
   // above. Since the user-permitted sites just grants the permissions to the
   // extension, we don't *really* need to, but additional coverage never hurt
   // (in case the implementation changes).
+}
+
+// Tests that user permitted sites are persisted and granted on extension load.
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       PRE_UserPermittedSitesArePersisted) {
+  // Note: We need a "real" extension here (instead of just a TestExtensionDir)
+  // because it needs to persist for the next test.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_all_urls"));
+  ASSERT_TRUE(extension);
+
+  WithholdExtensionPermissions(*extension);
+
+  // Note: We don't use `embedded_test_server` to grab a URL here because the
+  // port would (potentially) change between the PRE_ test and the second test.
+  // Instead, just use a constructed URL. Since all we check is the permissions
+  // data, we don't need the URL to actually load in the browsertest.
+  const GURL allowed_url("https://example.com");
+
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+            extension->permissions_data()->GetPageAccess(
+                allowed_url, extension_misc::kUnknownTabId, nullptr));
+
+  AddUserPermittedSite(allowed_url);
+  // Technically, this should only happen if the feature is enabled. However,
+  // we only add user-permitted sites when the feature is enabled. We can't
+  // DCHECK that (because then the version of these tests without the feature
+  // don't work), so we somewhat awkwardly just allow it to take effect
+  // (knowing that it shouldn't happen outside of tests).
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            extension->permissions_data()->GetPageAccess(
+                allowed_url, extension_misc::kUnknownTabId, nullptr));
+}
+
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       UserPermittedSitesArePersisted) {
+  const Extension* found_extension = nullptr;
+  for (const auto& extension :
+       ExtensionRegistry::Get(profile())->enabled_extensions()) {
+    if (extension->name() == "All Urls Extension") {
+      found_extension = extension.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(found_extension);
+
+  const GURL example_com("https://example.com");
+  // The user-permitted site should be allowed if and only if the feature is
+  // enabled (unlike the test above, our load-time granting *is* guarded behind
+  // the feature flag).
+  if (GetParam()) {
+    EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+              found_extension->permissions_data()->GetPageAccess(
+                  example_com, extension_misc::kUnknownTabId, nullptr));
+  } else {
+    EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+              found_extension->permissions_data()->GetPageAccess(
+                  example_com, extension_misc::kUnknownTabId, nullptr));
+  }
 }
 
 }  // namespace extensions

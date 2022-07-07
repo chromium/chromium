@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -27,6 +28,7 @@
 #include "extensions/browser/pref_types.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -535,16 +537,32 @@ PermissionsManager::GetEffectivePermissionsToGrant(
       ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
           desired_permissions, *granted_permissions);
 
+  URLPatternSet granted_scriptable_hosts =
+      granted_permissions->scriptable_hosts().Clone();
+  URLPatternSet granted_explicit_hosts =
+      granted_permissions->explicit_hosts().Clone();
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    // Also add any hosts the user indicated extensions may always run on.
+    URLPatternSet user_allowed_sites;
+    for (const auto& site : user_permissions_.permitted_sites) {
+      user_allowed_sites.AddOrigin(Extension::kValidHostPermissionSchemes,
+                                   site);
+    }
+
+    granted_scriptable_hosts.AddPatterns(user_allowed_sites);
+    granted_explicit_hosts.AddPatterns(user_allowed_sites);
+  }
+
   // Host permissions may be withheld. The resulting set is the intersection of
   // the hosts the extension desires and the user has approved or should always
   // be granted.
   URLPatternSet new_scriptable_hosts = URLPatternSet::CreateIntersection(
-      desired_permissions.scriptable_hosts(),
-      granted_permissions->scriptable_hosts(),
+      desired_permissions.scriptable_hosts(), granted_scriptable_hosts,
       URLPatternSet::IntersectionBehavior::kDetailed);
   URLPatternSet new_explicit_hosts = URLPatternSet::CreateIntersection(
-      desired_permissions.explicit_hosts(),
-      granted_permissions->explicit_hosts(),
+      desired_permissions.explicit_hosts(), granted_explicit_hosts,
       URLPatternSet::IntersectionBehavior::kDetailed);
 
   // The total resulting permissions set includes the new host permissions and
