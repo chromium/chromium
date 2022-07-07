@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -723,6 +724,27 @@ class Metrics {
     kMaxValue = SCRIPT_STARTED
   };
 
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantFlowFinishedState enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class FlowFinishedState {
+    UNKNOWN = 0,
+    // For now, this means that the script finished successfully, i.e., the
+    // script executor returned 'true' as result. This does not mean that the
+    // run will be counted towards our backend metrics - it's just an indicator
+    // that the script ran until a scripted end.
+    SUCCESS = 1,
+    // There was a script execution error. This can have a variety of causes
+    // such as network outage and many others.
+    FAILURE = 2,
+    // The controller was destroyed mid-script. Usually, this happens if the
+    // tab owning the controller was destroyed, or if the entire activity was
+    // closed by the user.
+    DESTROYED = 3,
+    kMaxValue = DESTROYED
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(
       bool initially_complete,
@@ -802,6 +824,10 @@ class Metrics {
   static void RecordCupRpcVerificationEvent(CupRpcVerificationEvent event);
   static void RecordJsFlowStartedEvent(JsFlowStartedEvent event);
   static void RecordServiceRequestRetryCount(int count, bool success);
+  static void RecordFlowFinished(ukm::UkmRecorder* ukm_recorder,
+                                 ukm::SourceId source_id,
+                                 FlowFinishedState state,
+                                 RoundtripNetworkStats flow_network_stats);
 
   // Extracts the enum value corresponding to the intent specified in
   // |script_parameters|.

@@ -204,8 +204,8 @@ TEST_F(ServiceImplTest, GetNextActions) {
               Run(net::HTTP_OK, std::string("response"), _));
 
   service_->GetNextActions(
-      TriggerContext(), previous_global_payload, previous_script_payload,
-      /* processed_actions = */ {},
+      TriggerContext(), std::string("fake_previous_global_payload"),
+      std::string("fake_previous_script_payload"), /* processed_actions = */ {},
       /* timing_stats = */ RoundtripTimingStats(), RoundtripNetworkStats(),
       mock_response_callback_.Get());
 }

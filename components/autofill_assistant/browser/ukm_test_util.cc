@@ -142,6 +142,17 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmUserDataSource(
                                  {kUserDataSource});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmFlowFinished(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(
+      kAutofillAssistantFlowFinishedEntry,
+      {kFlowFinishedState, kFlowFinishedNumActions,
+       kFlowFinishedNumJsFlowActions, kFlowFinishedNumRoundtrips,
+       kFlowFinishedTotalDecodedGetActionsSizeInBytes,
+       kFlowFinishedTotalDecodedJsFlowSizeInBytes,
+       kFlowFinishedTotalEncodedGetActionsSizeInBytes});
+}
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
     const std::vector<std::pair<ukm::SourceId, std::vector<UkmEnumVariant>>>&
         input) {

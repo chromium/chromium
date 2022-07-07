@@ -699,6 +699,9 @@ message RoundtripNetworkStats {
   // actions that were not executed, so this list can be longer than
   // |processed_actions|.
   repeated ActionNetworkStats action_stats = 3;
+  // Used for Chrome metrics only; in backend-metrics, this will always be 1 and
+  // can be ignored.
+  optional int32 num_roundtrips = 4;
 }
 
 // Next request to get a script's actions.

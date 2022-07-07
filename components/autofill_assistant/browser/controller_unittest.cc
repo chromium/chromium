@@ -35,6 +35,7 @@
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/ukm_test_util.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/strings/grit/components_strings.h"
@@ -46,6 +47,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,6 +60,7 @@ using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Gt;
@@ -99,6 +102,8 @@ class ControllerTest : public testing::Test {
     auto service = std::make_unique<NiceMock<MockService>>();
     mock_service_ = service.get();
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents_.get());
+    navigation_ids_.emplace_back(
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
     ON_CALL(mock_client_, GetWebContents).WillByDefault(Return(web_contents()));
     ON_CALL(mock_client_, HasHadUI()).WillByDefault(Return(true));
@@ -111,7 +116,7 @@ class ControllerTest : public testing::Test {
         mock_runtime_manager_->GetWeakPtr(), std::move(service), &ukm_recorder_,
         &mock_annotate_dom_model_service_);
 
-    controller_->SetWebControllerForTest(std::move(web_controller));
+    SetWebControllerForTest(controller_.get(), std::move(web_controller));
 
     ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
       controller_->SetUiShown(true);
@@ -175,6 +180,12 @@ class ControllerTest : public testing::Test {
     return script;
   }
 
+  // Defined as a function to allow access to other tests.
+  void SetWebControllerForTest(Controller* controller,
+                               std::unique_ptr<WebController> web_controller) {
+    controller->SetWebControllerForTest(std::move(web_controller));
+  }
+
   void SetupScripts(SupportsScriptResponseProto scripts) {
     std::string scripts_str;
     scripts.SerializeToString(&scripts_str);
@@ -220,6 +231,8 @@ class ControllerTest : public testing::Test {
         url, web_contents()->GetPrimaryMainFrame());
     content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
     controller_->DidFinishLoad(nullptr, GURL(""));
+    navigation_ids_.emplace_back(
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 
   void SimulateWebContentsFocused() {
@@ -272,6 +285,7 @@ class ControllerTest : public testing::Test {
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<Controller> controller_;
   NiceMock<MockAnnotateDomModelService> mock_annotate_dom_model_service_;
+  std::vector<ukm::SourceId> navigation_ids_;
 };
 
 struct NavigationState {
@@ -2202,6 +2216,187 @@ TEST_F(ControllerTest, OnGetScriptsFailedWillShutdown) {
 
   Start();
   EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
+}
+
+TEST_F(ControllerTest, FlowFinishedMetricOneRoundtripNoActions) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetupScripts(script_response);
+
+  EXPECT_CALL(*mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_OK, "",
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 13}));
+
+  Start("http://a.example.com/path");
+
+  EXPECT_THAT(
+      GetUkmFlowFinished(ukm_recorder_),
+      ElementsAreArray(std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>{
+          {navigation_ids_[0],
+           {{kFlowFinishedState, 1 /*Metrics::FlowFinishedState::SUCCESS*/},
+            {kFlowFinishedNumActions, 0},
+            {kFlowFinishedNumJsFlowActions, 0},
+            {kFlowFinishedNumRoundtrips, 1},
+            {kFlowFinishedTotalDecodedGetActionsSizeInBytes, 0},
+            {kFlowFinishedTotalDecodedJsFlowSizeInBytes, 0},
+            {kFlowFinishedTotalEncodedGetActionsSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(13)}}}}));
+}
+
+TEST_F(ControllerTest, FlowFinishedMetricFailedRoundtrip) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetupScripts(script_response);
+
+  EXPECT_CALL(*mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_UNAUTHORIZED, "",
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 13}));
+
+  Start("http://a.example.com/path");
+
+  EXPECT_THAT(
+      GetUkmFlowFinished(ukm_recorder_),
+      ElementsAreArray(std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>{
+          {navigation_ids_[0],
+           {{kFlowFinishedState, 2 /*Metrics::FlowFinishedState::FAILURE*/},
+            {kFlowFinishedNumActions, 0},
+            {kFlowFinishedNumJsFlowActions, 0},
+            {kFlowFinishedNumRoundtrips, 1},
+            {kFlowFinishedTotalDecodedGetActionsSizeInBytes, 0},
+            {kFlowFinishedTotalDecodedJsFlowSizeInBytes, 0},
+            {kFlowFinishedTotalEncodedGetActionsSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(13)}}}}));
+}
+
+TEST_F(ControllerTest, FlowFinishedMetricControllerDestroyedMidFlow) {
+  auto service = std::make_unique<NiceMock<MockService>>();
+  auto* service_ptr = service.get();
+
+  auto controller = std::make_unique<Controller>(
+      web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
+      mock_runtime_manager_->GetWeakPtr(), std::move(service), &ukm_recorder_,
+      /* annotate_dom_model_service= */ nullptr);
+  SetWebControllerForTest(controller.get(),
+                          std::make_unique<NiceMock<MockWebController>>());
+
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  std::string serialized_script_response;
+  script_response.SerializeToString(&serialized_script_response);
+  EXPECT_CALL(*service_ptr, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_script_response,
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  // Run a prompt to block execution.
+  ActionsResponseProto roundtrip;
+  roundtrip.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("ok");
+  std::string serialized_roundtrip;
+  roundtrip.SerializeToString(&serialized_roundtrip);
+  EXPECT_CALL(*service_ptr, GetActions)
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_OK, serialized_roundtrip,
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 10}));
+  controller->Start(GURL("http://a.example.com/path"),
+                    std::make_unique<TriggerContext>());
+  EXPECT_THAT(GetUkmFlowFinished(ukm_recorder_), IsEmpty());
+
+  controller.reset();
+  EXPECT_THAT(
+      GetUkmFlowFinished(ukm_recorder_),
+      ElementsAreArray(std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>{
+          {navigation_ids_[0],
+           {{kFlowFinishedState, 3 /*Metrics::FlowFinishedState::DESTROYED*/},
+            {kFlowFinishedNumActions, 1},
+            {kFlowFinishedNumJsFlowActions, 0},
+            {kFlowFinishedNumRoundtrips, 1},
+            {kFlowFinishedTotalDecodedGetActionsSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(serialized_roundtrip.size())},
+            {kFlowFinishedTotalDecodedJsFlowSizeInBytes, 0},
+            {kFlowFinishedTotalEncodedGetActionsSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(10)}}}}));
+}
+
+TEST_F(ControllerTest, FlowFinishedMetricMultipleRoundtrips) {
+  // A single script with a prompt action.
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetupScripts(script_response);
+
+  // First roundtrip, containing a single action and pretending to be 10 bytes.
+  ActionsResponseProto first_roundtrip;
+  first_roundtrip.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("ok 1");
+  std::string serialized_first_roundtrip;
+  first_roundtrip.SerializeToString(&serialized_first_roundtrip);
+  EXPECT_CALL(*mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_OK, serialized_first_roundtrip,
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 10}));
+
+  // Second roundtrip, containing three actions (one of which a JS flow action),
+  // pretending to be 15 bytes long. Note that the first action fails
+  // immediately, leading to only a subset of actions being executed (but they
+  // should all count towards network traffic).
+  ActionsResponseProto second_roundtrip;
+  // Invalid showcast, since no selector is specified.
+  second_roundtrip.add_actions()->mutable_show_cast();
+  second_roundtrip.add_actions()->mutable_js_flow()->set_js_flow("return 5;");
+  second_roundtrip.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("ok 2");
+  std::string serialized_second_roundtrip;
+  second_roundtrip.SerializeToString(&serialized_second_roundtrip);
+  EXPECT_CALL(*mock_service_, GetNextActions)
+      .WillOnce(RunOnceCallback<6>(
+          net::HTTP_OK, serialized_second_roundtrip,
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 15}))
+      // Third roundtrip is empty, ending the flow.
+      .WillOnce(RunOnceCallback<6>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  Start("http://a.example.com/path");
+  EXPECT_THAT(*fake_script_executor_ui_delegate_.GetUserActions(),
+              ElementsAre(Property(&UserAction::chip,
+                                   Field(&Chip::text, StrEq("ok 1")))));
+  (*fake_script_executor_ui_delegate_.GetUserActions())[0].RunCallback();
+
+  EXPECT_THAT(
+      GetUkmFlowFinished(ukm_recorder_),
+      ElementsAreArray(std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>{
+          {navigation_ids_[0],
+           {{kFlowFinishedState, 1 /*Metrics::FlowFinishedState::SUCCESS*/},
+            {kFlowFinishedNumActions, 4},
+            {kFlowFinishedNumJsFlowActions, 1},
+            {kFlowFinishedNumRoundtrips, 3},
+            {kFlowFinishedTotalDecodedGetActionsSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(
+                 serialized_first_roundtrip.size() +
+                 serialized_second_roundtrip.size())},
+            {kFlowFinishedTotalDecodedJsFlowSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(
+                 second_roundtrip.actions(1).SerializeAsString().size())},
+            {kFlowFinishedTotalEncodedGetActionsSizeInBytes,
+             ukm::GetExponentialBucketMinForBytes(
+                 25 /* sum of response infos */)}}}}));
 }
 
 class ControllerPrerenderTest : public ControllerTest {

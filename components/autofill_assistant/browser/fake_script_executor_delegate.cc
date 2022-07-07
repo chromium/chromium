@@ -184,4 +184,9 @@ FakeScriptExecutorDelegate::GetCurrentBrowseDomainsList() {
   return &browse_domains_;
 }
 
+void FakeScriptExecutorDelegate::OnActionsResponseReceived(
+    const RoundtripNetworkStats& network_stats) {
+  roundtrip_network_stats_ = network_stats;
+}
+
 }  // namespace autofill_assistant

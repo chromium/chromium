@@ -2208,30 +2208,33 @@ TEST_F(ScriptExecutorTest, RoundtripTimingStats) {
   EXPECT_EQ(1000, timing_stats.client_time_ms());
 }
 
-TEST_F(ScriptExecutorTest, RoundtripNetworkStats) {
+TEST_F(ScriptExecutorTest, RoundtripNetworkStatsForSuccessfulRoundtrip) {
   ActionsResponseProto actions_response;
   ActionProto* action = actions_response.add_actions();
   action->mutable_tell()->set_message("Hello world");
 
-  ServiceRequestSender::ResponseInfo response_info;
-  response_info.encoded_body_length = 12;
-
   EXPECT_CALL(mock_service_, GetActions)
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response),
-                                   response_info));
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_OK, Serialize(actions_response),
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 76}));
 
   RoundtripNetworkStats captured_network_stats;
   EXPECT_CALL(mock_service_, GetNextActions)
-      .WillOnce(
-          DoAll(SaveArg<5>(&captured_network_stats),
-                RunOnceCallback<6>(net::HTTP_OK, /* response= */ "",
-                                   ServiceRequestSender::ResponseInfo{})));
+      .WillOnce(DoAll(
+          SaveArg<5>(&captured_network_stats),
+          [&]() {
+            EXPECT_EQ(captured_network_stats,
+                      delegate_.GetRoundtripNetworkStats());
+          },
+          RunOnceCallback<6>(
+              net::HTTP_OK, "",
+              ServiceRequestSender::ResponseInfo{.encoded_body_length = 13})));
 
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_EQ(captured_network_stats.roundtrip_encoded_body_size_bytes(), 12);
+  EXPECT_EQ(captured_network_stats.roundtrip_encoded_body_size_bytes(), 76);
   EXPECT_EQ(static_cast<size_t>(
                 captured_network_stats.roundtrip_decoded_body_size_bytes()),
             Serialize(actions_response).size());
@@ -2240,6 +2243,53 @@ TEST_F(ScriptExecutorTest, RoundtripNetworkStats) {
   EXPECT_EQ(static_cast<size_t>(
                 captured_network_stats.action_stats(0).decoded_size_bytes()),
             Serialize(*action).size());
+
+  // Roundtrip accumulation is more comprehensively tested in the controller,
+  // this is just to make sure that GetActions and GetNextActions are both
+  // reported to the delegate.
+  EXPECT_EQ(
+      delegate_.GetRoundtripNetworkStats().roundtrip_encoded_body_size_bytes(),
+      13);
+}
+
+TEST_F(ScriptExecutorTest, RoundtripNetworkStatsForFailedRoundtrip) {
+  EXPECT_CALL(mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_UNAUTHORIZED, "",
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 12}));
+
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, false)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_EQ(
+      delegate_.GetRoundtripNetworkStats().roundtrip_encoded_body_size_bytes(),
+      12);
+  EXPECT_EQ(
+      delegate_.GetRoundtripNetworkStats().roundtrip_decoded_body_size_bytes(),
+      0);
+  EXPECT_EQ(delegate_.GetRoundtripNetworkStats().num_roundtrips(), 1);
+  EXPECT_EQ(delegate_.GetRoundtripNetworkStats().action_stats().size(), 0);
+}
+
+TEST_F(ScriptExecutorTest, RoundtripNetworkStatsForParsingError) {
+  EXPECT_CALL(mock_service_, GetActions)
+      .WillOnce(RunOnceCallback<5>(
+          net::HTTP_OK, "\xff\xff\xff not a valid proto, 36 bytes long",
+          ServiceRequestSender::ResponseInfo{.encoded_body_length = 12}));
+
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, false)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_EQ(
+      delegate_.GetRoundtripNetworkStats().roundtrip_encoded_body_size_bytes(),
+      12);
+  EXPECT_EQ(
+      delegate_.GetRoundtripNetworkStats().roundtrip_decoded_body_size_bytes(),
+      36);
+  EXPECT_EQ(delegate_.GetRoundtripNetworkStats().num_roundtrips(), 1);
+  EXPECT_EQ(delegate_.GetRoundtripNetworkStats().action_stats().size(), 0);
 }
 
 TEST_F(ScriptExecutorTest, ClearPersistentUiOnError) {

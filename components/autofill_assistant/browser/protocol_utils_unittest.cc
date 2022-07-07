@@ -130,6 +130,7 @@ TEST_F(ProtocolUtilsTest, CreateNextScriptActionsRequest) {
   processed_actions.emplace_back(ProcessedActionProto());
 
   RoundtripNetworkStats network_stats;
+  network_stats.set_num_roundtrips(1);
   network_stats.set_roundtrip_encoded_body_size_bytes(12345);
   network_stats.set_roundtrip_decoded_body_size_bytes(23456);
   auto* action_stats = network_stats.add_action_stats();
@@ -668,6 +669,7 @@ TEST_F(ProtocolUtilsTest, ComputeNetworkStats) {
   response_info.encoded_body_length = 20;
 
   RoundtripNetworkStats expected_stats;
+  expected_stats.set_num_roundtrips(1);
   expected_stats.set_roundtrip_encoded_body_size_bytes(20);
   expected_stats.set_roundtrip_decoded_body_size_bytes(28);
   auto* action_stats = expected_stats.add_action_stats();

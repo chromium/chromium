@@ -74,6 +74,8 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void SetBrowseModeInvisible(bool invisible) override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   bool MustUseBackendData() const override;
+  void OnActionsResponseReceived(
+      const RoundtripNetworkStats& network_stats) override;
 
   bool ShouldShowWarning() override;
 
@@ -122,6 +124,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
     must_use_backend_data_ = must_use_backend_data;
   }
 
+  RoundtripNetworkStats GetRoundtripNetworkStats() const {
+    return roundtrip_network_stats_;
+  }
+
  private:
   ClientSettings client_settings_;
   GURL current_url_;
@@ -144,6 +150,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   raw_ptr<UserData> user_data_ = nullptr;
   ProcessedActionStatusDetailsProto log_info_;
   bool must_use_backend_data_ = false;
+  RoundtripNetworkStats roundtrip_network_stats_;
 
   bool require_ui_ = false;
 };

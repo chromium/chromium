@@ -104,6 +104,10 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
   MOCK_METHOD(ProcessedActionStatusDetailsProto&, GetLogInfo, (), (override));
   MOCK_METHOD(bool, ShouldShowWarning, (), (override));
   MOCK_METHOD(bool, MustUseBackendData, (), (const override));
+  MOCK_METHOD(void,
+              OnActionsResponseReceived,
+              (const RoundtripNetworkStats& network_stats),
+              (override));
 
  private:
   ClientSettings client_settings_;

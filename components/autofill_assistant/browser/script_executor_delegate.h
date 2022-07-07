@@ -158,6 +158,10 @@ class ScriptExecutorDelegate {
   // backend endpoint to query data.
   virtual bool MustUseBackendData() const = 0;
 
+  // Called when a new action response has been received. Used for metrics.
+  virtual void OnActionsResponseReceived(
+      const RoundtripNetworkStats& network_stats) = 0;
+
  protected:
   virtual ~ScriptExecutorDelegate() = default;
 };

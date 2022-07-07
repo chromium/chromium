@@ -846,6 +846,10 @@ void ScriptExecutor::OnGetActions(
   }
 
   if (!success) {
+    roundtrip_network_stats_ = ProtocolUtils::ComputeNetworkStats(
+        response, response_info, /* actions = */ {});
+    delegate_->OnActionsResponseReceived(roundtrip_network_stats_);
+
     RunCallback(false);
     return;
   }
@@ -892,6 +896,7 @@ bool ScriptExecutor::ProcessNextActionResponse(
 
   roundtrip_network_stats_ =
       ProtocolUtils::ComputeNetworkStats(response, response_info, actions_);
+  delegate_->OnActionsResponseReceived(roundtrip_network_stats_);
   ReportPayloadsToListener();
   if (should_update_scripts) {
     ReportScriptsUpdateToListener(std::move(scripts));

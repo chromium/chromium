@@ -38,6 +38,8 @@ const char kAutofillAssistantCollectShippingAddress[] =
     "AutofillAssistant.CollectShippingAddress";
 const char kAutofillAssistantCollectUserDataResult[] =
     "AutofillAssistant.CollectUserDataResult";
+const char kAutofillAssistantFlowFinishedEntry[] =
+    "AutofillAssistant.FlowFinished";
 
 // The identifiers for all UKM metrics that we currently record/test.
 const char kTriggerUiType[] = "TriggerUIType";
@@ -71,6 +73,16 @@ const char kShippingModified[] = "ShippingModified";
 const char kResult[] = "Result";
 const char kTimeTakenMs[] = "TimeTakenMs";
 const char kUserDataSource[] = "UserDataSource";
+const char kFlowFinishedState[] = "FlowFinishedState";
+const char kFlowFinishedNumActions[] = "NumActions";
+const char kFlowFinishedNumJsFlowActions[] = "NumJsFlowActions";
+const char kFlowFinishedNumRoundtrips[] = "NumRoundtrips";
+const char kFlowFinishedTotalDecodedGetActionsSizeInBytes[] =
+    "TotalDecodedGetActionsSizeInBytes";
+const char kFlowFinishedTotalDecodedJsFlowSizeInBytes[] =
+    "TotalDecodedJsFlowSizeInBytes";
+const char kFlowFinishedTotalEncodedGetActionsSizeInBytes[] =
+    "TotalEncodedGetActionsSizeInBytes";
 
 // Convenience accessors for UKM metrics.
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -127,6 +139,9 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmTimeTakenMs(
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmUserDataSource(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmFlowFinished(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
+
 // Variant containing all UKM enums that we currently record/test.
 // NOTE: When adding entries, remember to also modify kUkmEnumMetricNames!
 using UkmEnumVariant = absl::variant<TriggerScriptProto::TriggerUIType,
@@ -140,7 +155,8 @@ using UkmEnumVariant = absl::variant<TriggerScriptProto::TriggerUIType,
                                      Metrics::AutofillAssistantSource,
                                      AutofillAssistantIntent,
                                      Metrics::AutofillAssistantExperiment,
-                                     Metrics::Onboarding>;
+                                     Metrics::Onboarding,
+                                     Metrics::FlowFinishedState>;
 
 // The metric names corresponding to the variant alternatives of UkmEnumVariant.
 // NOTE: When adding entries, remember to also modify UkmEnumVariant!
@@ -155,7 +171,8 @@ const std::vector<std::string> kUkmEnumMetricNames = {kTriggerUiType,
                                                       kSource,
                                                       kIntent,
                                                       kExperiments,
-                                                      kOnboarding};
+                                                      kOnboarding,
+                                                      kFlowFinishedState};
 
 // Intended to be used to convert a UkmEnumVariant to int64_t using a visitor.
 // Usage:

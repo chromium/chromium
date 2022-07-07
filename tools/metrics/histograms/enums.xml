@@ -5943,6 +5943,13 @@ others/histograms.xml -->
   <int value="3" label="Already installed"/>
 </enum>
 
+<enum name="AutofillAssistantFlowFinishedState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Successful"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="Destroyed"/>
+</enum>
+
 <enum name="AutofillAssistantGetClientTokenResult">
   <int value="0" label="Called"/>
   <int value="1" label="Success"/>

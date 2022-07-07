@@ -1031,6 +1031,7 @@ RoundtripNetworkStats ProtocolUtils::ComputeNetworkStats(
     const ServiceRequestSender::ResponseInfo& response_info,
     const std::vector<std::unique_ptr<Action>>& actions) {
   RoundtripNetworkStats stats;
+  stats.set_num_roundtrips(1);
   stats.set_roundtrip_decoded_body_size_bytes(response.size());
   stats.set_roundtrip_encoded_body_size_bytes(
       response_info.encoded_body_length);

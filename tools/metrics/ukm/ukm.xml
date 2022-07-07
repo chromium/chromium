@@ -2466,6 +2466,84 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.FlowFinished">
+  <owner>arbesser@google.com</owner>
+  <owner>fga@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics that are recorded at the end of a flow. Once an autofill
+    assistant flow has started, this event will be recorded exactly once at the
+    end of it. Metrics in this event describe aggregated statistics of the flow.
+  </summary>
+  <metric name="FlowFinishedState" enum="AutofillAssistantFlowFinishedState">
+    <summary>
+      An enum capturing whether the flow ended successfully or not.
+    </summary>
+  </metric>
+  <metric name="NumActions">
+    <summary>
+      The total number of actions received, across all roundtrips of this flow.
+    </summary>
+  </metric>
+  <metric name="NumJsFlowActions">
+    <summary>
+      The total number of JS flow actions received, summed over all GetActions
+      responses.
+    </summary>
+  </metric>
+  <metric name="NumRoundtrips">
+    <summary>
+      The total number of roundtrips during this flow.
+    </summary>
+  </metric>
+  <metric name="TotalDecodedGetActionsSizeInBytes">
+    <summary>
+      The total size of all received GetActions responses, summed over all
+      downloaded responses after decoding, in bytes. This number is
+      exponentially bucketed and uses the UKM GetExponentialBucketMinForBytes
+      method with a default value of 1.3 for spacing.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TotalDecodedJsFlowSizeInBytes">
+    <summary>
+      The total size of all JS flow actions received, summed over all GetActions
+      responses, in bytes. This number is exponentially bucketed and uses the
+      UKM GetExponentialBucketMinForBytes method with a default value of 1.3 for
+      spacing.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TotalEncodedGetActionsSizeInBytes">
+    <summary>
+      The total number of bytes that were received from the GetActions RPC,
+      summed over all downloaded responses before decoding, in bytes. This
+      number is exponentially bucketed and uses the UKM
+      GetExponentialBucketMinForBytes method with a default value of 1.3 for
+      spacing.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.InChromeTriggering">
   <owner>arbesser@google.com</owner>
   <owner>mcarlen@google.com</owner>
