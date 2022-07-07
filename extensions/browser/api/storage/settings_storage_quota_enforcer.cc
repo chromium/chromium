@@ -137,16 +137,16 @@ ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
 }
 
 ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
-    WriteOptions options, const base::DictionaryValue& values) {
+    WriteOptions options,
+    const base::Value::Dict& values) {
   LazyCalculateUsage();
   size_t new_used_total = used_total_;
   std::map<std::string, size_t> new_used_per_setting = used_per_setting_;
-  for (base::DictionaryValue::Iterator it(values); !it.IsAtEnd();
-       it.Advance()) {
-    Allocate(it.key(), it.value(), &new_used_total, &new_used_per_setting);
+  for (const auto [key, value] : values) {
+    Allocate(key, value, &new_used_total, &new_used_per_setting);
 
     if (!(options & IGNORE_QUOTA) &&
-        new_used_per_setting[it.key()] > limits_.quota_bytes_per_item) {
+        new_used_per_setting[key] > limits_.quota_bytes_per_item) {
       return WriteResult(QuotaExceededError(QUOTA_BYTES_PER_ITEM));
     }
   }

@@ -144,7 +144,7 @@ ValueStore::WriteResult LeveldbValueStore::Set(WriteOptions options,
 
 ValueStore::WriteResult LeveldbValueStore::Set(
     WriteOptions options,
-    const base::DictionaryValue& settings) {
+    const base::Value::Dict& settings) {
   Status status = EnsureDbIsOpen();
   if (!status.ok())
     return WriteResult(std::move(status));
@@ -152,9 +152,8 @@ ValueStore::WriteResult LeveldbValueStore::Set(
   leveldb::WriteBatch batch;
   ValueStoreChangeList changes;
 
-  for (base::DictionaryValue::Iterator it(settings); !it.IsAtEnd();
-       it.Advance()) {
-    status.Merge(AddToBatch(options, it.key(), it.value(), &batch, &changes));
+  for (const auto [key, value] : settings) {
+    status.Merge(AddToBatch(options, key, value, &batch, &changes));
     if (!status.ok())
       return WriteResult(std::move(status));
   }

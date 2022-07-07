@@ -79,7 +79,7 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
   return same;
 }
 
-void SetSettingsOnBackendSequence(const base::DictionaryValue* settings,
+void SetSettingsOnBackendSequence(const base::Value::Dict* settings,
                                   base::WaitableEvent* signal,
                                   value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
@@ -91,7 +91,7 @@ void SetSettingsOnBackendSequence(const base::DictionaryValue* settings,
 
 void SetExtensionSettings(Profile* profile,
                           const std::string& id,
-                          const base::DictionaryValue& settings) {
+                          const base::Value::Dict& settings) {
   base::WaitableEvent signal(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
   extensions::StorageFrontend::Get(profile)->RunWithStorage(
@@ -102,7 +102,7 @@ void SetExtensionSettings(Profile* profile,
 }
 
 void SetExtensionSettingsForAllProfiles(const std::string& id,
-                                        const base::DictionaryValue& settings) {
+                                        const base::Value::Dict& settings) {
   for (int i = 0; i < test()->num_clients(); ++i) {
     SetExtensionSettings(test()->GetProfile(i), id, settings);
   }

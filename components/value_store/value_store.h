@@ -183,7 +183,7 @@ class ValueStore {
 
   // Sets multiple keys to new values.
   virtual WriteResult Set(WriteOptions options,
-                          const base::DictionaryValue& values) = 0;
+                          const base::Value::Dict& values) = 0;
 
   // Removes a key from the storage.
   virtual WriteResult Remove(const std::string& key) = 0;

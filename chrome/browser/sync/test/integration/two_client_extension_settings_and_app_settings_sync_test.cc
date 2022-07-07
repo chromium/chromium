@@ -37,28 +37,28 @@ void MutateSomeSettings(
     const std::string& extension2) {
   {
     // Write to extension0 from profile 0 but not profile 1.
-    base::DictionaryValue settings;
-    settings.SetString("asdf", base::StringPrintf("asdfasdf-%d", seed));
+    base::Value::Dict settings;
+    settings.Set("asdf", base::StringPrintf("asdfasdf-%d", seed));
     SetExtensionSettings(test()->verifier(), extension0, settings);
     SetExtensionSettings(test()->GetProfile(0), extension0, settings);
   }
   {
     // Write the same data to extension1 from both profiles.
-    base::DictionaryValue settings;
-    settings.SetString("asdf", base::StringPrintf("asdfasdf-%d", seed));
-    settings.SetString("qwer", base::StringPrintf("qwerqwer-%d", seed));
+    base::Value::Dict settings;
+    settings.Set("asdf", base::StringPrintf("asdfasdf-%d", seed));
+    settings.Set("qwer", base::StringPrintf("qwerqwer-%d", seed));
     SetExtensionSettingsForAllProfiles(extension1, settings);
   }
   {
     // Write different data to extension2 from each profile.
-    base::DictionaryValue settings0;
-    settings0.SetString("zxcv", base::StringPrintf("zxcvzxcv-%d", seed));
+    base::Value::Dict settings0;
+    settings0.Set("zxcv", base::StringPrintf("zxcvzxcv-%d", seed));
     SetExtensionSettings(test()->verifier(), extension2, settings0);
     SetExtensionSettings(test()->GetProfile(0), extension2, settings0);
 
-    base::DictionaryValue settings1;
-    settings1.SetString("1324", base::StringPrintf("12341234-%d", seed));
-    settings1.SetString("5687", base::StringPrintf("56785678-%d", seed));
+    base::Value::Dict settings1;
+    settings1.Set("1324", base::StringPrintf("12341234-%d", seed));
+    settings1.Set("5687", base::StringPrintf("56785678-%d", seed));
     SetExtensionSettings(test()->verifier(), extension2, settings1);
     SetExtensionSettings(test()->GetProfile(1), extension2, settings1);
   }
@@ -89,14 +89,14 @@ testing::AssertionResult StartWithSameSettingsTest(
   {
       // Leave extension0 empty.
   } {
-    base::DictionaryValue settings;
-    settings.SetString("foo", "bar");
+    base::Value::Dict settings;
+    settings.Set("foo", "bar");
     SetExtensionSettingsForAllProfiles(extension1, settings);
   }
   {
-    base::DictionaryValue settings;
-    settings.SetString("foo", "bar");
-    settings.SetString("baz", "qux");
+    base::Value::Dict settings;
+    settings.Set("foo", "bar");
+    settings.Set("baz", "qux");
     SetExtensionSettingsForAllProfiles(extension2, settings);
   }
 
@@ -145,15 +145,15 @@ testing::AssertionResult StartWithDifferentSettingsTest(
       // test (nonempty, nonempty) because the merging will provide
       // unpredictable results, so test (empty, empty).
   } {
-    base::DictionaryValue settings;
-    settings.SetString("foo", "bar");
+    base::Value::Dict settings;
+    settings.Set("foo", "bar");
     SetExtensionSettings(test()->verifier(), extension1, settings);
     SetExtensionSettings(test()->GetProfile(0), extension1, settings);
   }
   {
-    base::DictionaryValue settings;
-    settings.SetString("foo", "bar");
-    settings.SetString("baz", "qux");
+    base::Value::Dict settings;
+    settings.Set("foo", "bar");
+    settings.Set("baz", "qux");
     SetExtensionSettings(test()->verifier(), extension2, settings);
     SetExtensionSettings(test()->GetProfile(1), extension2, settings);
   }

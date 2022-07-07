@@ -391,9 +391,8 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
                "extension_id", extension_id());
   if (args().empty() || !args()[0].is_dict())
     return BadMessage();
-  const base::DictionaryValue& input =
-      base::Value::AsDictionaryValue(args()[0]);
-  return UseWriteResult(storage->Set(ValueStore::DEFAULTS, input));
+  return UseWriteResult(
+      storage->Set(ValueStore::DEFAULTS, args()[0].GetDict()));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {

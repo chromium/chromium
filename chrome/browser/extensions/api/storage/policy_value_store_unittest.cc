@@ -90,7 +90,7 @@ class MutablePolicyValueStore : public PolicyValueStore {
   }
 
   WriteResult Set(WriteOptions options,
-                  const base::DictionaryValue& values) override {
+                  const base::Value::Dict& values) override {
     return delegate()->Set(options, values);
   }
 
@@ -180,8 +180,8 @@ TEST_F(PolicyValueStoreTest, ReadOnly) {
   base::Value string_value("value");
   EXPECT_FALSE(store_->Set(options, "key", string_value).status().ok());
 
-  base::DictionaryValue dict;
-  dict.SetStringKey("key", "value");
+  base::Value::Dict dict;
+  dict.Set("key", "value");
   EXPECT_FALSE(store_->Set(options, dict).status().ok());
 
   EXPECT_FALSE(store_->Remove("key").status().ok());

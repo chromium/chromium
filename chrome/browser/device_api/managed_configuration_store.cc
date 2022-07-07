@@ -19,7 +19,7 @@ void ManagedConfigurationStore::Initialize() {
 }
 
 bool ManagedConfigurationStore::SetCurrentPolicy(
-    const base::DictionaryValue& current_configuration) {
+    const base::Value::Dict& current_configuration) {
   if (!store_)
     Initialize();
   // Get the previous policies stored in the database.
@@ -38,7 +38,7 @@ bool ManagedConfigurationStore::SetCurrentPolicy(
 
   bool store_updated = false;
   for (auto kv : previous_policy) {
-    if (!current_configuration.FindKey(kv.first))
+    if (!current_configuration.Find(kv.first))
       removed_keys.push_back(kv.first);
   }
   value_store::ValueStoreChangeList changes;

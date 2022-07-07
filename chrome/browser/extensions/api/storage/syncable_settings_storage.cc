@@ -97,7 +97,8 @@ ValueStore::WriteResult SyncableSettingsStorage::Set(
 }
 
 ValueStore::WriteResult SyncableSettingsStorage::Set(
-    WriteOptions options, const base::DictionaryValue& values) {
+    WriteOptions options,
+    const base::Value::Dict& values) {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Set(options, values));
   if (!result.status().ok())

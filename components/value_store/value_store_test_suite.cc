@@ -21,7 +21,7 @@ const ValueStore::WriteOptions DEFAULTS = ValueStore::DEFAULTS;
 
 // Returns whether the read result of a storage operation has the expected
 // settings.
-void ExpectSettingsEq(const base::DictionaryValue& expected,
+void ExpectSettingsEq(const base::Value::Dict& expected,
                       ValueStore::ReadResult actual_result) {
   ASSERT_TRUE(actual_result.status().ok()) << actual_result.status().message;
   EXPECT_EQ(expected, actual_result.settings());
@@ -54,10 +54,10 @@ void ExpectChangesEq(const ValueStoreChangeList& expected,
   }
 }
 
-base::DictionaryValue MakeTestMap(std::map<std::string, std::string> pairs) {
-  base::DictionaryValue map;
+base::Value::Dict MakeTestMap(std::map<std::string, std::string> pairs) {
+  base::Value::Dict map;
   for (const auto& it : pairs)
-    map.GetDict().Set(it.first, std::move(it.second));
+    map.Set(it.first, std::move(it.second));
   return map;
 }
 
@@ -86,8 +86,7 @@ TEST_P(ValueStoreTestSuite, SetProducesMatchingChanges) {
       ValueStoreChange{"foo", absl::nullopt, base::Value{"baz"}});
   expected_changes.push_back(
       ValueStoreChange{"bar", absl::nullopt, base::Value{"qux"}});
-  base::DictionaryValue settings =
-      MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
   ExpectChangesEq(expected_changes, storage_->Set(DEFAULTS, settings));
 }
 
@@ -96,8 +95,7 @@ TEST_P(ValueStoreTestSuite, RemoveMissingProducesNoChange) {
 }
 
 TEST_P(ValueStoreTestSuite, RemoveSingleKeyProducesMatchingChanges) {
-  base::DictionaryValue settings =
-      MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
   storage_->Set(DEFAULTS, settings);
 
   ValueStoreChangeList changes;
@@ -106,7 +104,7 @@ TEST_P(ValueStoreTestSuite, RemoveSingleKeyProducesMatchingChanges) {
 }
 
 TEST_P(ValueStoreTestSuite, RemoveKeyListProducesMatchingChanges) {
-  base::DictionaryValue settings =
+  base::Value::Dict settings =
       MakeTestMap({{"foo", "baz"}, {"bar", "qux"}, {"abc", "def"}});
   storage_->Set(DEFAULTS, settings);
 
@@ -118,55 +116,51 @@ TEST_P(ValueStoreTestSuite, RemoveKeyListProducesMatchingChanges) {
 }
 
 TEST_P(ValueStoreTestSuite, SetValuesCanBeRetrievedOneAtATime) {
-  base::DictionaryValue settings =
-      MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
   storage_->Set(DEFAULTS, settings);
   ExpectSettingsEq(MakeTestMap({{"foo", "baz"}}), storage_->Get("foo"));
   ExpectSettingsEq(MakeTestMap({{"bar", "qux"}}), storage_->Get("bar"));
 }
 
 TEST_P(ValueStoreTestSuite, SetValuesCanBeRetrievedWithKeyList) {
-  base::DictionaryValue settings =
-      MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
   storage_->Set(DEFAULTS, settings);
   ExpectSettingsEq(settings,
                    storage_->Get(std::vector<std::string>{"foo", "bar"}));
 }
 
 TEST_P(ValueStoreTestSuite, MissingKeysSkippedInListRetrieve) {
-  base::DictionaryValue settings =
-      MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
   storage_->Set(DEFAULTS, settings);
   ExpectSettingsEq(
       settings, storage_->Get(std::vector<std::string>{"foo", "bar", "baz"}));
 }
 
 TEST_P(ValueStoreTestSuite, GetAllDoesGetAll) {
-  base::DictionaryValue settings =
-      MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
+  base::Value::Dict settings = MakeTestMap({{"foo", "baz"}, {"bar", "qux"}});
   storage_->Set(DEFAULTS, settings);
   ExpectSettingsEq(settings, storage_->Get());
 }
 
 TEST_P(ValueStoreTestSuite, RemovedSingleValueIsGone) {
-  base::DictionaryValue settings =
+  base::Value::Dict settings =
       MakeTestMap({{"foo", "baz"}, {"bar", "qux"}, {"abc", "def"}});
   storage_->Set(DEFAULTS, settings);
   ExpectSettingsEq(MakeTestMap({{"foo", "baz"}}), storage_->Get("foo"));
   storage_->Remove("foo");
-  ExpectSettingsEq({}, storage_->Get("foo"));
+  ExpectSettingsEq(base::Value::Dict(), storage_->Get("foo"));
   ExpectSettingsEq(MakeTestMap({{"bar", "qux"}}), storage_->Get("bar"));
 }
 
 TEST_P(ValueStoreTestSuite, RemovedMultipleValuesAreGone) {
-  base::DictionaryValue settings =
+  base::Value::Dict settings =
       MakeTestMap({{"foo", "baz"}, {"bar", "qux"}, {"abc", "def"}});
   storage_->Set(DEFAULTS, settings);
   ExpectSettingsEq(MakeTestMap({{"foo", "baz"}, {"bar", "qux"}}),
                    storage_->Get(std::vector<std::string>{"foo", "bar"}));
   storage_->Remove(std::vector<std::string>{"foo", "bar"});
-  ExpectSettingsEq({}, storage_->Get("foo"));
-  ExpectSettingsEq({}, storage_->Get("bar"));
+  ExpectSettingsEq(base::Value::Dict(), storage_->Get("foo"));
+  ExpectSettingsEq(base::Value::Dict(), storage_->Get("bar"));
   ExpectSettingsEq(MakeTestMap({{"abc", "def"}}), storage_->Get("abc"));
 }
 
@@ -193,16 +187,16 @@ TEST_P(ValueStoreTestSuite, ClearGeneratesChanges) {
 TEST_P(ValueStoreTestSuite, ClearedValuesAreGone) {
   storage_->Set(DEFAULTS, MakeTestMap({{"foo", "baz"}, {"bar", "qux"}}));
   storage_->Clear();
-  ExpectSettingsEq({}, storage_->Get("foo"));
-  ExpectSettingsEq({}, storage_->Get("bar"));
+  ExpectSettingsEq(base::Value::Dict(), storage_->Get("foo"));
+  ExpectSettingsEq(base::Value::Dict(), storage_->Get("bar"));
 }
 
 TEST_P(ValueStoreTestSuite, DotsAllowedInKeyNames) {
-  base::DictionaryValue dict;
-  auto inner_dict = std::make_unique<base::DictionaryValue>();
-  inner_dict->SetString("bar", "baz");
+  base::Value::Dict dict;
+  base::Value::Dict inner_dict;
+  inner_dict.Set("bar", "baz");
   dict.Set("foo", std::move(inner_dict));
-  dict.SetStringKey("foo.bar", "qux");
+  dict.Set("foo.bar", "qux");
 
   storage_->Set(DEFAULTS, dict);
 

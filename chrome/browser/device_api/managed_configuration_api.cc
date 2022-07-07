@@ -256,7 +256,7 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
     return;
 
   if (configuration_url.empty()) {
-    PostStoreConfiguration(origin, base::DictionaryValue());
+    PostStoreConfiguration(origin, base::Value::Dict());
     return;
   }
 
@@ -299,7 +299,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
   if (!decoding_result.value || !decoding_result.value->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
-    PostStoreConfiguration(origin, base::DictionaryValue());
+    PostStoreConfiguration(origin, base::Value::Dict());
     return;
   }
   DictionaryPrefUpdate update(profile_->GetPrefs(),
@@ -307,12 +307,12 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
   update.Get()->SetStringKey(GetOriginEncoded(origin), url_hash);
 
   // We need to transform each value into a string.
-  base::DictionaryValue result_dict;
+  base::Value::Dict result_dict;
   for (auto item : decoding_result.value->DictItems()) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);
-    result_dict.SetStringPath(item.first, result);
+    result_dict.SetByDottedPath(item.first, result);
   }
 
   PostStoreConfiguration(origin, std::move(result_dict));
@@ -320,7 +320,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
 void ManagedConfigurationAPI::PostStoreConfiguration(
     const url::Origin& origin,
-    base::DictionaryValue configuration) {
+    base::Value::Dict configuration) {
   MaybeCreateStoreForOrigin(origin);
   store_map_[origin]
       .AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)

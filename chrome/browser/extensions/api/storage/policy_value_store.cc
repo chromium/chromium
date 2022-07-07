@@ -42,10 +42,10 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   DCHECK(IsOnBackendSequence());
   // Convert |policy| to a dictionary value. Only include mandatory policies
   // for now.
-  base::DictionaryValue current_policy;
+  base::Value::Dict current_policy;
   for (const auto& it : policy) {
     if (it.second.level == policy::POLICY_LEVEL_MANDATORY) {
-      current_policy.SetKey(it.first, it.second.value_unsafe()->Clone());
+      current_policy.Set(it.first, it.second.value_unsafe()->Clone());
     }
   }
 
@@ -70,7 +70,7 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   // anymore.
   std::vector<std::string> removed_keys;
   for (auto kv : previous_policy) {
-    if (!current_policy.FindKey(kv.first))
+    if (!current_policy.Find(kv.first))
       removed_keys.push_back(kv.first);
   }
 
@@ -149,7 +149,7 @@ ValueStore::WriteResult PolicyValueStore::Set(WriteOptions options,
 
 ValueStore::WriteResult PolicyValueStore::Set(
     WriteOptions options,
-    const base::DictionaryValue& settings) {
+    const base::Value::Dict& settings) {
   return WriteResult(ReadOnlyError());
 }
 

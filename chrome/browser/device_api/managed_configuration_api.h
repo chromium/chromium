@@ -83,7 +83,7 @@ class ManagedConfigurationAPI : public KeyedService {
 
   // Sends an operation to set the configured value on FILE thread.
   void PostStoreConfiguration(const url::Origin& origin,
-                              base::DictionaryValue configuration);
+                              base::Value::Dict configuration);
   void InformObserversIfConfigurationChanged(const url::Origin& origin,
                                              bool changed);
 

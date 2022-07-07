@@ -54,7 +54,7 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
                   const std::string& key,
                   const base::Value& value) override;
   WriteResult Set(WriteOptions options,
-                  const base::DictionaryValue& values) override;
+                  const base::Value::Dict& values) override;
   WriteResult Remove(const std::string& key) override;
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;

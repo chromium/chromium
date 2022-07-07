@@ -25,7 +25,7 @@ class ManagedConfigurationStore {
 
   // Returns |true| if the new policy is different from the previously set
   // policy.
-  bool SetCurrentPolicy(const base::DictionaryValue& current_configuration);
+  bool SetCurrentPolicy(const base::Value::Dict& current_configuration);
   absl::optional<base::Value::Dict> Get(const std::vector<std::string>& keys);
 
  private:
