@@ -838,7 +838,7 @@ class WaylandDesktop(Desktop):
     if (os.path.exists(chrome_profile)
         and not os.path.exists(chrome_config_home)):
       self.child_env["CHROME_USER_DATA_DIR"] = chrome_profile
-    else:
+    elif os.path.exists(chrome_config_home):
       self.child_env["CHROME_CONFIG_HOME"] = chrome_config_home
 
     if self.debug:
@@ -1158,9 +1158,12 @@ class XDesktop(Desktop):
     self.child_env["DISPLAY"] = ":%d" % display
     self.child_env["CHROME_REMOTE_DESKTOP_SESSION"] = "1"
 
-    # Use a separate profile for any instances of Chrome that are started in
-    # the virtual session. Chrome doesn't support sharing a profile between
-    # multiple DISPLAYs, but Chrome Sync allows for a reasonable compromise.
+    # We used to create a separate profile/chrome config home for the virtual
+    # session since the virtual session was independent of the local session in
+    # curtain mode, and using the same Chrome profile between sessions would
+    # lead to cross talk issues. This is no longer the case given modern desktop
+    # environments don't support running two graphical sessions simultaneously.
+    # Therefore, we don't set the env var unless the directory already exists.
     #
     # M61 introduced CHROME_CONFIG_HOME, which allows specifying a different
     # config base path while still using different user data directories for
@@ -1172,7 +1175,7 @@ class XDesktop(Desktop):
     if (os.path.exists(chrome_profile)
         and not os.path.exists(chrome_config_home)):
       self.child_env["CHROME_USER_DATA_DIR"] = chrome_profile
-    else:
+    elif os.path.exists(chrome_config_home):
       self.child_env["CHROME_CONFIG_HOME"] = chrome_config_home
 
     # Set SSH_AUTH_SOCK to the file name to listen on.
