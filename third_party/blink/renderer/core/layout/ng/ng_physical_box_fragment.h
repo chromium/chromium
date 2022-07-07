@@ -508,48 +508,64 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     DCHECK(const_has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
            has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
     const NGLink* children_end = children_ + const_num_children_;
-    return reinterpret_cast<const NGFragmentItems*>(children_end);
+    return reinterpret_cast<const NGFragmentItems*>(
+        base::bits::AlignUp(reinterpret_cast<const uint8_t*>(children_end),
+                            alignof(NGFragmentItems)));
   }
 
   const PhysicalRect* ComputeLayoutOverflowAddress() const {
     DCHECK(has_layout_overflow_ || has_borders_ || has_padding_ ||
            has_inflow_bounds_ || const_has_rare_data_);
     const NGFragmentItems* items = ComputeItemsAddress();
-    if (!const_has_fragment_items_)
-      return reinterpret_cast<const PhysicalRect*>(items);
+    const uint8_t* uint8_t_items = reinterpret_cast<const uint8_t*>(items);
+    if (const_has_fragment_items_)
+      uint8_t_items += items->ByteSize();
+
     return reinterpret_cast<const PhysicalRect*>(
-        reinterpret_cast<const uint8_t*>(items) + items->ByteSize());
+        base::bits::AlignUp(uint8_t_items, alignof(PhysicalRect)));
   }
 
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
     DCHECK(has_borders_ || has_padding_ || has_inflow_bounds_ ||
            const_has_rare_data_);
     const PhysicalRect* address = ComputeLayoutOverflowAddress();
-    return has_layout_overflow_
-               ? reinterpret_cast<const NGPhysicalBoxStrut*>(address + 1)
-               : reinterpret_cast<const NGPhysicalBoxStrut*>(address);
+    const uint8_t* unaligned_border_address =
+        has_layout_overflow_ ? reinterpret_cast<const uint8_t*>(address + 1)
+                             : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const NGPhysicalBoxStrut*>(base::bits::AlignUp(
+        unaligned_border_address, alignof(NGPhysicalBoxStrut)));
   }
 
   const NGPhysicalBoxStrut* ComputePaddingAddress() const {
     DCHECK(has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
     const NGPhysicalBoxStrut* address = ComputeBordersAddress();
-    return has_borders_ ? address + 1 : address;
+    const uint8_t* unaligned_address =
+        has_borders_ ? reinterpret_cast<const uint8_t*>(address + 1)
+                     : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const NGPhysicalBoxStrut*>(
+        base::bits::AlignUp(unaligned_address, alignof(NGPhysicalBoxStrut)));
   }
 
   const PhysicalRect* ComputeInflowBoundsAddress() const {
     DCHECK(has_inflow_bounds_ || const_has_rare_data_);
     NGPhysicalBoxStrut* address =
         const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress());
-    return has_padding_ ? reinterpret_cast<PhysicalRect*>(address + 1)
-                        : reinterpret_cast<PhysicalRect*>(address);
+    const uint8_t* unaligned_address =
+        has_padding_ ? reinterpret_cast<const uint8_t*>(address + 1)
+                     : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const PhysicalRect*>(
+        base::bits::AlignUp(unaligned_address, alignof(PhysicalRect)));
   }
 
   const RareData* ComputeRareDataAddress() const {
     DCHECK(const_has_rare_data_);
     PhysicalRect* address =
         const_cast<PhysicalRect*>(ComputeInflowBoundsAddress());
-    return has_inflow_bounds_ ? reinterpret_cast<RareData*>(address + 1)
-                              : reinterpret_cast<RareData*>(address);
+    const uint8_t* unaligned_address =
+        has_inflow_bounds_ ? reinterpret_cast<const uint8_t*>(address + 1)
+                           : reinterpret_cast<const uint8_t*>(address);
+    return reinterpret_cast<const RareData*>(
+        base::bits::AlignUp(unaligned_address, alignof(RareData)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);

@@ -298,6 +298,15 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
   return cloned_fragment;
 }
 
+namespace {
+template <typename T>
+constexpr void AccountSizeAndPadding(size_t& current_size) {
+  const size_t current_size_with_padding =
+      base::bits::AlignUp(current_size, alignof(T));
+  current_size = current_size_with_padding + sizeof(T);
+}
+}  // namespace
+
 // static
 size_t NGPhysicalBoxFragment::AdditionalByteSize(wtf_size_t num_fragment_items,
                                                  wtf_size_t num_children,
@@ -306,13 +315,26 @@ size_t NGPhysicalBoxFragment::AdditionalByteSize(wtf_size_t num_fragment_items,
                                                  bool has_padding,
                                                  bool has_inflow_bounds,
                                                  bool has_rare_data) {
-  return NGFragmentItems::ByteSizeFor(num_fragment_items) +
-         sizeof(NGLink) * num_children +
-         (has_layout_overflow ? sizeof(PhysicalRect) : 0) +
-         (has_borders ? sizeof(NGPhysicalBoxStrut) : 0) +
-         (has_padding ? sizeof(NGPhysicalBoxStrut) : 0) +
-         (has_inflow_bounds ? sizeof(PhysicalRect) : 0) +
-         (has_rare_data ? sizeof(NGPhysicalBoxFragment::RareData) : 0);
+  // Padding must be 0 for flexible array members.
+  static_assert(0 == (sizeof(NGPhysicalBoxFragment) % alignof(NGLink)));
+
+  size_t additional_size = sizeof(NGLink) * num_children;
+  additional_size =
+      base::bits::AlignUp(additional_size, alignof(NGFragmentItems)) +
+      NGFragmentItems::ByteSizeFor(num_fragment_items);
+
+  if (has_layout_overflow)
+    AccountSizeAndPadding<PhysicalRect>(additional_size);
+  if (has_borders)
+    AccountSizeAndPadding<NGPhysicalBoxStrut>(additional_size);
+  if (has_padding)
+    AccountSizeAndPadding<NGPhysicalBoxStrut>(additional_size);
+  if (has_inflow_bounds)
+    AccountSizeAndPadding<PhysicalRect>(additional_size);
+  if (has_rare_data)
+    AccountSizeAndPadding<NGPhysicalBoxFragment::RareData>(additional_size);
+
+  return additional_size;
 }
 
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
