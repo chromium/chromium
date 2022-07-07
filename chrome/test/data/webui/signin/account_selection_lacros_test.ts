@@ -91,14 +91,34 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
           '.account-button');
       assertTrue(!!buttons);
       assertEquals(buttons.length, 3);
-      // Click account buttons.
-      buttons[1]!.click();
-      await verifySelectAccountLacrosCalled('gaia-id-0');
-      buttons[2]!.click();
-      await verifySelectAccountLacrosCalled('gaia-id-1');
       // Click "Use another account".
       buttons[0]!.click();
       await verifySelectAccountLacrosCalled('');
+      // Click account buttons.
+      buttons[1]!.click();
+      await verifySelectAccountLacrosCalled('gaia-id-0');
+    });
+
+    test('accountButtonsDisabledAfterClick', async function() {
+      flushTasks();
+      // Add some accounts.
+      webUIListenerCallback(
+          'available-accounts-changed', generateAccountsList(3));
+      flushTasks();
+      const accounts_buttons =
+          testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
+              '#buttonsContainer > button');
+      assertTrue(!!accounts_buttons);
+      assertEquals(accounts_buttons.length, 3);
+      accounts_buttons[0]!.click();
+      accounts_buttons.forEach(button => {
+        assertTrue(button.disabled);
+      });
+      const other_account_button =
+          testElement.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#other-account-button');
+      assertTrue(!!other_account_button);
+      assertTrue(other_account_button.disabled);
     });
   });
 });
