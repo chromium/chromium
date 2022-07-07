@@ -467,11 +467,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The coordinator for all NTPs in the BVC. Only used if kSingleNtp is enabled.
 @property(nonatomic, strong) NewTabPageCoordinator* ntpCoordinator;
 
-// The thumb strip's pan gesture handler that will be added to the toolbar and
-// tab strip.
-@property(nonatomic, weak)
-    ViewRevealingVerticalPanHandler* thumbStripPanHandler;
-
 @end
 
 @implementation BrowserViewController
@@ -2417,8 +2412,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(panHandler);
   _thumbStripEnabled = YES;
 
-  self.thumbStripPanHandler = panHandler;
-
   // Add self as animatee first to make sure that the BVC's view is loaded for
   // the rest of setup
   [panHandler addAnimatee:self];
@@ -2436,7 +2429,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.view.backgroundColor = UIColor.clearColor;
 
   CGRect webStateViewFrame = self.contentArea.bounds;
-  if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
+  if (panHandler.currentState == ViewRevealState::Revealed) {
     CGFloat toolbarHeight = [self expandedTopToolbarHeight];
     webStateViewFrame = UIEdgeInsetsInsetRect(
         webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
@@ -2463,14 +2456,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
   }
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.thumbStripPanHandler = nil;
 
   CGRect webStateViewFrame = self.contentArea.bounds;
-  if (self.thumbStripPanHandler.currentState == ViewRevealState::Peeked) {
-    CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-    webStateViewFrame = UIEdgeInsetsInsetRect(
-        webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-  }
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
 
