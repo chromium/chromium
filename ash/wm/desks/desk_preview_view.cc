@@ -507,7 +507,6 @@ views::View* DeskPreviewView::GetView() {
 void DeskPreviewView::MaybeActivateHighlightedView() {
   DesksController::Get()->ActivateDesk(mini_view_->desk(),
                                        DesksSwitchSource::kMiniViewButton);
-  RequestFocus();
 }
 
 void DeskPreviewView::MaybeCloseHighlightedView(bool primary_action) {
