@@ -151,7 +151,7 @@ using base::SysUTF8ToNSString;
                                reply:reply];
 }
 
-- (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+- (void)checkForUpdateWithAppId:(NSString* _Nonnull)appId
                installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
@@ -166,7 +166,7 @@ using base::SysUTF8ToNSString;
   };
 
   [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
-      checkForUpdateWithAppID:appID
+      checkForUpdateWithAppId:appId
              installDataIndex:installDataIndex
                      priority:priority
       policySameVersionUpdate:policySameVersionUpdate
@@ -174,14 +174,43 @@ using base::SysUTF8ToNSString;
                         reply:reply];
 }
 
-- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appID {
+- (void)installWithAppId:(NSString* _Nonnull)appId
+               brandCode:(NSString* _Nullable)brandCode
+               brandPath:(NSString* _Nullable)brandPath
+                     tag:(NSString* _Nullable)ap
+                 version:(NSString* _Nullable)version
+    existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+        installDataIndex:(NSString* _Nullable)installDataIndex
+                priority:(CRUPriorityWrapper* _Nonnull)priority
+             updateState:(id<CRUUpdateStateObserving> _Nonnull)updateState
+                   reply:(void (^_Nonnull)(int rc))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply(-1);
+  };
+
+  [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+          installWithAppId:appId
+                 brandCode:brandCode
+                 brandPath:brandPath
+                       tag:ap
+                   version:version
+      existenceCheckerPath:existenceCheckerPath
+          installDataIndex:installDataIndex
+                  priority:priority
+               updateState:updateState
+                     reply:reply];
+}
+
+- (void)cancelInstallsWithAppId:(NSString* _Nonnull)appId {
   auto errorHandler = ^(NSError* xpcError) {
     LOG(ERROR) << "XPC connection failed: "
                << base::SysNSStringToUTF8([xpcError description]);
   };
 
   [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
-      cancelInstallsWithAppID:appID];
+      cancelInstallsWithAppId:appId];
 }
 
 - (void)runInstallerWithAppId:(NSString* _Nonnull)appId
@@ -348,7 +377,7 @@ void UpdateServiceProxy::Update(
           initWithRepeatingCallback:state_update
                      callbackRunner:callback_runner_]);
 
-  [client_ checkForUpdateWithAppID:SysUTF8ToNSString(app_id)
+  [client_ checkForUpdateWithAppId:SysUTF8ToNSString(app_id)
                   installDataIndex:SysUTF8ToNSString(install_data_index)
                           priority:priorityWrapper.get()
            policySameVersionUpdate:policySameVersionUpdateWrapper.get()
@@ -356,11 +385,48 @@ void UpdateServiceProxy::Update(
                              reply:reply];
 }
 
+void UpdateServiceProxy::Install(const RegistrationRequest& registration,
+                                 const std::string& install_data_index,
+                                 Priority priority,
+                                 StateChangeCallback state_update,
+                                 Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  __block base::OnceCallback<void(UpdateService::Result)> block_callback =
+      std::move(callback);
+  auto reply = ^(int error) {
+    callback_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(block_callback),
+                                  static_cast<UpdateService::Result>(error)));
+  };
+
+  base::scoped_nsobject<CRUPriorityWrapper> priorityWrapper(
+      [[CRUPriorityWrapper alloc] initWithPriority:priority]);
+  base::scoped_nsprotocol<id<CRUUpdateStateObserving>> stateObserver(
+      [[CRUUpdateStateObserver alloc]
+          initWithRepeatingCallback:state_update
+                     callbackRunner:callback_runner_]);
+
+  [client_ installWithAppId:SysUTF8ToNSString(registration.app_id)
+                  brandCode:SysUTF8ToNSString(registration.brand_code)
+                  brandPath:base::mac::FilePathToNSString(
+                                registration.brand_path)
+                        tag:SysUTF8ToNSString(registration.ap)
+                    version:SysUTF8ToNSString(registration.version.GetString())
+       existenceCheckerPath:base::mac::FilePathToNSString(
+                                registration.existence_checker_path)
+           installDataIndex:SysUTF8ToNSString(install_data_index)
+                   priority:priorityWrapper.get()
+                updateState:stateObserver.get()
+                      reply:reply];
+}
+
 void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
-  [client_ cancelInstallsWithAppID:SysUTF8ToNSString(app_id)];
+  [client_ cancelInstallsWithAppId:SysUTF8ToNSString(app_id)];
 }
 
 void UpdateServiceProxy::RunInstaller(const std::string& app_id,

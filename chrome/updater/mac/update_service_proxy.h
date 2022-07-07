@@ -55,6 +55,11 @@ class UpdateServiceProxy : public UpdateService {
               PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
+  void Install(const RegistrationRequest& registration,
+               const std::string& install_data_index,
+               Priority priority,
+               StateChangeCallback state_update,
+               Callback callback) override;
   void CancelInstalls(const std::string& app_id) override;
   void RunInstaller(const std::string& app_id,
                     const base::FilePath& installer_path,

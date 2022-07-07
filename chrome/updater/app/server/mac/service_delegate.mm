@@ -143,7 +143,7 @@
                                 std::move(sccb), std::move(cb)));
 }
 
-- (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+- (void)checkForUpdateWithAppId:(NSString* _Nonnull)appId
                installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
@@ -190,7 +190,7 @@
   _callbackRunner->PostTask(
       FROM_HERE,
       base::BindOnce(&updater::UpdateService::Update, _service,
-                     base::SysNSStringToUTF8(appID),
+                     base::SysNSStringToUTF8(appId),
                      base::SysNSStringToUTF8(installDataIndex),
                      [priority priority],
                      [policySameVersionUpdate policySameVersionUpdate],
@@ -253,10 +253,72 @@
                                 std::move(cb)));
 }
 
-- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appID {
+- (void)installWithAppId:(NSString* _Nonnull)appId
+               brandCode:(NSString* _Nullable)brandCode
+               brandPath:(NSString* _Nullable)brandPath
+                     tag:(NSString* _Nullable)ap
+                 version:(NSString* _Nullable)version
+    existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+        installDataIndex:(NSString* _Nullable)installDataIndex
+                priority:(CRUPriorityWrapper* _Nonnull)priority
+             updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                   reply:(void (^_Nonnull)(int rc))reply {
+  updater::RegistrationRequest request;
+  request.app_id = base::SysNSStringToUTF8(appId);
+  request.brand_code = base::SysNSStringToUTF8(brandCode);
+  request.brand_path = base::mac::NSStringToFilePath(brandPath);
+  request.ap = base::SysNSStringToUTF8(ap);
+  request.version = base::Version(base::SysNSStringToUTF8(version));
+  request.existence_checker_path =
+      base::mac::NSStringToFilePath(existenceCheckerPath);
+
+  auto cb =
+      base::BindOnce(base::RetainBlock(^(updater::UpdateService::Result error) {
+        VLOG(1) << "Install complete: error = " << error;
+        if (reply)
+          reply(static_cast<int>(error));
+
+        _appServer->TaskCompleted();
+      }));
+
+  auto sccb = base::BindRepeating(base::RetainBlock(^(
+      const updater::UpdateService::UpdateState& state) {
+    NSString* version = base::SysUTF8ToNSString(
+        state.next_version.IsValid() ? state.next_version.GetString() : "");
+
+    base::scoped_nsobject<CRUUpdateStateStateWrapper> updateStateStateWrapper(
+        [[CRUUpdateStateStateWrapper alloc]
+            initWithUpdateStateState:state.state]);
+    base::scoped_nsobject<CRUErrorCategoryWrapper> errorCategoryWrapper(
+        [[CRUErrorCategoryWrapper alloc]
+            initWithErrorCategory:state.error_category]);
+
+    base::scoped_nsobject<CRUUpdateStateWrapper> updateStateWrapper(
+        [[CRUUpdateStateWrapper alloc]
+              initWithAppId:base::SysUTF8ToNSString(state.app_id)
+                      state:updateStateStateWrapper.get()
+                    version:version
+            downloadedBytes:state.downloaded_bytes
+                 totalBytes:state.total_bytes
+            installProgress:state.install_progress
+              errorCategory:errorCategoryWrapper.get()
+                  errorCode:state.error_code
+                  extraCode:state.extra_code1]);
+    [updateState observeUpdateState:updateStateWrapper.get()];
+  }));
+
+  _appServer->TaskStarted();
+  _callbackRunner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&updater::UpdateService::Install, _service, request,
+                     base::SysNSStringToUTF8(installDataIndex),
+                     [priority priority], std::move(sccb), std::move(cb)));
+}
+
+- (void)cancelInstallsWithAppId:(NSString* _Nonnull)appId {
   _callbackRunner->PostTask(
       FROM_HERE, base::BindOnce(&updater::UpdateService::CancelInstalls,
-                                _service, base::SysNSStringToUTF8(appID)));
+                                _service, base::SysNSStringToUTF8(appId)));
 }
 
 - (void)runInstallerWithAppId:(NSString* _Nonnull)appId
@@ -363,7 +425,7 @@
     reply(updater::kErrorPermissionDenied);
 }
 
-- (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+- (void)checkForUpdateWithAppId:(NSString* _Nonnull)appId
                installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
@@ -371,7 +433,7 @@
                     updateState:(id<CRUUpdateStateObserving>)updateState
                           reply:(void (^_Nonnull)(int rc))reply {
   // This function may be called by any user.
-  [_service checkForUpdateWithAppID:appID
+  [_service checkForUpdateWithAppId:appId
                    installDataIndex:installDataIndex
                            priority:priority
             policySameVersionUpdate:policySameVersionUpdate
@@ -397,7 +459,22 @@
   [_service getAppStatesWithReply:reply restrictedView:YES];
 }
 
-- (void)cancelInstallsWithAppID:(NSString* _Nonnull)appId {
+- (void)installWithAppId:(NSString* _Nonnull)appId
+               brandCode:(NSString* _Nullable)brandCode
+               brandPath:(NSString* _Nullable)brandPath
+                     tag:(NSString* _Nullable)ap
+                 version:(NSString* _Nullable)version
+    existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+        installDataIndex:(NSString* _Nullable)installDataIndex
+                priority:(CRUPriorityWrapper* _Nonnull)priority
+             updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                   reply:(void (^_Nonnull)(int rc))reply {
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply)
+    reply(updater::kErrorPermissionDenied);
+}
+
+- (void)cancelInstallsWithAppId:(NSString* _Nonnull)appId {
   // This function may only be called by the same user.
   VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
 }

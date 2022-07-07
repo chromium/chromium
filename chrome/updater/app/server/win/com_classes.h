@@ -92,6 +92,7 @@ class UpdaterImpl
   IFACEMETHODIMP CheckForUpdate(const wchar_t* app_id) override;
   IFACEMETHODIMP RegisterApp(const wchar_t* app_id,
                              const wchar_t* brand_code,
+                             const wchar_t* brand_path,
                              const wchar_t* tag,
                              const wchar_t* version,
                              const wchar_t* existence_checker_path,
@@ -99,9 +100,19 @@ class UpdaterImpl
   IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallback* callback) override;
   IFACEMETHODIMP Update(const wchar_t* app_id,
                         const wchar_t* install_data_index,
+                        LONG priority,
                         BOOL same_version_update_allowed,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;
+  IFACEMETHODIMP Install(const wchar_t* app_id,
+                         const wchar_t* brand_code,
+                         const wchar_t* brand_path,
+                         const wchar_t* tag,
+                         const wchar_t* version,
+                         const wchar_t* existence_checker_path,
+                         const wchar_t* install_data_index,
+                         LONG priority,
+                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP CancelInstalls(const wchar_t* app_id) override;
   IFACEMETHODIMP RunInstaller(const wchar_t* app_id,
                               const wchar_t* installer_path,

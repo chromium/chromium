@@ -43,7 +43,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kAllowed = 1,
   };
 
-  // Values posted by the completion |callback| as a result of the
+  // Values posted by the completion `callback` as a result of the
   // non-blocking invocation of the service functions. These values are not
   // present in the telemetry pings.
   enum class Result {
@@ -219,27 +219,29 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual void RunPeriodicTasks(base::OnceClosure callback) = 0;
 
   // Initiates an update check for all registered applications. Receives state
-  // change notifications through the repeating |state_update| callback.
-  // Calls |callback| once  the operation is complete.
+  // change notifications through the repeating `state_update` callback.
+  // Calls `callback` once  the operation is complete.
   virtual void UpdateAll(StateChangeCallback state_update,
                          Callback callback) = 0;
 
   // Updates specified product. This update may be on-demand.
   //
   // Args:
-  //   |app_id|: ID of app to update.
-  //   |priority|: Priority for processing this update.
-  //   |state_update|: The callback will be invoked every time the update
+  //   `app_id`: ID of app to update.
+  //   `install_data_index`: Index of the server install data.
+  //   `priority`: Priority for processing this update.
+  //   `policy_same_version_update`: Whether a same-version update is allowed.
+  //   `state_update`: The callback will be invoked every time the update
   //     changes state when the engine starts. It will be called on the
   //     sequence used by the update service, so this callback must not block.
   //     It will not be called again after the update has reached a terminal
-  //     state. It will not be called after the completion |callback| is posted.
-  //   |callback|: Posted after the update stops, successfully or otherwise.
+  //     state. It will not be called after the completion `callback` is posted.
+  //   `callback`: Posted after the update stops, successfully or otherwise.
   //
-  //   |state_update| arg:
+  //   `state_update` arg:
   //     UpdateState: the new state of this update request.
   //
-  //   |callback| arg:
+  //   `callback` arg:
   //     Result: the final result from the update engine.
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index,
@@ -248,29 +250,29 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                       StateChangeCallback state_update,
                       Callback callback) = 0;
 
-  // Install an app by running its installer.
-  // TODO(crbug.com/1286574): perform necessary actions after install, such as
-  // sending install ping and/or run post-install command.
+  // Registers and installs an application from the network.
   //
   // Args:
-  //   |app_id|: ID of app to install.
-  //   |app_installer|: Offline installer path.
-  //   |arguments|: Arguments to run the installer.
-  //   |install_data|: Server install data extracted from the offline manifest.
-  //   |install_settings|: An optional serialized dictionary to customize the
-  //       installation.
-  //   |state_update| arg:
-  //     UpdateState: the new state of this install request.
+  //   `registration`: Registration data about the app.
+  //   `install_data_index`: Index of the server install data.
+  //   `priority`: Priority for processing this update.
+  //   `state_update`: The callback will be invoked every time the update
+  //     changes state when the engine starts. It will be called on the
+  //     sequence used by the update service, so this callback must not block.
+  //     It will not be called again after the update has reached a terminal
+  //     state. It will not be called after the completion `callback` is posted.
+  //   `callback`: Posted after the update stops, successfully or otherwise.
   //
-  //   |callback| arg:
+  //   `state_update` arg:
+  //     UpdateState: the new state of this update request.
+  //
+  //   `callback` arg:
   //     Result: the final result from the update engine.
-  virtual void RunInstaller(const std::string& app_id,
-                            const base::FilePath& installer_path,
-                            const std::string& install_args,
-                            const std::string& install_data,
-                            const std::string& install_settings,
-                            StateChangeCallback state_update,
-                            Callback callback) = 0;
+  virtual void Install(const RegistrationRequest& registration,
+                       const std::string& install_data_index,
+                       Priority priority,
+                       StateChangeCallback state_update,
+                       Callback callback) = 0;
 
   // Cancels any ongoing installations of the specified product. This does not
   // interrupt any product installers that are currently running, but does
@@ -279,6 +281,30 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   // Args:
   //   `app_id`: ID of the product to cancel installs of.
   virtual void CancelInstalls(const std::string& app_id) = 0;
+
+  // Install an app by running its installer.
+  // TODO(crbug.com/1286574): perform necessary actions after install, such as
+  // sending install ping and/or run post-install command.
+  //
+  // Args:
+  //   `app_id`: ID of app to install.
+  //   `app_installer`: Offline installer path.
+  //   `arguments`: Arguments to run the installer.
+  //   `install_data`: Server install data extracted from the offline manifest.
+  //   `install_settings`: An optional serialized dictionary to customize the
+  //       installation.
+  //   `state_update` arg:
+  //     UpdateState: the new state of this install request.
+  //
+  //   `callback` arg:
+  //     Result: the final result from the update engine.
+  virtual void RunInstaller(const std::string& app_id,
+                            const base::FilePath& installer_path,
+                            const std::string& install_args,
+                            const std::string& install_data,
+                            const std::string& install_settings,
+                            StateChangeCallback state_update,
+                            Callback callback) = 0;
 
   // Provides a way to commit data or clean up resources before the task
   // scheduler is shutting down.
@@ -290,7 +316,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual ~UpdateService() = default;
 };
 
-// These specializations must be defined in the |updater| namespace.
+// These specializations must be defined in the `updater` namespace.
 template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;

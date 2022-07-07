@@ -398,6 +398,16 @@ void UpdateServiceImpl::Update(
           priority, policy_same_version_update));
 }
 
+void UpdateServiceImpl::Install(const RegistrationRequest& registration,
+                                const std::string& install_data_index,
+                                Priority priority,
+                                StateChangeCallback state_update,
+                                Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  // TODO(crbug.com/1311743): Implement.
+}
+
 void UpdateServiceImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;

@@ -710,6 +710,7 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE RegisterApp( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
+            /* [string][in] */ const WCHAR *brand_path,
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
@@ -721,10 +722,22 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE UpdateAll( 
+            /* [in] */ IUpdaterObserver *observer) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE Install( 
+            /* [string][in] */ const WCHAR *app_id,
+            /* [string][in] */ const WCHAR *brand_code,
+            /* [string][in] */ const WCHAR *brand_path,
+            /* [string][in] */ const WCHAR *tag,
+            /* [string][in] */ const WCHAR *version,
+            /* [string][in] */ const WCHAR *existence_checker_path,
+            /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ LONG priority,
             /* [in] */ IUpdaterObserver *observer) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CancelInstalls( 
@@ -777,6 +790,7 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
+            /* [string][in] */ const WCHAR *brand_path,
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
@@ -792,12 +806,26 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ LONG priority,
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer);
         
         DECLSPEC_XFGVIRT(IUpdater, UpdateAll)
         HRESULT ( STDMETHODCALLTYPE *UpdateAll )( 
             IUpdater * This,
+            /* [in] */ IUpdaterObserver *observer);
+        
+        DECLSPEC_XFGVIRT(IUpdater, Install)
+        HRESULT ( STDMETHODCALLTYPE *Install )( 
+            IUpdater * This,
+            /* [string][in] */ const WCHAR *app_id,
+            /* [string][in] */ const WCHAR *brand_code,
+            /* [string][in] */ const WCHAR *brand_path,
+            /* [string][in] */ const WCHAR *tag,
+            /* [string][in] */ const WCHAR *version,
+            /* [string][in] */ const WCHAR *existence_checker_path,
+            /* [string][in] */ const WCHAR *install_data_index,
+            /* [in] */ LONG priority,
             /* [in] */ IUpdaterObserver *observer);
         
         DECLSPEC_XFGVIRT(IUpdater, CancelInstalls)
@@ -844,17 +872,20 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_CheckForUpdate(This,app_id)	\
     ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 
 
-#define IUpdater_RegisterApp(This,app_id,brand_code,tag,version,existence_checker_path,callback)	\
-    ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,tag,version,existence_checker_path,callback) ) 
+#define IUpdater_RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback)	\
+    ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,callback) ) 
 
 #define IUpdater_RunPeriodicTasks(This,callback)	\
     ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
-#define IUpdater_Update(This,app_id,install_data_index,same_version_update_allowed,observer)	\
-    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,same_version_update_allowed,observer) ) 
+#define IUpdater_Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer)	\
+    ( (This)->lpVtbl -> Update(This,app_id,install_data_index,priority,same_version_update_allowed,observer) ) 
 
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
+
+#define IUpdater_Install(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,install_data_index,priority,observer)	\
+    ( (This)->lpVtbl -> Install(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,install_data_index,priority,observer) ) 
 
 #define IUpdater_CancelInstalls(This,app_id)	\
     ( (This)->lpVtbl -> CancelInstalls(This,app_id) ) 

@@ -73,6 +73,17 @@ class UpdateServiceImplInactive : public UpdateService {
         base::BindOnce(std::move(callback), UpdateService::Result::kInactive));
   }
 
+  void Install(const RegistrationRequest& /*registration*/,
+               const std::string& /*install_data_index*/,
+               Priority /*priority*/,
+               StateChangeCallback /*state_update*/,
+               Callback callback) override {
+    VLOG(1) << __func__ << " (Inactive)";
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), UpdateService::Result::kInactive));
+  }
+
   void CancelInstalls(const std::string& /*app_id*/) override {
     VLOG(1) << __func__ << " (Inactive)";
   }
