@@ -47,13 +47,16 @@
 
 namespace {
 
-// Recomputes the destination URL with the added prefetch information for
-// |match| (does not modify |destination_url|).
-GURL GetPrefetchURLFromMatch(const AutocompleteMatch& match,
-                             TemplateURLService* template_url_service) {
+// Recomputes the destination URL for |match| with the updated prefetch
+// information (does not modify |destination_url|). Passing true to
+// |attach_prefetch_information| if the URL request will be sent to network,
+// otherwise set to false if it is for client-internal use only.
+GURL GetPreloadURLFromMatch(const AutocompleteMatch& match,
+                            TemplateURLService* template_url_service,
+                            bool attach_prefetch_information) {
   // Copy the search term args, so we can modify them for just the prefetch.
   auto search_terms_args = *(match.search_terms_args);
-  search_terms_args.is_prefetch = true;
+  search_terms_args.is_prefetch = attach_prefetch_information;
   return GURL(template_url_service->GetDefaultSearchProvider()
                   ->url_ref()
                   .ReplaceSearchTerms(search_terms_args,
@@ -484,7 +487,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     }
 
     if (BaseSearchProvider::ShouldPrefetch(match)) {
-      MaybePrefetchURL(GetPrefetchURLFromMatch(match, template_url_service));
+      MaybePrefetchURL(GetPreloadURLFromMatch(
+          match, template_url_service, /*attach_prefetch_information=*/true));
     }
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
         BaseSearchProvider::ShouldPrerender(match)) {
@@ -521,7 +525,8 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
            .prefetch_likely_navigations) {
     return;
   }
-  MaybePrefetchURL(GetPrefetchURLFromMatch(match, template_url_service),
+  MaybePrefetchURL(GetPreloadURLFromMatch(match, template_url_service,
+                                          /*attach_prefetch_information=*/true),
                    /*navigation_prefetch=*/true);
 }
 
@@ -713,7 +718,8 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     const AutocompleteMatch& match,
     content::WebContents& web_contents,
     TemplateURLService* template_url_service) {
-  GURL prefetch_url = GetPrefetchURLFromMatch(match, template_url_service);
+  GURL prefetch_url = GetPreloadURLFromMatch(
+      match, template_url_service, /*attach_prefetch_information=*/true);
   MaybePrefetchURL(prefetch_url);
   if (!BaseSearchProvider::ShouldPrerender(match))
     return;
@@ -724,8 +730,14 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
     DCHECK(prerender_manager);
+
+    // Prerender URL needs not to contain the prefetch information to help
+    // servers to recognize prefetch traffic, because it should not send network
+    // requests.
+    GURL prerender_url = GetPreloadURLFromMatch(
+        match, template_url_service, /*attach_prefetch_information=*/false);
     prefetch_request_iter->second->MaybeStartPrerenderSearchResult(
-        *prerender_manager);
+        *prerender_manager, prerender_url);
   }
 }
 

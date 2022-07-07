@@ -306,7 +306,8 @@ void BaseSearchPrefetchRequest::CancelPrefetch() {
 }
 
 void BaseSearchPrefetchRequest::MaybeStartPrerenderSearchResult(
-    PrerenderManager& prerender_manager) {
+    PrerenderManager& prerender_manager,
+    const GURL& prerender_url) {
   // Prerendering is supposed to be requested after prefetch received a servable
   // response and take over the prefetched main resource response. When
   // prerendering is requested while prefetching is still running, it has to
@@ -342,27 +343,29 @@ void BaseSearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       NOTREACHED();
   }
 
+  // maintain a weak ptr so that this can cancel prerendering when
+  // needed.
+  prerender_url_ = prerender_url;
   prerender_manager_ = prerender_manager.GetWeakPtr();
-  if (!servable_response_code_received_) {
-    // Case 2: this will start prerendering after it receives a
-    // servable response.
-    return;
-  }
 
-  // Case 3, 4: This can start prerendering because it has received a
-  // response.
-  // TODO(https://crbug.com/1295170): Do not start prerendering if this
-  // request is about to expire.
-  prerender_manager.StartPrerenderSearchResult(prefetch_search_terms_,
-                                               prefetch_url_);
+  if (servable_response_code_received_) {
+    // Case 3, 4: This can start prerendering because it has received a
+    // response.
+    // TODO(https://crbug.com/1295170): Do not start prerendering if this
+    // request is about to expire.
+    prerender_manager.StartPrerenderSearchResult(prefetch_search_terms_,
+                                                 prerender_url);
+  }
 }
 
 void BaseSearchPrefetchRequest::ErrorEncountered() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
          current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked);
+         current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
+         current_status_ == SearchPrefetchStatus::kPrerendered);
   current_status_ = SearchPrefetchStatus::kRequestFailed;
   StopPrefetch();
+  StopPrerender();
 }
 
 void BaseSearchPrefetchRequest::OnServableResponseCodeReceived() {
@@ -375,7 +378,7 @@ void BaseSearchPrefetchRequest::OnServableResponseCodeReceived() {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
                                   prerender_manager_, prefetch_search_terms_,
-                                  prefetch_url_));
+                                  prerender_url_));
   }
 }
 
@@ -398,6 +401,7 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsPrerenderActivated() {
 
 void BaseSearchPrefetchRequest::ResetPrerenderUpgrader() {
   prerender_manager_ = nullptr;
+  prerender_url_ = GURL();
 }
 
 void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
@@ -433,5 +437,6 @@ void BaseSearchPrefetchRequest::StopPrerender() {
   if (prerender_manager_) {
     prerender_manager_->StopPrerenderSearchResult(prefetch_search_terms_);
     prerender_manager_ = nullptr;
+    prerender_url_ = GURL();
   }
 }

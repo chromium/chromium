@@ -100,7 +100,8 @@ class BaseSearchPrefetchRequest {
 
   // Called when SearchPrefetchService receives the hint that this prefetch
   // request can be upgraded to a prerender attempt.
-  void MaybeStartPrerenderSearchResult(PrerenderManager& prerender_manager);
+  void MaybeStartPrerenderSearchResult(PrerenderManager& prerender_manager,
+                                       const GURL& prerender_url);
 
   // Called when the prefetch encounters an error.
   void ErrorEncountered();
@@ -177,6 +178,13 @@ class BaseSearchPrefetchRequest {
 
   // The URL to prefetch the search terms from.
   GURL prefetch_url_;
+
+  // The URL to prerender the search terms from.
+  // `prerender_url_` can be different from `prefetch_url_`. The latter is used
+  // to send network requests, so it may contain a special parameter for the
+  // server to recognize that it is a prefetch request, but the former does not
+  // send network requests, i.e. this parameter is not required.
+  GURL prerender_url_;
 
   // Whether this is for a navigation-time prefetch.
   bool navigation_prefetch_;
