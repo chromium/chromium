@@ -174,12 +174,12 @@ class LocalCardMigrationManagerTest : public testing::Test {
         std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
     // Add a local credit card (but it will not match what we will enter below).
-    AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
     // Add another local credit card (but it will not match what we will enter
     // below).
-    AddLocalCreditCard(personal_data(), "Flo Master", "4444333322221111", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "4444333322221111", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
 
@@ -189,7 +189,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     FormsSeen(std::vector<FormData>(1, credit_card_form));
 
     // Edit the data, and submit.
-    EditCreditCardFrom(credit_card_form, "Flo Master", "5555555555554444", "11",
+    EditCreditCardFrom(credit_card_form, "Jane Doe", "5555555555554444", "11",
                        test::NextYear().c_str(), "123");
     FormSubmitted(credit_card_form);
   }
@@ -202,11 +202,11 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
     // Add a local credit card whose |TypeAndLastFourDigits| matches what we
     // will enter below.
-    AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
     // Add another local credit card.
-    AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
 
@@ -216,7 +216,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     FormsSeen(std::vector<FormData>(1, credit_card_form));
 
     // Edit the data, and submit.
-    EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+    EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "123");
     FormSubmitted(credit_card_form);
   }
@@ -229,15 +229,15 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
     // Add a local credit card whose |TypeAndLastFourDigits| matches what we
     // will enter below.
-    AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
     // Add other invalid local credit cards (invalid card number or expired), so
     // it will not trigger migration.
-    AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111112", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111112", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
-    AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                        test::LastYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
 
@@ -247,7 +247,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     FormsSeen(std::vector<FormData>(1, credit_card_form));
 
     // Edit the data, and submit.
-    EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+    EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "123");
     FormSubmitted(credit_card_form);
   }
@@ -262,12 +262,12 @@ class LocalCardMigrationManagerTest : public testing::Test {
     // what we will enter below.
     CreditCard credit_card(CreditCard::MASKED_SERVER_CARD,
                            /*server_id=*/"a123");
-    test::SetCreditCardInfo(&credit_card, "Flo Master", "1111", "11",
+    test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                             test::NextYear().c_str(), "1");
     credit_card.SetNetworkForMaskedCard(kVisaCard);
     personal_data().AddServerCreditCard(credit_card);
     // Add one valid local credit card, so it will trigger migration
-    AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
 
@@ -277,7 +277,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     FormsSeen(std::vector<FormData>(1, credit_card_form));
 
     // Edit the data, and submit.
-    EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+    EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "123");
     FormSubmitted(credit_card_form);
   }
@@ -292,16 +292,16 @@ class LocalCardMigrationManagerTest : public testing::Test {
     // will enter below.
     CreditCard credit_card(CreditCard::MASKED_SERVER_CARD,
                            /*server_id=*/"a123");
-    test::SetCreditCardInfo(&credit_card, "Flo Master", "1111", "11",
+    test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                             test::NextYear().c_str(), "1");
     credit_card.SetNetworkForMaskedCard(kVisaCard);
     personal_data().AddServerCreditCard(credit_card);
     // Add other invalid local credit cards (invalid card number or expired), so
     // it will not trigger migration.
-    AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111112", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111112", "11",
                        test::NextYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
-    AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+    AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                        test::LastYear().c_str(), "1",
                        base::GUID::GenerateRandomV4());
 
@@ -311,7 +311,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     FormsSeen(std::vector<FormData>(1, credit_card_form));
 
     // Edit the data, and submit.
-    EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+    EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                        test::NextYear().c_str(), "123");
     FormSubmitted(credit_card_form);
   }
@@ -347,7 +347,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -357,7 +357,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
@@ -430,11 +430,11 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_SignInOnly) {
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_NoPaymentsAccount) {
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -444,7 +444,7 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_NoPaymentsAccount) {
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
@@ -462,17 +462,17 @@ TEST_F(LocalCardMigrationManagerTest,
   // Add a masked server card whose |TypeAndLastFourDigits| matches a local
   // card.
   CreditCard server_card(CreditCard::MASKED_SERVER_CARD, "a123");
-  test::SetCreditCardInfo(&server_card, "Flo Master", "1111", "11",
+  test::SetCreditCardInfo(&server_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data().AddServerCreditCard(server_card);
   // Add a local card whose |TypeAndLastFourDigits| matches a masked server
   // card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -482,7 +482,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "5555555555554444", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
@@ -499,15 +499,15 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a full server card whose number matches a local card.
   CreditCard server_card(CreditCard::FULL_SERVER_CARD, "a123");
-  test::SetCreditCardInfo(&server_card, "Flo Master", "4111111111111111", "11",
+  test::SetCreditCardInfo(&server_card, "Jane Doe", "4111111111111111", "11",
                           test::NextYear().c_str(), "1");
   personal_data().AddServerCreditCard(server_card);
   // Add a local credit card whose number matches a full server card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -517,7 +517,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "5555555555554444", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
@@ -532,7 +532,7 @@ TEST_F(LocalCardMigrationManagerTest, GetDetectedValues_AllWithCardHolderName) {
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card with a different cardholder name.
@@ -546,7 +546,7 @@ TEST_F(LocalCardMigrationManagerTest, GetDetectedValues_AllWithCardHolderName) {
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_TRUE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
@@ -565,7 +565,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card without card holder name.
@@ -578,7 +578,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_TRUE(local_card_migration_manager_->LocalCardMigrationWasTriggered());
@@ -644,7 +644,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card. One migratable credit card will still trigger
   // migration on settings page.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -672,7 +672,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card. One migratable credit card will still trigger
   // migration on settings page.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -704,7 +704,7 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
   // Add a local credit card for migration.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -746,7 +746,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card. One migratable credit card will still trigger
   // migration on settings page.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -789,7 +789,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card. One migratable credit card will still trigger
   // migration on settings page.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -824,11 +824,11 @@ TEST_F(LocalCardMigrationManagerTest,
 // Verify selected cards are correctly passed to manager.
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_ToggleIsChosen) {
   const base::GUID guid1 = base::GUID::GenerateRandomV4();
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1", guid1);
 
   const base::GUID guid2 = base::GUID::GenerateRandomV4();
-  AddLocalCreditCard(personal_data(), "Flo Master", "5454545454545454", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5454545454545454", "11",
                      test::NextYear().c_str(), "1", guid2);
 
   // Set the billing_customer_number to designate existence of a Payments
@@ -853,7 +853,7 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_ToggleIsChosen) {
 
 TEST_F(LocalCardMigrationManagerTest, DeleteLocalCardViaMigrationDialog) {
   const base::GUID guid = base::GUID::GenerateRandomV4();
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1", guid);
 
   const std::string guid_str = guid.AsLowercaseString();
@@ -919,11 +919,11 @@ TEST_F(LocalCardMigrationManagerTest,
 // strike count is logged.
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_StrikeCountUMALogged) {
   const base::GUID guid1 = base::GUID::GenerateRandomV4();
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1", guid1);
 
   const base::GUID guid2 = base::GUID::GenerateRandomV4();
-  AddLocalCreditCard(personal_data(), "Flo Master", "5454545454545454", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5454545454545454", "11",
                      test::NextYear().c_str(), "1", guid2);
 
   // Set the billing_customer_number to designate existence of a Payments
@@ -962,11 +962,11 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -982,7 +982,7 @@ TEST_F(LocalCardMigrationManagerTest,
   payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(local_card_migration_manager_->IntermediatePromptWasShown());
@@ -999,11 +999,11 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1019,7 +1019,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
@@ -1046,12 +1046,12 @@ TEST_F(
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
-  test::SetCreditCardInfo(&credit_card, "Flo Master", "1111", "11",
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1067,7 +1067,7 @@ TEST_F(
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
@@ -1087,12 +1087,12 @@ TEST_F(
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
-  test::SetCreditCardInfo(&credit_card, "Flo Master", "1111", "11",
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1108,7 +1108,7 @@ TEST_F(
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
@@ -1200,7 +1200,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card. One migratable credit card will still trigger
   // migration on settings page.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1244,11 +1244,11 @@ TEST_F(LocalCardMigrationManagerTest,
   base::HistogramTester histogram_tester;
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1258,7 +1258,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
@@ -1340,11 +1340,11 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.
-  AddLocalCreditCard(personal_data(), "Flo Master", "4111111111111111", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
   // Add another local credit card.
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1361,7 +1361,7 @@ TEST_F(LocalCardMigrationManagerTest,
   payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
@@ -1383,12 +1383,12 @@ TEST_F(LocalCardMigrationManagerTest,
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
-  test::SetCreditCardInfo(&credit_card, "Flo Master", "1111", "11",
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1405,7 +1405,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
@@ -1427,12 +1427,12 @@ TEST_F(LocalCardMigrationManagerTest,
   // Add a masked server credit card whose |TypeAndLastFourDigits| matches what
   // we will enter below.
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
-  test::SetCreditCardInfo(&credit_card, "Flo Master", "1111", "11",
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111", "11",
                           test::NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data().AddServerCreditCard(credit_card);
   // Add one valid local credit card, so it will trigger migration
-  AddLocalCreditCard(personal_data(), "Flo Master", "5555555555554444", "11",
+  AddLocalCreditCard(personal_data(), "Jane Doe", "5555555555554444", "11",
                      test::NextYear().c_str(), "1",
                      base::GUID::GenerateRandomV4());
 
@@ -1449,7 +1449,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+  EditCreditCardFrom(credit_card_form, "Jane Doe", "4111111111111111", "11",
                      test::NextYear().c_str(), "123");
   FormSubmitted(credit_card_form);
 
