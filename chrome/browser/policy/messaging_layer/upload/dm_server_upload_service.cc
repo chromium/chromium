@@ -72,7 +72,7 @@ DmServerUploadService::RecordHandler::RecordHandler(
 DmServerUploader::DmServerUploader(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
-    absl::optional<ScopedReservation> scoped_reservation,
+    ScopedReservation scoped_reservation,
     RecordHandler* handler,
     ReportSuccessfulUploadCallback report_success_upload_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
@@ -209,7 +209,7 @@ DmServerUploadService::~DmServerUploadService() = default;
 Status DmServerUploadService::EnqueueUpload(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
-    absl::optional<ScopedReservation> scoped_reservation,
+    ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   Start<DmServerUploader>(need_encryption_key, std::move(records),

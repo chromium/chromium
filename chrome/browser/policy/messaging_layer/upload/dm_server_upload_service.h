@@ -102,7 +102,7 @@ class DmServerUploadService {
     DmServerUploader(
         bool need_encryption_key,
         std::vector<EncryptedRecord> records,
-        absl::optional<ScopedReservation> scoped_reservation,
+        ScopedReservation scoped_reservation,
         RecordHandler* handler,
         ReportSuccessfulUploadCallback report_success_upload_cb,
         EncryptionKeyAttachedCallback encryption_key_attached_cb,
@@ -138,7 +138,7 @@ class DmServerUploadService {
 
     const bool need_encryption_key_;
     std::vector<EncryptedRecord> encrypted_records_;
-    absl::optional<ScopedReservation> scoped_reservation_;
+    ScopedReservation scoped_reservation_;
     const ReportSuccessfulUploadCallback report_success_upload_cb_;
     const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
     raw_ptr<RecordHandler> handler_;
@@ -165,7 +165,7 @@ class DmServerUploadService {
   Status EnqueueUpload(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
-      absl::optional<ScopedReservation> scoped_reservation,
+      ScopedReservation scoped_reservation,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb);
 
