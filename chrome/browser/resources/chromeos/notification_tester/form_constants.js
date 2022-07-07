@@ -112,9 +112,9 @@ export const FormSelectOptions = {
   ],
   ICON_OPTIONS: [
     {displayText: 'No Image', value: 'none'},
-    {displayText: 'Top Hat Cinammon Toast (PNG)', value: 'top_hat'},
-    {displayText: 'Metal Cinammon Toast (JPEG)', value: 'metal'},
-    {displayText: 'Google Icon (SVG)', value: 'google'},
+    {displayText: 'Chromium Logo (PNG)', value: 'chromium_logo'},
+    {displayText: 'Google Logo (PNG)', value: 'google_logo'},
+    {displayText: 'Warning Symbol (PNG)', value: 'warning'},
   ],
   IMAGE_OPTIONS: [
     {displayText: 'No Image', value: 'none'},

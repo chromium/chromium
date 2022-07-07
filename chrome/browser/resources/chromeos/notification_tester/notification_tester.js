@@ -31,7 +31,19 @@ export class NotificationTester extends PolymerElement {
       notifMetadata: {
         type: Object,
         value: function() {
-          return {};
+          // Set default values of form elements.
+          return {
+            notifierType: 'System',
+            richDataNeverTimeout: false,
+            richDataPinned: false,
+            richDataRenotify: false,
+            richDataProgress: '-1',
+            richDataShowSettings: false,
+            richDataShowSnooze: false,
+            richDataNumButtons: '0',
+            richDataNumNotifItems: '0',
+            originURL: '',
+          };
         },
       },
       /*
@@ -137,11 +149,21 @@ export class NotificationTester extends PolymerElement {
   static get observers() {
     return [
       'notificationTypeChanged_(notifMetadata.notificationType)',
-      'notifierTypeChanged_(notifMetadata.notifierType)'
+      'notifierTypeChanged_(notifMetadata.notifierType)',
     ];
   }
 
   onClickGenerate() {
+    // Convert properties where strings represent base-10 numbers to base-10
+    // numbers.
+    const BASE_TEN = 10;
+    this.notifMetadata.richDataNumButtons =
+        parseInt(this.notifMetadata.richDataNumButtons, BASE_TEN);
+    this.notifMetadata.richDataNumNotifItems =
+        parseInt(this.notifMetadata.richDataNumNotifItems, BASE_TEN);
+    this.notifMetadata.richDataProgress =
+        parseInt(this.notifMetadata.richDataProgress, BASE_TEN);
+
     // Send notification data to C++
     chrome.send('generateNotificationForm', [this.notifMetadata]);
   }
