@@ -12,9 +12,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace {
@@ -152,41 +150,5 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiFencedFrameTest, Load) {
 INSTANTIATE_TEST_SUITE_P(DeclarativeNetRequestApiFencedFrameTest,
                          DeclarativeNetRequestApiFencedFrameTest,
                          testing::Bool());
-
-class DeclarativeNetRequestApiPrerenderingTest
-    : public DeclarativeNetRequestLazyApiTest {
- public:
-  DeclarativeNetRequestApiPrerenderingTest()
-      : prerender_helper_(base::BindRepeating(
-            &DeclarativeNetRequestApiPrerenderingTest::GetActiveWebContents,
-            base::Unretained(this))) {}
-  ~DeclarativeNetRequestApiPrerenderingTest() override = default;
-
- private:
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-  void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
-    DeclarativeNetRequestApiTest::SetUp();
-  }
-
-  content::test::PrerenderTestHelper prerender_helper_;
-};
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         DeclarativeNetRequestApiPrerenderingTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         DeclarativeNetRequestApiPrerenderingTest,
-                         ::testing::Values(ContextType::kEventPage));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         DeclarativeNetRequestApiPrerenderingTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
-                       PrerenderedPageInterception) {
-  ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
-}
 
 }  // namespace
