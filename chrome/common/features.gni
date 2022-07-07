@@ -66,10 +66,6 @@ declare_args() {
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_castos
 
-  # Enables supervision for Family Link users.
-  # Supervision is only supported on Chrome OS and Android.
-  enable_supervised_users = is_chromeos || is_android
-
   # Enables usage of the system-provided notification center.
   enable_system_notifications =
       is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
@@ -82,6 +78,10 @@ declare_args() {
 
   # optimize_webui was moved to ui/base/ui_features.gni
 }
+
+# Enables supervision for Family Link users.
+# Supervision is only supported on Chrome OS and Android.
+enable_supervised_users = is_chromeos || is_android
 
 # Use brlapi from brltty for braille display support.
 use_brlapi = is_chromeos_ash
