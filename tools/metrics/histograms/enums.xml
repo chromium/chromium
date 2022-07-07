@@ -31912,6 +31912,7 @@ Called by update_document_policy_enum.py.-->
   <int value="990" label="EventPathEnabled"/>
   <int value="991" label="OnFileTransferEnterpriseConnector"/>
   <int value="992" label="ChromeRootStoreEnabled"/>
+  <int value="993" label="WebSQLNonSecureContextEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

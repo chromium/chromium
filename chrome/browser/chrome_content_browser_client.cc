@@ -238,6 +238,7 @@
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
+#include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/site_isolation/pref_names.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -2318,13 +2319,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                                               process, profile);
     }
 
-    // This passes the preference set by an enterprise policy on to a blink
-    // switch so that we know whether to force WebSQL to be enabled.
-    if (g_browser_process->local_state()->GetBoolean(
-            policy::policy_prefs::kWebSQLAccess)) {
-      command_line->AppendSwitch(blink::switches::kWebSQLAccess);
-    }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const std::string& login_profile =
         browser_command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
@@ -2346,6 +2340,17 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       if (prefs->GetBoolean(prefs::kPrintPreviewDisabled))
         command_line->AppendSwitch(switches::kDisablePrintPreview);
+
+      // This passes the preference set by an enterprise policy on to a blink
+      // switch so that we know whether to force WebSQL/WebSQL in non-secure
+      // context to be enabled.
+      if (prefs->GetBoolean(storage::kWebSQLAccess)) {
+        command_line->AppendSwitch(blink::switches::kWebSQLAccess);
+      }
+      if (prefs->GetBoolean(storage::kWebSQLNonSecureContextEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kWebSQLNonSecureContextEnabled);
+      }
 
 #if !BUILDFLAG(IS_ANDROID)
       InstantService* instant_service =

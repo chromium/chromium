@@ -5776,6 +5776,7 @@ test("unit_tests") {
     "//components/services/app_service/public/cpp:run_on_os_login",
     "//components/services/paint_preview_compositor/public/mojom",
     "//components/services/patch/content",
+    "//components/services/storage/public/cpp:prefs",
     "//components/services/unzip/content",
     "//components/site_engagement/content",
     "//components/site_engagement/core",

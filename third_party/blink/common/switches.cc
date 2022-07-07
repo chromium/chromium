@@ -161,6 +161,10 @@ const char kJavaScriptFlags[] = "js-flags";
 // Controls whether WebSQL is force enabled.
 const char kWebSQLAccess[] = "web-sql-access";
 
+// Controls whether WebSQL for non-secure context is force enabled.
+const char kWebSQLNonSecureContextEnabled[] =
+    "web-sql-non-secure-context-enabled";
+
 // Used to communicate managed policy for the EventPath feature. This feature is
 // typically controlled by base::Feature (see blink/common/features.*) but
 // requires an enterprise policy override. This is implicitly a tri-state, and

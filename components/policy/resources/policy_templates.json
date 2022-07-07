@@ -31122,13 +31122,13 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
     },
     {
       'name': 'WebSQLAccess',
-      'owners': ['arichiv@chromium.org'],
+      'owners': ['arichiv@chromium.org', 'chrome-owp-storage@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['android:101-', 'chrome.*:101-', 'chrome_os:101-'],
       'features': {
         'dynamic_refresh': False,
-        'per_profile': False,
+        'per_profile': True,
       },
       'items': [
         {
@@ -31148,6 +31148,35 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'desc': '''WebSQL is on by default as of M101, but can be disabled via Chrome flag.
           If this policy is set to false or unset, WebSQL can be disabled.
           If this policy is set to true, WebSQL cannot be disabled.''',
+    },
+    {
+      'name': 'WebSQLNonSecureContextEnabled',
+      'owners': ['ayui@chromium.org', 'chrome-owp-storage@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['android:105-110', 'chrome.*:105-110', 'chrome_os:105-110'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force WebSQL in non-secure contexts to be enabled.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable WebSQL in non-secure contexts unless enabled by Chrome flag.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 993,
+      'caption': '''Force WebSQL in non-secure contexts to be enabled.''',
+      'tags': [],
+      'desc': '''WebSQL in non-secure contexts is off by default as of M107 and will be fully removed in M110.
+          If this policy is set to false or unset, WebSQL in non-secure contexts will remain on until the end of M106, then off from M107.
+          If this policy is set to true, WebSQL in non-secure contexts will be enabled.''',
     },
     {
       'name': 'SetTimeoutWithout1MsClampEnabled',
@@ -32509,6 +32538,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 992,
+  'highest_id_currently_used': 993,
   'highest_atomic_group_id_currently_used': 43
 }

@@ -39,6 +39,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -880,15 +881,13 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationEnabled) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class ChromeContentBrowserClientSwitchTest : public testing::Test {
+class ChromeContentBrowserClientSwitchTest
+    : public ChromeRenderViewHostTestHarness {
  public:
   ChromeContentBrowserClientSwitchTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
-  void SetBooleanSwitchToLocalState(const std::string& path, bool value) {
-    testing_local_state_.Get()->SetBoolean(path, value);
-  }
-
+ protected:
   void AppendSwitchInCurrentProcess(const base::StringPiece& switch_string) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switch_string);
   }
@@ -898,15 +897,13 @@ class ChromeContentBrowserClientSwitchTest : public testing::Test {
     command_line.AppendSwitchASCII(switches::kProcessType,
                                    switches::kRendererProcess);
 
-    client_.AppendExtraCommandLineSwitches(&command_line, kFakeChildProcessId);
+    client_.AppendExtraCommandLineSwitches(&command_line, process()->GetID());
     return command_line;
   }
 
  private:
   ScopedTestingLocalState testing_local_state_;
   ChromeContentBrowserClient client_;
-  content::BrowserTaskEnvironment task_environment_;
-  static const int kFakeChildProcessId = 1;
 };
 
 TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDefault) {
@@ -915,15 +912,40 @@ TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDefault) {
 }
 
 TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDisabled) {
-  SetBooleanSwitchToLocalState(policy::policy_prefs::kWebSQLAccess, false);
+  profile()->GetPrefs()->SetBoolean(storage::kWebSQLAccess, false);
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
   EXPECT_FALSE(result.HasSwitch(blink::switches::kWebSQLAccess));
 }
 
 TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessEnabled) {
-  SetBooleanSwitchToLocalState(policy::policy_prefs::kWebSQLAccess, true);
+  profile()->GetPrefs()->SetBoolean(storage::kWebSQLAccess, true);
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
   EXPECT_TRUE(result.HasSwitch(blink::switches::kWebSQLAccess));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       WebSQLNonSecureContextEnabledDefault) {
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(
+      result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       WebSQLNonSecureContextEnabledDisabled) {
+  profile()->GetPrefs()->SetBoolean(storage::kWebSQLNonSecureContextEnabled,
+                                    false);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(
+      result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       WebSQLNonSecureContextEnabledEnabled) {
+  profile()->GetPrefs()->SetBoolean(storage::kWebSQLNonSecureContextEnabled,
+                                    true);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(
+      result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

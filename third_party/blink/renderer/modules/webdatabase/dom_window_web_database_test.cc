@@ -115,6 +115,39 @@ TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContextFeatureOn) {
             static_cast<int>(DOMExceptionCode::kInvalidStateError));
 }
 
+TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContextFeatureOffSwitchOn) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      blink::switches::kWebSQLNonSecureContextEnabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kWebSQLNonSecureContextAccess);
+  V8TestingScope scope;
+  OpenWebDatabaseInWindow("http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // Insufficient state exists to actually open a database, but this error
+  // means it was tried.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST(DOMWindowWebDatabaseTest, WebSQLNonSecureContextFeatureOffSwitchOff) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      blink::switches::kWebSQLNonSecureContextEnabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kWebSQLNonSecureContextAccess);
+  V8TestingScope scope;
+  OpenWebDatabaseInWindow("http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // This error means the database opening was rejected.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kSecurityError));
+}
+
 TEST(DOMWindowWebDatabaseTest, WebSQLDefault) {
   V8TestingScope scope;
   OpenWebDatabaseInWindow("https://example.test:0/", "first_party/empty.html",

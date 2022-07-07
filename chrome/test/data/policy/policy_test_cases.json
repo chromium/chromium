@@ -18444,7 +18444,6 @@
         "policies": {},
         "prefs": {
           "policy.web_sql_access": {
-            "location": "local_state",
             "default_value": false
           }
         }
@@ -18453,7 +18452,6 @@
         "policies": { "WebSQLAccess": false },
         "prefs": {
           "policy.web_sql_access": {
-            "location": "local_state",
             "value": false
           }
         }
@@ -18462,7 +18460,6 @@
         "policies": { "WebSQLAccess": true },
         "prefs": {
           "policy.web_sql_access": {
-            "location": "local_state",
             "value": true
           }
         }
@@ -18697,6 +18694,42 @@
         "prefs": {
           "policy.event_path_enabled": {
             "default_value": true
+          }
+        }
+      }
+    ]
+  },
+  "WebSQLNonSecureContextEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.web_sql_non_secure_context_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "WebSQLNonSecureContextEnabled": false },
+        "prefs": {
+          "policy.web_sql_non_secure_context_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "WebSQLNonSecureContextEnabled": true },
+        "prefs": {
+          "policy.web_sql_non_secure_context_enabled": {
+            "value": true
           }
         }
       }

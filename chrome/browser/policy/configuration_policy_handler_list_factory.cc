@@ -97,6 +97,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
+#include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/pref_names.h"
@@ -1665,7 +1666,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kForceMajorVersionToMinorPositionInUserAgent,
     base::Value::Type::INTEGER},
   { key::kWebSQLAccess,
-    policy_prefs::kWebSQLAccess,
+    storage::kWebSQLAccess,
+    base::Value::Type::BOOLEAN },
+  { key::kWebSQLNonSecureContextEnabled,
+    storage::kWebSQLNonSecureContextEnabled,
     base::Value::Type::BOOLEAN },
 #if BUILDFLAG(IS_MAC)
   { key::kWarnBeforeQuittingEnabled,
