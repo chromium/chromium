@@ -64,12 +64,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.ColdStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
+  <obsolete>
+    This metric is obsolete as of M105, because the max bucket did reach the
+    desired hour-level granularity. IOS.BackgroundTimeBeforeColdStart is the new
+    metric.
+  </obsolete>
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     This event is recorded on every cold start app open. The value represents
-    how long the app was away from the foreground. NOTE: this metric is
-    obsolete, IOS.BackgroundTimeBeforeColdStart is the new metric.
+    how long the app was away from the foreground.
   </summary>
 </histogram>
 
@@ -1687,12 +1691,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.WarmStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
+  <obsolete>
+    This metric is obsolete as of M105, because the max bucket did reach the
+    desired hour-level granularity. IOS.BackgroundTimeBeforeWarmStart is the new
+    metric.
+  </obsolete>
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     This event is recorded on every warm start app open. The value represents
-    how long the app was away from the foreground. NOTE: this metric is
-    obsolete, IOS.BackgroundTimeBeforeWarmStart is the new metric.
+    how long the app was away from the foreground.
   </summary>
 </histogram>
 
