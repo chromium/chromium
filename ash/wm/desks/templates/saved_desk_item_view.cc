@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -16,7 +15,6 @@
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -50,6 +48,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory_internal.h"
@@ -137,6 +136,9 @@ SavedDeskItemView::SavedDeskItemView(
           color_provider->GetBaseLayerColor(
               AshColorProvider::BaseLayerType::kTransparent80),
           kCornerRadius))
+      .SetBorder(std::make_unique<views::HighlightBorder>(
+          kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+          /*use_light_colors=*/false))
       .AddChildren(
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kVertical)
@@ -239,13 +241,6 @@ SavedDeskItemView::SavedDeskItemView(
   name_view_->SetBorder(views::CreateEmptyBorder(kTemplateNameInsets));
   name_view_->parent()->SetProperty(views::kMarginsKey, -kTemplateNameInsets);
   name_view_observation_.Observe(name_view_);
-
-  // Add a shadow with system UI shadow type.
-  shadow_ = std::make_unique<ViewShadow>(
-      this,
-      SystemShadow::GetElevationFromType(SystemShadow::Type::kElevation12));
-  shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
-  shadow_->SetRoundedCornerRadius(kCornerRadius);
 
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,

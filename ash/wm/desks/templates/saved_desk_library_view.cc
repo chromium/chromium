@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -270,6 +271,10 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
       l10n_util::GetStringUTF16(
           IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
       PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+  feedback_button_->SetBorder(std::make_unique<views::HighlightBorder>(
+      feedback_button_->CalculatePreferredSize().height() / 2,
+      views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 
   no_items_label_ =
       scroll_contents->AddChildView(std::make_unique<RoundedLabel>(
