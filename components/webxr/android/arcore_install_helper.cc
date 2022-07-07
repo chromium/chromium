@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -20,6 +21,11 @@
 using base::android::AttachCurrentThread;
 
 namespace webxr {
+
+namespace {
+// Increase the timeout for the message to 60s from the default 10s.
+constexpr base::TimeDelta kMessageTimeout = base::Seconds(60);
+}  // namespace
 
 ArCoreInstallHelper::ArCoreInstallHelper() {
   // As per documentation, it's recommended to issue a call to
@@ -122,6 +128,7 @@ void ArCoreInstallHelper::ShowMessage(int render_process_id,
       messages::MessageDispatcherBridge::Get();
   message_->SetIconResourceId(message_dispatcher_bridge->MapToJavaDrawableId(
       IDR_ANDROID_AR_CORE_INSALL_ICON));
+  message_->SetDuration(kMessageTimeout.InMilliseconds());
 
   message_dispatcher_bridge->EnqueueMessage(
       message_.get(), GetWebContents(render_process_id, render_frame_id),

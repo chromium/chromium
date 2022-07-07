@@ -3,13 +3,13 @@
 <grit-part>
   <if expr="enable_arcore">
     <!-- ARCore check message -->
-    <message name="IDS_AR_CORE_CHECK_MESSAGE_INSTALL_TITLE" desc="Title for the ARCore check message. When a WebXR page is loaded, if ARCore is needed to display AR content and it is not installed, a message will be shown to the user prompting them to install ARCore.">
-      Install ARCore?
+    <message name="IDS_AR_CORE_CHECK_MESSAGE_INSTALL_TITLE" desc="Title for the ARCore check message. When a WebXR page is loaded, if Google Play Services for AR is needed to display AR content and it is not installed, a message will be shown to the user prompting them to install that package.">
+      Install Google Play Services for AR?
     </message>
-    <message name="IDS_AR_CORE_CHECK_MESSAGE_UPDATE_TITLE" desc="Title for the ARCore check message. When a WebXR page is loaded, if ARCore is needed to display AR content and the installed ARCore is not up to date to the version needed by the implementation, a message will be shown to the user prompting them to update ARCore.">
-      Update ARCore?
+    <message name="IDS_AR_CORE_CHECK_MESSAGE_UPDATE_TITLE" desc="Title for the ARCore check message. When a WebXR page is loaded, if Google Play Services for AR is needed to display AR content and the installed ARCore is not up to date to the version needed by the implementation, a message will be shown to the user prompting them to update that package.">
+      Update Google Play Services for AR?
     </message>
-    <message name="IDS_AR_CORE_CHECK_MESSAGE_DESCRIPTION" desc="Description for the ARCore check message that will be prompted when a WebXR page requires ARCore to display AR content.">
+    <message name="IDS_AR_CORE_CHECK_MESSAGE_DESCRIPTION" desc="Description for the ARCore check message that will be prompted when a WebXR page requires Google Play Services for AR to display AR content.">
       View augmented reality content
     </message>
   </if>
