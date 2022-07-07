@@ -259,10 +259,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'PunctuationMode', function() {
       lastSpokenTextString);
 });
 
-AX_TEST_F('ChromeVoxTtsBackgroundTest', 'NumberReadingStyle', async function() {
-  // This test depends on local storage initialized by prefs.
-  await importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js');
-
+AX_TEST_F('ChromeVoxTtsBackgroundTest', 'NumberReadingStyle', function() {
   let lastSpokenTextString = '';
   tts.speakUsingQueue_ = function(utterance, _) {
     lastSpokenTextString = utterance.textString;
@@ -357,10 +354,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'SplitUntilSmall', function() {
   assertEqualsJSON(['a'], split('a', 'b'));
 });
 
-AX_TEST_F('ChromeVoxTtsBackgroundTest', 'Phonetics', async function() {
-  // JaPhoneticMap gets initialized by Background.
-  await importModule('Background', '/chromevox/background/background.js');
-
+AX_TEST_F('ChromeVoxTtsBackgroundTest', 'Phonetics', function() {
   let spokenStrings = [];
   tts.speakUsingQueue_ = (utterance, ...rest) => {
     spokenStrings.push(utterance.textString);
@@ -547,23 +541,18 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
   this.expectUtteranceQueueIsLike([]);
 });
 
-AX_TEST_F(
-    'ChromeVoxTtsBackgroundTest', 'ResetTtsSettingsClearsVoice',
-    async function() {
-      // Pull in ChromeVox.tts which is initialized by ChromeVoxBackground.
-      await importModule(
-          'ChromeVoxBackground', '/chromevox/background/classic_background.js');
-
-      ChromeVox.tts.ttsEngines_[0].currentVoice = '';
-      CommandHandlerInterface.instance.onCommand('resetTextToSpeechSettings');
-      await new Promise(r => {
-        ChromeVox.tts.speak = textString => {
-          if (textString ===
-              'Reset text to speech settings to default values') {
-            r();
-          }
-        };
-      });
-      assertEquals(
-          constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
+TEST_F('ChromeVoxTtsBackgroundTest', 'ResetTtsSettingsClearsVoice', function() {
+  this.newCallback(async () => {
+    ChromeVox.tts.ttsEngines_[0].currentVoice = '';
+    CommandHandlerInterface.instance.onCommand('resetTextToSpeechSettings');
+    await new Promise(r => {
+      ChromeVox.tts.speak = textString => {
+        if (textString === 'Reset text to speech settings to default values') {
+          r();
+        }
+      };
     });
+    assertEquals(
+        constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
+  })();
+});

@@ -6,10 +6,6 @@
  * @fileoverview Loader for the background page.
  */
 
-// These legacy Closure requires will eventually be moved to ES6 modules (see
-// below block). These requires represent a dependency graph sourced from
-// loader.js via a script node in our top level html. Once done, that script can
-// itself be type="module".
 goog.require('AbstractEarcons');
 goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
@@ -60,11 +56,3 @@ goog.require('cursors.Unit');
 goog.require('goog.i18n.MessageFormat');
 
 goog.require('ALL_NODE_MENU_DATA');
-
-// ChromeVox ES6 module(s).
-//
-// During the transition to ES6 modules, this top level module will import all
-// migrated modules. The migration will occur in breadth-first order, starting
-// with background.js. ES6 modules can "depend" on Closure provides (since these
-// are global), but not vice versa. Those Closure provides are above.
-import('/chromevox/background/es6_loader.js');
