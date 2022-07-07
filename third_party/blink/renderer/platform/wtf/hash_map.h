@@ -162,15 +162,15 @@ class HashMap {
   // Returns a reference to the mapped value. Crashes if no mapped value exists.
   MappedPeekType at(KeyPeekInType) const;
 
-  // replaces value but not key if key is already present return value is a
+  // Replaces value but not key if key is already present. Return value is a
   // pair of the iterator to the key location, and a boolean that's true if a
-  // new value was actually added
+  // new value was actually added.
   template <typename IncomingKeyType, typename IncomingMappedType>
   AddResult Set(IncomingKeyType&&, IncomingMappedType&&);
 
-  // does nothing if key is already present return value is a pair of the
+  // Does nothing if key is already present. Return value is a pair of the
   // iterator to the key location, and a boolean that's true if a new value
-  // was actually added
+  // was actually added.
   template <typename IncomingKeyType, typename IncomingMappedType>
   AddResult insert(IncomingKeyType&&, IncomingMappedType&&);
 
