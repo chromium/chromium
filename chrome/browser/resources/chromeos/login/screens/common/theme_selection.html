@@ -30,12 +30,6 @@ found in the LICENSE file. -->
         transition: background-color 0ms;
       }
 
-      cr-card-radio-button[checked] {
-        border-color: var(--cros-focus-ring-color);
-        border-style: solid;
-        border-width: 2px;
-      }
-
       .card-label {
         color: var(--cros-text-color-primary);
         font-size: 16px;
@@ -74,8 +68,7 @@ found in the LICENSE file. -->
       </div>
       <div slot="content" class="layout vertical landscape-vertical-centered">
         <cr-radio-group id="theme" selected="{{selectedTheme}}">
-          <cr-card-radio-button id="lightThemeButton" class="flex" name="light"
-              on-click="setLightTheme_">
+          <cr-card-radio-button id="lightThemeButton" class="flex" name="light">
             <div class="card-container">
               <img srcset="images/1x/thumbnail-theme-light-1x.png,
                   images/2x/thumbnail-theme-light-2x.png"
@@ -91,7 +84,7 @@ found in the LICENSE file. -->
             </div>
           </cr-card-radio-button>
           <cr-card-radio-button id="darkThemeButton" class="flex"
-              name="dark" on-click="setDarkTheme_">
+              name="dark">
             <div class="card-container">
               <img srcset="images/1x/thumbnail-theme-dark-1x.png,
                   images/2x/thumbnail-theme-dark-2x.png"
@@ -107,7 +100,7 @@ found in the LICENSE file. -->
             </div>
           </cr-card-radio-button>
           <cr-card-radio-button id="autoThemeButton" class="flex"
-              name="auto" on-click="setAutoTheme_">
+              name="auto">
             <div class="card-container">
               <img srcset="images/1x/thumbnail-theme-auto-1x.png,
                   images/2x/thumbnail-theme-auto-2x.png"

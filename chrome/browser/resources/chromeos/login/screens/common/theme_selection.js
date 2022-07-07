@@ -52,9 +52,7 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
        * Indicates selected theme
        * @private
        */
-      selectedTheme: {
-        type: String,
-      },
+      selectedTheme: {type: String, value: 'auto', observer: 'onThemeChanged_'},
 
       /**
        * Indicates if the device is used in tablet mode
@@ -98,16 +96,19 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     this.userActed(UserAction.NEXT);
   }
 
-  setDarkTheme_() {
-    this.userActed([UserAction.SELECT, SelectedTheme.DARK]);
-  }
-
-  setLightTheme_() {
-    this.userActed([UserAction.SELECT, SelectedTheme.LIGHT]);
-  }
-
-  setAutoTheme_() {
-    this.userActed([UserAction.SELECT, SelectedTheme.AUTO]);
+  onThemeChanged_(themeSelect, oldTheme) {
+    if (oldTheme === undefined) {
+      return;
+    }
+    if (themeSelect === 'auto') {
+      this.userActed([UserAction.SELECT, SelectedTheme.AUTO]);
+    }
+    if (themeSelect === 'light') {
+      this.userActed([UserAction.SELECT, SelectedTheme.LIGHT]);
+    }
+    if (themeSelect === 'dark') {
+      this.userActed([UserAction.SELECT, SelectedTheme.DARK]);
+    }
   }
 }
 customElements.define(ThemeSelectionScreen.is, ThemeSelectionScreen);
