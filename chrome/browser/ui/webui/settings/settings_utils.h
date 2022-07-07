@@ -45,13 +45,6 @@ base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
 void ValidateSavedFonts(PrefService* prefs);
 #endif
 
-// When |font_name_or_list| starts with ",", it is a list of font names
-// separated by "," and this function returns the first available font name.
-// Otherwise returns |font_name_or_list| as is.
-// Unlike gfx::FontList, this function picks one font, and character-level
-// fallback is handled in CSS.
-std::string ResolveFontList(const std::string& font_name_or_list);
-
 }  // namespace settings_utils
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UTILS_H_

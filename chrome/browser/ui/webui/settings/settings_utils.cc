@@ -4,13 +4,11 @@
 
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/url_formatter/url_fixer.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/font_list.h"
 #include "url/gurl.h"
 
 namespace settings_utils {
@@ -35,17 +33,5 @@ base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_FLAGS_FAVICON, scale_factor);
 }
-
-std::string ResolveFontList(const std::string& font_name_or_list) {
-  if (!font_name_or_list.empty() && font_name_or_list[0] == ',')
-    return gfx::FontList::FirstAvailableOrFirst(font_name_or_list);
-  return font_name_or_list;
-}
-
-#if !BUILDFLAG(IS_WIN)
-std::string MaybeGetLocalizedFontName(const std::string& font_name_or_list) {
-  return ResolveFontList(font_name_or_list);
-}
-#endif
 
 }  // namespace settings_utils
