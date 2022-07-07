@@ -30,7 +30,8 @@ class ReadHandleImpl
                            size_t offset,
                            size_t size,
                            void* serializePointer) override {
-    DCHECK_LE(size + offset, size_);
+    DCHECK_LE(offset, size_);
+    DCHECK_LE(size, size_ - offset);
     // Copy the data into the shared memory allocation.
     // In the case of buffer mapping, this is the mapped GPU memory which we
     // copy into client-visible shared memory.
@@ -57,9 +58,15 @@ class WriteHandleImpl
                              size_t size) override {
     // Nothing is serialized because we're using shared memory.
     DCHECK_EQ(deserialize_size, 0u);
-    DCHECK_LE(size + offset, size_);
     DCHECK(mTargetData);
     DCHECK(ptr_);
+
+    if (offset > mDataLength || size > mDataLength - offset) {
+      return false;
+    }
+    if (offset > size_ || size > size_ - offset) {
+      return false;
+    }
 
     // Copy from shared memory into the target buffer.
     // mTargetData will always be the starting address
