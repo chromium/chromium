@@ -686,18 +686,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
       const BrowserAccessibility* node,
       std::vector<const BrowserAccessibility*>* storage);
 
-  // Add parent connection if missing (!connected_to_parent_tree_node_). If the
-  // root's parent is in another accessibility tree but it wasn't previously
-  // connected, post the proper notifications on the parent.
-  void EnsureParentConnectionIfNotRootManager();
-
-  // If this BrowserAccessibilityManager is a child frame or guest frame,
-  // returns the BrowserAccessibilityManager from the parent document in the
-  // frame tree. If the current frame is not connected to its parent frame yet,
-  // or if it got disconnected after being reparented, return nullptr to
-  // indicate that we don't have access to the parent manager yet.
-  BrowserAccessibilityManager* GetParentManager() const;
-
   // Performs hit testing on the AXTree using the cache from
   // BuildAXTreeHitTestCache. This requires BuildAXTreeHitTestCache to be
   // called first.

@@ -958,14 +958,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   if (document.IsNull())
     return;
 
-  // Don't serialize child trees without an embedding token. These are
-  // unrendered child frames. This prevents a situation where child trees can't
-  // be linked to their parent, leading to a dangerous situation for some
-  // platforms, where events are fired on objects not connected to the root. For
-  // example, on Mac, this can lead to a lockup in AppKit.
-  if (!document.GetFrame()->GetEmbeddingToken())
-    return;
-
   DCHECK(document.IsAccessibilityEnabled())
       << "SendPendingAccessibilityEvents should not do any work when nothing "
          "has enabled accessibility.";

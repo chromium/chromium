@@ -1414,16 +1414,19 @@ TEST_F(BrowserAccessibilityManagerTest, TestHitTestScaled) {
   ui::AXTreeUpdate parent_update =
       MakeAXTreeUpdate(parent_root, parent_child, parent_childtree);
 
-  // Link the child trees to their parent trees.
+  // Link the child tree to its parent.
   child_update.tree_data.parent_tree_id = parent_update.tree_data.tree_id;
 
   // Create the two managers.
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
-      BrowserAccessibilityManager::Create(parent_update, nullptr));
+      BrowserAccessibilityManager::Create(
+          parent_update, test_browser_accessibility_delegate_.get()));
 
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_update, nullptr));
+      BrowserAccessibilityManager::Create(
+          child_update, test_browser_accessibility_delegate_.get()));
 
+  // Verify that they're properly connected.
   ASSERT_EQ(parent_manager.get(), child_manager->GetRootManager());
 
   // Set scaling factor for testing to be 200%

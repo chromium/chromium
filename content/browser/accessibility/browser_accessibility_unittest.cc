@@ -180,10 +180,12 @@ TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   child_tree_update.nodes[4].id = 5;
 
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
-      BrowserAccessibilityManager::Create(parent_tree_update, nullptr));
+      BrowserAccessibilityManager::Create(
+          parent_tree_update, test_browser_accessibility_delegate_.get()));
 
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree_update, nullptr));
+      BrowserAccessibilityManager::Create(
+          child_tree_update, test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = parent_manager->GetRoot();
   // Test traversal
@@ -881,10 +883,12 @@ TEST_F(BrowserAccessibilityTest, PortalName) {
       ax::mojom::StringAttribute::kName, "name");
 
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
-      BrowserAccessibilityManager::Create(parent_tree_update, nullptr));
+      BrowserAccessibilityManager::Create(
+          parent_tree_update, test_browser_accessibility_delegate_.get()));
 
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree_update, nullptr));
+      BrowserAccessibilityManager::Create(
+          child_tree_update, test_browser_accessibility_delegate_.get()));
 
   // Portal node should use name from root of child tree.
   EXPECT_EQ("name", child_manager->GetRoot()->GetName());
