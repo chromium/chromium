@@ -101,23 +101,30 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
 }
 
 history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id,
-                                               float score) {
-  const auto& visits = GetHardcodedTestVisits();
-  for (const auto& visit : visits) {
-    if (visit.visit_row.visit_id != visit_id)
-      continue;
-
-    history::ClusterVisit cluster_visit;
-    cluster_visit.annotated_visit = visit;
-    cluster_visit.normalized_url = visit.url_row.url();
-    cluster_visit.url_for_deduping =
-        ComputeURLForDeduping(cluster_visit.normalized_url);
-    cluster_visit.score = score;
-    return cluster_visit;
+                                               float score,
+                                               int engagement_score) {
+  for (const auto& visit : GetHardcodedTestVisits()) {
+    if (visit.visit_row.visit_id == visit_id)
+      return AnnotatedVisitToClusterVisit(visit, score, engagement_score);
   }
 
-  NOTREACHED();
-  return history::ClusterVisit();
+  NOTREACHED() << "GetHardcodedClusterVisit() could not find visit_id: "
+               << visit_id;
+  return {};
+}
+
+history::ClusterVisit AnnotatedVisitToClusterVisit(
+    const history::AnnotatedVisit& visit,
+    float score,
+    int engagement_score) {
+  history::ClusterVisit cluster_visit;
+  cluster_visit.annotated_visit = visit;
+  cluster_visit.normalized_url = visit.url_row.url();
+  cluster_visit.url_for_deduping =
+      ComputeURLForDeduping(cluster_visit.normalized_url);
+  cluster_visit.score = score;
+  cluster_visit.engagement_score = engagement_score;
+  return cluster_visit;
 }
 
 }  // namespace history_clusters

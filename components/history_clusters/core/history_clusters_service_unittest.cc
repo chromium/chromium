@@ -68,23 +68,16 @@ class TestClusteringBackend : public ClusteringBackend {
 
   // Fetches a scored visit by an ID. `visit_id` must be valid. This is a
   // convenience method used for constructing the fake response.
-  history::ClusterVisit GetVisitById(int visit_id,
-                                     float score = 0.5,
-                                     int engagement_score = 0) {
-    for (auto& visit : last_clustered_visits_) {
-      if (visit.visit_row.visit_id == visit_id) {
-        history::ClusterVisit cluster_visit;
-        cluster_visit.annotated_visit = visit;
-        cluster_visit.normalized_url = visit.url_row.url();
-        cluster_visit.score = score;
-        cluster_visit.engagement_score = engagement_score;
-        return cluster_visit;
-      }
+  history::ClusterVisit GetVisitById(int visit_id) {
+    for (const auto& visit : last_clustered_visits_) {
+      if (visit.visit_row.visit_id == visit_id)
+        return AnnotatedVisitToClusterVisit(visit);
     }
 
-    NOTREACHED() << "TestClusteringBackend::GetVisitById "
-                 << "could not find visit_id: " << visit_id;
-    return history::ClusterVisit();
+    NOTREACHED()
+        << "TestClusteringBackend::GetVisitById() could not find visit_id: "
+        << visit_id;
+    return {};
   }
 
   // Should be invoked before `GetClusters()` is invoked.
@@ -308,6 +301,28 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
     return {old_clusters, visits};
   }
+
+  // Helper to flush out the multiple history and cluster backend requests made
+  // by `Does[Query|URL]MatchAnyCluster()`. It won't populate the cache until
+  // all its requests have been completed. It makes 1 request (to each) per
+  // unique day with at least 1 visit; i.e. `number_of_days_with_visits`.
+  void FlushKeywordRequests(std::vector<history::Cluster> clusters,
+                            size_t number_of_days_with_visits) {
+    test_clustering_backend_->WaitForGetClustersCall();
+    test_clustering_backend_->FulfillCallback(clusters);
+
+    // `Does[Query|URL]MatchAnyCluster()` will continue making history and
+    // cluster backend requests until it has exhausted history. We have to flush
+    // out these requests before it will populate the cache.
+    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
+      test_clustering_backend_->WaitForGetClustersCall();
+      history::BlockUntilHistoryProcessesPendingRequests(
+          history_service_.get());
+      test_clustering_backend_->FulfillCallback({});
+    }
+    // One last wait to flush out the last, empty history request.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  };
 
  protected:
   // ScopedFeatureList needs to be declared before TaskEnvironment, so that it
@@ -878,71 +893,49 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // query should have kicked off a cache population request.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
-  // Helper to flush out the multiple history and cluster backend requests made
-  // by `DoesQueryMatchAnyCluster()`. It won't populate the cache until all its
-  // requests have been completed. It makes 1 request (to each) per unique day
-  // with at least 1 visit; i.e. `number_of_days_with_visits`.
-  const auto flush_keyword_requests = [&](size_t number_of_days_with_visits) {
-    test_clustering_backend_->WaitForGetClustersCall();
-
-    std::vector<history::Cluster> clusters;
-    clusters.push_back(history::Cluster(
-        0,
-        {
-            test_clustering_backend_->GetVisitById(5),
-            test_clustering_backend_->GetVisitById(2),
-        },
-        {{u"apples", history::ClusterKeywordData(
-                         history::ClusterKeywordData::kEntity, 5.0f, {})},
-         {u"oranges", history::ClusterKeywordData()},
-         {u"z", history::ClusterKeywordData()},
-         {u"apples bananas", history::ClusterKeywordData()}},
-        /*should_show_on_prominent_ui_surfaces=*/true));
-    clusters.push_back(history::Cluster(
-        0,
-        {
-            test_clustering_backend_->GetVisitById(5),
-            test_clustering_backend_->GetVisitById(2),
-        },
-        {
-            {u"apples",
-             history::ClusterKeywordData(
-                 history::ClusterKeywordData::kSearchTerms, 100.0f, {})},
-        },
-        /*should_show_on_prominent_ui_surfaces=*/true));
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(5),
-                             test_clustering_backend_->GetVisitById(2),
-                         },
-                         {{u"sensitive", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/false));
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(5),
-                         },
-                         {{u"singlevisit", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/true));
-
-    test_clustering_backend_->FulfillCallback(clusters);
-
-    // `DoesQueryMatchAnyCluster()` will continue making history and cluster
-    // backend requests until it has exhausted history. We have to flush out
-    // these requests before it will populate the cache.
-    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
-      test_clustering_backend_->WaitForGetClustersCall();
-      history::BlockUntilHistoryProcessesPendingRequests(
-          history_service_.get());
-      test_clustering_backend_->FulfillCallback({});
-    }
-    // One last wait to flush out the last, empty history request.
-    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  };
+  std::vector<history::Cluster> clusters;
+  clusters.push_back(history::Cluster(
+      0,
+      {
+          GetHardcodedClusterVisit(5),
+          GetHardcodedClusterVisit(2),
+      },
+      {{u"apples", history::ClusterKeywordData(
+                       history::ClusterKeywordData::kEntity, 5.0f, {})},
+       {u"oranges", history::ClusterKeywordData()},
+       {u"z", history::ClusterKeywordData()},
+       {u"apples bananas", history::ClusterKeywordData()}},
+      /*should_show_on_prominent_ui_surfaces=*/true));
+  clusters.push_back(history::Cluster(
+      0,
+      {
+          GetHardcodedClusterVisit(5),
+          GetHardcodedClusterVisit(2),
+      },
+      {
+          {u"apples",
+           history::ClusterKeywordData(
+               history::ClusterKeywordData::kSearchTerms, 100.0f, {})},
+      },
+      /*should_show_on_prominent_ui_surfaces=*/true));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           GetHardcodedClusterVisit(5),
+                           GetHardcodedClusterVisit(2),
+                       },
+                       {{u"sensitive", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/false));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           GetHardcodedClusterVisit(5),
+                       },
+                       {{u"singlevisit", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
 
   // Hardcoded test visits span 3 days (1-day-old, 2-days-old, and 60-day-old).
-  flush_keyword_requests(3);
+  FlushKeywordRequests(clusters, 3);
 
   // Now the exact query should match the populated cache.
   const auto keyword_data =
@@ -992,7 +985,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
 
   // Visits now span 2 days (1-day-old and 60-day-old) since we deleted the only
   // 2-day-old visit.
-  flush_keyword_requests(2);
+  FlushKeywordRequests(clusters, 2);
 
   // The keyword cache should be repopulated.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
@@ -1054,59 +1047,37 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
   EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
       ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
 
-  // Helper to flush out the multiple history and cluster backend requests made
-  // by `DoesURLMatchAnyCluster()`. It won't populate the cache until all its
-  // requests have been completed. It makes 1 request (to each) per unique day
-  // with at least 1 visit; i.e. `number_of_days_with_visits`.
-  const auto flush_keyword_requests = [&](size_t number_of_days_with_visits) {
-    test_clustering_backend_->WaitForGetClustersCall();
-
-    std::vector<history::Cluster> clusters;
-    clusters.push_back(history::Cluster(
-        0,
-        {
-            test_clustering_backend_->GetVisitById(5),
-            test_clustering_backend_->GetVisitById(
-                /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
-        },
-        {{u"apples", history::ClusterKeywordData()},
-         {u"oranges", history::ClusterKeywordData()},
-         {u"z", history::ClusterKeywordData()},
-         {u"apples bananas", history::ClusterKeywordData()}},
-        /*should_show_on_prominent_ui_surfaces=*/true));
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(5),
-                             test_clustering_backend_->GetVisitById(2),
-                         },
-                         {{u"sensitive", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/false));
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(2),
-                         },
-                         {{u"singlevisit", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/true));
-
-    test_clustering_backend_->FulfillCallback(clusters);
-
-    // `DoesQueryMatchAnyCluster()` will continue making history and cluster
-    // backend requests until it has exhausted history. We have to flush out
-    // these requests before it will populate the cache.
-    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
-      test_clustering_backend_->WaitForGetClustersCall();
-      history::BlockUntilHistoryProcessesPendingRequests(
-          history_service_.get());
-      test_clustering_backend_->FulfillCallback({});
-    }
-    // One last wait to flush out the last, empty history request.
-    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  };
+  std::vector<history::Cluster> clusters;
+  clusters.push_back(history::Cluster(
+      0,
+      {
+          GetHardcodedClusterVisit(5),
+          GetHardcodedClusterVisit(
+              /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
+      },
+      {{u"apples", history::ClusterKeywordData()},
+       {u"oranges", history::ClusterKeywordData()},
+       {u"z", history::ClusterKeywordData()},
+       {u"apples bananas", history::ClusterKeywordData()}},
+      /*should_show_on_prominent_ui_surfaces=*/true));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           GetHardcodedClusterVisit(5),
+                           GetHardcodedClusterVisit(2),
+                       },
+                       {{u"sensitive", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/false));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           GetHardcodedClusterVisit(2),
+                       },
+                       {{u"singlevisit", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
 
   // Hardcoded test visits span 3 days (1-day-old, 2-days-old, and 60-day-old).
-  flush_keyword_requests(3);
+  FlushKeywordRequests(clusters, 3);
 
   // Now the exact query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
@@ -1124,7 +1095,7 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
 
   // Visits now span 2 days (1-day-old and 60-day-old) since we deleted the only
   // 2-day-old visit.
-  flush_keyword_requests(2);
+  FlushKeywordRequests(clusters, 2);
 
   // The keyword cache should be repopulated.
   EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
@@ -1145,59 +1116,37 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
   EXPECT_FALSE(history_clusters_service_->DoesURLMatchAnyCluster(
       ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
 
-  // Helper to flush out the multiple history and cluster backend requests made
-  // by `DoesURLMatchAnyCluster()`. It won't populate the cache until all its
-  // requests have been completed. It makes 1 request (to each) per unique day
-  // with at least 1 visit; i.e. `number_of_days_with_visits`.
-  const auto flush_keyword_requests = [&](size_t number_of_days_with_visits) {
-    test_clustering_backend_->WaitForGetClustersCall();
-
-    std::vector<history::Cluster> clusters;
-    clusters.push_back(history::Cluster(
-        0,
-        {
-            test_clustering_backend_->GetVisitById(5),
-            test_clustering_backend_->GetVisitById(
-                /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
-        },
-        {{u"apples", history::ClusterKeywordData()},
-         {u"oranges", history::ClusterKeywordData()},
-         {u"z", history::ClusterKeywordData()},
-         {u"apples bananas", history::ClusterKeywordData()}},
-        /*should_show_on_prominent_ui_surfaces=*/true));
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(5),
-                             test_clustering_backend_->GetVisitById(2),
-                         },
-                         {{u"sensitive", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/false));
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(2),
-                         },
-                         {{u"singlevisit", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/true));
-
-    test_clustering_backend_->FulfillCallback(clusters);
-
-    // `DoesQueryMatchAnyCluster()` will continue making history and cluster
-    // backend requests until it has exhausted history. We have to flush out
-    // these requests before it will populate the cache.
-    for (size_t i = 0; i < number_of_days_with_visits - 1; ++i) {
-      test_clustering_backend_->WaitForGetClustersCall();
-      history::BlockUntilHistoryProcessesPendingRequests(
-          history_service_.get());
-      test_clustering_backend_->FulfillCallback({});
-    }
-    // One last wait to flush out the last, empty history request.
-    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  };
+  std::vector<history::Cluster> clusters;
+  clusters.push_back(history::Cluster(
+      0,
+      {
+          GetHardcodedClusterVisit(5),
+          GetHardcodedClusterVisit(
+              /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
+      },
+      {{u"apples", history::ClusterKeywordData()},
+       {u"oranges", history::ClusterKeywordData()},
+       {u"z", history::ClusterKeywordData()},
+       {u"apples bananas", history::ClusterKeywordData()}},
+      /*should_show_on_prominent_ui_surfaces=*/true));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           GetHardcodedClusterVisit(5),
+                           GetHardcodedClusterVisit(2),
+                       },
+                       {{u"sensitive", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/false));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           GetHardcodedClusterVisit(2),
+                       },
+                       {{u"singlevisit", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
 
   // Hardcoded test visits span 3 days (1-day-old, 2-days-old, and 60-day-old).
-  flush_keyword_requests(3);
+  FlushKeywordRequests(clusters, 3);
 
   // Now the exact query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
@@ -1216,7 +1165,7 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
 
   // Visits now span 2 days (1-day-old and 60-day-old) since we deleted the only
   // 2-day-old visit.
-  flush_keyword_requests(2);
+  FlushKeywordRequests(clusters, 2);
 
   // The keyword cache should be repopulated.
   EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
@@ -1236,6 +1185,7 @@ class HistoryClustersServiceMaxKeywordsTest
  private:
   Config config_;
 };
+
 TEST_F(HistoryClustersServiceMaxKeywordsTest,
        DoesQueryMatchAnyClusterMaxKeywordPhrases) {
   base::HistogramTester histogram_tester;

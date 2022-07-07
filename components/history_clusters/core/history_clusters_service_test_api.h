@@ -75,7 +75,13 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits();
 
 // Fetches the hardcoded `ClusterVisit` with ID `visit_id`.
 history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id,
-                                               float score = 0.5);
+                                               float score = 0.5,
+                                               int engagement_score = 0);
+
+history::ClusterVisit AnnotatedVisitToClusterVisit(
+    const history::AnnotatedVisit& visit,
+    float score = .5,
+    int engagement_score = 0);
 
 }  // namespace history_clusters
 
