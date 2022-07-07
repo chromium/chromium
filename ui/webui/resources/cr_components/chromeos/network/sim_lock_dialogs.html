@@ -168,7 +168,7 @@
       <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
       <div slot="body">
         <div id="puk-subtitle">
-          [[i18n('networkSimPukDialogSubtitle')]]
+          [[getNetworkSimPukDialogString_(isSimPinLockRestricted_)]]
         </div>
         <div id="puk-warning-container">
           <template is="dom-if" if="[[hasErrorText_]]">
@@ -176,7 +176,8 @@
             </iron-icon>
           </template>
           <div aria-live="assertive">
-            [[getPukWarningMessage_(error_, deviceState)]]
+            [[getPukWarningMessage_(error_, deviceState,
+                isSimPinLockRestricted_)]]
           </div>
         </div>
         <network-password-input id="unlockPuk"
@@ -187,10 +188,13 @@
             error-message="[[getPukErrorMessage_(error_, deviceState)]]"
             allow-error-message>
         </network-password-input>
+        <!-- TODO(b/228093904): Use template dom-if instead of
+          hidden for SIM PIN Lock Dialog refactor. -->
         <network-password-input id="unlockPin1"
             value="{{pin_new1_}}"
             label="[[i18n('networkSimEnterNewPin')]]"
             disabled="[[inProgress_]]"
+            hidden="[[isSimPinLockRestricted_]]"
             allow-error-message>
         </network-password-input>
         <network-password-input id="unlockPin2"
@@ -199,7 +203,9 @@
             on-enter="sendUnlockPuk_"
             disabled="[[inProgress_]]"
             invalid="[[isSecondNewPinInvalid_(error_, deviceState)]]"
-            error-message="[[getSecondNewPinErrorMessage_(error_, deviceState)]]"
+            error-message="[[getSecondNewPinErrorMessage_(error_,
+                deviceState)]]"
+            hidden="[[isSimPinLockRestricted_]]"
             allow-error-message>
         </network-password-input>
       </div>

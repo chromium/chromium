@@ -378,6 +378,12 @@ Polymer({
     if (!this.validatePuk_(puk)) {
       return;
     }
+
+    if (this.isSimPinLockRestricted_) {
+      this.unlockCellularSim_('', puk);
+      return;
+    }
+
     const pin = this.$.unlockPin1.value;
     if (!this.validatePin_(pin, this.$.unlockPin2.value)) {
       return;
@@ -473,8 +479,9 @@ Polymer({
     this.enterPinEnabled_ = !this.inProgress_ && !!this.pin_ && !hasError;
     this.changePinEnabled_ = !this.inProgress_ && !!this.pin_ &&
         !!this.pin_new1_ && !!this.pin_new2_ && !hasError;
-    this.enterPukEnabled_ = !this.inProgress_ && !!this.puk_ &&
-        !!this.pin_new1_ && !!this.pin_new2_ && !hasError;
+    this.enterPukEnabled_ = !this.inProgress_ && !!this.puk_ && !hasError &&
+        (this.isSimPinLockRestricted_ ||
+         (!!this.pin_new1_ && !!this.pin_new2_));
   },
 
   /**
@@ -708,6 +715,26 @@ Polymer({
    * @private
    */
   getPukWarningMessage_() {
+    return this.isSimPinLockRestricted_ ?
+        this.getPukWarningSimPinRestrictedMessage_() :
+        this.getPukWarningSimPinUnrestrictedMessage_();
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getNetworkSimPukDialogString_() {
+    return this.isSimPinLockRestricted_ ?
+        this.i18n('networkSimPukDialogManagedSubtitle') :
+        this.i18n('networkSimPukDialogSubtitle');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPukWarningSimPinUnrestrictedMessage_() {
     if (this.isPukInvalid_()) {
       const retriesLeft = this.getNumRetriesLeft_();
       if (retriesLeft === 1) {
@@ -718,6 +745,25 @@ Polymer({
     }
 
     return this.i18n('networkSimPukDialogWarningNoFailures');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPukWarningSimPinRestrictedMessage_() {
+    if (this.isPukInvalid_()) {
+      const retriesLeft = this.getNumRetriesLeft_();
+      if (retriesLeft === 1) {
+        return this.i18n(
+            'networkSimPukDialogManagedWarningWithFailure', retriesLeft);
+      }
+
+      return this.i18n(
+          'networkSimPukDialogManagedWarningWithFailures', retriesLeft);
+    }
+
+    return this.i18n('networkSimPukDialogManagedWarningNoFailures');
   },
 });
 })();

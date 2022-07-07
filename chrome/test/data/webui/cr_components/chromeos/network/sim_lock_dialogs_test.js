@@ -81,6 +81,16 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus: {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3}
     };
     verifyDialogShown('unlockPukDialog', deviceState);
+
+    assertFalse(simLockDialog.$.unlockPin1.hidden);
+    assertFalse(simLockDialog.$.unlockPin2.hidden);
+
+    simLockDialog.globalPolicy = {
+      allowCellularSimLock: false,
+    };
+
+    assertTrue(simLockDialog.$.unlockPin1.hidden);
+    assertTrue(simLockDialog.$.unlockPin2.hidden);
   });
 
   test('Show invalid unlock PIN error message properly', async function() {
