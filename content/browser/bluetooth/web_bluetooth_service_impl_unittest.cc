@@ -291,16 +291,14 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     prompt_ = prompt.get();
     return std::move(prompt);
   }
-  void ShowDeviceCredentialsPrompt(content::RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   CredentialsCallback callback) override {
-    std::move(callback).Run(DeviceCredentialsPromptResult::kCancelled, u"");
-  }
-  void ShowDevicePairConfirmPrompt(content::RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   PairConfirmCallback callback) override {
-    std::move(callback).Run(DevicePairConfirmPromptResult::kCancelled);
-  }
+
+  void ShowDevicePairPrompt(content::RenderFrameHost* frame,
+                            const std::u16string& device_identifier,
+                            PairPromptCallback callback,
+                            PairingKind pairing_kind) override {
+    std::move(callback).Run(PairPromptResult(PairPromptStatus::kCancelled));
+  };
+
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override {

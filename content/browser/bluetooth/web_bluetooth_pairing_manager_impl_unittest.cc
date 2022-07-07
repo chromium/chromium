@@ -13,6 +13,7 @@
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_impl.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,6 +31,7 @@ using ::blink::mojom::WebBluetoothWriteType;
 using ::device::BluetoothDevice;
 using ::device::MockBluetoothDevice;
 using ::testing::Return;
+using PairPromptResult = BluetoothDelegate::PairPromptResult;
 
 /**
  * A collection of related Bluetooth test data.
@@ -279,23 +281,11 @@ class BluetoothPairingManagerTest : public testing::Test,
     std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED);
   }
 
-  void PromptForBluetoothCredentials(
+  void PromptForBluetoothPairing(
       const std::u16string& device_identifier,
-      BluetoothCredentialsCallback callback) override {
-    switch (prompt_result_) {
-      case PairPromptResult::kSuccess:
-        std::move(callback).Run(prompt_result_, kValidTestData.pincode);
-        break;
-      case PairPromptResult::kCancelled:
-        std::move(callback).Run(prompt_result_, "");
-        break;
-    }
-  }
-
-  void PromptForBluetoothPairConfirm(
-      const std::u16string& device_identifier,
-      BluetoothPairConfirmCallback callback) override {
-    std::move(callback).Run(confirm_only_prompt_result_);
+      BluetoothDelegate::PairPromptCallback callback,
+      BluetoothDelegate::PairingKind pairing_kind) override {
+    std::move(callback).Run(prompt_result_);
   }
 
   void SetAuthBehavior(AuthBehavior auth_behavior) {
@@ -304,12 +294,8 @@ class BluetoothPairingManagerTest : public testing::Test,
 
   int num_pair_attempts() const { return num_pair_attempts_; }
 
-  void SetCredentialPromptResult(PairPromptResult result) {
+  void SetPromptResult(PairPromptResult result) {
     prompt_result_ = result;
-  }
-
-  void SetPairConfirmPromptResult(PairPromptResult result) {
-    confirm_only_prompt_result_ = result;
   }
 
   const std::vector<uint8_t>& characteristic_value() const {
@@ -335,8 +321,7 @@ class BluetoothPairingManagerTest : public testing::Test,
   int num_pair_attempts_ = 0;
   bool device_paired_ = false;
   AuthBehavior auth_behavior_ = AuthBehavior::kUnspecified;
-  PairPromptResult prompt_result_ = PairPromptResult::kSuccess;
-  PairPromptResult confirm_only_prompt_result_ = PairPromptResult::kSuccess;
+  PairPromptResult prompt_result_;
   std::unique_ptr<WebBluetoothPairingManagerImpl> pairing_manager_;
   SingleThreadTaskEnvironment single_threaded_task_environment_;
 };
@@ -889,7 +874,10 @@ TEST_F(BluetoothPairingManagerTest, WriteDescriptorDoublePair) {
 }
 
 TEST_F(BluetoothPairingManagerTest, CredentialPromptPINSuccess) {
-  SetCredentialPromptResult(PairPromptResult::kSuccess);
+  BluetoothDelegate::PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  result.pin = kValidTestData.pincode;
+  SetPromptResult(result);
 
   MockBluetoothDevice device(/*adapter=*/nullptr,
                              /*bluetooth_class=*/0,
@@ -913,7 +901,9 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPINSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, CredentialPromptPINCancelled) {
-  SetCredentialPromptResult(PairPromptResult::kCancelled);
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kCancelled;
+  SetPromptResult(result);
 
   MockBluetoothDevice device(/*adapter=*/nullptr,
                              /*bluetooth_class=*/0,
@@ -951,7 +941,9 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPasskeyCancelled) {
 }
 
 TEST_F(BluetoothPairingManagerTest, PairConfirmPromptSuccess) {
-  SetPairConfirmPromptResult(PairPromptResult::kSuccess);
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  SetPromptResult(result);
 
   MockBluetoothDevice device(/*adapter=*/nullptr,
                              /*bluetooth_class=*/0,
@@ -970,7 +962,9 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPromptSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, PairConfirmPromptCancelled) {
-  SetPairConfirmPromptResult(PairPromptResult::kCancelled);
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kCancelled;
+  SetPromptResult(result);
 
   MockBluetoothDevice device(/*adapter=*/nullptr,
                              /*bluetooth_class=*/0,

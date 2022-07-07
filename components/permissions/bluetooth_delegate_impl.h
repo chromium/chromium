@@ -65,25 +65,18 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
         const content::BluetoothScanningPrompt::EventHandler&
             event_handler) = 0;
 
-    // Prompt the user for Bluetooth credentials (AKA Passkey).
+    // Prompt the user for pairing Bluetooth device.
     //
     // The |device_identifier| is a localized string (device name, address,
     // etc.) displayed to the user for identification purposes. When the
     // prompt is complete |callback| is called with the result.
-    virtual void ShowBluetoothDeviceCredentialsDialog(
+    // |pairing_kind| is to determine which pairing kind of prompt should be
+    // shown.
+    virtual void ShowBluetoothDevicePairDialog(
         content::RenderFrameHost* frame,
         const std::u16string& device_identifier,
-        content::BluetoothDelegate::CredentialsCallback callback) = 0;
-
-    // Prompt the user to consent pairing device.
-    //
-    // The |device_identifier| is a localized string (device name, address,
-    // etc.) displayed to the user for identification purposes. When the
-    // prompt is complete |callback| is called with the result.
-    virtual void ShowBluetoothDevicePairConfirmDialog(
-        content::RenderFrameHost* frame,
-        const std::u16string& device_identifier,
-        content::BluetoothDelegate::PairConfirmCallback callback) = 0;
+        content::BluetoothDelegate::PairPromptCallback callback,
+        content::BluetoothDelegate::PairingKind pairng_kind) = 0;
   };
 
   explicit BluetoothDelegateImpl(std::unique_ptr<Client> client);
@@ -100,12 +93,12 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
       content::RenderFrameHost* frame,
       const content::BluetoothScanningPrompt::EventHandler& event_handler)
       override;
-  void ShowDeviceCredentialsPrompt(content::RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   CredentialsCallback callback) override;
-  void ShowDevicePairConfirmPrompt(content::RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   PairConfirmCallback callback) override;
+
+  void ShowDevicePairPrompt(content::RenderFrameHost* frame,
+                            const std::u16string& device_identifier,
+                            PairPromptCallback callback,
+                            PairingKind pairing_kind) override;
+
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       content::RenderFrameHost* frame,
       const std::string& device_address) override;

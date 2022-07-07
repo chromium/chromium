@@ -29,7 +29,7 @@ namespace chrome {
 void ShowBluetoothDeviceCredentialsDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    BluetoothDelegate::CredentialsCallback close_callback) {
+    BluetoothDelegate::PairPromptCallback close_callback) {
   // This dialog owns itself. DialogDelegateView will delete |dialog| instance.
   auto* dialog = new BluetoothDeviceCredentialsView(device_identifier,
                                                     std::move(close_callback));
@@ -56,7 +56,7 @@ bool IsInputTextValid(const std::u16string& text) {
 
 BluetoothDeviceCredentialsView::BluetoothDeviceCredentialsView(
     const std::u16string& device_identifier,
-    BluetoothDelegate::CredentialsCallback close_callback)
+    BluetoothDelegate::PairPromptCallback close_callback)
     : close_callback_(std::move(close_callback)) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -66,7 +66,8 @@ BluetoothDeviceCredentialsView::BluetoothDeviceCredentialsView(
                      base::Unretained(this)));
   auto canceled = [](BluetoothDeviceCredentialsView* dialog) {
     std::move(dialog->close_callback_)
-        .Run(BluetoothDelegate::DeviceCredentialsPromptResult::kCancelled, u"");
+        .Run(BluetoothDelegate::PairPromptResult(
+            BluetoothDelegate::PairPromptStatus::kCancelled));
   };
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
@@ -181,9 +182,10 @@ void BluetoothDeviceCredentialsView::OnDialogAccepted() {
   base::TrimWhitespace(passkey_text_->GetText(), base::TRIM_ALL,
                        &trimmed_input);
 
-  std::move(close_callback_)
-      .Run(BluetoothDelegate::DeviceCredentialsPromptResult::kSuccess,
-           std::move(trimmed_input));
+  BluetoothDelegate::PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  result.pin = base::UTF16ToUTF8(trimmed_input);
+  std::move(close_callback_).Run(result);
 }
 
 void BluetoothDeviceCredentialsView::ContentsChanged(

@@ -81,39 +81,37 @@ ChromeBluetoothDelegateImplClient::ShowBluetoothScanningPrompt(
 #endif
 }
 
-void ChromeBluetoothDelegateImplClient::ShowBluetoothDeviceCredentialsDialog(
+void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     content::RenderFrameHost* frame,
     const std::u16string& device_identifier,
-    content::BluetoothDelegate::CredentialsCallback callback) {
+    content::BluetoothDelegate::PairPromptCallback callback,
+    content::BluetoothDelegate::PairingKind pairing_kind) {
 #if PAIR_BLUETOOTH_ON_DEMAND()
-  chrome::ShowBluetoothDeviceCredentialsDialog(
-      content::WebContents::FromRenderFrameHost(frame), device_identifier,
-      std::move(callback));
+
+  switch (pairing_kind) {
+    case (content::BluetoothDelegate::PairingKind::kProvidePin):
+      chrome::ShowBluetoothDeviceCredentialsDialog(
+          content::WebContents::FromRenderFrameHost(frame), device_identifier,
+          std::move(callback));
+      break;
+    case (content::BluetoothDelegate::PairingKind::kConfirmOnly):
+      chrome::ShowBluetoothDevicePairConfirmDialog(
+          content::WebContents::FromRenderFrameHost(frame), device_identifier,
+          std::move(callback));
+      break;
+    default:
+      NOTREACHED();
+      std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
+          content::BluetoothDelegate::PairPromptStatus::kCancelled));
+      break;
+  }
+
 #else
   // WebBluetoothServiceImpl will only start the pairing process (which prompts
   // for credentials) on devices that pair on demand. This should never be
   // reached.
   NOTREACHED();
-  std::move(callback).Run(
-      content::BluetoothDelegate::DeviceCredentialsPromptResult::kCancelled,
-      u"");
-#endif
-}
-
-void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairConfirmDialog(
-    content::RenderFrameHost* frame,
-    const std::u16string& device_identifier,
-    content::BluetoothDelegate::PairConfirmCallback callback) {
-#if PAIR_BLUETOOTH_ON_DEMAND()
-  chrome::ShowBluetoothDevicePairConfirmDialog(
-      content::WebContents::FromRenderFrameHost(frame), device_identifier,
-      std::move(callback));
-#else
-  // WebBluetoothServiceImpl will only start the pairing process (which prompts
-  // for confirmation) on devices that pair on demand. This should never be
-  // reached.
-  NOTREACHED();
-  std::move(callback).Run(
-      content::BluetoothDelegate::DevicePairConfirmPromptResult::kCancelled);
+  std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
+      content::BluetoothDelegate::PairPromptStatus::kCancelled));
 #endif
 }

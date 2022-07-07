@@ -48,18 +48,13 @@ FakeBluetoothDelegate::ShowBluetoothScanningPrompt(
   return std::make_unique<AlwaysAllowBluetoothScanning>(event_handler);
 }
 
-void FakeBluetoothDelegate::ShowDeviceCredentialsPrompt(
+void FakeBluetoothDelegate::ShowDevicePairPrompt(
     RenderFrameHost* frame,
     const std::u16string& device_identifier,
-    CredentialsCallback callback) {
-  std::move(callback).Run(DeviceCredentialsPromptResult::kCancelled, u"");
-}
-
-void FakeBluetoothDelegate::ShowDevicePairConfirmPrompt(
-    RenderFrameHost* frame,
-    const std::u16string& device_identifier,
-    PairConfirmCallback callback) {
-  std::move(callback).Run(DevicePairConfirmPromptResult::kCancelled);
+    PairPromptCallback callback,
+    PairingKind pairing_kind) {
+  std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
+      content::BluetoothDelegate::PairPromptStatus::kCancelled));
 }
 
 WebBluetoothDeviceId FakeBluetoothDelegate::GetWebBluetoothDeviceId(

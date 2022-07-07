@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
@@ -20,23 +21,6 @@ namespace content {
 // separated into a separate interface for readability and testing purposes.
 class WebBluetoothPairingManagerDelegate {
  public:
-  enum class PairPromptResult {
-    // User entered valid pin text or pressed OK (or equiv.) button for pairing
-    // confirmation.
-    kSuccess,
-    // User cancelled, or agent cancelled on their behalf.
-    kCancelled,
-  };
-
-  // Callback for bluetooth auth credential (PIN, Passkey) prompts.
-  // |result| is only valid when status is SUCCESS.
-  using BluetoothCredentialsCallback =
-      base::OnceCallback<void(PairPromptResult, const std::string& result)>;
-
-  // Callback for bluetooth pair confirm prompts.
-  using BluetoothPairConfirmCallback =
-      base::OnceCallback<void(PairPromptResult)>;
-
   // Return the cached device ID for the given characteric instance ID.
   // The returned device ID may be invalid - check before use.
   virtual blink::WebBluetoothDeviceId GetCharacteristicDeviceID(
@@ -121,21 +105,15 @@ class WebBluetoothPairingManagerDelegate {
       blink::mojom::WebBluetoothService::
           RemoteCharacteristicStartNotificationsCallback callback) = 0;
 
-  // Display a dialog to prompt to user for their Bluetooth passkey.
+  // Display a dialog to prompt to user for Bluetooth pairing.
   // |device_identifier| is any string the caller wants to display to the user
   // to identify the device (MAC address, name, etc.). |callback| will be called
-  // with the dialog result.
-  virtual void PromptForBluetoothCredentials(
+  // with the dialog result. |pairng_kind| will be used to determined which
+  // prompt to show.
+  virtual void PromptForBluetoothPairing(
       const std::u16string& device_identifier,
-      BluetoothCredentialsCallback callback) = 0;
-
-  // Display a dialog to prompt for user to confirm to pair with Bluetooth
-  // device. |device_identifier| is any string the caller wants to display to
-  // the user to identify the device (MAC address, name, etc.). |callback| will
-  // be called with the dialog result.
-  virtual void PromptForBluetoothPairConfirm(
-      const std::u16string& device_identifier,
-      BluetoothPairConfirmCallback callback) = 0;
+      BluetoothDelegate::PairPromptCallback callback,
+      BluetoothDelegate::PairingKind pairing_kind) = 0;
 };
 
 }  // namespace content

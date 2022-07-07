@@ -50,12 +50,12 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
   std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) override;
-  void ShowDeviceCredentialsPrompt(RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   CredentialsCallback callback) override;
-  void ShowDevicePairConfirmPrompt(RenderFrameHost* frame,
-                                   const std::u16string& device_identifier,
-                                   PairConfirmCallback callback) override;
+
+  void ShowDevicePairPrompt(RenderFrameHost* frame,
+                            const std::u16string& device_identifier,
+                            PairPromptCallback callback,
+                            PairingKind pairing_kind) override;
+
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override;

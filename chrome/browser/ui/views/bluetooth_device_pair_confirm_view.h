@@ -22,7 +22,7 @@ class BluetoothDevicePairConfirmView : public views::DialogDelegateView,
   METADATA_HEADER(BluetoothDevicePairConfirmView);
   BluetoothDevicePairConfirmView(
       const std::u16string& device_identifier,
-      content::BluetoothDelegate::PairConfirmCallback close_callback);
+      content::BluetoothDelegate::PairPromptCallback close_callback);
   BluetoothDevicePairConfirmView(const BluetoothDevicePairConfirmView&) =
       delete;
   BluetoothDevicePairConfirmView& operator=(
@@ -40,7 +40,7 @@ class BluetoothDevicePairConfirmView : public views::DialogDelegateView,
  private:
   void OnDialogAccepted();
 
-  content::BluetoothDelegate::PairConfirmCallback close_callback_;
+  content::BluetoothDelegate::PairPromptCallback close_callback_;
   raw_ptr<views::Textfield> passkey_text_ = nullptr;
   raw_ptr<views::View> icon_view_ = nullptr;
   raw_ptr<views::View> contents_wrapper_ = nullptr;

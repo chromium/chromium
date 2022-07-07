@@ -22,7 +22,7 @@ class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
   METADATA_HEADER(BluetoothDeviceCredentialsView);
   BluetoothDeviceCredentialsView(
       const std::u16string& device_identifier,
-      content::BluetoothDelegate::CredentialsCallback close_callback);
+      content::BluetoothDelegate::PairPromptCallback close_callback);
   BluetoothDeviceCredentialsView(const BluetoothDeviceCredentialsView&) =
       delete;
   BluetoothDeviceCredentialsView& operator=(
@@ -48,7 +48,7 @@ class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
 
-  content::BluetoothDelegate::CredentialsCallback close_callback_;
+  content::BluetoothDelegate::PairPromptCallback close_callback_;
   raw_ptr<views::Textfield> passkey_text_ = nullptr;
   raw_ptr<views::View> icon_view_ = nullptr;
   raw_ptr<views::View> contents_wrapper_ = nullptr;

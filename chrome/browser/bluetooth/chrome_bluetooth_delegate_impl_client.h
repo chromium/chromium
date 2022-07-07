@@ -41,14 +41,12 @@ class ChromeBluetoothDelegateImplClient
       content::RenderFrameHost* frame,
       const content::BluetoothScanningPrompt::EventHandler& event_handler)
       override;
-  void ShowBluetoothDeviceCredentialsDialog(
+
+  void ShowBluetoothDevicePairDialog(
       content::RenderFrameHost* frame,
       const std::u16string& device_identifier,
-      content::BluetoothDelegate::CredentialsCallback callback) override;
-  void ShowBluetoothDevicePairConfirmDialog(
-      content::RenderFrameHost* frame,
-      const std::u16string& device_identifier,
-      content::BluetoothDelegate::PairConfirmCallback callback) override;
+      content::BluetoothDelegate::PairPromptCallback callback,
+      content::BluetoothDelegate::PairingKind pairing_kind) override;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_IMPL_CLIENT_H_

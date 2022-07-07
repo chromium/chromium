@@ -137,7 +137,7 @@ void ShowCreateChromeAppShortcutsDialog(
 void ShowBluetoothDeviceCredentialsDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    content::BluetoothDelegate::CredentialsCallback close_callback);
+    content::BluetoothDelegate::PairPromptCallback close_callback);
 
 // Shows the dialog to let user confirm to pair with the device
 // identified by |device_identifier|. |device_identifier| is the most
@@ -146,7 +146,7 @@ void ShowBluetoothDeviceCredentialsDialog(
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    content::BluetoothDelegate::PairConfirmCallback close_callback);
+    content::BluetoothDelegate::PairPromptCallback close_callback);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
 // Callback used to indicate whether a user has accepted the installation of a

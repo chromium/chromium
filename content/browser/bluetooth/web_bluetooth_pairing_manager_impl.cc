@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
+#include "content/public/browser/bluetooth_delegate.h"
 
 namespace content {
 
@@ -259,34 +260,34 @@ void WebBluetoothPairingManagerImpl::OnPairDevice(
 void WebBluetoothPairingManagerImpl::RequestPinCode(BluetoothDevice* device) {
   blink::WebBluetoothDeviceId device_id =
       pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
-  pairing_manager_delegate_->PromptForBluetoothCredentials(
+  pairing_manager_delegate_->PromptForBluetoothPairing(
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPinCodeResult,
-                     weak_ptr_factory_.GetWeakPtr(), device_id));
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      BluetoothDelegate::PairingKind::kProvidePin);
 }
 
 void WebBluetoothPairingManagerImpl::OnPinCodeResult(
     blink::WebBluetoothDeviceId device_id,
-    WebBluetoothPairingManagerDelegate::PairPromptResult status,
-    const std::string& result) {
-  switch (status) {
-    case WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled:
+    const BluetoothDelegate::PairPromptResult& result) {
+  switch (result.result_code) {
+    case BluetoothDelegate::PairPromptStatus::kCancelled:
       pairing_manager_delegate_->CancelPairing(device_id);
       break;
-    case WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess:
-      pairing_manager_delegate_->SetPinCode(device_id, result);
+    case BluetoothDelegate::PairPromptStatus::kSuccess:
+      pairing_manager_delegate_->SetPinCode(device_id, result.pin);
       break;
   }
 }
 
 void WebBluetoothPairingManagerImpl::OnPairConfirmResult(
     blink::WebBluetoothDeviceId device_id,
-    WebBluetoothPairingManagerDelegate::PairPromptResult status) {
-  switch (status) {
-    case WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled:
+    const BluetoothDelegate::PairPromptResult& result) {
+  switch (result.result_code) {
+    case BluetoothDelegate::PairPromptStatus::kCancelled:
       pairing_manager_delegate_->CancelPairing(device_id);
       break;
-    case WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess:
+    case BluetoothDelegate::PairPromptStatus::kSuccess:
       pairing_manager_delegate_->PairConfirmed(device_id);
       break;
   }
@@ -325,10 +326,11 @@ void WebBluetoothPairingManagerImpl::ConfirmPasskey(BluetoothDevice* device,
 void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
   blink::WebBluetoothDeviceId device_id =
       pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
-  pairing_manager_delegate_->PromptForBluetoothPairConfirm(
+  pairing_manager_delegate_->PromptForBluetoothPairing(
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
-                     weak_ptr_factory_.GetWeakPtr(), device_id));
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      BluetoothDelegate::PairingKind::kConfirmOnly);
 }
 
 }  // namespace content

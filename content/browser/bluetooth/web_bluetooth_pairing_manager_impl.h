@@ -95,14 +95,11 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
       device::BluetoothDevice::ConnectCallback callback,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
-  void OnPinCodeResult(
-      blink::WebBluetoothDeviceId device_id,
-      WebBluetoothPairingManagerDelegate::PairPromptResult status,
-      const std::string& result);
+  void OnPinCodeResult(blink::WebBluetoothDeviceId device_id,
+                       const BluetoothDelegate::PairPromptResult& result);
 
-  void OnPairConfirmResult(
-      blink::WebBluetoothDeviceId device_id,
-      WebBluetoothPairingManagerDelegate::PairPromptResult status);
+  void OnPairConfirmResult(blink::WebBluetoothDeviceId device_id,
+                           const BluetoothDelegate::PairPromptResult& result);
 
   // device::BluetoothDevice::PairingDelegate implementation:
   void RequestPinCode(device::BluetoothDevice* device) override;

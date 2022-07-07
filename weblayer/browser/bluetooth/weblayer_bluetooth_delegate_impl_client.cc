@@ -59,25 +59,15 @@ WebLayerBluetoothDelegateImplClient::ShowBluetoothScanningPrompt(
 #endif
 }
 
-void WebLayerBluetoothDelegateImplClient::ShowBluetoothDeviceCredentialsDialog(
+void WebLayerBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     content::RenderFrameHost* frame,
     const std::u16string& device_identifier,
-    content::BluetoothDelegate::CredentialsCallback callback) {
+    content::BluetoothDelegate::PairPromptCallback callback,
+    content::BluetoothDelegate::PairingKind) {
   // Web Bluetooth is not supported for desktop in WebLayer and Android already
   // bonds on demand, so this should not be called on any platform.
-  std::move(callback).Run(
-      content::BluetoothDelegate::DeviceCredentialsPromptResult::kCancelled,
-      /*result=*/std::u16string());
+  std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
+      content::BluetoothDelegate::PairPromptStatus::kCancelled));
   NOTREACHED();
 }
-
-void WebLayerBluetoothDelegateImplClient::ShowBluetoothDevicePairConfirmDialog(
-    content::RenderFrameHost* frame,
-    const std::u16string& device_identifier,
-    content::BluetoothDelegate::PairConfirmCallback callback) {
-  // Web Bluetooth is not supported for desktop in WebLayer and Android already
-  // bonds on demand, so this should not be called on any platform.
-  NOTREACHED();
-}
-
 }  // namespace weblayer

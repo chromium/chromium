@@ -27,7 +27,7 @@ namespace chrome {
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    BluetoothDelegate::PairConfirmCallback close_callback) {
+    BluetoothDelegate::PairPromptCallback close_callback) {
   // This dialog owns itself. DialogDelegateView will delete |dialog| instance.
   auto* dialog = new BluetoothDevicePairConfirmView(device_identifier,
                                                     std::move(close_callback));
@@ -38,7 +38,7 @@ void ShowBluetoothDevicePairConfirmDialog(
 
 BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
     const std::u16string& device_identifier,
-    BluetoothDelegate::PairConfirmCallback close_callback)
+    BluetoothDelegate::PairPromptCallback close_callback)
     : close_callback_(std::move(close_callback)) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -48,7 +48,8 @@ BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
                      base::Unretained(this)));
   auto canceled = [](BluetoothDevicePairConfirmView* dialog) {
     std::move(dialog->close_callback_)
-        .Run(BluetoothDelegate::DevicePairConfirmPromptResult::kCancelled);
+        .Run(BluetoothDelegate::PairPromptResult(
+            BluetoothDelegate::PairPromptStatus::kCancelled));
   };
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
@@ -132,8 +133,9 @@ std::u16string BluetoothDevicePairConfirmView::GetWindowTitle() const {
 }
 
 void BluetoothDevicePairConfirmView::OnDialogAccepted() {
-  std::move(close_callback_)
-      .Run(BluetoothDelegate::DevicePairConfirmPromptResult::kSuccess);
+  BluetoothDelegate::PairPromptResult prompt_result;
+  prompt_result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  std::move(close_callback_).Run(prompt_result);
 }
 
 BEGIN_METADATA(BluetoothDevicePairConfirmView, views::DialogDelegateView)

@@ -176,43 +176,6 @@ bool IsValidRequestScanOptions(
   return HasValidFilter(options->filters);
 }
 
-void BluetoothDelegateCredentialsCallback(
-    WebBluetoothPairingManagerDelegate::BluetoothCredentialsCallback callback,
-    BluetoothDelegate::DeviceCredentialsPromptResult status,
-    const std::u16string& result) {
-  WebBluetoothPairingManagerDelegate::PairPromptResult delegate_result;
-  switch (status) {
-    case BluetoothDelegate::DeviceCredentialsPromptResult::kSuccess:
-      delegate_result =
-          WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess;
-      break;
-    case BluetoothDelegate::DeviceCredentialsPromptResult::kCancelled:
-      delegate_result =
-          WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled;
-      break;
-  }
-
-  std::move(callback).Run(delegate_result, base::UTF16ToUTF8(result));
-}
-
-void BluetoothDelegatePairConfirmCallback(
-    WebBluetoothPairingManagerDelegate::BluetoothPairConfirmCallback callback,
-    BluetoothDelegate::DevicePairConfirmPromptResult status) {
-  WebBluetoothPairingManagerDelegate::PairPromptResult delegate_result;
-  switch (status) {
-    case BluetoothDelegate::DevicePairConfirmPromptResult::kSuccess:
-      delegate_result =
-          WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess;
-      break;
-    case BluetoothDelegate::DevicePairConfirmPromptResult::kCancelled:
-      delegate_result =
-          WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled;
-      break;
-  }
-
-  std::move(callback).Run(delegate_result);
-}
-
 bool& ShouldIgnoreVisibilityRequirementsForTesting() {
   static bool should_ignore_visibility_requirements = false;
   return should_ignore_visibility_requirements;
@@ -2672,40 +2635,32 @@ void WebBluetoothServiceImpl::PairConfirmed(
   device->ConfirmPairing();
 }
 
-void WebBluetoothServiceImpl::PromptForBluetoothCredentials(
+void WebBluetoothServiceImpl::PromptForBluetoothPairing(
     const std::u16string& device_identifier,
-    BluetoothCredentialsCallback callback) {
+    BluetoothDelegate::PairPromptCallback callback,
+    BluetoothDelegate::PairingKind pairing_kind) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   BluetoothDelegate* delegate =
       GetContentClient()->browser()->GetBluetoothDelegate();
+
   if (!delegate) {
-    std::move(callback).Run(
-        WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled, "");
+    std::move(callback).Run(BluetoothDelegate::PairPromptResult(
+        BluetoothDelegate::PairPromptStatus::kCancelled));
     return;
   }
-  delegate->ShowDeviceCredentialsPrompt(
-      &render_frame_host(), device_identifier,
-      base::BindOnce(&BluetoothDelegateCredentialsCallback,
-                     std::move(callback)));
-}
 
-void WebBluetoothServiceImpl::PromptForBluetoothPairConfirm(
-    const std::u16string& device_identifier,
-    BluetoothPairConfirmCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BluetoothDelegate* delegate =
-      GetContentClient()->browser()->GetBluetoothDelegate();
-  if (!delegate) {
-    std::move(callback).Run(
-        WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled);
-    return;
+  switch (pairing_kind) {
+    case BluetoothDelegate::PairingKind::kConfirmOnly:
+    case BluetoothDelegate::PairingKind::kProvidePin:
+      delegate->ShowDevicePairPrompt(&render_frame_host(), device_identifier,
+                                     std::move(callback), pairing_kind);
+      break;
+    default:
+      NOTREACHED();
+      std::move(callback).Run(BluetoothDelegate::PairPromptResult(
+          BluetoothDelegate::PairPromptStatus::kCancelled));
+      break;
   }
-  delegate->ShowDevicePairConfirmPrompt(
-      &render_frame_host(), device_identifier,
-      base::BindOnce(&BluetoothDelegatePairConfirmCallback,
-                     std::move(callback)));
 }
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
