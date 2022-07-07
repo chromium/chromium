@@ -21,7 +21,8 @@ import java.lang.ref.WeakReference;
  * Only instantiate this class when you need the implemented features.
  */
 public class ActivityWindowAndroid
-        extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
+        extends WindowAndroid implements ApplicationStatus.ActivityStateListener,
+                                         ApplicationStatus.WindowFocusChangedListener {
     private final boolean mListenToActivityState;
 
     // Just create one ImmutableWeakReference object to avoid gc churn.
@@ -62,6 +63,7 @@ public class ActivityWindowAndroid
 
         if (listenToActivityState) {
             ApplicationStatus.registerStateListenerForActivity(this, activity);
+            ApplicationStatus.registerWindowFocusChangedListener(this);
         }
 
         WeakReference<Activity> activityWeakReference = new WeakReference<Activity>(activity);
@@ -101,6 +103,7 @@ public class ActivityWindowAndroid
             onActivityResumed();
         } else if (newState == ActivityState.DESTROYED) {
             onActivityDestroyed();
+            ApplicationStatus.unregisterWindowFocusChangedListener(this);
         }
     }
 
@@ -109,5 +112,10 @@ public class ActivityWindowAndroid
     public int getActivityState() {
         return mListenToActivityState ? ApplicationStatus.getStateForActivity(getActivity().get())
                                       : super.getActivityState();
+    }
+
+    @Override
+    public void onWindowFocusChanged(Activity activity, boolean hasFocus) {
+        if (getActivity().get() == activity) onWindowFocusChanged(hasFocus);
     }
 }

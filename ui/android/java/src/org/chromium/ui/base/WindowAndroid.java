@@ -145,6 +145,9 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     // WindowAndroid.
     private final UnownedUserDataHost mUnownedUserDataHost = new UnownedUserDataHost();
 
+    private float mRefreshRate;
+    private boolean mHasFocus = true;
+
     /**
      * An interface to notify listeners that a context menu is closed.
      */
@@ -891,6 +894,17 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         }
     }
 
+    protected void onWindowFocusChanged(boolean hasFocus) {
+        mHasFocus = hasFocus;
+        if (!mHasFocus) {
+            // `preferredDisplayModeId` affects other windows even when this window is not in focus,
+            // so reset to no preference when not in focus.
+            doSetPreferredRefreshRate(0);
+        } else {
+            doSetPreferredRefreshRate(mRefreshRate);
+        }
+    }
+
     @Override
     @RequiresApi(Build.VERSION_CODES.M)
     public void onCurrentModeChanged(Display.Mode currentMode) {
@@ -979,6 +993,11 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     @SuppressLint("NewApi")
     @CalledByNative
     private void setPreferredRefreshRate(float preferredRefreshRate) {
+        mRefreshRate = preferredRefreshRate;
+        if (mHasFocus) doSetPreferredRefreshRate(preferredRefreshRate);
+    }
+
+    private void doSetPreferredRefreshRate(float preferredRefreshRate) {
         if (mSupportedRefreshRateModes == null || !mAllowChangeRefreshRate) return;
 
         int preferredModeId = getPreferredModeId(preferredRefreshRate);
