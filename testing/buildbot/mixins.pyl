@@ -857,7 +857,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'os': 'Mac-12',
+        'os': 'Mac-12.4',
       },
     },
   },
