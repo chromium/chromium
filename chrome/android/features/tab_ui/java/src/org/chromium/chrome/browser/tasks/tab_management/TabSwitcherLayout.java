@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.vectordrawable.graphics.drawable.AnimationUtilsCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -27,7 +26,6 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -69,7 +67,7 @@ public class TabSwitcherLayout extends Layout {
 
     // Duration of the transition animation
     public static final long ZOOMING_DURATION = 300;
-    private static final int TRANSLATE_DURATION_MS = 500;
+    private static final int TRANSLATE_DURATION_MS = 450;
     private static final int BACKGROUND_FADING_DURATION_MS = 150;
 
     private static final String TRACE_SHOW_TAB_SWITCHER = "TabSwitcherLayout.Show.TabSwitcher";
@@ -519,8 +517,7 @@ public class TabSwitcherLayout extends Layout {
 
         Animator translateUp = ObjectAnimator.ofFloat(mController.getTabSwitcherContainer(),
                 View.TRANSLATION_Y, mController.getTabSwitcherContainer().getHeight(), 0f);
-        translateUp.setInterpolator(AnimationUtilsCompat.loadInterpolator(
-                getContext(), R.anim.fast_out_extra_slow_in_interpolator));
+        translateUp.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
         translateUp.setDuration(TRANSLATE_DURATION_MS);
 
         mTabToSwitcherAnimation = new AnimatorSet();
@@ -555,8 +552,7 @@ public class TabSwitcherLayout extends Layout {
 
         Animator translateDown = ObjectAnimator.ofFloat(mController.getTabSwitcherContainer(),
                 View.TRANSLATION_Y, 0f, mController.getTabSwitcherContainer().getHeight());
-        translateDown.setInterpolator(AnimationUtilsCompat.loadInterpolator(
-                getContext(), R.anim.fast_out_extra_slow_in_interpolator));
+        translateDown.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
         translateDown.setDuration(TRANSLATE_DURATION_MS);
 
         mTabToSwitcherAnimation = new AnimatorSet();

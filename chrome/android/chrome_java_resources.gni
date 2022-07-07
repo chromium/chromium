@@ -12,7 +12,6 @@ chrome_java_resources = [
   "java/res/anim/activity_close_exit.xml",
   "java/res/anim/activity_open_enter.xml",
   "java/res/anim/decelerate_quart.xml",
-  "java/res/anim/fast_out_extra_slow_in_interpolator.xml",
   "java/res/anim/fast_out_slow_in_interpolator.xml",
   "java/res/anim/slide_in_up.xml",
   "java/res/anim/stay_hidden.xml",
