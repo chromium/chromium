@@ -110,6 +110,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
  private:
   void UnconfigureInternal();
+  GPUTexture* ReplaceCurrentTexture();
   void ResizeSwapbuffers(gfx::Size size);
   void InitializeAlphaModePipeline(WGPUTextureFormat format);
 
@@ -134,11 +135,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   V8GPUCanvasAlphaMode::Enum alpha_mode_;
   std::unique_ptr<TextureAlphaClearer> alpha_clearer_;
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
-
-  // TODO(bajones): These don't need to be tracked if swap_buffers can persist
-  // across resizes.
-  WGPUTextureUsage usage_;
-  WGPUTextureFormat format_;
 
   gfx::Size size_;
 

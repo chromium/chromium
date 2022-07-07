@@ -94,16 +94,7 @@ void WebGPUSwapBufferProvider::SetFilterQuality(
   }
 }
 
-void WebGPUSwapBufferProvider::Neuter() {
-  if (neutered_) {
-    return;
-  }
-
-  if (layer_) {
-    layer_->ClearClient();
-    layer_ = nullptr;
-  }
-
+void WebGPUSwapBufferProvider::DiscardCurrentSwapBuffer() {
   if (current_swap_buffer_) {
     if (auto context_provider = GetContextProviderWeakPtr()) {
       gpu::webgpu::WebGPUInterface* webgpu =
@@ -126,6 +117,19 @@ void WebGPUSwapBufferProvider::Neuter() {
     }
     current_swap_buffer_ = nullptr;
   }
+}
+
+void WebGPUSwapBufferProvider::Neuter() {
+  if (neutered_) {
+    return;
+  }
+
+  if (layer_) {
+    layer_->ClearClient();
+    layer_ = nullptr;
+  }
+
+  DiscardCurrentSwapBuffer();
 
   client_ = nullptr;
   neutered_ = true;

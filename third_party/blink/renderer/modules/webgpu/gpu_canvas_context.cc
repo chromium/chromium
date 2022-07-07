@@ -400,9 +400,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // that errors can be generated in the appropriate error scope.
   device_ = descriptor->device();
 
-  usage_ = AsDawnFlags<WGPUTextureUsage>(descriptor->usage());
-  format_ = AsDawnEnum(descriptor->format());
-  switch (format_) {
+  WGPUTextureUsage usage = AsDawnFlags<WGPUTextureUsage>(descriptor->usage());
+  WGPUTextureFormat format = AsDawnEnum(descriptor->format());
+  switch (format) {
     case WGPUTextureFormat_BGRA8Unorm:
       // TODO(crbug.com/1298618): support RGBA8Unorm on MAC.
 #if !BUILDFLAG(IS_MAC)
@@ -454,6 +454,26 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
+  swap_buffers_ = base::AdoptRef(
+      new WebGPUSwapBufferProvider(this, device_->GetDawnControlClient(),
+                                   device_->GetHandle(), usage, format));
+  swap_buffers_->SetFilterQuality(filter_quality_);
+
+  // Note: SetContentsOpaque is only an optimization hint. It doesn't
+  // actually make the contents opaque.
+  switch (alpha_mode_) {
+    case V8GPUCanvasAlphaMode::Enum::kOpaque: {
+      CcLayer()->SetContentsOpaque(true);
+      if (!alpha_clearer_ || !alpha_clearer_->IsCompatible(device_, format)) {
+        alpha_clearer_ = std::make_unique<TextureAlphaClearer>(device_, format);
+      }
+      break;
+    }
+    case V8GPUCanvasAlphaMode::Enum::kPremultiplied:
+      CcLayer()->SetContentsOpaque(false);
+      break;
+  }
+
   // Set the size while configuring.
   if (descriptor->hasSize()) {
     // TODO(crbug.com/1326473): Remove this branch after deprecation period.
@@ -485,41 +505,16 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     configured_size_.SetSize(0, 0);
     ResizeSwapbuffers(Host()->Size());
   }
-
-  // Note: SetContentsOpaque is only an optimization hint. It doesn't
-  // actually make the contents opaque.
-  switch (alpha_mode_) {
-    case V8GPUCanvasAlphaMode::Enum::kOpaque: {
-      CcLayer()->SetContentsOpaque(true);
-      if (!alpha_clearer_ || alpha_clearer_->IsCompatible(device_, format_)) {
-        alpha_clearer_ =
-            std::make_unique<TextureAlphaClearer>(device_, format_);
-      }
-      break;
-    }
-    case V8GPUCanvasAlphaMode::Enum::kPremultiplied:
-      CcLayer()->SetContentsOpaque(false);
-      break;
-  }
 }
 
 void GPUCanvasContext::ResizeSwapbuffers(gfx::Size size) {
   size_ = size;
 
   // The spec indicates that when the canvas is resized the current texture is
-  // set to null. It will be reallocated on the next call to getCurrentTexture.
-
-  // TODO(bajones): Currently the only way to clear the swap_buffers texture
-  // reference is to neuter it, which renders the swap_buffers unusable and
-  // requires a new one to be created. Resizing could be handled more
-  // efficiently if the swap_buffers internal texture reference could be
-  // discarded without needing to recreate the entire thing.
-  if (device_) {
-    UnconfigureInternal();
-    swap_buffers_ = base::AdoptRef(
-        new WebGPUSwapBufferProvider(this, device_->GetDawnControlClient(),
-                                     device_->GetHandle(), usage_, format_));
-    swap_buffers_->SetFilterQuality(filter_quality_);
+  // discarded and a new one allocated in it's place immediately.
+  if (swap_buffers_) {
+    swap_buffers_->DiscardCurrentSwapBuffer();
+    ReplaceCurrentTexture();
   }
 
   // If we don't notify the host that something has changed it may never check
@@ -575,13 +570,6 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
     return GPUTexture::CreateError(device_);
   }
 
-  // As we are getting a new texture, if this is an offscreencanvas or if it is
-  // going to be presented to video, we have to notify the placeholder or
-  // listeners.
-  if (IsOffscreenCanvas() ||
-      static_cast<HTMLCanvasElement*>(Host())->HasCanvasCapture())
-    DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
-
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrentTexture is called multiple
   // time, the same texture should be returned. |texture_| is set to null when
@@ -589,6 +577,22 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   if (texture_) {
     return texture_;
   }
+
+  return ReplaceCurrentTexture();
+}
+
+GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
+  DCHECK(device_);
+  DCHECK(swap_buffers_);
+
+  // As we are getting a new texture, if this is an offscreencanvas or if it is
+  // going to be presented to video, we have to notify the placeholder or
+  // listeners.
+  if (IsOffscreenCanvas() ||
+      static_cast<HTMLCanvasElement*>(Host())->HasCanvasCapture())
+    DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+
+  texture_ = nullptr;
 
   WGPUTexture dawn_client_texture = swap_buffers_->GetNewTexture(size_);
   if (!dawn_client_texture) {
