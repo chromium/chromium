@@ -80,12 +80,18 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
     options = super(PerfBenchmarkWithProfiling,
                     self).CreateCoreTimelineBasedMeasurementOptions()
 
+    # Here, we implicitly assume that CreateCoreTimelineBasedMeasurementOptions
+    # is called after CustomizeOptions.
     if self._browser_package is not None:
       options.config.enable_experimental_system_tracing = True
       options.config.system_trace_config.EnableProfiling(
           # Enable wildcard to sample all processes for the selected browser.
           "{}*".format(self._browser_package),
           self.GetSamplingFrequencyHz())
+
+      # These environment variables are set here so that they can be used during
+      # symbolization, which happens separately from benchmarking, during the
+      # "results processing" stage (in results_processor.ProcessResults).
       if self._symbols_directory is not None:
         os.environ["PERFETTO_SYMBOLIZER_MODE"] = "index"
         os.environ["PERFETTO_BINARY_PATH"] = self._symbols_directory
