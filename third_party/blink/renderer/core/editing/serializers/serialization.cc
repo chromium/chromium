@@ -762,6 +762,11 @@ DocumentFragment* CreateFragmentForTransformToFragment(
     Document& output_doc) {
   DocumentFragment* fragment = output_doc.createDocumentFragment();
 
+  // The HTML spec says that we should execute scripts and set their already
+  // started flag to false for transformToFragment, so we use
+  // kAllowScriptingContentAndDoNotMarkAlreadyStarted in ParseHTML and ParseXML
+  // below. https://html.spec.whatwg.org/multipage/scripting.html#scriptTagXSLT
+
   if (source_mime_type == "text/html") {
     // As far as I can tell, there isn't a spec for how transformToFragment is
     // supposed to work. Based on the documentation I can find, it looks like we
@@ -770,11 +775,14 @@ DocumentFragment* CreateFragmentForTransformToFragment(
     // that effect here by passing in a fake body element as context for the
     // fragment.
     auto* fake_body = MakeGarbageCollected<HTMLBodyElement>(output_doc);
-    fragment->ParseHTML(source_string, fake_body);
+    fragment->ParseHTML(source_string, fake_body,
+                        kAllowScriptingContentAndDoNotMarkAlreadyStarted);
   } else if (source_mime_type == "text/plain") {
     fragment->ParserAppendChild(Text::Create(output_doc, source_string));
   } else {
-    bool successful_parse = fragment->ParseXML(source_string, nullptr);
+    bool successful_parse =
+        fragment->ParseXML(source_string, nullptr,
+                           kAllowScriptingContentAndDoNotMarkAlreadyStarted);
     if (!successful_parse)
       return nullptr;
   }
