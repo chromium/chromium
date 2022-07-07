@@ -1263,6 +1263,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool CreateWebUI(const GURL& dest_url, int entry_bindings);
 
   // Destroys WebUI instance and resets related data.
+  // This indirectly calls content's embedders and may have arbitrary side
+  // effect, like deleting `this`.
   void ClearWebUI();
 
   // Returns the Mojo ImageDownloader service.

@@ -29,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/browser/webui_config_map.h"
@@ -461,6 +462,48 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, CoopCoepPolicies) {
   auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(true, EvalJs(main_frame, "window.crossOriginIsolated;",
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+}
+
+// Regression test for: https://crbug.com/1308391
+// Check content/ supports its embedders closing WebContent during WebUI
+// destruction, after the RenderFrameHost owning it has unloaded.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
+                       SynchronousWebContentDeletionInUnload) {
+  static std::unique_ptr<WebContents> web_contents;
+  web_contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  // Install a WebUI. When destroyed, it executes a callback releasing the
+  // WebContent.
+  class Config : public WebUIConfig {
+   public:
+    Config() : WebUIConfig(kChromeUIUntrustedScheme, "test-host") {}
+    std::unique_ptr<WebUIController> CreateWebUIController(
+        WebUI* web_ui) final {
+      class Controller : public WebUIController {
+       public:
+        explicit Controller(WebUI* web_ui) : WebUIController(web_ui) {
+          AddUntrustedDataSource(web_contents->GetBrowserContext(),
+                                 "test-host");
+        }
+        ~Controller() override { web_contents.reset(); }
+      };
+      return std::make_unique<Controller>(web_ui);
+    };
+  };
+
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<Config>());
+  ASSERT_TRUE(NavigateToURL(web_contents.get(),
+                            GetChromeUntrustedUIURL("test-host/title1.html")));
+  RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  RenderFrameDeletedObserver rfh_deleted(web_contents->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver delete_observer(main_rfh);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL dummy_url = embedded_test_server()->GetURL("/simple_page.html");
+  web_contents->GetController().LoadURL(
+      dummy_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  delete_observer.WaitUntilDeleted();
+  ASSERT_FALSE(web_contents);
 }
 
 class WebUIRequestSchemesTest : public ContentBrowserTest {
