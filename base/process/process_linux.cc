@@ -225,7 +225,7 @@ bool Process::SetProcessBackgrounded(bool background) {
     return false;
 
   int priority = background ? kBackgroundPriority : kForegroundPriority;
-  int result = setpriority(PRIO_PROCESS, process_, priority);
+  int result = setpriority(PRIO_PROCESS, static_cast<id_t>(process_), priority);
   DPCHECK(result == 0);
   return result == 0;
 }

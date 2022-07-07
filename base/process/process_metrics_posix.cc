@@ -26,6 +26,8 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <features.h>
+
+#include "base/numerics/safe_conversions.h"
 #endif
 
 namespace base {
@@ -88,7 +90,7 @@ size_t GetHandleLimit() {
 void IncreaseFdLimitTo(unsigned int max_descriptors) {
   struct rlimit limits;
   if (getrlimit(RLIMIT_NOFILE, &limits) == 0) {
-    unsigned int new_limit = max_descriptors;
+    rlim_t new_limit = max_descriptors;
     if (max_descriptors <= limits.rlim_cur)
       return;
     if (limits.rlim_max > 0 && limits.rlim_max < max_descriptors) {
@@ -119,7 +121,7 @@ size_t GetMallocUsageMallinfo() {
   struct mallinfo minfo = mallinfo();
 #endif
 #undef MALLINFO2_FOUND_IN_LIBC
-  return minfo.hblkhd + minfo.arena;
+  return checked_cast<size_t>(minfo.hblkhd + minfo.arena);
 }
 
 }  // namespace

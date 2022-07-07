@@ -342,7 +342,7 @@ TEST_F(SynchronizedMinidumpManagerTest,
   MinidumpParams params;
 
   // Fork the process.
-  pid_t pid = base::ForkWithFlags(0u, nullptr, nullptr);
+  pid_t pid = base::ForkWithFlags(0, nullptr, nullptr);
   if (pid != 0) {
     // The child process should instantiate a manager which immediately grabs
     // the lock, and falls aleep for some period of time, then writes a dump,

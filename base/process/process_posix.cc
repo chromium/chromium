@@ -67,9 +67,9 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
   }
 
   pid_t ret_pid = HANDLE_EINTR(waitpid(handle, status, WNOHANG));
-  static const int64_t kMaxSleepInMicroseconds = 1 << 18;  // ~256 milliseconds.
-  int64_t max_sleep_time_usecs = 1 << 10;                  // ~1 milliseconds.
-  int64_t double_sleep_time = 0;
+  static const uint32_t kMaxSleepInMicroseconds = 1 << 18;  // ~256 ms.
+  uint32_t max_sleep_time_usecs = 1 << 10;                  // ~1 ms.
+  int double_sleep_time = 0;
 
   // If the process hasn't exited yet, then sleep and try again.
   base::TimeTicks wakeup_time = base::TimeTicks::Now() + wait;
@@ -77,12 +77,10 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
     base::TimeTicks now = base::TimeTicks::Now();
     if (now > wakeup_time)
       break;
-    // Guaranteed to be non-negative!
-    int64_t sleep_time_usecs = (wakeup_time - now).InMicroseconds();
-    // Sleep for a bit while we wait for the process to finish.
-    if (sleep_time_usecs > max_sleep_time_usecs)
-      sleep_time_usecs = max_sleep_time_usecs;
 
+    const uint32_t sleep_time_usecs = static_cast<uint32_t>(
+        std::min(static_cast<uint64_t>((wakeup_time - now).InMicroseconds()),
+                 uint64_t{max_sleep_time_usecs}));
     // usleep() will return 0 and set errno to EINTR on receipt of a signal
     // such as SIGCHLD.
     usleep(sleep_time_usecs);
@@ -394,7 +392,7 @@ void Process::Exited(int exit_code) const {
 
 int Process::GetPriority() const {
   DCHECK(IsValid());
-  return getpriority(PRIO_PROCESS, process_);
+  return getpriority(PRIO_PROCESS, static_cast<id_t>(process_));
 }
 
 }  // namespace base

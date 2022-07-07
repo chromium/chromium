@@ -601,7 +601,7 @@ TEST(ProcessMetricsTest, ParseProcTimeInState) {
 // http://crbug.com/396455
 TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
   const ProcessHandle current = GetCurrentProcessHandle();
-  const int initial_threads = GetNumberOfThreads(current);
+  const int64_t initial_threads = GetNumberOfThreads(current);
   ASSERT_GT(initial_threads, 0);
   const int kNumAdditionalThreads = 10;
   {

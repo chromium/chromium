@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/strings/string_number_conversions.h"
@@ -173,7 +174,7 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 
 size_t ProcessMetrics::GetResidentSetSize() const {
   return internal::ReadProcStatsAndGetFieldAsSizeT(process_, internal::VM_RSS) *
-      getpagesize();
+         checked_cast<size_t>(getpagesize());
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
@@ -340,7 +341,8 @@ size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
   if (!GetSystemMemoryInfo(&meminfo))
     return 0;
-  return meminfo.total - meminfo.free - meminfo.buffers - meminfo.cached;
+  return checked_cast<size_t>(meminfo.total - meminfo.free - meminfo.buffers -
+                              meminfo.cached);
 }
 
 int ParseProcStatCPU(StringPiece input) {
@@ -375,7 +377,7 @@ int ParseProcStatCPU(StringPiece input) {
   return -1;
 }
 
-int GetNumberOfThreads(ProcessHandle process) {
+int64_t GetNumberOfThreads(ProcessHandle process) {
   return internal::ReadProcStatsAndGetFieldAsInt64(process,
                                                    internal::VM_NUMTHREADS);
 }
@@ -431,7 +433,7 @@ bool ProcessMetrics::ParseProcTimeInState(
       if (time > 0) {
         time_in_state_per_thread.push_back(
             {tid, current_core_type, current_core_index, frequency,
-             internal::ClockTicksToTimeDelta(time)});
+             internal::ClockTicksToTimeDelta(checked_cast<int64_t>(time))});
       }
     } else {
       // Data without a header is not supported.
@@ -440,17 +442,17 @@ bool ProcessMetrics::ParseProcTimeInState(
 
     // Advance line.
     DCHECK_GT(num_chars, 0);
-    pos += num_chars;
+    pos += static_cast<size_t>(num_chars);
   }
 
   return true;
 }
 
-CPU::CoreType ProcessMetrics::GetCoreType(int core_index) {
+CPU::CoreType ProcessMetrics::GetCoreType(uint32_t core_index) {
   const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
-  if (static_cast<size_t>(core_index) >= core_types.size())
+  if (core_index >= core_types.size())
     return CPU::CoreType::kUnknown;
-  return core_types[static_cast<size_t>(core_index)];
+  return core_types[core_index];
 }
 
 const char kProcSelfExe[] = "/proc/self/exe";
@@ -680,9 +682,11 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
 
 Value VmStatInfo::ToValue() const {
   Value res(Value::Type::DICTIONARY);
-  res.SetIntKey("pswpin", pswpin);
-  res.SetIntKey("pswpout", pswpout);
-  res.SetIntKey("pgmajfault", pgmajfault);
+  // TODO(crbug.com/1334256): Make base::Value able to hold unsigned long and
+  // remove casts below.
+  res.SetIntKey("pswpin", static_cast<int>(pswpin));
+  res.SetIntKey("pswpout", static_cast<int>(pswpout));
+  res.SetIntKey("pgmajfault", static_cast<int>(pgmajfault));
   return res;
 }
 

@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -136,8 +137,10 @@ bool ProcessIterator::CheckForNextProcess() {
   }
 
   entry_.pid_ = pid;
-  entry_.ppid_ = GetProcStatsFieldAsInt64(proc_stats, internal::VM_PPID);
-  entry_.gid_ = GetProcStatsFieldAsInt64(proc_stats, internal::VM_PGRP);
+  entry_.ppid_ = checked_cast<ProcessId>(
+      GetProcStatsFieldAsInt64(proc_stats, internal::VM_PPID));
+  entry_.gid_ = checked_cast<ProcessId>(
+      GetProcStatsFieldAsInt64(proc_stats, internal::VM_PGRP));
   entry_.cmd_line_args_.assign(cmd_line_args.begin(), cmd_line_args.end());
   entry_.exe_file_ = GetProcessExecutablePath(pid).BaseName().value();
   return true;

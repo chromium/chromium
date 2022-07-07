@@ -212,7 +212,7 @@ TimeDelta GetUserCpuTimeSinceBoot() {
   if (!StringToUint64(cpu[0], &user) || !StringToUint64(cpu[1], &nice))
     return TimeDelta();
 
-  return ClockTicksToTimeDelta(user + nice);
+  return ClockTicksToTimeDelta(checked_cast<int64_t>(user + nice));
 }
 
 TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
@@ -224,7 +224,7 @@ TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
   //   0000040          17         100           3   134512692
   // which means the answer is 100.
   // It may be the case that this value is always 100.
-  static const int kHertz = sysconf(_SC_CLK_TCK);
+  static const long kHertz = sysconf(_SC_CLK_TCK);
 
   return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }

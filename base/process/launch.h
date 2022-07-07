@@ -434,7 +434,7 @@ BASE_EXPORT LaunchOptions LaunchOptionsForTest();
 //
 // It is unsafe to use any pthread APIs after ForkWithFlags().
 // However, performing an exec() will lift this restriction.
-BASE_EXPORT pid_t ForkWithFlags(unsigned long flags, pid_t* ptid, pid_t* ctid);
+BASE_EXPORT pid_t ForkWithFlags(int flags, pid_t* ptid, pid_t* ctid);
 #endif
 
 namespace internal {
