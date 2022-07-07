@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include "build/build_config.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -126,9 +125,21 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 
   void TearDownOnMainThread() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Explicitly removing the user is required; otherwise ProfileHelper keeps
+    // a dangling pointer to the User.
+    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
+    // destructor of ash::FakeChromeUserManager.
+    GetFakeUserManager()->RemoveUserFromList(kManagedUserAccountId);
     scoped_user_manager_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetUpPolicy(const Extension* extension) {
     g_browser_process->local_state()->Set(
@@ -190,14 +201,7 @@ class WebHidExtensionFeatureDisabledBrowserTest
   }
 };
 
-// TODO(crbug.com/1342174): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FeatureDefaultDisabled DISABLED_FeatureDefaultDisabled
-#else
-#define MAYBE_FeatureDefaultDisabled FeatureDefaultDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
-                       MAYBE_FeatureDefaultDisabled) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, FeatureDefaultDisabled) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -215,14 +219,8 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1342174): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
-#else
-#define MAYBE_FeatureDisabled FeatureDisabled
-#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
-                       MAYBE_FeatureDisabled) {
+                       FeatureDisabled) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -240,14 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1342174): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetDevices DISABLED_GetDevices
-#else
-#define MAYBE_GetDevices GetDevices
-#endif
-IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
-                       MAYBE_GetDevices) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest, GetDevices) {
   extensions::TestExtensionDir test_dir;
 
   auto device = CreateTestDeviceWithInputAndOutputReports();
@@ -268,14 +259,8 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/1342174): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RequestDevice DISABLED_RequestDevice
-#else
-#define MAYBE_RequestDevice RequestDevice
-#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
-                       MAYBE_RequestDevice) {
+                       RequestDevice) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
