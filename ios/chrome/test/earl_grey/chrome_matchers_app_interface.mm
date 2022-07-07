@@ -1190,27 +1190,29 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
                                            title:(NSString*)pageTitle {
-#if TARGET_IPHONE_SIMULATOR
+  // The title of the activity view starts as the URL, then asynchronously
+  // changes to the page title. Sometimes, the activity view fails to update
+  // the text to the page title, causing test flake. Allow matcher to pass
+  // with either value for the activity view title.
+
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    NSString* label = [element accessibilityLabel];
+    NSLog(@"label is %@ %d %d", label, [label containsString:host],
+          [label containsString:pageTitle]);
+    return [label containsString:host] || [label containsString:pageTitle];
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description
+        appendText:[NSString stringWithFormat:
+                                 @"accessibilityLabel containing %@ or %@",
+                                 host, pageTitle]];
+  };
+
   return grey_allOf(
-      // The title of the activity view starts as the URL, then asynchronously
-      // changes to the page title. Sometimes, the activity view fails to update
-      // the text to the page title, causing test flake. Allow matcher to pass
-      // with either value for the activity view title.
-      grey_anyOf(grey_accessibilityLabel(host),
-                 grey_accessibilityLabel(pageTitle), nil),
-      grey_ancestor(
-          grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitHeader),
-                     grey_kindOfClassName(@"LPLinkView"), nil)),
+      grey_kindOfClassName(@"LPLinkView"),
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe],
       nil);
-#else
-  // Device tests tend to fail more often if the host is allowed in the
-  // grey_anyOf as above.
-  return grey_allOf(grey_accessibilityLabel(pageTitle),
-                    grey_ancestor(grey_allOf(
-                        grey_accessibilityTrait(UIAccessibilityTraitHeader),
-                        grey_kindOfClassName(@"LPLinkView"), nil)),
-                    nil);
-#endif
 }
 
 + (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {

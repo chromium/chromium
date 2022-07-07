@@ -46,6 +46,27 @@ NSString* const kTypedURLError =
     @"Error occurred during typed URL verification.";
 NSString* const kWaitForRestoreSessionToFinishError =
     @"Session restoration did not finish";
+
+// Helper class to allow EarlGrey to match elements with isAccessible=N.
+class ScopedMatchNonAccessibilityElements {
+ public:
+  ScopedMatchNonAccessibilityElements() {
+    original_value_ = GREY_CONFIG_BOOL(kGREYConfigKeyIgnoreIsAccessible);
+    [[GREYConfiguration sharedConfiguration]
+            setValue:@YES
+        forConfigKey:kGREYConfigKeyIgnoreIsAccessible];
+  }
+
+  ~ScopedMatchNonAccessibilityElements() {
+    [[GREYConfiguration sharedConfiguration]
+            setValue:[NSNumber numberWithBool:original_value_]
+        forConfigKey:kGREYConfigKeyIgnoreIsAccessible];
+  }
+
+ private:
+  BOOL original_value_;
+};
+
 }  // namespace
 
 namespace chrome_test_util {
@@ -1448,6 +1469,9 @@ UIWindow* GetAnyKeyWindow() {
     // github.com/google/EarlGrey/blob/master/docs/features.md#visibility-checks
     ScopedSynchronizationDisabler disabler;
 #endif
+
+    // On iOS 16, LPLinkView and LPTextView are marked isAccessible=N.
+    ScopedMatchNonAccessibilityElements enabler;
 
     // Page title is added asynchronously, so wait for its appearance.
     NSString* hostString = base::SysUTF8ToNSString(URL.host());
