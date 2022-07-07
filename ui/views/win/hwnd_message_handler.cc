@@ -3236,6 +3236,7 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
     point.x = event.x();
     point.y = event.y();
     ::ClientToScreen(hwnd(), &point);
+    num_drag_events_after_press_++;
     // Windows sometimes sends spurious WM_MOUSEMOVEs at 0,0. If this happens
     // after a mouse down on a tab, it can cause a detach of the tab to 0,0.
     // In general, it would cause weird behavior while dragging, so ignore
@@ -3244,13 +3245,25 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
       POINT cursor_pos;
       ::GetCursorPos(&cursor_pos);
       constexpr int kMinSpuriousDistance = 200;
+      constexpr int kMaxDragEvents = 10;
       auto distance = sqrt(pow(static_cast<float>(abs(cursor_pos.x)), 2) +
                            pow(static_cast<float>(abs(cursor_pos.y)), 2));
+      // TODO(crbug.com/1270828): If this stat shows that
+      // `num_drag_events_after_press_` is predominantly less than some small
+      // number, add a check for that below and reduce kMinSpurious distance
+      // to something like 20 or 30 to reduce the chance of one of the first
+      // tab or two being detached incorrectly. Also fix the comment above the
+      // declaration of `num_drag_events_after_press_` to reflect this.
       if (distance > kMinSpuriousDistance) {
+        base::UmaHistogramExactLinear("Windows.DragEventsAfterPress",
+                                      num_drag_events_after_press_,
+                                      kMaxDragEvents + 1);
         SetMsgHandled(true);
         return 0;
       }
     }
+  } else if (event.type() == ui::ET_MOUSE_PRESSED) {
+    num_drag_events_after_press_ = 0;
   }
 
   // Don't send right mouse button up to the delegate when displaying system
