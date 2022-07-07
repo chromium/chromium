@@ -65,3 +65,12 @@ builder(
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,
 )
+
+# GoFindit builder to verify a culprit (go/gofindit-design-doc)
+builder(
+    name = "gofindit-culprit-verification",
+    executable = "recipe:gofindit/chromium/single_revision",
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
+)

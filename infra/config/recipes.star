@@ -201,6 +201,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:gofindit/chromium/single_revision",
+    bootstrappable = POLYMORPHIC,
+)
+
+build_recipe(
     name = "recipe:presubmit",
 )
 
