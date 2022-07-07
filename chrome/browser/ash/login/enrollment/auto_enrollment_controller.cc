@@ -566,12 +566,7 @@ void AutoEnrollmentController::Timeout() {
     ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutFRE);
   }
 
-  // Reset state.
-  if (client_) {
-    // Cancelling the `client_` allows it to determine whether
-    // its protocol finished before login was complete.
-    client_.release()->CancelAndDeleteSoon();
-  }
+  client_.reset();
 
   // Make sure to nuke pending `client_` start sequences.
   client_start_weak_factory_.InvalidateWeakPtrs();

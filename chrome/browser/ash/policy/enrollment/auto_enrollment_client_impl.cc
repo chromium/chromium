@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state_message_processor.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
@@ -177,26 +176,9 @@ void AutoEnrollmentClientImpl::Retry() {
   RetryStep();
 }
 
-void AutoEnrollmentClientImpl::CancelAndDeleteSoon() {
-  // Regardless of PSM execution, only check if neither Hash dance request (i.e.
-  // DeviceAutoEnrollmentRequest), nor device state request
-  // (i.e.DeviceInitialEnrollmentStateRequest or DeviceStateRetrievalRequest) is
-  // in progress.
-  if (!request_job_) {
-    // Regardless of PsmHelper client execution, the AutoEnrollmentClientImpl
-    // isn't running, just delete it and it will delete PsmHelper immediately.
-    delete this;
-  } else {
-    // Client still running, but our owner isn't interested in the result
-    // anymore. Wait until the protocol completes.
-    progress_callback_.Reset();
-  }
-}
-
 void AutoEnrollmentClientImpl::OnConnectionChanged(
     network::mojom::ConnectionType type) {
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE &&
-      !progress_callback_.is_null()) {
+  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
     RetryStep();
   }
 }
@@ -389,11 +371,7 @@ void AutoEnrollmentClientImpl::HandlePsmCompletion(
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {
   state_ = state;
-  if (progress_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-  } else {
-    progress_callback_.Run(state_);
-  }
+  progress_callback_.Run(state_);
 }
 
 void AutoEnrollmentClientImpl::NextStep() {
@@ -510,14 +488,9 @@ void AutoEnrollmentClientImpl::HandleRequestCompletion(
                                -net_error);
     request_job_.reset();
 
-    // Abort if CancelAndDeleteSoon has been called meanwhile.
-    if (progress_callback_.is_null()) {
-      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-    } else {
-      ReportProgress(status == DM_STATUS_REQUEST_FAILED
-                         ? AUTO_ENROLLMENT_STATE_CONNECTION_ERROR
-                         : AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-    }
+    ReportProgress(status == DM_STATUS_REQUEST_FAILED
+                       ? AUTO_ENROLLMENT_STATE_CONNECTION_ERROR
+                       : AUTO_ENROLLMENT_STATE_SERVER_ERROR);
     return;
   }
 
@@ -590,10 +563,7 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
     LOG(WARNING) << "Received has_state=" << has_server_state_.value();
 
     progress = true;
-    // Report timing if hash dance finished successfully and if the caller is
-    // still interested in the result.
-    if (!progress_callback_.is_null())
-      RecordHashDanceSuccessTimeHistogram();
+    RecordHashDanceSuccessTimeHistogram();
   }
 
   // Bucket download done, update UMA.

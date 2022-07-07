@@ -103,10 +103,6 @@ class AutoEnrollmentClient {
   // called by consumers when they become aware of environment changes (such as
   // captive portal setup being complete).
   virtual void Retry() = 0;
-
-  // Cancels any pending requests. |progress_callback_| will not be invoked.
-  // |this| will delete itself.
-  virtual void CancelAndDeleteSoon() = 0;
 };
 
 }  // namespace policy

@@ -61,10 +61,6 @@ void FakeAutoEnrollmentClient::Start() {
 
 void FakeAutoEnrollmentClient::Retry() {}
 
-void FakeAutoEnrollmentClient::CancelAndDeleteSoon() {
-  delete this;
-}
-
 void FakeAutoEnrollmentClient::SetState(AutoEnrollmentState target_state) {
   state_ = target_state;
   progress_callback_.Run(state_);

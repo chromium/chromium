@@ -84,7 +84,6 @@ class AutoEnrollmentClientImpl
 
   void Start() override;
   void Retry() override;
-  void CancelAndDeleteSoon() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
