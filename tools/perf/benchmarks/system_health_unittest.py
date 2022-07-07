@@ -59,7 +59,8 @@ class TestSystemHealthStories(unittest.TestCase):
       # so they explicitly override RunPageInteractions method.
       if s.name.startswith('long_running:'):
         continue
-      self.assertEquals(s.__class__.RunPageInteractions,
+      self.assertEqual(
+          s.__class__.RunPageInteractions,
           system_health_story.SystemHealthStory.RunPageInteractions,
           'Story %s overrides RunPageInteractions. Override _DidLoadDocument '
           'instead' % s.name)

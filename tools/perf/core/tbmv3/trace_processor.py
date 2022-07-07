@@ -331,7 +331,7 @@ def RunMetrics(trace_processor_path,
     annotations = root_annotations.get(full_metric_name, None)
     metric_proto = measurements.get(full_metric_name, None)
     if metric_proto is None:
-      logging.warn("Metric not found in the output: %s", metric_name)
+      logging.warning("Metric not found in the output: %s", metric_name)
       continue
     elif annotations is None:
       logging.info("Skipping metric %s because it has no field with unit.",

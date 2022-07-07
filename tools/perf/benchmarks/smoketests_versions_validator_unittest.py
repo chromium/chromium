@@ -16,8 +16,7 @@ class TestSmoketestsVersionValidator(unittest.TestCase):
         'a:2018', 'b:2018'])
     stories = system_health_smoke_test.find_multi_version_stories(
         all_stories, disabled_stories)
-    self.assertEquals(0, len(stories),
-                      "Should be no result from version check")
+    self.assertEqual(0, len(stories), "Should be no result from version check")
 
   def test_version_check_multi_colon_prefix_with_version(self):
     all_stories = [
@@ -25,8 +24,7 @@ class TestSmoketestsVersionValidator(unittest.TestCase):
     disabled_stories = frozenset(['story:name:a:2018'])
     stories = system_health_smoke_test.find_multi_version_stories(
         all_stories, disabled_stories)
-    self.assertEquals(0, len(stories),
-                      "Should be no result from version check")
+    self.assertEqual(0, len(stories), "Should be no result from version check")
 
   def test_version_check_multi_colon_prefix_without_version(self):
     all_stories = [
@@ -34,16 +32,14 @@ class TestSmoketestsVersionValidator(unittest.TestCase):
     disabled_stories = frozenset(['story:name:a:2019'])
     stories = system_health_smoke_test.find_multi_version_stories(
         all_stories, disabled_stories)
-    self.assertEquals(0, len(stories),
-                      "Should be no result from version check")
+    self.assertEqual(0, len(stories), "Should be no result from version check")
 
   def test_version_check_fail_without_version(self):
     all_stories = ['a', 'a:2019', 'b:2019']
     disabled_stories = frozenset(['x'])
     stories = system_health_smoke_test.find_multi_version_stories(
         all_stories, disabled_stories)
-    self.assertEquals(1, len(stories),
-                      'Expecting 1 item in stories.')
+    self.assertEqual(1, len(stories), 'Expecting 1 item in stories.')
     self.assertIn('a', stories)
     self.assertIn('a', stories['a'])
     self.assertIn('a:2019', stories['a'])
@@ -53,8 +49,7 @@ class TestSmoketestsVersionValidator(unittest.TestCase):
     disabled_stories = frozenset(['a'])
     stories = system_health_smoke_test.find_multi_version_stories(
         all_stories, disabled_stories)
-    self.assertEquals(1, len(stories),
-                      'Expecting 1 item in stories.')
+    self.assertEqual(1, len(stories), 'Expecting 1 item in stories.')
     self.assertIn('a', stories)
     self.assertIn('a:2018', stories['a'])
     self.assertIn('a:2019', stories['a'])
@@ -64,8 +59,7 @@ class TestSmoketestsVersionValidator(unittest.TestCase):
     disabled_stories = frozenset(['x'])
     stories = system_health_smoke_test.find_multi_version_stories(
         all_stories, disabled_stories)
-    self.assertEquals(2, len(stories),
-                      'Expecting 2 item in stories.')
+    self.assertEqual(2, len(stories), 'Expecting 2 item in stories.')
     self.assertIn('a', stories)
     self.assertIn('a', stories['a'])
     self.assertIn('a:2019', stories['a'])

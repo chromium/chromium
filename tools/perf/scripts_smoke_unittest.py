@@ -42,7 +42,7 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   def testRunBenchmarkHelp(self):
     return_code, stdout = self.RunPerfScript('run_benchmark --help')
-    self.assertEquals(return_code, 0, stdout)
+    self.assertEqual(return_code, 0, stdout)
     self.assertIn('usage: run_benchmark', stdout)
 
   @decorators.Disabled('chromeos')  # crbug.com/754913
@@ -60,22 +60,26 @@ class ScriptsSmokeTest(unittest.TestCase):
         return
       cmdline.extend(['--browser-executable', self.options.browser_executable])
     return_code, stdout = self.RunPerfScript(cmdline)
-    self.assertRegexpMatches(stdout, r'Available benchmarks .*? are:')
+    if sys.version_info.major == 3:
+      self.assertRegex(stdout, r'Available benchmarks .*? are:')
+    else:
+      # TODO: (crbug/1342770) clean up after python migration is done.
+      self.assertRegexpMatches(stdout, r'Available benchmarks .*? are:')  # pylint: disable=deprecated-method
     self.assertEqual(return_code, 0)
 
   def testRunBenchmarkRunListsOutBenchmarks(self):
     return_code, stdout = self.RunPerfScript('run_benchmark run')
     self.assertIn('Pass --browser to list benchmarks', stdout)
-    self.assertNotEquals(return_code, 0)
+    self.assertNotEqual(return_code, 0)
 
   def testRunBenchmarkRunNonExistingBenchmark(self):
     return_code, stdout = self.RunPerfScript('run_benchmark foo')
     self.assertIn('no such benchmark: foo', stdout)
-    self.assertNotEquals(return_code, 0)
+    self.assertNotEqual(return_code, 0)
 
   def testRunRecordWprHelp(self):
     return_code, stdout = self.RunPerfScript('record_wpr')
-    self.assertEquals(return_code, 0, stdout)
+    self.assertEqual(return_code, 0, stdout)
     self.assertIn('optional arguments:', stdout)
 
   @decorators.Disabled('chromeos')  # crbug.com/814068
@@ -86,7 +90,7 @@ class ScriptsSmokeTest(unittest.TestCase):
     # crbug.com/561668
     if 'ImportError: cannot import name small_profile_extender' in stdout:
       self.skipTest('small_profile_extender is missing')
-    self.assertEquals(return_code, 0, stdout)
+    self.assertEqual(return_code, 0, stdout)
     self.assertIn('kraken', stdout)
 
   @decorators.Disabled('chromeos')  # crbug.com/754913
@@ -112,7 +116,7 @@ class ScriptsSmokeTest(unittest.TestCase):
         return
       cmdline += ' --browser-executable=%s' % self.options.browser_executable
     return_code, stdout = self.RunPerfScript(cmdline)
-    self.assertEquals(return_code, 0, stdout)
+    self.assertEqual(return_code, 0, stdout)
     try:
       with open(os.path.join(tempdir, 'output.json')) as f:
         test_results = json.load(f)
@@ -207,7 +211,7 @@ class ScriptsSmokeTest(unittest.TestCase):
         ), env=env)
     test_results = None
     try:
-      self.assertEquals(return_code, 0)
+      self.assertEqual(return_code, 0)
       expected_benchmark_folders = (
           'dummy_benchmark.stable_benchmark_1',
           'dummy_benchmark.stable_benchmark_1.reference',
@@ -263,7 +267,7 @@ class ScriptsSmokeTest(unittest.TestCase):
             os.path.join(tempdir, 'output.json')
         ))
     try:
-      self.assertEquals(return_code, 0, stdout)
+      self.assertEqual(return_code, 0, stdout)
     except AssertionError:
       try:
         with open(os.path.join(tempdir, benchmark, 'benchmark_log.txt')) as fh:

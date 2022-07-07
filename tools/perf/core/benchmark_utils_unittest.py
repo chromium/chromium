@@ -25,4 +25,4 @@ class BenchmarkUtilsUnittest(unittest.TestCase):
   def testGetBenchmarkStoryNamesOrdering(self):
     story_names = benchmark_utils.GetBenchmarkStoryNames(
         ThousandAndOneStoriesBenchmark())
-    self.assertEquals(story_names, ['story-number-%i' % i for i in range(1001)])
+    self.assertEqual(story_names, ['story-number-%i' % i for i in range(1001)])

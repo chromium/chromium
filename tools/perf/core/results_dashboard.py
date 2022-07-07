@@ -358,7 +358,7 @@ def _RevisionNumberColumns(data, prefix):
       # branch in the chromium/src repo.
       revision_supplemental_columns[prefix + 'commit_pos'] = revision
   except ValueError:
-    logging.warn('Revision has non-integer value: "%s".', data['rev'])
+    logging.warning('Revision has non-integer value: "%s".', data['rev'])
     # The dashboard requires ordered integer revision numbers. If the revision
     # is not an integer or None, assume it's a git hash and send a timestamp.
     revision = _GetTimestamp()
@@ -492,9 +492,9 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
   try:
     token = json.loads(content).get('token')
     if not token:
-      logging.warn(
+      logging.warning(
           'Error fetching upload completion token: Badly formatted token dict.')
     else:
       logging.info('Upload completion token created. Token id: %s' % token)
   except Exception as e:  # pylint: disable=broad-except
-    logging.warn('Error fetching upload completion token: %s' % e)
+    logging.warning('Error fetching upload completion token: %s' % e)

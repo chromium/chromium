@@ -15,5 +15,5 @@ class SkpicturePrinterUnitTest(legacy_page_test_case.LegacyPageTestCase):
     page_test = skpicture_printer.SkpicturePrinter(self.options.output_dir)
     measurements = self.RunPageTest(page_test, 'file://blank.html')
     saved_picture_count = measurements['saved_picture_count']['samples']
-    self.assertEquals(len(saved_picture_count), 1)
+    self.assertEqual(len(saved_picture_count), 1)
     self.assertGreater(saved_picture_count[0], 0)
