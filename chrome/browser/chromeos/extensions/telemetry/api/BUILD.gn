@@ -22,6 +22,8 @@ source_set("api") {
     "diagnostics_api_converters.h",
     "hardware_info_delegate.cc",
     "hardware_info_delegate.h",
+    "remote_probe_service_strategy.cc",
+    "remote_probe_service_strategy.h",
     "telemetry_api.cc",
     "telemetry_api.h",
     "telemetry_api_converters.cc",

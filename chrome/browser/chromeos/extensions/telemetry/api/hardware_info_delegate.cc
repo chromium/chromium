@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/remote_probe_service_strategy.h"
 
 namespace chromeos {
 
@@ -84,11 +85,12 @@ void HardwareInfoDelegate::Factory::SetForTesting(Factory* test_factory) {
 HardwareInfoDelegate::Factory::~Factory() = default;
 
 HardwareInfoDelegate::HardwareInfoDelegate()
-    : probe_service_(ash::ProbeService::Factory::Create(
-          remote_probe_service_.BindNewPipeAndPassReceiver())) {}
+    : remote_probe_service_strategy_(RemoteProbeServiceStrategy::Create()) {}
+HardwareInfoDelegate::~HardwareInfoDelegate() = default;
 
-HardwareInfoDelegate::~HardwareInfoDelegate() {
-  remote_probe_service_.reset();
+mojo::Remote<ash::health::mojom::ProbeService>&
+HardwareInfoDelegate::GetRemoteService() {
+  return remote_probe_service_strategy_->GetRemoteService();
 }
 
 // GetManufacturer tries to get the manufacturer (or OEM name) from
@@ -101,7 +103,7 @@ void HardwareInfoDelegate::GetManufacturer(ManufacturerCallback done_cb) {
   auto fallback = base::BindOnce(&HardwareInfoDelegate::FallbackHandler,
                                  base::Unretained(this), std::move(done_cb));
   auto cb = base::BindOnce(&OnGetSystemInfo).Then(std::move(fallback));
-  remote_probe_service_->ProbeTelemetryInfo(
+  GetRemoteService()->ProbeTelemetryInfo(
       {ash::health::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
 }
 
