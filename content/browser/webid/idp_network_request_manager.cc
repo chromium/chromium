@@ -79,10 +79,6 @@ constexpr char kIdpBrandingIconSize[] = "size";
 
 constexpr char kTokenKey[] = "token";
 
-// Token request body keys
-constexpr char kTokenAccountKey[] = "account_id";
-constexpr char kTokenRequestKey[] = "request";
-
 // Revoke request body keys.
 constexpr char kClientIdKey[] = "client_id";
 constexpr char kRevokeAccountKey[] = "account_id";
@@ -472,29 +468,6 @@ void IdpNetworkRequestManager::SendAccountsRequest(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      client_id),
       maxResponseSizeInKiB * 1024);
-}
-
-// TODO(majidvp): Should accept request in base::Value form instead of string.
-std::string CreateTokenRequestBody(const std::string& account,
-                                   const std::string& request) {
-  // Given account and id_request creates the following JSON
-  // ```json
-  // {
-  //   "account_id": "1234",
-  //   "request": "nonce=abc987987cba&client_id=89898"
-  //   }
-  // }```
-  base::Value request_data(base::Value::Type::DICTIONARY);
-  request_data.SetStringKey(kTokenAccountKey, account);
-  if (!request.empty())
-    request_data.SetStringKey(kTokenRequestKey, request);
-
-  std::string request_body;
-  if (!base::JSONWriter::Write(request_data, &request_body)) {
-    LOG(ERROR) << "Not able to serialize token request body.";
-    return std::string();
-  }
-  return request_body;
 }
 
 void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
