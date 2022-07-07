@@ -67,25 +67,28 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     history::HistoryDatabase* db) {
   base::ElapsedThreadTimer query_visits_timer;
 
+  // Because `base::Time::Now()` may change during the async history request,
+  // and because determining whether history was exhausted depends on whether
+  // the query reached `Now()`, `now` tracks `Now()` at the time the query
+  // options were created.
+  const auto now = base::Time::Now();
+
+  // It's very unlikely for `now == begin_time_limit_`, but it's theoretically
+  // possible if e.g. the keyword cooldown is set to 0ms, and it took 0ms from
+  // initiating the `GetAnnotatedVisitsToCluster()` to reach here.
+  if (now == begin_time_limit_) {
+    continuation_params_.exhausted_unclustered_visits = true;
+    continuation_params_.exhausted_all_visits = true;
+  }
+
   history::QueryOptions options;
   // Accumulate 1 day at a time of visits to avoid breaking up clusters.
   while (annotated_visits_.empty() &&
          !continuation_params_.exhausted_unclustered_visits) {
-    // Because `base::Time::Now()` may change during the async history request,
-    // and because determining whether history was exhausted depends on whether
-    // the query reached `Now()`, `now` tracks `Now()` at the time the query
-    // options were created.
-    const auto now = base::Time::Now();
-
     options = GetHistoryQueryOptions(backend, now);
     DCHECK(!options.begin_time.is_null());
     DCHECK(!options.end_time.is_null());
-
-    // TODO(manukh): Revisit this and make sure `break` is sufficient. We might
-    //   also need to conditionally set `exhausted_unclustered_visits` or
-    //   something else.
-    if (options.begin_time == options.end_time)
-      break;
+    DCHECK(options.begin_time != options.end_time);
     bool limited_by_max_count = AddUnclusteredVisits(backend, db, options);
     AddIncompleteVisits(backend, options.begin_time, options.end_time);
     IncrementContinuationParams(options, limited_by_max_count, now);
