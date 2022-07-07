@@ -481,18 +481,8 @@ class AuthenticatorResidentCredentialConfirmationSheetView
 class AuthenticatorSelectAccountSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  // Indicates whether the corresponding view is presented before or after
-  // gathering user verification and generating an assertion signature.
-  // `kPreUserVerification` is only possible with platform authenticators
-  // for which we can silently enumerate credentials.
-  enum Mode {
-    kPostUserVerification,
-    kPreUserVerification,
-  };
-
-  AuthenticatorSelectAccountSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
-      Mode mode);
+  explicit AuthenticatorSelectAccountSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
   ~AuthenticatorSelectAccountSheetModel() override;
 
   // Set the index of the currently selected row.
@@ -511,7 +501,6 @@ class AuthenticatorSelectAccountSheetModel
   bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
 
-  const Mode mode_;
   size_t selected_ = 0;
 };
 

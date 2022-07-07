@@ -196,16 +196,7 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
         AuthenticatorRequestDialogModel::ExperimentServerLinkTitle exp_title)
         override {}
 
-    void AccountSelectorShown(
-        const std::vector<device::AuthenticatorGetAssertionResponse>& responses)
-        override {
-      for (const auto& response : responses) {
-        accounts_.emplace_back(base::HexEncode(response.credential->id));
-      }
-    }
-
     raw_ptr<ChromeAuthenticatorRequestDelegate> delegate_ = nullptr;
-    std::vector<std::string> accounts_;
 
    private:
     State state_ = kHasNotShowedUI;
@@ -288,8 +279,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");
-  EXPECT_EQ(observer_->accounts_.size(), 1u);
-  EXPECT_EQ(observer_->accounts_.at(0), "01020304");
 }
 
 // WebAuthnCableExtension exercises code paths where a server sends a caBLEv2
@@ -663,6 +652,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
       parent_->model() = delegate->dialog_model();
+      LOG(ERROR) << static_cast<void*>(parent_->model());
 
       for (const auto& name : parent_->model()->paired_phone_names()) {
         parent_->trace() << "UINAME: " << name << std::endl;

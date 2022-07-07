@@ -47,12 +47,6 @@ void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
 
 void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::string backend_id) {
-  // `backend_id` is the base64-encoded credential ID. See
-  // `OnCredentialsReceived()` for where these are encoded.
-  absl::optional<std::vector<uint8_t>> selected_credential_id =
-      base::Base64Decode(backend_id);
-  DCHECK(selected_credential_id);
-
 #if BUILDFLAG(IS_ANDROID)
   auto* credentials_delegate =
       ConditionalUiDelegateAndroid::GetConditionalUiDelegate(
@@ -61,7 +55,10 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::move(retrieve_suggestions_callback_).Run();
     return;
   }
-  credentials_delegate->OnWebAuthnAccountSelected(*selected_credential_id);
+  absl::optional<std::vector<uint8_t>> selected_credential =
+      base::Base64Decode(backend_id);
+  DCHECK(selected_credential);
+  credentials_delegate->OnWebAuthnAccountSelected(*selected_credential);
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
@@ -70,7 +67,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     return;
   }
   authenticator_delegate->dialog_model()->OnAccountPreselected(
-      *selected_credential_id);
+      std::vector<uint8_t>(backend_id.begin(), backend_id.end()));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -126,7 +123,15 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     }
     suggestion.icon = "fingerprint";
     suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
+#if BUILDFLAG(IS_ANDROID)
+    // Android passes the credential ID instead of the user ID, because it
+    // needs the credential ID to directly populate the allowCredentials
+    // list when one is selected.
     suggestion.payload = base::Base64Encode(credential.cred_id);
+#else
+    suggestion.payload =
+        std::string(credential.user.id.begin(), credential.user.id.end());
+#endif
     suggestions.push_back(std::move(suggestion));
   }
   suggestions_ = std::move(suggestions);

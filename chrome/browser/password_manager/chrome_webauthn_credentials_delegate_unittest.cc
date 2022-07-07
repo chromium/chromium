@@ -248,12 +248,14 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
         EXPECT_EQ(credential_id, CredId2());
         run_loop.Quit();
       }));
-#endif
-
+  // Select the credential for User2.
+  credentials_delegate_->SelectWebAuthnCredential("5678");
+  run_loop.Run();
+#else
+  // On Android, the credential ID is the suggestion backend_id, whereas on
+  // desktop it is the user ID.
   credentials_delegate_->SelectWebAuthnCredential(
       base::Base64Encode(CredId2()));
-
-#if BUILDFLAG(IS_ANDROID)
   auto credential_id = GetSelectedId();
   EXPECT_EQ(credential_id, CredId2());
 #endif

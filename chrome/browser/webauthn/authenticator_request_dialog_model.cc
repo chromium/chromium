@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/process/launch.h"
@@ -368,19 +367,6 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
       SetCurrentStep(Step::kErrorInternalUnrecognized);
       return;
     }
-
-    // For empty allow list requests, let the user select one of the silently
-    // enumerated credentials before dispatching to the platform authenticator.
-    if (base::FeatureList::IsEnabled(
-            device::kWebAuthnNewDiscoverableCredentialsUi) &&
-        transport_availability_.has_empty_allow_list &&
-        !transport_availability_.recognized_platform_authenticator_credentials
-             .empty()) {
-      ephemeral_state_.creds_ =
-          transport_availability_.recognized_platform_authenticator_credentials;
-      SetCurrentStep(Step::kPreSelectAccount);
-      return;
-    }
   }
 
   if (transport_availability_.request_type ==
@@ -665,31 +651,20 @@ void AuthenticatorRequestDialogModel::OnAccountSelected(size_t index) {
 }
 
 void AuthenticatorRequestDialogModel::OnAccountPreselected(
-    const std::vector<uint8_t>& credential_id) {
-  for (size_t i = 0; i < creds().size(); ++i) {
-    if (creds().at(i).cred_id == credential_id) {
-      OnAccountPreselectedIndex(i);
+    const std::vector<uint8_t>& id) {
+  for (const auto& cred : creds()) {
+    if (cred.user.id == id) {
+      account_preselected_callback_.Run(cred.cred_id);
+      ephemeral_state_.creds_.clear();
+      if (transport_availability()->has_win_native_api_authenticator) {
+        HideDialogAndDispatchToNativeWindowsApi();
+      } else {
+        HideDialogAndDispatchToPlatformAuthenticator();
+      }
       return;
     }
   }
-  NOTREACHED() << "OnAccountPreselected() called with unknown credential_id "
-               << base::HexEncode(credential_id);
-}
-
-void AuthenticatorRequestDialogModel::OnAccountPreselectedIndex(size_t index) {
-  // User selected one of the platform authenticator credentials enumerated in
-  // Conditional or regular modal UI prior to collecting user verification.
-  // Run `account_preselected_callback_` to narrow the request to the selected
-  // credential and dispatch to the platform authenticator.
-  const device::DiscoverableCredentialMetadata& cred = creds().at(index);
-  DCHECK(account_preselected_callback_);
-  account_preselected_callback_.Run(cred.cred_id);
-  ephemeral_state_.creds_.clear();
-  if (transport_availability()->has_win_native_api_authenticator) {
-    HideDialogAndDispatchToNativeWindowsApi();
-  } else {
-    HideDialogAndDispatchToPlatformAuthenticator();
-  }
+  NOTREACHED();
 }
 
 void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
@@ -977,8 +952,11 @@ void AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered(
 }
 
 void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
-  ephemeral_state_.creds_ =
-      transport_availability_.recognized_platform_authenticator_credentials;
+  ephemeral_state_.creds_ = {};
+  for (const auto& cred :
+       transport_availability_.recognized_platform_authenticator_credentials) {
+    ephemeral_state_.creds_.emplace_back(cred);
+  }
 
   if (conditional_ui_user_list_callback_) {
     std::move(conditional_ui_user_list_callback_).Run(ephemeral_state_.creds_);

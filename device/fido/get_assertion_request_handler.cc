@@ -308,10 +308,9 @@ GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
 void GetAssertionRequestHandler::PreselectAccount(
     std::vector<uint8_t> credential_id) {
-  // PreselectAccount is only supposed to be invoked for discoverable credential
-  // requests.
-  DCHECK(request_.allow_list.empty());
-  preselected_credential_ = std::move(credential_id);
+  request_.allow_list = {device::PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey, credential_id,
+      {FidoTransportProtocol::kInternal})};
 }
 
 base::WeakPtr<GetAssertionRequestHandler>
@@ -394,13 +393,6 @@ void GetAssertionRequestHandler::DispatchRequest(
           &GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch,
           weak_factory_.GetWeakPtr(), authenticator));
       return;
-  }
-
-  if (preselected_credential_) {
-    DCHECK(request.allow_list.empty());
-    request.allow_list = {device::PublicKeyCredentialDescriptor(
-        CredentialType::kPublicKey, *preselected_credential_,
-        {FidoTransportProtocol::kInternal})};
   }
 
   ReportGetAssertionRequestTransport(authenticator);
@@ -668,16 +660,6 @@ void GetAssertionRequestHandler::HandleResponse(
         .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt,
              authenticator);
     return;
-  }
-
-  if (preselected_credential_) {
-    // A discoverable platform credential was preselected by the user prior to
-    // making the assertion request. Instruct the UI not to show another account
-    // selection dialog by setting the `userSelected` flag.
-    DCHECK_EQ(num_responses, 1u);
-    DCHECK(response->credential &&
-           response->credential->id == preselected_credential_);
-    response->user_selected = true;
   }
 
   DCHECK(responses_.empty());

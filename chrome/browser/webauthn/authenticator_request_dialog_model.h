@@ -121,7 +121,6 @@ class AuthenticatorRequestDialogModel {
 
     // Account selection,
     kSelectAccount,
-    kPreSelectAccount,
 
     // Attestation permission requests.
     kAttestationPermissionRequest,
@@ -496,15 +495,9 @@ class AuthenticatorRequestDialogModel {
   // |responses()|.
   void OnAccountSelected(size_t index);
 
-  // OnAccountPreselected is called when the user selects a discoverable
-  // credential from a platform authenticator prior to providing user
-  // authentication. `crededential_id` must match one of the credentials in
-  // `creds()`.
-  void OnAccountPreselected(const std::vector<uint8_t>& credential_id);
-
-  // Like `OnAccountPreselected()`, but this takes an index into `creds()`
-  // instead of a credential ID.
-  void OnAccountPreselectedIndex(size_t index);
+  // Called when an account from |ephemeral_state_.creds_| is selected from the
+  // Conditional UI prompt.
+  void OnAccountPreselected(const std::vector<uint8_t>& id);
 
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
