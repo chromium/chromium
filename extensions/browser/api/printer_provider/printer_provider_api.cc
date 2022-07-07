@@ -294,12 +294,14 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
   // in the event. If the extension listens to the event, it's added to the set
   // of |request| sources. |request| is |GetPrintersRequest| object associated
   // with the event.
-  bool WillRequestPrinters(int request_id,
-                           content::BrowserContext* browser_context,
-                           Feature::Context target_context,
-                           const Extension* extension,
-                           Event* event,
-                           const base::DictionaryValue* listener_filter);
+  bool WillRequestPrinters(
+      int request_id,
+      content::BrowserContext* browser_context,
+      Feature::Context target_context,
+      const Extension* extension,
+      const base::DictionaryValue* listener_filter,
+      std::unique_ptr<base::ListValue>* event_args_out,
+      std::unique_ptr<EventFilteringInfo>* event_filtering_info_out);
 
   content::BrowserContext* browser_context_;
 
@@ -756,8 +758,9 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    Event* event,
-    const base::DictionaryValue* listener_filter) {
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::ListValue>* event_args_out,
+    std::unique_ptr<EventFilteringInfo>* event_filtering_info_out) {
   if (!extension)
     return false;
   EventRouter* event_router = EventRouter::Get(browser_context_);

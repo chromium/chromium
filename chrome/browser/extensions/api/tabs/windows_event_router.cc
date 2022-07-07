@@ -58,12 +58,14 @@ bool ControllerVisibleToListener(WindowController* window_controller,
              WindowController::GetFilterFromWindowTypesValues(filter_value));
 }
 
-bool WillDispatchWindowEvent(WindowController* window_controller,
-                             BrowserContext* browser_context,
-                             Feature::Context target_context,
-                             const Extension* extension,
-                             Event* event,
-                             const base::DictionaryValue* listener_filter) {
+bool WillDispatchWindowEvent(
+    WindowController* window_controller,
+    BrowserContext* browser_context,
+    Feature::Context target_context,
+    const Extension* extension,
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::ListValue>* event_args_out,
+    std::unique_ptr<EventFilteringInfo>* event_filtering_info_out) {
   bool has_filter =
       listener_filter &&
       listener_filter->HasKey(extensions::tabs_constants::kWindowTypesKey);
@@ -74,14 +76,14 @@ bool WillDispatchWindowEvent(WindowController* window_controller,
     return false;
   }
 
-  // Cleanup previous values.
-  event->filter_info = EventFilteringInfo();
+  *event_filtering_info_out = std::make_unique<EventFilteringInfo>();
   // Only set the window type if the listener has set a filter.
   // Otherwise we set the window visibility relative to the extension.
   if (has_filter) {
-    event->filter_info.window_type = window_controller->GetWindowTypeText();
+    (*event_filtering_info_out)->window_type =
+        window_controller->GetWindowTypeText();
   } else {
-    event->filter_info.window_exposed_by_default = true;
+    (*event_filtering_info_out)->window_exposed_by_default = true;
   }
   return true;
 }
@@ -91,8 +93,9 @@ bool WillDispatchWindowFocusedEvent(
     BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    Event* event,
-    const base::DictionaryValue* listener_filter) {
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::ListValue>* event_args_out,
+    std::unique_ptr<EventFilteringInfo>* event_filtering_info_out) {
   int window_id = extension_misc::kUnknownWindowId;
   Profile* new_active_context = nullptr;
   bool has_filter =
@@ -106,18 +109,17 @@ bool WillDispatchWindowFocusedEvent(
     new_active_context = window_controller->profile();
   }
 
-  // Cleanup previous values.
-  event->filter_info = EventFilteringInfo();
+  *event_filtering_info_out = std::make_unique<EventFilteringInfo>();
   // Only set the window type if the listener has set a filter,
   // otherwise set the visibility to true (if the window is not
   // supposed to be visible by the extension, we will clear out the
   // window id later).
   if (has_filter) {
-    event->filter_info.window_type =
+    (*event_filtering_info_out)->window_type =
         window_controller ? window_controller->GetWindowTypeText()
                           : extensions::tabs_constants::kWindowTypeValueNormal;
   } else {
-    event->filter_info.window_exposed_by_default = true;
+    (*event_filtering_info_out)->window_exposed_by_default = true;
   }
 
   // When switching between windows in the default and incognito profiles,
@@ -132,12 +134,11 @@ bool WillDispatchWindowFocusedEvent(
   bool visible_to_listener = ControllerVisibleToListener(
       window_controller, extension, listener_filter);
 
+  *event_args_out = std::make_unique<base::ListValue>();
   if (cant_cross_incognito || !visible_to_listener) {
-    event->event_args->ClearList();
-    event->event_args->Append(extension_misc::kUnknownWindowId);
+    (*event_args_out)->Append(extension_misc::kUnknownWindowId);
   } else {
-    event->event_args->ClearList();
-    event->event_args->Append(window_id);
+    (*event_args_out)->Append(window_id);
   }
   return true;
 }

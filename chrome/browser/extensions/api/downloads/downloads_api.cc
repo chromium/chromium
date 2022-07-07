@@ -915,8 +915,9 @@ bool OnDeterminingFilenameWillDispatchCallback(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    Event* event,
-    const base::DictionaryValue* listener_filter) {
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::ListValue>* event_args_out,
+    std::unique_ptr<EventFilteringInfo>* event_filtering_info_out) {
   *any_determiners = true;
   base::Time installed =
       ExtensionPrefs::Get(browser_context)->GetInstallTime(extension->id());
