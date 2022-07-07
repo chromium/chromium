@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
   <owner>twellington@chromium.org</owner>
   <summary>
     The request desktop site content setting at profile open. Recorded for
-    Android only.
+    Android and iOS only.
   </summary>
 </histogram>
 
