@@ -41,4 +41,20 @@ test(() => {
   assert_equals(e.colno, 0);
   assert_equals(e.error, undefined);
 }, "Initial values of ErrorEvent members")
+
+test(() => {
+  const e = new ErrorEvent("error", {error : null});
+  assert_equals(e.error, null);
+}, "error member can be set to null")
+
+test(() => {
+  const e = new ErrorEvent("error", {error : undefined});
+  assert_equals(e.error, undefined);
+}, "error member can be set to undefined")
+
+test(() => {
+  const e = new ErrorEvent("error", {error : "foo"});
+  assert_equals(e.error, "foo");
+}, "error member can be set to arbitrary")
+
 </script>

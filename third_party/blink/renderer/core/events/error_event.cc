@@ -66,10 +66,6 @@ ErrorEvent::ErrorEvent(ScriptState* script_state,
   location_ = std::make_unique<SourceLocation>(initializer->filename(),
                                                String(), initializer->lineno(),
                                                initializer->colno(), nullptr);
-  // TODO(crbug.com/1070964): Remove this existence check.  There is a bug that
-  // the current code generator does not initialize a ScriptValue with the
-  // v8::Null value despite that the dictionary member has the default value of
-  // IDL null.  |hasError| guard is necessary here.
   if (initializer->hasError()) {
     v8::Local<v8::Value> error = initializer->error().V8Value();
     // TODO(crbug.com/1070871): Remove the following IsNullOrUndefined() check.
@@ -79,6 +75,9 @@ ErrorEvent::ErrorEvent(ScriptState* script_state,
     if (!error->IsNullOrUndefined()) {
       error_.Set(script_state->GetIsolate(), error);
     }
+  } else {
+    error_.Set(script_state->GetIsolate(),
+               v8::Undefined(script_state->GetIsolate()));
   }
 }
 
