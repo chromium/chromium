@@ -693,6 +693,31 @@ On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
 ### Crash Reporting
 TODO(crbug.com/1035895): Document updater crash reporting.
 
+### Process Launcher (Deprecated, please use the Application Commands feature)
+The feature allows installed products to pre-register and later run elevated
+command lines in the format `c:\program files\foo\exe.exe params`. Multiple
+command lines can be registered per `app_id`.
+
+This feature is only for system applications.
+
+The program path is always an absolute path. Additionally, the program path is
+also a child of %ProgramFiles% or %ProgramFiles(x86)%. For instance:
+* `c:\path-to-exe\exe.exe` is an invalid path.
+* `"c:\Program Files\subdir\exe.exe"` is a valid path.
+* `"c:\Program Files (x86)\subdir\exe.exe"` is also a valid path.
+
+#### Registration
+Commands are registered in the registry with the following format:
+
+```
+    Update\Clients\{`app_id`}
+        REG_SZ `command_id` == "c:\Program Files\subdir\exe.exe p1 p2"
+```
+
+#### Usage
+Once registered, commands may be invoked using the `LaunchCmdElevated` method in
+the `IProcessLauncher` interface.
+
 ### Application Commands (applicable to the Windows version of the Updater)
 The feature allows installed products to pre-register and later run command
 lines in the format `c:\path-to-exe\exe.exe {params}` (elevated for system

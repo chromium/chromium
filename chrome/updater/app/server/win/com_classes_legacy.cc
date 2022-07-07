@@ -48,62 +48,6 @@ HRESULT OpenCallerProcessHandle(DWORD proc_id,
   return proc_handle.IsValid() ? S_OK : updater::HRESULTFromLastError();
 }
 
-std::wstring GetCommandToLaunch(const WCHAR* app_guid, const WCHAR* cmd_id) {
-  if (!app_guid || !cmd_id)
-    return std::wstring();
-
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
-                        updater::Wow6432(KEY_READ));
-  if (key.OpenKey(app_guid, updater::Wow6432(KEY_READ)) != ERROR_SUCCESS)
-    return std::wstring();
-
-  std::wstring cmd_line;
-  key.ReadValue(cmd_id, &cmd_line);
-  return cmd_line;
-}
-
-HRESULT LaunchCmd(const std::wstring& cmd,
-                  const base::win::ScopedHandle& caller_proc_handle,
-                  ULONG_PTR* proc_handle) {
-  if (cmd.empty() || !caller_proc_handle.IsValid() || !proc_handle)
-    return E_INVALIDARG;
-
-  *proc_handle = NULL;
-
-  STARTUPINFOW startup_info = {sizeof(startup_info)};
-  PROCESS_INFORMATION process_information = {0};
-  std::wstring cmd_line(cmd);
-  if (!::CreateProcess(nullptr, &cmd_line[0], nullptr, nullptr, FALSE,
-                       CREATE_NO_WINDOW, nullptr, nullptr, &startup_info,
-                       &process_information)) {
-    return updater::HRESULTFromLastError();
-  }
-
-  base::win::ScopedProcessInformation pi(process_information);
-  DCHECK(pi.IsValid());
-
-  HANDLE duplicate_proc_handle = NULL;
-
-  bool res = ::DuplicateHandle(
-                 ::GetCurrentProcess(),     // Current process.
-                 pi.process_handle(),       // Process handle to duplicate.
-                 caller_proc_handle.Get(),  // Process receiving the handle.
-                 &duplicate_proc_handle,    // Duplicated handle.
-                 PROCESS_QUERY_INFORMATION |
-                     SYNCHRONIZE,  // Access requested for the new handle.
-                 FALSE,            // Don't inherit the new handle.
-                 0) != 0;          // Flags.
-  if (!res) {
-    HRESULT hr = updater::HRESULTFromLastError();
-    VLOG(1) << "Failed to duplicate the handle " << hr;
-    return hr;
-  }
-
-  // The caller must close this handle.
-  *proc_handle = reinterpret_cast<ULONG_PTR>(duplicate_proc_handle);
-  return S_OK;
-}
-
 // Extracts a string from a VARIANT if the VARIANT is VT_BSTR or VT_BSTR |
 // VT_BYREF. Returns absl::nullopt if the VARIANT is not a BSTR.
 absl::optional<std::wstring> StringFromVariant(const VARIANT& source) {
@@ -522,34 +466,41 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchBrowser(DWORD browser_type,
 }
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
-    const WCHAR* app_guid,
-    const WCHAR* cmd_id,
+    const WCHAR* app_id,
+    const WCHAR* command_id,
     DWORD caller_proc_id,
     ULONG_PTR* proc_handle) {
-  VLOG(2) << "LegacyProcessLauncherImpl::LaunchCmdElevated: app " << app_guid
-          << ", cmd_id " << cmd_id << ", pid " << caller_proc_id;
-
-  if (!cmd_id || !wcslen(cmd_id) || !proc_handle) {
-    VLOG(1) << "Invalid arguments";
-    return E_INVALIDARG;
+  AppCommandRunner app_command_runner;
+  if (HRESULT hr = AppCommandRunner::LoadAppCommand(
+          UpdaterScope::kSystem, app_id, command_id, app_command_runner);
+      FAILED(hr)) {
+    return hr;
   }
 
   base::win::ScopedHandle caller_proc_handle;
-  HRESULT hr = OpenCallerProcessHandle(caller_proc_id, caller_proc_handle);
-  if (FAILED(hr)) {
+  if (HRESULT hr = OpenCallerProcessHandle(caller_proc_id, caller_proc_handle);
+      FAILED(hr)) {
     VLOG(1) << "failed to open caller's handle " << hr;
     return hr;
   }
 
-  std::wstring cmd = GetCommandToLaunch(app_guid, cmd_id);
-  if (cmd.empty()) {
-    VLOG(1) << "cmd not found";
-    return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+  base::Process process;
+  if (HRESULT hr = app_command_runner.Run({}, process); FAILED(hr)) {
+    return hr;
   }
 
-  VLOG(2) << "[LegacyProcessLauncherImpl::LaunchCmdElevated][cmd " << cmd
-          << "]";
-  return LaunchCmd(cmd, caller_proc_handle, proc_handle);
+  HANDLE duplicate_proc_handle = NULL;
+  if (!::DuplicateHandle(::GetCurrentProcess(), process.Handle(),
+                         caller_proc_handle.Get(), &duplicate_proc_handle,
+                         PROCESS_QUERY_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
+    HRESULT hr = HRESULTFromLastError();
+    VLOG(1) << "Failed to duplicate the handle " << hr;
+    return hr;
+  }
+
+  // The caller must close this handle.
+  *proc_handle = reinterpret_cast<ULONG_PTR>(duplicate_proc_handle);
+  return S_OK;
 }
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(

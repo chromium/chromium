@@ -167,8 +167,8 @@ class LegacyProcessLauncherImpl
   // Overrides for IProcessLauncher/IProcessLauncher2.
   IFACEMETHODIMP LaunchCmdLine(const WCHAR* cmd_line) override;
   IFACEMETHODIMP LaunchBrowser(DWORD browser_type, const WCHAR* url) override;
-  IFACEMETHODIMP LaunchCmdElevated(const WCHAR* app_guid,
-                                   const WCHAR* cmd_id,
+  IFACEMETHODIMP LaunchCmdElevated(const WCHAR* app_id,
+                                   const WCHAR* command_id,
                                    DWORD caller_proc_id,
                                    ULONG_PTR* proc_handle) override;
   IFACEMETHODIMP LaunchCmdLineEx(const WCHAR* cmd_line,
