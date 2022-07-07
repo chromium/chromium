@@ -36,6 +36,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -176,13 +177,13 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kAddPrinter,
-          chromeos.settings.mojom.Setting.kSavedPrinters,
+          Setting.kAddPrinter,
+          Setting.kSavedPrinters,
         ]),
       },
     };
@@ -250,12 +251,12 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
     // Manually show the deep links for settings nested within elements.
-    if (settingId !== chromeos.settings.mojom.Setting.kSavedPrinters) {
+    if (settingId !== Setting.kSavedPrinters) {
       // Continue with deep link attempt.
       return true;
     }

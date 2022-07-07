@@ -29,6 +29,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -258,7 +259,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       /**
        * Contains the settingId of any deep link that wasn't able to be shown,
        * null otherwise.
-       * @private {?chromeos.settings.mojom.Setting}
+       * @private {?Setting}
        */
       pendingSettingId_: {
         type: Number,
@@ -267,23 +268,23 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kDisplaySize,
-          chromeos.settings.mojom.Setting.kNightLight,
-          chromeos.settings.mojom.Setting.kDisplayOrientation,
-          chromeos.settings.mojom.Setting.kDisplayArrangement,
-          chromeos.settings.mojom.Setting.kDisplayResolution,
-          chromeos.settings.mojom.Setting.kDisplayRefreshRate,
-          chromeos.settings.mojom.Setting.kDisplayMirroring,
-          chromeos.settings.mojom.Setting.kAllowWindowsToSpanDisplays,
-          chromeos.settings.mojom.Setting.kAmbientColors,
-          chromeos.settings.mojom.Setting.kTouchscreenCalibration,
-          chromeos.settings.mojom.Setting.kNightLightColorTemperature,
-          chromeos.settings.mojom.Setting.kDisplayOverscan,
+          Setting.kDisplaySize,
+          Setting.kNightLight,
+          Setting.kDisplayOrientation,
+          Setting.kDisplayArrangement,
+          Setting.kDisplayResolution,
+          Setting.kDisplayRefreshRate,
+          Setting.kDisplayMirroring,
+          Setting.kAllowWindowsToSpanDisplays,
+          Setting.kAmbientColors,
+          Setting.kTouchscreenCalibration,
+          Setting.kNightLightColorTemperature,
+          Setting.kDisplayOverscan,
         ]),
       },
 
@@ -378,7 +379,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {

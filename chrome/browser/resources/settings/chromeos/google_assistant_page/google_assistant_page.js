@@ -20,6 +20,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -145,17 +146,17 @@ class SettingsGoogleAssistantPageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kAssistantOnOff,
-          chromeos.settings.mojom.Setting.kAssistantRelatedInfo,
-          chromeos.settings.mojom.Setting.kAssistantOkGoogle,
-          chromeos.settings.mojom.Setting.kAssistantNotifications,
-          chromeos.settings.mojom.Setting.kAssistantVoiceInput,
-          chromeos.settings.mojom.Setting.kTrainAssistantVoiceModel,
+          Setting.kAssistantOnOff,
+          Setting.kAssistantRelatedInfo,
+          Setting.kAssistantOkGoogle,
+          Setting.kAssistantNotifications,
+          Setting.kAssistantVoiceInput,
+          Setting.kTrainAssistantVoiceModel,
         ]),
       },
     };

@@ -22,6 +22,7 @@ import './nearby_share_receive_dialog.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
@@ -132,18 +133,17 @@ class SettingsNearbyShareSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kNearbyShareOnOff,
-          chromeos.settings.mojom.Setting.kNearbyShareDeviceName,
-          chromeos.settings.mojom.Setting.kNearbyShareDeviceVisibility,
-          chromeos.settings.mojom.Setting.kNearbyShareContacts,
-          chromeos.settings.mojom.Setting.kNearbyShareDataUsage,
-          chromeos.settings.mojom.Setting
-              .kDevicesNearbyAreSharingNotificationOnOff,
+          Setting.kNearbyShareOnOff,
+          Setting.kNearbyShareDeviceName,
+          Setting.kNearbyShareDeviceVisibility,
+          Setting.kNearbyShareContacts,
+          Setting.kNearbyShareDataUsage,
+          Setting.kDevicesNearbyAreSharingNotificationOnOff,
         ]),
       },
 

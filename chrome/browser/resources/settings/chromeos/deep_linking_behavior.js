@@ -8,13 +8,10 @@
  */
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import '../constants/setting.mojom-lite.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Router} from '../router.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 /** @type {string} */
@@ -30,13 +27,13 @@ export const DeepLinkingBehavior = {
      */
     Setting: {
       type: Object,
-      value: chromeos.settings.mojom.Setting,
+      value: Setting,
     },
 
     /**
      * Set of setting IDs that could be deep linked to. Initialized as an
      * empty set, should be overridden with applicable setting IDs.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     * @type {!Set<!Setting>}
      */
     supportedSettingIds: {
       type: Object,
@@ -47,7 +44,7 @@ export const DeepLinkingBehavior = {
   /**
    * Retrieves the settingId saved in the url's query parameter. Returns null if
    * deep linking is disabled or if no settingId is found.
-   * @return {?chromeos.settings.mojom.Setting}
+   * @return {?Setting}
    */
   getDeepLinkSettingId() {
     const settingIdStr = getSettingIdParameter();
@@ -58,7 +55,7 @@ export const DeepLinkingBehavior = {
     if (isNaN(settingIdNum)) {
       return null;
     }
-    return /** @type {!chromeos.settings.mojom.Setting} */ (settingIdNum);
+    return /** @type {!Setting} */ (settingIdNum);
   },
 
   /**
@@ -66,9 +63,9 @@ export const DeepLinkingBehavior = {
    * Promise for an object that reflects if the deep link was shown or not. The
    * object has a boolean |deepLinkShown| and any |pendingSettingId| that
    * couldn't be shown.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
-   *     ?chromeos.settings.mojom.Setting}>}
+   *     ?Setting}>}
    */
   showDeepLink(settingId) {
     return new Promise(resolve => {
@@ -100,7 +97,7 @@ export const DeepLinkingBehavior = {
    * and before the deep link is shown. Returns whether or not the deep link
    * attempt should continue. Default behavior is to no op and then return
    * true, continuing the deep link attempt.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
@@ -113,7 +110,7 @@ export const DeepLinkingBehavior = {
    * link was shown or not. The object has a boolean |deepLinkShown| and any
    * |pendingSettingId| that couldn't be shown.
    * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
-   *     ?chromeos.settings.mojom.Setting}>}
+   *     ?Setting}>}
    */
   attemptDeepLink() {
     const settingId = this.getDeepLinkSettingId();
@@ -143,19 +140,19 @@ export class DeepLinkingBehaviorInterface {
     /** @type {!Object} */
     this.Setting;
 
-    /** @type {!Set<!chromeos.settings.mojom.Setting>}} */
+    /** @type {!Set<!Setting>}} */
     this.supportedSettingIds;
   }
 
   /**
-   * @return {?chromeos.settings.mojom.Setting}
+   * @return {?Setting}
    */
   getDeepLinkSettingId() {}
 
   /**
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
-   *     ?chromeos.settings.mojom.Setting}>}
+   *     ?Setting}>}
    */
   showDeepLink(settingId) {}
 
@@ -165,14 +162,14 @@ export class DeepLinkingBehaviorInterface {
   showDeepLinkElement(elToFocus) {}
 
   /**
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {}
 
   /**
    * @return {!Promise<!{deepLinkShown: boolean, pendingSettingId:
-   *     ?chromeos.settings.mojom.Setting}>}
+   *     ?Setting}>}
    */
   attemptDeepLink() {}
 }

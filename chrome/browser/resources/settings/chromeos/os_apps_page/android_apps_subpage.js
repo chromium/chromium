@@ -17,6 +17,7 @@ import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.j
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -80,13 +81,13 @@ class SettingsAndroidAppsSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kManageAndroidPreferences,
-          chromeos.settings.mojom.Setting.kRemovePlayStore,
+          Setting.kManageAndroidPreferences,
+          Setting.kRemovePlayStore,
         ]),
       },
     };

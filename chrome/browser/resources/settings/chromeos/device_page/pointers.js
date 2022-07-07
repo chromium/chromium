@@ -18,6 +18,7 @@ import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -156,27 +157,27 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kTouchpadTapToClick,
-          chromeos.settings.mojom.Setting.kTouchpadTapDragging,
-          chromeos.settings.mojom.Setting.kTouchpadReverseScrolling,
-          chromeos.settings.mojom.Setting.kTouchpadAcceleration,
-          chromeos.settings.mojom.Setting.kTouchpadScrollAcceleration,
-          chromeos.settings.mojom.Setting.kTouchpadSpeed,
-          chromeos.settings.mojom.Setting.kTouchpadHapticFeedback,
-          chromeos.settings.mojom.Setting.kTouchpadHapticClickSensitivity,
-          chromeos.settings.mojom.Setting.kPointingStickAcceleration,
-          chromeos.settings.mojom.Setting.kPointingStickSpeed,
-          chromeos.settings.mojom.Setting.kPointingStickSwapPrimaryButtons,
-          chromeos.settings.mojom.Setting.kMouseSwapPrimaryButtons,
-          chromeos.settings.mojom.Setting.kMouseReverseScrolling,
-          chromeos.settings.mojom.Setting.kMouseAcceleration,
-          chromeos.settings.mojom.Setting.kMouseScrollAcceleration,
-          chromeos.settings.mojom.Setting.kMouseSpeed,
+          Setting.kTouchpadTapToClick,
+          Setting.kTouchpadTapDragging,
+          Setting.kTouchpadReverseScrolling,
+          Setting.kTouchpadAcceleration,
+          Setting.kTouchpadScrollAcceleration,
+          Setting.kTouchpadSpeed,
+          Setting.kTouchpadHapticFeedback,
+          Setting.kTouchpadHapticClickSensitivity,
+          Setting.kPointingStickAcceleration,
+          Setting.kPointingStickSpeed,
+          Setting.kPointingStickSwapPrimaryButtons,
+          Setting.kMouseSwapPrimaryButtons,
+          Setting.kMouseReverseScrolling,
+          Setting.kMouseAcceleration,
+          Setting.kMouseScrollAcceleration,
+          Setting.kMouseSpeed,
         ]),
       },
     };

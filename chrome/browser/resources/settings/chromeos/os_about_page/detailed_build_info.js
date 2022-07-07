@@ -25,6 +25,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -105,14 +106,14 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kChangeChromeChannel,
-          chromeos.settings.mojom.Setting.kChangeDeviceName,
-          chromeos.settings.mojom.Setting.kCopyDetailedBuildInfo,
+          Setting.kChangeChromeChannel,
+          Setting.kChangeDeviceName,
+          Setting.kCopyDetailedBuildInfo,
         ]),
       },
 

@@ -20,6 +20,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -172,16 +173,16 @@ class SettingsPowerElement extends SettingsPowerElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kPowerIdleBehaviorWhileCharging,
-          chromeos.settings.mojom.Setting.kPowerSource,
-          chromeos.settings.mojom.Setting.kSleepWhenLaptopLidClosed,
-          chromeos.settings.mojom.Setting.kPowerIdleBehaviorWhileOnBattery,
-          chromeos.settings.mojom.Setting.kAdaptiveCharging,
+          Setting.kPowerIdleBehaviorWhileCharging,
+          Setting.kPowerSource,
+          Setting.kSleepWhenLaptopLidClosed,
+          Setting.kPowerIdleBehaviorWhileOnBattery,
+          Setting.kAdaptiveCharging,
         ]),
       },
 
@@ -214,12 +215,11 @@ class SettingsPowerElement extends SettingsPowerElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
-    if (settingId === chromeos.settings.mojom.Setting.kPowerSource &&
-        this.$.powerSource.hidden) {
+    if (settingId === Setting.kPowerSource && this.$.powerSource.hidden) {
       // If there is only 1 power source, there is no dropdown to focus.
       // Stop the deep link attempt in this case.
       return false;

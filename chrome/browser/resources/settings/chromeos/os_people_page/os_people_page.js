@@ -36,6 +36,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
 import {Route, Router} from '../../router.js';
@@ -216,18 +217,18 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kSetUpParentalControls,
+          Setting.kSetUpParentalControls,
 
           // Perform Sync page deep links here since it's a shared page.
-          chromeos.settings.mojom.Setting.kNonSplitSyncEncryptionOptions,
-          chromeos.settings.mojom.Setting.kAutocompleteSearchesAndUrls,
-          chromeos.settings.mojom.Setting.kMakeSearchesAndBrowsingBetter,
-          chromeos.settings.mojom.Setting.kGoogleDriveSearchSuggestions,
+          Setting.kNonSplitSyncEncryptionOptions,
+          Setting.kAutocompleteSearchesAndUrls,
+          Setting.kMakeSearchesAndBrowsingBetter,
+          Setting.kGoogleDriveSearchSuggestions,
         ]),
       },
 
@@ -292,7 +293,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
 
   /**
    * Helper function for manually showing deep links on this page.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @param {!function():?Element} getElementCallback
    * @private
    */
@@ -310,13 +311,13 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
     switch (settingId) {
       // Manually show the deep links for settings nested within elements.
-      case chromeos.settings.mojom.Setting.kSetUpParentalControls:
+      case Setting.kSetUpParentalControls:
         this.afterRenderShowDeepLink_(settingId, () => {
           const parentalPage =
               /** @type {?SettingsParentalControlsPageElement} */ (
@@ -329,7 +330,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
 
       // Handle the settings within the old sync page since its a shared
       // component.
-      case chromeos.settings.mojom.Setting.kNonSplitSyncEncryptionOptions:
+      case Setting.kNonSplitSyncEncryptionOptions:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage = /** @type {?SettingsSyncPageElement} */ (
               this.shadowRoot.querySelector('settings-sync-page'));
@@ -341,7 +342,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         });
         return false;
 
-      case chromeos.settings.mojom.Setting.kAutocompleteSearchesAndUrls:
+      case Setting.kAutocompleteSearchesAndUrls:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage = /** @type {?SettingsSyncPageElement} */ (
               this.shadowRoot.querySelector('settings-sync-page'));
@@ -350,7 +351,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         });
         return false;
 
-      case chromeos.settings.mojom.Setting.kMakeSearchesAndBrowsingBetter:
+      case Setting.kMakeSearchesAndBrowsingBetter:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage = /** @type {?SettingsSyncPageElement} */ (
               this.shadowRoot.querySelector('settings-sync-page'));
@@ -359,7 +360,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         });
         return false;
 
-      case chromeos.settings.mojom.Setting.kGoogleDriveSearchSuggestions:
+      case Setting.kGoogleDriveSearchSuggestions:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage = /** @type {?SettingsSyncPageElement} */ (
               this.shadowRoot.querySelector('settings-sync-page'));

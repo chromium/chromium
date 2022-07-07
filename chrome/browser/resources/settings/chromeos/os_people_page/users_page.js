@@ -21,6 +21,7 @@ import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.j
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -77,16 +78,16 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kGuestBrowsingV2,
-          chromeos.settings.mojom.Setting.kShowUsernamesAndPhotosAtSignInV2,
-          chromeos.settings.mojom.Setting.kRestrictSignInV2,
-          chromeos.settings.mojom.Setting.kAddToUserAllowlistV2,
-          chromeos.settings.mojom.Setting.kRemoveFromUserAllowlistV2,
+          Setting.kGuestBrowsingV2,
+          Setting.kShowUsernamesAndPhotosAtSignInV2,
+          Setting.kRestrictSignInV2,
+          Setting.kAddToUserAllowlistV2,
+          Setting.kRemoveFromUserAllowlistV2,
         ]),
       },
     };
@@ -114,12 +115,11 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
-    if (settingId !==
-        chromeos.settings.mojom.Setting.kRemoveFromUserAllowlistV2) {
+    if (settingId !== Setting.kRemoveFromUserAllowlistV2) {
       // Continue with deep linking attempt.
       return true;
     }

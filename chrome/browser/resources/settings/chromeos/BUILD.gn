@@ -824,7 +824,7 @@ js_library("deep_linking_behavior") {
   deps = [
     "..:router",
     "..:setting_id_param_util",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

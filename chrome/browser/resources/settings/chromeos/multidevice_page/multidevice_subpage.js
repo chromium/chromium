@@ -24,6 +24,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -73,23 +74,23 @@ class SettingsMultideviceSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kInstantTetheringOnOff,
-          chromeos.settings.mojom.Setting.kMultiDeviceOnOff,
-          chromeos.settings.mojom.Setting.kSmartLockOnOff,
-          chromeos.settings.mojom.Setting.kMessagesSetUp,
-          chromeos.settings.mojom.Setting.kMessagesOnOff,
-          chromeos.settings.mojom.Setting.kForgetPhone,
-          chromeos.settings.mojom.Setting.kPhoneHubOnOff,
-          chromeos.settings.mojom.Setting.kPhoneHubCameraRollOnOff,
-          chromeos.settings.mojom.Setting.kPhoneHubNotificationsOnOff,
-          chromeos.settings.mojom.Setting.kPhoneHubTaskContinuationOnOff,
-          chromeos.settings.mojom.Setting.kWifiSyncOnOff,
-          chromeos.settings.mojom.Setting.kPhoneHubAppsOnOff,
+          Setting.kInstantTetheringOnOff,
+          Setting.kMultiDeviceOnOff,
+          Setting.kSmartLockOnOff,
+          Setting.kMessagesSetUp,
+          Setting.kMessagesOnOff,
+          Setting.kForgetPhone,
+          Setting.kPhoneHubOnOff,
+          Setting.kPhoneHubCameraRollOnOff,
+          Setting.kPhoneHubNotificationsOnOff,
+          Setting.kPhoneHubTaskContinuationOnOff,
+          Setting.kWifiSyncOnOff,
+          Setting.kPhoneHubAppsOnOff,
         ]),
       },
     };

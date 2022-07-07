@@ -20,6 +20,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
@@ -107,13 +108,13 @@ class SettingsAmbientModePageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kAmbientModeOnOff,
-          chromeos.settings.mojom.Setting.kAmbientModeSource,
+          Setting.kAmbientModeOnOff,
+          Setting.kAmbientModeSource,
         ]),
       },
 
@@ -163,10 +164,10 @@ class SettingsAmbientModePageElement extends
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    */
   beforeDeepLinkAttempt(settingId) {
-    if (settingId !== chromeos.settings.mojom.Setting.kAmbientModeSource) {
+    if (settingId !== Setting.kAmbientModeSource) {
       // Continue with deep link attempt.
       return true;
     }

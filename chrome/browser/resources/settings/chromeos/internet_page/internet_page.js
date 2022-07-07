@@ -42,6 +42,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -260,13 +261,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kWifiOnOff,
-          chromeos.settings.mojom.Setting.kMobileOnOff,
+          Setting.kWifiOnOff,
+          Setting.kMobileOnOff,
         ]),
       },
 
@@ -377,15 +378,15 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
     // Manually show the deep links for settings nested within elements.
     let networkType = null;
-    if (settingId === chromeos.settings.mojom.Setting.kWifiOnOff) {
+    if (settingId === Setting.kWifiOnOff) {
       networkType = mojom.NetworkType.kWiFi;
-    } else if (settingId === chromeos.settings.mojom.Setting.kMobileOnOff) {
+    } else if (settingId === Setting.kMobileOnOff) {
       networkType = mojom.NetworkType.kCellular;
     }
 

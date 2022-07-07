@@ -17,10 +17,12 @@ import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resourc
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
 
 // TODO(crbug.com/1093185): Implement DeepLinkingBehavior and override methods
 // to show the actions for search result.
@@ -79,13 +81,13 @@ class SettingsInternetDetailMenuElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kCellularRenameESimNetwork,
-          chromeos.settings.mojom.Setting.kCellularRemoveESimNetwork,
+          Setting.kCellularRenameESimNetwork,
+          Setting.kCellularRemoveESimNetwork,
         ]),
       },
     };
@@ -93,7 +95,7 @@ class SettingsInternetDetailMenuElement extends
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
@@ -105,8 +107,7 @@ class SettingsInternetDetailMenuElement extends
       // Wait for menu to open.
       afterNextRender(this, () => {
         let element;
-        if (settingId ===
-            chromeos.settings.mojom.Setting.kCellularRenameESimNetwork) {
+        if (settingId === Setting.kCellularRenameESimNetwork) {
           element = this.shadowRoot.querySelector('#renameBtn');
         } else {
           element = this.shadowRoot.querySelector('#removeBtn');

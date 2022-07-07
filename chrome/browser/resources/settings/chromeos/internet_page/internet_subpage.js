@@ -31,6 +31,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -213,7 +214,7 @@ class SettingsInternetSubpageElement extends
       /**
        * Contains the settingId of any deep link that wasn't able to be shown,
        * null otherwise.
-       * @private {?chromeos.settings.mojom.Setting}
+       * @private {?Setting}
        */
       pendingSettingId_: {
         type: Number,
@@ -222,16 +223,16 @@ class SettingsInternetSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kWifiOnOff,
-          chromeos.settings.mojom.Setting.kWifiAddNetwork,
-          chromeos.settings.mojom.Setting.kMobileOnOff,
-          chromeos.settings.mojom.Setting.kInstantTetheringOnOff,
-          chromeos.settings.mojom.Setting.kAddESimNetwork,
+          Setting.kWifiOnOff,
+          Setting.kWifiAddNetwork,
+          Setting.kMobileOnOff,
+          Setting.kInstantTetheringOnOff,
+          Setting.kAddESimNetwork,
         ]),
       },
     };
@@ -285,11 +286,11 @@ class SettingsInternetSubpageElement extends
 
   /**
    * Overridden from DeepLinkingBehavior.
-   * @param {!chromeos.settings.mojom.Setting} settingId
+   * @param {!Setting} settingId
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
-    if (settingId === chromeos.settings.mojom.Setting.kAddESimNetwork) {
+    if (settingId === Setting.kAddESimNetwork) {
       afterNextRender(this, () => {
         const deepLinkElement =
             this.shadowRoot.querySelector('cellular-networks-list')
@@ -303,7 +304,7 @@ class SettingsInternetSubpageElement extends
       return false;
     }
 
-    if (settingId === chromeos.settings.mojom.Setting.kInstantTetheringOnOff) {
+    if (settingId === Setting.kInstantTetheringOnOff) {
       // Wait for element to load.
       afterNextRender(this, () => {
         // If both Cellular and Instant Tethering are enabled, we show a special

@@ -22,6 +22,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -94,7 +95,7 @@ class SettingsInternetKnownNetworksPageElement extends
       /**
        * Contains the settingId of any deep link that wasn't able to be shown,
        * null otherwise.
-       * @private {?chromeos.settings.mojom.Setting}
+       * @private {?Setting}
        */
       pendingSettingId_: {
         type: Number,
@@ -103,13 +104,13 @@ class SettingsInternetKnownNetworksPageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kPreferWifiNetwork,
-          chromeos.settings.mojom.Setting.kForgetWifiNetwork,
+          Setting.kPreferWifiNetwork,
+          Setting.kForgetWifiNetwork,
         ]),
       },
     };
