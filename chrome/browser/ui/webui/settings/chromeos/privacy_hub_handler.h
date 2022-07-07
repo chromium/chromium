@@ -6,21 +6,23 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PRIVACY_HUB_HANDLER_H_
 
 #include "content/public/browser/web_ui_message_handler.h"
-
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "ui/events/devices/microphone_mute_switch_monitor.h"
 
 namespace chromeos::settings {
 
 class PrivacyHubHandler : public content::WebUIMessageHandler,
-                          public media::CameraPrivacySwitchObserver {
+                          public media::CameraPrivacySwitchObserver,
+                          public ui::MicrophoneMuteSwitchMonitor::Observer {
  public:
   PrivacyHubHandler();
+  ~PrivacyHubHandler() override;
 
   PrivacyHubHandler(const PrivacyHubHandler&) = delete;
 
   PrivacyHubHandler& operator=(const PrivacyHubHandler&) = delete;
 
- private:
+ protected:
   // content::WebUIMessageHandler
   void RegisterMessages() override;
 
@@ -28,8 +30,14 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   void OnCameraPrivacySwitchStatusChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
 
-  void HandleInitial(const base::Value::List& args);
+  // ui::MicrophoneMuteSwitchMonitor::Observer
+  void OnMicrophoneMuteSwitchValueChanged(bool muted) override;
 
+  void HandleInitialCameraSwitchState(const base::Value::List& args);
+
+  void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
+
+ private:
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_;
 };
 

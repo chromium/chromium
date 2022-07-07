@@ -20,14 +20,22 @@ class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getInitialCameraHardwareToggleState',
+      'getInitialMicrophoneHardwareToggleState',
     ]);
     this.cameraToggleIsEnabled = false;
+    this.microphoneToggleIsEnabled = false;
   }
 
   /** override */
   getInitialCameraHardwareToggleState() {
     this.methodCalled('getInitialCameraHardwareToggleState');
     return Promise.resolve(this.cameraToggleIsEnabled);
+  }
+
+  /** override */
+  getInitialMicrophoneHardwareToggleState() {
+    this.methodCalled('getInitialMicrophoneHardwareToggleState');
+    return Promise.resolve(this.microphoneToggleIsEnabled);
   }
 }
 
@@ -123,6 +131,46 @@ suite('PrivacyHubSubpageTests', function() {
         'The sublabel should contain the hint about the internal camera');
 
     webUIListenerCallback('camera-hardware-toggle-changed', false);
+
+    await waitAfterNextRender(subLabel);
+
+    chai.assert.match(
+        subLabel.textContent, /^\s*$/,
+        'The sublabel should only consist of whitespace');
+  });
+
+  test('Update microphone setting sub-label', async () => {
+    const params = new URLSearchParams();
+    params.append('settingId', '1117');
+
+    privacyHubBrowserProxy.microphoneToggleIsEnabled = false;
+
+    await privacyHubBrowserProxy.whenCalled(
+        'getInitialMicrophoneHardwareToggleState');
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
+
+    flush();
+
+    const subLabel =
+        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
+            .shadowRoot.querySelector('#sub-label-text');
+
+    await waitAfterNextRender(subLabel);
+
+    chai.assert.match(
+        subLabel.textContent, /^\s*$/,
+        'The sublabel should only consist of whitespace');
+
+    webUIListenerCallback('microphone-hardware-toggle-changed', true);
+
+    await waitAfterNextRender(subLabel);
+
+    chai.assert.match(
+        subLabel.textContent,
+        /^\s*All microphones disabled by devices hardware switch\s*$/,
+        'The sublabel should contain the hint about the internal camera');
+
+    webUIListenerCallback('microphone-hardware-toggle-changed', false);
 
     await waitAfterNextRender(subLabel);
 

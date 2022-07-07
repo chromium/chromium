@@ -59,11 +59,18 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
     super.ready();
     assert(loadTimeData.getBoolean('showPrivacyHub'));
     this.addWebUIListener('camera-hardware-toggle-changed', (enabled) => {
-      this.setCameraHardwareToggleState(enabled);
+      this.setCameraHardwareToggleState_(enabled);
     });
     this.browserProxy_.getInitialCameraHardwareToggleState().then((enabled) => {
-      this.setCameraHardwareToggleState(enabled);
+      this.setCameraHardwareToggleState_(enabled);
     });
+    this.addWebUIListener('microphone-hardware-toggle-changed', (enabled) => {
+      this.setMicrophoneHardwareToggleState_(enabled);
+    });
+    this.browserProxy_.getInitialMicrophoneHardwareToggleState().then(
+        (enabled) => {
+          this.setMicrophoneHardwareToggleState_(enabled);
+        });
   }
 
   static get properties() {
@@ -88,9 +95,23 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
         ]),
       },
 
+      /** @private {string} */
       cameraToggleActive_: {
         type: String,
         value: '',
+      },
+
+      /** @private {boolean} */
+      microphoneHardwareToggleActive_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {string} */
+      microphoneHardwareToggleActiveSubLabel_: {
+        type: String,
+        computed: 'computeMicrophoneHardwareToggleSubLabel_(' +
+            'microphoneHardwareToggleActive_)',
       },
     };
   }
@@ -111,12 +132,33 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
    * @param {boolean} enabled
    * @private
    */
-  setCameraHardwareToggleState(enabled) {
+  setCameraHardwareToggleState_(enabled) {
     if (enabled) {
       this.cameraToggleActive_ = this.i18n('cameraToggleSublabelActive');
     } else {
       this.cameraToggleActive_ = '';
     }
+  }
+
+  /**
+   * @param {boolean} enabled
+   * @private
+   */
+  setMicrophoneHardwareToggleState_(enabled) {
+    if (enabled) {
+      this.microphoneHardwareToggleActive_ = true;
+    } else {
+      this.microphoneHardwareToggleActive_ = false;
+    }
+  }
+
+  /**
+   * @private
+   */
+  computeMicrophoneHardwareToggleSubLabel_() {
+    return this.microphoneHardwareToggleActive_ ?
+        this.i18n('microphoneToggleSublabelActive') :
+        '';
   }
 }
 
