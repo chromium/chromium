@@ -401,13 +401,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosAutoclick" enum="BooleanEnabled"
-    expires_after="2021-12-31">
+    expires_after="2023-07-01">
   <owner>kenjibaheux@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome OS Autoclick feature is on (logged once 45 secs after
-    startup).
+    startup). Warning: this histogram was expired 2021-12-31 to 2022-07-07, data
+    might be missing.
   </summary>
 </histogram>
 
@@ -1989,7 +1990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
-    expires_after="2022-07-11">
+    expires_after="2023-07-01">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1999,9 +2000,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2022-12-04">
+    enum="TextToSpeechFromExtensionAPI" expires_after="2023-07-01">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Indicates if an utterance spoken via synthesized text-to-speech was
     triggered by the Chrome TTS extension API or the web speech API.
@@ -2009,8 +2011,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.HasVoiceName"
-    enum="TextToSpeechHasVoiceName" expires_after="2022-10-23">
+    enum="TextToSpeechHasVoiceName" expires_after="2023-07-01">
   <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     True if an utterance spoken via synthesized text-to-speech requested a
     specific voice by name.
@@ -2018,8 +2021,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
-    expires_after="2022-06-26">
+    expires_after="2023-07-01">
   <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     True if an utterance is spoken with native speech provided by the operating
     system, otherwise it's spoken via a Chrome extension that implements
@@ -2028,9 +2032,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Source" enum="TextToSpeechSource"
-    expires_after="M103">
+    expires_after="2023-07-01">
   <owner>joelriley@google.com</owner>
   <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     ChromeOS source that triggered text-to-speech utterance via extension API,
     from a few known accessibility clients (Select-to-speak, ChromeVox).
@@ -2038,8 +2043,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
-    expires_after="2022-06-26">
+    expires_after="2023-07-01">
   <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The length of an utterance to be spoken via synthesized text-to-speech.
   </summary>
