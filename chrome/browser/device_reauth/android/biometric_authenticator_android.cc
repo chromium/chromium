@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/biometric_authenticator_bridge_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -27,7 +28,6 @@
 #include "ui/android/view_android.h"
 
 using content::WebContents;
-using device_reauth::BiometricAuthFinalResult;
 using device_reauth::BiometricAuthUIResult;
 using device_reauth::BiometricsAvailability;
 using password_manager::UiCredential;
@@ -139,6 +139,13 @@ void BiometricAuthenticatorAndroid::Authenticate(
   bridge_->Authenticate(
       base::BindOnce(&BiometricAuthenticatorAndroid::OnAuthenticationCompleted,
                      base::Unretained(this)));
+}
+
+void BiometricAuthenticatorAndroid::AuthenticateWithMessage(
+    device_reauth::BiometricAuthRequester requester,
+    const std::u16string message,
+    AuthenticateCallback callback) {
+  NOTIMPLEMENTED();
 }
 
 void BiometricAuthenticatorAndroid::Cancel(

@@ -45,37 +45,6 @@ enum class BiometricAuthRequester {
   kMaxValue = kIncognitoReauthPage,
 };
 
-// The result of the biometric authentication.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BiometricAuthFinalResult {
-  // This value is used for when we don't know the exact auth method used. This
-  // can be the case on Android versions under 11.
-  kSuccessWithUnknownMethod = 0,
-  kSuccessWithBiometrics = 1,
-  kSuccessWithDeviceLock = 2,
-  kCanceledByUser = 3,
-  kFailed = 4,
-
-  // Deprecated in favour of kCanceledByChrome. Recorded when the auth succeeds
-  // after Chrome cancelled it.
-  // kSuccessButCanceled = 5,
-
-  // Deprecated in favour of kCanceledByChrome. Recorded when the auth fails
-  // after Chrome cancelled it.
-  // kFailedAndCanceled = 6,
-
-  // Recorded if an authentication was requested within 60s of the previous
-  // successful authentication.
-  kAuthStillValid = 7,
-
-  // Recorded when the authentication flow is cancelled by Chrome.
-  kCanceledByChrome = 8,
-
-  kMaxValue = kCanceledByChrome,
-};
-
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a
 // website, either via form filling or the Credential Management API.
@@ -95,6 +64,15 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   // |requester| is the filling surface that is asking for authentication.
   virtual void Authenticate(BiometricAuthRequester requester,
                             AuthenticateCallback callback) = 0;
+
+  // Asks the user to authenticate. Invokes |callback| asynchronously when
+  // the auth flow returns with the result.
+  // |requester| is the filling surface that is asking for authentication.
+  // |message| contains text that will be displayed to the end user on
+  // authentication request
+  virtual void AuthenticateWithMessage(BiometricAuthRequester requester,
+                                       const std::u16string message,
+                                       AuthenticateCallback callback) = 0;
 
   // Cancels an in-progress authentication if the filling surface requesting
   // the cancelation corresponds to the one for which the ongoing auth was

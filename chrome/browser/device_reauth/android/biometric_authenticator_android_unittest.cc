@@ -25,7 +25,6 @@ namespace {
 using base::Bucket;
 using base::test::RunOnceCallback;
 using device_reauth::BiometricAuthenticator;
-using device_reauth::BiometricAuthFinalResult;
 using device_reauth::BiometricAuthRequester;
 using device_reauth::BiometricAuthUIResult;
 using device_reauth::BiometricsAvailability;
