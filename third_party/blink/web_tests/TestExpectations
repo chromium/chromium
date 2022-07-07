@@ -137,6 +137,28 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/lo
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
+# ====== Timed HTML parser budget tests from here ========================
+# See crbug.com/1342718 for details.
+# These tests either started failing outright, or became flaky, when the HTML
+# parser switched to using a time based budget instead of a token based budget.
+# All of these are bugs/issues with the test itself.
+
+crbug.com/1341693 [ Linux ] external/wpt/dom/nodes/MutationObserver-document.html [ Skip ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Failure Pass ]
+crbug.com/1339293 external/wpt/content-security-policy/media-src/media-src-7_1_2.sub.html [ Skip ]
+crbug.com/1339293 [ Linux ] external/wpt/content-security-policy/media-src/media-src-blocked.sub.html [ Failure Pass Timeout ]
+crbug.com/1339293 [ Linux ] fast/frames/empty-frame-src.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] fast/frames/frame-scrolling-attribute.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] media/controls/rotated-video-has-right-panel-width.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] media/media-controls-overflow-hidden.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029.html [ Failure Pass ]
+
+# ====== Timed HTML parser budget tests to here ========================
+
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
 
 # ====== Site Isolation failures from here ======
@@ -7109,20 +7131,8 @@ crbug.com/1308932 scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Fa
 # Sheriff 2022-06-24
 crbug.com/1339211 [ Mac ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
 crbug.com/1339214 [ Mac ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]
-crbug.com/1339293 external/wpt/content-security-policy/media-src/media-src-7_1_2.sub.html [ Skip ]
-crbug.com/1339293 [ Linux ] external/wpt/content-security-policy/media-src/media-src-blocked.sub.html [ Failure Pass Timeout ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] fast/frames/empty-frame-src.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] fast/frames/frame-scrolling-attribute.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
-crbug.com/1339293 [ Linux ] media/controls/rotated-video-has-right-panel-width.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] media/media-controls-overflow-hidden.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029.html [ Failure Pass ]
+crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF-dynamic.html [ Failure Pass ]
 crbug.com/webrtc/14228 external/wpt/webrtc/protocol/h264-profile-levels.https.html [ Failure Pass ]
 
@@ -7148,7 +7158,6 @@ crbug.com/1305302 external/wpt/webidl/ecmascript-binding/global-object-implicit-
 
 # Sheriff 2022-07-04
 crbug.com/1340981 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html [ Timeout ]
-crbug.com/1341693 [ Linux ] external/wpt/dom/nodes/MutationObserver-document.html [ Skip ]
 
 # Sheriff 2022-07-05
 crbug.com/1321217 [ Mac ] http/tests/devtools/layers/layer-canvas-log.js [ Failure Pass ]
