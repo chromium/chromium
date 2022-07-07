@@ -38,7 +38,8 @@ class DesktopWebAppUkmRecorder {
   static void Emit(const DailyInteraction& record) {
     DCHECK(record.start_url.is_valid());
     ukm::SourceId source_id =
-        ukm::UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(record.start_url);
+        ukm::UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(
+            base::PassKey<DesktopWebAppUkmRecorder>(), record.start_url);
     ukm::builders::WebApp_DailyInteraction builder(source_id);
     builder.SetUsed(true)
         .SetInstalled(record.installed)

@@ -34,6 +34,7 @@ ukm::SourceId UkmRecorder::GetNewSourceID() {
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForPaymentAppFromScope(
+    base::PassKey<content::PaymentAppProviderUtil>,
     const GURL& service_worker_scope) {
   return UkmRecorder::GetSourceIdFromScopeImpl(service_worker_scope,
                                                SourceIdType::PAYMENT_APP_ID);
@@ -41,6 +42,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForPaymentAppFromScope(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestUrl(
+    base::PassKey<WebApkUkmRecorder>,
     const GURL& manifest_url) {
   return UkmRecorder::GetSourceIdFromScopeImpl(manifest_url,
                                                SourceIdType::WEBAPK_ID);
@@ -48,6 +50,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestUrl(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(
+    base::PassKey<web_app::DesktopWebAppUkmRecorder>,
     const GURL& start_url) {
   return UkmRecorder::GetSourceIdFromScopeImpl(
       start_url, SourceIdType::DESKTOP_WEB_APP_ID);

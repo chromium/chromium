@@ -79,11 +79,24 @@ class METRICS_EXPORT UkmRecorder {
   // session.
   static SourceId GetNewSourceID();
 
-  // Add an entry to the UkmEntry list.
-  virtual void AddEntry(mojom::UkmEntryPtr entry) = 0;
+  // Gets new source Id for WEBAPK_ID type and updates the manifest url. This
+  // method should only be called by WebApkUkmRecorder class.
+  static SourceId GetSourceIdForWebApkManifestUrl(
+      base::PassKey<WebApkUkmRecorder>,
+      const GURL& manifest_url);
 
-  // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
-  virtual void SetSamplingForTesting(int rate) {}
+  // Gets new source ID for a desktop web app, using the start_url from the web
+  // app manifest. This method should only be called by DailyMetricsHelper.
+  static SourceId GetSourceIdForDesktopWebAppStartUrl(
+      base::PassKey<web_app::DesktopWebAppUkmRecorder>,
+      const GURL& start_url);
+
+  // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
+  // the scope of the app. This method should only be called by
+  // PaymentAppProviderUtil class when the payment app window is opened.
+  static SourceId GetSourceIdForPaymentAppFromScope(
+      base::PassKey<content::PaymentAppProviderUtil>,
+      const GURL& service_worker_scope);
 
   // Gets a new SourceId for WEB_IDENTITY_ID type and updates the source url
   // from the identity provider. This method should only be called in the
@@ -98,29 +111,18 @@ class METRICS_EXPORT UkmRecorder {
   static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSBounceDetector>,
                                             const GURL& redirect_url);
 
+  // Add an entry to the UkmEntry list.
+  virtual void AddEntry(mojom::UkmEntryPtr entry) = 0;
+
+  // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
+  virtual void SetSamplingForTesting(int rate) {}
+
  protected:
   // Type-safe wrappers for Update<X> functions.
   void RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url);
   void RecordAppURL(ukm::SourceIdObj source_id,
                     const GURL& url,
                     const AppType app_type);
-
-  // TODO(crbug.com/1340241): change all GetSourceId* methods to use PassKeys
-  // instead of relying on friend classes, as is currently done in
-  // GetSourceIdForWebIdentityFromScope(). Gets new SourceId for WEBAPK_ID type
-  // and updates the manifest url. This method should only be called by
-  // WebApkUkmRecorder class.
-  static SourceId GetSourceIdForWebApkManifestUrl(const GURL& manifest_url);
-
-  // Gets new SourceId for a desktop web app, using the start_url from the web
-  // app manifest. This method should only be called by DailyMetricsHelper.
-  static SourceId GetSourceIdForDesktopWebAppStartUrl(const GURL& start_url);
-
-  // Gets new SourceId for PAYMENT_APP_ID type and updates the source url to
-  // the scope of the app. This method should only be called by
-  // PaymentAppProviderUtil class when the payment app window is opened.
-  static SourceId GetSourceIdForPaymentAppFromScope(
-      const GURL& service_worker_scope);
 
   // Returns a new SourceId for the given GURL and SourceIDType.
   static SourceId GetSourceIdFromScopeImpl(const GURL& scope_url,
@@ -133,17 +135,7 @@ class METRICS_EXPORT UkmRecorder {
   friend UkmBackgroundRecorderService;
   friend metrics::UkmRecorderInterface;
   friend PermissionUmaUtil;
-  friend content::PaymentAppProviderUtil;
   friend content::RenderFrameHostImpl;
-
-  // WebApkUkmRecorder and DesktopWebAppUkmRecorder record metrics about
-  // installed web apps. Instead of using
-  // the current main frame URL, we want to record the URL which identifies the
-  // current app: the web app manifest url or start url, respectively.
-  // Therefore, they need to be friends so that they can access the private
-  // GetSourceIdForWebApkManifestUrl() method.
-  friend WebApkUkmRecorder;
-  friend web_app::DesktopWebAppUkmRecorder;
 
   // Associates the SourceId with a URL. Most UKM recording code should prefer
   // to use a shared SourceId that is already associated with a URL, rather

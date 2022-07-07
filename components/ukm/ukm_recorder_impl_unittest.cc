@@ -234,7 +234,8 @@ TEST(UkmRecorderImplTest, WebApkSourceUrl) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   GURL url("https://example_url.com/manifest.json");
-  SourceId id = UkmRecorderImpl::GetSourceIdForWebApkManifestUrl(url);
+  SourceId id =
+      UkmRecorderImpl::GetSourceIdFromScopeImpl(url, SourceIdType::WEBAPK_ID);
 
   ASSERT_NE(kInvalidSourceId, id);
 
@@ -252,7 +253,8 @@ TEST(UkmRecorderImplTest, PaymentAppScopeUrl) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   GURL url("https://bobpay.com");
-  SourceId id = UkmRecorderImpl::GetSourceIdForPaymentAppFromScope(url);
+  SourceId id = UkmRecorderImpl::GetSourceIdFromScopeImpl(
+      url, SourceIdType::PAYMENT_APP_ID);
 
   ASSERT_NE(kInvalidSourceId, id);
 

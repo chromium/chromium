@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
+using PassKey = base::PassKey<WebApkUkmRecorder>;
 
 namespace {
 
@@ -34,8 +35,8 @@ void WebApkUkmRecorder::RecordInstall(const GURL& manifest_url,
   if (!manifest_url.is_valid())
     return;
 
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(manifest_url);
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(
+      PassKey(), manifest_url);
 
   // All installs through this method are browser-installs (ie, they should all
   // use the "browser" distributor).
@@ -54,8 +55,8 @@ void WebApkUkmRecorder::RecordSessionDuration(const GURL& manifest_url,
   if (!manifest_url.is_valid())
     return;
 
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(manifest_url);
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(
+      PassKey(), manifest_url);
   ukm::builders::WebAPK_SessionEnd(source_id)
       .SetDistributor(distributor)
       .SetAppVersion(version_code)
@@ -71,8 +72,8 @@ void WebApkUkmRecorder::RecordVisit(const GURL& manifest_url,
   if (!manifest_url.is_valid())
     return;
 
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(manifest_url);
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(
+      PassKey(), manifest_url);
   ukm::builders::WebAPK_Visit(source_id)
       .SetDistributor(distributor)
       .SetAppVersion(version_code)
@@ -89,8 +90,8 @@ void WebApkUkmRecorder::RecordUninstall(const GURL& manifest_url,
                                         int64_t installed_duration_ms) {
   // UKM metric |launch_count| parameter is enum. '2' indicates >= 2 launches.
   launch_count = base::clamp<int64_t>(launch_count, 0, 2);
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(manifest_url);
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(
+      PassKey(), manifest_url);
   ukm::builders::WebAPK_Uninstall(source_id)
       .SetDistributor(distributor)
       .SetAppVersion(version_code)
@@ -106,8 +107,8 @@ void WebApkUkmRecorder::RecordWebApkableVisit(const GURL& manifest_url) {
   if (!manifest_url.is_valid())
     return;
 
-  ukm::SourceId source_id =
-      ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(manifest_url);
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForWebApkManifestUrl(
+      PassKey(), manifest_url);
   ukm::builders::PWA_Visit(source_id).SetWebAPKableSiteVisit(1).Record(
       ukm::UkmRecorder::Get());
 }
