@@ -162,8 +162,8 @@ class AndroidSharedVrPageState(_SharedVrPageState):
                      'gvr-android-sdk', 'test-apks', 'vr_keyboard',
                      'vr_keyboard_current.apk'))
 
-  def WillRunStory(self, page):
-    super(AndroidSharedVrPageState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(AndroidSharedVrPageState, self).WillRunStory(story)
     if not self._finder_options.disable_screen_reset:
       self._CycleScreen()
 
@@ -230,8 +230,8 @@ class WindowsSharedVrPageState(_SharedVrPageState):
                 self._finder_options, self._possible_browser)
     self._desktop_runtime.Setup()
 
-  def WillRunStory(self, page):
-    super(WindowsSharedVrPageState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(WindowsSharedVrPageState, self).WillRunStory(story)
     self._desktop_runtime.WillRunStory()
 
   def TearDownState(self):

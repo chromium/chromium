@@ -4,7 +4,7 @@
 import time
 
 from telemetry.page import shared_page_state
-from telemetry import story
+from telemetry import story as story_module
 
 
 class _IdleSharedState(shared_page_state.SharedPageState):
@@ -13,8 +13,8 @@ class _IdleSharedState(shared_page_state.SharedPageState):
         test, finder_options, story_set, possible_browser)
     self._current_story = None
 
-  def WillRunStory(self, current_story):
-    self._current_story = current_story
+  def WillRunStory(self, story):
+    self._current_story = story
     assert self.platform.tracing_controller.is_tracing_running
 
   def RunStory(self, _):
@@ -24,7 +24,7 @@ class _IdleSharedState(shared_page_state.SharedPageState):
     self._current_story = None
 
 
-class _IdleStory(story.Story):
+class _IdleStory(story_module.Story):
   def __init__(self, name, duration):
     super(_IdleStory, self).__init__(
         shared_state_class=_IdleSharedState, name=name)
@@ -43,7 +43,7 @@ class _IdleStory(story.Story):
     return self._url
 
 
-class IdleStorySet(story.StorySet):
+class IdleStorySet(story_module.StorySet):
   def __init__(self):
     super(IdleStorySet, self).__init__()
     self.AddStory(_IdleStory('IdleStory_10s', 10))

@@ -51,11 +51,11 @@ class RenderingSharedState(shared_page_state.SharedPageState):
 
     return 'unknown_gpu'
 
-  def WillRunStory(self, page):
-    super(RenderingSharedState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(RenderingSharedState, self).WillRunStory(story)
     if not self._finder_options.allow_software_compositing:
       self._EnsureNotSwiftShader()
-    if page.TAGS and story_tags.KEY_IDLE_POWER in page.TAGS:
+    if story.TAGS and story_tags.KEY_IDLE_POWER in story.TAGS:
       self._EnsureScreenOn()
 
   def DidRunStory(self, results):
