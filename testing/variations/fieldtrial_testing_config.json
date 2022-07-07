@@ -1884,26 +1884,6 @@
             ]
         }
     ],
-    "BlinkAhoCorasickForAttributeSelectors": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SubstringSetTreeForAttributeBuckets"
-                    ]
-                }
-            ]
-        }
-    ],
     "BlinkSchedulerPrioritizeRenderingAfterInput": [
         {
             "platforms": [
@@ -8159,6 +8139,26 @@
                     },
                     "enable_features": [
                         "SubframeShutdownDelay"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SubstringSetTreeForAttributeBuckets": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SubstringSetTreeForAttributeBuckets"
                     ]
                 }
             ]
