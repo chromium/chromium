@@ -152,6 +152,11 @@ const char kDeferredFontShapingDescription[] =
     "Defer text rendering in invisible CSS boxes until the boxes become "
     "visible.";
 
+const char kDocumentPictureInPictureApiName[] =
+    "Document Picture-in-Picture API";
+const char kDocumentPictureInPictureApiDescription[] =
+    "Enables API to open an always-on-top window with a full HTML document";
+
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";

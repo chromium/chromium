@@ -56901,6 +56901,7 @@ from previous Chrome versions.
   <int value="-1068278508" label="InfoCardAcknowledgementTracking:disabled"/>
   <int value="-1068197506" label="EnhancedNetworkVoices:enabled"/>
   <int value="-1067635248" label="SpeculativeResourcePrefetching:disabled"/>
+  <int value="-1065887406" label="PictureInPictureV2:disabled"/>
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
   <int value="-1064733740" label="ui-show-composited-layer-borders"/>
   <int value="-1064302126"
@@ -57733,6 +57734,7 @@ from previous Chrome versions.
   <int value="-536003711"
       label="OmniboxClobberTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-535662704" label="BundledConnectionHelp:enabled"/>
+  <int value="-535226444" label="PictureInPictureV2:enabled"/>
   <int value="-535208779" label="enable-native-cups"/>
   <int value="-534722229" label="LauncherNudgeShortInterval:enabled"/>
   <int value="-534525820" label="MediaAppPhotosIntegrationImage:enabled"/>

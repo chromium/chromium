@@ -100,6 +100,9 @@ extern const char kDefaultChromeAppsMigrationDescription[];
 extern const char kDeferredFontShapingName[];
 extern const char kDeferredFontShapingDescription[];
 
+extern const char kDocumentPictureInPictureApiName[];
+extern const char kDocumentPictureInPictureApiDescription[];
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 

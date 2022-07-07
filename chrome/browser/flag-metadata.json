@@ -1371,6 +1371,11 @@
     "owners": [ "garrick", "jasongustaman" ],
     "expiry_milestone": 109
   },
+  {
+    "name": "document-picture-in-picture-api",
+    "owners": [ "steimel", "media-dev" ],
+    "expiry_milestone": 120
+  },
    {
     "name": "document-transition",
     "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
