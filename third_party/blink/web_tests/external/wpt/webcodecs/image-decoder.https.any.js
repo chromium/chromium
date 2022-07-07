@@ -64,6 +64,39 @@ promise_test(t => {
 }, 'Test JPEG w/ EXIF orientation left-bottom.');
 
 promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(1, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation top-left.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(2, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation top-right.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(3, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation bottom-right.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(4, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation bottom-left.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(5, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation left-top.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(6, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation right-top.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(7, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation right-bottom.');
+
+promise_test(t => {
+  return testFourColorDecodeWithExifOrientation(8, null, /*useYuv=*/ true);
+}, 'Test 4:2:0 JPEG w/ EXIF orientation left-bottom.');
+
+
+promise_test(t => {
   return testFourColorsDecode('four-colors.png', 'image/png');
 }, 'Test PNG image decoding.');
 
