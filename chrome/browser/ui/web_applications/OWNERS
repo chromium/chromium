@@ -1,3 +1,1 @@
 file://chrome/browser/web_applications/OWNERS
-
-per-file system_web_app_ui_utils*=file://ash/webui/PLATFORM_OWNERS
