@@ -1040,8 +1040,9 @@ class MediaEngagementContentsObserverFencedFrameBrowserTest
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
+// TODO(crbug.com/1320380): Re-enable this test
 IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
-                       SendEngagementLevelToRenderFrameOnFencedFrame) {
+                       DISABLED_SendEngagementLevelToRenderFrameOnFencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   MockAutoplayConfigurationClient client;
