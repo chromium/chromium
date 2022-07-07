@@ -1896,6 +1896,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
   // The WebContents holds the parameters from the PiP request.
   WebContents::CreateParams web_contents_params(browser()->profile());
   web_contents_params.initial_picture_in_picture_aspect_ratio = 0.5;
+  web_contents_params.lock_picture_in_picture_aspect_ratio = true;
 
   // Opening a picture in picture window should create a new browser.
   NavigateParams params(MakeNavigateParams(browser()));

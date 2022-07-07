@@ -53,16 +53,16 @@ struct SizingParams {
   ResizeEdge resize_edge{};
   float aspect_ratio = 0.0f;
   Size min_size;
-  Size max_size;
+  absl::optional<Size> max_size;
   Rect input_rect;
   Rect expected_output_rect;
 
   std::string ToString() const {
-    return base::StrCat({HitTestToString(resize_edge),
-                         " ratio=", base::NumberToString(aspect_ratio), " [",
-                         min_size.ToString(), "..", max_size.ToString(), "] ",
-                         input_rect.ToString(), " -> ",
-                         expected_output_rect.ToString()});
+    return base::StrCat(
+        {HitTestToString(resize_edge), " ratio=",
+         base::NumberToString(aspect_ratio), " [", min_size.ToString(), "..",
+         max_size.has_value() ? max_size->ToString() : "nullopt", "] ",
+         input_rect.ToString(), " -> ", expected_output_rect.ToString()});
   }
 };
 
@@ -121,6 +121,11 @@ const SizingParams kSizeRectToSquareAspectRatioTestCases[] = {
      kMaxSizeHorizontal,
      Rect(100, 100, kMaxSizeHorizontal.height(), kMaxSizeHorizontal.height()),
      Rect(100, 100, kMaxSizeHorizontal.height(), kMaxSizeHorizontal.height())},
+
+    // Dragging the top-left resizer left.
+    // No max size specified.
+    {ResizeEdge::kTopLeft, kAspectRatioSquare, kMinSizeHorizontal,
+     absl::nullopt, Rect(102, 100, 22, 24), Rect(102, 102, 22, 22)},
 };
 
 const SizingParams kSizeRectToHorizontalAspectRatioTestCases[] = {
@@ -143,6 +148,11 @@ const SizingParams kSizeRectToHorizontalAspectRatioTestCases[] = {
      kMaxSizeHorizontal,
      Rect(100, 100, kMaxSizeHorizontal.width(), kMaxSizeHorizontal.height()),
      Rect(100, 100, kMaxSizeHorizontal.width(), kMaxSizeHorizontal.height())},
+
+    // Dragging the left resizer left.
+    // No max size specified.
+    {ResizeEdge::kLeft, kAspectRatioHorizontal, kMinSizeHorizontal,
+     absl::nullopt, Rect(96, 100, 48, 22), Rect(96, 98, 48, 24)},
 };
 
 const SizingParams kSizeRectToVerticalAspectRatioTestCases[] = {
@@ -163,6 +173,11 @@ const SizingParams kSizeRectToVerticalAspectRatioTestCases[] = {
     {ResizeEdge::kTop, kAspectRatioVertical, kMinSizeVertical, kMaxSizeVertical,
      Rect(100, 100, kMaxSizeVertical.width(), kMaxSizeVertical.height()),
      Rect(100, 100, kMaxSizeVertical.width(), kMaxSizeVertical.height())},
+
+    // Dragging the right resizer right.
+    // No max size specified.
+    {ResizeEdge::kRight, kAspectRatioVertical, kMinSizeVertical, absl::nullopt,
+     Rect(100, 100, 24, 44), Rect(100, 100, 24, 48)},
 };
 
 INSTANTIATE_TEST_SUITE_P(

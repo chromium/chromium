@@ -314,6 +314,14 @@ class BrowserView : public BrowserWindow,
   // a Picture in Picture window.
   bool GetIsPictureInPictureType() const;
 
+  // Returns the initial_aspect_ratio parameter from |browser_|'s CreateParams.
+  // Valid only for PictureInPicture browsers.
+  float GetInitialAspectRatio() const;
+
+  // Returns the lock_aspect_ratio parameter from |browser_|'s CreateParams.
+  // Valid only for PictureInPicture browsers.
+  bool GetLockAspectRatio() const;
+
   // Returns true if the top browser controls (a.k.a. top-chrome UIs) are
   // allowed to slide up and down with the gesture scrolls on the current tab's
   // page.

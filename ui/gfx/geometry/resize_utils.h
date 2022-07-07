@@ -5,6 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_RESIZE_UTILS_H_
 #define UI_GFX_GEOMETRY_RESIZE_UTILS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
@@ -28,12 +29,10 @@ enum class ResizeEdge {
 // |min_window_size| and |max_window_size| are expected to adhere to the
 // given aspect ratio.
 // |aspect_ratio| must be valid and is found using width / height.
-// TODO(apacible): |max_window_size| is expected to be non-empty. Handle
-// unconstrained max sizes and sizing when windows are maximized.
 void GEOMETRY_EXPORT SizeRectToAspectRatio(ResizeEdge resize_edge,
                                            float aspect_ratio,
                                            const Size& min_window_size,
-                                           const Size& max_window_size,
+                                           absl::optional<Size> max_window_size,
                                            Rect* rect);
 
 }  // namespace gfx

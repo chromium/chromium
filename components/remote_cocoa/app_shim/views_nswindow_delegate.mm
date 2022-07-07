@@ -119,10 +119,16 @@
 
   gfx::Rect resizedWindowRect(gfx::Point([window frame].origin),
                               gfx::Size(size));
+
+  absl::optional<gfx::Size> maxSizeParam;
+  gfx::Size maxSize([window maxSize]);
+  if (!maxSize.IsEmpty())
+    maxSizeParam = maxSize;
+
   gfx::SizeRectToAspectRatio(*_resizingHorizontally ? gfx::ResizeEdge::kRight
                                                     : gfx::ResizeEdge::kBottom,
                              *_aspectRatio, gfx::Size([window minSize]),
-                             gfx::Size([window maxSize]), &resizedWindowRect);
+                             maxSizeParam, &resizedWindowRect);
   // Discard any updates to |resizedWindowRect| origin as Cocoa takes care of
   // that.
   return resizedWindowRect.size().ToCGSize();

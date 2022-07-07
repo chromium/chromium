@@ -3017,7 +3017,13 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 
   creator_location_ = params.creator_location;
 
-  pip_initial_aspect_ratio_ = params.initial_picture_in_picture_aspect_ratio;
+  // An initial aspect ratio of 0.0 implies that the website did not set one and
+  // therefore we should use a default value. We will also use a default value
+  // if the website has given an invalid aspect ratio (i.e. a negative one).
+  pip_initial_aspect_ratio_ =
+      params.initial_picture_in_picture_aspect_ratio <= 0.0f
+          ? 1.0f
+          : params.initial_picture_in_picture_aspect_ratio;
 
   pip_lock_aspect_ratio_ = params.lock_picture_in_picture_aspect_ratio;
 

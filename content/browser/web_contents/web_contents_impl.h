@@ -2298,10 +2298,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Stores WebContents::CreateParams::creator_location_.
   base::Location creator_location_;
 
-  // Stores WebContents::CreateParams::initial_aspect_ratio.
-  float pip_initial_aspect_ratio_ = 0;
+  // The initial aspect ratio (only used for WebContents associated with a
+  // PictureInPicture window). This value is either the parameter given in
+  // WebContents::CreateParams::initial_picture_in_picture_aspect_ratio, or a
+  // default value if the given value is unset or invalid.
+  float pip_initial_aspect_ratio_ = 1.0f;
 
-  // Stores WebContents::CreateParams::lock_aspect_ratio.
+  // Stores WebContents::CreateParams::lock_picture_in_picture_aspect_ratio.
   bool pip_lock_aspect_ratio_ = false;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;

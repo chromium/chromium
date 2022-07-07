@@ -165,14 +165,15 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 gfx::Rect CalculateInitialPictureInPictureWindowBounds(
     float initial_aspect_ratio) {
+  DCHECK(initial_aspect_ratio > 0);
+
   // TODO(https://crbug.com/1327797): This copies a bunch of logic from
   // OverlayWindowViews. The sizing logic should be delegated to a PiP-specific
   // controller.
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   gfx::Rect window_bounds(work_area.width() / 5, work_area.height() / 5);
-  float aspect_ratio = (initial_aspect_ratio > 0) ? initial_aspect_ratio : 1.0;
-  gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, aspect_ratio,
+  gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, initial_aspect_ratio,
                              gfx::Size(0, 0), work_area.size(), &window_bounds);
 
   int window_diff_width = work_area.right() - window_bounds.width();
@@ -312,6 +313,11 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
               CalculateInitialPictureInPictureWindowBounds(
                   params.contents_to_insert
                       ->GetPictureInPictureInitialAspectRatio());
+          browser_params.initial_aspect_ratio =
+              params.contents_to_insert
+                  ->GetPictureInPictureInitialAspectRatio();
+          browser_params.lock_aspect_ratio =
+              params.contents_to_insert->GetPictureInPictureLockAspectRatio();
         }
 
         return {Browser::Create(browser_params), -1};

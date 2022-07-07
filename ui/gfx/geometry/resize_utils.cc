@@ -35,34 +35,47 @@ bool IsResizingHorizontally(ResizeEdge resize_edge) {
 void SizeRectToAspectRatio(ResizeEdge resize_edge,
                            float aspect_ratio,
                            const Size& min_window_size,
-                           const Size& max_window_size,
+                           absl::optional<Size> max_window_size,
                            Rect* rect) {
   DCHECK_GT(aspect_ratio, 0.0f);
-  DCHECK_GE(max_window_size.width(), min_window_size.width());
-  DCHECK_GE(max_window_size.height(), min_window_size.height());
+  if (max_window_size.has_value()) {
+    DCHECK_GE(max_window_size->width(), min_window_size.width());
+    DCHECK_GE(max_window_size->height(), min_window_size.height());
+    DCHECK(Rect(rect->origin(), *max_window_size).Contains(*rect))
+        << rect->ToString() << " is larger than the maximum size "
+        << max_window_size->ToString();
+  }
   DCHECK(rect->Contains(Rect(rect->origin(), min_window_size)))
       << rect->ToString() << " is smaller than the minimum size "
       << min_window_size.ToString();
-  DCHECK(Rect(rect->origin(), max_window_size).Contains(*rect))
-      << rect->ToString() << " is larger than the maximum size "
-      << max_window_size.ToString();
 
   Size new_size = rect->size();
   if (IsResizingHorizontally(resize_edge)) {
     new_size.set_height(base::ClampRound(new_size.width() / aspect_ratio));
     if (min_window_size.height() > new_size.height() ||
-        new_size.height() > max_window_size.height()) {
-      new_size.set_height(base::clamp(new_size.height(),
-                                      min_window_size.height(),
-                                      max_window_size.height()));
+        (max_window_size.has_value() &&
+         new_size.height() > max_window_size->height())) {
+      if (max_window_size.has_value()) {
+        new_size.set_height(base::clamp(new_size.height(),
+                                        min_window_size.height(),
+                                        max_window_size->height()));
+      } else {
+        new_size.set_height(min_window_size.height());
+      }
       new_size.set_width(base::ClampRound(new_size.height() * aspect_ratio));
     }
   } else {
     new_size.set_width(base::ClampRound(new_size.height() * aspect_ratio));
     if (min_window_size.width() > new_size.width() ||
-        new_size.width() > max_window_size.width()) {
-      new_size.set_width(base::clamp(new_size.width(), min_window_size.width(),
-                                     max_window_size.width()));
+        (max_window_size.has_value() &&
+         new_size.width() > max_window_size->width())) {
+      if (max_window_size.has_value()) {
+        new_size.set_width(base::clamp(new_size.width(),
+                                       min_window_size.width(),
+                                       max_window_size->width()));
+      } else {
+        new_size.set_width(min_window_size.width());
+      }
       new_size.set_height(base::ClampRound(new_size.width() / aspect_ratio));
     }
   }
@@ -70,7 +83,9 @@ void SizeRectToAspectRatio(ResizeEdge resize_edge,
   // The dimensions might still be outside of the allowed ranges at this point.
   // This happens when the aspect ratio makes it impossible to fit |rect|
   // within the size limits without letter-/pillarboxing.
-  new_size.SetToMin(max_window_size);
+  if (max_window_size.has_value())
+    new_size.SetToMin(*max_window_size);
+
   new_size.SetToMax(min_window_size);
 
   // |rect| bounds before sizing to aspect ratio.
