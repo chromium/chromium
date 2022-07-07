@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "base/containers/cxx20_erase.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
@@ -57,12 +58,11 @@ void UkmObserver::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {
           UkmEventHash::FromUnsafeValue(entry->event_hash));
   if (!metrics_for_event)
     return;
-  for (const auto& metric_and_value : entry->metrics) {
-    if (!metrics_for_event->count(
-            UkmMetricHash::FromUnsafeValue(metric_and_value.first))) {
-      entry->metrics.erase(metric_and_value);
-    }
-  }
+
+  base::EraseIf(entry->metrics, [&metrics_for_event](const auto& it) {
+    return !metrics_for_event->count(UkmMetricHash::FromUnsafeValue(it.first));
+  });
+
   ukm_data_manager_->OnEntryAdded(std::move(entry));
 }
 

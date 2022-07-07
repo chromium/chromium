@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/database/ukm_database_backend.h"
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
@@ -224,11 +225,13 @@ void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
     BindValuesToStatement(query.bind_values, statement);
 
     if (!statement.is_valid() || !statement.Step()) {
+      VLOG(1) << "Failed to run SQL query " << query.query;
       success = false;
       break;
     }
 
     float output = GetSingleFloatOutput(statement);
+    VLOG(1) << "Output from SQL query " << query.query << " Result: " << output;
     result[index].push_back(processing::ProcessedValue(output));
   }
   callback_task_runner_->PostTask(
