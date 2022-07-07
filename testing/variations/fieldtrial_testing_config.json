@@ -9339,6 +9339,7 @@
                         "intended_as_new_entry": "true",
                         "is_overriding_user_agent": "true",
                         "method": "true",
+                        "origin": "true",
                         "post_id": "true",
                         "should_update_history": "true",
                         "url_is_unreachable": "true"
