@@ -126,17 +126,22 @@ class PolicyGenerationTest(unittest.TestCase):
           "desc":
           "CloudManagementEnrollmentToken desc"
       }, {
-          "name": "DeprecatedButGenerated",
-          "type": "string",
+          "name":
+          "DeprecatedButGenerated",
+          "type":
+          "string",
           "schema": {
               "type": "string"
           },
           "supported_on": ["chrome_os:1-93", "android:1-93", "chrome.*:1-93"],
-          "id": 7,
+          "id":
+          7,
           "tags": [],
-          "caption": "DeprecatedButGenerated caption",
-          "desc": "DeprecatedButGenerated desc"
-      },  {
+          "caption":
+          "DeprecatedButGenerated caption",
+          "desc":
+          "DeprecatedButGenerated desc"
+      }, {
           "name": "DeprecatedNotGenerated",
           "type": "string",
           "schema": {

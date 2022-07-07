@@ -177,10 +177,13 @@ class PolicyWatcherTest : public testing::Test {
     third_party_auth_cert_empty_.MergeDictionary(&third_party_auth_partial_);
     third_party_auth_cert_empty_.SetStringKey(
         key::kRemoteAccessHostTokenValidationCertificateIssuer, "");
+
+#if BUILDFLAG(IS_WIN)
     remote_assistance_uiaccess_true_.SetBoolKey(
         key::kRemoteAccessHostAllowUiAccessForRemoteAssistance, true);
     remote_assistance_uiaccess_false_.SetBoolKey(
         key::kRemoteAccessHostAllowUiAccessForRemoteAssistance, false);
+#endif
 
     deprecated_policies_.SetStringKey(key::kRemoteAccessHostDomain,
                                       kHostDomain);
@@ -727,10 +730,6 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   expected_schema.erase(key::kRemoteAccessHostTokenUrl);
   expected_schema.erase(key::kRemoteAccessHostTokenValidationUrl);
   expected_schema.erase(key::kRemoteAccessHostTokenValidationCertificateIssuer);
-  expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
-#elif !BUILDFLAG(IS_WIN)
-  // RemoteAssistanceHostAllowUiAccess does not exist on non-Windows platforms.
-  expected_schema.erase(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
 #endif
 
   std::map<std::string, base::Value::Type> actual_schema;

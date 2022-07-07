@@ -113,7 +113,8 @@ class PolicyDetails:
       self.enterprise_default = policy['default_for_enterprise_users']
     if self.has_enterprise_default:
       self.default_policy_level = policy.get('default_policy_level', '')
-      if self.default_policy_level == 'recommended' and not self.can_be_recommended:
+      if (self.default_policy_level == 'recommended'
+          and not self.can_be_recommended):
         raise RuntimeError('Policy ' + self.name +
                            ' has default_policy_level set to ' +
                            self.default_policy_level + ', '
@@ -503,7 +504,7 @@ def _GetSupportedChromeUserPolicies(policies, protobuf_type):
 # Ensure only windows supported policies are returned when building for windows.
 # Eventually only supported policies on every platforms will be returned.
 def _GetSupportedPolicies(policies, target_platform):
-  if target_platform == 'win':
+  if target_platform in ['win', 'linux']:
     return [policy for policy in policies if policy.is_supported]
 
   return [

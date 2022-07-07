@@ -157,6 +157,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
 #endif
   }
 
+#if BUILDFLAG(IS_WIN)
   void SetUseIeSitelist(bool use_ie_sitelist) {
     policy::PolicyMap policies;
     EnableBrowserSwitcher(&policies);
@@ -165,6 +166,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
     provider_.UpdateChromePolicy(policies);
     base::RunLoop().RunUntilIdle();
   }
+#endif
 
   void SetExternalUrl(const std::string& url) {
     policy::PolicyMap policies;
