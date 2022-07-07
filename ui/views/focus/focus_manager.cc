@@ -489,31 +489,25 @@ View* FocusManager::FindFocusableView(FocusTraversable* focus_traversable,
                                       bool reverse) {
   FocusTraversable* new_focus_traversable = nullptr;
   View* new_starting_view = nullptr;
-  auto can_go_into_anchored_dialog =
+  const FocusSearch::AnchoredDialogPolicy can_go_into_anchored_dialog =
       FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog;
-  View* v = focus_traversable->GetFocusSearch()->FindNextFocusableView(
-      starting_view,
+  const FocusSearch::SearchDirection search_direction =
       reverse ? FocusSearch::SearchDirection::kBackwards
-              : FocusSearch::SearchDirection::kForwards,
-      FocusSearch::TraversalDirection::kDown,
-      FocusSearch::StartingViewPolicy::kSkipStartingView,
-      can_go_into_anchored_dialog, &new_focus_traversable, &new_starting_view);
+              : FocusSearch::SearchDirection::kForwards;
+  View* v = nullptr;
 
   // Let's go down the FocusTraversable tree as much as we can.
-  while (new_focus_traversable) {
-    DCHECK(!v);
-    focus_traversable = new_focus_traversable;
-    new_focus_traversable = nullptr;
-    starting_view = nullptr;
+  do {
     v = focus_traversable->GetFocusSearch()->FindNextFocusableView(
-        starting_view,
-        reverse ? FocusSearch::SearchDirection::kBackwards
-                : FocusSearch::SearchDirection::kForwards,
-        FocusSearch::TraversalDirection::kDown,
+        starting_view, search_direction, FocusSearch::TraversalDirection::kDown,
         FocusSearch::StartingViewPolicy::kSkipStartingView,
         can_go_into_anchored_dialog, &new_focus_traversable,
         &new_starting_view);
-  }
+    DCHECK(!new_focus_traversable || !v);
+    focus_traversable = std::exchange(new_focus_traversable, nullptr);
+    starting_view = nullptr;
+  } while (focus_traversable);
+
   return v;
 }
 
