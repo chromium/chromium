@@ -56,11 +56,11 @@ class DoctypeData {
   bool force_quirks_;
 };
 
-static inline Attribute* FindAttributeInVector(Vector<Attribute>& attributes,
+static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
                                                const QualifiedName& name) {
   for (unsigned i = 0; i < attributes.size(); ++i) {
-    if (attributes.at(i).GetName().Matches(name))
-      return &attributes.at(i);
+    if (attributes[i].GetName().Matches(name))
+      return &attributes[i];
   }
   return nullptr;
 }

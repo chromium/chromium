@@ -37,6 +37,9 @@ namespace blink {
 
 class ContainerNode;
 
+// NOTE: HTMLStackItem stores all of its attributes (if any) just after the end
+// of the pointer itself, to reduce on the number of Alloc/Free calls. (This
+// also saves a little bit of memory, as a side effect.)
 class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
  public:
   enum ItemType { kItemForContextElement, kItemForDocumentFragmentNode };
@@ -54,15 +57,42 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     }
   }
 
-  HTMLStackItem(
-      ContainerNode* node,
-      AtomicHTMLToken* token,
-      const AtomicString& namespace_uri = html_names::xhtmlNamespaceURI)
+  // You cannot call this constructor directly (but it must be public
+  // so that MakeGarbageCollected() can); use Create() below instead.
+  HTMLStackItem(base::PassKey<HTMLStackItem>,
+                ContainerNode* node,
+                AtomicHTMLToken* token,
+                const AtomicString& namespace_uri)
       : node_(node),
         token_local_name_(token->GetName()),
-        token_attributes_(token->Attributes()),
         namespace_uri_(namespace_uri),
-        is_document_fragment_node_(false) {}
+        num_token_attributes_(token->Attributes().size()),
+        is_document_fragment_node_(false) {
+    // We rely on Create() allocating extra memory past our end for the
+    // attributes.
+    for (wtf_size_t i = 0; i < token->Attributes().size(); ++i) {
+      new (TokenAttributesData() + i) Attribute(token->Attributes()[i]);
+    }
+  }
+
+  ~HTMLStackItem() {
+    // We need to clean up the attributes we initialized in the constructor
+    // manually, since they are not stored in a regular member.
+    if (num_token_attributes_ > 0) {
+      for (Attribute& attribute : Attributes()) {
+        attribute.~Attribute();
+      }
+    }
+  }
+
+  static HTMLStackItem* Create(
+      ContainerNode* node,
+      AtomicHTMLToken* token,
+      const AtomicString& namespace_uri = html_names::xhtmlNamespaceURI) {
+    return MakeGarbageCollected<HTMLStackItem>(
+        AdditionalBytes(token->Attributes().size() * sizeof(Attribute)),
+        base::PassKey<HTMLStackItem>(), node, token, namespace_uri);
+  }
 
   Element* GetElement() const { return To<Element>(node_.Get()); }
   ContainerNode* GetNode() const { return node_.Get(); }
@@ -73,13 +103,17 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   const AtomicString& NamespaceURI() const { return namespace_uri_; }
   const AtomicString& LocalName() const { return token_local_name_; }
 
-  const Vector<Attribute>& Attributes() const {
+  const base::span<Attribute> Attributes() {
     DCHECK(token_local_name_);
-    return token_attributes_;
+    return {TokenAttributesData(), num_token_attributes_};
+  }
+  const base::span<const Attribute> Attributes() const {
+    DCHECK(token_local_name_);
+    return {TokenAttributesData(), num_token_attributes_};
   }
   Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
     DCHECK(token_local_name_);
-    return FindAttributeInVector(token_attributes_, attribute_name);
+    return FindAttributeInVector(Attributes(), attribute_name);
   }
 
   bool HasLocalName(const AtomicString& name) const {
@@ -208,11 +242,23 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   void Trace(Visitor* visitor) const { visitor->Trace(node_); }
 
  private:
+  // The attributes are stored directly after the HTMLStackItem in memory
+  // (using Oilpan's AdditionalBytes system). Space for this is guaranteed
+  // by Create().
+  Attribute* TokenAttributesData() {
+    static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
+    return reinterpret_cast<Attribute*>(this + 1);
+  }
+  const Attribute* TokenAttributesData() const {
+    static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
+    return reinterpret_cast<const Attribute*>(this + 1);
+  }
+
   Member<ContainerNode> node_;
 
   AtomicString token_local_name_;
-  Vector<Attribute> token_attributes_;
   AtomicString namespace_uri_;
+  wtf_size_t num_token_attributes_ = 0;
   bool is_document_fragment_node_;
 };
 
