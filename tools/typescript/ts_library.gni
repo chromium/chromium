@@ -16,6 +16,7 @@ template("ts_library") {
                              "tsconfig_base",
                              "manifest_excludes",
                              "testonly",
+                             "visibility",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
