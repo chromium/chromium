@@ -99,7 +99,7 @@ UIView* FakeWebClient::GetWindowedContainer() {
 }
 
 UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
-                                                 const GURL& url) {
+                                                 const GURL& url) const {
   return default_user_agent_;
 }
 

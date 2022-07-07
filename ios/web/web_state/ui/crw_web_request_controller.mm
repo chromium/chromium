@@ -389,6 +389,14 @@ enum class BackForwardNavigationType {
       UMA_HISTOGRAM_MEDIUM_TIMES("PLT.iOS.BrowserInitiatedPageLoadTime2",
                                  context->GetElapsedTimeSinceCreation());
     }
+
+    // Use the Session Restoration User Agent as it is the only way to know if
+    // it is automatic or not.
+    if (self.webState->GetUserAgentForSessionRestoration() ==
+        web::UserAgentType::AUTOMATIC) {
+      web::GetWebClient()->LogDefaultUserAgent(self.webState,
+                                               context->GetUrl());
+    }
   }
 }
 

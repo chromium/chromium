@@ -174,7 +174,12 @@ class WebClient {
   // Returns the UserAgentType that should be used by default for the web
   // content, based on the |web_state|.
   virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,
-                                            const GURL& url);
+                                            const GURL& url) const;
+
+  // Logs the default mode used (Mobile or Desktop). This is supposed to be
+  // called only if the user didn't force the mode.
+  virtual void LogDefaultUserAgent(web::WebState* web_state,
+                                   const GURL& url) const;
 
   // Returns true if URL was restored via session restoration cache.
   virtual bool RestoreSessionFromCache(web::WebState* web_state) const;
