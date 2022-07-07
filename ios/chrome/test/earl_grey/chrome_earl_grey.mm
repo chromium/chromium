@@ -1397,8 +1397,15 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)verifyStringCopied:(NSString*)text {
   ConditionBlock condition = ^{
-    return !![[ChromeEarlGreyAppInterface pasteboardString]
-        containsString:text];
+    NSArray<NSString*>* pasteboardStrings =
+        [ChromeEarlGreyAppInterface pasteboardStrings];
+    for (NSString* paste in pasteboardStrings) {
+      if ([paste containsString:text]) {
+        return true;
+      }
+    }
+
+    return false;
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kWaitForActionTimeout,
                                                           condition),

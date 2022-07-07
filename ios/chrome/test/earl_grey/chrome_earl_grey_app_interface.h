@@ -609,9 +609,9 @@
 // Clears the URLs stored in the pasteboard, from the tested app's perspective.
 + (void)clearPasteboardURLs;
 
-// Retrieves the currently stored string on the pasteboard from the tested app's
-// perspective.
-+ (NSString*)pasteboardString;
+// Retrieves the currently stored strings on the pasteboard from the tested
+// app's perspective.
++ (NSArray<NSString*>*)pasteboardStrings;
 
 // Retrieves the currently stored URL on the pasteboard from the tested app's
 // perspective.

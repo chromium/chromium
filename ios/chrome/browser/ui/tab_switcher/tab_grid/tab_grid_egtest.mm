@@ -1443,28 +1443,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   NSString* URL1String = base::SysUTF8ToNSString(_URL1.spec());
   NSString* URL3String = base::SysUTF8ToNSString(_URL3.spec());
 
-  // Copying can take a while, wait for it to happen.
-  GREYCondition* copyCondition = [GREYCondition
-      conditionWithName:@"test text copied condition"
-                  block:^BOOL {
-                    NSArray<NSString*>* URLStrings =
-                        UIPasteboard.generalPasteboard.strings;
-                    if (URLStrings.count != 2) {
-                      return false;
-                    }
-
-                    // Strings may appear in either order.
-                    if (([URLStrings[0] isEqualToString:URL1String] &&
-                         [URLStrings[1] isEqualToString:URL3String]) ||
-                        ([URLStrings[0] isEqualToString:URL3String] &&
-                         [URLStrings[1] isEqualToString:URL1String])) {
-                      return true;
-                    }
-
-                    return false;
-                  }];
-  // Wait for copy to happen or timeout after 5 seconds.
-  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying URLs failed");
+  [ChromeEarlGrey verifyStringCopied:URL1String];
+  [ChromeEarlGrey verifyStringCopied:URL3String];
 }
 
 #pragma mark - Tab Grid Search

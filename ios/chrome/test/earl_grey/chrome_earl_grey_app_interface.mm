@@ -1230,8 +1230,8 @@ NSString* SerializedValue(const base::Value* value) {
   [[UIPasteboard generalPasteboard] setURLs:nil];
 }
 
-+ (NSString*)pasteboardString {
-  return [UIPasteboard generalPasteboard].string;
++ (NSArray<NSString*>*)pasteboardStrings {
+  return [UIPasteboard generalPasteboard].strings;
 }
 
 + (NSString*)pasteboardURLSpec {
