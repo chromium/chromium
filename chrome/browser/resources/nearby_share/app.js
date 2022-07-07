@@ -184,6 +184,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
    * @private
    */
   onClose_(event) {
+    // TODO(b/237796007): Handle the case of null |event.detail|
     const reason =
         event.detail.reason == null ? CloseReason.UNKNOWN : event.detail.reason;
     chrome.send('close', [reason]);

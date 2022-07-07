@@ -121,8 +121,8 @@ export class NearbyPageTemplateElement extends PolymerElement {
    * @private
    */
   fire_(eventName, detail) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+    this.dispatchEvent(new CustomEvent(
+        eventName, {bubbles: true, composed: true, detail: detail || {}}));
   }
 
   /** @private */

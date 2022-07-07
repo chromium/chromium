@@ -71,8 +71,11 @@ suite('nearby-page-template', function() {
 
     /** @type {boolean} */
     let cancelTriggered = false;
-    element.addEventListener(
-        element.cancelButtonEventName, () => cancelTriggered = true);
+    // Nearby Share app always expects |event.detail| to be defined
+    element.addEventListener(element.cancelButtonEventName, event => {
+      cancelTriggered = true;
+      assertTrue(!!event.detail);
+    });
     element.shadowRoot.querySelector('#cancelButton').click();
     assertTrue(cancelTriggered);
 
