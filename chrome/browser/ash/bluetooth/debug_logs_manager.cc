@@ -91,7 +91,7 @@ void DebugLogsManager::SendDBusVerboseLogsMessage(bool enable,
   uint8_t level = enable ? kVerboseBasicLevel : kVerboseDisabledLevel;
   VLOG(1) << (enable ? "Enabling" : "Disabling") << " bluetooth verbose logs";
 
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     VLOG(1) << "Floss does not yet support dynamic verbose logging.";
     return;
   }

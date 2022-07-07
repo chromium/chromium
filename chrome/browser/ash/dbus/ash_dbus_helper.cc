@@ -190,7 +190,7 @@ void InitializeFeatureListDependentDBus() {
   using chromeos::InitializeDBusClient;
 
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     InitializeDBusClient<floss::FlossDBusManager>(bus);
   } else {
     InitializeDBusClient<bluez::BluezDBusManager>(bus);
@@ -227,7 +227,7 @@ void ShutdownDBus() {
     CfmHotlineClient::Shutdown();
   }
 #endif
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     floss::FlossDBusManager::Shutdown();
   } else {
     bluez::BluezDBusManager::Shutdown();

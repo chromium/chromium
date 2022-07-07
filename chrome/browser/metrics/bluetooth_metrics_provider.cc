@@ -77,7 +77,7 @@ void BluetoothMetricsProvider::GetBluetoothAvailability() {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   bool is_initialized;
 
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     bluetooth_stack_name_ = BluetoothStackName::kFloss;
     is_initialized = floss::FlossDBusManager::IsInitialized();
   } else {

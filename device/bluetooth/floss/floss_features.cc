@@ -4,11 +4,27 @@
 
 #include "device/bluetooth/floss/floss_features.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 namespace floss {
 namespace features {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Floss client if supported by platform
 const base::Feature kFlossEnabled{"Floss", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+bool IsFlossEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(floss::features::kFlossEnabled);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserInitParams::Get()->use_floss_bluetooth;
+#else
+  return false;
+#endif
+}
 
 }  // namespace features
 }  // namespace floss

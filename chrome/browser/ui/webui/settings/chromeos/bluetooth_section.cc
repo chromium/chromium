@@ -162,7 +162,7 @@ BluetoothSection::BluetoothSection(Profile* profile,
       pref_service_(pref_service),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   bool is_initialized = false;
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     is_initialized = floss::FlossDBusManager::IsInitialized();
   } else {
     is_initialized = bluez::BluezDBusManager::IsInitialized();

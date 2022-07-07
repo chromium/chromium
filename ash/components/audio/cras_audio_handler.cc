@@ -1131,8 +1131,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   }
 
   // Sets Floss enabled based on feature flag.
-  CrasAudioClient::Get()->SetFlossEnabled(
-      base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
+  CrasAudioClient::Get()->SetFlossEnabled(floss::features::IsFlossEnabled());
 
   input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
   if (input_muted_by_microphone_mute_switch_)

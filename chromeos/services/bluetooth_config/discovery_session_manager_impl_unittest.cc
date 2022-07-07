@@ -579,7 +579,7 @@ TEST_F(DiscoverySessionManagerImplTest,
        AdapterDiscoveringStopsDuringPairing_Floss) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
-  EXPECT_TRUE(base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
+  EXPECT_TRUE(floss::features::IsFlossEnabled());
 
   std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate = StartDiscovery();
 

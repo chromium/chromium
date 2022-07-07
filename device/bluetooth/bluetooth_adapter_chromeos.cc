@@ -9,7 +9,7 @@
 namespace device {
 
 scoped_refptr<device::BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     return floss::BluetoothAdapterFloss::CreateAdapter();
   } else {
     return bluez::BluetoothAdapterBlueZ::CreateAdapter();

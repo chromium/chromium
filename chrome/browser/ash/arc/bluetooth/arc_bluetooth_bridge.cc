@@ -466,7 +466,7 @@ ArcBluetoothBridge::ArcBluetoothBridge(content::BrowserContext* context,
   arc_bridge_service_->app()->AddObserver(this);
   arc_bridge_service_->intent_helper()->AddObserver(this);
 
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     VLOG(1) << "Disabling ArcBluetoothBridge, Floss not yet supported.";
     return;
   }

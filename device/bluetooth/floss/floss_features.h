@@ -6,12 +6,19 @@
 #define DEVICE_BLUETOOTH_FLOSS_FLOSS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace floss {
 namespace features {
 
+// The feature is defined in Ash and propagated to Lacros over crosapi.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const DEVICE_BLUETOOTH_EXPORT base::Feature kFlossEnabled;
+#endif
+
+// A helper method that has the appropriate behavior on both Ash and Lacros.
+bool DEVICE_BLUETOOTH_EXPORT IsFlossEnabled();
 
 }  // namespace features
 }  // namespace floss

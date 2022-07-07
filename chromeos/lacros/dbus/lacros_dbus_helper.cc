@@ -38,7 +38,7 @@ void LacrosInitializeDBus() {
 
 void LacrosInitializeFeatureListDependentDBus() {
   dbus::Bus* bus = LacrosDBusThreadManager::Get()->GetSystemBus();
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     InitializeDBusClient<floss::FlossDBusManager>(bus);
   } else {
     InitializeDBusClient<bluez::BluezDBusManager>(bus);
@@ -47,7 +47,7 @@ void LacrosInitializeFeatureListDependentDBus() {
 
 void LacrosShutdownDBus() {
   // Shut down D-Bus clients in reverse order of initialization.
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+  if (floss::features::IsFlossEnabled()) {
     floss::FlossDBusManager::Shutdown();
   } else {
     bluez::BluezDBusManager::Shutdown();

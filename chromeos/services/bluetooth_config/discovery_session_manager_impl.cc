@@ -66,7 +66,7 @@ void DiscoverySessionManagerImpl::AdapterDiscoveringChanged(
   // discovery session since doing so will clear the pairing handler which is
   // still needed.
   // TODO(b/222230887): Decouple pairing handler from discovery session.
-  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled))
+  if (floss::features::IsFlossEnabled())
     return;
 
   DestroyDiscoverySession();

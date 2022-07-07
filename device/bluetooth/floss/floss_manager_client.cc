@@ -359,8 +359,8 @@ void FlossManagerClient::Init(dbus::Bus* bus,
   RegisterWithManager();
 
   // Enable Floss and retry a few times until it is set.
-  SetFlossEnabled(base::FeatureList::IsEnabled(floss::features::kFlossEnabled),
-                  kSetFlossRetryCount, kSetFlossRetryDelayMs,
+  SetFlossEnabled(floss::features::IsFlossEnabled(), kSetFlossRetryCount,
+                  kSetFlossRetryDelayMs,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
 }

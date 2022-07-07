@@ -29,8 +29,7 @@ void BluetoothLogSource::Fetch(SysLogsSourceCallback callback) {
   auto response = std::make_unique<SystemLogsResponse>();
   std::string json;
 
-  bluetooth_log.SetBoolKey(
-      kIsFloss, base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
+  bluetooth_log.SetBoolKey(kIsFloss, floss::features::IsFlossEnabled());
 
   base::JSONWriter::WriteWithOptions(
       bluetooth_log, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);

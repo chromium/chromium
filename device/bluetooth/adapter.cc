@@ -109,8 +109,7 @@ void Adapter::GetInfo(GetInfoCallback callback) {
   adapter_info->name = adapter_->GetName();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_info->system_name = adapter_->GetSystemName();
-  adapter_info->floss =
-      base::FeatureList::IsEnabled(floss::features::kFlossEnabled);
+  adapter_info->floss = floss::features::IsFlossEnabled();
 #endif
   adapter_info->initialized = adapter_->IsInitialized();
   adapter_info->present = adapter_->IsPresent();

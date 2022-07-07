@@ -118,6 +118,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -530,6 +531,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->ash_chrome_version = version_info::GetVersionNumber();
   params->use_cups_for_printing = GetUseCupsForPrinting();
+  params->use_floss_bluetooth = floss::features::IsFlossEnabled();
 
   return params;
 }
