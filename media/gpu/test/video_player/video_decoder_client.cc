@@ -64,7 +64,13 @@ VideoDecoderClient::VideoDecoderClient(
 VideoDecoderClient::~VideoDecoderClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
 
-  DestroyDecoder();
+  if (decoder_client_thread_.IsRunning()) {
+    base::WaitableEvent done;
+    decoder_client_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&VideoDecoderClient::DestroyDecoderTask,
+                                  weak_this_, &done));
+    done.Wait();
+  }
 
   // Wait until the renderer and frame processors are done before destroying
   // them. This needs to be done after destroying the decoder so no new frames
@@ -109,20 +115,6 @@ bool VideoDecoderClient::CreateDecoder() {
                                 weak_this_, &success, &done));
   done.Wait();
   return success;
-}
-
-void VideoDecoderClient::DestroyDecoder() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
-
-  if (!decoder_client_thread_.IsRunning()) {
-    return;
-  }
-
-  base::WaitableEvent done;
-  decoder_client_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoDecoderClient::DestroyDecoderTask,
-                                weak_this_, &done));
-  done.Wait();
 }
 
 bool VideoDecoderClient::WaitForFrameProcessors() {

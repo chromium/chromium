@@ -49,9 +49,7 @@ struct VideoDecoderClientConfig {
 // The video decoder client is responsible for the communication between the
 // video player and the video decoder. It also communicates with the frame
 // renderer and other components. The video decoder client can only have one
-// active decoder at any time. To decode a different stream the DestroyDecoder()
-// and CreateDecoder() functions have to be called to destroy and re-create the
-// decoder.
+// active decoder at any time.
 //
 // All communication with the decoder is done on the |decoder_client_thread_|,
 // so callbacks scheduled by the decoder can be executed asynchronously. This is
@@ -112,13 +110,11 @@ class VideoDecoderClient {
 
   // Create a new decoder, returns whether creating was successful.
   bool CreateDecoder();
-  // Destroy the currently active decoder.
-  void DestroyDecoder();
-
   // Create a new video |decoder_| on the |decoder_client_thread_|.
   void CreateDecoderTask(bool* success, base::WaitableEvent* done);
   // Destroy the active video |decoder_| on the |decoder_client_thread_|.
   void DestroyDecoderTask(base::WaitableEvent* done);
+
   // Initialize the video |decoder_| with |video| on the
   // |decoder_client_thread_|.
   void InitializeDecoderTask(const Video* video, base::WaitableEvent* done);
