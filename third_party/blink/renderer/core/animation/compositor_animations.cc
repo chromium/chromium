@@ -339,7 +339,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // like regular filters do, so they can still be composited.
           break;
         case CSSPropertyID::kBackgroundColor:
-        case CSSPropertyID::kBoxShadow: {
+        case CSSPropertyID::kBoxShadow:
+        case CSSPropertyID::kClipPath: {
           NativePaintImageGenerator* generator = nullptr;
           // Not having a layout object is a reason for not compositing marked
           // in CompositorAnimations::CheckCanStartElementOnCompositor.
@@ -359,6 +360,13 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
             generator = target_element.GetDocument()
                             .GetFrame()
                             ->GetBoxShadowPaintImageGenerator();
+          } else if (property.GetCSSProperty().PropertyID() ==
+                         CSSPropertyID::kClipPath &&
+                     RuntimeEnabledFeatures::
+                         CompositeClipPathAnimationEnabled()) {
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetClipPathPaintImageGenerator();
           }
           Animation* compositable_animation = nullptr;
 
@@ -369,27 +377,6 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           }
 
           if (!compositable_animation) {
-            DefaultToUnsupportedProperty(unsupported_properties, property,
-                                         &reasons);
-          }
-          break;
-        }
-        case CSSPropertyID::kClipPath: {
-          Animation* compositable_animation = nullptr;
-          if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
-            ClipPathPaintImageGenerator* generator =
-                target_element.GetDocument()
-                    .GetFrame()
-                    ->GetClipPathPaintImageGenerator();
-            // TODO(crbug.com/686074): The generator may be null in tests.
-            // Fix and remove this test-only branch.
-            if (generator) {
-              compositable_animation =
-                  generator->GetAnimationIfCompositable(&target_element);
-            }
-          }
-          if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() ||
-              !compositable_animation) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }
