@@ -18,6 +18,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       bodyText: '',
       cancelButtonLabel: '',
       confirmButtonLabel: '',
+      managedDisclaimerText: '',
       showGuestOption: false,
       headerTextColor: '',
       interceptedProfileColor: '',
@@ -25,6 +26,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       interceptedAccount: {isManaged: false, pictureUrl: ''},
       primaryAccount: {isManaged: false, pictureUrl: ''},
       useV2Design: false,
+      showManagedDisclaimer: false,
     };
   }
 

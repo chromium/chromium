@@ -248,6 +248,10 @@ extern const char kSyncGoogleDashboardURL[];
 // The URL for the "Learn more" page for sync setup on the personal stuff page.
 extern const char kSyncLearnMoreURL[];
 
+// The URL for the "Learn more" link in the enterprise disclaimer for managed
+// profile in the Signin Intercept bubble.
+extern const char kSigninInterceptManagedDisclaimerLearnMoreURL[];
+
 #if !BUILDFLAG(IS_ANDROID)
 // The URL for the trusted vault sync passphrase opt in.
 extern const char kSyncTrustedVaultOptInURL[];

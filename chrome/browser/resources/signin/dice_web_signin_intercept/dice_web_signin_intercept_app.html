@@ -132,7 +132,32 @@
   }
 
   #contents {
+    margin: 0 0 8px;
     overflow-wrap: break-word;  /** For very long names and emails */
+  }
+
+  #managedDisclaimer {
+    align-items: center;
+    background: var(--google-grey-50);
+    border-radius: 8px;
+    color: var(--google-grey-700);
+    display: flex;
+    flex-direction: row;
+    font-size: 12px;
+    font-weight: 400;
+    justify-content: flex-start;
+    line-height: 16px;
+    margin: 0 0 16px;
+    padding: 10px 12px;
+  }
+
+  #managedDisclaimerIcon {
+    margin-inline-end: 12px;
+  }
+
+  #managedDisclaimerIcon > iron-icon {
+    height: 16px;
+    width: 16px;
   }
 
   #actionRow {
@@ -162,6 +187,11 @@
   @media (prefers-color-scheme: dark) {
     #interceptDialog [slot=footer] {
       background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+    }
+
+    #managedDisclaimer {
+      background: var(--google-grey-800);
+      color: var(--google-grey-100);
     }
   }
 
@@ -222,6 +252,17 @@
   <div id="body">
     <div id="title">[[interceptionParameters_.bodyTitle]]</div>
     <div id="contents">[[interceptionParameters_.bodyText]]</div>
+    <template is="dom-if"
+        if="[[interceptionParameters_.showManagedDisclaimer]]">
+      <div id="managedDisclaimer">
+        <div id="managedDisclaimerIcon">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
+        <div id="managedDisclaimerText"
+            inner-h-t-m-l="[[interceptionParameters_.managedDisclaimerText]]">
+        </div>
+      </div>
+    </template>
   </div>
 
   <div id="actionRow">

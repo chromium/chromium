@@ -36,6 +36,7 @@
 namespace {
 constexpr int kInterceptionBubbleWithoutGuestHeight = 326;
 constexpr int kInterceptionBubbleGuestFooterHeight = 36;
+constexpr int kInterceptionBubbleManagedDisclaimerHeight = 52;
 constexpr int kInterceptionBubbleExtraTextHeight = 30;
 constexpr int kInterceptionBubbleWidth = 290;
 
@@ -173,6 +174,11 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
     // The kMultiUser bubble has a longer text, increase the height a bit.
     // TODO: Dynamically compute the right size based on the text length.
     height += kInterceptionBubbleExtraTextHeight;
+  }
+  if (bubble_parameters.show_managed_disclaimer) {
+    // Increase the height to display an entreprise disclaimer for managed
+    // profile.
+    height += kInterceptionBubbleManagedDisclaimerHeight;
   }
   web_view->SetPreferredSize(gfx::Size(kInterceptionBubbleWidth, height));
   DiceWebSigninInterceptUI* web_ui = web_view->GetWebContents()

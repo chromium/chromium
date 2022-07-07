@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -17,10 +19,14 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -179,6 +185,7 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
   parameters.SetStringKey("bodyText", GetBodyText());
   parameters.SetStringKey("confirmButtonLabel", GetConfirmButtonLabel());
   parameters.SetStringKey("cancelButtonLabel", GetCancelButtonLabel());
+  parameters.SetStringKey("managedDisclaimerText", GetManagedDisclaimerText());
   parameters.SetBoolKey("showGuestOption",
                         bubble_parameters_.show_guest_option);
   parameters.SetKey("interceptedAccount",
@@ -192,6 +199,8 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
       color_utils::SkColorToRgbaString(
           GetProfileHighlightColor(Profile::FromWebUI(web_ui()))));
   parameters.SetBoolKey("useV2Design", GetShouldUseV2Design());
+  parameters.SetBoolKey("showManagedDisclaimer",
+                        bubble_parameters_.show_managed_disclaimer);
 
   parameters.SetStringKey(
       "headerTextColor",
@@ -311,6 +320,29 @@ std::string DiceWebSigninInterceptHandler::GetCancelButtonLabel() {
               DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch
           ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL
           : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL);
+}
+
+std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
+  std::string learn_more_url =
+      google_util::AppendGoogleLocaleParam(
+          GURL(chrome::kSigninInterceptManagedDisclaimerLearnMoreURL),
+          g_browser_process->GetApplicationLocale())
+          .spec();
+  std::string manager_domain = intercepted_account().IsManaged()
+                                   ? intercepted_account().hosted_domain
+                                   : std::string();
+  if (manager_domain.empty())
+    manager_domain = chrome::GetDeviceManagerIdentity().value_or(std::string());
+
+  if (manager_domain.empty()) {
+    return l10n_util::GetStringFUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_MANAGED_DISCLAIMER,
+        base::ASCIIToUTF16(learn_more_url));
+  }
+
+  return l10n_util::GetStringFUTF8(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_MANAGED_BY_DISCLAIMER,
+      base::ASCIIToUTF16(manager_domain), base::ASCIIToUTF16(learn_more_url));
 }
 
 bool DiceWebSigninInterceptHandler::GetShouldUseV2Design() {

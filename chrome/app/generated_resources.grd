@@ -9694,6 +9694,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2" desc="Title of the web signin interception bubble. 'Separate' is an action verb. The prompt is shown to let the user choose to keep the browsing activity for a new account in the same profile as an existing one or to move it to a new profile.">
           Separate your browsing?
         </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_MANAGED_DISCLAIMER" desc="Enterprise disclaimer for a managed account in the signin interception bubble.">
+          This new profile will be managed by your organization. <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>https://help.google.com/articleLink</ex></ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_MANAGED_BY_DISCLAIMER" desc="Enterprise disclaimer for a managed account in the signin interception bubble, with the manager domain name.">
+          This new profile will be managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. <ph name="BEGIN_LINK">&lt;a href="$2" target=&quot;_blank&quot;&gt;<ex>https://help.google.com/articleLink</ex></ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
       </if>
 
       <if expr="not chromeos_ash and not is_android">

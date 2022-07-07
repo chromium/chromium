@@ -22,6 +22,7 @@ const BASE_PARAMETERS: InterceptionParameters = {
   bodyText: 'body_text',
   confirmButtonLabel: 'confirm_label',
   cancelButtonLabel: 'cancel_label',
+  managedDisclaimerText: 'managed_disclaimer',
   showGuestOption: true,
   headerTextColor: 'rgba(255, 255, 255, 1)',
   interceptedProfileColor: 'rgba(255, 0, 0, 1)',
@@ -29,6 +30,7 @@ const BASE_PARAMETERS: InterceptionParameters = {
   interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
   primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},
   useV2Design: false,
+  showManagedDisclaimer: false,
 };
 
 function fireParametersChanged(parameters: InterceptionParameters) {

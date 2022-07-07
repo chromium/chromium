@@ -64,6 +64,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   std::string GetBodyText();
   std::string GetConfirmButtonLabel();
   std::string GetCancelButtonLabel();
+  std::string GetManagedDisclaimerText();
   bool GetShouldUseV2Design();
 
   base::ScopedObservation<signin::IdentityManager,

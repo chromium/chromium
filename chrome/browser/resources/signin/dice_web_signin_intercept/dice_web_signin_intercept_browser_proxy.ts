@@ -20,6 +20,7 @@ export type InterceptionParameters = {
   bodyText: string,
   confirmButtonLabel: string,
   cancelButtonLabel: string,
+  managedDisclaimerText: string,
   headerTextColor: string,
   interceptedProfileColor: string,
   primaryProfileColor: string,
@@ -27,6 +28,7 @@ export type InterceptionParameters = {
   primaryAccount: AccountInfo,
   showGuestOption: boolean,
   useV2Design: boolean,
+  showManagedDisclaimer: boolean,
 };
 
 export interface DiceWebSigninInterceptBrowserProxy {

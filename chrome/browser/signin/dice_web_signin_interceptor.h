@@ -171,7 +171,8 @@ class DiceWebSigninInterceptor : public KeyedService,
                        AccountInfo primary_account,
                        SkColor profile_highlight_color = SkColor(),
                        bool show_guest_option = false,
-                       bool show_link_data_option = false);
+                       bool show_link_data_option = false,
+                       bool show_managed_disclaimer = false);
 
       BubbleParameters(const BubbleParameters& copy);
       BubbleParameters& operator=(const BubbleParameters&);
@@ -183,6 +184,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       SkColor profile_highlight_color;
       bool show_guest_option;
       bool show_link_data_option;
+      bool show_managed_disclaimer;
     };
 
     virtual ~Delegate() = default;
