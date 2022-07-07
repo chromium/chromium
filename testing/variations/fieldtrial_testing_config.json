@@ -10102,9 +10102,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "ChromeWhatsNewUIFeedbackButton": "true"
-                    },
                     "enable_features": [
                         "ChromeWhatsNewUI"
                     ]
