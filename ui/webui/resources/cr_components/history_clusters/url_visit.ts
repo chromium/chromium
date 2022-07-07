@@ -158,6 +158,17 @@ class VisitRowElement extends MenuContainerElementBase {
     this.openUrl_(event);
   }
 
+  private onContextMenu_(event: MouseEvent) {
+    // Because WebUI has a Blink-provided context menu that's suitable, and
+    // Side Panel always UIs always have a custom context menu.
+    if (!loadTimeData.getBoolean('inSidePanel')) {
+      return;
+    }
+
+    BrowserProxyImpl.getInstance().handler.showContextMenuForURL(
+        this.visit.normalizedUrl, {x: event.clientX, y: event.clientY});
+  }
+
   private onKeydown_(e: KeyboardEvent) {
     // To be consistent with <history-list>, only handle Enter, and not Space.
     if (e.key !== 'Enter') {

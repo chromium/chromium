@@ -6,6 +6,7 @@ module history_clusters.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a search query related to a visit to the search results page.
@@ -166,6 +167,9 @@ interface PageHandler {
 
   // The ClustersBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
+
+  // Shows a context menu for a history cluster item.
+  ShowContextMenuForURL(url.mojom.Url url, gfx.mojom.Point point);
 
   // Notify the backend that the side panel UI is ready to be shown.
   ShowSidePanelUI();

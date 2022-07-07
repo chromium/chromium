@@ -23,6 +23,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "chrome://resources/cr_components/history_clusters/"

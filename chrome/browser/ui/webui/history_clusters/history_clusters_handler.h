@@ -84,6 +84,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void RecordClusterAction(mojom::ClusterAction cluster_action,
                            uint32_t cluster_index) override;
   void RecordToggledVisibility(bool visible) override;
+  void ShowContextMenuForURL(const GURL& url, const gfx::Point& point) override;
 
   // HistoryClustersService::Observer:
   void OnDebugMessage(const std::string& message) override;

@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -37,10 +38,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
@@ -50,6 +54,66 @@
 namespace history_clusters {
 
 namespace {
+
+class HistoryClustersSidePanelContextMenu
+    : public ui::SimpleMenuModel,
+      public ui::SimpleMenuModel::Delegate {
+ public:
+  HistoryClustersSidePanelContextMenu(Browser* browser, GURL url)
+      : ui::SimpleMenuModel(this), browser_(browser), url_(url) {
+    AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                        IDS_HISTORY_CLUSTERS_OPEN_IN_NEW_TAB);
+    AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                        IDS_HISTORY_CLUSTERS_OPEN_IN_NEW_WINDOW);
+    AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                        IDS_HISTORY_CLUSTERS_OPEN_INCOGNITO);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                        IDS_HISTORY_CLUSTERS_COPY_LINK);
+  }
+  ~HistoryClustersSidePanelContextMenu() override = default;
+
+  void ExecuteCommand(int command_id, int event_flags) override {
+    switch (command_id) {
+      case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
+        content::OpenURLParams params(url_, content::Referrer(),
+                                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+        browser_->OpenURL(params);
+        break;
+      }
+
+      case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: {
+        content::OpenURLParams params(url_, content::Referrer(),
+                                      WindowOpenDisposition::NEW_WINDOW,
+                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+        browser_->OpenURL(params);
+        break;
+      }
+
+      case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
+        content::OpenURLParams params(url_, content::Referrer(),
+                                      WindowOpenDisposition::OFF_THE_RECORD,
+                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+        browser_->OpenURL(params);
+        break;
+      }
+      case IDC_CONTENT_CONTEXT_COPYLINKLOCATION: {
+        ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+        scw.WriteText(base::UTF8ToUTF16(url_.spec()));
+        break;
+      }
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+ private:
+  const raw_ptr<Browser> browser_;
+  GURL url_;
+};
 
 // Creates a `mojom::VisitPtr` from a `history_clusters::Visit`.
 mojom::URLVisitPtr VisitToMojom(Profile* profile,
@@ -480,6 +544,16 @@ void HistoryClustersHandler::RecordToggledVisibility(bool visible) {
   HistoryClustersMetricsLogger::GetOrCreateForPage(
       web_contents_->GetPrimaryPage())
       ->RecordToggledVisibility(visible);
+}
+
+void HistoryClustersHandler::ShowContextMenuForURL(const GURL& url,
+                                                   const gfx::Point& point) {
+  Browser* browser = chrome::FindLastActive();
+  if (history_clusters_side_panel_embedder_) {
+    history_clusters_side_panel_embedder_->ShowContextMenu(
+        point,
+        std::make_unique<HistoryClustersSidePanelContextMenu>(browser, url));
+  }
 }
 
 }  // namespace history_clusters
