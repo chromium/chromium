@@ -136,7 +136,8 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
+// TODO(crbug.com/1341434): Re-enable this test
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
@@ -177,8 +178,7 @@ class SigninPolicyPrefsTest : public PolicyPrefsTest {
   }
 };
 
-// TODO(crbug.com/1341434): Re-enable this test
-IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
+IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
   PrefService* signin_profile_prefs =
       ash::ProfileHelper::GetSigninProfile()->GetPrefs();
 
