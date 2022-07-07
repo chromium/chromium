@@ -788,8 +788,15 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 }
 
+// TODO(crbug.com/1342625): Test is flaky.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckNameUpdatesForDefaultApps \
+  DISABLED_CheckNameUpdatesForDefaultApps
+#else
+#define MAYBE_CheckNameUpdatesForDefaultApps CheckNameUpdatesForDefaultApps
+#endif
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckNameUpdatesForDefaultApps) {
+                       MAYBE_CheckNameUpdatesForDefaultApps) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "$1",
@@ -1283,8 +1290,16 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
             http_server_.GetURL("/"));
 }
 
+// TODO(crbug.com/1342625): Test is flaky.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckDoesApplyIconURLChangeForDefaultApps \
+  DISABLED_CheckDoesApplyIconURLChangeForDefaultApps
+#else
+#define MAYBE_CheckDoesApplyIconURLChangeForDefaultApps \
+  CheckDoesApplyIconURLChangeForDefaultApps
+#endif
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckDoesApplyIconURLChangeForDefaultApps) {
+                       MAYBE_CheckDoesApplyIconURLChangeForDefaultApps) {
   // This test changes the scope and also the icon list. The scope should update
   // along with the icons.
   constexpr char kManifestTemplate[] = R"(
