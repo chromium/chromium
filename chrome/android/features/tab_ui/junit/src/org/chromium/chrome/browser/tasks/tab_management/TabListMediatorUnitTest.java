@@ -2315,11 +2315,9 @@ public class TabListMediatorUnitTest {
         assertThat(showQuickly, equalTo(true));
 
         // Create a PropertyModel that is not a tab and add it to the existing TabListModel.
-        PropertyModel propertyModel = new PropertyModel.Builder(NewTabTileViewProperties.ALL_KEYS)
-                                              .with(CARD_TYPE, OTHERS)
-                                              .build();
-        mMediator.addSpecialItemToModel(
-                mModel.size(), TabProperties.UiType.NEW_TAB_TILE, propertyModel);
+        PropertyModel propertyModel = mock(PropertyModel.class);
+        when(propertyModel.get(CARD_TYPE)).thenReturn(OTHERS);
+        mMediator.addSpecialItemToModel(mModel.size(), TabProperties.UiType.MESSAGE, propertyModel);
         assertThat(mModel.size(), equalTo(tabs.size() + 1));
 
         // TabListModel unchange check should ignore the non-Tab item.

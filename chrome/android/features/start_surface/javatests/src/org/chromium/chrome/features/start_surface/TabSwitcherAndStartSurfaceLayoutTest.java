@@ -1068,29 +1068,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     }
 
     @Test
-    @MediumTest
-    @Feature("NewTabTile")
-    // clang-format off
-    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION,
-            ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
-    @CommandLineFlags.Add({BASE_PARAMS + "/tab_grid_layout_android_new_tab_tile/false"
-            + "/tab_grid_layout_android_new_tab/false"})
-    public void testNewTabTile_Disabled() throws InterruptedException {
-        // clang-format on
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(2, 0, null);
-
-        enterGTSWithThumbnailChecking();
-
-        onView(withId(R.id.new_tab_tile)).check(doesNotExist());
-        verifyTabSwitcherCardCount(cta, 2);
-
-        switchTabModel(cta, true);
-        onView(withId(R.id.new_tab_tile)).check(doesNotExist());
-        verifyTabSwitcherCardCount(cta, 0);
-    }
-
-    @Test
     @LargeTest
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",

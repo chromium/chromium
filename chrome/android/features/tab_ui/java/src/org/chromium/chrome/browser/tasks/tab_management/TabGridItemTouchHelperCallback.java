@@ -108,13 +108,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         final int dragFlags = viewHolder.getItemViewType() == TabProperties.UiType.MESSAGE
-                        || viewHolder.getItemViewType() == TabProperties.UiType.NEW_TAB_TILE
                         || viewHolder.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
                 ? 0
                 : mDragFlags;
-        final int swipeFlags = viewHolder.getItemViewType() == TabProperties.UiType.NEW_TAB_TILE
-                ? 0
-                : ItemTouchHelper.START | ItemTouchHelper.END;
+        final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         mRecyclerView = recyclerView;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
@@ -123,7 +120,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     public boolean canDropOver(@NonNull RecyclerView recyclerView,
             @NonNull RecyclerView.ViewHolder current, @NonNull RecyclerView.ViewHolder target) {
         if (target.getItemViewType() == TabProperties.UiType.MESSAGE
-                || target.getItemViewType() == TabProperties.UiType.NEW_TAB_TILE
                 || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE) {
             return false;
         }

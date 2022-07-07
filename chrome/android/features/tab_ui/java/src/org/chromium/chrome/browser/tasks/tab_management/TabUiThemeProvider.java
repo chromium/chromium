@@ -156,20 +156,6 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Returns the {@link ColorStateList} to use for the plus sign in new tab tile based on the
-     * incognito mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The {@link ColorStateList} for new tab tile plus sign color.
-     */
-    public static ColorStateList getNewTabTilePlusTintList(Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.new_tab_tile_plus_color_incognito
-                            : R.color.new_tab_tile_plus_color);
-    }
-
-    /**
      * Returns the divider color for tab grid card based on the incognito mode.
      *
      * @param context {@link Context} used to retrieve color.

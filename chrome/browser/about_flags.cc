@@ -1876,9 +1876,6 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_NewTabVariation[] = {
     {"tab_grid_layout_android_new_tab", "NewTabVariation"},
     {"allow_to_refetch", "true"}};
 
-const FeatureEntry::FeatureParam kTabGridLayoutAndroid_NewTabTile[] = {
-    {"tab_grid_layout_android_new_tab_tile", "NewTabTile"}};
-
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TallNTV[] = {
     {"thumbnail_aspect_ratio", "0.85"},
     {"allow_to_refetch", "true"},
@@ -1901,8 +1898,6 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TabGroupAutoCreation[] =
 const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
     {"New Tab Variation", kTabGridLayoutAndroid_NewTabVariation,
      std::size(kTabGridLayoutAndroid_NewTabVariation), nullptr},
-    {"New Tab Tile", kTabGridLayoutAndroid_NewTabTile,
-     std::size(kTabGridLayoutAndroid_NewTabTile), nullptr},
     {"Tall NTV", kTabGridLayoutAndroid_TallNTV,
      std::size(kTabGridLayoutAndroid_TallNTV), nullptr},
     {"Search term chip", kTabGridLayoutAndroid_SearchChip,

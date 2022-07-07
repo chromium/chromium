@@ -16,11 +16,6 @@
     <color name="favicon_background_color">@color/default_bg_color_secondary</color>
     <color name="favicon_background_color_incognito">@color/black_alpha_38</color>
 
-    <color name="hovered_tab_grid_card_background_color">@color/default_bg_color_secondary</color>
-
-    <color name="new_tab_tile_plus_color">@color/default_icon_color_secondary_tint_list</color>
-    <color name="new_tab_tile_plus_color_incognito">@color/default_icon_color_secondary_light</color>
-
     <!-- Incognito colors for theme refactor 2021. -->
     <!-- TODO(https://crbug.com/1223976): Use semantic colors for incognito. -->
     <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_200</color>

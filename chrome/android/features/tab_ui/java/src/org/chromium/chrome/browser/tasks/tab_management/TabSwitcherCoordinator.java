@@ -126,7 +126,6 @@ public class TabSwitcherCoordinator
     @Nullable
     private TabGroupManualSelectionMode mTabGroupManualSelectionMode;
     private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
-    private NewTabTileCoordinator mNewTabTileCoordinator;
     private TabAttributeCache mTabAttributeCache;
     private ViewGroup mContainer;
     private TabCreatorManager mTabCreatorManager;
@@ -322,12 +321,6 @@ public class TabSwitcherCoordinator
                             MessageCardViewBinder::bind);
                 }
 
-                if (TabUiFeatureUtilities.isTabGridLayoutAndroidNewTabTileEnabled()) {
-                    mTabListCoordinator.registerItemType(TabProperties.UiType.NEW_TAB_TILE,
-                            new LayoutViewBuilder(R.layout.new_tab_tile_card_item),
-                            NewTabTileViewBinder::bind);
-                }
-
                 if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
                     mTabListCoordinator.registerItemType(TabProperties.UiType.LARGE_MESSAGE,
                             new LayoutViewBuilder(R.layout.large_message_card_item),
@@ -425,11 +418,6 @@ public class TabSwitcherCoordinator
                     mTabSuggestionsOrchestrator.addObserver(tabSuggestionMessageService);
                     mMessageCardProviderCoordinator.subscribeMessageService(
                             tabSuggestionMessageService);
-                }
-
-                if (TabUiFeatureUtilities.isTabGridLayoutAndroidNewTabTileEnabled()) {
-                    mNewTabTileCoordinator =
-                            new NewTabTileCoordinator(mTabModelSelector, mTabCreatorManager);
                 }
 
                 if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
@@ -626,23 +614,14 @@ public class TabSwitcherCoordinator
         }
         boolean showQuickly = mTabListCoordinator.resetWithListOfTabs(tabs, quickMode, mruMode);
         if (showQuickly) {
-            mTabListCoordinator.removeSpecialListItem(TabProperties.UiType.NEW_TAB_TILE, 0);
             removeAllAppendedMessage();
         }
-
-        int cardsCount = tabs == null ? 0 : tabs.size();
-        if (tabs != null && mNewTabTileCoordinator != null) {
-            mTabListCoordinator.addSpecialListItem(tabs.size(), TabProperties.UiType.NEW_TAB_TILE,
-                    mNewTabTileCoordinator.getModel());
-            cardsCount += 1;
-        }
-
         if (tabs != null && tabs.size() > 0) {
             if (mPriceMessageService != null
                     && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled()) {
                 mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
             }
-            appendMessagesTo(cardsCount);
+            appendMessagesTo(tabs.size());
         }
 
         return showQuickly;
@@ -781,9 +760,6 @@ public class TabSwitcherCoordinator
         }
         if (mTabGridIphDialogCoordinator != null) {
             mTabGridIphDialogCoordinator.destroy();
-        }
-        if (mNewTabTileCoordinator != null) {
-            mNewTabTileCoordinator.destroy();
         }
         mMultiThumbnailCardProvider.destroy();
         if (mTabSelectionEditorCoordinator != null) {

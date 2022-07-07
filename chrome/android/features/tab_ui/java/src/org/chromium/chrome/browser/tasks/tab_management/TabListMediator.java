@@ -1818,8 +1818,6 @@ class TabListMediator {
                 return;
             }
             index = mModel.lastIndexForMessageItemFromType(itemIdentifier);
-        } else if (uiType == UiType.NEW_TAB_TILE) {
-            index = mModel.getIndexForNewTabTile();
         }
 
         if (index == TabModel.INVALID_TAB_INDEX) return;
@@ -1832,8 +1830,6 @@ class TabListMediator {
         if (uiType == UiType.MESSAGE || uiType == UiType.LARGE_MESSAGE) {
             return mModel.get(index).type == uiType
                     && mModel.get(index).model.get(MESSAGE_TYPE) == itemIdentifier;
-        } else if (uiType == UiType.NEW_TAB_TILE) {
-            return mModel.get(index).type == uiType;
         }
 
         return false;
