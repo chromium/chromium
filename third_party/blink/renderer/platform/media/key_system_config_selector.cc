@@ -624,10 +624,6 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // for cross-origin frames. We do not do this on Android because there is no
   // CDM selection available to Chrome that doesn't require a distinct
   // identifier.
-  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
-  // so we should use IsCrossOriginToOutermostMainFrame when we intend to check
-  // if any embedded frame (eg, iframe or fenced frame) is cross-origin with
-  // respect to the outermost main frame. Follow up to confirm correctness.
   if (web_frame_delegate_->IsCrossOriginToOutermostMainFrame()) {
     if (distinctive_identifier_support == EmeFeatureSupport::ALWAYS_ENABLED)
       return CONFIGURATION_NOT_SUPPORTED;
