@@ -35013,6 +35013,7 @@ Called by update_extension_histograms.py.-->
   <int value="1679" label="FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS"/>
   <int value="1680" label="PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE"/>
   <int value="1681" label="OFFSCREEN_CREATEDOCUMENT"/>
+  <int value="1682" label="PASSWORDSPRIVATE_REFRESHSCRIPTSIFNECESSARY"/>
 </enum>
 
 <enum name="ExtensionIconState">

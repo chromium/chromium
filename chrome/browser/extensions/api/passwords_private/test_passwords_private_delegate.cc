@@ -298,6 +298,11 @@ void TestPasswordsPrivateDelegate::RecordChangePasswordFlowStarted(
       credential.change_password_url ? *credential.change_password_url : "";
 }
 
+void TestPasswordsPrivateDelegate::RefreshScriptsIfNecessary(
+    RefreshScriptsIfNecessaryCallback callback) {
+  std::move(callback).Run();
+}
+
 void TestPasswordsPrivateDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   start_password_check_triggered_ = true;

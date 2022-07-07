@@ -46,6 +46,8 @@ class PasswordCheckDelegate
  public:
   using StartPasswordCheckCallback =
       PasswordsPrivateDelegate::StartPasswordCheckCallback;
+  using RefreshScriptsIfNecessaryCallback =
+      PasswordsPrivateDelegate::RefreshScriptsIfNecessaryCallback;
 
   PasswordCheckDelegate(Profile* profile,
                         password_manager::SavedPasswordsPresenter* presenter);
@@ -95,6 +97,10 @@ class PasswordCheckDelegate
   void RecordChangePasswordFlowStarted(
       const api::passwords_private::InsecureCredential& credential,
       bool is_manual_flow);
+
+  // Refreshes the cache for automatic password change scripts if that is stale
+  // and runs `callback` once that is complete.
+  void RefreshScriptsIfNecessary(RefreshScriptsIfNecessaryCallback callback);
 
   // Checks that all preconditions for running a password check are fulfilled
   // and, once that is the case, launches the password check. Invokes `callback`

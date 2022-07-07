@@ -153,6 +153,8 @@ declare global {
           credential: InsecureCredential, callback?: () => void): void;
       export function recordChangePasswordFlowStarted(
           credential: InsecureCredential, isManualFlow: boolean): void;
+      export function refreshScriptsIfNecessary(
+          callback?: () => void): void;
       export function startPasswordCheck(callback?: () => void): void;
       export function stopPasswordCheck(callback?: () => void): void;
       export function getPasswordCheckStatus(

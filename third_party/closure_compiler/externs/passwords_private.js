@@ -359,6 +359,13 @@ chrome.passwordsPrivate.unmuteInsecureCredential = function(credential, callback
 chrome.passwordsPrivate.recordChangePasswordFlowStarted = function(credential, isManualFlow, callback) {};
 
 /**
+ * Refreshes the cache for automatic password change scripts if it is stale.
+ * Invokes `callback` on completion.
+ * @param {function(): void=} callback
+ */
+chrome.passwordsPrivate.refreshScriptsIfNecessary = function(callback) {};
+
+/**
  * Starts a check for insecure passwords. Invokes |callback| on completion.
  * @param {function(): void=} callback
  */

@@ -405,6 +405,24 @@ ResponseAction PasswordsPrivateRecordChangePasswordFlowStartedFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateRefreshScriptsIfNecessaryFunction:
+PasswordsPrivateRefreshScriptsIfNecessaryFunction::
+    ~PasswordsPrivateRefreshScriptsIfNecessaryFunction() = default;
+
+ResponseAction PasswordsPrivateRefreshScriptsIfNecessaryFunction::Run() {
+  GetDelegate(browser_context())
+      ->RefreshScriptsIfNecessary(base::BindOnce(
+          &PasswordsPrivateRefreshScriptsIfNecessaryFunction::OnRefreshed,
+          base::RetainedRef(this)));
+
+  // OnRefreshed() might respond before we reach this point.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateRefreshScriptsIfNecessaryFunction::OnRefreshed() {
+  Respond(NoArguments());
+}
+
 // PasswordsPrivateStartPasswordCheckFunction:
 PasswordsPrivateStartPasswordCheckFunction::
     ~PasswordsPrivateStartPasswordCheckFunction() = default;

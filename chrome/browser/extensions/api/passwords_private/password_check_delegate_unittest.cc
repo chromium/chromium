@@ -119,6 +119,8 @@ using ::testing::UnorderedElementsAre;
 
 using MockStartPasswordCheckCallback =
     base::MockCallback<PasswordCheckDelegate::StartPasswordCheckCallback>;
+using MockRefreshScriptsIfNecessaryCallback = base::MockCallback<
+    PasswordsPrivateDelegate::RefreshScriptsIfNecessaryCallback>;
 
 PasswordsPrivateEventRouter* CreateAndUsePasswordsPrivateEventRouter(
     Profile* profile) {
@@ -972,6 +974,18 @@ TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStartedAutomated) {
 
   delegate().RecordChangePasswordFlowStarted(credential,
                                              /*is_manual_flow=*/false);
+}
+
+TEST_F(PasswordCheckDelegateTest, RefreshScriptsIfNecessary) {
+  base::OnceClosure refresh_callback = base::DoNothing();
+  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(MoveArg<0>(&refresh_callback));
+
+  MockRefreshScriptsIfNecessaryCallback callback;
+  delegate().RefreshScriptsIfNecessary(callback.Get());
+
+  EXPECT_CALL(callback, Run);
+  std::move(refresh_callback).Run();
 }
 
 TEST_F(PasswordCheckDelegateTest,

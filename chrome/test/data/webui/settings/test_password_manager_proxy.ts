@@ -106,6 +106,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordChangePasswordFlowStarted',
       'recordPasswordCheckInteraction',
       'recordPasswordCheckReferrer',
+      'refreshScriptsIfNecessary',
       'removeException',
       'removeExceptions',
       'removeInsecureCredential',
@@ -264,6 +265,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     assertEquals(
         expected.listening.accountStorageOptInState,
         actual.listening.accountStorageOptInState);
+  }
+
+  refreshScriptsIfNecessary() {
+    this.methodCalled('refreshScriptsIfNecessary');
+    return Promise.resolve();
   }
 
   startBulkPasswordCheck() {

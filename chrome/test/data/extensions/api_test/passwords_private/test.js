@@ -772,6 +772,13 @@ var availableTests = [
         });
   },
 
+  function refreshScriptsIfNecessary() {
+    chrome.passwordsPrivate.refreshScriptsIfNecessary(() => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
+
   function startPasswordCheck() {
     chrome.passwordsPrivate.startPasswordCheck(() => {
       chrome.test.assertNoLastError();

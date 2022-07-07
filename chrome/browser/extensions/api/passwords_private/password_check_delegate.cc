@@ -71,6 +71,7 @@ using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordForm;
+using password_manager::PasswordScriptsFetcher;
 using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using ui::TimeFormat;
 
@@ -397,6 +398,15 @@ void PasswordCheckDelegate::RecordChangePasswordFlowStarted(
   }
 }
 
+void PasswordCheckDelegate::RefreshScriptsIfNecessary(
+    RefreshScriptsIfNecessaryCallback callback) {
+  if (PasswordScriptsFetcher* fetcher = GetPasswordScriptsFetcher()) {
+    fetcher->RefreshScriptsIfNecessary(std::move(callback));
+    return;
+  }
+  std::move(callback).Run();
+}
+
 void PasswordCheckDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   // If the delegate isn't initialized yet, enqueue the callback and return
@@ -719,8 +729,8 @@ PasswordCheckDelegate::GetPasswordChangeSuccessTracker() const {
       GetForBrowserContext(profile_);
 }
 
-password_manager::PasswordScriptsFetcher*
-PasswordCheckDelegate::GetPasswordScriptsFetcher() const {
+PasswordScriptsFetcher* PasswordCheckDelegate::GetPasswordScriptsFetcher()
+    const {
   return PasswordScriptsFetcherFactory::GetForBrowserContext(profile_);
 }
 

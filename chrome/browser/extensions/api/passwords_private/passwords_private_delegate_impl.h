@@ -107,6 +107,8 @@ class PasswordsPrivateDelegateImpl
   void RecordChangePasswordFlowStarted(
       const api::passwords_private::InsecureCredential& credential,
       bool is_manual_flow) override;
+  void RefreshScriptsIfNecessary(
+      RefreshScriptsIfNecessaryCallback callback) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;

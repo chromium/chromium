@@ -207,6 +207,13 @@ export interface PasswordManagerProxy {
   optInForAccountStorage(optIn: boolean): void;
 
   /**
+   * Refreshes the cache for automatic password change scripts if the cache is
+   * stale.
+   * @return A promise that resolves when the cache is fresh.
+   */
+  refreshScriptsIfNecessary(): Promise<void>;
+
+  /**
    * Requests the start of the bulk password check.
    */
   startBulkPasswordCheck(): Promise<void>;
@@ -548,6 +555,12 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   optInForAccountStorage(optIn: boolean) {
     chrome.passwordsPrivate.optInForAccountStorage(optIn);
+  }
+
+  refreshScriptsIfNecessary() {
+    return new Promise<void>(resolve => {
+      chrome.passwordsPrivate.refreshScriptsIfNecessary(resolve);
+    });
   }
 
   startBulkPasswordCheck() {

@@ -571,6 +571,11 @@ void PasswordsPrivateDelegateImpl::RecordChangePasswordFlowStarted(
                                                            is_manual_flow);
 }
 
+void PasswordsPrivateDelegateImpl::RefreshScriptsIfNecessary(
+    RefreshScriptsIfNecessaryCallback callback) {
+  password_check_delegate_.RefreshScriptsIfNecessary(std::move(callback));
+}
+
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   password_check_delegate_.StartPasswordCheck(std::move(callback));

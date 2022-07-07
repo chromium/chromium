@@ -34,6 +34,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   using PlaintextPasswordCallback =
       base::OnceCallback<void(absl::optional<std::u16string>)>;
 
+  using RefreshScriptsIfNecessaryCallback = base::OnceClosure;
+
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
@@ -197,6 +199,11 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual void RecordChangePasswordFlowStarted(
       const api::passwords_private::InsecureCredential& credential,
       bool is_manual_flow) = 0;
+
+  // Refreshes the cache for automatic password change scripts if that is stale
+  // and runs `callback` once that is complete.
+  virtual void RefreshScriptsIfNecessary(
+      RefreshScriptsIfNecessaryCallback callback) = 0;
 
   // Requests to start a check for insecure passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().

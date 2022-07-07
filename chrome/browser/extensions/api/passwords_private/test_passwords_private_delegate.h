@@ -24,14 +24,15 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
-  // Fake implementation of GetUrlCollection. This returns value if |url| is
+  // Fake implementation of `GetUrlCollection`. This returns a value if `url` is
   // not empty.
   absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
-  // Fake implementation. This returns value set by SetIsAccountStoreDefault.
+  // Fake implementation. This returns the value set by
+  // `SetIsAccountStoreDefault`.
   bool IsAccountStoreDefault(content::WebContents* web_contents) override;
-  // Fake implementation of AddPassword. This returns true if |url| and
-  // |password| aren't empty.
+  // Fake implementation of AddPassword. This returns true if `url` and
+  // `password` aren't empty.
   bool AddPassword(const std::string& url,
                    const std::u16string& username,
                    const std::u16string& password,
@@ -72,28 +73,32 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
       PlaintextInsecurePasswordCallback callback) override;
-  // Fake implementation of ChangeInsecureCredential. This succeeds if the
+  // Fake implementation of `ChangeInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
   bool ChangeInsecureCredential(
       const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) override;
-  // Fake implementation of RemoveInsecureCredential. This succeeds if the
+  // Fake implementation of `RemoveInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
   bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
-  // Fake implementation of MuteInsecureCredential. This succeeds if the
+  // Fake implementation of `MuteInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
   bool MuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
-  // Fake implementation of UnmuteInsecureCredential. This succeeds if the
+  // Fake implementation of `UnmuteInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
   bool UnmuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
-  // Fake implementation of RecordChangePasswordFlowStarted. Sets the url
-  // returned by |last_change_flow_url()|.
+  // Fake implementation of `RecordChangePasswordFlowStarted`. Sets the url
+  // returned by `last_change_flow_url()`.
   void RecordChangePasswordFlowStarted(
       const api::passwords_private::InsecureCredential& credential,
       bool is_manual_flow) override;
+  // Fake implementation of `RefreshScriptsIfNecessary` that directly calls
+  // `callback`.
+  void RefreshScriptsIfNecessary(
+      RefreshScriptsIfNecessaryCallback callback) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
