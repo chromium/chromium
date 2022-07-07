@@ -51,13 +51,14 @@ bool IsNSWindowFloating(NSWindow* window) {
 }
 
 class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
- protected:
-  NativeAppWindowCocoaBrowserTest() {}
-
+ public:
   NativeAppWindowCocoaBrowserTest(const NativeAppWindowCocoaBrowserTest&) =
       delete;
   NativeAppWindowCocoaBrowserTest& operator=(
       const NativeAppWindowCocoaBrowserTest&) = delete;
+
+ protected:
+  NativeAppWindowCocoaBrowserTest() = default;
 
   void SetUpAppWithWindows(int num_windows) {
     app_ = InstallExtension(
@@ -590,7 +591,8 @@ NSBitmapImageRep* ScreenshotNSWindow(NSWindow* window) {
 }  // namespace
 
 // Test that the colored frames have the correct color when active and inactive.
-IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, FrameColor) {
+// Disabled; https://crbug.com/1322741.
+IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, DISABLED_FrameColor) {
   // The hex values indicate an RGB color. When we get the NSColor later, the
   // components are CGFloats in the range [0, 1].
   extensions::AppWindow* app_window = CreateTestAppWindow(
