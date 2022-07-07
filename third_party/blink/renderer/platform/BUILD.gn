@@ -2429,6 +2429,17 @@ source_set("blink_fuzzer_test_support") {
   ]
 }
 
+# Fuzzer for WTF::unicode::MathVariant.
+fuzzer_test("math_transform_fuzzer") {
+  sources = [ "math_transform_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  libfuzzer_options = [ "max_len=10" ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/math_transform.dict"
+}
+
 # Fuzzer for blink::FindCategory.
 fuzzer_test("mathml_operator_dictionary_fuzzer") {
   sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
