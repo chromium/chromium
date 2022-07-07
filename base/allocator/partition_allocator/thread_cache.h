@@ -10,7 +10,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
@@ -248,19 +247,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 #if defined(PA_THREAD_CACHE_FAST_TLS)
     return internal::g_thread_cache;
 #else
-    // This region isn't MTE-tagged.
     return reinterpret_cast<ThreadCache*>(
         internal::PartitionTlsGet(internal::g_thread_cache_key));
 #endif
   }
 
   static bool IsValid(ThreadCache* tcache) {
-    // Do not MTE-untag, as it'd mess up the sentinel value.
     return reinterpret_cast<uintptr_t>(tcache) & kTombstoneMask;
   }
 
   static bool IsTombstone(ThreadCache* tcache) {
-    // Do not MTE-untag, as it'd mess up the sentinel value.
     return reinterpret_cast<uintptr_t>(tcache) == kTombstone;
   }
 
@@ -531,14 +527,14 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   }
 
   PA_DCHECK(bucket.count != 0);
-  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
+  internal::PartitionFreelistEntry* result = bucket.freelist_head;
   // Passes the bucket size to |GetNext()|, so that in case of freelist
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
   internal::PartitionFreelistEntry* next =
-      entry->GetNextForThreadCache<true>(bucket.slot_size);
-  PA_DCHECK(entry != next);
+      result->GetNextForThreadCache<true>(bucket.slot_size);
+  PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);
   bucket.freelist_head = next;
@@ -546,7 +542,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
   PA_DCHECK(cached_memory_ >= bucket.slot_size);
   cached_memory_ -= bucket.slot_size;
-  return internal::SlotStartPtr2Addr(entry);
+  return reinterpret_cast<uintptr_t>(result);
 }
 
 PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
@@ -569,22 +565,19 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   static_assert(internal::kAlignment == 16, "");
 
 #if PA_HAS_BUILTIN(__builtin_assume_aligned)
-  // Cast back to uintptr_t, because we need it for pointer arithmetic. Make
-  // sure it gets MTE-tagged, as we cast it later to a pointer and dereference.
-  uintptr_t address_tagged =
-      reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
-          internal::SlotStartAddr2Ptr(slot_start), internal::kAlignment));
+  uintptr_t address = reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
+      reinterpret_cast<void*>(slot_start), internal::kAlignment));
 #else
-  uintptr_t address_tagged = internal::SlotStartAddr2Ptr(slot_start);
+  uintptr_t address = slot_start;
 #endif
 
   // The pointer is always 16 bytes aligned, so its start address is always == 0
-  // % 16. Its distance to the next cacheline is `64 - ((address_tagged & 63) /
-  // 16) * 16`.
+  // % 16. Its distance to the next cacheline is 64 - ((address & 63) / 16) *
+  // 16.
   static_assert(
       internal::kPartitionCachelineSize == 64,
       "The computation below assumes that cache lines are 64 bytes long.");
-  int distance_to_next_cacheline_in_16_bytes = 4 - ((address_tagged >> 4) & 3);
+  int distance_to_next_cacheline_in_16_bytes = 4 - ((address >> 4) & 3);
   int slot_size_remaining_in_16_bytes =
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
       // When BRP is on in the "previous slot" mode, this slot may have a BRP
@@ -600,8 +593,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 
   static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
                                               0xbadbad00, 0xbadbad00};
-  // Already MTE-tagged above, so safe to dereference.
-  uint32_t* address_aligned = reinterpret_cast<uint32_t*>(address_tagged);
+  uint32_t* address_aligned = reinterpret_cast<uint32_t*>(address);
+
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
     // Clang will expand the memcpy to a 16-byte write (movups on x86).
     memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes));

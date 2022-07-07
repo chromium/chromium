@@ -714,19 +714,30 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return size - flags.extras_size;
   }
 
-  PA_ALWAYS_INLINE uintptr_t SlotStartToObjectAddr(uintptr_t slot_start) const {
-    // TODO(bartekn): Check that |slot_start| is indeed a slot start.
-    return slot_start + flags.extras_offset;
-  }
-
   PA_ALWAYS_INLINE void* SlotStartToObject(uintptr_t slot_start) const {
+    // TODO(bartekn): Move MTE tagging here.
     // TODO(bartekn): Check that |slot_start| is indeed a slot start.
-    return internal::TagAddr(SlotStartToObjectAddr(slot_start));
+    return reinterpret_cast<void*>(slot_start + flags.extras_offset);
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
-    return UntagPtr(object) - flags.extras_offset;
+    // TODO(bartekn): Move MTE untagging here.
+    return reinterpret_cast<uintptr_t>(object) - flags.extras_offset;
     // TODO(bartekn): Check that the result is indeed a slot start.
+  }
+
+  static PA_ALWAYS_INLINE uintptr_t ObjectInnerPtr2Addr(void* object) {
+    // TODO(bartekn): Add MTE untagging here.
+    return reinterpret_cast<uintptr_t>(object);
+  }
+  static PA_ALWAYS_INLINE uintptr_t ObjectPtr2Addr(void* object) {
+    // TODO(bartekn): Check that |object| is indeed an object start.
+    return ObjectInnerPtr2Addr(object);
+  }
+  static PA_ALWAYS_INLINE void* SlotStartAddr2Ptr(uintptr_t slot_start) {
+    // TODO(bartekn): Move MTE tagging here.
+    // TODO(bartekn): Check that |slot_start| is indeed a slot start.
+    return reinterpret_cast<void*>(slot_start);
   }
 
   bool brp_enabled() const {
@@ -810,7 +821,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return ret;
   }
 
-  // Allocates a memory slot, without initializing extras.
+  // Allocates memory, without initializing extras.
   //
   // - |flags| are as in AllocWithFlags().
   // - |raw_size| accommodates for extras on top of AllocWithFlags()'s
@@ -831,7 +842,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                              bool* is_already_zeroed)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool TryReallocInPlaceForNormalBuckets(void* object,
+  bool TryReallocInPlaceForNormalBuckets(void* ptr,
                                          SlotSpan* slot_span,
                                          size_t new_size);
   bool TryReallocInPlaceForDirectMap(
@@ -930,6 +941,8 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
 // ref-count is in place for this allocation.
 PA_ALWAYS_INLINE uintptr_t
 PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
+  address = ::partition_alloc::internal::UnmaskPtr(address);
+
   // Adjust to support pointers right past the end of an allocation, which in
   // some cases appear to point outside the designated allocation slot.
   //
@@ -954,11 +967,14 @@ PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
   // Get the offset from the beginning of the slot span.
   uintptr_t slot_span_start =
       SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(slot_span);
+  PA_DCHECK(slot_span_start ==
+            ::partition_alloc::internal::UnmaskPtr(slot_span_start));
   size_t offset_in_slot_span = address - slot_span_start;
 
   auto* bucket = slot_span->bucket;
-  return slot_span_start +
-         bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span);
+  return ::partition_alloc::internal::RemaskPtr(
+      slot_span_start +
+      bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
 }
 
 // Checks whether a given address stays within the same allocation slot after
@@ -986,10 +1002,11 @@ PA_ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
 
-  uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
+  void* object = root->SlotStartToObject(slot_start);
+  uintptr_t object_addr = PartitionRoot<ThreadSafe>::ObjectPtr2Addr(object);
   uintptr_t new_address = address + delta_in_bytes;
   return object_addr <= new_address &&
-         // We use "greater than or equal" below because we want to include
+         // We use "greater then or equal" below because we want to include
          // pointers right past the end of an allocation.
          new_address <= object_addr + slot_span->GetUsableSize(root);
 }
@@ -1005,7 +1022,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
 
   // memset() can be really expensive.
 #if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
-  DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
+  DebugMemset(reinterpret_cast<void*>(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                   - sizeof(PartitionRefCount)
@@ -1032,8 +1049,9 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
                                             size_t slot_span_alignment,
                                             size_t* usable_size,
                                             bool* is_already_zeroed) {
-  PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
-            internal::base::bits::IsPowerOfTwo(slot_span_alignment));
+  PA_DCHECK(
+      (slot_span_alignment >= internal::PartitionPageSize()) &&
+      partition_alloc::internal::base::bits::IsPowerOfTwo(slot_span_alignment));
   SlotSpan* slot_span = bucket->active_slot_spans_head;
   // There always must be a slot span on the active list (could be a sentinel).
   PA_DCHECK(slot_span);
@@ -1042,7 +1060,7 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
   PA_DCHECK(!slot_span->marked_full);
 
   uintptr_t slot_start =
-      internal::SlotStartPtr2Addr(slot_span->get_freelist_head());
+      reinterpret_cast<uintptr_t>(slot_span->get_freelist_head());
   // Use the fast path when a slot is readily available on the free list of the
   // first active slot span. However, fall back to the slow path if a
   // higher-order alignment is requested, because an inner slot of an existing
@@ -1064,7 +1082,7 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
     void* entry = slot_span->PopForAlloc(bucket->slot_size);
-    PA_DCHECK(internal::SlotStartPtr2Addr(entry) == slot_start);
+    PA_DCHECK(reinterpret_cast<uintptr_t>(entry) == slot_start);
 
     PA_DCHECK(slot_span->bucket == bucket);
   } else {
@@ -1128,7 +1146,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   // only cases where we don't would be delayed free() in PCScan, but |*object|
   // can be cold in cache.
   PA_PREFETCH(object);
-  uintptr_t object_addr = internal::ObjectPtr2Addr(object);
+  uintptr_t object_addr = ObjectPtr2Addr(object);
 
   // On Android, malloc() interception is more fragile than on other
   // platforms, as we use wrapped symbols. However, the GigaCage allows us to
@@ -1164,10 +1182,12 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
 #if defined(PA_HAS_MEMORY_TAGGING)
   const size_t slot_size = slot_span->bucket->slot_size;
   if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
-    internal::TagMemoryRangeIncrement(slot_start, slot_size);
+    // TODO(bartekn): |slot_start| shouldn't have MTE tag.
+    slot_start = ::partition_alloc::internal::TagMemoryRangeIncrement(
+        slot_start, slot_size);
     // Incrementing the MTE-tag in the memory range invalidates the |object|'s
     // tag, so it must be retagged.
-    object = internal::TagPtr(object);
+    object = ::partition_alloc::internal::RemaskPtr(object);
   }
 #else
   // We are going to read from |*slot_span| in all branches, but haven't done it
@@ -1251,8 +1271,9 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   if (flags.allow_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
-    internal::PartitionCookieCheckValue(static_cast<unsigned char*>(object) +
-                                        slot_span->GetUsableSize(this));
+    internal::PartitionCookieCheckValue(
+        reinterpret_cast<unsigned char*>(object) +
+        slot_span->GetUsableSize(this));
   }
 #endif
 
@@ -1260,8 +1281,11 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // default.
   if (PA_UNLIKELY(IsQuarantineEnabled())) {
     if (PA_LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
+      uintptr_t unmasked_slot_start =
+          ::partition_alloc::internal::UnmaskPtr(slot_start);
       // Mark the state in the state bitmap as freed.
-      internal::StateBitmapFromAddr(slot_start)->Free(slot_start);
+      internal::StateBitmapFromAddr(unmasked_slot_start)
+          ->Free(unmasked_slot_start);
     }
   }
 
@@ -1294,8 +1318,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
   // memset() can be really expensive.
 #if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
-  internal::DebugMemset(internal::SlotStartAddr2Ptr(slot_start),
-                        internal::kFreedByte,
+  internal::DebugMemset(SlotStartAddr2Ptr(slot_start), internal::kFreedByte,
                         slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                             - sizeof(internal::PartitionRefCount)
@@ -1306,7 +1329,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // efficiency.
   if (PA_UNLIKELY(internal::RandomPeriod()) &&
       !IsDirectMappedBucket(slot_span->bucket)) {
-    internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start), 0,
+    internal::SecureMemset(SlotStartAddr2Ptr(slot_start), 0,
                            slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                                - sizeof(internal::PartitionRefCount)
@@ -1360,8 +1383,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start,
   // RawFreeLocked()). This is intentional, as the thread cache is purged often,
   // and the memory has a consequence the memory has already been touched
   // recently (to link the thread cache freelist).
-  *static_cast<volatile uintptr_t*>(internal::SlotStartAddr2Ptr(slot_start)) =
-      0;
+  *reinterpret_cast<volatile uintptr_t*>(slot_start) = 0;
   // Note: even though we write to slot_start + sizeof(void*) as well, due to
   // alignment constraints, the two locations are always going to be in the same
   // OS page. No need to write to the second one as well.
@@ -1429,6 +1451,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(
 template <bool thread_safe>
 PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsValidSlotSpan(
     SlotSpan* slot_span) {
+  slot_span = ::partition_alloc::internal::UnmaskPtr(slot_span);
   PartitionRoot* root = FromSlotSpan(slot_span);
   return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
 }
@@ -1860,8 +1883,11 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // default.
   if (PA_UNLIKELY(is_quarantine_enabled)) {
     if (PA_LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
+      uintptr_t unmasked_slot_start =
+          ::partition_alloc::internal::UnmaskPtr(slot_start);
       // Mark the corresponding bits in the state bitmap as allocated.
-      internal::StateBitmapFromAddr(slot_start)->Allocate(slot_start);
+      internal::StateBitmapFromAddr(unmasked_slot_start)
+          ->Allocate(unmasked_slot_start);
     }
   }
 
@@ -1964,7 +1990,8 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
   // |alignment| is a power of two, but the compiler doesn't necessarily know
   // that. A regular % operation is very slow, make sure to use the equivalent,
   // faster form.
-  // No need to MTE-untag, as it doesn't change alignment.
+  // No need to call ObjectPtr2Addr, because MTE untagging isn't necessary, as
+  // it doesn't change alignment.
   PA_CHECK(!(reinterpret_cast<uintptr_t>(object) & (alignment - 1)));
 
   return object;

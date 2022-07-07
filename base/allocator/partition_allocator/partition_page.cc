@@ -263,7 +263,9 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
   for (PartitionFreelistEntry* head = freelist_head; head;
        head = head->GetNext(slot_size)) {
     ++num_free_slots;
-    size_t offset_in_slot_span = SlotStartPtr2Addr(head) - slot_span_start;
+    size_t offset_in_slot_span = ::partition_alloc::internal::UnmaskPtr(
+                                     reinterpret_cast<uintptr_t>(head)) -
+                                 slot_span_start;
     size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
     PA_DCHECK(slot_number < num_provisioned_slots);
     free_slots[slot_number] = true;
@@ -278,8 +280,9 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     for (size_t slot_number = 0; slot_number < num_provisioned_slots;
          slot_number++) {
       if (free_slots[slot_number]) {
-        uintptr_t slot_start = slot_span_start + (slot_size * slot_number);
-        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
+        uintptr_t slot_address = ::partition_alloc::internal::RemaskPtr(
+            slot_span_start + (slot_size * slot_number));
+        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_address);
 
         if (!head)
           head = entry;

@@ -337,8 +337,10 @@ static size_t PartitionPurgeSlotSpan(
   // slots are not in use.
   for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
        /**/) {
-    size_t slot_index =
-        (SlotStartPtr2Addr(entry) - slot_span_start) / slot_size;
+    size_t slot_index = (::partition_alloc::internal::UnmaskPtr(
+                             reinterpret_cast<uintptr_t>(entry)) -
+                         slot_span_start) /
+                        slot_size;
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
 #if !BUILDFLAG(IS_WIN)
@@ -829,7 +831,6 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     internal::SlotSpanMetadata<thread_safe>* slot_span,
     size_t requested_size) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
-  // Slot-span metadata isn't MTE-tagged.
   PA_DCHECK(
       internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
 
@@ -923,7 +924,8 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // Write a new trailing cookie.
   if (flags.allow_cookie) {
-    auto* object = static_cast<unsigned char*>(SlotStartToObject(slot_start));
+    auto* object =
+        reinterpret_cast<unsigned char*>(SlotStartToObject(slot_start));
     internal::PartitionCookieWriteValue(object +
                                         slot_span->GetUsableSize(this));
   }
@@ -934,17 +936,17 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
 template <bool thread_safe>
 bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
-    void* object,
+    void* ptr,
     SlotSpan* slot_span,
     size_t new_size) {
-  uintptr_t slot_start = ObjectToSlotStart(object);
-  PA_DCHECK(internal::IsManagedByNormalBuckets(slot_start));
+  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+  PA_DCHECK(internal::IsManagedByNormalBuckets(address));
 
   // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
   // new size is a significant percentage smaller. We could do the same if we
   // determine it is a win.
   if (AllocationCapacityFromRequestedSize(new_size) !=
-      AllocationCapacityFromPtr(object))
+      AllocationCapacityFromPtr(ptr))
     return false;
 
   // Trying to allocate |new_size| would use the same amount of underlying
@@ -952,6 +954,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && BUILDFLAG(PA_DCHECK_IS_ON)
+    uintptr_t slot_start = ObjectToSlotStart(ptr);
     internal::PartitionRefCount* old_ref_count;
     if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
@@ -972,12 +975,13 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).
     if (flags.allow_cookie) {
-      internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
-                                          slot_span->GetUsableSize(this));
+      internal::PartitionCookieWriteValue(
+          reinterpret_cast<unsigned char*>(address) +
+          slot_span->GetUsableSize(this));
     }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   }
-  return object;
+  return ptr;
 }
 
 template <bool thread_safe>

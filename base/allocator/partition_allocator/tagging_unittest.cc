@@ -21,9 +21,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlySafe) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp = TagMemoryRangeRandomly(buffer, 4 * kMemTagGranuleSize, 0u);
+  uintptr_t bufferp =
+      TagMemoryRangeRandomly(buffer, 4 * kMemTagGranuleSize, 0u);
   EXPECT_TRUE(bufferp);
-  int* buffer0 = static_cast<int*>(bufferp);
+  int* buffer0 = reinterpret_cast<int*>(bufferp);
   *buffer0 = 42;
   EXPECT_EQ(42, *buffer0);
   FreePages(buffer, PageAllocationGranularity());
@@ -36,13 +37,13 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp = TagMemoryRangeIncrement(buffer, 4 * kMemTagGranuleSize);
+  uintptr_t bufferp = TagMemoryRangeIncrement(buffer, 4 * kMemTagGranuleSize);
   EXPECT_TRUE(bufferp);
-  int* buffer0 = static_cast<int*>(bufferp);
+  int* buffer0 = reinterpret_cast<int*>(bufferp);
   *buffer0 = 42;
   EXPECT_EQ(42, *buffer0);
   if (cpu.has_mte()) {
-    EXPECT_NE(bufferp, reinterpret_cast<void*>(buffer));
+    EXPECT_NE(bufferp, buffer);
   }
   FreePages(buffer, PageAllocationGranularity());
 }
@@ -56,10 +57,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp =
+  uintptr_t bufferp =
       TagMemoryRangeRandomly(buffer, 4 * kMemTagGranuleSize - 1, 0u);
   if (cpu.has_mte()) {
-    EXPECT_FALSE(bufferp);
+    EXPECT_EQ(bufferp, 0u);
   }
   FreePages(buffer, PageAllocationGranularity());
 }
@@ -71,9 +72,9 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyNoSz) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp = TagMemoryRangeRandomly(buffer, 0, 0u);
+  uintptr_t bufferp = TagMemoryRangeRandomly(buffer, 0, 0u);
   if (cpu.has_mte()) {
-    EXPECT_FALSE(bufferp);
+    EXPECT_EQ(bufferp, 0u);
   }
   FreePages(buffer, PageAllocationGranularity());
 }
@@ -85,10 +86,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeRandomlyBadAlign) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp =
+  uintptr_t bufferp =
       TagMemoryRangeRandomly(buffer - 1, 4 * kMemTagGranuleSize, 0u);
   if (cpu.has_mte()) {
-    EXPECT_FALSE(bufferp);
+    EXPECT_EQ(bufferp, 0u);
   }
   FreePages(buffer, PageAllocationGranularity());
 }
@@ -100,9 +101,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadSz) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp = TagMemoryRangeIncrement(buffer, 4 * kMemTagGranuleSize - 1);
+  uintptr_t bufferp =
+      TagMemoryRangeIncrement(buffer, 4 * kMemTagGranuleSize - 1);
   if (cpu.has_mte()) {
-    EXPECT_FALSE(bufferp);
+    EXPECT_EQ(bufferp, 0u);
   }
   FreePages(buffer, PageAllocationGranularity());
 }
@@ -114,9 +116,9 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementNoSz) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp = TagMemoryRangeIncrement(buffer, 0);
+  uintptr_t bufferp = TagMemoryRangeIncrement(buffer, 0);
   if (cpu.has_mte()) {
-    EXPECT_FALSE(bufferp);
+    EXPECT_EQ(bufferp, 0u);
   }
   FreePages(buffer, PageAllocationGranularity());
 }
@@ -128,9 +130,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
       PageAllocationGranularity(), PageAllocationGranularity(),
       PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
-  void* bufferp = TagMemoryRangeIncrement(buffer - 1, 4 * kMemTagGranuleSize);
+  uintptr_t bufferp =
+      TagMemoryRangeIncrement(buffer - 1, 4 * kMemTagGranuleSize);
   if (cpu.has_mte()) {
-    EXPECT_FALSE(bufferp);
+    EXPECT_EQ(bufferp, 0u);
   }
   FreePages(buffer, PageAllocationGranularity());
 }

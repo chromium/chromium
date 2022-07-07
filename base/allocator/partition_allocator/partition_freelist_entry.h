@@ -41,7 +41,6 @@ class EncodedPartitionFreelistEntryPtr {
       std::nullptr_t)
       : encoded_(Transform(0)) {}
   explicit PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(void* ptr)
-      // The encoded pointer stays MTE-tagged.
       : encoded_(Transform(reinterpret_cast<uintptr_t>(ptr))) {}
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* Decode() const {
@@ -118,14 +117,10 @@ class PartitionFreelistEntry {
   // Emplaces the freelist entry at the beginning of the given slot span, and
   // initializes it as null-terminated.
   static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
-      void* slot_start_tagged) {
-    // |slot_start_tagged| is MTE-tagged.
-    auto* entry = new (slot_start_tagged) PartitionFreelistEntry(nullptr);
-    return entry;
-  }
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
       uintptr_t slot_start) {
-    return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
+    auto* entry = new (reinterpret_cast<void*>(slot_start))
+        PartitionFreelistEntry(nullptr);
+    return entry;
   }
 
   // Emplaces the freelist entry at the beginning of the given slot span, and
@@ -138,7 +133,7 @@ class PartitionFreelistEntry {
       uintptr_t slot_start,
       PartitionFreelistEntry* next) {
     auto* entry =
-        new (SlotStartAddr2Ptr(slot_start)) PartitionFreelistEntry(next);
+        new (reinterpret_cast<void*>(slot_start)) PartitionFreelistEntry(next);
     return entry;
   }
 
@@ -150,7 +145,7 @@ class PartitionFreelistEntry {
   static PA_ALWAYS_INLINE void EmplaceAndInitForTest(uintptr_t slot_start,
                                                      void* next,
                                                      bool make_shadow_match) {
-    new (SlotStartAddr2Ptr(slot_start))
+    new (reinterpret_cast<void*>(slot_start))
         PartitionFreelistEntry(next, make_shadow_match);
   }
 
@@ -179,7 +174,7 @@ class PartitionFreelistEntry {
     }
   }
 
-  PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* entry) {
+  PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
@@ -187,14 +182,15 @@ class PartitionFreelistEntry {
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
-    if (PA_UNLIKELY(entry &&
-                    (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
-                        (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))) {
+    if (PA_UNLIKELY(
+            ptr &&
+            (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) !=
+                (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask))) {
       FreelistCorruptionDetected(0);
     }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
-    encoded_next_ = EncodedPartitionFreelistEntryPtr(entry);
+    encoded_next_ = EncodedPartitionFreelistEntryPtr(ptr);
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = encoded_next_.Inverted();
 #endif
@@ -208,7 +204,8 @@ class PartitionFreelistEntry {
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = 0;
 #endif
-    return SlotStartPtr2Addr(this);
+    uintptr_t slot_start = reinterpret_cast<uintptr_t>(this);
+    return slot_start;
   }
 
   PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
@@ -232,8 +229,8 @@ class PartitionFreelistEntry {
     //
     // Also, the lightweight UaF detection (pointer shadow) is checked.
 
-    uintptr_t here_address = SlotStartPtr2Addr(here);
-    uintptr_t next_address = SlotStartPtr2Addr(next);
+    uintptr_t here_address = reinterpret_cast<uintptr_t>(here);
+    uintptr_t next_address = reinterpret_cast<uintptr_t>(next);
 
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;

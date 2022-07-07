@@ -362,7 +362,7 @@ struct BackupRefPtrImpl {
   // Wraps a pointer.
   template <typename T>
   static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
-    uintptr_t address = ::partition_alloc::UntagPtr(ptr);
+    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
     if (IsSupportedAndNotNull(address)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(ptr != nullptr);
@@ -382,7 +382,7 @@ struct BackupRefPtrImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   static ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
-    uintptr_t address = ::partition_alloc::UntagPtr(wrapped_ptr);
+    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(wrapped_ptr != nullptr);
@@ -403,7 +403,7 @@ struct BackupRefPtrImpl {
   template <typename T>
   static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    uintptr_t address = ::partition_alloc::UntagPtr(wrapped_ptr);
+    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
       CHECK(wrapped_ptr != nullptr);
       CHECK(IsPointeeAlive(address));
@@ -442,7 +442,7 @@ struct BackupRefPtrImpl {
             typename = std::enable_if_t<offset_type<Z>, void>>
   static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    uintptr_t address = ::partition_alloc::UntagPtr(wrapped_ptr);
+    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
     if (IsSupportedAndNotNull(address))
       CHECK(IsValidDelta(address, delta_elems * sizeof(T)));
 #endif

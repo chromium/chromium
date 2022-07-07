@@ -206,8 +206,7 @@ TEST_P(PartitionAllocThreadCacheTest, Simple) {
   EXPECT_EQ(kFillCountForSmallBucket, tcache->bucket_count_for_testing(index));
 
   void* ptr2 = root_->Alloc(kSmallSize, "");
-  // MTE-untag, because Free() changes tag.
-  EXPECT_EQ(UntagPtr(ptr), UntagPtr(ptr2));
+  EXPECT_EQ(internal::UnmaskPtr(ptr), internal::UnmaskPtr(ptr2));
   // Allocated from the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
@@ -234,8 +233,7 @@ TEST_P(PartitionAllocThreadCacheTest, InexactSizeMatch) {
   EXPECT_EQ(kFillCountForSmallBucket, tcache->bucket_count_for_testing(index));
 
   void* ptr2 = root_->Alloc(kSmallSize + 1, "");
-  // MTE-untag, because Free() changes tag.
-  EXPECT_EQ(UntagPtr(ptr), UntagPtr(ptr2));
+  EXPECT_EQ(internal::UnmaskPtr(ptr), internal::UnmaskPtr(ptr2));
   // Allocated from the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
@@ -465,7 +463,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   void* this_thread_ptr = root_->Alloc(kMediumSize, "");
   // |other_thread_ptr| was returned to the central allocator, and is returned
   // here, as it comes from the freelist.
-  EXPECT_EQ(UntagPtr(this_thread_ptr), UntagPtr(other_thread_ptr));
+  EXPECT_EQ(internal::UnmaskPtr(this_thread_ptr),
+            internal::UnmaskPtr(other_thread_ptr));
   root_->Free(other_thread_ptr);
 
   for (void* ptr : tmp)

@@ -12,7 +12,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -93,9 +92,7 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
   PA_SCAN_DCHECK(!(begin % sizeof(uintptr_t)));
   PA_SCAN_DCHECK(!(end % sizeof(uintptr_t)));
 #if defined(PA_HAS_64_BITS_POINTERS)
-  // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |mask| to untag, for efficiency.
-  const uintptr_t mask = Derived::CageMask() & kPtrUntagMask;
+  const uintptr_t mask = Derived::CageMask();
   const uintptr_t base = Derived::CageBase();
 #endif
   for (; begin < end; begin += sizeof(uintptr_t)) {
@@ -129,10 +126,7 @@ __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(uintptr_t begin,
   // vmovdqa (_mm256_load_si256) is twice smaller (0.25) than that of vmovapd
   // (_mm256_load_pd).
   const __m256i vbase = _mm256_set1_epi64x(derived().CageBase());
-  // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |cage_mask| to untag, for efficiency.
-  const __m256i cage_mask =
-      _mm256_set1_epi64x(derived().CageMask() & kPtrUntagMask);
+  const __m256i cage_mask = _mm256_set1_epi64x(derived().CageMask());
 
   static_assert(sizeof(__m256i) == kBytesInVector);
   for (; begin <= (end - kBytesInVector); begin += kBytesInVector) {
@@ -168,10 +162,7 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
   static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
   PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
   const __m128i vbase = _mm_set1_epi64x(derived().CageBase());
-  // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |cage_mask| to untag, for efficiency.
-  const __m128i cage_mask =
-      _mm_set1_epi64x(derived().CageMask() & kPtrUntagMask);
+  const __m128i cage_mask = _mm_set1_epi64x(derived().CageMask());
 
   static_assert(sizeof(__m128i) == kBytesInVector);
   for (; begin <= (end - kBytesInVector); begin += kBytesInVector) {
@@ -209,10 +200,7 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
   static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
   PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
   const uint64x2_t vbase = vdupq_n_u64(derived().CageBase());
-  // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |cage_mask| to untag, for efficiency.
-  const uint64x2_t cage_mask =
-      vdupq_n_u64(derived().CageMask() & kPtrUntagMask);
+  const uint64x2_t cage_mask = vdupq_n_u64(derived().CageMask());
 
   for (; begin <= (end - kBytesInVector); begin += kBytesInVector) {
     // Keep it MTE-untagged. See DisableMTEScope for details.
