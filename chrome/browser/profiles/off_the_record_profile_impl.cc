@@ -98,6 +98,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
@@ -345,7 +349,9 @@ bool OffTheRecordProfileImpl::IsOffTheRecord() const {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool OffTheRecordProfileImpl::IsMainProfile() const {
-  return false;
+  return chromeos::BrowserInitParams::Get()->session_type ==
+             crosapi::mojom::SessionType::kGuestSession &&
+         profile_->IsMainProfile();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
