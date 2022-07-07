@@ -1037,19 +1037,9 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
         mime_type, apps::PatternMatchType::kMimeType));
   }
   if (!mime_type_condition_values.empty()) {
-    // For ARC view file intents, save the mime type conditions under kFile
-    // instead of kMimeType to maintain consistency with view file intents of
-    // other app types.
-    if (has_view_action) {
-      auto file_type_condition = std::make_unique<apps::Condition>(
-          apps::ConditionType::kFile, std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(file_type_condition));
-    } else {
-      auto mime_type_condition = std::make_unique<apps::Condition>(
-          apps::ConditionType::kMimeType,
-          std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(mime_type_condition));
-    }
+    auto mime_type_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kMimeType, std::move(mime_type_condition_values));
+    intent_filter->conditions.push_back(std::move(mime_type_condition));
   }
   if (!arc_intent_filter.activity_name().empty()) {
     intent_filter->activity_name = arc_intent_filter.activity_name();
@@ -1148,20 +1138,10 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
         mime_type, apps::mojom::PatternMatchType::kMimeType));
   }
   if (!mime_type_condition_values.empty()) {
-    // For ARC view file intents, save the mime type conditions under kFile
-    // instead of kMimeType to maintain consistency with view file intents of
-    // other app types.
-    if (has_view_action) {
-      auto file_type_condition =
-          MakeCondition(apps::mojom::ConditionType::kFile,
-                        std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(file_type_condition));
-    } else {
-      auto mime_type_condition =
-          MakeCondition(apps::mojom::ConditionType::kMimeType,
-                        std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(mime_type_condition));
-    }
+    auto mime_type_condition =
+        MakeCondition(apps::mojom::ConditionType::kMimeType,
+                      std::move(mime_type_condition_values));
+    intent_filter->conditions.push_back(std::move(mime_type_condition));
   }
   if (!arc_intent_filter.activity_name().empty()) {
     intent_filter->activity_name = arc_intent_filter.activity_name();

@@ -1197,56 +1197,6 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_FileIntentFilterScheme) {
   }
 }
 
-TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ReturnskFile) {
-  const char* package_name = "com.foo.bar";
-  const char* mime_type = "image/*";
-
-  arc::IntentFilter arc_filter(package_name, {arc::kIntentActionView}, {}, {},
-                               {}, {mime_type});
-
-  apps::IntentFilterPtr app_service_filter =
-      apps_util::CreateIntentFilterForArc(arc_filter);
-
-  ASSERT_EQ(app_service_filter->conditions.size(), 2U);
-  for (auto& condition : app_service_filter->conditions) {
-    // There should not be a kMimeType condition for ARC view file intent
-    // filters.
-    ASSERT_NE(condition->condition_type, apps::ConditionType::kMimeType);
-    if (condition->condition_type == apps::ConditionType::kAction) {
-      ASSERT_EQ(condition->condition_values[0]->value,
-                apps_util::kIntentActionView);
-    }
-    if (condition->condition_type == apps::ConditionType::kFile) {
-      ASSERT_EQ(condition->condition_values[0]->value, mime_type);
-    }
-  }
-}
-
-TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ReturnskFile_Mojom) {
-  const char* package_name = "com.foo.bar";
-  const char* mime_type = "image/*";
-
-  arc::IntentFilter arc_filter(package_name, {arc::kIntentActionView}, {}, {},
-                               {}, {mime_type});
-
-  apps::mojom::IntentFilterPtr app_service_filter =
-      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
-
-  ASSERT_EQ(app_service_filter->conditions.size(), 2U);
-  for (auto& condition : app_service_filter->conditions) {
-    // There should not be a kMimeType condition for ARC view file intent
-    // filters.
-    ASSERT_NE(condition->condition_type, apps::mojom::ConditionType::kMimeType);
-    if (condition->condition_type == apps::mojom::ConditionType::kAction) {
-      ASSERT_EQ(condition->condition_values[0]->value,
-                apps_util::kIntentActionView);
-    }
-    if (condition->condition_type == apps::mojom::ConditionType::kFile) {
-      ASSERT_EQ(condition->condition_values[0]->value, mime_type);
-    }
-  }
-}
-
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 TEST_F(IntentUtilsTest,
        ConvertArcIntentFilter_WildcardHostPatternMatchTypeMojom) {
