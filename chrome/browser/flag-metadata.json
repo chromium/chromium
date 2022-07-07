@@ -1617,6 +1617,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "enable-biometric-authentication-in-settings",
+    "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-bluetooth-spp-in-serial-api",
     "owners": [ "mattreynolds", "cmumford" ],
     "expiry_milestone": 110

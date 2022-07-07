@@ -2428,6 +2428,9 @@ extern const char kUseAngleName[];
 extern const char kUseAngleDefault[];
 extern const char kUseAngleGL[];
 
+extern const char kEnableBiometricAuthenticationInSettingsName[];
+extern const char kEnableBiometricAuthenticationInSettingsDescription[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // ChromeOS -------------------------------------------------------------------

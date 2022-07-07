@@ -4240,7 +4240,10 @@ const char kSystemColorChooserDescription[] =
 const char kUseAngleName[] = "Choose ANGLE graphics backend";
 const char kUseAngleDefault[] = "Default";
 const char kUseAngleGL[] = "OpenGL";
-
+const char kEnableBiometricAuthenticationInSettingsName[] =
+    "Biometric authentication in settings";
+const char kEnableBiometricAuthenticationInSettingsDescription[] =
+    "Enables biometric authentication in settings to view/edit/copy a password";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // ChromeOS -------------------------------------------------------------------

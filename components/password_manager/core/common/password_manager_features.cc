@@ -171,6 +171,13 @@ const base::Feature kRecoverFromNeverSaveAndroid = {
 const base::Feature kSecondaryServerFieldPredictions = {
     "SecondaryServerFieldPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Enables biometric authentication in settings
+const base::Feature kEnableBiometricAuthenticationInSettings = {
+    "EnableBiometricAuthenticationInSettings",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Displays at least the decryptable and never saved logins in the password
 // manager

@@ -8738,6 +8738,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingAutoDisplayIntentPicker)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {"enable-biometric-authentication-in-settings",
+     flag_descriptions::kEnableBiometricAuthenticationInSettingsName,
+     flag_descriptions::kEnableBiometricAuthenticationInSettingsDescription,
+     kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kEnableBiometricAuthenticationInSettings)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

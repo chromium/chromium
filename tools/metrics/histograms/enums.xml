@@ -56779,6 +56779,8 @@ from previous Chrome versions.
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
+  <int value="-1130756844"
+      label="EnableBiometricAuthenticationInSettings:disabled"/>
   <int value="-1128981647" label="EnableOAuthIpp:enabled"/>
   <int value="-1128912963" label="MediaControlsExpandGesture:disabled"/>
   <int value="-1128221789"
@@ -60134,6 +60136,8 @@ from previous Chrome versions.
       label="OmniboxTrendingZeroPrefixSuggestionsOnNTP:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
+  <int value="1059157909"
+      label="EnableBiometricAuthenticationInSettings:enabled"/>
   <int value="1059283439"
       label="OmniboxClobberTriggersContextualWebZeroSuggest:disabled"/>
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
