@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 
 import com.google.android.material.tabs.TabLayout;
@@ -60,6 +61,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -175,9 +177,11 @@ public class HistoryClustersCoordinatorTest {
     private Intent mHistoryActivityIntent = new Intent();
     private Intent mOpenUrlIntent = new Intent();
     private Activity mActivity;
-    private Promise mPromise = new Promise();
+    private Promise<HistoryClustersResult> mPromise = new Promise();
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
+    private HistoryCluster mCluster;
+    private HistoryClustersResult mClusterResult;
     private TestHistoryClustersDelegate mHistoryClustersDelegate =
             new TestHistoryClustersDelegate();
     private List<ClusterVisit> mVisitsForRemoval = new ArrayList<>();
@@ -195,6 +199,9 @@ public class HistoryClustersCoordinatorTest {
                 new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "bar.com", new ArrayList<>(),
                 new ArrayList<>(), mGurl2, 123L, new ArrayList<>());
+        mCluster = new HistoryCluster(Arrays.asList(mVisit1, mVisit2), "\"label\"", "label",
+                Collections.emptyList(), 123L, Arrays.asList("pugs", "terriers"));
+        mClusterResult = new HistoryClustersResult(Arrays.asList(mCluster), "dogs", false, false);
 
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
@@ -343,6 +350,46 @@ public class HistoryClustersCoordinatorTest {
                 toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id));
 
         assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit2));
+    }
+
+    @Test
+    public void testSetQueryState() {
+        mHistoryClustersCoordinator.inflateActivityView();
+        mHistoryClustersCoordinator.setQueryState(QueryState.forQuery("dogs"));
+        fulfillPromise(mPromise, mClusterResult);
+
+        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 600, 1000);
+
+        assertHasViewWithClass(recyclerView, HistoryClustersRelatedSearchesChipLayout.class);
+        assertHasViewWithClass(recyclerView, HistoryClustersItemView.class);
+        assertHasViewWithClass(recyclerView, HistoryClusterView.class);
+    }
+
+    @Test
+    public void testDestroy() {
+        mHistoryClustersCoordinator.inflateActivityView();
+        mHistoryClustersCoordinator.setQueryState(QueryState.forQuery("dogs"));
+        mHistoryClustersCoordinator.destroy();
+
+        // Fulfilling the promise post-destroy shouldn't crash or do anything else for that matter.
+        fulfillPromise(mPromise, mClusterResult);
+    }
+
+    private <T> void fulfillPromise(Promise<T> promise, T result) {
+        promise.fulfill(result);
+        ShadowLooper.idleMainLooper();
+    }
+
+    private void assertHasViewWithClass(RecyclerView recyclerView, Class clazz) {
+        for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
+            RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
+            if (clazz.equals(viewHolder.itemView.getClass())) {
+                return;
+            }
+        }
+        assertFalse(true);
     }
 
     private static void resetStaticState() {
