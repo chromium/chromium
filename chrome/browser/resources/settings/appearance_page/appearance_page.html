@@ -71,7 +71,8 @@
                 prefs.homepage.value)]]">
         </settings-toggle-button>
         <template is="dom-if" if="[[prefs.browser.show_home_button.value]]">
-          <div class="list-frame" hidden="[[!pageVisibility.homeButton]]">
+          <div id="home-button-options" class="list-frame"
+              hidden="[[!pageVisibility.homeButton]]">
             <settings-radio-group pref="{{prefs.homepage_is_newtabpage}}">
               <controlled-radio-button class="list-item" name="true"
                   pref="[[prefs.homepage_is_newtabpage]]"
@@ -109,6 +110,31 @@
             pref="{{prefs.bookmark_bar.show_on_all_tabs}}"
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
+
+        <template is="dom-if" if="[[showSidePanelOptions_]]">
+          <div class="cr-row">$i18n{sidePanel}</div>
+          <div class="list-frame">
+            <settings-radio-group
+                id="side-panel"
+                pref="{{prefs.side_panel.is_right_aligned}}">
+              <controlled-radio-button
+                  class="list-item"
+                  pref="[[prefs.side_panel.is_right_aligned]]"
+                  label="$i18n{sidePanelAlignRight}"
+                  name="true"
+                  no-extension-indicator>
+              </controlled-radio-button>
+              <controlled-radio-button
+                  class="list-item"
+                  pref="[[prefs.side_panel.is_right_aligned]]"
+                  label="$i18n{sidePanelAlignLeft}"
+                  name="false"
+                  no-extension-indicator>
+              </controlled-radio-button>
+            </settings-radio-group>
+          </div>
+        </template>
+
 <if expr="is_linux">
         <div class="hr" hidden="[[!pageVisibility.bookmarksBar]]"></div>
         <settings-toggle-button

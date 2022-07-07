@@ -1583,6 +1583,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
+
+  // When in RTL mode, the side panel should default to the left of the screen.
+  // Otherwise, the side panel should default to the right side of the screen.
+  // TODO(dljames): Add enum values kAlternateSide / kDefaultSide that will
+  // replace false and true respectively.
+  registry->RegisterBooleanPref(prefs::kSidePanelHorizontalAlignment,
+                                base::i18n::IsRTL() ? false : true);
 #endif
 
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);

@@ -29,6 +29,7 @@ export type AppearancePageVisibility = {
   homeButton: boolean,
   pageZoom: boolean,
   setTheme: boolean,
+  sidePanel: boolean,
 };
 
 export type PrivacyPageVisibility = {
@@ -74,6 +75,7 @@ if (loadTimeData.getBoolean('isGuest')) {
       homeButton: false,
       bookmarksBar: false,
       pageZoom: false,
+      sidePanel: false,
     },
     advancedSettings: true,
     privacy: {

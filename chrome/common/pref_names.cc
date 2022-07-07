@@ -1697,6 +1697,12 @@ const char kUserAgentReduction[] = "user_agent_reduction";
 const char kForceMajorVersionToMinorPositionInUserAgent[] =
     "force_major_version_to_minor_position_in_user_agent";
 
+#if (!BUILDFLAG(IS_ANDROID))
+// Boolean determining the side the side panel will be appear on (left / right).
+// True when the side panel is aligned to the right.
+const char kSidePanelHorizontalAlignment[] = "side_panel.is_right_aligned";
+#endif
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

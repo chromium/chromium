@@ -159,6 +159,15 @@
   <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
     Show bookmarks bar
   </message>
+  <message name="IDS_SETTINGS_SIDE_PANEL" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
+    Side panel
+  </message>
+  <message name="IDS_SETTINGS_SIDE_PANEL_ALIGN_LEFT" desc="Label for the button that allows the side panel to appear on the left side of the browser. Translate this verbatim, do not localize for RTL languages.">
+    Show on left
+  </message>
+  <message name="IDS_SETTINGS_SIDE_PANEL_ALIGN_RIGHT" desc="Label for the button that allows the side panel to appear on the right side of the browser. Translate this verbatim, do not localize for RTL languages.">
+    Show on right
+  </message>
   <message name="IDS_SETTINGS_HOME_PAGE_NTP" desc="Description of the New Tab Page when set as the home page.">
     New Tab page
   </message>

@@ -356,6 +356,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
     {"chromeColors", IDS_SETTINGS_CHROME_COLORS},
     {"showHomeButton", IDS_SETTINGS_SHOW_HOME_BUTTON},
     {"showBookmarksBar", IDS_SETTINGS_SHOW_BOOKMARKS_BAR},
+    {"sidePanel", IDS_SETTINGS_SIDE_PANEL},
     {"homePageNtp", IDS_SETTINGS_HOME_PAGE_NTP},
     {"changeHomePage", IDS_SETTINGS_CHANGE_HOME_PAGE},
     {"themesGalleryUrl", IDS_THEMES_GALLERY_URL},
@@ -371,6 +372,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
     {"minimumFont", IDS_SETTINGS_MINIMUM_FONT_SIZE_LABEL},
     {"tiny", IDS_SETTINGS_TINY_FONT_SIZE},
     {"huge", IDS_SETTINGS_HUGE_FONT_SIZE},
+    {"sidePanelAlignLeft", IDS_SETTINGS_SIDE_PANEL_ALIGN_LEFT},
+    {"sidePanelAlignRight", IDS_SETTINGS_SIDE_PANEL_ALIGN_RIGHT},
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -399,6 +402,9 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                          zoom::GetPresetZoomFactorsAsJSON());
   html_source->AddBoolean("showReaderModeOption",
                           dom_distiller::OfferReaderModeInSettings());
+  html_source->AddBoolean(
+      "showSidePanelOptions",
+      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
