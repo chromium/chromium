@@ -7450,10 +7450,12 @@ test("unit_tests") {
   }
 
   if (enable_spellcheck) {
-    sources += [
-      "../browser/spellchecker/spellcheck_custom_dictionary_unittest.cc",
-      "../browser/spellchecker/spellcheck_language_policy_handlers_unittest.cc",
-    ]
+    sources +=
+        [ "../browser/spellchecker/spellcheck_custom_dictionary_unittest.cc" ]
+
+    if (is_chromeos || is_linux || is_win) {
+      sources += [ "../browser/spellchecker/spellcheck_language_policy_handlers_unittest.cc" ]
+    }
 
     if (is_mac) {
       sources += [

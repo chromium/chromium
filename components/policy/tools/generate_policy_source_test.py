@@ -134,8 +134,7 @@ class PolicyGenerationTest(unittest.TestCase):
               "type": "string"
           },
           "supported_on": ["chrome_os:1-93", "android:1-93", "chrome.*:1-93"],
-          "id":
-          7,
+          "id": 7,
           "tags": [],
           "caption":
           "DeprecatedButGenerated caption",

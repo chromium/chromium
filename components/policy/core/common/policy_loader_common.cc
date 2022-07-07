@@ -42,8 +42,6 @@ const char kBlockedExtensionPrefix[] = "[BLOCKED]";
 // Please keep the list in alphabetical order!
 const char* kSensitivePolicies[] = {
     key::kAutoOpenFileTypes,
-    key::kChromeCleanupEnabled,
-    key::kChromeCleanupReportingEnabled,
     key::kCommandLineFlagSecurityWarningsEnabled,
     key::kDefaultSearchProviderEnabled,
     key::kFirstPartySetsOverrides,
@@ -55,9 +53,13 @@ const char* kSensitivePolicies[] = {
     key::kPasswordProtectionLoginURLs,
     key::kRestoreOnStartup,
     key::kRestoreOnStartupURLs,
-    key::kSafeBrowsingForTrustedSourcesEnabled,
     key::kSafeBrowsingEnabled,
     key::kSafeBrowsingAllowlistDomains,
+#if BUILDFLAG(IS_WIN)
+    key::kChromeCleanupEnabled,
+    key::kChromeCleanupReportingEnabled,
+    key::kSafeBrowsingForTrustedSourcesEnabled,
+#endif
 };
 
 void RecordInvalidPolicies(const std::string& policy_name) {

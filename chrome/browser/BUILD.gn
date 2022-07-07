@@ -7386,10 +7386,6 @@ static_library("browser") {
       "spellchecker/spellcheck_factory.h",
       "spellchecker/spellcheck_hunspell_dictionary.cc",
       "spellchecker/spellcheck_hunspell_dictionary.h",
-      "spellchecker/spellcheck_language_blocklist_policy_handler.cc",
-      "spellchecker/spellcheck_language_blocklist_policy_handler.h",
-      "spellchecker/spellcheck_language_policy_handler.cc",
-      "spellchecker/spellcheck_language_policy_handler.h",
       "spellchecker/spellcheck_service.cc",
       "spellchecker/spellcheck_service.h",
     ]
@@ -7398,6 +7394,15 @@ static_library("browser") {
       sources += [
         "spellchecker/spelling_request.cc",
         "spellchecker/spelling_request.h",
+      ]
+    }
+
+    if (is_win || is_linux || is_chromeos) {
+      sources += [
+        "spellchecker/spellcheck_language_blocklist_policy_handler.cc",
+        "spellchecker/spellcheck_language_blocklist_policy_handler.h",
+        "spellchecker/spellcheck_language_policy_handler.cc",
+        "spellchecker/spellcheck_language_policy_handler.h",
       ]
     }
 
