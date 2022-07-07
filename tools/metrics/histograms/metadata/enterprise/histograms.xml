@@ -69,6 +69,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Recommended" summary="Recommended Policy"/>
 </variants>
 
+<variants name="WmiSystemSignal">
+  <variant name="AntiVirus" summary="AntiVirus info"/>
+  <variant name="Hotfixes" summary="Hotfix info"/>
+</variants>
+
 <histogram name="Enterprise.AccountStatusCheckResult"
     enum="EnterpriseAccountStatus" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
@@ -2079,6 +2084,64 @@ chromium-metrics-reviews@google.com.
   <owner>bmalcolm@chromium.org</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>Result of a single attempt to upload system logs.</summary>
+</histogram>
+
+<histogram name="Enterprise.SystemSignals.Collection.WMI.{Signal}.ParsingError"
+    enum="DeviceSignalsWmiParsingError" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the actual error whenever parsing of {Signal} from WMI results
+    failed.
+  </summary>
+  <token key="Signal" variants="WmiSystemSignal"/>
+</histogram>
+
+<histogram name="Enterprise.SystemSignals.Collection.WMI.{Signal}.QueryError"
+    enum="WmiQueryError" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the actual error whenever collection of {Signal} from WMI failed
+    with a query error.
+  </summary>
+  <token key="Signal" variants="WmiSystemSignal"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SystemSignals.Collection.WSC.AntiVirus.ParsingError"
+    enum="DeviceSignalsWscParsingError" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the actual error whenever parsing of AntiVirus info from WSC
+    results failed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SystemSignals.Collection.WSC.AntiVirus.QueryError"
+    enum="DeviceSignalsWscQueryError" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the actual error whenever collection of AntiVirus info from WSC
+    failed with a query error.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.SystemSignals.Collection.{Signal}.ParsingError.Rate"
+    units="%" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the response parsing error rate whenever collecting {Signal}.
+  </summary>
+  <token key="Signal">
+    <variant name="WMI.AntiVirus" summary="AntiVirus info from WMI"/>
+    <variant name="WMI.Hotfixes" summary="Hotfixes info from WMI"/>
+    <variant name="WSC.AntiVirus" summary="AntiVirus info from WSC"/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"

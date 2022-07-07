@@ -5,6 +5,7 @@
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
 
 #include "base/win/windows_version.h"
+#include "chrome/services/system_signals/win/metrics_utils.h"
 #include "components/device_signals/core/system_signals/win/wmi_client.h"
 #include "components/device_signals/core/system_signals/win/wmi_client_impl.h"
 #include "components/device_signals/core/system_signals/win/wsc_client.h"
@@ -50,13 +51,13 @@ void WinSystemSignalsService::GetAntiVirusSignals(
     // WSC is only supported on Win8+.
     auto response = wsc_client_->GetAntiVirusProducts();
 
-    // TODO(b/229737923): Collect metrics.
+    LogWscAvResponse(response);
     av_products = std::move(response.av_products);
   } else {
     // Fallback to an undocumented WMI table on Win7 and earlier.
     auto response = wmi_client_->GetAntiVirusProducts();
 
-    // TODO(b/229737923): Collect metrics.
+    LogWmiAvResponse(response);
     av_products = std::move(response.av_products);
   }
 
@@ -67,7 +68,7 @@ void WinSystemSignalsService::GetHotfixSignals(
     GetHotfixSignalsCallback callback) {
   auto response = wmi_client_->GetInstalledHotfixes();
 
-  // TODO(b/229737923): Collect metrics.
+  LogWmiHotfixResponse(response);
   std::move(callback).Run(std::move(response.hotfixes));
 }
 

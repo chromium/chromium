@@ -17,6 +17,8 @@
 namespace device_signals {
 
 // Errors that can occur when calling WMI, or parsing response values.
+// Do not change ordering. This enum is captured as
+// `DeviceSignalsWmiParsingError` in enums.xml.
 enum class WmiParsingError {
   kFailedToIterateResults = 0,
   kFailedToGetName = 1,

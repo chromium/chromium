@@ -15,13 +15,19 @@
 // https://docs.microsoft.com/en-us/windows/win32/api/iwscapi/
 namespace device_signals {
 
+// Errors that can occur when querying WSC.
+// Do not change ordering. This enum is captured as
+// `DeviceSignalsWscQueryError` in enums.xml.
 enum class WscQueryError {
   kFailedToCreateInstance = 0,
   kFailedToInitializeProductList = 1,
   kFailedToGetProductCount = 2,
+  kMaxValue = kFailedToGetProductCount
 };
 
 // Errors that can occur when calling WSC, or parsing response values.
+// Do not change ordering. This enum is captured as
+// `DeviceSignalsWscParsingError` in enums.xml.
 enum class WscParsingError {
   kFailedToGetItem = 0,
   kFailedToGetState = 1,

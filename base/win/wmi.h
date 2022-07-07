@@ -32,11 +32,14 @@ namespace win {
 
 // Enumeration of errors that can arise when connecting to a WMI server and
 // running a query.
+// Do not change ordering. This enum is captured as `WmiQueryError` in
+// enums.xml.
 enum class WmiError {
   kFailedToCreateInstance = 0,
   kFailedToConnectToWMI = 1,
   kFailedToSetSecurityBlanket = 2,
   kFailedToExecWMIQuery = 3,
+  kMaxValue = kFailedToExecWMIQuery
 };
 
 // String used to connect to the CIMV2 WMI server.

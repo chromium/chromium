@@ -24633,6 +24633,28 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="Granted"/>
 </enum>
 
+<enum name="DeviceSignalsWmiParsingError">
+  <int value="0" label="Failed to iterate results"/>
+  <int value="1" label="Failed to get name"/>
+  <int value="2" label="Failed to get state"/>
+  <int value="3" label="State invalid"/>
+  <int value="4" label="Failed to get ID"/>
+</enum>
+
+<enum name="DeviceSignalsWscParsingError">
+  <int value="0" label="Failed to get item"/>
+  <int value="1" label="Failed to get state"/>
+  <int value="2" label="State invalid"/>
+  <int value="3" label="Failed to get name"/>
+  <int value="4" label="Failed to get ID"/>
+</enum>
+
+<enum name="DeviceSignalsWscQueryError">
+  <int value="0" label="Failed to create instance"/>
+  <int value="1" label="Failed to initialize product list"/>
+  <int value="2" label="Failed to get product count"/>
+</enum>
+
 <enum name="DevicesPageEvents">
   <obsolete>
     Removed July 2019.
@@ -103571,6 +103593,12 @@ Called by update_scheduler_enums.py.-->
   <int value="0" label="Recently Closed"/>
   <int value="1" label="Most Visited"/>
   <int value="2" label="People"/>
+</enum>
+
+<enum name="WmiQueryError">
+  <int value="0" label="Failed to create instance"/>
+  <int value="1" label="Failed to initialize product list"/>
+  <int value="2" label="Failed to get product count"/>
 </enum>
 
 <enum name="WMIRefresherInitStatus">
