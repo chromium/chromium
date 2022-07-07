@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -1651,11 +1650,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         insertionAgent);
   }
-
-  if (NewTabPageTabHelper::FromWebState(webState)) {
-    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
-        self.viewController);
-  }
 }
 
 // Uninstalls delegates for `webState`.
@@ -1683,10 +1677,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   if (CaptivePortalTabHelper::FromWebState(webState)) {
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         nil);
-  }
-
-  if (NewTabPageTabHelper::FromWebState(webState)) {
-    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
   }
 }
 
