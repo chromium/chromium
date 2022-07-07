@@ -634,10 +634,6 @@ message SystemProfileProto {
     // Logged on Android only as of Q1 2022. Used by only Android WebView. Other
     // platforms should use Stability.Counts2.
     optional int32 launch_count = 15;
-    // The number of times that it didn't exit cleanly (which we assume to be
-    // mostly crashes). On Android M71+ this does not include times when the Gms
-    // Core version has changed, which is recorded separately below.
-    optional int32 crash_count = 16;
     // Android only. The number of times Chrome didn't exit cleanly and the GMS
     // Core version has changed from the last session. This is in addition to
     // |crash_count| in which we exclude unclean exits that are likely caused by
