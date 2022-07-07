@@ -20,6 +20,8 @@ namespace password_manager {
 
 namespace {
 
+using sync_util::IsPasswordSyncEnabled;
+
 // Time in seconds by which the passwords migration from the built-in backend to
 // the Android backend is delayed.
 constexpr int kMigrationToAndroidBackendDelay = 30;
@@ -37,12 +39,10 @@ bool ShouldAttemptMigration(PrefService* prefs) {
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
-    PrefService* prefs,
-    std::unique_ptr<SyncDelegate> sync_delegate)
+    PrefService* prefs)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
-      sync_delegate_(std::move(sync_delegate)),
       sync_settings_helper_(prefs) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
@@ -151,8 +151,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
   // data in the remote store. For shadow traffic, this doesn't matter.
   if (ShouldAttemptMigration(prefs_)) {
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
-        built_in_backend_.get(), android_backend_.get(), prefs_,
-        sync_delegate_.get());
+        built_in_backend_.get(), android_backend_.get(), prefs_);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -282,12 +281,17 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
   sync_settings_helper_.CachePasswordSyncSettingOnStartup(sync_service);
   sync_service->AddObserver(&sync_settings_helper_);
   active_backend_->OnSyncServiceInitialized(sync_service);
+  if (migrator_) {
+    // The migrator exists only if prefs allow the migration.
+    DCHECK(ShouldAttemptMigration(prefs_));
+    migrator_->OnSyncServiceInitialized(sync_service);
+  }
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
   DCHECK(migrator_);
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
-      !sync_delegate_->IsSyncingPasswordsEnabled()) {
+      !IsPasswordSyncEnabled(sync_service_)) {
     // Sync was disabled at the end of the last session, but migration from
     // the android backend to the built-in backend didn't happen. It's not
     // safe to attempt to call the android backend to migrate logins. Disable

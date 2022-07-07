@@ -25,8 +25,7 @@ namespace password_manager {
 
 std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     const base::FilePath& login_db_path,
-    PrefService* prefs,
-    std::unique_ptr<SyncDelegate> sync_delegate) {
+    PrefService* prefs) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<PasswordStoreBuiltInBackend>(
@@ -42,8 +41,7 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreBuiltInBackend>(
             CreateLoginDatabaseForProfileStorage(login_db_path)),
-        std::make_unique<PasswordStoreAndroidBackend>(prefs), prefs,
-        std::move(sync_delegate));
+        std::make_unique<PasswordStoreAndroidBackend>(prefs), prefs);
   }
   return std::make_unique<PasswordStoreBuiltInBackend>(
       CreateLoginDatabaseForProfileStorage(login_db_path));

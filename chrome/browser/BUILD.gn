@@ -1057,8 +1057,6 @@ static_library("browser") {
     "password_manager/password_reuse_manager_factory.h",
     "password_manager/password_scripts_fetcher_factory.cc",
     "password_manager/password_scripts_fetcher_factory.h",
-    "password_manager/password_store_backend_sync_delegate_impl.cc",
-    "password_manager/password_store_backend_sync_delegate_impl.h",
     "password_manager/password_store_factory.cc",
     "password_manager/password_store_factory.h",
     "password_manager/password_store_utils.cc",

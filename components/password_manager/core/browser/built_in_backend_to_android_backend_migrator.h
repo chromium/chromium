@@ -19,11 +19,9 @@ class BuiltInBackendToAndroidBackendMigrator {
  public:
   // |built_in_backend| and |android_backend| must not be null and must outlive
   // the migrator.
-  BuiltInBackendToAndroidBackendMigrator(
-      PasswordStoreBackend* built_in_backend,
-      PasswordStoreBackend* android_backend,
-      PrefService* prefs,
-      PasswordStoreBackend::SyncDelegate* sync_delegate);
+  BuiltInBackendToAndroidBackendMigrator(PasswordStoreBackend* built_in_backend,
+                                         PasswordStoreBackend* android_backend,
+                                         PrefService* prefs);
 
   BuiltInBackendToAndroidBackendMigrator(
       const BuiltInBackendToAndroidBackendMigrator&) = delete;
@@ -36,6 +34,8 @@ class BuiltInBackendToAndroidBackendMigrator {
   ~BuiltInBackendToAndroidBackendMigrator();
 
   void StartMigrationIfNecessary();
+
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
  private:
   struct IsPasswordLess;
@@ -111,7 +111,7 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   std::unique_ptr<MigrationMetricsReporter> metrics_reporter_;
 
-  const raw_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate_;
+  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   bool non_syncable_data_migration_in_progress_ = false;
 

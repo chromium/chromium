@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
-#include "chrome/browser/password_manager/password_store_backend_sync_delegate_impl.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,16 +75,16 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   // about the sync service existence. And hence we cannot directly query the
   // status of password syncing. However, status of password syncing is
   // relevant for migrating passwords from the built-in backend to the Android
-  // backend. Since migration does *not* start immediately after start up, we
-  // inject a repeating callback that queries the sync service. Assumption is
-  // by the time the migration starts, the sync service will have been
-  // created. As a safety mechanism, if the sync service isn't created yet, we
-  // proceed as if the user isn't syncing which forces moving the passwords to
-  // the Android backend to avoid data loss.
+  // backend. Since migration does *not* start immediately after start up,
+  // SyncService will be propagated to PasswordStoreBackend after the backend
+  // creation once SyncService is initialized. Assumption is by the time the
+  // migration starts, the sync service will have been created. As a safety
+  // mechanism, if the sync service isn't created yet, we proceed as if the
+  // user isn't syncing which forces moving the passwords to the Android backend
+  // to avoid data loss.
   ps = new password_manager::PasswordStore(
-      password_manager::PasswordStoreBackend::Create(
-          profile->GetPath(), profile->GetPrefs(),
-          std::make_unique<PasswordStoreBackendSyncDelegateImpl>(profile)));
+      password_manager::PasswordStoreBackend::Create(profile->GetPath(),
+                                                     profile->GetPrefs()));
 #else
   NOTIMPLEMENTED();
 #endif

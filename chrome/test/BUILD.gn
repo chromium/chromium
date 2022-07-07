@@ -6231,7 +6231,6 @@ test("unit_tests") {
       "../browser/optimization_guide/android/optimization_guide_tab_url_provider_android_unittest.cc",
       "../browser/page_load_metrics/observers/android_page_load_metrics_observer_unittest.cc",
       "../browser/password_manager/android/password_ui_view_android_unittest.cc",
-      "../browser/password_manager/password_store_backend_sync_delegate_impl_unittest.cc",
       "../browser/permissions/notification_blocked_message_delegate_android_unittest.cc",
       "../browser/permissions/permission_prompt_android_unittest.cc",
       "../browser/permissions/permission_update_message_controller_android_unittest.cc",

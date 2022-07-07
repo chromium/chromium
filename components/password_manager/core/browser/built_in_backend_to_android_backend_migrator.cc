@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +24,8 @@
 namespace password_manager {
 
 namespace {
+
+using sync_util::IsPasswordSyncEnabled;
 
 // Threshold for the next migration attempt. This is needed in order to prevent
 // clients from spamming GMS Core API.
@@ -95,12 +98,10 @@ class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
 BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
     PasswordStoreBackend* built_in_backend,
     PasswordStoreBackend* android_backend,
-    PrefService* prefs,
-    PasswordStoreBackend::SyncDelegate* sync_delegate)
+    PrefService* prefs)
     : built_in_backend_(built_in_backend),
       android_backend_(android_backend),
-      prefs_(prefs),
-      sync_delegate_(sync_delegate) {
+      prefs_(prefs) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   base::UmaHistogramBoolean(
@@ -132,9 +133,13 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   }
 }
 
+void BuiltInBackendToAndroidBackendMigrator::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  sync_service_ = sync_service;
+}
+
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
-  if (IsMigrationNeeded(prefs_) &&
-      sync_delegate_->IsSyncingPasswordsEnabled()) {
+  if (IsMigrationNeeded(prefs_) && IsPasswordSyncEnabled(sync_service_)) {
     // TODO(crbug.com/1302299): Drop metadata and only then update pref.
   }
   prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
@@ -161,7 +166,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
   // identical. Update calls don't fail because they would add a password in
   // the rare case that it doesn't exist in the target backend.
   if (IsMigrationNeeded(prefs_)) {
-    if (sync_delegate_->IsSyncingPasswordsEnabled()) {
+    if (IsPasswordSyncEnabled(sync_service_)) {
       // Sync is enabled. Migrate non-syncable data from the built-in backend
       // to android backend.
       built_in_backend_->GetAllLoginsAsync(base::BindOnce(
@@ -492,7 +497,7 @@ bool BuiltInBackendToAndroidBackendMigrator::ShouldMigrateNonSyncableData() {
   // non-syncable data (e.g. after enrolling into the experiment).
   return IsMigrationNeeded(prefs_) &&
          (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) ||
-          sync_delegate_->IsSyncingPasswordsEnabled());
+          IsPasswordSyncEnabled(sync_service_));
 }
 
 }  // namespace password_manager

@@ -134,7 +134,6 @@ class PasswordStoreProxyBackendTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PasswordStoreProxyBackend> proxy_backend_;
-  testing::NiceMock<MockPasswordBackendSyncDelegate> sync_delegate_;
   StrictMock<MockPasswordStoreBackend> built_in_backend_;
   StrictMock<MockPasswordStoreBackend> android_backend_;
   syncer::TestSyncService sync_service_;
