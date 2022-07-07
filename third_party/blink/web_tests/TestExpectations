@@ -6277,8 +6277,6 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/resource-timing/nested-context-na
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
-crbug.com/1249176 [ Mac11-arm64 ] media/controls/overflow-menu-always-visible.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-always-visible.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
@@ -7165,3 +7163,4 @@ crbug.com/1299832 http/tests/devtools/extensions/extensions-api.js [ Skip ]
 # Sheriff 2022-07-07
 crbug.com/1339538 [ Mac ] fast/frames/002.html [ Failure Pass ]
 crbug.com/1339538 [ Linux ] fast/frames/002.html [ Failure Pass ]
+crbug.com/1097040 media/controls/overflow-menu-always-visible.html [ Failure Pass ]
