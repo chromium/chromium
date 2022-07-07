@@ -106,7 +106,7 @@ overflow_menu::Destination LowestShown(
     int numVisibleDestinations,
     base::Value::Dict& flatHistory) {
   std::vector<overflow_menu::Destination> shown(
-      ranking.begin(), ranking.begin() + numVisibleDestinations);
+      ranking.begin(), ranking.begin() + (numVisibleDestinations - 1));
   return SortByUsage(shown, flatHistory, true).front();
 }
 
@@ -116,7 +116,7 @@ overflow_menu::Destination HighestUnshown(
     int numVisibleDestinations,
     base::Value::Dict& flatHistory) {
   std::vector<overflow_menu::Destination> unshown(
-      ranking.begin() + numVisibleDestinations, ranking.end());
+      ranking.begin() + (numVisibleDestinations - 1), ranking.end());
   return SortByUsage(unshown, flatHistory, false).front();
 }
 
