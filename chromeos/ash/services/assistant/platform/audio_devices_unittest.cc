@@ -155,6 +155,16 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendHotwordDeviceToObserver) {
   EXPECT_EQ("<none>", observer.preferred_device_id());
 }
 
+TEST_F(AssistantAudioDevicesTest, ShouldSendMicDeviceToObserver) {
+  FakeAudioDevicesObserver observer;
+  audio_devices().AddAndFireObserver(&observer);
+
+  UpdateDeviceList({DeviceBuilder(AudioDeviceType::kMic).WithId(221).Build()});
+
+  EXPECT_EQ("<none>", observer.hotword_device_id());
+  EXPECT_EQ("221", observer.preferred_device_id());
+}
+
 TEST_F(AssistantAudioDevicesTest, ShouldSendUsbDeviceToObserver) {
   FakeAudioDevicesObserver observer;
   audio_devices().AddAndFireObserver(&observer);
@@ -196,6 +206,16 @@ TEST_F(AssistantAudioDevicesTest, ShouldSendFrontMicDeviceToObserver) {
 
   EXPECT_EQ("<none>", observer.hotword_device_id());
   EXPECT_EQ("555", observer.preferred_device_id());
+}
+
+TEST_F(AssistantAudioDevicesTest, ShouldNotSendHdmiDeviceToObserver) {
+  FakeAudioDevicesObserver observer;
+  audio_devices().AddAndFireObserver(&observer);
+
+  UpdateDeviceList({DeviceBuilder(AudioDeviceType::kHdmi).WithId(999).Build()});
+
+  EXPECT_EQ("<none>", observer.hotword_device_id());
+  EXPECT_EQ("<none>", observer.preferred_device_id());
 }
 
 TEST_F(AssistantAudioDevicesTest, ShouldUseHighestPriorityHotwordDevice) {

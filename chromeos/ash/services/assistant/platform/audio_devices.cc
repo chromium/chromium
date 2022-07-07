@@ -99,6 +99,7 @@ absl::optional<uint64_t> GetPreferredDeviceId(
       continue;
 
     switch (device.type) {
+      case chromeos::AudioDeviceType::kMic:
       case chromeos::AudioDeviceType::kUsb:
       case chromeos::AudioDeviceType::kHeadphone:
       case chromeos::AudioDeviceType::kInternalMic:
