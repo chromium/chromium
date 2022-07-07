@@ -52,8 +52,7 @@ export class ChromeVoxBackground {
     ChromeVox.tts = this.tts;
     ChromeVox.braille = this.backgroundBraille_;
 
-    chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
-        this.onIntroduceChromeVox);
+    this.onIntroduceChromeVox();
 
     // Set up a message passing system for goog.provide() calls from
     // within the content scripts.
