@@ -274,6 +274,7 @@ suite('PasswordsSection', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     elementFactory = new PasswordSectionElementFactory(document);
     loadTimeData.overrideValues({
+      enableAutomaticPasswordChangeInSettings: false,
       enablePasswordViewPage: false,
       unifiedPasswordManagerEnabled: false,
     });
@@ -1799,6 +1800,14 @@ suite('PasswordsSection', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_PASSWORD_MANAGER, interaction);
+  });
+
+  test('passwordScriptsRefreshedOnOpen', async function() {
+    loadTimeData.overrideValues(
+        {enableAutomaticPasswordChangeInSettings: true});
+    elementFactory.createPasswordsSection(passwordManager, [], []);
+    Router.getInstance().navigateTo(routes.PASSWORDS);
+    await passwordManager.whenCalled('refreshScriptsIfNecessary');
   });
 
   test(

@@ -36,31 +36,31 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
+import {GlobalScrollTargetMixin, GlobalScrollTargetMixinInterface} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
-import {Route, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 // <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {MergeExceptionsStoreCopiesMixin} from './merge_exceptions_store_copies_mixin.js';
-import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mixin.js';
+import {MergeExceptionsStoreCopiesMixin, MergeExceptionsStoreCopiesMixinInterface} from './merge_exceptions_store_copies_mixin.js';
+import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {MultiStoreExceptionEntry} from './multi_store_exception_entry.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordCheckMixin} from './password_check_mixin.js';
+import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
-import {PasswordRequestorMixin} from './password_requestor_mixin.js';
+import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
 
@@ -109,10 +109,18 @@ export interface PasswordsSectionElement {
   };
 }
 
-const PasswordsSectionElementBase = MergePasswordsStoreCopiesMixin(
-    PasswordRequestorMixin(PrefsMixin(GlobalScrollTargetMixin(
-        MergeExceptionsStoreCopiesMixin(WebUIListenerMixin(
-            I18nMixin(PasswordCheckMixin(PolymerElement))))))));
+const PasswordsSectionElementBase =
+    MergePasswordsStoreCopiesMixin(PasswordRequestorMixin(
+        PrefsMixin(GlobalScrollTargetMixin(RouteObserverMixin(
+            MergeExceptionsStoreCopiesMixin(WebUIListenerMixin(
+                I18nMixin(PasswordCheckMixin(PolymerElement))))))))) as {
+      new (): PolymerElement & PasswordCheckMixinInterface &
+          I18nMixinInterface & WebUIListenerMixinInterface &
+          MergeExceptionsStoreCopiesMixinInterface &
+          RouteObserverMixinInterface & GlobalScrollTargetMixinInterface &
+          PrefsMixinInterface & PasswordRequestorMixinInterface &
+          MergePasswordsStoreCopiesMixinInterface,
+    };
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -245,6 +253,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'eligibleForAccountStorage_)',
       },
 
+      isAutomaticPasswordChangeEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableAutomaticPasswordChangeInSettings');
+        }
+      },
+
       isPasswordViewPageEnabled_: {
         type: Boolean,
         value() {
@@ -317,6 +333,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private hasPasswordExceptions_: boolean;
   private shouldShowBanner_: boolean;
   private isAccountStoreUser_: boolean;
+  private isAutomaticPasswordChangeEnabled_: boolean;
   private isPasswordViewPageEnabled_: boolean;
   private isUnifiedPasswordManagerEnabled_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
@@ -447,6 +464,16 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.passwordManager_.removeAccountStorageOptInStateListener(
         this.setIsOptedInForAccountStorageListener_);
     this.setIsOptedInForAccountStorageListener_ = null;
+  }
+
+  override currentRouteChanged(route: Route): void {
+    super.currentRouteChanged(route);
+
+    // If password change scripts are enabled, the scripts cache should be
+    // refreshed to minimize any UI modifications on the password check page.
+    if (route === routes.PASSWORDS && this.isAutomaticPasswordChangeEnabled_) {
+      this.passwordManager_.refreshScriptsIfNecessary();
+    }
   }
 
   private computeShowAddPasswordButton_(): boolean {

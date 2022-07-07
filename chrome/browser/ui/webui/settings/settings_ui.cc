@@ -292,6 +292,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableAutofillAssistant",
       password_manager::features::IsAutomatedPasswordChangeEnabled());
 
+  html_source->AddBoolean(
+      "enableAutomaticPasswordChangeInSettings",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeInSettings));
+
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "enableDesktopDetailedLanguageSettings",
