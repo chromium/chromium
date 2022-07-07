@@ -2208,7 +2208,7 @@ void TraceLog::SetProcessID(ProcessId process_id) {
   // See http://isthe.com/chongo/tech/comp/fnv/ for algorithm details.
   const uint64_t kOffsetBasis = 14695981039346656037ull;
   const uint64_t kFnvPrime = 1099511628211ull;
-  const uint64_t pid = process_id_;
+  const uint64_t pid = static_cast<uint64_t>(process_id_);
   process_id_hash_ = (kOffsetBasis ^ pid) * kFnvPrime;
 }
 

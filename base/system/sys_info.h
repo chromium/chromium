@@ -34,19 +34,19 @@ class BASE_EXPORT SysInfo {
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this
   // will return the lesser of the actual physical memory, or 512MB.
-  static int64_t AmountOfPhysicalMemory();
+  static uint64_t AmountOfPhysicalMemory();
 
   // Return the number of bytes of current available physical memory on the
   // machine.
   // (The amount of memory that can be allocated without any significant
   // impact on the system. It can lead to freeing inactive file-backed
   // and/or speculative file-backed memory).
-  static int64_t AmountOfAvailablePhysicalMemory();
+  static uint64_t AmountOfAvailablePhysicalMemory();
 
   // Return the number of bytes of virtual memory of this process. A return
   // value of zero means that there is no limit on the available virtual
   // memory.
-  static int64_t AmountOfVirtualMemory();
+  static uint64_t AmountOfVirtualMemory();
 
   // Return the number of megabytes of physical memory on the current machine.
   static int AmountOfPhysicalMemoryMB() {
@@ -215,14 +215,14 @@ class BASE_EXPORT SysInfo {
   FRIEND_TEST_ALL_PREFIXES(SysInfoTest, AmountOfAvailablePhysicalMemory);
   FRIEND_TEST_ALL_PREFIXES(debug::SystemMetricsTest, ParseMeminfo);
 
-  static int64_t AmountOfPhysicalMemoryImpl();
-  static int64_t AmountOfAvailablePhysicalMemoryImpl();
+  static uint64_t AmountOfPhysicalMemoryImpl();
+  static uint64_t AmountOfAvailablePhysicalMemoryImpl();
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
-  static int64_t AmountOfAvailablePhysicalMemory(
+  static uint64_t AmountOfAvailablePhysicalMemory(
       const SystemMemoryInfoKB& meminfo);
 #endif
 };

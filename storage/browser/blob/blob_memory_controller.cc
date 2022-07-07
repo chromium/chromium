@@ -82,11 +82,11 @@ File::Error CreateBlobDirectory(const FilePath& blob_storage_dir) {
 BlobStorageLimits CalculateBlobStorageLimitsImpl(
     const FilePath& storage_dir,
     bool disk_enabled,
-    absl::optional<int64_t> optional_memory_size_for_testing) {
+    absl::optional<uint64_t> optional_memory_size_for_testing) {
   int64_t disk_size = 0ull;
-  int64_t memory_size = optional_memory_size_for_testing
-                            ? optional_memory_size_for_testing.value()
-                            : base::SysInfo::AmountOfPhysicalMemory();
+  uint64_t memory_size = optional_memory_size_for_testing
+                             ? optional_memory_size_for_testing.value()
+                             : base::SysInfo::AmountOfPhysicalMemory();
   if (disk_enabled && CreateBlobDirectory(storage_dir) == base::File::FILE_OK)
     disk_size = base::SysInfo::AmountOfTotalDiskSpace(storage_dir);
 
@@ -99,9 +99,9 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
     constexpr size_t kTwoGigabytes = 2ull * 1024 * 1024 * 1024;
     limits.max_blob_in_memory_space = kTwoGigabytes;
 #elif BUILDFLAG(IS_ANDROID)
-    limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 100ll);
+    limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 100);
 #else
-    limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 5ll);
+    limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 5);
 #endif
   }
   // Devices just on the edge (RAM == 256MB) should not fail because

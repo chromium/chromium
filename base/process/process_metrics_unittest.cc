@@ -207,11 +207,11 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.shmem, 140204);
   EXPECT_EQ(meminfo.slab, 54212);
 #endif
-  EXPECT_EQ(355725,
+  EXPECT_EQ(355725u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
   // Simulate as if there is no MemAvailable.
   meminfo.available = 0;
-  EXPECT_EQ(374448,
+  EXPECT_EQ(374448u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
   meminfo = {};
   EXPECT_TRUE(ParseProcMeminfo(valid_input2, &meminfo));
@@ -223,7 +223,7 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.swap_total, 524280);
   EXPECT_EQ(meminfo.swap_free, 524200);
   EXPECT_EQ(meminfo.dirty, 4);
-  EXPECT_EQ(69936,
+  EXPECT_EQ(69936u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
 }
 

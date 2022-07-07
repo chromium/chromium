@@ -69,21 +69,15 @@ base::TimeDelta MinimumIntervalSeconds() {
 }
 
 double MemoryThresholdParam() {
-  int64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-  double memory_threshold_mb = kDefaultMemoryThresholdMB;
-
-  if (physical_memory > 3.1 * 1024 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf4GbDevices();
-  else if (physical_memory > 2.1 * 1024 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf3GbDevices();
-  else if (physical_memory > 1.1 * 1024 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf2GbDevices();
-  else if (physical_memory > 600 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf1GbDevices();
-  else
-    memory_threshold_mb = MemoryThresholdParamOf512MbDevices();
-
-  return memory_threshold_mb;
+  int physical_memory_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  if (physical_memory_mb > 3.1 * 1024)
+    return MemoryThresholdParamOf4GbDevices();
+  if (physical_memory_mb > 2.1 * 1024)
+    return MemoryThresholdParamOf3GbDevices();
+  if (physical_memory_mb > 1.1 * 1024)
+    return MemoryThresholdParamOf2GbDevices();
+  return (physical_memory_mb > 600) ? MemoryThresholdParamOf1GbDevices()
+                                    : MemoryThresholdParamOf512MbDevices();
 }
 
 }  // namespace

@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDeviceInfoHelper {
 
   virtual int64_t AmountOfTotalDiskSpace(const base::FilePath& path) const;
 
-  virtual int64_t AmountOfPhysicalMemory() const;
+  virtual uint64_t AmountOfPhysicalMemory() const;
 };  // class QuotaDeviceInfoHelper
 
 }  // namespace storage

@@ -1165,9 +1165,9 @@ PR_ParseTimeString(
 #endif
                   if (secs != (time_t) -1)
                     {
-                      *result_imploded = (PRInt64)secs * PR_USEC_PER_SEC;
-                      *result_imploded += result->tm_usec;
-                      return PR_SUCCESS;
+                    *result_imploded = secs * (PRTime)PR_USEC_PER_SEC;
+                    *result_imploded += result->tm_usec;
+                    return PR_SUCCESS;
                     }
                 }
 
