@@ -352,8 +352,6 @@ ci.thin_tester(
         category = "mac",
         short_name = "12",
     ),
-    # TODO(crbug.com/1332397): Add to rotation when it's stable.
-    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/Mac Builder"],
 )
 

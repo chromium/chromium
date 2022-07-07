@@ -97,5 +97,8 @@
     ]
   },
   "builder_group": "chromium.mac",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

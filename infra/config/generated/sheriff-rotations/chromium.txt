@@ -34,6 +34,7 @@ ci/Mac10.13 Tests
 ci/Mac10.14 Tests
 ci/Mac10.15 Tests
 ci/Mac11 Tests
+ci/Mac12 Tests
 ci/Network Service Linux
 ci/WebKit Linux ASAN
 ci/WebKit Linux Leak
