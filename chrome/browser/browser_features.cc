@@ -168,6 +168,6 @@ const base::Feature kRestartNetworkServiceUnsandboxedForFailedLaunch{
 // When this feature is enabled, metrics are gathered regarding the performance
 // and reliability of app-bound encryption primitives on a background thread.
 const base::Feature kAppBoundEncryptionMetrics{
-    "AppBoundEncryptionMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AppBoundEncryptionMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 }  // namespace features
