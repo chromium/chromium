@@ -17,6 +17,7 @@ import {TypingEcho} from '/chromevox/background/editing/editable_text_base.js';
 import {EventSourceState} from '/chromevox/background/event_source.js';
 import {GestureInterface} from '/chromevox/background/gesture_interface.js';
 import {Output} from '/chromevox/background/output/output.js';
+import {PhoneticData} from '/chromevox/background/phonetic_data.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {SmartStickyMode} from '/chromevox/background/smart_sticky_mode.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';

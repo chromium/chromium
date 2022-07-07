@@ -5,14 +5,9 @@
 /**
  * @fileoverview Provides phonetic disambiguation functionality across multiple
  * languages for ChromeVox.
- *
  */
 
-goog.provide('PhoneticData');
-
-goog.require('JaPhoneticData');
-
-PhoneticData = class {
+export class PhoneticData {
   /**
    * Returns the phonetic disambiguation for |char| in |locale|.
    * Returns empty string if disambiguation can't be found.
@@ -67,4 +62,4 @@ PhoneticData = class {
     }
     return result.join(', ');
   }
-};
+}
