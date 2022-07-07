@@ -43,8 +43,7 @@ enable_dangling_raw_ptr_checks = true
 
 ```bash
 ./out/dangling/content_shell \
-   --enable-features=PartitionAllocBackupRefPtr \
-   --enable-features=PartitionAllocDanglingPtr
+   --enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtr
 ```
 
 By default, Chrome will crash on the first dangling raw_ptr detected.
@@ -54,8 +53,7 @@ By default, Chrome will crash on the first dangling raw_ptr detected.
 ### Crash (default)
 
 ```bash
---enable-features=PartitionAllocBackupRefPtr \
---enable-features=PartitionAllocDanglingPtr:mode/crash
+--enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtr:mode/crash
 ```
 
 ### Record a list of signatures 
@@ -63,8 +61,7 @@ By default, Chrome will crash on the first dangling raw_ptr detected.
 Example usage:
 ```bash
 ./out/dangling/content_shell \
-   --enable-features=PartitionAllocBackupRefPtr \
-   --enable-features=PartitionAllocDanglingPtr:mode/log_signature \
+   --enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtr:mode/log_signature \
    |& tee output
 ```
 
