@@ -73,9 +73,7 @@ class ScopedTimeTicksOverride {
 };
 
 class MobileFriendlinessCheckerTest : public testing::Test {
-  static void EvalMobileFriendliness(LocalFrameView* view,
-                                     int scroll_y_offset,
-                                     bool fixed_clock) {
+  static void EvalMobileFriendliness(LocalFrameView* view, bool fixed_clock) {
     DCHECK(view->GetFrame().IsLocalRoot());
     ScopedTimeTicksOverride clock(fixed_clock);
     for (const Frame* frame = &view->GetFrame(); frame;
@@ -85,10 +83,6 @@ class MobileFriendlinessCheckerTest : public testing::Test {
             DocumentUpdateReason::kTest);
       }
     }
-
-    // Scroll the view to specified offset
-    view->LayoutViewport()->SetScrollOffsetUnconditionally(
-        ScrollOffset(0, scroll_y_offset));
 
     view->GetMobileFriendlinessChecker()->DidFinishLifecycleUpdate(*view);
   }
@@ -127,7 +121,6 @@ class MobileFriendlinessCheckerTest : public testing::Test {
 
   MobileFriendliness CalculateMetricsForHTMLString(const std::string& html,
                                                    float device_scale = 1.0,
-                                                   int scroll_y_offset = 0,
                                                    bool fixed_clock = true) {
     MFTestWebFrameClient web_frame_client;
     {
@@ -137,15 +130,13 @@ class MobileFriendlinessCheckerTest : public testing::Test {
           helper->GetWebView()->MainFrameImpl(), html,
           url_test_helpers::ToKURL("about:blank"));
       EvalMobileFriendliness(
-          helper->GetWebView()->MainFrameImpl()->GetFrameView(),
-          scroll_y_offset, fixed_clock);
+          helper->GetWebView()->MainFrameImpl()->GetFrameView(), fixed_clock);
     }
     return web_frame_client.GetMobileFriendliness();
   }
 
   MobileFriendliness CalculateMetricsForFile(const std::string& path,
                                              float device_scale = 1.0,
-                                             int scroll_y_offset = 0,
                                              bool fixed_clock = true) {
     MFTestWebFrameClient web_frame_client;
     {
@@ -157,8 +148,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
       frame_test_helpers::LoadFrame(helper->GetWebView()->MainFrameImpl(),
                                     kBaseUrl + path);
       EvalMobileFriendliness(
-          helper->GetWebView()->MainFrameImpl()->GetFrameView(),
-          scroll_y_offset, fixed_clock);
+          helper->GetWebView()->MainFrameImpl()->GetFrameView(), fixed_clock);
     }
     return web_frame_client.GetMobileFriendliness();
   }
@@ -1477,7 +1467,6 @@ TEST_F(MobileFriendlinessCheckerTest, TapTargetTimeout) {
 </html>
 )",
                                     /*device_scale=*/1.0,
-                                    /*scroll_y_offset=*/0,
                                     /*fixed_clock=*/false);
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, -2);
 }
