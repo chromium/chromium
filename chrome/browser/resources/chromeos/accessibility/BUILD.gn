@@ -162,13 +162,7 @@ group("unit_tests_js") {
 
 js2gtest("misc_unit_tests_js") {
   test_type = "unit"
-  sources = [
-    "braille_ime/braille_ime_unittest.js",
-    "common/rect_util_unittest.js",
-  ]
+  sources = [ "braille_ime/braille_ime_unittest.js" ]
   gen_include_files = [ "common/testing/accessibility_test_base.js" ]
-  extra_js_files = [
-    "braille_ime/braille_ime.js",
-    "common/rect_util.js",
-  ]
+  extra_js_files = [ "braille_ime/braille_ime.js" ]
 }

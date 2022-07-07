@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RectUtil} from '/common/rect_util.js';
 import {SelectToSpeakConstants} from '/select_to_speak/select_to_speak_constants.js';
 
 const SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '/common/event_generator.js';
+import {RectUtil} from '/common/rect_util.js';
 import {ActionManager} from '/switch_access/action_manager.js';
 import {AutoScanManager} from '/switch_access/auto_scan_manager.js';
 import {FocusRingManager} from '/switch_access/focus_ring_manager.js';

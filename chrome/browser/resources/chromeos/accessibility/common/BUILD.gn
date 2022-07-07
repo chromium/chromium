@@ -162,6 +162,7 @@ js2gtest("accessibility_tests") {
     "cursors/cursors_test.js",
     "cursors/recovery_strategy_test.js",
     "event_generator_test.js",
+    "rect_util_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",
     "tree_walker_test.js",

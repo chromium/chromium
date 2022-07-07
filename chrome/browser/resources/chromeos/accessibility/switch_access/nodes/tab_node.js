@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RectUtil} from '/common/rect_util.js';
 import {Navigator} from '/switch_access/navigator.js';
 import {BackButtonNode} from '/switch_access/nodes/back_button_node.js';
 import {BasicNode, BasicRootNode} from '/switch_access/nodes/basic_node.js';

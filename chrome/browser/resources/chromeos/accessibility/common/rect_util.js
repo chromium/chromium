@@ -9,7 +9,7 @@
 let ScreenRect;
 
 /** A collection of helper functions when dealing with rects. */
-const RectUtil = {
+export const RectUtil = {
   /** @type {!ScreenRect} */
   ZERO_RECT: {top: 0, left: 0, width: 0, height: 0},
 

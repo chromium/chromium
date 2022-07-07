@@ -13,6 +13,7 @@ SwitchAccessTabNodeTest = class extends SwitchAccessE2ETest {
     await importModule('Navigator', '/switch_access/navigator.js');
     await importModule(
         'SwitchAccessMenuAction', '/switch_access/switch_access_constants.js');
+    await importModule('RectUtil', '/common/rect_util.js');
   }
 };
 

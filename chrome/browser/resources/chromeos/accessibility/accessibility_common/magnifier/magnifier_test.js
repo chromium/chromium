@@ -26,6 +26,12 @@ MagnifierE2ETest = class extends E2ETestBase {
     });
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('RectUtil', '/common/rect_util.js');
+  }
+
   async getPref(name) {
     return new Promise(resolve => {
       chrome.settingsPrivate.getPref(name, ret => {

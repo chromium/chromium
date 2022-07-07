@@ -22,6 +22,7 @@ AutoclickE2ETest = class extends E2ETestBase {
 
     const module =
         await import('/accessibility_common/accessibility_common_loader.js');
+    await importModule('RectUtil', '/common/rect_util.js');
 
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
     accessibilityCommon = new module.AccessibilityCommon();

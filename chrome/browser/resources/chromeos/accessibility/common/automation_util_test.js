@@ -14,8 +14,10 @@ GEN_INCLUDE([
 AccessibilityExtensionAutomationUtilE2ETest =
     class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
-    super.setUp();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('RectUtil', '/common/rect_util.js');
+
     window.Dir = constants.Dir;
     window.RoleType = chrome.automation.RoleType;
 

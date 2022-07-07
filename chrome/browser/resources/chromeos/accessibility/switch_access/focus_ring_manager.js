@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RectUtil} from '/common/rect_util.js';
 import {MenuManager} from '/switch_access/menu_manager.js';
 import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
 import {SwitchAccess} from '/switch_access/switch_access.js';

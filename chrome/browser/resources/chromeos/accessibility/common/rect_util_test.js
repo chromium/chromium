@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['./testing/accessibility_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 
 /** Test fixture for rect_util.js. */
-RectUtilUnitTest = class extends AccessibilityTestBase {};
+RectUtilTest = class extends SelectToSpeakE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('RectUtil', '/common/rect_util.js');
+  }
+};
 
-/** @override */
-RectUtilUnitTest.prototype.extraLibraries = ['rect_util.js'];
-
-TEST_F('RectUtilUnitTest', 'Adjacent', function() {
+AX_TEST_F('RectUtilTest', 'Adjacent', function() {
   const baseRect = {left: 10, top: 10, width: 10, height: 10};
   const adjacentRects = [
     {left: 0, top: 0, width: 10, height: 10},
@@ -73,7 +76,7 @@ TEST_F('RectUtilUnitTest', 'Adjacent', function() {
   }
 });
 
-TEST_F('RectUtilUnitTest', 'Close', function() {
+AX_TEST_F('RectUtilTest', 'Close', function() {
   const centerRect = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(RectUtil.close(centerRect, centerRect, 0));
 
@@ -130,7 +133,7 @@ TEST_F('RectUtilUnitTest', 'Close', function() {
   assertFalse(RectUtil.close(farRect, centerRect, 20));
 });
 
-TEST_F('RectUtilUnitTest', 'Equals', function() {
+AX_TEST_F('RectUtilTest', 'Equals', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 0, top: 0, width: 10, height: 10};
   const rect3 = {left: 1, top: 0, width: 10, height: 10};
@@ -155,7 +158,7 @@ TEST_F('RectUtilUnitTest', 'Equals', function() {
   assertFalse(RectUtil.equal(rect6, rect1), 'equal should be symmetric');
 });
 
-TEST_F('RectUtilUnitTest', 'Center', function() {
+AX_TEST_F('RectUtilTest', 'Center', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 10, top: 20, width: 10, height: 40};
 
@@ -168,7 +171,7 @@ TEST_F('RectUtilUnitTest', 'Center', function() {
   assertEquals(40, center2.y, 'Center2 y should be 40');
 });
 
-TEST_F('RectUtilUnitTest', 'Union', function() {
+AX_TEST_F('RectUtilTest', 'Union', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 4, top: 4, width: 2, height: 2};
   const rect3 = {left: 10, top: 20, width: 10, height: 40};
@@ -200,7 +203,7 @@ TEST_F('RectUtilUnitTest', 'Union', function() {
       'Union of rect1 and rect5 does not match expected value');
 });
 
-TEST_F('RectUtilUnitTest', 'UnionAll', function() {
+AX_TEST_F('RectUtilTest', 'UnionAll', function() {
   const rect1 = {left: 0, top: 0, width: 10, height: 10};
   const rect2 = {left: 0, top: 10, width: 10, height: 10};
   const rect3 = {left: 10, top: 0, width: 10, height: 10};
@@ -220,7 +223,7 @@ TEST_F('RectUtilUnitTest', 'UnionAll', function() {
       'Union of rects 1-5 does not match expected value');
 });
 
-TEST_F('RectUtilUnitTest', 'ExpandToFitWithPadding', function() {
+AX_TEST_F('RectUtilTest', 'ExpandToFitWithPadding', function() {
   const padding = 5;
   let inner = {left: 100, top: 100, width: 100, height: 100};
   let outer = {left: 120, top: 120, width: 20, height: 20};
@@ -266,7 +269,7 @@ TEST_F('RectUtilUnitTest', 'ExpandToFitWithPadding', function() {
           'expandToFitWithPadding does not match expected value');
 });
 
-TEST_F('RectUtilUnitTest', 'Contains', function() {
+AX_TEST_F('RectUtilTest', 'Contains', function() {
   const outer = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(RectUtil.contains(outer, outer), 'Rect should contain itself');
 
@@ -323,7 +326,7 @@ TEST_F('RectUtilUnitTest', 'Contains', function() {
 });
 
 
-TEST_F('RectUtilUnitTest', 'Difference', function() {
+AX_TEST_F('RectUtilTest', 'Difference', function() {
   const outer = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(
       RectUtil.equal(RectUtil.ZERO_RECT, RectUtil.difference(outer, outer)),
@@ -365,7 +368,7 @@ TEST_F('RectUtilUnitTest', 'Difference', function() {
       'Difference to the right should be the largest');
 });
 
-TEST_F('RectUtilUnitTest', 'Intersection', function() {
+AX_TEST_F('RectUtilTest', 'Intersection', function() {
   const rect1 = {left: 10, top: 10, width: 10, height: 10};
   assertTrue(
       RectUtil.equal(rect1, RectUtil.intersection(rect1, rect1)),
@@ -423,7 +426,7 @@ TEST_F('RectUtilUnitTest', 'Intersection', function() {
       'Intersection should be symmetric');
 });
 
-TEST_F('RectUtilUnitTest', 'Overlaps', function() {
+AX_TEST_F('RectUtilTest', 'Overlaps', function() {
   var rect1 = {left: 0, top: 0, width: 100, height: 100};
   var rect2 = {left: 80, top: 0, width: 100, height: 20};
   var rect3 = {left: 0, top: 80, width: 20, height: 100};
@@ -436,7 +439,7 @@ TEST_F('RectUtilUnitTest', 'Overlaps', function() {
   assertFalse(RectUtil.overlaps(rect2, rect3));
 });
 
-TEST_F('RectUtilUnitTest', 'RectFromPoints', function() {
+AX_TEST_F('RectUtilTest', 'RectFromPoints', function() {
   var rect = {left: 10, top: 20, width: 50, height: 60};
 
   assertNotEquals(

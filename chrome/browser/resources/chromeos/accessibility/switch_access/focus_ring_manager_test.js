@@ -17,6 +17,7 @@ SwitchAccessFocusRingManagerTest = class extends SwitchAccessE2ETest {
     await importModule(
         'SAConstants', '/switch_access/switch_access_constants.js');
     await importModule('ActionManager', '/switch_access/action_manager.js');
+    await importModule('RectUtil', '/common/rect_util.js');
 
     await TestUtility.setup();
   }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** A collection of helper functions when dealing with arrays. */
-const ArrayUtil = {
+export const ArrayUtil = {
   /**
    * @param {Array=} array1
    * @param {Array=} array2
