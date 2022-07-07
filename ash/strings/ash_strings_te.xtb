@@ -260,7 +260,7 @@
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
 <translation id="2509468283778169019">CAPS LOCK ఆన్‌లో ఉంది</translation>
 <translation id="2542089167727451762">మీ ప్రొఫైల్ ఫోటోను నొక్కండి</translation>
-<translation id="255671100581129685">Google అసిస్టెంట్ పబ్లిక్ సెషన్‌లో అందుబాటులో లేదు.</translation>
+<translation id="255671100581129685">Google Assistant పబ్లిక్ సెషన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="256712445991462162">డాక్ చేసిన మాగ్నిఫైయర్</translation>
 <translation id="2570734079541893434">సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="2573588302192866788"><ph name="NAME" />‌ను కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
@@ -657,7 +657,7 @@
 <translation id="4774338217796918551">రేపు <ph name="COME_BACK_TIME" />కి తిరిగి రండి.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
 <translation id="4777825441726637019">Play Store</translation>
-<translation id="4778095205580009397">Google అసిస్టెంట్ డెమో సెషన్‌లో అందుబాటులో లేదు.</translation>
+<translation id="4778095205580009397">Google Assistant డెమో సెషన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="4814539958450445987">లాగిన్ స్క్రీన్</translation>
@@ -672,7 +672,7 @@
 <translation id="4872237917498892622">Alt+Search లేదా Shift</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4889868803215848840">సూచనలను మెరుగుపరచడానికి ఆప్షనల్ ఫీడ్‌బ్యాక్‌ను అందించండి:</translation>
-<translation id="4890187583552566966">Google అసిస్టెంట్‌ను మీ నిర్వాహ‌కుడు నిలిపివేశారు.</translation>
+<translation id="4890187583552566966">Google Assistantను మీ నిర్వాహ‌కుడు నిలిపివేశారు.</translation>
 <translation id="4890408602550914571">మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే బ్లూటూత్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="4895488851634969361">బ్యాటరీ నిండింది.</translation>
 <translation id="490375751687810070">నిలువుగా ఉంది</translation>
@@ -799,7 +799,7 @@
 <translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
 <translation id="5678564054339031017">వచ్చే వారాన్ని చూపించు</translation>
 <translation id="5679050765726761783">తక్కువ స్థాయి పవర్ అడాప్టర్ కనెక్ట్ చేయబడింది</translation>
-<translation id="5682642926269496722">ప్రస్తుత వినియోగదారు ఖాతాలో Google అసిస్టెంట్ పని చేయదు.</translation>
+<translation id="5682642926269496722">ప్రస్తుత వినియోగదారు ఖాతాలో Google Assistant పని చేయదు.</translation>
 <translation id="5689633613396158040">రాత్రి కాంతి ఫీచర్ అనేది తక్కువ కాంతి ఉన్న సందర్భాలలో మీ స్క్రీన్‌ను స్పష్టంగా చూడటాన్ని లేదా చదవడాన్ని మరింత సులభతరం చేస్తుంది. నైట్ లైట్ ఆన్ చేసే సమయాన్ని మార్చడానికి నొక్కండి లేదా దాన్ని పూర్తిగా ఆపివేయండి.</translation>
 <translation id="5691772641933328258">వేలిముద్ర గుర్తించబడలేదు</translation>
 <translation id="570390244361237317">అన్ని యాప్‌లు, అన్ని యాప్‌లను యాక్సెస్ చేయడానికి బాణం కీలతో నావిగేట్ చేయండి</translation>
@@ -878,7 +878,7 @@
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
-<translation id="612734058257491180">అతిథి సెషన్‌లో Google అసిస్టెంట్ పని చేయదు.</translation>
+<translation id="612734058257491180">అతిథి సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6134259848159370930">మీ పరికరం, యాప్‌లు, సెట్టింగ్‌లు, వెబ్‌ను వెతకండి.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయి'ని తెరవండి</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
@@ -1026,7 +1026,7 @@
 <translation id="7026338066939101231">తరుగుదల</translation>
 <translation id="7029814467594812963">సెషన్ నిష్క్రమించు</translation>
 <translation id="7032161822340700104">కేవలం 6 టెంప్లేట్‌లకు మాత్రమే అనుమతి ఉంది. కొత్త టెంప్లేట్‌ను జోడించాలంటే ఒక పాత టెంప్లేట్‌ను తీసివేయాలి.</translation>
-<translation id="703425375924687388"><ph name="QUERY_NAME" />, Google అసిస్టెంట్</translation>
+<translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">స్టేటస్ ప్రాంతాన్ని కుదించండి</translation>
 <translation id="7045033600005038336">టెంప్లేట్‌ను రీప్లేస్ చేయాలా?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> డిస్‌కనెక్ట్ అయింది</translation>
@@ -1146,7 +1146,7 @@
 <translation id="776344839111254542">అప్‌డేట్ వివరాలను వీక్షించడం కోసం క్లిక్ చేయండి</translation>
 <translation id="7780094051999721182">షార్ట్‌కట్‌లు</translation>
 <translation id="7780159184141939021">స్క్రీన్‌ను తిప్పండి</translation>
-<translation id="7796353162336583443">గమనికను రాయడానికి, స్క్రీన్‌షాట్‌ను తీయడానికి, Google అసిస్టెంట్, లేజర్ పాయింటర్ లేదా భూతద్దాన్ని ఉపయోగించడానికి అరలో స్టైలస్ బటన్‌ను నొక్కండి.</translation>
+<translation id="7796353162336583443">గమనికను రాయడానికి, స్క్రీన్‌షాట్‌ను తీయడానికి, Google Assistant, లేజర్ పాయింటర్ లేదా భూతద్దాన్ని ఉపయోగించడానికి అరలో స్టైలస్ బటన్‌ను నొక్కండి.</translation>
 <translation id="7796735576426975947">కొత్త నోటిఫికేషన్ దాచబడింది</translation>
 <translation id="7798302898096527229">రద్దు చేయడానికి Search లేదా Shiftను నొక్కండి.</translation>
 <translation id="7807067443225230855">శోధన మరియు అసిస్టెంట్</translation>
@@ -1175,7 +1175,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">స్పీచ్ ఇప్పుడు పరికరంలోనే ప్రాసెస్ చేయబడింది, డిక్టేషన్ ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>
 <translation id="7932451802722951285">Google Calendarలో తెరవండి</translation>
-<translation id="7933084174919150729">ప్రాథమిక ప్రొఫైల్‌కు మాత్రమే Google అసిస్టెంట్ అందుబాటులో ఉంటుంది.</translation>
+<translation id="7933084174919150729">ప్రాథమిక ప్రొఫైల్‌కు మాత్రమే Google Assistant అందుబాటులో ఉంటుంది.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> మరియు <ph name="SECOND_PARENT_EMAIL" /> ద్వారా ఖాతా నిర్వహించబడుతోంది</translation>
 <translation id="793716872548410480">మీ క్లిప్‌బోర్డ్‌ను చూడడానికి, <ph name="SHORTCUT_KEY_NAME" /> + V నొక్కండి. మీరు చివరగా కాపీ చేసిన 5 ఐటెమ్‌లు, మీ క్లిప్‌బోర్డ్‌లో సేవ్ చేయబడతాయి.</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>

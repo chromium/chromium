@@ -158,7 +158,7 @@
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
 <translation id="1147991416141538220">ऐक्सेस मांगने के लिए, इस डिवाइस के एडमिन से संपर्क करें.</translation>
 <translation id="1148063863818152153">आपके डिवाइस का ईआईडी नंबर</translation>
-<translation id="1148624853678088576">आप बिल्कुल तैयार हैं!</translation>
+<translation id="1148624853678088576">आप बिलकुल तैयार हैं!</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कैन हो रही है</translation>
 <translation id="1150490752229770117">इस <ph name="DEVICE_TYPE" /> के लिए अपने-आप होने वाला यह आखिरी साॅफ़्टवेयर और सुरक्षा अपडेट था. आने वाले समय में अपडेट पाने के लिए, नए माॅडल पर अपग्रेड करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -1955,7 +1955,7 @@
 <translation id="2804043232879091219">वैकल्पिक ब्राउज़र नहीं खोला जा सका</translation>
 <translation id="2804667941345577550">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="2804680522274557040">कैमरा बंद किया गया</translation>
-<translation id="2805539617243680210">अब आप बिल्कुल तैयार हैं!</translation>
+<translation id="2805539617243680210">अब आप बिलकुल तैयार हैं!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2805760958323556153">नीति का ExtensionInstallForcelist मान अमान्य है. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -5709,7 +5709,7 @@
 <translation id="6551739526055143276">इसे Family Link से मैनेज किया जाता है</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> उपयोगकर्ता</translation>
 <translation id="655483977608336153">दोबारा कोशिश करें</translation>
-<translation id="6555432686520421228">सभी उपयोगकर्ता खातों को हटाएं और अपने <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस को बिल्कुल नया जैसा बनाने के लिए रीसेट करें.</translation>
+<translation id="6555432686520421228">सभी उपयोगकर्ता खातों को हटाएं और अपने <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस को बिलकुल नया जैसा बनाने के लिए रीसेट करें.</translation>
 <translation id="6555604601707417276">Linux का बैक अप वापस लाया गया</translation>
 <translation id="6555810572223193255">क्‍लीनअप अभी उपलब्ध नहीं है</translation>
 <translation id="6556477848444788999">पिन या पासवर्ड, आपके <ph name="DEVICE_TYPE" /> पर मौजूद डेटा को सुरक्षित रखता है. इसमें, इस डिवाइस से स्ट्रीम किया गया डेटा भी शामिल है.</translation>
@@ -6738,7 +6738,7 @@
 <translation id="758895749110326677">Chromebook पर गेमिंग को बेहतर बनाने में मदद करें</translation>
 <translation id="7589461650300748890">अरे, सुनिए. सतर्क रहें.</translation>
 <translation id="7593653750169415785">आपने कुछ सूचनाओं को अस्वीकार कर दिया, इसलिए यह अपने आप ब्लॉक हो गया है</translation>
-<translation id="7594725637786616550">पावरवॉश आपके <ph name="DEVICE_TYPE" /> को बिल्कुल नए जैसा रीसेट कर देगा.</translation>
+<translation id="7594725637786616550">पावरवॉश आपके <ph name="DEVICE_TYPE" /> को बिलकुल नए जैसा रीसेट कर देगा.</translation>
 <translation id="7595453277607160340">Android ऐप्लिकेशन का इस्तेमाल करने और आपका <ph name="DEVICE_TYPE" /> ठीक से काम करता रहे, इसके लिए फिर से साइन इन करें और अपडेट करें.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (गड़बड़ी कोड <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">कंप्यूटर फिर से चालू करें</translation>
@@ -7122,7 +7122,7 @@
 <translation id="7946586320617670168">शुरुआती जगह सुरक्षित होनी चाहिए</translation>
 <translation id="794676567536738329">अनुमतियों की पुष्टि करें</translation>
 <translation id="7947962633355574091">वीडियो के पते को कॉ&amp;पी करें</translation>
-<translation id="7947964080535614577">आम तौर पर, साइटें विज्ञापन दिखाती हैं, ताकि कॉन्टेंट या सेवाएं बिल्कुल मुफ़्त में उपलब्ध कराई जा सकें. हालांकि, कुछ साइटें तंग या गुमराह करने वाले विज्ञापन दिखाती हैं.</translation>
+<translation id="7947964080535614577">आम तौर पर, साइटें विज्ञापन दिखाती हैं, ताकि कॉन्टेंट या सेवाएं बिलकुल मुफ़्त में उपलब्ध कराई जा सकें. हालांकि, कुछ साइटें तंग या गुमराह करने वाले विज्ञापन दिखाती हैं.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> के सभी पेज</translation>
 <translation id="7950629216186736592">वजह: एलबीएस की सुविधा सिर्फ़ http://, https://, और file:// से शुरू होने वाले यूआरएल के साथ काम करती है.</translation>
 <translation id="7951265006188088697">Google Pay के पैसे चुकाने के तरीके को जोड़ने या प्रबंधित करने के लिए, अपने <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> पर जाएं</translation>
@@ -7759,7 +7759,7 @@
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR हेडसेट को दिखा रहा है</translation>
 <translation id="8590375307970699841">स्वचालित अपडेट सेट अप करें</translation>
 <translation id="8591783563402255548">1 सेकंड</translation>
-<translation id="8592141010104017453">सूचनाएं बिल्कुल न दिखाएं</translation>
+<translation id="8592141010104017453">सूचनाएं बिलकुल न दिखाएं</translation>
 <translation id="859246725979739260">इस साइट को, आपकी जगह की जानकारी ऐक्सेस करने से रोका गया है.</translation>
 <translation id="8593121833493516339">इस्तेमाल और निदान से जुड़ा डेटा भेजें. Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेजकर,  अपने बच्चे के Android अनुभव को बेहतर बनाने में मदद करें. इसका इस्तेमाल आपके बच्चे की पहचान करने के लिए नहीं किया जाएगा. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. अगर आपके बच्चे के लिए दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="8594908476761052472">वीडियो कैप्चर करें</translation>
@@ -8080,7 +8080,7 @@
 <translation id="8890170499370378450">हो सकता है कि आपको मोबाइल डेटा का शुल्क देना पड़े</translation>
 <translation id="8890516388109605451">स्रोत</translation>
 <translation id="8890529496706615641">प्रोफ़ाइल का नाम नहीं बदला जा सका. कृपया फिर से कोशिश करें या तकनीकी सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
-<translation id="8892168913673237979">बिल्कुल तैयार है!</translation>
+<translation id="8892168913673237979">बिलकुल तैयार है!</translation>
 <translation id="8893801527741465188">अनइंस्टॉल पूरा हुआ</translation>
 <translation id="8893928184421379330">क्षमा करें, डिवाइस <ph name="DEVICE_LABEL" /> की पहचान नहीं हो सकी.</translation>
 <translation id="8894761918470382415">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) के लिए डेटा ऐक्सेस सुरक्षा</translation>

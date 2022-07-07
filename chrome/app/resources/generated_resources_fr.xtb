@@ -4261,7 +4261,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5121130586824819730">Votre disque dur est saturé. Veuillez enregistrer à un autre emplacement ou libérer de l'espace sur le disque dur.</translation>
 <translation id="5123433949759960244">Basket-ball</translation>
 <translation id="5125751979347152379">URL incorrecte</translation>
-<translation id="5125967981703109366">À propos de cette carte</translation>
+<translation id="5125967981703109366">À propos de cette fiche</translation>
 <translation id="5126611267288187364">Afficher les modifications</translation>
 <translation id="5127242257756472928">Non autorisé à utiliser les infos au sujet de vos écrans pour ouvrir et placer des fenêtres</translation>
 <translation id="5127620150973591153">Code de connexion sécurisée : <ph name="TOKEN" /></translation>
@@ -6577,7 +6577,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="744341768939279100">Créer un profil</translation>
 <translation id="744366959743242014">Chargement des données en cours. Cette opération peut prendre quelques secondes.</translation>
 <translation id="7443806024147773267">Accédez à vos mots de passe chaque fois que vous êtes connecté à votre compte Google</translation>
-<translation id="7444970023873202833">Redécouvrez encore plus de souvenirs dans Google Photos</translation>
+<translation id="7444970023873202833">Découvrez plus de souvenirs dans Google Photos</translation>
 <translation id="7444983668544353857">Désactiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installer automatiquement des applications</translation>
 <translation id="7449381494541372002">démarrage…</translation>
@@ -6894,10 +6894,10 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7744192722284567281">Détecté lors d'une violation des données</translation>
 <translation id="7744649840067671761">Appuyez sur un nouveau contacteur ou une nouvelle touche du clavier pour commencer l'association.
 Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association.</translation>
-<translation id="7746739418892731373">Vous voyez une sélection de photos et de vidéos de votre bibliothèque Google Photos. Vous pouvez contrôler ce qui s'affiche dans cette sélection sur <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
+<translation id="7746739418892731373">Ceci est une sélection de photos et vidéos de votre bibliothèque Google Photos. Vous pouvez contrôler ce qui s'affiche sur <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Vous pouvez gérer les paramètres de cette carte dans le menu associé ou voir plus d'options dans "Personnaliser Chrome".</translation>
+        Vous pouvez gérer les paramètres de cette fiche depuis son menu ou voir plus d'options dans "Personnaliser Chrome".</translation>
 <translation id="7750228210027921155">Mode PIP (Picture-in-Picture)</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
 <translation id="7751619076382363711">Vous n'avez supprimé aucun site</translation>

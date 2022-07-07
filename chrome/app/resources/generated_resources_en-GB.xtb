@@ -2319,7 +2319,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3151562827395986343">Clear history, cookies, cache and more</translation>
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3152356229013609796">View, dismiss and reply to your phone's notifications</translation>
-<translation id="3157387275655328056">Add to Reading List</translation>
+<translation id="3157387275655328056">Add to reading list</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158033540161634471">Set up your fingerprint</translation>
 <translation id="3158770568048368350">This may cause your mobile network to briefly disconnect</translation>
@@ -6037,7 +6037,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="686609795364435700">Quiet</translation>
 <translation id="686664946474413495">Colour temperature</translation>
 <translation id="6867086642466184030">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> and <ph name="NUMBER_OF_OTHER_APPS" /> other apps from opening supported links.</translation>
-<translation id="6867400383614725881">New Incognito tab</translation>
+<translation id="6867400383614725881">New incognito tab</translation>
 <translation id="6868934826811377550">See details.</translation>
 <translation id="6871644448911473373">OCSP Responder: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">The password that you entered was rejected by the server.</translation>

@@ -598,7 +598,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4290281343757112331">Download later instead?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Turn on screen lock in Android settings<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_ATOS_LINK" />. The <ph name="BEGIN_PRIVACY_LINK" />Privacy Policy<ph name="END_PRIVACY_LINK" /> also applies.</translation>
-<translation id="4296252229500326964">New Incognito tab</translation>
+<translation id="4296252229500326964">New incognito tab</translation>
 <translation id="4298388696830689168">Linked sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Basics</translation>
@@ -1088,7 +1088,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6864459304226931083">Download image</translation>
 <translation id="6865313869410766144">Auto-fill form data</translation>
-<translation id="6867400383614725881">New Incognito tab</translation>
+<translation id="6867400383614725881">New incognito tab</translation>
 <translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6883204995689174413">Share</translation>
