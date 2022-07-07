@@ -93,6 +93,7 @@ ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
 ci/mac11-arm64-rel-tests
+ci/mac12-arm64-rel-tests
 ci/win-archive-rel
 ci/win-asan
 ci/win-official

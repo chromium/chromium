@@ -210,8 +210,6 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "12",
     ),
-    # TODO(crbug.com/1334005): Add to rotation when it's stable.
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     triggered_by = ["ci/mac-arm64-rel"],
 )
