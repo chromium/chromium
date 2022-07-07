@@ -92,17 +92,18 @@ class TestWebUI : public WebUI {
     void TakeAsArg4(std::unique_ptr<base::Value> arg);
 
     const std::string& function_name() const { return function_name_; }
-    const base::Value* arg1() const { return arg1_.get(); }
-    const base::Value* arg2() const { return arg2_.get(); }
-    const base::Value* arg3() const { return arg3_.get(); }
-    const base::Value* arg4() const { return arg4_.get(); }
+    const base::Value* arg1() const { return args_[0].get(); }
+    const base::Value* arg2() const { return args_[1].get(); }
+    const base::Value* arg3() const { return args_[2].get(); }
+    const base::Value* arg4() const { return args_[3].get(); }
+
+    const std::array<std::unique_ptr<base::Value>, 4>& args() const {
+      return args_;
+    }
 
    private:
     std::string function_name_;
-    std::unique_ptr<base::Value> arg1_;
-    std::unique_ptr<base::Value> arg2_;
-    std::unique_ptr<base::Value> arg3_;
-    std::unique_ptr<base::Value> arg4_;
+    std::array<std::unique_ptr<base::Value>, 4> args_;
   };
 
   const std::vector<std::unique_ptr<CallData>>& call_data() const {

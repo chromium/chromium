@@ -189,19 +189,19 @@ TestWebUI::CallData::~CallData() {
 }
 
 void TestWebUI::CallData::TakeAsArg1(std::unique_ptr<base::Value> arg) {
-  arg1_ = std::move(arg);
+  args_[0] = std::move(arg);
 }
 
 void TestWebUI::CallData::TakeAsArg2(std::unique_ptr<base::Value> arg) {
-  arg2_ = std::move(arg);
+  args_[1] = std::move(arg);
 }
 
 void TestWebUI::CallData::TakeAsArg3(std::unique_ptr<base::Value> arg) {
-  arg3_ = std::move(arg);
+  args_[2] = std::move(arg);
 }
 
 void TestWebUI::CallData::TakeAsArg4(std::unique_ptr<base::Value> arg) {
-  arg4_ = std::move(arg);
+  args_[3] = std::move(arg);
 }
 
 }  // namespace content

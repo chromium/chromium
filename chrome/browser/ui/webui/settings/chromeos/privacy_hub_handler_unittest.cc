@@ -76,9 +76,8 @@ class PrivacyHubHandlerTest : public testing::Test {
       }
 
       // Assume that the data is stored in the last valid arg.
-      for (const base::Value* arg :
-           {data->arg4(), data->arg3(), data->arg2()}) {
-        if (arg)
+      for (const auto& arg : base::Reversed(data->args())) {
+        if (arg && arg.get() != data->arg1())
           return arg->Clone();
       }
     }
