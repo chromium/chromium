@@ -25,11 +25,10 @@
 #include "ui/views/layout/layout_types.h"
 
 ReadAnythingToolbarView::ReadAnythingToolbarView(
-    ReadAnythingCoordinator* coordinator)
-    : coordinator_(std::move(coordinator)) {
+    ReadAnythingCoordinator* coordinator,
+    ReadAnythingToolbarView::Delegate* delegate)
+    : delegate_(delegate), coordinator_(std::move(coordinator)) {
   coordinator_->AddObserver(this);
-  delegate_ = static_cast<ReadAnythingToolbarView::Delegate*>(
-      coordinator_->GetController());
   auto* font_model = coordinator_->GetModel()->GetFontModel();
 
   // Create and set a BoxLayout LayoutManager for this view.

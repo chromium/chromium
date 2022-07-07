@@ -29,7 +29,8 @@ class ReadAnythingToolbarView : public views::View,
     virtual void OnFontSizeChanged(bool increase) = 0;
   };
 
-  explicit ReadAnythingToolbarView(ReadAnythingCoordinator* coordinator);
+  ReadAnythingToolbarView(ReadAnythingCoordinator* coordinator,
+                          ReadAnythingToolbarView::Delegate* delegate);
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
   ReadAnythingToolbarView& operator=(const ReadAnythingToolbarView&) = delete;
   ~ReadAnythingToolbarView() override;
@@ -38,6 +39,8 @@ class ReadAnythingToolbarView : public views::View,
   void OnCoordinatorDestroyed() override;
 
  private:
+  friend class ReadAnythingToolbarViewTest;
+
   void FontNameChangedCallback();
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();

@@ -9094,6 +9094,7 @@ if (!is_android) {
       "../browser/ui/views/page_info/page_info_bubble_view_interactive_uitest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_notice_bubble_interactive_ui_test.cc",
+      "../browser/ui/views/side_panel/read_anything/read_anything_toolbar_view_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/ui/webui/settings/settings_interactive_uitest.cc",
