@@ -371,7 +371,7 @@ void V8Platform::OnCriticalMemoryPressure() {
 // We only have a reservation on 32-bit Windows systems.
 // TODO(bbudge) Make the #if's in BlinkInitializer match.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
-  base::ReleaseReservation();
+  partition_alloc::ReleaseReservation();
 #endif
 }
 

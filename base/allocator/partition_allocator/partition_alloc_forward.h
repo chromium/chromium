@@ -62,14 +62,6 @@ using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionRoot;
-
-}  // namespace base
-
 // From https://clang.llvm.org/docs/AttributeReference.html#malloc:
 //
 // The malloc attribute indicates that the function acts like a system memory
