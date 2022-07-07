@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
+  "+components/metrics",
+  "+content/public/browser",
+  "+content/public/test",
+]

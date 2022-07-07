@@ -10,7 +10,7 @@
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
-#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 

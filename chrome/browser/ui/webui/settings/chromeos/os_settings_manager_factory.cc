@@ -19,7 +19,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {

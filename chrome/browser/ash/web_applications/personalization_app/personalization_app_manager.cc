@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/web_applications/personalization_app/enterprise_policy_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 

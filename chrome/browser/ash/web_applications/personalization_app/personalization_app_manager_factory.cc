@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 

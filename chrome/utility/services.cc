@@ -118,8 +118,8 @@
 #include "ash/services/recording/recording_service.h"
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
-#include "chromeos/components/local_search_service/local_search_service.h"
-#include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
+#include "chromeos/ash/components/local_search_service/local_search_service.h"
+#include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 

@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {

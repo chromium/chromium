@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {

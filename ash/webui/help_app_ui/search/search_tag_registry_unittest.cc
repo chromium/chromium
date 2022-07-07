@@ -7,7 +7,7 @@
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/help_app_ui/search/search_metadata.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

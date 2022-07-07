@@ -1,0 +1,76 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "index.mojom",
+    "local_search_service.mojom",
+    "types.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.local_search_service.mojom.IndexId"
+          cpp = "::chromeos::local_search_service::IndexId"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.Content"
+          cpp = "::chromeos::local_search_service::Content"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.Data"
+          cpp = "::chromeos::local_search_service::Data"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.SearchParams"
+          cpp = "::chromeos::local_search_service::SearchParams"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.Position"
+          cpp = "::chromeos::local_search_service::Position"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.Result"
+          cpp = "::chromeos::local_search_service::Result"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.ResponseStatus"
+          cpp = "::chromeos::local_search_service::ResponseStatus"
+        },
+        {
+          mojom = "chromeos.local_search_service.mojom.Backend"
+          cpp = "::chromeos::local_search_service::Backend"
+        },
+      ]
+      traits_headers = [ "//chromeos/ash/components/local_search_service/public/mojom/types_mojom_traits.h" ]
+      traits_sources = [ "//chromeos/ash/components/local_search_service/public/mojom/types_mojom_traits.cc" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "types_mojom_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gmock:gmock",
+    "//testing/gtest",
+  ]
+}

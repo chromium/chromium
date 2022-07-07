@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"

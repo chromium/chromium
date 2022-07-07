@@ -7,7 +7,4 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
-
-  # TODO(https://crbug.com/1164001): Remove when these move to ash.
-  "+chromeos/components/local_search_service",
 ]

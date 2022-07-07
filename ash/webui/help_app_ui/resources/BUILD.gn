@@ -33,8 +33,8 @@ copy("stage_static") {
 
 copy("stage_generated") {
   sources = [
-    "$target_gen_dir/../../../../chromeos/components/local_search_service/public/mojom/index.mojom-lite.js",
-    "$target_gen_dir/../../../../chromeos/components/local_search_service/public/mojom/types.mojom-lite.js",
+    "$target_gen_dir/../../../../chromeos/ash/components/local_search_service/public/mojom/index.mojom-lite.js",
+    "$target_gen_dir/../../../../chromeos/ash/components/local_search_service/public/mojom/types.mojom-lite.js",
     "$target_gen_dir/../../system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../help_app_ui.mojom-lite.js",
     "$target_gen_dir/../search/search.mojom-lite.js",
@@ -44,7 +44,7 @@ copy("stage_generated") {
     "//ash/webui/help_app_ui:mojo_bindings_js",
     "//ash/webui/help_app_ui/search:mojo_bindings_js__generator",
     "//ash/webui/system_apps/public/js:modulize",
-    "//chromeos/components/local_search_service/public/mojom:mojom_js__generator",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js__generator",
   ]
 }
 
@@ -96,7 +96,7 @@ js_library("browser_proxy") {
     "//ash/webui/help_app_ui:mojo_bindings_js_library_for_compile",
     "//ash/webui/help_app_ui/search:mojo_bindings_js_library_for_compile",
     "//ash/webui/system_apps/public/js:message_pipe.m",
-    "//chromeos/components/local_search_service/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js_library_for_compile",
   ]
 }
 

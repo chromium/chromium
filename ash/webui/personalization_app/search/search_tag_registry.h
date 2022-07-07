@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

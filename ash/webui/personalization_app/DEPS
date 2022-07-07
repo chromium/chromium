@@ -1,4 +1,0 @@
-include_rules = [
-  # TODO(https://crbug.com/1164001): Remove when these move to ash.
-  "+chromeos/components/local_search_service",
-]

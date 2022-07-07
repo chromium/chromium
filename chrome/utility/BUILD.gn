@@ -183,8 +183,8 @@ static_library("utility") {
       "//chrome/services/file_util",
       "//chrome/services/sharing",
       "//chromeos/ash/components/assistant:buildflags",
-      "//chromeos/components/local_search_service:local_search_service",
-      "//chromeos/components/local_search_service/public/mojom",
+      "//chromeos/ash/components/local_search_service",
+      "//chromeos/ash/components/local_search_service/public/mojom",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]

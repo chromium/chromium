@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

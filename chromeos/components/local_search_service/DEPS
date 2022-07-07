@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/keyed_service/content",
-  "+components/keyed_service/core",
-  "+components/metrics",
-  "+components/prefs",
-  "+content/public/browser",
-  "+content/public/test",
-  "+sandbox/policy/sandbox_type.h",
-]

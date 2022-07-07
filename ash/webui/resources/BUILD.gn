@@ -175,7 +175,7 @@ grit("help_app_resources") {
     "//ash/webui/help_app_ui/resources:browser_proxy_rollup",
     "//ash/webui/help_app_ui/resources:receiver_rollup",
     "//ash/webui/help_app_ui/search:mojo_bindings_js",
-    "//chromeos/components/local_search_service/public/mojom:mojom_js",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js",
   ]
 }
 
