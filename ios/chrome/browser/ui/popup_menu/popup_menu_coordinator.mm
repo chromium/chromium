@@ -259,6 +259,16 @@ enum class IOSOverflowMenuActionType {
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
+- (void)presentationControllerWillDismiss:
+    (UIPresentationController*)presentationController {
+  // Update the UI before dismissal starts. Technically, on iPhone, the user
+  // could be interactively dismissing a sheet, which they could then cancel
+  // (leading to state mismatch: visible menu, but UIUpdater with menu
+  // dismissed). However, the UIUpdater only modifies the toolbar, which is
+  // hidden behind the sheet anyway.
+  [self.UIUpdater updateUIForMenuDismissed];
+}
+
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissPopupMenuAnimated:NO];
