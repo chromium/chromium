@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
@@ -90,8 +91,12 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
           rb.GetImageSkiaNamed(IDR_SETTINGS_RGB_KEYBOARD_RAINBOW_COLOR_48_PNG);
       button->SetBackgroundImage(*image);
     } else {
-      button->SetBackgroundColor(
-          ConvertBacklightColorToIconBackgroundColor(backlight_color));
+      SkColor color =
+          ConvertBacklightColorToIconBackgroundColor(backlight_color);
+      button->SetBackgroundColor(color);
+      button->SetIconColor(color_utils::GetLuma(color) < 125
+                               ? gfx::kGoogleGrey200
+                               : gfx::kGoogleGrey900);
     }
     button->SetBorder(views::CreateRoundedRectBorder(
         /*thickness=*/4, /*corner_radius=*/16,
