@@ -55,6 +55,13 @@
     font-size: 14px;
   }
 
+  #title {
+    flex: auto;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
   /* Note: help bubbles have the same color treatment in both light and dark
    * themes, which is why the values below do not change based on theme
    * preference. */
@@ -82,6 +89,7 @@
     margin: 0;
     margin-inline-end: 4px;
     margin-inline-start: 12px;
+    order: 2;
   }
 
   cr-icon-button:focus {
@@ -91,10 +99,12 @@
 
 <div class="help-bubble">
   <div id="topContainer">
-    <div id="body">[[body]]</div>
     <cr-icon-button id="close" iron-icon="cr:close"
         aria-label="[[closeText]]" on-click="dismiss_">
     </cr-icon-button>
+    <div id="title"></div>
+    <div id="body"></div>
   </div>
+  <div id="main"></div>
   <div class="arrow"></div>
 </div>

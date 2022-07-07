@@ -30,6 +30,9 @@ export interface HelpBubbleElement {
   $: {
     body: HTMLElement,
     close: CrIconButtonElement,
+    main: HTMLElement,
+    title: HTMLElement,
+    topContainer: HTMLElement,
   };
 }
 
@@ -49,13 +52,13 @@ export class HelpBubbleElement extends PolymerElement {
         value: '',
         reflectToAttribute: true,
       },
-      body: String,
       closeText: String,
     };
   }
 
   anchorId: string;
-  body: string;
+  bodyText: string;
+  titleText: string;
   closeText: string;
   position: HelpBubblePosition;
 
@@ -68,6 +71,18 @@ export class HelpBubbleElement extends PolymerElement {
    * Shows the bubble.
    */
   show() {
+    // If there is no title, the body element should be in the top container
+    // with the close button, else it should be in the main container.
+    if (this.titleText) {
+      this.$.title.style.display = 'block';
+      this.$.title.innerText = this.titleText;
+      this.$.main.appendChild(this.$.body);
+    } else {
+      this.$.title.style.display = 'none';
+      this.$.topContainer.appendChild(this.$.body);
+    }
+    this.$.body.innerText = this.bodyText;
+
     this.anchorElement_ =
         this.parentElement!.querySelector<HTMLElement>(`#${this.anchorId}`)!;
     assert(

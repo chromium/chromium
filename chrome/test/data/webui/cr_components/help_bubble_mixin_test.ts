@@ -374,6 +374,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   secondParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
   secondParams.position = HelpBubblePosition.BELOW;
   secondParams.bodyText = 'This is another help bubble.';
+  secondParams.titleText = 'This is a title';
   secondParams.buttons = [];
 
   test('help bubble mixin shows multiple bubbles', async () => {
@@ -390,6 +391,21 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertEquals(container.$.p1, bubble2!.getAnchorElement());
     assertTrue(isVisible(bubble1));
     assertTrue(isVisible(bubble2));
+  });
+
+  test('help bubble mixin shows bubbles with and without title', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    testProxy.getCallbackRouterRemote().showHelpBubble(secondParams);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    const titleBubble = container.getHelpBubbleFor('title')!;
+    const paragraphBubble = container.getHelpBubbleFor('p1')!;
+    // Testing that setting `titleText` will cause the title to display
+    // correctly is present in help_bubble_test.ts, so it is sufficient to
+    // verify that the property is set correctly.
+    assertEquals('', paragraphBubble.titleText);
+    assertEquals(secondParams.titleText, titleBubble.titleText);
   });
 
   test('help bubble mixin hides multiple bubbles', async () => {

@@ -35,11 +35,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   const HELP_BUBBLE_BODY = 'help bubble body';
+  const HELP_BUBBLE_TITLE = 'help bubble title';
 
   test('help bubble shows and anchors correctly', () => {
     helpBubble.anchorId = 'p1';
     helpBubble.position = HelpBubblePosition.BELOW;
-    helpBubble.body = HELP_BUBBLE_BODY;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
 
     assertEquals(
@@ -49,10 +50,34 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertTrue(isVisible(helpBubble));
   });
 
+  test('help bubble titles shows', () => {
+    helpBubble.anchorId = 'p1';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.titleText = HELP_BUBBLE_TITLE;
+    helpBubble.show();
+
+    assertTrue(isVisible(helpBubble));
+    const titleElement = helpBubble.$.title;
+    assertEquals(HELP_BUBBLE_TITLE, titleElement.textContent);
+    assertTrue(isVisible(titleElement));
+  });
+
+  test('help bubble titles hides when no title set', () => {
+    helpBubble.anchorId = 'p1';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.show();
+
+    assertTrue(isVisible(helpBubble));
+    const titleElement = helpBubble.$.title;
+    assertFalse(isVisible(titleElement));
+  });
+
   test('help bubble closes', () => {
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubblePosition.BELOW;
-    helpBubble.body = HELP_BUBBLE_BODY;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
 
     assertEquals(
@@ -67,7 +92,7 @@ suite('CrComponentsHelpBubbleTest', () => {
   test('help bubble open close open', () => {
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubblePosition.BELOW;
-    helpBubble.body = HELP_BUBBLE_BODY;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
     helpBubble.hide();
     helpBubble.show();
@@ -94,7 +119,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.addEventListener('help-bubble-dismissed', callback);
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubblePosition.BELOW;
-    helpBubble.body = HELP_BUBBLE_BODY;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
     const closeButton = helpBubble.$.close;
     assertEquals(0, clicked);
