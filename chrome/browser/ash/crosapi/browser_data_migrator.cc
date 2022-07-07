@@ -306,25 +306,17 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return true;
   }
 
-  crosapi::browser_util::MigrationMode mode =
-      crosapi::browser_util::GetMigrationMode(user, policy_init_state);
-
-  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-          local_state, user_id_hash, mode)) {
+  if (crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
+          local_state, user_id_hash)) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
     // remove this log message.
+    if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
+            local_state, user_id_hash,
+            crosapi::browser_util::MigrationMode::kMove)) {
+      LOG(WARNING) << "Profile move migration has been completed already.";
+    }
     LOG(WARNING) << "Profile migration has been completed already.";
     return false;
-  }
-
-  // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
-  // remove this log message.
-  if (mode == crosapi::browser_util::MigrationMode::kMove &&
-      crosapi::browser_util::IsProfileMigrationCompletedForUser(
-          local_state, user_id_hash,
-          crosapi::browser_util::MigrationMode::kCopy)) {
-    LOG(WARNING) << "Only copy migration is marked as completed. Running "
-                    "profile move migraiton.";
   }
 
   return true;

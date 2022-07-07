@@ -321,6 +321,14 @@ bool IsProfileMigrationAvailable();
 MigrationMode GetMigrationMode(const user_manager::User* user,
                                PolicyInitState policy_init_state);
 
+// Returns true if either copy or move migration is completed. Used as a wrapper
+// over `IsProfileMigrationCompletedForUser()`.
+// TODO(crbug.com/1340438): This function is introduced to prevent running
+// profile move migration for users who have already completed copy migration.
+bool IsCopyOrMoveProfileMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash);
+
 // Checks if profile migration has been completed. This is reset if profile
 // migration is initiated for example due to lacros data directory being wiped.
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
