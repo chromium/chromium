@@ -74,9 +74,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     }
     NewTabPageTabHelper::CreateForWebState(&web_state_);
-    coordinator_ = [[NewTabPageCoordinator alloc]
-        initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()];
+    coordinator_ =
+        [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
+    coordinator_.baseViewController = base_view_controller_;
     coordinator_.toolbarDelegate = toolbar_delegate_;
     coordinator_.webState = &web_state_;
   }

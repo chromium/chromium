@@ -433,8 +433,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Coordinator used to manage the secondary toolbar view.
 @property(nonatomic, strong)
     ToolbarContainerCoordinator* secondaryToolbarContainerCoordinator;
-// Interface object with the toolbars.
-@property(nonatomic, strong) id<ToolbarCoordinating> toolbarInterface;
 
 // Vertical offset for the primary toolbar, used for fullscreen.
 @property(nonatomic, strong) NSLayoutConstraint* primaryToolbarOffsetConstraint;
@@ -501,7 +499,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _keyCommandsProvider = keyCommandsProvider;
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
     _prerenderService = dependencies.prerenderService;
-    _bubblePresenter = dependencies.bubblePresenter;
     // TODO(crbug.com/1331229): Remove all use of the download manager
     // coordinator from BVC
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
@@ -509,8 +506,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [_sideSwipeController setSnapshotDelegate:self];
     [_sideSwipeController setSwipeDelegate:self];
     _bookmarkInteractionController = dependencies.bookmarkInteractionController;
+    self.bubblePresenter = dependencies.bubblePresenter;
+    self.ntpCoordinator = dependencies.ntpCoordinator;
     self.popupMenuCoordinator = dependencies.popupMenuCoordinator;
-    self.toolbarInterface = dependencies.toolbarInterface;
     self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
     self.secondaryToolbarCoordinator = dependencies.secondaryToolbarCoordinator;
     self.tabStripCoordinator = dependencies.tabStripCoordinator;
@@ -1034,7 +1032,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.secondaryToolbarContainerCoordinator = nil;
   [self.secondaryToolbarCoordinator stop];
   self.secondaryToolbarCoordinator = nil;
-  self.toolbarInterface = nil;
   _sideSwipeController = nil;
   _webStateListObserver.reset();
   _allWebStateObservationForwarder = nullptr;
@@ -1254,7 +1251,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.secondaryToolbarContainerCoordinator = nil;
     [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
-    self.toolbarInterface = nil;
     _toolbarUIState = nil;
     _browserViewControllerHelper = nil;
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
@@ -2409,7 +2405,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)stopNTP {
   [self.ntpCoordinator stop];
-  self.ntpCoordinator = nullptr;
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
@@ -2449,6 +2444,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
 
+  self.ntpCoordinator.panGestureHandler = panHandler;
   [self.ntpCoordinator.thumbStripSupporting
       thumbStripEnabledWithPanHandler:panHandler];
 }
@@ -2479,6 +2475,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   webStateView.frame = webStateViewFrame;
 
   [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
+  self.ntpCoordinator.panGestureHandler = nil;
 
   _thumbStripEnabled = NO;
 }
@@ -2495,7 +2492,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
-  [_ntpCoordinator reload];
+  [self.ntpCoordinator reload];
 }
 
 #pragma mark - ViewRevealingAnimatee
@@ -2592,7 +2589,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Stop scrolling in the current web state when transitioning.
   if (self.currentWebState) {
     if (self.isNTPActiveForCurrentWebState) {
-      [_ntpCoordinator stopScrolling];
+      [self.ntpCoordinator stopScrolling];
     } else {
       CRWWebViewScrollViewProxy* scrollProxy =
           self.currentWebState->GetWebViewProxy().scrollViewProxy;
@@ -4112,20 +4109,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self.active && self.currentWebState == webState) {
     [self displayWebState:webState];
   }
-}
-
-#pragma mark - Getters
-
-- (NewTabPageCoordinator*)ntpCoordinator {
-  if (!_ntpCoordinator) {
-    _ntpCoordinator =
-        [[NewTabPageCoordinator alloc] initWithBaseViewController:self
-                                                          browser:self.browser];
-    _ntpCoordinator.panGestureHandler = self.thumbStripPanHandler;
-    _ntpCoordinator.toolbarDelegate = self.toolbarInterface;
-    _ntpCoordinator.bubblePresenter = _bubblePresenter;
-  }
-  return _ntpCoordinator;
 }
 
 @end

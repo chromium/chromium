@@ -238,7 +238,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.bubblePresenter = bubble_presenter_;
     dependencies.popupMenuCoordinator = popup_menu_coordinator_;
     dependencies.downloadManagerCoordinator = download_manager_coordinator_;
-    dependencies.toolbarInterface = toolbar_coordinator_adaptor_;
     dependencies.primaryToolbarCoordinator = primary_toolbar_coordinator_;
     dependencies.secondaryToolbarCoordinator = secondary_toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;

@@ -38,6 +38,7 @@ class Browser;
 @class DownloadManagerCoordinator;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
+@class NewTabPageCoordinator;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -51,7 +52,6 @@ class PrerenderService;
 @class TabStripLegacyCoordinator;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
-@protocol ToolbarCoordinating;
 @protocol IncognitoReauthCommands;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -62,7 +62,7 @@ typedef struct {
   BubblePresenter* bubblePresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
-  id<ToolbarCoordinating> toolbarInterface;
+  NewTabPageCoordinator* ntpCoordinator;
   PrimaryToolbarCoordinator* primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;

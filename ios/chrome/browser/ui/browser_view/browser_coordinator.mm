@@ -99,6 +99,7 @@
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
@@ -340,6 +341,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   BrowserViewControllerDependencies _viewControllerDependencies;
   PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
+  NewTabPageCoordinator* _ntpCoordinator;
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
   PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
   SecondaryToolbarCoordinator* _secondaryToolbarCoordinator;
@@ -643,6 +645,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     }
   }
 
+  _ntpCoordinator =
+      [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
+  _ntpCoordinator.toolbarDelegate = _toolbarCoordinatorAdaptor;
+  _ntpCoordinator.bubblePresenter = _bubblePresenter;
+
   _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
   _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
   _popupMenuCommandsHandler =
@@ -657,7 +664,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.downloadManagerCoordinator =
       self.downloadManagerCoordinator;
-  _viewControllerDependencies.toolbarInterface = _toolbarCoordinatorAdaptor;
+  _viewControllerDependencies.ntpCoordinator = _ntpCoordinator;
   _viewControllerDependencies.primaryToolbarCoordinator =
       _primaryToolbarCoordinator;
   _viewControllerDependencies.secondaryToolbarCoordinator =
@@ -691,6 +698,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _primaryToolbarCoordinator.popupPresenterDelegate = self.viewController;
   [_primaryToolbarCoordinator start];
 
+  _ntpCoordinator.baseViewController = self.viewController;
+
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];
   [_dispatcher startDispatchingToTarget:self.viewController
@@ -703,7 +712,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.bubblePresenter = nil;
   _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.downloadManagerCoordinator = nil;
-  _viewControllerDependencies.toolbarInterface = nil;
+  _viewControllerDependencies.ntpCoordinator = nil;
   _viewControllerDependencies.primaryToolbarCoordinator = nil;
   _viewControllerDependencies.secondaryToolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
@@ -742,6 +751,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   [self.browserContainerCoordinator stop];
   self.browserContainerCoordinator = nil;
+
+  [_ntpCoordinator stop];
+  _ntpCoordinator = nil;
 
   _dispatcher = nil;
 }

@@ -218,12 +218,13 @@ namespace {
 // Synthesize NewTabPageConfiguring properties.
 @synthesize selectedFeed = _selectedFeed;
 @synthesize shouldScrollIntoFeed = _shouldScrollIntoFeed;
+@synthesize baseViewController = _baseViewController;
 
 #pragma mark - ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  self = [super initWithBaseViewController:viewController browser:browser];
+- (instancetype)initWithBrowser:(Browser*)browser {
+  DCHECK(browser);
+  self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     _containerViewController = [[UIViewController alloc] init];
   }
