@@ -19,11 +19,6 @@ class RenderFrameHost;
 class CONTENT_EXPORT BrowsingTopicsDocumentHost final
     : public DocumentService<blink::mojom::BrowsingTopicsDocumentService> {
  public:
-  BrowsingTopicsDocumentHost(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::BrowsingTopicsDocumentService>
-          receiver);
-
   BrowsingTopicsDocumentHost(const BrowsingTopicsDocumentHost&) = delete;
   BrowsingTopicsDocumentHost& operator=(const BrowsingTopicsDocumentHost&) =
       delete;
@@ -39,6 +34,11 @@ class CONTENT_EXPORT BrowsingTopicsDocumentHost final
   void GetBrowsingTopics(GetBrowsingTopicsCallback callback) override;
 
  private:
+  BrowsingTopicsDocumentHost(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::BrowsingTopicsDocumentService>
+          receiver);
+
   // |this| can only be destroyed by DocumentService.
   ~BrowsingTopicsDocumentHost() override;
 };

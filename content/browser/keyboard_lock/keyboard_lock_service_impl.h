@@ -21,10 +21,6 @@ class RenderFrameHost;
 class KeyboardLockServiceImpl final
     : public DocumentService<blink::mojom::KeyboardLockService> {
  public:
-  KeyboardLockServiceImpl(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver);
-
   static void CreateMojoService(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver);
@@ -36,10 +32,13 @@ class KeyboardLockServiceImpl final
   void GetKeyboardLayoutMap(GetKeyboardLayoutMapCallback callback) override;
 
  private:
+  KeyboardLockServiceImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver);
+
   // |this| can only be destroyed by DocumentService.
   ~KeyboardLockServiceImpl() override;
 
-  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
   RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle feature_handle_;
 };
 

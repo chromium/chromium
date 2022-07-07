@@ -33,7 +33,7 @@ class ImageCaptureImpl final
                  TakePhotoCallback callback) override;
 
  private:
-  ImageCaptureImpl(RenderFrameHost* render_frame_host,
+  ImageCaptureImpl(RenderFrameHost& render_frame_host,
                    mojo::PendingReceiver<media::mojom::ImageCapture> receiver);
   ~ImageCaptureImpl() override;
 

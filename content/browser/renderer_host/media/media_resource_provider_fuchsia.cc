@@ -58,12 +58,13 @@ void MediaResourceProviderFuchsia::Bind(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
         receiver) {
+  CHECK(frame_host);
   // The object will delete itself when connection to the frame is broken.
-  new MediaResourceProviderFuchsia(frame_host, std::move(receiver));
+  new MediaResourceProviderFuchsia(*frame_host, std::move(receiver));
 }
 
 MediaResourceProviderFuchsia::MediaResourceProviderFuchsia(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 MediaResourceProviderFuchsia::~MediaResourceProviderFuchsia() = default;
@@ -81,7 +82,7 @@ void MediaResourceProviderFuchsia::CreateCdm(
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       render_frame_host()
-          ->GetStoragePartition()
+          .GetStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
 
   media::CreateFetcherCB create_fetcher_cb = base::BindRepeating(

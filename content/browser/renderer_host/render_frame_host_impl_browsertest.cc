@@ -6151,12 +6151,12 @@ class DestructorLifetimeDocumentService
     : public DocumentService<blink::mojom::BrowserInterfaceBroker> {
  public:
   DestructorLifetimeDocumentService(
-      RenderFrameHostImpl* render_frame_host,
+      RenderFrameHostImpl& render_frame_host,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver,
       bool& was_destroyed)
       : DocumentService(render_frame_host, std::move(receiver)),
-        render_frame_host_(render_frame_host->GetWeakPtr()),
-        page_(render_frame_host->GetPage().GetWeakPtr()),
+        render_frame_host_(render_frame_host.GetWeakPtr()),
+        page_(render_frame_host.GetPage().GetWeakPtr()),
         was_destroyed_(was_destroyed) {}
 
   ~DestructorLifetimeDocumentService() override {
@@ -6225,7 +6225,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
   // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(main_frame,
+  new DestructorLifetimeDocumentService(*main_frame,
                                         remote.BindNewPipeAndPassReceiver(),
                                         document_service_was_destroyed);
 
@@ -6269,7 +6269,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
   // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(main_frame,
+  new DestructorLifetimeDocumentService(*main_frame,
                                         remote.BindNewPipeAndPassReceiver(),
                                         document_service_was_destroyed);
 
@@ -6307,7 +6307,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
   // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(child_frame,
+  new DestructorLifetimeDocumentService(*child_frame,
                                         remote.BindNewPipeAndPassReceiver(),
                                         document_service_was_destroyed);
 
@@ -6349,7 +6349,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
   // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(child_frame,
+  new DestructorLifetimeDocumentService(*child_frame,
                                         remote.BindNewPipeAndPassReceiver(),
                                         document_service_was_destroyed);
 
@@ -6387,7 +6387,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   bool document_service_was_destroyed = false;
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote;
   // This is self-owned so the bare new is OK.
-  new DestructorLifetimeDocumentService(child_frame,
+  new DestructorLifetimeDocumentService(*child_frame,
                                         remote.BindNewPipeAndPassReceiver(),
                                         document_service_was_destroyed);
 

@@ -37,7 +37,7 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
  public:
   // |rfh| should be the RenderFrameHost that owns the WebBluetoothServiceImpl
   // that owns this map.
-  explicit FrameConnectedBluetoothDevices(RenderFrameHost* rfh);
+  explicit FrameConnectedBluetoothDevices(RenderFrameHost& rfh);
 
   FrameConnectedBluetoothDevices(const FrameConnectedBluetoothDevices&) =
       delete;

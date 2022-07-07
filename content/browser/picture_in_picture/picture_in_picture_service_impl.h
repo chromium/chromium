@@ -55,7 +55,7 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
   friend class PictureInPictureSession;
 
   PictureInPictureServiceImpl(
-      RenderFrameHost*,
+      RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
   ~PictureInPictureServiceImpl() override;
 

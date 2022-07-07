@@ -740,16 +740,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::ComputePressureHost>(base::BindRepeating(
       &RenderFrameHostImpl::BindComputePressureHost, base::Unretained(host)));
 
-  map->Add<blink::mojom::ContactsManager>(base::BindRepeating(
-      [](RenderFrameHostImpl* host,
-         mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
-        DCHECK(host);
-
-        // The object is bound to the lifetime of `render_frame_host`'s logical
-        // document by virtue of being a `DocumentService` implementation.
-        new ContactsManagerImpl(host, std::move(receiver));
-      },
-      base::Unretained(host)));
+  map->Add<blink::mojom::ContactsManager>(
+      base::BindRepeating(ContactsManagerImpl::Create, base::Unretained(host)));
 
   map->Add<blink::mojom::ContentSecurityNotifier>(base::BindRepeating(
       [](RenderFrameHostImpl* host,

@@ -223,7 +223,7 @@ void StopDiscoverySession(
 
 BluetoothDeviceChooserController::BluetoothDeviceChooserController(
     WebBluetoothServiceImpl* web_bluetooth_service,
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     scoped_refptr<device::BluetoothAdapter> adapter)
     : adapter_(std::move(adapter)),
       web_bluetooth_service_(web_bluetooth_service),
@@ -299,7 +299,7 @@ void BluetoothDeviceChooserController::GetDevice(
       base::Unretained(this));
 
   if (auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate()) {
-    chooser_ = delegate->RunBluetoothChooser(render_frame_host_,
+    chooser_ = delegate->RunBluetoothChooser(&*render_frame_host_,
                                              std::move(chooser_event_handler));
   }
 

@@ -16,22 +16,29 @@ namespace content {
 void AuthenticatorImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+  CHECK(render_frame_host);
   // Avoid creating the service if the RenderFrameHost isn't active, e.g. if a
   // request arrives during a navigation.
   if (!render_frame_host->IsActive()) {
     return;
   }
-
   // AuthenticatorImpl owns itself. It self-destructs when the RenderFrameHost
   // navigates or is deleted. See DocumentService for details.
-  DCHECK(render_frame_host);
   new AuthenticatorImpl(
-      render_frame_host, std::move(receiver),
+      *render_frame_host, std::move(receiver),
       std::make_unique<AuthenticatorCommon>(render_frame_host));
 }
 
+void AuthenticatorImpl::CreateForTesting(
+    RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+    std::unique_ptr<AuthenticatorCommon> authenticator_common) {
+  new AuthenticatorImpl(render_frame_host, std::move(receiver),
+                        std::move(authenticator_common));
+}
+
 AuthenticatorImpl::AuthenticatorImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
     std::unique_ptr<AuthenticatorCommon> authenticator_common)
     : DocumentService(render_frame_host, std::move(receiver)),

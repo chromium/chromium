@@ -30,8 +30,6 @@ class CONTENT_EXPORT SpeculationHostImpl final
       RenderFrameHost* frame_host,
       mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
 
-  ~SpeculationHostImpl() override;
-
   SpeculationHostImpl(const SpeculationHostImpl&) = delete;
   SpeculationHostImpl& operator=(const SpeculationHostImpl&) = delete;
   SpeculationHostImpl(SpeculationHostImpl&&) = delete;
@@ -42,8 +40,9 @@ class CONTENT_EXPORT SpeculationHostImpl final
 
  private:
   SpeculationHostImpl(
-      RenderFrameHost* frame_host,
+      RenderFrameHost& frame_host,
       mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
+  ~SpeculationHostImpl() override;
 
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;

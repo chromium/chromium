@@ -31,7 +31,7 @@ PaymentCredential::PaymentCredential(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::PaymentCredential> receiver,
     scoped_refptr<PaymentManifestWebDataService> web_data_service)
-    : DocumentService(&render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       web_data_service_(web_data_service) {}
 
 PaymentCredential::~PaymentCredential() {
@@ -82,7 +82,7 @@ void PaymentCredential::OnWebDataServiceRequestDone(
 }
 
 bool PaymentCredential::IsCurrentStateValid() const {
-  if (!IsFrameAllowedToUseSecurePaymentConfirmation(render_frame_host()) ||
+  if (!IsFrameAllowedToUseSecurePaymentConfirmation(&render_frame_host()) ||
       !web_data_service_) {
     return false;
   }

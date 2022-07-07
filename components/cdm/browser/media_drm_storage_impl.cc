@@ -716,7 +716,7 @@ void MediaDrmStorageImpl::ClearMatchingLicenses(
 // MediaDrmStorageImpl
 
 MediaDrmStorageImpl::MediaDrmStorageImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     PrefService* pref_service,
     GetOriginIdCB get_origin_id_cb,
     AllowEmptyOriginIdCB allow_empty_origin_id_cb,
@@ -734,13 +734,13 @@ MediaDrmStorageImpl::MediaDrmStorageImpl(
 }
 
 MediaDrmStorageImpl::MediaDrmStorageImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     GetOriginIdCB get_origin_id_cb,
     AllowEmptyOriginIdCB allow_empty_origin_id_cb,
     mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver)
     : MediaDrmStorageImpl(
           render_frame_host,
-          user_prefs::UserPrefs::Get(render_frame_host->GetBrowserContext()),
+          user_prefs::UserPrefs::Get(render_frame_host.GetBrowserContext()),
           get_origin_id_cb,
           allow_empty_origin_id_cb,
           std::move(receiver)) {}

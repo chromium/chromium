@@ -79,11 +79,11 @@ void TakePhotoOnIOThread(const std::string& source_id,
 void ImageCaptureImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::ImageCapture> receiver) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
   // ImageCaptureImpl owns itself. It will self-destruct when a Mojo interface
   // error occurs, the render frame host is deleted, or the render frame host
   // navigates to a new document.
-  new ImageCaptureImpl(render_frame_host, std::move(receiver));
+  new ImageCaptureImpl(*render_frame_host, std::move(receiver));
 }
 
 void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
@@ -149,7 +149,7 @@ void ImageCaptureImpl::TakePhoto(const std::string& source_id,
 }
 
 ImageCaptureImpl::ImageCaptureImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::ImageCapture> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -171,7 +171,7 @@ bool ImageCaptureImpl::HasPanTiltZoomPermissionGranted() {
 
   return MediaDevicesPermissionChecker::
       HasPanTiltZoomPermissionGrantedOnUIThread(
-          render_frame_host()->GetProcess()->GetID(),
-          render_frame_host()->GetRoutingID());
+          render_frame_host().GetProcess()->GetID(),
+          render_frame_host().GetRoutingID());
 }
 }  // namespace content

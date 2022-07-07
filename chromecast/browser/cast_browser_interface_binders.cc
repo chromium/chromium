@@ -60,7 +60,7 @@ void BindApplicationMediaInfoManager(
   }
   auto application_session_id =
       CastNavigationUIData::GetSessionIdForWebContents(web_contents);
-  media::CreateApplicationMediaInfoManager(
+  media::ApplicationMediaInfoManager::Create(
       frame_host, std::move(application_session_id),
       /*mixer_audio_enabled=*/false, std::move(receiver));
 }
@@ -68,7 +68,7 @@ void BindApplicationMediaInfoManager(
 void BindAudioSocketBroker(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<::chromecast::mojom::AudioSocketBroker> receiver) {
-  media::CreateAudioSocketBroker(frame_host, std::move(receiver));
+  media::AudioSocketBroker::Create(frame_host, std::move(receiver));
 }
 
 // Some Cast internals still dynamically set up interface binders after

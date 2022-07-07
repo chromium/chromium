@@ -17,7 +17,7 @@ class RenderFrameHost;
 // Subclass of DocumentService for test.
 class DocumentServiceEchoImpl final : public DocumentService<mojom::Echo> {
  public:
-  DocumentServiceEchoImpl(RenderFrameHost* render_frame_host,
+  DocumentServiceEchoImpl(RenderFrameHost& render_frame_host,
                           mojo::PendingReceiver<mojom::Echo> receiver,
                           base::OnceClosure destruction_cb);
   ~DocumentServiceEchoImpl() final;

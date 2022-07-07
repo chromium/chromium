@@ -34,15 +34,10 @@ class LiveCaptionSpeechRecognitionHost
           media::mojom::SpeechRecognitionRecognizerClient>,
       public content::WebContentsObserver {
  public:
-  explicit LiveCaptionSpeechRecognitionHost(
-      content::RenderFrameHost* frame_host,
-      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-          pending_receiver);
   LiveCaptionSpeechRecognitionHost(const LiveCaptionSpeechRecognitionHost&) =
       delete;
   LiveCaptionSpeechRecognitionHost& operator=(
       const LiveCaptionSpeechRecognitionHost&) = delete;
-  ~LiveCaptionSpeechRecognitionHost() override;
 
   // static
   static void Create(
@@ -68,6 +63,12 @@ class LiveCaptionSpeechRecognitionHost
 #endif
 
  private:
+  explicit LiveCaptionSpeechRecognitionHost(
+      content::RenderFrameHost& frame_host,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+          pending_receiver);
+  ~LiveCaptionSpeechRecognitionHost() override;
+
   // Returns the WebContents if it exists. If it does not exist, sets the
   // RenderFrameHost reference to nullptr and returns nullptr.
   content::WebContents* GetWebContents();

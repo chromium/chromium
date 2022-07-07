@@ -64,7 +64,7 @@ class ShareServiceImpl
       bool is_safe);
 
  private:
-  ShareServiceImpl(content::RenderFrameHost* render_frame_host,
+  ShareServiceImpl(content::RenderFrameHost& render_frame_host,
                    mojo::PendingReceiver<blink::mojom::ShareService> receiver);
   ~ShareServiceImpl() override;
 

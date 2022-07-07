@@ -28,7 +28,7 @@ class ManagedConfigurationServiceImpl
 
  private:
   ManagedConfigurationServiceImpl(
-      content::RenderFrameHost* host,
+      content::RenderFrameHost& host,
       mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
           receiver);
   // blink::mojom::DeviceApiService:
@@ -44,8 +44,6 @@ class ManagedConfigurationServiceImpl
   // ManagedConfigurationAPI::Observer:
   void OnManagedConfigurationChanged() override;
   const url::Origin& GetOrigin() override;
-
-  const raw_ptr<content::RenderFrameHost> host_;
 
   mojo::Remote<blink::mojom::ManagedConfigurationObserver>
       configuration_subscription_;

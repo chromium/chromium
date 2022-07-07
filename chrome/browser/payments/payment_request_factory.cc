@@ -66,7 +66,7 @@ void CreatePaymentRequest(
   auto display_manager = delegate->GetDisplayManager()->GetWeakPtr();
   // PaymentRequest is a DocumentService, whose lifetime is managed by the
   // RenderFrameHost passed in here.
-  new PaymentRequest(render_frame_host, std::move(delegate),
+  new PaymentRequest(*render_frame_host, std::move(delegate),
                      std::move(display_manager), std::move(receiver),
                      web_contents_manager->transaction_mode(),
                      /*observer_for_testing=*/nullptr);

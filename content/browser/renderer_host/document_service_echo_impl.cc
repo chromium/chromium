@@ -7,7 +7,7 @@
 namespace content {
 
 DocumentServiceEchoImpl::DocumentServiceEchoImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::Echo> receiver,
     base::OnceClosure destruction_cb)
     : DocumentService(render_frame_host, std::move(receiver)),

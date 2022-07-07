@@ -88,7 +88,8 @@ TEST_F(PromptBasedUserConsentHandlerTest, PromptsUser) {
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
   CompletionCallback callback;
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   consent_handler.RequestUserConsent("12345", std::move(callback));
 }
 
@@ -99,7 +100,8 @@ TEST_F(PromptBasedUserConsentHandlerTest, ConfirmInvokedCallback) {
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   EXPECT_FALSE(consent_handler.is_active());
   bool succeed;
   auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
@@ -119,7 +121,8 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelingInvokedCallback) {
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   EXPECT_FALSE(consent_handler.is_active());
   bool cancelled;
   auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
@@ -144,7 +147,8 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
 
   ExpectNoSmsPrompt();
 
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   bool cancelled;
   auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
     cancelled = (result == UserConsentResult::kNoDelegate);
@@ -171,8 +175,8 @@ class PromptBasedUserConsentHandlerAlwaysAllowedTest
 
 TEST_F(PromptBasedUserConsentHandlerAlwaysAllowedTest, CancelsWhenInactiveRFH) {
   NavigateAndCommit(GURL(kTestUrl));
-  RenderFrameHost* old_main_frame_host = main_rfh();
-  const url::Origin& origin = old_main_frame_host->GetLastCommittedOrigin();
+  RenderFrameHost& old_main_frame_host = *main_rfh();
+  const url::Origin& origin = old_main_frame_host.GetLastCommittedOrigin();
 
   ExpectNoSmsPrompt();
 

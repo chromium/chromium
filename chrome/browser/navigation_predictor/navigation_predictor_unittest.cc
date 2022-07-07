@@ -60,8 +60,8 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     SetupFieldTrial();
 
     ChromeRenderViewHostTestHarness::SetUp();
-    new NavigationPredictor(main_rfh(),
-                            predictor_service_.BindNewPipeAndPassReceiver());
+    NavigationPredictor::Create(
+        main_rfh(), predictor_service_.BindNewPipeAndPassReceiver());
   }
 
   void SetupFieldTrial() {

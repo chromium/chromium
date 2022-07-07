@@ -19,7 +19,6 @@ class TickClock;
 namespace content {
 
 class RenderFrameHost;
-class RenderFrameHostImpl;
 
 // Implements the mojo interface between WebAudio and the browser so that
 // WebAudio can report when audible sounds from an AudioContext starts and
@@ -30,17 +29,14 @@ class RenderFrameHostImpl;
 class CONTENT_EXPORT AudioContextManagerImpl final
     : public content::DocumentService<blink::mojom::AudioContextManager> {
  public:
-  explicit AudioContextManagerImpl(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
-
   AudioContextManagerImpl(const AudioContextManagerImpl&) = delete;
   AudioContextManagerImpl& operator=(const AudioContextManagerImpl&) = delete;
 
-  ~AudioContextManagerImpl() override;
-
   static void Create(
       RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
+  static AudioContextManagerImpl& CreateForTesting(
+      RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
 
   // Notify observers that audible audio started/stopped playing from an
@@ -51,10 +47,13 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   void set_clock_for_testing(base::TickClock* clock) { clock_ = clock; }
 
  private:
+  explicit AudioContextManagerImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
+  ~AudioContextManagerImpl() override;
+
   // Send measured audible duration to UKM database.
   void RecordAudibleTime(base::TimeDelta);
-
-  const raw_ptr<RenderFrameHostImpl> render_frame_host_impl_;
 
   // To track pending audible time. Stores ID of AudioContext (int32_t) and
   // the start time of audible period (base::TimeTicks).

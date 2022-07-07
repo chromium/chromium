@@ -45,7 +45,7 @@ void PictureInPictureSession::Update(
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
   player_id_ =
-      MediaPlayerId(service_->render_frame_host()->GetGlobalId(), player_id);
+      MediaPlayerId(service_->render_frame_host().GetGlobalId(), player_id);
 
   media_player_remote_.reset();
   media_player_remote_.Bind(std::move(player_remote));
@@ -113,7 +113,7 @@ void PictureInPictureSession::OnConnectionError() {
 
 WebContentsImpl* PictureInPictureSession::GetWebContentsImpl() {
   return static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(service_->render_frame_host()));
+      WebContents::FromRenderFrameHost(&service_->render_frame_host()));
 }
 
 VideoPictureInPictureWindowControllerImpl&

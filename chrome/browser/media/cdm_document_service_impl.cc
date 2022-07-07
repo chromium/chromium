@@ -134,7 +134,7 @@ void CdmDocumentServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver) {
   DVLOG(2) << __func__;
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   // PlatformVerificationFlow and the pref service requires to be run/accessed
   // on the UI thread.
@@ -142,14 +142,13 @@ void CdmDocumentServiceImpl::Create(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new CdmDocumentServiceImpl(render_frame_host, std::move(receiver));
+  new CdmDocumentServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 CdmDocumentServiceImpl::CdmDocumentServiceImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::CdmDocumentService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
-      render_frame_host_(render_frame_host) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 CdmDocumentServiceImpl::~CdmDocumentServiceImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -167,7 +166,7 @@ void CdmDocumentServiceImpl::ChallengePlatform(
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool success = platform_verification::PerformBrowserChecks(
-      render_frame_host()->GetMainFrame());
+      render_frame_host().GetMainFrame());
   if (!success) {
     std::move(callback).Run(false, std::string(), std::string(), std::string());
     return;
@@ -197,7 +196,7 @@ void CdmDocumentServiceImpl::ChallengePlatform(
         base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>();
 
   platform_verification_flow_->ChallengePlatformKey(
-      content::WebContents::FromRenderFrameHost(render_frame_host()),
+      content::WebContents::FromRenderFrameHost(&render_frame_host()),
       service_id, challenge,
       base::BindOnce(&CdmDocumentServiceImpl::OnPlatformChallenged,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -262,7 +261,7 @@ void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
   if (version == kCurrentStorageIdVersion ||
       version == kRequestLatestStorageIdVersion) {
     ComputeStorageId(
-        GetStorageIdSaltFromProfile(render_frame_host_), origin(),
+        GetStorageIdSaltFromProfile(&render_frame_host()), origin(),
         base::BindOnce(&CdmDocumentServiceImpl::OnStorageIdResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -291,7 +290,7 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
   // If we are in guest/incognito mode, then verified access is effectively
   // disabled.
   Profile* profile =
-      Profile::FromBrowserContext(render_frame_host_->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
   if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
     std::move(callback).Run(false);
     return;
@@ -329,7 +328,7 @@ void CdmDocumentServiceImpl::GetMediaFoundationCdmData(
   }
 
   Profile* profile =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
 
   PrefService* user_prefs = profile->GetPrefs();
   std::unique_ptr<CdmPrefData> pref_data =
@@ -357,7 +356,7 @@ void CdmDocumentServiceImpl::SetCdmClientToken(
   }
 
   PrefService* user_prefs =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext())
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext())
           ->GetPrefs();
   CdmPrefServiceHelper::SetCdmClientToken(user_prefs, cdm_origin, client_token);
 }

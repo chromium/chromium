@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 DraggableRegionsHostImpl::DraggableRegionsHostImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<chrome::mojom::DraggableRegions> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -22,6 +22,7 @@ DraggableRegionsHostImpl::~DraggableRegionsHostImpl() = default;
 void DraggableRegionsHostImpl::CreateIfAllowed(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chrome::mojom::DraggableRegions> receiver) {
+  CHECK(render_frame_host);
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   auto* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -32,13 +33,13 @@ void DraggableRegionsHostImpl::CreateIfAllowed(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new DraggableRegionsHostImpl(render_frame_host, std::move(receiver));
+  new DraggableRegionsHostImpl(*render_frame_host, std::move(receiver));
 }
 
 void DraggableRegionsHostImpl::UpdateDraggableRegions(
     std::vector<chrome::mojom::DraggableRegionPtr> draggable_region) {
   auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   auto* browser = chrome::FindBrowserWithWebContents(web_contents);
   // When a WebApp browser's WebContents is reparented to a tabbed browser, a
   // draggable regions update may race with the reparenting logic.

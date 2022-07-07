@@ -24,9 +24,6 @@ class RenderFrameHost;
 class CONTENT_EXPORT LockScreenServiceImpl
     : public DocumentService<blink::mojom::LockScreenService> {
  public:
-  explicit LockScreenServiceImpl(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::LockScreenService> receiver);
   LockScreenServiceImpl(const LockScreenServiceImpl&) = delete;
   LockScreenServiceImpl& operator=(const LockScreenServiceImpl&) = delete;
 
@@ -42,6 +39,10 @@ class CONTENT_EXPORT LockScreenServiceImpl
 
  private:
   friend class LockScreenServiceImplBrowserTest;
+
+  explicit LockScreenServiceImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::LockScreenService> receiver);
 
   // |this| can only be destructed as a DocumentService.
   ~LockScreenServiceImpl() override;

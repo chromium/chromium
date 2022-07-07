@@ -35,19 +35,18 @@ class RenderFrameHost;
 class NavigationPredictor
     : public content::DocumentService<blink::mojom::AnchorElementMetricsHost> {
  public:
-  NavigationPredictor(content::RenderFrameHost* render_frame_host,
-                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
-
   NavigationPredictor(const NavigationPredictor&) = delete;
   NavigationPredictor& operator=(const NavigationPredictor&) = delete;
-
-  ~NavigationPredictor() override;
 
   // Create and bind NavigationPredictor.
   static void Create(content::RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
 
  private:
+  NavigationPredictor(content::RenderFrameHost& render_frame_host,
+                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
+  ~NavigationPredictor() override;
+
   // blink::mojom::AnchorElementMetricsHost:
   void ReportAnchorElementClick(
       blink::mojom::AnchorElementClickPtr click) override;

@@ -25,16 +25,16 @@ class OutputProtectionImpl final
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
 
-  OutputProtectionImpl(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
-
   // media::mojom::OutputProtection implementation.
   void QueryStatus(QueryStatusCallback callback) final;
   void EnableProtection(uint32_t desired_protection_mask,
                         EnableProtectionCallback callback) final;
 
  private:
+  OutputProtectionImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
+
   // |this| can only be destructed as a DocumentService.
   ~OutputProtectionImpl() final;
 

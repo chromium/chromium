@@ -39,7 +39,7 @@ void DidGetInstalledApps(
 InstalledAppProviderImpl::InstalledAppProviderImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> pending_receiver)
-    : DocumentService(&render_frame_host, std::move(pending_receiver)) {}
+    : DocumentService(render_frame_host, std::move(pending_receiver)) {}
 
 InstalledAppProviderImpl::~InstalledAppProviderImpl() = default;
 
@@ -51,15 +51,13 @@ void InstalledAppProviderImpl::FilterInstalledApps(
   if (base::FeatureList::IsEnabled(features::kInstalledAppProvider)) {
 #if BUILDFLAG(IS_WIN)
     is_implemented = true;
-    bool is_off_the_record = render_frame_host()
-                                 ->GetProcess()
-                                 ->GetBrowserContext()
-                                 ->IsOffTheRecord();
+    bool is_off_the_record =
+        render_frame_host().GetProcess()->GetBrowserContext()->IsOffTheRecord();
     installed_app_provider_win::FilterInstalledAppsForWin(
         std::move(related_apps),
         base::BindOnce(&DidGetInstalledApps, is_off_the_record,
                        std::move(callback)),
-        render_frame_host()->GetLastCommittedURL());
+        render_frame_host().GetLastCommittedURL());
 #endif
   }
 

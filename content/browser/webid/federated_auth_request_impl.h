@@ -28,7 +28,7 @@ namespace content {
 class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
-class RenderFrameHostImpl;
+class RenderFrameHost;
 
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
 // fulfill WebID-related requests.
@@ -41,8 +41,11 @@ class RenderFrameHostImpl;
 class CONTENT_EXPORT FederatedAuthRequestImpl
     : public DocumentService<blink::mojom::FederatedAuthRequest> {
  public:
-  static void Create(RenderFrameHostImpl*,
+  static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
+  static FederatedAuthRequestImpl& CreateForTesting(
+      RenderFrameHost&,
+      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
   FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
@@ -78,7 +81,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   friend class FederatedAuthRequestImplTest;
 
   FederatedAuthRequestImpl(
-      RenderFrameHostImpl*,
+      RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
@@ -142,8 +145,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void AddConsoleErrorMessage(blink::mojom::FederatedAuthRequestResult result);
 
   bool ShouldCompleteRequestImmediately();
-
-  const raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;

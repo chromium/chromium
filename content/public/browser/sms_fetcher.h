@@ -82,14 +82,14 @@ class SmsFetcher {
   // have telephony capabilities and exclusively listen for SMSes received
   // on other devices.
   virtual void Subscribe(const OriginList& origin_list,
-                         Subscriber* subscriber) = 0;
+                         Subscriber& subscriber) = 0;
   // Subscribes to incoming SMSes from SmsProvider for telephony
   // devices that can receive SMSes locally and can show a permission prompt.
   // TODO(yigu): This API is used in content/ only. We should move it to the
   // SmsFetcherImpl per guideline. https://crbug.com/1136062.
   virtual void Subscribe(const OriginList& origin_list,
-                         Subscriber* subscriber,
-                         RenderFrameHost* render_frame_host) = 0;
+                         Subscriber& subscriber,
+                         RenderFrameHost& render_frame_host) = 0;
   virtual void Unsubscribe(const OriginList& origin_list,
                            Subscriber* subscriber) = 0;
   // TODO(yigu): This API is used in content/ only. We should move it to the

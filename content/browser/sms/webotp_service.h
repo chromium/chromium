@@ -42,11 +42,11 @@ class CONTENT_EXPORT WebOTPService
   static bool Create(SmsFetcher*,
                      RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::WebOTPService>);
-
-  WebOTPService(SmsFetcher*,
-                const OriginList&,
-                RenderFrameHost*,
-                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+  static WebOTPService& CreateForTesting(
+      SmsFetcher*,
+      const OriginList&,
+      RenderFrameHost&,
+      mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
   WebOTPService(const WebOTPService&) = delete;
   WebOTPService& operator=(const WebOTPService&) = delete;
@@ -82,6 +82,11 @@ class CONTENT_EXPORT WebOTPService
   void OnUserConsentComplete(UserConsentResult);
 
  private:
+  WebOTPService(SmsFetcher*,
+                const OriginList&,
+                RenderFrameHost&,
+                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+
   void CleanUp();
   UserConsentHandler* CreateConsentHandler(UserConsent);
   UserConsentHandler* GetConsentHandler();

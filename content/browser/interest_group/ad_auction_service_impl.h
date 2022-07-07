@@ -84,7 +84,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // `render_frame_host` must not be null, and DocumentService guarantees
   // `this` will not outlive the `render_frame_host`.
   AdAuctionServiceImpl(
-      RenderFrameHost* render_frame_host,
+      RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver);
 
   // `this` can only be destroyed by DocumentService.

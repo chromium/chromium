@@ -27,7 +27,7 @@ class MediaResourceProviderFuchsia final
 
  private:
   MediaResourceProviderFuchsia(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
           receiver);
 

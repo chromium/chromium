@@ -29,9 +29,9 @@ bool NoopUserConsentHandler::is_async() const {
 }
 
 PromptBasedUserConsentHandler::PromptBasedUserConsentHandler(
-    RenderFrameHost* frame_host,
+    RenderFrameHost& frame_host,
     const OriginList& origin_list)
-    : frame_host_{frame_host}, origin_list_{origin_list} {}
+    : frame_host_(frame_host), origin_list_(origin_list) {}
 PromptBasedUserConsentHandler::~PromptBasedUserConsentHandler() = default;
 
 void PromptBasedUserConsentHandler::RequestUserConsent(
@@ -42,7 +42,7 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
   DCHECK_NE(frame_host_->GetLifecycleState(),
             RenderFrameHost::LifecycleState::kPrerendering);
   WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(frame_host_);
+      content::WebContents::FromRenderFrameHost(&*frame_host_);
   if (!web_contents->GetDelegate()) {
     std::move(on_complete).Run(UserConsentResult::kNoDelegate);
     return;
@@ -60,7 +60,7 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
   on_complete_ = std::move(on_complete);
   is_prompt_open_ = true;
   web_contents->GetDelegate()->CreateSmsPrompt(
-      frame_host_, origin_list_, one_time_code,
+      &*frame_host_, origin_list_, one_time_code,
       base::BindOnce(&PromptBasedUserConsentHandler::OnConfirm,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PromptBasedUserConsentHandler::OnCancel,

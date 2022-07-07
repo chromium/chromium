@@ -38,7 +38,7 @@ class SubAppsServiceImpl
 
  private:
   SubAppsServiceImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
   base::WeakPtrFactory<SubAppsServiceImpl> weak_ptr_factory_{this};
 };

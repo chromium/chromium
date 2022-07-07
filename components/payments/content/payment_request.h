@@ -77,7 +77,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
     virtual ~ObserverForTest() {}
   };
 
-  PaymentRequest(content::RenderFrameHost* render_frame_host,
+  PaymentRequest(content::RenderFrameHost& render_frame_host,
                  std::unique_ptr<ContentPaymentRequestDelegate> delegate,
                  base::WeakPtr<PaymentRequestDisplayManager> display_manager,
                  mojo::PendingReceiver<mojom::PaymentRequest> receiver,

@@ -27,7 +27,7 @@ class WakeLockServiceImpl final
                    mojo::PendingReceiver<device::mojom::WakeLock>) final;
 
  private:
-  WakeLockServiceImpl(RenderFrameHost*,
+  WakeLockServiceImpl(RenderFrameHost&,
                       mojo::PendingReceiver<blink::mojom::WakeLockService>);
 };
 

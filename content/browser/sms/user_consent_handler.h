@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_SMS_USER_CONSENT_HANDLER_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 #include "url/origin.h"
@@ -53,7 +53,7 @@ class CONTENT_EXPORT PromptBasedUserConsentHandler : public UserConsentHandler {
  public:
   using OriginList = std::vector<url::Origin>;
 
-  PromptBasedUserConsentHandler(RenderFrameHost* frame_host,
+  PromptBasedUserConsentHandler(RenderFrameHost& frame_host,
                                 const OriginList& origin_list);
   ~PromptBasedUserConsentHandler() override;
 
@@ -66,7 +66,7 @@ class CONTENT_EXPORT PromptBasedUserConsentHandler : public UserConsentHandler {
   void OnCancel();
 
  private:
-  raw_ptr<RenderFrameHost> frame_host_;
+  raw_ref<RenderFrameHost> frame_host_;
   const OriginList origin_list_;
   bool is_prompt_open_{false};
   CompletionCallback on_complete_;

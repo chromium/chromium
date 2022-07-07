@@ -25,8 +25,8 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
     clock_.SetNowTicks(base::TimeTicks::Now());
 
     mojo::Remote<blink::mojom::AudioContextManager> service_remote;
-    audio_context_manager_ = new AudioContextManagerImpl(
-        main_rfh(), service_remote.BindNewPipeAndPassReceiver());
+    audio_context_manager_ = &AudioContextManagerImpl::CreateForTesting(
+        *main_rfh(), service_remote.BindNewPipeAndPassReceiver());
     audio_context_manager_->set_clock_for_testing(&clock_);
   }
 

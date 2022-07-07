@@ -35,7 +35,7 @@ class EyeDropperChooserImpl final
   void ColorSelectionCanceled() override;
 
  private:
-  EyeDropperChooserImpl(RenderFrameHost*,
+  EyeDropperChooserImpl(RenderFrameHost&,
                         mojo::PendingReceiver<blink::mojom::EyeDropperChooser>);
 
   ~EyeDropperChooserImpl() override;

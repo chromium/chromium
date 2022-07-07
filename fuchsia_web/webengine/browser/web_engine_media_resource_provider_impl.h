@@ -34,7 +34,7 @@ class WebEngineMediaResourceProviderImpl final
 
  private:
   WebEngineMediaResourceProviderImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver);
 
   // mojom::WebEngineMediaResourceProvider:

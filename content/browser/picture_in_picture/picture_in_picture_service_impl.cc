@@ -17,15 +17,16 @@ namespace content {
 void PictureInPictureServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
-  DCHECK(render_frame_host);
-  new PictureInPictureServiceImpl(render_frame_host, std::move(receiver));
+  CHECK(render_frame_host);
+  new PictureInPictureServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 // static
 PictureInPictureServiceImpl* PictureInPictureServiceImpl::CreateForTesting(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
-  return new PictureInPictureServiceImpl(render_frame_host,
+  CHECK(render_frame_host);
+  return new PictureInPictureServiceImpl(*render_frame_host,
                                          std::move(receiver));
 }
 
@@ -42,7 +43,7 @@ void PictureInPictureServiceImpl::StartSession(
   mojo::PendingRemote<blink::mojom::PictureInPictureSession> session_remote;
 
   auto result = GetController().StartSession(
-      this, MediaPlayerId(render_frame_host()->GetGlobalId(), player_id),
+      this, MediaPlayerId(render_frame_host().GetGlobalId(), player_id),
       std::move(player_remote), surface_id, natural_size,
       show_play_pause_button, std::move(observer), source_bounds,
       &session_remote, &window_size);
@@ -51,8 +52,8 @@ void PictureInPictureServiceImpl::StartSession(
     // Frames are to be blocklisted from the back-forward cache because the
     // picture-in-picture continues to be displayed while the page is in the
     // cache instead of closing.
-    static_cast<RenderFrameHostImpl*>(render_frame_host())
-        ->OnBackForwardCacheDisablingStickyFeatureUsed(
+    static_cast<RenderFrameHostImpl&>(render_frame_host())
+        .OnBackForwardCacheDisablingStickyFeatureUsed(
             blink::scheduler::WebSchedulerTrackedFeature::kPictureInPicture);
   }
 
@@ -60,7 +61,7 @@ void PictureInPictureServiceImpl::StartSession(
 }
 
 PictureInPictureServiceImpl::PictureInPictureServiceImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -73,7 +74,7 @@ PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
 VideoPictureInPictureWindowControllerImpl&
 PictureInPictureServiceImpl::GetController() {
   return *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-      WebContents::FromRenderFrameHost(render_frame_host()));
+      WebContents::FromRenderFrameHost(&render_frame_host()));
 }
 
 }  // namespace content

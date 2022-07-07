@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -38,12 +38,12 @@ class CONTENT_EXPORT DocumentServiceBase {
   virtual void WillBeDestroyed(DocumentServiceDestructionReason reason) {}
 
  protected:
-  explicit DocumentServiceBase(RenderFrameHost* render_frame_host);
+  explicit DocumentServiceBase(RenderFrameHost& render_frame_host);
 
-  RenderFrameHost* render_frame_host() const { return render_frame_host_; }
+  RenderFrameHost& render_frame_host() const { return *render_frame_host_; }
 
  private:
-  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
+  const raw_ref<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace internal

@@ -15,7 +15,7 @@
 namespace content {
 
 BrowsingTopicsDocumentHost::BrowsingTopicsDocumentHost(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::BrowsingTopicsDocumentService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -24,7 +24,7 @@ void BrowsingTopicsDocumentHost::CreateMojoService(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::BrowsingTopicsDocumentService>
         receiver) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   if (render_frame_host->GetLastCommittedOrigin().opaque()) {
     mojo::ReportBadMessage(
@@ -42,15 +42,15 @@ void BrowsingTopicsDocumentHost::CreateMojoService(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new BrowsingTopicsDocumentHost(render_frame_host, std::move(receiver));
+  new BrowsingTopicsDocumentHost(*render_frame_host, std::move(receiver));
 }
 
 void BrowsingTopicsDocumentHost::GetBrowsingTopics(
     GetBrowsingTopicsCallback callback) {
   std::vector<blink::mojom::EpochTopicPtr> browsing_topics =
       GetContentClient()->browser()->GetBrowsingTopicsForJsApi(
-          render_frame_host()->GetLastCommittedOrigin(),
-          render_frame_host()->GetMainFrame());
+          render_frame_host().GetLastCommittedOrigin(),
+          render_frame_host().GetMainFrame());
 
   std::move(callback).Run(std::move(browsing_topics));
 }

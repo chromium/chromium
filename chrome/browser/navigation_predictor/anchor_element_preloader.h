@@ -48,7 +48,7 @@ class AnchorElementPreloader
 
  private:
   AnchorElementPreloader(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost>
           receiver);
 

@@ -58,15 +58,15 @@ std::vector<std::pair<UnhashedAppId, GURL>> InstallParamsFromMojo(
   return subapps;
 }
 
-WebAppProvider* GetWebAppProvider(content::RenderFrameHost* render_frame_host) {
+WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
   auto* const initiator_web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
   return web_app::WebAppProvider::GetForWebContents(initiator_web_contents);
 }
 
 absl::optional<AppId> GetAppIdForLastCommittedURL(
-    content::RenderFrameHost* render_frame_host) {
-  GURL parent_url = render_frame_host->GetLastCommittedURL();
+    content::RenderFrameHost& render_frame_host) {
+  GURL parent_url = render_frame_host.GetLastCommittedURL();
   WebAppProvider* provider = GetWebAppProvider(render_frame_host);
   DCHECK(provider);
   WebAppRegistrar& web_app_registrar = provider->registrar();
@@ -91,7 +91,7 @@ void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
 }  // namespace
 
 SubAppsServiceImpl::SubAppsServiceImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::SubAppsService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -101,6 +101,7 @@ SubAppsServiceImpl::~SubAppsServiceImpl() = default;
 void SubAppsServiceImpl::CreateIfAllowed(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::SubAppsService> receiver) {
+  CHECK(render_frame_host);
   // This class is created only on the primary main frame (this excludes
   // fenced frames and prerendered pages).
   DCHECK(render_frame_host->IsInPrimaryMainFrame());
@@ -114,7 +115,7 @@ void SubAppsServiceImpl::CreateIfAllowed(
 
   // The object is bound to the lifetime of `render_frame_host` and the mojo
   // connection. See DocumentService for details.
-  new SubAppsServiceImpl(render_frame_host, std::move(receiver));
+  new SubAppsServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 void SubAppsServiceImpl::Add(
@@ -141,7 +142,7 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
-  const GURL& parent_app_url = render_frame_host()->GetLastCommittedURL();
+  const GURL& parent_app_url = render_frame_host().GetLastCommittedURL();
 
   // Check that each sub app's install url has the same origin as the parent
   // app and that the unhashed app id is a valid URL.

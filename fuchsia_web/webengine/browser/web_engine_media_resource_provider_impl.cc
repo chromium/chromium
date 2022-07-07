@@ -20,12 +20,13 @@
 void WebEngineMediaResourceProviderImpl::Bind(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver) {
+  CHECK(frame_host);
   // The object will delete itself when connection to the frame is broken.
-  new WebEngineMediaResourceProviderImpl(frame_host, std::move(receiver));
+  new WebEngineMediaResourceProviderImpl(*frame_host, std::move(receiver));
 }
 
 WebEngineMediaResourceProviderImpl::WebEngineMediaResourceProviderImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -34,7 +35,7 @@ WebEngineMediaResourceProviderImpl::~WebEngineMediaResourceProviderImpl() =
 
 void WebEngineMediaResourceProviderImpl::ShouldUseAudioConsumer(
     ShouldUseAudioConsumerCallback callback) {
-  auto* frame_impl = FrameImpl::FromRenderFrameHost(render_frame_host());
+  auto* frame_impl = FrameImpl::FromRenderFrameHost(&render_frame_host());
   DCHECK(frame_impl);
   std::move(callback).Run(
       frame_impl->media_settings().has_audio_consumer_session_id());
@@ -53,7 +54,7 @@ void WebEngineMediaResourceProviderImpl::CreateAudioConsumer(
   auto factory = base::ComponentContextForProcess()
                      ->svc()
                      ->Connect<fuchsia::media::SessionAudioConsumerFactory>();
-  auto* frame_impl = FrameImpl::FromRenderFrameHost(render_frame_host());
+  auto* frame_impl = FrameImpl::FromRenderFrameHost(&render_frame_host());
   DCHECK(frame_impl);
 
   if (!frame_impl->media_settings().has_audio_consumer_session_id()) {

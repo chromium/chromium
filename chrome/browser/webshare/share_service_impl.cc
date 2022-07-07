@@ -35,14 +35,14 @@
 // //components/browser_ui/webshare/android/java/src/org/chromium/components/browser_ui/webshare/ShareServiceImpl.java
 
 ShareServiceImpl::ShareServiceImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::ShareService> receiver)
     : content::DocumentService<blink::mojom::ShareService>(render_frame_host,
                                                            std::move(receiver))
 #if BUILDFLAG(IS_CHROMEOS)
       ,
       sharesheet_client_(
-          content::WebContents::FromRenderFrameHost(render_frame_host))
+          content::WebContents::FromRenderFrameHost(&render_frame_host))
 #endif
 {
   DCHECK(base::FeatureList::IsEnabled(features::kWebShare));
@@ -54,7 +54,7 @@ ShareServiceImpl::~ShareServiceImpl() = default;
 void ShareServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ShareService> receiver) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     // The renderer should have checked and disallowed the request for fenced
     // frames in NavigatorShare and thrown a DOMException. Ignore the request
@@ -64,7 +64,7 @@ void ShareServiceImpl::Create(
     return;
   }
 
-  new ShareServiceImpl(render_frame_host, std::move(receiver));
+  new ShareServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 // static
@@ -169,7 +169,7 @@ void ShareServiceImpl::Share(const std::string& title,
   UMA_HISTOGRAM_ENUMERATION(kWebShareApiCountMetric, WebShareMethod::kShare);
 
   content::WebContents* const web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
     VLOG(1) << "Cannot share after navigating away";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
@@ -239,7 +239,7 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
   safe_browsing_request_.reset();
 
   content::WebContents* const web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
     VLOG(1) << "Cannot share after navigating away";
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);

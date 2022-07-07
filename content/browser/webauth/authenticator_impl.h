@@ -28,6 +28,11 @@ class CONTENT_EXPORT AuthenticatorImpl
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
 
+  static void CreateForTesting(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+      std::unique_ptr<AuthenticatorCommon> authenticator_common);
+
   AuthenticatorImpl(const AuthenticatorImpl&) = delete;
   AuthenticatorImpl& operator=(const AuthenticatorImpl&) = delete;
 
@@ -35,7 +40,7 @@ class CONTENT_EXPORT AuthenticatorImpl
   friend class AuthenticatorImplTest;
   friend class AuthenticatorImplRequestDelegateTest;
 
-  AuthenticatorImpl(RenderFrameHost* render_frame_host,
+  AuthenticatorImpl(RenderFrameHost& render_frame_host,
                     mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
                     std::unique_ptr<AuthenticatorCommon> authenticator_common);
   ~AuthenticatorImpl() override;

@@ -78,11 +78,11 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
 void AdAuctionServiceImpl::CreateMojoService(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   // The object is bound to the lifetime of `render_frame_host` and the mojo
   // connection. See DocumentService for details.
-  new AdAuctionServiceImpl(render_frame_host, std::move(receiver));
+  new AdAuctionServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 void AdAuctionServiceImpl::JoinInterestGroup(
@@ -148,7 +148,7 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (!render_frame_host()->IsNestedWithinFencedFrame()) {
+  if (!render_frame_host().IsNestedWithinFencedFrame()) {
     ReportBadMessageAndDeleteThis(
         "Unexpected request: LeaveInterestGroupForDocument only supported "
         "within fenced frames");
@@ -158,7 +158,7 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   // Get interest group owner and name. AdAuctionDocumentData is created as
   // part of navigation to a mapped URN URL. We need to find the top-level
   // fenced frame, since only the top-level frame has the document data.
-  RenderFrameHost* rfh = render_frame_host();
+  RenderFrameHost* rfh = &render_frame_host();
   while (!rfh->IsFencedFrameRoot()) {
     rfh = rfh->GetParentOrOuterDocument();
     if (!rfh) {
@@ -184,7 +184,7 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing
-  if (!render_frame_host()->IsFeatureEnabled(
+  if (!render_frame_host().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     ReportBadMessageAndDeleteThis("Unexpected request");
     return;
@@ -202,14 +202,14 @@ void AdAuctionServiceImpl::RunAdAuction(const blink::AuctionConfig& config,
                                         RunAdAuctionCallback callback) {
   // If the run ad auction API is not allowed for this context by Permissions
   // Policy, do nothing
-  if (!render_frame_host()->IsFeatureEnabled(
+  if (!render_frame_host().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
     ReportBadMessageAndDeleteThis("Unexpected request");
     return;
   }
 
-  auto* auction_result_metrics = AdAuctionResultMetrics::GetOrCreateForPage(
-      render_frame_host()->GetPage());
+  auto* auction_result_metrics =
+      AdAuctionResultMetrics::GetOrCreateForPage(render_frame_host().GetPage());
   if (!auction_result_metrics->ShouldRunAuction()) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -257,8 +257,8 @@ void AdAuctionServiceImpl::DeprecatedGetURLFromURN(
   }
   FencedFrameURLMappingObserver obs;
   content::FencedFrameURLMapping& mapping =
-      static_cast<RenderFrameHostImpl*>(render_frame_host())
-          ->GetPage()
+      static_cast<RenderFrameHostImpl&>(render_frame_host())
+          .GetPage()
           .fenced_frame_urls_map();
   // FLEDGE URN URLs should already be mapped, so the observer will be called
   // synchronously.
@@ -289,8 +289,8 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
                                     std::move(replacement->replacement));
   }
   content::FencedFrameURLMapping& mapping =
-      static_cast<RenderFrameHostImpl*>(render_frame_host())
-          ->GetPage()
+      static_cast<RenderFrameHostImpl&>(render_frame_host())
+          .GetPage()
           .fenced_frame_urls_map();
   mapping.SubstituteMappedURL(urn_url, local_replacements);
   std::move(callback).Run();
@@ -326,7 +326,7 @@ network::mojom::URLLoaderFactory*
 AdAuctionServiceImpl::GetFrameURLLoaderFactory() {
   if (!frame_url_loader_factory_ || !frame_url_loader_factory_.is_connected()) {
     frame_url_loader_factory_.reset();
-    render_frame_host()->CreateNetworkServiceDefaultFactory(
+    render_frame_host().CreateNetworkServiceDefaultFactory(
         frame_url_loader_factory_.BindNewPipeAndPassReceiver());
   }
   return frame_url_loader_factory_.get();
@@ -345,17 +345,17 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
     //
     // TODO(mmenke): Hook up devtools.
     GetContentClient()->browser()->WillCreateURLLoaderFactory(
-        render_frame_host()->GetSiteInstance()->GetBrowserContext(),
-        render_frame_host(), render_frame_host()->GetProcess()->GetID(),
+        render_frame_host().GetSiteInstance()->GetBrowserContext(),
+        &render_frame_host(), render_frame_host().GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
         url::Origin(), /*navigation_id=*/absl::nullopt,
-        ukm::SourceIdObj::FromInt64(render_frame_host()->GetPageUkmSourceId()),
+        ukm::SourceIdObj::FromInt64(render_frame_host().GetPageUkmSourceId()),
         &factory_receiver, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
         /*factory_override=*/nullptr);
 
     render_frame_host()
-        ->GetStoragePartition()
+        .GetStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         ->Clone(std::move(factory_receiver));
 
@@ -376,11 +376,11 @@ AdAuctionServiceImpl::GetRefCountedTrustedURLLoaderFactory() {
 }
 
 RenderFrameHostImpl* AdAuctionServiceImpl::GetFrame() {
-  return static_cast<RenderFrameHostImpl*>(render_frame_host());
+  return static_cast<RenderFrameHostImpl*>(&render_frame_host());
 }
 
 scoped_refptr<SiteInstance> AdAuctionServiceImpl::GetFrameSiteInstance() {
-  return render_frame_host()->GetSiteInstance();
+  return render_frame_host().GetSiteInstance();
 }
 
 network::mojom::ClientSecurityStatePtr
@@ -389,12 +389,12 @@ AdAuctionServiceImpl::GetClientSecurityState() {
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
       main_frame_origin_(
-          render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
-      main_frame_url_(render_frame_host->GetMainFrame()->GetLastCommittedURL()),
+          render_frame_host.GetMainFrame()->GetLastCommittedOrigin()),
+      main_frame_url_(render_frame_host.GetMainFrame()->GetLastCommittedURL()),
       auction_worklet_manager_(
           &GetInterestGroupManager().auction_process_manager(),
           GetTopWindowOrigin(),
@@ -415,7 +415,7 @@ bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
     const url::Origin& owner) {
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing
-  if (!render_frame_host()->IsFeatureEnabled(
+  if (!render_frame_host().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     ReportBadMessageAndDeleteThis("Unexpected request");
     return false;
@@ -443,7 +443,7 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
         interest_group_api_operation,
     const url::Origin& origin) const {
   return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-      render_frame_host(), interest_group_api_operation, main_frame_origin_,
+      &render_frame_host(), interest_group_api_operation, main_frame_origin_,
       origin);
 }
 
@@ -472,7 +472,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   }
 
   auto* auction_result_metrics =
-      AdAuctionResultMetrics::GetForPage(render_frame_host()->GetPage());
+      AdAuctionResultMetrics::GetForPage(render_frame_host().GetPage());
 
   if (!render_url) {
     DCHECK(report_urls.empty());
@@ -515,13 +515,13 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()
     const {
   return *static_cast<InterestGroupManagerImpl*>(
-      render_frame_host()->GetStoragePartition()->GetInterestGroupManager());
+      render_frame_host().GetStoragePartition()->GetInterestGroupManager());
 }
 
 url::Origin AdAuctionServiceImpl::GetTopWindowOrigin() const {
-  if (!render_frame_host()->GetParent())
+  if (!render_frame_host().GetParent())
     return origin();
-  return render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
+  return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 }
 
 }  // namespace content

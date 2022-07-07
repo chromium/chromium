@@ -83,7 +83,7 @@ class DocumentHelper
     : public content::DocumentService<blink::mojom::HidService> {
  public:
   DocumentHelper(std::unique_ptr<HidService> parent,
-                 RenderFrameHost* render_frame_host,
+                 RenderFrameHost& render_frame_host,
                  mojo::PendingReceiver<blink::mojom::HidService> receiver)
       : DocumentService(render_frame_host, std::move(receiver)),
         parent_(std::move(parent)) {
@@ -150,7 +150,7 @@ HidService::~HidService() {
 void HidService::Create(
     RenderFrameHostImpl* render_frame_host,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   if (!render_frame_host->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kHid)) {
@@ -180,7 +180,7 @@ void HidService::Create(
           render_frame_host->GetBrowserContext(),
           render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
           render_frame_host),
-      render_frame_host, std::move(receiver));
+      *render_frame_host, std::move(receiver));
 }
 
 // static

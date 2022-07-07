@@ -16,7 +16,7 @@
 namespace content {
 
 LockScreenServiceImpl::LockScreenServiceImpl(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::LockScreenService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
       lock_screen_storage_(LockScreenStorageImpl::GetInstance()) {}
@@ -27,9 +27,10 @@ LockScreenServiceImpl::~LockScreenServiceImpl() = default;
 void LockScreenServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::LockScreenService> receiver) {
+  CHECK(render_frame_host);
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new LockScreenServiceImpl(render_frame_host, std::move(receiver));
+  new LockScreenServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 void LockScreenServiceImpl::GetKeys(GetKeysCallback callback) {
@@ -57,7 +58,7 @@ bool LockScreenServiceImpl::IsAllowed() {
   if (origin().opaque())
     return false;
   return lock_screen_storage_->IsAllowedBrowserContext(
-      render_frame_host()->GetProcess()->GetBrowserContext());
+      render_frame_host().GetProcess()->GetBrowserContext());
 }
 
 }  // namespace content

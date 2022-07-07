@@ -65,7 +65,7 @@ enum class DocumentServiceDestructionReason : int {
 template <typename Interface>
 class DocumentService : public Interface, public internal::DocumentServiceBase {
  public:
-  DocumentService(RenderFrameHost* render_frame_host,
+  DocumentService(RenderFrameHost& render_frame_host,
                   mojo::PendingReceiver<Interface> pending_receiver)
       : DocumentServiceBase(render_frame_host),
         receiver_(this, std::move(pending_receiver)) {
@@ -117,7 +117,7 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   // navigation, so it is always safe to simply call `GetLastCommittedOrigin()`
   // and `GetLastCommittedURL()` directly.
   const url::Origin& origin() const {
-    return render_frame_host()->GetLastCommittedOrigin();
+    return render_frame_host().GetLastCommittedOrigin();
   }
 
   // Reports a bad message and deletes `this`.
@@ -137,8 +137,7 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
     delete this;
   }
 
-  // Returns the RenderFrameHost tracked by this object. Guaranteed to never be
-  // null.
+  // Returns a reference to the RenderFrameHost tracked by this object.
   using DocumentServiceBase::render_frame_host;
 
   // Subclasses can use this to check thread safety.

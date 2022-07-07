@@ -34,13 +34,14 @@ void LiveCaptionUnavailabilityNotifier::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
         receiver) {
+  CHECK(frame_host);
   // The object is bound to the lifetime of |frame_host| and the mojo
   // connection. See DocumentService for details.
-  new LiveCaptionUnavailabilityNotifier(frame_host, std::move(receiver));
+  new LiveCaptionUnavailabilityNotifier(*frame_host, std::move(receiver));
 }
 
 LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
-    content::RenderFrameHost* frame_host,
+    content::RenderFrameHost& frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
         receiver)
     : DocumentService<media::mojom::MediaFoundationRendererNotifier>(
@@ -52,7 +53,7 @@ LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
   context_ = CaptionBubbleContextBrowser::Create(web_contents);
 
   Profile* profile =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
   profile_prefs_ = profile->GetPrefs();
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -79,13 +80,13 @@ void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated(
 }
 
 content::WebContents* LiveCaptionUnavailabilityNotifier::GetWebContents() {
-  return content::WebContents::FromRenderFrameHost(render_frame_host());
+  return content::WebContents::FromRenderFrameHost(&render_frame_host());
 }
 
 LiveCaptionController*
 LiveCaptionUnavailabilityNotifier::GetLiveCaptionController() {
   Profile* profile =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
   if (!profile)
     return nullptr;
 
@@ -115,7 +116,7 @@ bool LiveCaptionUnavailabilityNotifier::ErrorSilencedForOrigin() {
       silenced_sites_list.begin(), silenced_sites_list.end(),
       [&](const base::Value& value) {
         return value.GetString() ==
-               render_frame_host()->GetLastCommittedOrigin().Serialize();
+               render_frame_host().GetLastCommittedOrigin().Serialize();
       });
 
   return it != silenced_sites_list.end();
@@ -148,16 +149,16 @@ void LiveCaptionUnavailabilityNotifier::
         CaptionBubbleErrorType error_type,
         bool checked) {
   PrefService* prefs =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext())
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext())
           ->GetPrefs();
   ListPrefUpdate update(
       prefs, prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
   if (checked) {
-    update->Append(render_frame_host()->GetLastCommittedOrigin().Serialize());
+    update->Append(render_frame_host().GetLastCommittedOrigin().Serialize());
   } else {
     update->EraseListValueIf([&](const base::Value& value) {
       return value.GetString() ==
-             render_frame_host()->GetLastCommittedOrigin().Serialize();
+             render_frame_host().GetLastCommittedOrigin().Serialize();
     });
   }
 }
@@ -165,9 +166,9 @@ void LiveCaptionUnavailabilityNotifier::
 void LiveCaptionUnavailabilityNotifier::
     OnMediaFoundationRendererErrorClicked() {
   Profile* profile =
-      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
   chrome::ShowSiteSettings(
-      profile, render_frame_host()->GetLastCommittedOrigin().GetURL());
+      profile, render_frame_host().GetLastCommittedOrigin().GetURL());
 }
 
 void LiveCaptionUnavailabilityNotifier::

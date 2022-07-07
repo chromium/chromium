@@ -71,11 +71,11 @@ class CommerceHintObserverImpl
     : public content::DocumentService<mojom::CommerceHintObserver> {
  public:
   explicit CommerceHintObserverImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<mojom::CommerceHintObserver> receiver,
       base::WeakPtr<CommerceHintService> service)
       : DocumentService(render_frame_host, std::move(receiver)),
-        binding_url_(render_frame_host->GetLastCommittedURL()),
+        binding_url_(render_frame_host.GetLastCommittedURL()),
         service_(std::move(service)) {}
 
   ~CommerceHintObserverImpl() override = default;
@@ -207,9 +207,10 @@ content::WebContents* CommerceHintService::WebContents() {
 void CommerceHintService::BindCommerceHintObserver(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<mojom::CommerceHintObserver> receiver) {
+  CHECK(host);
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new CommerceHintObserverImpl(host, std::move(receiver),
+  new CommerceHintObserverImpl(*host, std::move(receiver),
                                weak_factory_.GetWeakPtr());
 }
 

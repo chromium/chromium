@@ -14,22 +14,34 @@
 namespace chromecast {
 namespace media {
 
-void CreateApplicationMediaInfoManager(
+void ApplicationMediaInfoManager::Create(
     content::RenderFrameHost* render_frame_host,
     std::string application_session_id,
     bool mixer_audio_enabled,
     mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
         receiver) {
+  CHECK(render_frame_host);
   // The created ApplicationMediaInfoManager will be deleted on connection
   // error, or when the frame navigates away. See DocumentService for
   // details.
-  new ApplicationMediaInfoManager(render_frame_host, std::move(receiver),
+  new ApplicationMediaInfoManager(*render_frame_host, std::move(receiver),
                                   std::move(application_session_id),
                                   mixer_audio_enabled);
 }
 
+ApplicationMediaInfoManager& ApplicationMediaInfoManager::CreateForTesting(
+    content::RenderFrameHost& render_frame_host,
+    std::string application_session_id,
+    bool mixer_audio_enabled,
+    mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
+        receiver) {
+  return *new ApplicationMediaInfoManager(
+      render_frame_host, std::move(receiver), std::move(application_session_id),
+      mixer_audio_enabled);
+}
+
 ApplicationMediaInfoManager::ApplicationMediaInfoManager(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<::media::mojom::CastApplicationMediaInfoManager>
         receiver,
     std::string application_session_id,
@@ -39,7 +51,7 @@ ApplicationMediaInfoManager::ApplicationMediaInfoManager(
       mixer_audio_enabled_(mixer_audio_enabled),
       renderer_blocked_(false) {
   shell::CastRendererBlockData::SetApplicationMediaInfoManagerForWebContents(
-      content::WebContents::FromRenderFrameHost(render_frame_host), this);
+      content::WebContents::FromRenderFrameHost(&render_frame_host), this);
 }
 
 ApplicationMediaInfoManager::~ApplicationMediaInfoManager() = default;

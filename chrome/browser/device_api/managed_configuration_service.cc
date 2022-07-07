@@ -14,6 +14,7 @@
 void ManagedConfigurationServiceImpl::Create(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
+  CHECK(host);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(blink::features::kManagedConfiguration)) {
     mojo::ReportBadMessage(
@@ -31,13 +32,13 @@ void ManagedConfigurationServiceImpl::Create(
 
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new ManagedConfigurationServiceImpl(host, std::move(receiver));
+  new ManagedConfigurationServiceImpl(*host, std::move(receiver));
 }
 
 ManagedConfigurationServiceImpl::ManagedConfigurationServiceImpl(
-    content::RenderFrameHost* host,
+    content::RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver)
-    : DocumentService(host, std::move(receiver)), host_(host) {
+    : DocumentService(host, std::move(receiver)) {
   managed_configuration_api()->AddObserver(this);
 }
 
@@ -76,7 +77,7 @@ void ManagedConfigurationServiceImpl::OnManagedConfigurationChanged() {
 ManagedConfigurationAPI*
 ManagedConfigurationServiceImpl::managed_configuration_api() {
   return ManagedConfigurationAPIFactory::GetForProfile(
-      Profile::FromBrowserContext(host_->GetBrowserContext()));
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
 }
 
 const url::Origin& ManagedConfigurationServiceImpl::GetOrigin() {

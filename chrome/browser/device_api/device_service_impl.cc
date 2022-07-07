@@ -83,11 +83,11 @@ bool IsForceInstalledOrigin(const PrefService* prefs,
       });
 }
 
-const Profile* GetProfile(content::RenderFrameHost* host) {
-  return Profile::FromBrowserContext(host->GetBrowserContext());
+const Profile* GetProfile(content::RenderFrameHost& host) {
+  return Profile::FromBrowserContext(host.GetBrowserContext());
 }
 
-const PrefService* GetPrefs(content::RenderFrameHost* host) {
+const PrefService* GetPrefs(content::RenderFrameHost& host) {
   return GetProfile(host)->GetPrefs();
 }
 
@@ -103,7 +103,7 @@ bool IsAffiliatedUser() {
 #endif
 }
 
-bool IsTrustedContext(content::RenderFrameHost* host,
+bool IsTrustedContext(content::RenderFrameHost& host,
                       const url::Origin& origin) {
   // TODO(anqing): This feature flag is turned on by default for origin trial.
   // The flag will be removed when permission policies are ready.
@@ -124,11 +124,11 @@ bool IsTrustedContext(content::RenderFrameHost* host,
 }  // namespace
 
 DeviceServiceImpl::DeviceServiceImpl(
-    content::RenderFrameHost* host,
+    content::RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver)
-    : DocumentService(host, std::move(receiver)), host_(host) {
+    : DocumentService(host, std::move(receiver)) {
   pref_change_registrar_.Init(
-      Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs());
+      Profile::FromBrowserContext(host.GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kDeviceAttributesAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
@@ -145,16 +145,18 @@ DeviceServiceImpl::~DeviceServiceImpl() = default;
 void DeviceServiceImpl::Create(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {
+  CHECK(host);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!IsTrustedContext(host, host->GetMainFrame()->GetLastCommittedOrigin())) {
+  if (!IsTrustedContext(*host,
+                        host->GetMainFrame()->GetLastCommittedOrigin())) {
     // Not sending bad message here since the API is always exposed to the end
     // user.
     return;
   }
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new DeviceServiceImpl(host, std::move(receiver));
+  new DeviceServiceImpl(*host, std::move(receiver));
 }
 
 // static
@@ -165,7 +167,7 @@ void DeviceServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void DeviceServiceImpl::OnDisposingIfNeeded() {
   // DeviceServiceImpl is allocated on the heap, thus it is safe to remove it
   // like this.
-  if (!IsTrustedContext(host_, origin())) {
+  if (!IsTrustedContext(render_frame_host(), origin())) {
     ResetAndDeleteThis();
   }
 }
@@ -205,7 +207,7 @@ void DeviceServiceImpl::GetDeviceAttribute(
     return;
   }
 
-  if (!CanAccessDeviceAttributes(GetPrefs(host_), origin())) {
+  if (!CanAccessDeviceAttributes(GetPrefs(render_frame_host()), origin())) {
     device_attribute_api::ReportNotAllowedError(std::move(callback));
     return;
   }

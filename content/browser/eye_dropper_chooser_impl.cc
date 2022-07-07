@@ -19,7 +19,7 @@ namespace content {
 void EyeDropperChooserImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::EyeDropperChooser> receiver) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   // Renderer process should already check for user activation before sending
   // this request. Double check in case of compromised renderer and consume
@@ -33,11 +33,11 @@ void EyeDropperChooserImpl::Create(
     return;
   }
 
-  new EyeDropperChooserImpl(render_frame_host, std::move(receiver));
+  new EyeDropperChooserImpl(*render_frame_host, std::move(receiver));
 }
 
 EyeDropperChooserImpl::EyeDropperChooserImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::EyeDropperChooser> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
@@ -47,16 +47,16 @@ EyeDropperChooserImpl::~EyeDropperChooserImpl() {
 }
 
 void EyeDropperChooserImpl::Choose(ChooseCallback callback) {
-  if (!render_frame_host() || callback_ || eye_dropper_) {
+  if (callback_ || eye_dropper_) {
     std::move(callback).Run(/*success=*/false, /*color=*/0);
     return;
   }
 
   callback_ = std::move(callback);
   WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
+      WebContents::FromRenderFrameHost(&render_frame_host());
   if (WebContentsDelegate* delegate = web_contents->GetDelegate())
-    eye_dropper_ = delegate->OpenEyeDropper(render_frame_host(), this);
+    eye_dropper_ = delegate->OpenEyeDropper(&render_frame_host(), this);
 
   if (!eye_dropper_) {
     // Color selection wasn't successful since the eye dropper can't be opened.

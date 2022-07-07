@@ -36,15 +36,15 @@ namespace {
 // The maximum number of clicks to track in a single navigation.
 size_t kMaxClicksTracked = 10;
 
-bool IsPrerendering(content::RenderFrameHost* render_frame_host) {
-  return render_frame_host->GetLifecycleState() ==
+bool IsPrerendering(content::RenderFrameHost& render_frame_host) {
+  return render_frame_host.GetLifecycleState() ==
          content::RenderFrameHost::LifecycleState::kPrerendering;
 }
 
 }  // namespace
 
 NavigationPredictor::NavigationPredictor(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<AnchorElementMetricsHost> receiver)
     : content::DocumentService<blink::mojom::AnchorElementMetricsHost>(
           render_frame_host,
@@ -57,7 +57,7 @@ NavigationPredictor::NavigationPredictor(
   DCHECK(!IsPrerendering(render_frame_host));
 
   ukm_recorder_ = ukm::UkmRecorder::Get();
-  ukm_source_id_ = render_frame_host->GetMainFrame()->GetPageUkmSourceId();
+  ukm_source_id_ = render_frame_host.GetMainFrame()->GetPageUkmSourceId();
 }
 
 NavigationPredictor::~NavigationPredictor() {
@@ -67,8 +67,9 @@ NavigationPredictor::~NavigationPredictor() {
 void NavigationPredictor::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
+  CHECK(render_frame_host);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(render_frame_host));
+  DCHECK(!IsPrerendering(*render_frame_host));
 
   // Only valid for the main frame.
   if (render_frame_host->GetParentOrOuterDocument())
@@ -86,7 +87,7 @@ void NavigationPredictor::Create(
 
   // The object is bound to the lifetime of the |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new NavigationPredictor(render_frame_host, std::move(receiver));
+  new NavigationPredictor(*render_frame_host, std::move(receiver));
 }
 
 int NavigationPredictor::GetBucketMinForPageMetrics(int value) const {
@@ -111,7 +112,7 @@ void NavigationPredictor::ReportNewAnchorElements(
   // exist. Note that NavigationPredictor only runs on the main frame, but get
   // reports for links from all same-process iframes.
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   PageAnchorsMetricsObserver::AnchorsData::CreateForWebContents(web_contents);
   PageAnchorsMetricsObserver::AnchorsData* data =
       PageAnchorsMetricsObserver::AnchorsData::FromWebContents(web_contents);
@@ -161,7 +162,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     NavigationPredictorKeyedService* service =
         NavigationPredictorKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(
-                render_frame_host()->GetBrowserContext()));
+                render_frame_host().GetBrowserContext()));
     DCHECK(service);
     service->OnPredictionUpdated(
         web_contents, document_url,

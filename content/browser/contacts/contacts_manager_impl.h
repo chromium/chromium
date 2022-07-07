@@ -17,9 +17,14 @@ class RenderFrameHostImpl;
 class ContactsManagerImpl
     : public DocumentService<blink::mojom::ContactsManager> {
  public:
-  explicit ContactsManagerImpl(
+  static void Create(
       RenderFrameHostImpl* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver);
+      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
+    CHECK(render_frame_host);
+    // The object is bound to the lifetime of `render_frame_host`'s logical
+    // document by virtue of being a `DocumentService` implementation.
+    new ContactsManagerImpl(*render_frame_host, std::move(receiver));
+  }
 
   ContactsManagerImpl(const ContactsManagerImpl&) = delete;
   ContactsManagerImpl& operator=(const ContactsManagerImpl&) = delete;
@@ -35,6 +40,10 @@ class ContactsManagerImpl
               SelectCallback mojom_callback) override;
 
  private:
+  explicit ContactsManagerImpl(
+      RenderFrameHostImpl& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ContactsManager> receiver);
+
   std::unique_ptr<ContactsProvider> contacts_provider_;
 
   // The source id to use when reporting back UKM statistics.

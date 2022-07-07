@@ -100,7 +100,7 @@ class MediaDrmStorageImpl final
   // allowed or not. It is called if |get_origin_id_cb| is unable to return an
   // origin ID.
   MediaDrmStorageImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       PrefService* pref_service,
       GetOriginIdCB get_origin_id_cb,
       AllowEmptyOriginIdCB allow_empty_origin_id_cb,
@@ -109,7 +109,7 @@ class MediaDrmStorageImpl final
   // As above, but derives the PrefService from |render_frame_host|.
   // TODO(estade): make this the only constructor.
   MediaDrmStorageImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       GetOriginIdCB get_origin_id_cb,
       AllowEmptyOriginIdCB allow_empty_origin_id_cb,
       mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);

@@ -80,7 +80,7 @@ void CreateMediaDrmStorage(
   // The object will be deleted on connection error, or when the frame navigates
   // away.
   new cdm::MediaDrmStorageImpl(
-      render_frame_host, pref_service, base::BindRepeating(&CreateOriginId),
+      *render_frame_host, pref_service, base::BindRepeating(&CreateOriginId),
       base::BindRepeating(&AllowEmptyOriginIdCB), std::move(receiver));
 }
 
@@ -143,9 +143,9 @@ void CastContentBrowserClient::BindMediaServiceReceiver(
     bool mixer_audio_enabled;
     GetApplicationMediaInfo(&application_session_id, &mixer_audio_enabled,
                             render_frame_host);
-    media::CreateApplicationMediaInfoManager(render_frame_host,
-                                             std::move(application_session_id),
-                                             mixer_audio_enabled, std::move(r));
+    media::ApplicationMediaInfoManager::Create(
+        render_frame_host, std::move(application_session_id),
+        mixer_audio_enabled, std::move(r));
     return;
   }
 }

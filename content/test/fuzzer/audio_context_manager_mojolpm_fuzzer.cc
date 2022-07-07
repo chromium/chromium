@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"  // [nogncheck]
-#include "content/browser/site_instance_impl.h"             // nogncheck
+#include "content/browser/site_instance_impl.h"  // nogncheck
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
@@ -173,8 +173,8 @@ void AudioContextManagerTestcase::AddAudioContextManagerImpl(
     mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver) {
   clock_.SetNowTicks(base::TimeTicks::Now());
 
-  audio_context_manager_ = new content::AudioContextManagerImpl(
-      render_frame_host_, std::move(receiver));
+  audio_context_manager_ = &content::AudioContextManagerImpl::CreateForTesting(
+      *render_frame_host_, std::move(receiver));
 
   audio_context_manager_->set_clock_for_testing(&clock_);
 }

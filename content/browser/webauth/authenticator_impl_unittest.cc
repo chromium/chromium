@@ -3718,10 +3718,10 @@ class AuthenticatorImplRequestDelegateTest : public AuthenticatorImplTest {
     mojo::Remote<blink::mojom::Authenticator> authenticator;
     // AuthenticatorImpl owns itself. It self-destructs when the RenderFrameHost
     // navigates or is deleted.
-    new AuthenticatorImpl(main_rfh(),
-                          authenticator.BindNewPipeAndPassReceiver(),
-                          std::make_unique<FakeAuthenticatorCommon>(
-                              main_rfh(), std::move(delegate)));
+    AuthenticatorImpl::CreateForTesting(
+        *main_rfh(), authenticator.BindNewPipeAndPassReceiver(),
+        std::make_unique<FakeAuthenticatorCommon>(main_rfh(),
+                                                  std::move(delegate)));
     return authenticator;
   }
 };

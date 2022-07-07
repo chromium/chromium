@@ -34,17 +34,24 @@ namespace media {
 class AudioSocketBroker
     : public ::content::DocumentService<mojom::AudioSocketBroker> {
  public:
-  AudioSocketBroker(content::RenderFrameHost* render_frame_host,
-                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver);
-  AudioSocketBroker(content::RenderFrameHost* render_frame_host,
-                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
-                    const std::string& audio_output_service_path);
+  static void Create(content::RenderFrameHost* render_frame_host,
+                     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver);
+  static AudioSocketBroker& CreateForTesting(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
+      const std::string& audio_output_service_path);
   AudioSocketBroker(const AudioSocketBroker&) = delete;
   AudioSocketBroker& operator=(const AudioSocketBroker&) = delete;
-  ~AudioSocketBroker() override;
 
  private:
   class SocketFdConnection;
+
+  AudioSocketBroker(content::RenderFrameHost& render_frame_host,
+                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver);
+  AudioSocketBroker(content::RenderFrameHost& render_frame_host,
+                    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
+                    const std::string& audio_output_service_path);
+  ~AudioSocketBroker() override;
 
   // Helper struct which holds the information regarding a socket pair
   // in the time between sending the socket to the renderer and the audio
@@ -79,10 +86,6 @@ class AudioSocketBroker
 
   base::WeakPtrFactory<AudioSocketBroker> weak_factory_{this};
 };
-
-void CreateAudioSocketBroker(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver);
 
 }  // namespace media
 }  // namespace chromecast

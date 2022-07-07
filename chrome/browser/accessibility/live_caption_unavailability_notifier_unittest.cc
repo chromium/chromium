@@ -51,7 +51,7 @@ class LiveCaptionUnavailabilityNotifierTest
     // The LiveCaptionUnavailabilityNotifier is self-owned and is reset upon the
     // destruction of the mojo connection.
     notifier_ =
-        new LiveCaptionUnavailabilityNotifier(main_rfh(), std::move(receiver));
+        new LiveCaptionUnavailabilityNotifier(*main_rfh(), std::move(receiver));
   }
 
  private:

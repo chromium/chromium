@@ -31,7 +31,7 @@ class DraggableRegionsHostImpl
 
  private:
   DraggableRegionsHostImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<chrome::mojom::DraggableRegions> receiver);
 };
 

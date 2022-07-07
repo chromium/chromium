@@ -125,7 +125,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // |render_frame_host|: The RFH that owns this instance.
   // |receiver|: The instance will be bound to this receiver's pipe.
   WebBluetoothServiceImpl(
-      RenderFrameHost* render_frame_host,
+      RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
   ~WebBluetoothServiceImpl() override;

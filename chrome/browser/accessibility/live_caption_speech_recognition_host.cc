@@ -25,13 +25,14 @@ void LiveCaptionSpeechRecognitionHost::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
         receiver) {
+  CHECK(frame_host);
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new LiveCaptionSpeechRecognitionHost(frame_host, std::move(receiver));
+  new LiveCaptionSpeechRecognitionHost(*frame_host, std::move(receiver));
 }
 
 LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
-    content::RenderFrameHost* frame_host,
+    content::RenderFrameHost& frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
         receiver)
     : DocumentService<media::mojom::SpeechRecognitionRecognizerClient>(
@@ -97,7 +98,7 @@ void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
 #endif
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
-  return content::WebContents::FromRenderFrameHost(render_frame_host());
+  return content::WebContents::FromRenderFrameHost(&render_frame_host());
 }
 
 LiveCaptionController*

@@ -18,7 +18,7 @@ namespace content {
 BluetoothDeviceScanningPromptController::
     BluetoothDeviceScanningPromptController(
         WebBluetoothServiceImpl* web_bluetooth_service,
-        RenderFrameHost* render_frame_host)
+        RenderFrameHost& render_frame_host)
     : web_bluetooth_service_(web_bluetooth_service),
       render_frame_host_(render_frame_host) {}
 
@@ -39,7 +39,7 @@ void BluetoothDeviceScanningPromptController::ShowPermissionPrompt() {
     if (!render_frame_host_->IsActive())
       return;
     prompt_ = delegate->ShowBluetoothScanningPrompt(
-        render_frame_host_, std::move(prompt_event_handler));
+        &*render_frame_host_, std::move(prompt_event_handler));
   }
 }
 
