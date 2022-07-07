@@ -298,15 +298,13 @@ bool IsEligibleForLazyEmbeds(const KURL& url, const Document& document) {
 
 // If kAutomaticLazyFrameLoadingToAds is enabled, calculate the timeout in
 // advance from the field trial param, otherwise return 0;
-base::TimeDelta CalculateLazyAdsTimeoutMs() {
+base::TimeDelta CalculateTimeoutMs(const base::Feature& feature) {
   static constexpr base::TimeDelta kDefaultTimeout{base::Milliseconds(0)};
-  if (!base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds))
+  if (!base::FeatureList::IsEnabled(feature))
     return kDefaultTimeout;
 
   const String timeout =
-      base::GetFieldTrialParamValueByFeature(
-          features::kAutomaticLazyFrameLoadingToAds, "timeout")
-          .c_str();
+      base::GetFieldTrialParamValueByFeature(feature, "timeout").c_str();
   if (timeout.IsEmpty())
     return kDefaultTimeout;
 
@@ -316,9 +314,18 @@ base::TimeDelta CalculateLazyAdsTimeoutMs() {
 
   return base::Milliseconds(timeout_ms);
 }
+
+const base::TimeDelta GetLazyEmbedsTimeoutMs() {
+  DEFINE_STATIC_LOCAL(
+      base::TimeDelta, timeoutMs,
+      (CalculateTimeoutMs(features::kAutomaticLazyFrameLoadingToEmbeds)));
+  return timeoutMs;
+}
+
 const base::TimeDelta GetLazyAdsTimeoutMs() {
-  DEFINE_STATIC_LOCAL(base::TimeDelta, timeoutMs,
-                      (CalculateLazyAdsTimeoutMs()));
+  DEFINE_STATIC_LOCAL(
+      base::TimeDelta, timeoutMs,
+      (CalculateTimeoutMs(features::kAutomaticLazyFrameLoadingToAds)));
   return timeoutMs;
 }
 
@@ -680,17 +687,37 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
   if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
     lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
 
-  if (CheckAndRecordIfShouldLazilyLoadFrame(
-          GetDocument(),
-          /*is_loading_attr_lazy=*/loading_lazy_set,
-          /*is_eligible_for_lazy_embeds=*/
-          IsEligibleForLazyEmbeds(url, GetDocument()),
-          /*is_eligible_for_lazy_ads=*/IsEligibleForLazyAds(url),
-          /*record_uma=*/true)) {
+  // TODO(crbug.com/1341892) Remove having multiple booleans here. We eventually
+  // select one reason to decide the timeout, so essentially we don't have to
+  // keep them. But currently we need these two booleans separately to record
+  // UKM in CheckAndRecordIfShouldLazilyLoadFrame. Once we confirm that we can
+  // ignore AutomaticLazyLoadReason::kBothEmbedsAndAds case due to the small
+  // amount of the data size, we remove these booleans and
+  // AutomaticLazyLoadReason::kBothEmbedsAndAds.
+  const bool is_eligible_for_lazy_embeds =
+      IsEligibleForLazyEmbeds(url, GetDocument());
+  const bool is_eligible_for_lazy_ads = IsEligibleForLazyAds(url);
+  AutomaticLazyLoadReason auto_lazy_load_reason;
+  if (is_eligible_for_lazy_embeds && is_eligible_for_lazy_ads) {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kBothEmbedsAndAds;
+  } else if (is_eligible_for_lazy_embeds) {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kEmbeds;
+  } else if (is_eligible_for_lazy_ads) {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kAds;
+  } else {
+    auto_lazy_load_reason = AutomaticLazyLoadReason::kNotEligible;
+  }
+  base::UmaHistogramEnumeration("Blink.AutomaticLazyFrameLoad.Reason",
+                                auto_lazy_load_reason);
+
+  if (CheckAndRecordIfShouldLazilyLoadFrame(GetDocument(), loading_lazy_set,
+                                            is_eligible_for_lazy_embeds,
+                                            is_eligible_for_lazy_ads,
+                                            /*record_uma=*/true)) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
-    MaybeSetTimeoutToStartAdFrameLoading(
-        url, /*is_loading_attr_lazy=*/loading_lazy_set);
+    MaybeSetTimeoutToStartFrameLoading(url, loading_lazy_set,
+                                       auto_lazy_load_reason);
 
     return true;
   }
@@ -888,7 +915,7 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   return content_frame_->IsAdSubframe();
 }
 
-void HTMLFrameOwnerElement::LoadIfLazyOnIdle(base::TimeTicks deadline) {
+void HTMLFrameOwnerElement::LoadIfLazyAfterTimeout() {
   LoadImmediatelyIfLazy();
 }
 
@@ -898,30 +925,40 @@ bool HTMLFrameOwnerElement::IsEligibleForLazyAds(const KURL& url) {
   return IsAdRelated() && !AreSameOrigin(GetDocument(), url);
 }
 
-void HTMLFrameOwnerElement::MaybeSetTimeoutToStartAdFrameLoading(
+void HTMLFrameOwnerElement::MaybeSetTimeoutToStartFrameLoading(
     const KURL& url,
-    bool is_loading_attr_lazy) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToAds)) {
-    return;
-  }
-  if (!IsEligibleForLazyAds(url)) {
-    return;
-  }
+    bool is_loading_attr_lazy,
+    AutomaticLazyLoadReason auto_lazy_load_reason) {
   // Even if the frame is ad related, respect the explicit loading="lazy"
   // attribute and won't set a timeout if the attribute exists.
   if (is_loading_attr_lazy) {
     return;
   }
 
-  // TODO(sisidovski) FrameScheduler should have the attribution of this task,
-  // but FrameScheduler doesn't expose
-  // SingleThreadIdleTaskRunner::PostIdleTask. So we call PostIdleTask here
-  // through the main thread scheduler.
-  ThreadScheduler::Current()->PostDelayedIdleTask(
-      FROM_HERE, GetLazyAdsTimeoutMs(),
-      WTF::Bind(&HTMLFrameOwnerElement::LoadIfLazyOnIdle,
-                WrapWeakPersistent(this)));
+  base::TimeDelta timeout_ms;
+  switch (auto_lazy_load_reason) {
+    case AutomaticLazyLoadReason::kAds:
+      timeout_ms = GetLazyAdsTimeoutMs();
+      break;
+    // We prioritize LazyEmbeds if the frame is eligible for both reasons, at
+    // least until the LazyEmbeds experiment finishes to secure the chunk of
+    // group size.
+    case AutomaticLazyLoadReason::kBothEmbedsAndAds:
+    case AutomaticLazyLoadReason::kEmbeds:
+      timeout_ms = GetLazyEmbedsTimeoutMs();
+      break;
+    case AutomaticLazyLoadReason::kNotEligible:
+      // If the auto lazy-load is not elibible, do nothing and return.
+      return;
+  }
+
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalLoading)
+      ->PostDelayedTask(
+          FROM_HERE,
+          WTF::Bind(&HTMLFrameOwnerElement::LoadIfLazyAfterTimeout,
+                    WrapWeakPersistent(this)),
+          timeout_ms);
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {

@@ -117,6 +117,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.AutomaticLazyFrameLoad.Reason"
+    enum="AutomaticLazyFrameLoadReason" expires_after="2022-12-18">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Records if the frame is eligible for automatic lazy-load mechanisms. This is
+    recorded when each frame having a url in the page is created.
+  </summary>
+</histogram>
+
 <histogram name="Blink.AutomaticLazyLoadFrame"
     enum="AutomaticLazyLoadFrameState" expires_after="2022-12-18">
   <owner>sisidovski@google.com</owner>

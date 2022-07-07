@@ -1086,7 +1086,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/lazyembed"],
     "args": [
-      "--enable-features=AutomaticLazyFrameLoadingToEmbeds,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed",
+      "--enable-features=AutomaticLazyFrameLoadingToEmbeds:timeout/1000,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed,AutomaticLazyFrameLoadingToAds:timeout/5000",
       "--disable-field-trial-config"
     ]
   },
