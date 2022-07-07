@@ -3264,7 +3264,7 @@
 <translation id="4117637339509843559">ダークモード</translation>
 <translation id="4117714603282104018">タッチパッドの触覚フィードバック</translation>
 <translation id="4118579674665737931">デバイスを再起動してもう一度お試しください。</translation>
-<translation id="412022815379960229">ログインすれば常に、Google フォトの「思い出」の写真を見ることができます。</translation>
+<translation id="412022815379960229">ログインすれば、いつでも Google フォトの「思い出」の写真を見ることができます。</translation>
 <translation id="4120388883569225797">このセキュリティ キーはリセットできません</translation>
 <translation id="4120817667028078560">パスが長すぎます</translation>
 <translation id="4124823734405044952">セキュリティ キーがリセットされました</translation>
@@ -6848,10 +6848,10 @@
 <translation id="7744047395460924128">印刷履歴の表示</translation>
 <translation id="7744192722284567281">データ侵害で漏洩</translation>
 <translation id="7744649840067671761">新しいスイッチかキーボードのキーを押すと割り当てを開始できます。割り当て済みのスイッチかキーを押すと割り当てが解除されます。</translation>
-<translation id="7746739418892731373">Google フォト ライブラリの写真と動画のハイライトが表示されています。ハイライトに何を表示するかは、<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> で管理できます。
+<translation id="7746739418892731373">Google フォト ライブラリの写真と動画のハイライトが表示されます。ハイライトに何を表示するかは、<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> で制御できます。
         <ph name="BREAK" />
         <ph name="BREAK" />
-        カードメニューからこのカードの設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
+        カードメニューからこのカードの設定を管理することができ、[Chrome をカスタマイズ] でその他のオプションを確認できます。</translation>
 <translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
 <translation id="7751260505918304024">すべて表示</translation>
 <translation id="7751619076382363711">削除されたサイトはありません</translation>

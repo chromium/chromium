@@ -3287,7 +3287,7 @@
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4117714603282104018">터치패드 햅틱 반응</translation>
 <translation id="4118579674665737931">기기를 재부팅한 후 다시 시도해 주세요.</translation>
-<translation id="412022815379960229">로그인할 때마다 Google 포토에서 나의 소중한 추억들과 다시 만나세요.</translation>
+<translation id="412022815379960229">로그인할 때마다 Google 포토에서 소중한 추억들을 만나보세요.</translation>
 <translation id="4120388883569225797">보안 키를 재설정할 수 없습니다.</translation>
 <translation id="4120817667028078560">경로가 너무 김</translation>
 <translation id="4124823734405044952">보안 키가 재설정되었습니다.</translation>
@@ -6884,7 +6884,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7744192722284567281">정보 유출에 포함됨</translation>
 <translation id="7744649840067671761">할당을 시작하려면 새 스위치 또는 키보드 키를 누르세요.
 할당을 삭제하려면 할당된 스위치 또는 키를 누르세요.</translation>
-<translation id="7746739418892731373">Google 사진 라이브러리의 사진 및 동영상 하이라이트입니다. <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />에서 하이라이트에 표시되는 항목을 제어할 수 있습니다.
+<translation id="7746739418892731373">Google 포토 라이브러리의 사진 및 동영상 하이라이트입니다. <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />에서 하이라이트에 표시되는 항목을 제어할 수 있습니다.
         <ph name="BREAK" />
         <ph name="BREAK" />
         카드 메뉴에서 카드 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 볼 수 있습니다.</translation>
