@@ -236,6 +236,13 @@ RealtimeReportingClient::InitBrowserReportingClient(
 #else
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* main_profile = enterprise_connectors::GetMainProfileLacros();
+  if (main_profile) {
+    // Prefer the user client id if available.
+    client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Make sure DeviceManagementService has been initialized.
   device_management_service->ScheduleInitialization(0);
@@ -254,7 +261,7 @@ RealtimeReportingClient::InitBrowserReportingClient(
         dm_token, client_id,
         /*user_affiliation_ids=*/std::vector<std::string>());
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return {policy_client_desc, client};
 }
@@ -325,13 +332,11 @@ void RealtimeReportingClient::ReportRealtimeEvent(
   }
 
 #ifndef NDEBUG
-  // Make sure the event is a SAFE_BROWSING event in kAllReportingEvents array.
+  // Make sure the event is included in the kAllReportingEvents array.
   bool found = false;
   for (const auto& event :
        enterprise_connectors::ReportingServiceSettings::kAllReportingEvents) {
-    if (event.source == enterprise_connectors::ReportingConnectorEventSource::
-                            SAFE_BROWSING &&
-        event.name == name) {
+    if (event.name == name) {
       found = true;
       break;
     }
@@ -367,7 +372,6 @@ void RealtimeReportingClient::ReportRealtimeEvent(
         wrapper.Set("uploaded_successfully", uploaded);
         wrapper.Set(per_profile ? "profile_dm_token" : "browser_dm_token",
                     std::move(dm_token));
-        // TODO(xanth-this-cl): Also add extension events
         safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
             std::move(wrapper));
       },
