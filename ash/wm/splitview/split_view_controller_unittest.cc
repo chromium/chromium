@@ -1003,6 +1003,41 @@ TEST_F(SplitViewControllerTest, SplitDividerWindowBounds) {
   EXPECT_NEAR(window2_width, old_window1_width, 1);
 }
 
+// Verify that disconnecting a display which has a snapped window in it in
+// tablet mode won't lead to a crash. Regression test for
+// https://crbug.com/1316230.
+TEST_F(SplitViewControllerTest,
+       DisplayDisconnectionWithSnappedWindowInTabletMode) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  UpdateDisplay("800x600,800x600");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_TRUE(EnterOverview());
+
+  // Turn off the display mirror mode.
+  Shell::Get()->display_manager()->SetMirrorMode(display::MirrorMode::kOff,
+                                                 absl::nullopt);
+
+  std::unique_ptr<aura::Window> w1(
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
+  ASSERT_NE(w1->GetRootWindow(), w2->GetRootWindow());
+
+  // Snap the window on the second display.
+  auto* split_view_controller_on_display2 =
+      SplitViewController::Get(w2->GetRootWindow());
+  split_view_controller_on_display2->SnapWindow(w2.get(),
+                                                SplitViewController::LEFT);
+  ASSERT_TRUE(split_view_controller_on_display2->split_view_divider());
+
+  // Now disconnect the second display, verify there's no crash.
+  UpdateDisplay("800x600");
+  base::RunLoop().RunUntilIdle();
+}
+
 // Tests that the bounds of the snapped windows and divider are adjusted when
 // the screen display configuration changes.
 TEST_F(SplitViewControllerTest, DisplayConfigurationChangeTest) {

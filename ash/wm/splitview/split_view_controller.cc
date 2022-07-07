@@ -1777,6 +1777,14 @@ void SplitViewController::OnDisplayRemoved(
   // called. In clamshell mode, |OverviewController::CanEndOverview| always
   // returns true, meaning that overview is guaranteed to end successfully.
   DCHECK(!InClamshellSplitViewMode());
+
+  // If the `root_window_`is the root window of the display which is going to
+  // be removed, there's no need to start overview.
+  if (GetRootWindowSettings(root_window_)->display_id ==
+      display::kInvalidDisplayId) {
+    return;
+  }
+
   // If we are in tablet split view with only one snapped window, make sure we
   // are in overview (see https://crbug.com/1027179).
   if (state_ == State::kLeftSnapped || state_ == State::kRightSnapped) {
