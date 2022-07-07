@@ -74,6 +74,11 @@ module.exports = {
       'semi': 'off',
       '@typescript-eslint/semi': ['error'],
 
+      // https://google.github.io/styleguide/tsguide.html#arrayt-type
+      '@typescript-eslint/array-type': ['error', {
+        default: 'array-simple',
+      }],
+
       // https://google.github.io/styleguide/jsguide.html#naming
       '@typescript-eslint/naming-convention': [
         'error',
