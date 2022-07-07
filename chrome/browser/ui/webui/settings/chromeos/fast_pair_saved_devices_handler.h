@@ -39,7 +39,8 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
   void HandleLoadSavedDevicePage(const base::Value::List& args);
   void OnGetSavedDevices(nearby::fastpair::OptInStatus status,
                          std::vector<nearby::fastpair::FastPairDevice> devices);
-  void SaveImageAsBase64(const std::string& image_url, gfx::Image image);
+  void SaveImageAsBase64(const std::string& image_byte_string,
+                         gfx::Image image);
   void DecodingUrlsFinished();
 
   void HandleRemoveSavedDevice(const base::Value::List& args);
@@ -57,7 +58,8 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
   // for security reasons. This map is used to store the encoded urls created
   // in async calls to be used when we create our dictionary to give to
   // chrome://os-settings for display.
-  base::flat_map<std::string, std::string> image_url_to_encoded_url_map_;
+  base::flat_map<std::string, std::string>
+      image_byte_string_to_encoded_url_map_;
 
   base::WeakPtrFactory<FastPairSavedDevicesHandler> weak_ptr_factory_{this};
 };

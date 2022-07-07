@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/fast_pair_saved_devices_handler.h"
 
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
@@ -51,63 +52,45 @@ const char kDisplayUrlBase64[] =
     "zAXrTQLGi/OgEwAAAABJRU5ErkJggg==";
 
 const char kDeviceName1[] = "I16max";
-const char kDisplayUrl1[] =
-    "https://lh3.googleusercontent.com/"
-    "k8zVfbUX1vo44utJCdVzEf9hkmijQfHLCMc2cidJfrnvH62rblJ5LH32gfQce6XnAPB1LwwTVh"
-    "vSPEw3c7OxMCw";
+const char kImageBytes1[] = "01010101001010101010101010101";
 const std::vector<uint8_t> kAccountKey1 = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
                                            0x61, 0xC3, 0x32, 0x1D};
 const char kDeviceName2[] = "JBL Flip 6";
-const char kDisplayUrl2[] =
-    "https://lh3-dz.googleusercontent.com/"
-    "Bw8fRUbTFyZhUU5wge68od-"
-    "6RXdoeuGs3uMZbFm8zvpKtI6hTxiLlNU7cbeHlB1pPL3n2jHyqcIae7B0giXGTQ";
+const char kImageBytes2[] = "111110101001010101001010101111";
 const std::vector<uint8_t> kAccountKey2 = {0xA1, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB6, 0xCD, 0x5E, 0x3F, 0x45,
                                            0x61, 0xC3, 0x32, 0x1D};
 const char kDeviceName3[] = "Pixel Buds";
-const char kDisplayUrl3[] =
-    "https://lh3.googleusercontent.com/"
-    "pCvLoM4hzVoFiqTSTUkLg7puZfpBTvBLr6PBSZYDoeIsaxwcaSkPGqOfdJ5fuaVa3PKT71qrF6"
-    "5KJrBYX-K-Xg";
+const char kImageBytes3[] = "00000010101100110101010010101001";
 const std::vector<uint8_t> kAccountKey3 = {0xA6, 0xB0, 0xF0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB6, 0xCD, 0x5E, 0x3F, 0x45,
                                            0x68, 0xC3, 0x32, 0x1D};
 const char kDeviceName4[] = "Wyze Buds";
-const char kDisplayUrl4[] =
-    "https://lh3.googleusercontent.com/"
-    "NTEvjDWCU9v5T6D80kGMzG-"
-    "ziGKRYhEW093j5YYEoat56UODs9sk8L2kkfF0570psmClMLfDlyHD0yEhDmTIZg";
+const char kImageBytes4[] = "11111000101010010101";
 const std::vector<uint8_t> kAccountKey4 = {0xB0, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
                                            0x61, 0xC3, 0x32, 0x1D};
 
 const char kDeviceName5[] = "B&O Beoplay E6";
-const char kDisplayUrl5[] =
-    "https://lh3.googleusercontent.com/"
-    "Af3OOuFVJasO6MMnfA59I4_KoemT79Q7bYy-aN7pXPvSsyPHdYdQh4mtAUKUuo_zgvZsQ_"
-    "egiAmloPCpgg";
+const char kImageBytes5[] = "110000100010000100010100000001001000100001";
 const std::vector<uint8_t> kAccountKey5 = {0xC0, 0xC6, 0xD0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
                                            0x61, 0xC3, 0x32, 0x1D};
 
 const char kDeviceName6[] = "LG HBS-830";
-const char kDisplayUrl6[] =
-    "https://lh3.googleusercontent.com/"
-    "40-bd0-Jt7puzW1x7gRnub2KsIx6qWP5g8Qx_vhAF4-"
-    "eJZiGVEIirRD7g3KxkmZ53X2VoMWRkg4d6uopNkc";
+const char kImageBytes6[] = "11110100011111111010100101001010100101010011";
 const std::vector<uint8_t> kAccountKey6 = {0xB5, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB8, 0xCF, 0x5E, 0x3F, 0x45,
                                            0x61, 0xC3, 0x36, 0x1D};
 
 nearby::fastpair::FastPairDevice CreateFastPairDevice(
     const std::string device_name,
-    const std::string image_url,
+    const std::string image_bytes,
     const std::vector<uint8_t>& account_key) {
   nearby::fastpair::StoredDiscoveryItem item;
-  item.set_device_name(device_name);
-  item.set_display_url(image_url);
+  item.set_title(device_name);
+  item.set_icon_png(image_bytes);
 
   nearby::fastpair::FastPairDevice device;
   device.set_account_key(std::string(account_key.begin(), account_key.end()));
@@ -171,8 +154,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
         std::make_unique<ash::quick_pair::MockFastPairImageDecoder>();
     mock_decoder_ = mock_decoder.get();
     // On call to DecodeImage, run the third argument callback with test_image_.
-    ON_CALL(*mock_decoder,
-            DecodeImageFromUrl(testing::_, testing::_, testing::_))
+    ON_CALL(*mock_decoder, DecodeImage(testing::_, testing::_, testing::_))
         .WillByDefault(base::test::RunOnceCallback<2>(test_image_));
 
     handler_ = std::make_unique<TestFastPairSavedDevicesHandler>(
@@ -184,24 +166,24 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
   content::TestWebUI* test_web_ui() { return test_web_ui_.get(); }
 
   void InitializeSavedDevicesList(const std::string& device_name1,
-                                  const std::string& device_url1,
+                                  const std::string& device_image_bytes1,
                                   const std::vector<uint8_t>& account_key1,
                                   const std::string& device_name2,
-                                  const std::string& device_url2,
+                                  const std::string& device_image_bytes2,
                                   const std::vector<uint8_t>& account_key2,
                                   const std::string& device_name3,
-                                  const std::string& device_url3,
+                                  const std::string& device_image_bytes3,
                                   const std::vector<uint8_t>& account_key3,
                                   nearby::fastpair::OptInStatus opt_in_status) {
     std::vector<nearby::fastpair::FastPairDevice> devices{
         CreateFastPairDevice(/*device_name=*/device_name1,
-                             /*image_url=*/device_url1,
+                             /*image_bytes=*/device_image_bytes1,
                              /*account_key=*/account_key1),
         CreateFastPairDevice(/*device_name=*/device_name2,
-                             /*image_url=*/device_url2,
+                             /*image_bytes=*/device_image_bytes2,
                              /*account_key=*/account_key2),
         CreateFastPairDevice(/*device_name=*/device_name3,
-                             /*image_url=*/device_url3,
+                             /*image_bytes=*/device_image_bytes3,
                              /*account_key=*/account_key3)};
     fast_pair_repository_.SetSavedDevices(
         /*status=*/opt_in_status,
@@ -230,6 +212,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
     const base::Value::List* saved_devices_list =
         saved_devices_list_call_data.arg2()->GetIfList();
     ASSERT_EQ(3u, saved_devices_list->size());
+
     ASSERT_TRUE(
         VerifyDeviceInList(/*device=*/*(saved_devices_list->begin()),
                            /*expected_device_name=*/device_name1,
@@ -294,10 +277,10 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
 
 TEST_F(FastPairSavedDevicesHandlerTest, GetSavedDevices) {
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();
@@ -320,10 +303,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, GetSavedDevices) {
 
 TEST_F(FastPairSavedDevicesHandlerTest, ReloadBeforePageLoadsIgnored) {
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
 
@@ -352,10 +335,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, ReloadBeforePageLoadsIgnored) {
 
 TEST_F(FastPairSavedDevicesHandlerTest, ReloadAfterPageLoads) {
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();
@@ -415,10 +398,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, EmptyListSentToWebUi) {
 
 TEST_F(FastPairSavedDevicesHandlerTest, SavedDevicesBecomesEmpty) {
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();
@@ -451,10 +434,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, SavedDevicesBecomesEmpty) {
 
 TEST_F(FastPairSavedDevicesHandlerTest, SavedDevicesChanges) {
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();
@@ -472,10 +455,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, SavedDevicesChanges) {
       /*account_key3=*/kAccountKey3);
 
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName4, /*device_url1=*/kDisplayUrl4,
+      /*device_name1=*/kDeviceName4, /*device_image_bytes1=*/kImageBytes4,
       /*account_key1=*/kAccountKey4, /*device_name2=*/kDeviceName5,
-      /*device_url2=*/kDisplayUrl5, /*account_key2=*/kAccountKey5,
-      /*device_name3=*/kDeviceName6, /*device_url3=*/kDisplayUrl6,
+      /*device_image_bytes2=*/kImageBytes5, /*account_key2=*/kAccountKey5,
+      /*device_name3=*/kDeviceName6, /*device_image_bytes3=*/kImageBytes6,
       /*account_key3=*/kAccountKey6,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();
@@ -494,14 +477,13 @@ TEST_F(FastPairSavedDevicesHandlerTest, SavedDevicesChanges) {
 }
 
 TEST_F(FastPairSavedDevicesHandlerTest, EmptyImageSentToWebUi) {
-  ON_CALL(*mock_decoder_,
-          DecodeImageFromUrl(testing::_, testing::_, testing::_))
+  ON_CALL(*mock_decoder_, DecodeImage(testing::_, testing::_, testing::_))
       .WillByDefault(base::test::RunOnceCallback<2>(gfx::Image()));
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();
@@ -522,10 +504,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, EmptyImageSentToWebUi) {
 
 TEST_F(FastPairSavedDevicesHandlerTest, RemoveSavedDevice) {
   InitializeSavedDevicesList(
-      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
-      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
-      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
       /*account_key3=*/kAccountKey3,
       /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   LoadPage();

@@ -129,19 +129,25 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   // The difference between a nearby::fastpair::FastPairDevice and a
   // nearby::fastpair::StoredDiscoveryItem is that although they represent the
   // same devices saved to a user's account, the FastPairDevice contains the
-  // raw byte array with the device name and the image url, which we will
-  // parse into a StoredDiscoveryItem to access the image url as strings. We
+  // raw byte array with the device name and the image bytes, which we will
+  // parse into a StoredDiscoveryItem to access the image bytes as strings. We
   // create a flat set of these strings in the case that the
-  // user has the same device multiple times, we only decode the image url
+  // user has the same device multiple times, we only decode the image bytes
   // once.
   devices_ = devices;
-  base::flat_set<std::string> image_urls;
+  base::flat_set<std::string> image_byte_strings;
   for (const auto& device : devices) {
     nearby::fastpair::StoredDiscoveryItem item;
     if (item.ParseFromString(device.discovery_item_bytes()) &&
-        item.has_display_url()) {
-      image_urls.insert(item.display_url());
+        item.has_icon_png()) {
+      image_byte_strings.insert(item.icon_png());
     }
+  }
+
+  if (image_byte_strings.empty()) {
+    QP_LOG(VERBOSE) << __func__ << ": no device images";
+    DecodingUrlsFinished();
+    return;
   }
 
   // Image decoding occurs asynchronously in a separate process, so we use
@@ -149,22 +155,23 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   // they complete, we can continue parsing the saved device data to communicate
   // with the settings page.
   pending_decoding_tasks_count_ =
-      std::make_unique<base::AtomicRefCount>(image_urls.size());
-  for (std::string image_url : image_urls) {
-    image_decoder_->DecodeImageFromUrl(
-        GURL(image_url),
+      std::make_unique<base::AtomicRefCount>(image_byte_strings.size());
+  for (std::string image_byte_string : image_byte_strings) {
+    image_decoder_->DecodeImage(
+        std::vector<uint8_t>(image_byte_string.begin(),
+                             image_byte_string.end()),
         /*resize_to_notification_size=*/false,
         base::BindOnce(&FastPairSavedDevicesHandler::SaveImageAsBase64,
-                       weak_ptr_factory_.GetWeakPtr(), image_url));
+                       weak_ptr_factory_.GetWeakPtr(), image_byte_string));
   }
 }
 
 void FastPairSavedDevicesHandler::SaveImageAsBase64(
-    const std::string& image_url,
+    const std::string& image_byte_string,
     gfx::Image image) {
   if (!image.IsEmpty()) {
     std::string encoded_image = webui::GetBitmapDataUrl(image.AsBitmap());
-    image_url_to_encoded_url_map_[image_url] = encoded_image;
+    image_byte_string_to_encoded_url_map_[image_byte_string] = encoded_image;
   }
 
   // Even if the image is empty, we want to decrement our task counter to
@@ -185,13 +192,16 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
   saved_devices_list.reserve(devices_.size());
 
   // |nearby::fastpair::StoredDiscoveryItem| contains information about
-  // the device name, |image_url_to_encoded_url_map_| contains the base64
-  // encoded urls for the images, and |nearby::fastpair::FastPairDevice|
+  // the device name, |image_byte_string_to_encoded_url_map_| contains the
+  // base64 encoded urls for the images, and |nearby::fastpair::FastPairDevice|
   // contains the account key. Here, we reconcile this data for each device
   // and convert it to dictionary, to be communicated to the settings page.
   for (const auto& device : devices_) {
     // If the device does not have an account key, then it was not properly
-    // saved to the user's account, and we ignore these devices.
+    // saved to the user's account, and we ignore these devices. Android
+    // has devices still in Footprints but marked as deleted by removing the
+    // account key, so it is not expected for all of these devices to have
+    // account keys.
     if (!device.has_account_key())
       continue;
 
@@ -199,13 +209,14 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
     std::string image_url = "";
     nearby::fastpair::StoredDiscoveryItem item;
     if (item.ParseFromString(device.discovery_item_bytes()) &&
-        item.has_display_url() &&
-        base::Contains(image_url_to_encoded_url_map_, item.display_url())) {
-      image_url = image_url_to_encoded_url_map_[item.display_url()];
+        item.has_icon_png() &&
+        base::Contains(image_byte_string_to_encoded_url_map_,
+                       item.icon_png())) {
+      image_url = image_byte_string_to_encoded_url_map_[item.icon_png()];
     }
 
     saved_devices_list.Append(SavedDeviceToDictionary(
-        /*device_name=*/item.has_device_name() ? item.device_name() : "",
+        /*device_name=*/item.has_title() ? item.title() : "",
         /*image_url=*/image_url,
         /*account_key=*/account_key));
   }
@@ -217,7 +228,7 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
   // We reset the state here for another page load that may happened while
   // chrome://os-settings is open, since our decoding tasks are completed.
   devices_.clear();
-  image_url_to_encoded_url_map_.clear();
+  image_byte_string_to_encoded_url_map_.clear();
   pending_decoding_tasks_count_.reset();
   loading_saved_device_page_ = false;
 }
