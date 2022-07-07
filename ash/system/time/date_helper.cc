@@ -141,13 +141,17 @@ void DateHelper::CalculateLocalWeekTitles() {
   int safe_index = 0;
 
   // Find a first day of a week.
-  while (day_of_week != calendar_utils::kFirstDayOfWeekString) {
+  while (day_of_week != calendar_utils::kFirstDayOfWeekString &&
+         day_of_week != u"01") {
     start_date += base::Hours(25);
     day_of_week = GetFormattedTime(&day_of_week_formatter_, start_date);
     ++safe_index;
     // Should already find the first day within 7 times, since there are only 7
     // days in a week.
-    DCHECK_NE(safe_index, calendar_utils::kDateInOneWeek);
+    if (safe_index == calendar_utils::kDateInOneWeek) {
+      week_titles_ = {u"S", u"M", u"T", u"W", u"T", u"F", u"S"};
+      return;
+    }
   }
 
   int day_index = 0;

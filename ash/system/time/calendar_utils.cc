@@ -207,7 +207,7 @@ base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
   std::u16string day_of_week = GetDayOfWeek(first_day);
   int days = 0;
   // Find the first day of the week.
-  while (day_of_week != kFirstDayOfWeekString) {
+  while (day_of_week != kFirstDayOfWeekString && day_of_week != u"01") {
     // 5 hours ago from midnight should be the previous day.
     first_day -= base::Hours(5);
     first_day = DateHelper::GetInstance()->GetLocalMidnight(first_day);
