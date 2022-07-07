@@ -181,7 +181,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   blink::WebString ConvertIDNToUnicode(const blink::WebString& host) override;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetDisplayThreadPriority(base::PlatformThreadId thread_id) override;
+  void SetCompositingThreadType(base::PlatformThreadId thread_id) override;
 #endif
   blink::BlameContext* GetTopLevelBlameContext() override;
   std::unique_ptr<blink::WebDedicatedWorkerHostFactoryClient>

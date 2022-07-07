@@ -241,29 +241,29 @@ class PooledSingleThreadTaskRunnerManagerCommonTest
 
 }  // namespace
 
-TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, PrioritySetCorrectly) {
+TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, ThreadTypeSetCorrectly) {
   const struct {
     TaskTraits traits;
-    ThreadPriority expected_thread_priority;
+    ThreadType expected_thread_type;
   } test_cases[] = {
       {{TaskPriority::BEST_EFFORT},
-       CanUseBackgroundPriorityForWorkerThread() ? ThreadPriority::BACKGROUND
-                                                 : ThreadPriority::NORMAL},
+       CanUseBackgroundThreadTypeForWorkerThread() ? ThreadType::kBackground
+                                                   : ThreadType::kDefault},
       {{TaskPriority::BEST_EFFORT, ThreadPolicy::PREFER_BACKGROUND},
-       CanUseBackgroundPriorityForWorkerThread() ? ThreadPriority::BACKGROUND
-                                                 : ThreadPriority::NORMAL},
+       CanUseBackgroundThreadTypeForWorkerThread() ? ThreadType::kBackground
+                                                   : ThreadType::kDefault},
       {{TaskPriority::BEST_EFFORT, ThreadPolicy::MUST_USE_FOREGROUND},
-       ThreadPriority::NORMAL},
-      {{TaskPriority::USER_VISIBLE}, ThreadPriority::NORMAL},
+       ThreadType::kDefault},
+      {{TaskPriority::USER_VISIBLE}, ThreadType::kDefault},
       {{TaskPriority::USER_VISIBLE, ThreadPolicy::PREFER_BACKGROUND},
-       ThreadPriority::NORMAL},
+       ThreadType::kDefault},
       {{TaskPriority::USER_VISIBLE, ThreadPolicy::MUST_USE_FOREGROUND},
-       ThreadPriority::NORMAL},
-      {{TaskPriority::USER_BLOCKING}, ThreadPriority::NORMAL},
+       ThreadType::kDefault},
+      {{TaskPriority::USER_BLOCKING}, ThreadType::kDefault},
       {{TaskPriority::USER_BLOCKING, ThreadPolicy::PREFER_BACKGROUND},
-       ThreadPriority::NORMAL},
+       ThreadType::kDefault},
       {{TaskPriority::USER_BLOCKING, ThreadPolicy::MUST_USE_FOREGROUND},
-       ThreadPriority::NORMAL}};
+       ThreadType::kDefault}};
 
   // Why are events used here instead of the task tracker?
   // Shutting down can cause priorities to get raised. This means we have to use
@@ -272,8 +272,8 @@ TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, PrioritySetCorrectly) {
     TestWaitableEvent event;
     CreateTaskRunner(test_case.traits)
         ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                     EXPECT_EQ(test_case.expected_thread_priority,
-                               PlatformThread::GetCurrentThreadPriority());
+                     EXPECT_EQ(test_case.expected_thread_type,
+                               PlatformThread::GetCurrentThreadType());
                      event.Signal();
                    }));
     event.Wait();
@@ -299,9 +299,9 @@ TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, ThreadNamesSet) {
   } test_cases[] = {
       // Non-MayBlock()
       {{TaskPriority::BEST_EFFORT},
-       CanUseBackgroundPriorityForWorkerThread() ? background : foreground},
+       CanUseBackgroundThreadTypeForWorkerThread() ? background : foreground},
       {{TaskPriority::BEST_EFFORT, ThreadPolicy::PREFER_BACKGROUND},
-       CanUseBackgroundPriorityForWorkerThread() ? background : foreground},
+       CanUseBackgroundThreadTypeForWorkerThread() ? background : foreground},
       {{TaskPriority::BEST_EFFORT, ThreadPolicy::MUST_USE_FOREGROUND},
        foreground},
       {{TaskPriority::USER_VISIBLE}, foreground},
@@ -317,11 +317,11 @@ TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, ThreadNamesSet) {
 
       // MayBlock()
       {{TaskPriority::BEST_EFFORT, MayBlock()},
-       CanUseBackgroundPriorityForWorkerThread() ? background_blocking
-                                                 : foreground_blocking},
+       CanUseBackgroundThreadTypeForWorkerThread() ? background_blocking
+                                                   : foreground_blocking},
       {{TaskPriority::BEST_EFFORT, ThreadPolicy::PREFER_BACKGROUND, MayBlock()},
-       CanUseBackgroundPriorityForWorkerThread() ? background_blocking
-                                                 : foreground_blocking},
+       CanUseBackgroundThreadTypeForWorkerThread() ? background_blocking
+                                                   : foreground_blocking},
       {{TaskPriority::BEST_EFFORT, ThreadPolicy::MUST_USE_FOREGROUND,
         MayBlock()},
        foreground_blocking},

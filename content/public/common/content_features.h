@@ -47,7 +47,6 @@ CONTENT_EXPORT extern const base::Feature
     kBlockInsecurePrivateNetworkRequestsForNavigations;
 CONTENT_EXPORT extern const base::Feature
     kBrokerFileOperationsOnDiskCacheInNetworkService;
-CONTENT_EXPORT extern const base::Feature kBrowserUseDisplayThreadPriority;
 CONTENT_EXPORT extern const base::Feature
     kBrowserVerifiedUserActivationKeyboard;
 CONTENT_EXPORT extern const base::Feature kBrowserVerifiedUserActivationMouse;

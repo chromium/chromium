@@ -51,7 +51,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 class JavaHandlerThreadForTest : public android::JavaHandlerThread {
  public:
   explicit JavaHandlerThreadForTest(const char* name)
-      : android::JavaHandlerThread(name, base::ThreadPriority::NORMAL) {}
+      : android::JavaHandlerThread(name, base::ThreadType::kDefault) {}
 
   using android::JavaHandlerThread::state;
   using android::JavaHandlerThread::State;

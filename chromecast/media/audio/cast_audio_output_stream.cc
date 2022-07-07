@@ -149,7 +149,7 @@ CastAudioOutputStream::MixerServiceWrapper::MixerServiceWrapper(
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  options.priority = base::ThreadPriority::REALTIME_AUDIO;
+  options.thread_type = base::ThreadType::kRealtimeAudio;
   CHECK(io_thread_.StartWithOptions(std::move(options)));
   io_task_runner_ = io_thread_.task_runner();
   DCHECK(io_task_runner_);

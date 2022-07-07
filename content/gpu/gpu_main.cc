@@ -288,14 +288,10 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::PlatformThread::SetName("CrGpuMain");
 
-#if !BUILDFLAG(IS_MAC)
   // Set thread priority before sandbox initialization.
-  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority) &&
-      !features::IsGpuMainThreadForcedToNormalPriorityDrDc()) {
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::DISPLAY);
+  if (!features::IsGpuMainThreadForcedToNormalPriorityDrDc()) {
+    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
   }
-#endif
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   ContentSandboxHelper sandbox_helper;
@@ -329,19 +325,16 @@ int GpuMain(MainFunctionParams parameters) {
 
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
-  base::ThreadPriority io_thread_priority =
-      base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)
-          ? base::ThreadPriority::DISPLAY
-          : base::ThreadPriority::NORMAL;
+  base::ThreadType io_thread_type = base::ThreadType::kCompositing;
 #if BUILDFLAG(IS_MAC)
   // Increase the thread priority to get more reliable values in performance
   // test of mac_os.
   if (command_line.HasSwitch(switches::kUseHighGPUThreadPriorityForPerfTests))
-    io_thread_priority = base::ThreadPriority::REALTIME_AUDIO;
+    io_thread_type = base::ThreadType::kRealtimeAudio;
 #endif
   // ChildProcess will start the ThreadPoolInstance now that the sandbox is
   // initialized.
-  ChildProcess gpu_process(io_thread_priority);
+  ChildProcess gpu_process(io_thread_type);
   DCHECK(base::ThreadPoolInstance::Get()->WasStarted());
 
   auto* client = GetContentClient()->gpu();

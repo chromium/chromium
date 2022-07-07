@@ -74,11 +74,10 @@ void FakeAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK(!fake_audio_worker_);
 
   capture_thread_.reset(new base::Thread("FakeAudioInput"));
-  base::Thread::Options options;
-  // REALTIME_AUDIO priority is needed to avoid audio playout delays.
+  // kRealtimeAudio priority is needed to avoid audio playout delays.
   // See crbug.com/971265
-  options.priority = base::ThreadPriority::REALTIME_AUDIO;
-  CHECK(capture_thread_->StartWithOptions(std::move(options)));
+  CHECK(capture_thread_->StartWithOptions(
+      base::Thread::Options(base::ThreadType::kRealtimeAudio)));
 
   {
     base::AutoLock lock(callback_lock_);

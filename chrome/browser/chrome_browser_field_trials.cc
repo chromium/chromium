@@ -131,7 +131,7 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     // command line flag. Check if this has happened -- it may not have happened
     // if this is the first startup after the feature is enabled.
     bool actually_enabled =
-        base::internal::CanUseBackgroundPriorityForWorkerThread();
+        base::internal::CanUseBackgroundThreadTypeForWorkerThread();
     // Use the default group if either the feature wasn't overridden or if the
     // feature target state and actual state don't agree. Also separate users
     // that override the feature via the commandline into separate groups.

@@ -30,21 +30,21 @@ struct EnvironmentParams {
   // the thread pool name concatenated to this.
   const char* name_suffix;
 
-  // Preferred priority for threads in this environment; the actual thread
-  // priority depends on shutdown state and platform capabilities.
-  ThreadPriority priority_hint;
+  // Preferred type for threads in this environment; the actual thread type
+  // depends on shutdown state and platform capabilities.
+  ThreadType thread_type_hint;
 };
 
 constexpr EnvironmentParams kEnvironmentParams[] = {
-    {"Foreground", base::ThreadPriority::NORMAL},
-    {"ForegroundBlocking", base::ThreadPriority::NORMAL},
-    {"Background", base::ThreadPriority::BACKGROUND},
-    {"BackgroundBlocking", base::ThreadPriority::BACKGROUND},
+    {"Foreground", base::ThreadType::kDefault},
+    {"ForegroundBlocking", base::ThreadType::kDefault},
+    {"Background", base::ThreadType::kBackground},
+    {"BackgroundBlocking", base::ThreadType::kBackground},
 };
 
 // Returns true if this platform supports having WorkerThreads running with a
 // background priority.
-bool BASE_EXPORT CanUseBackgroundPriorityForWorkerThread();
+bool BASE_EXPORT CanUseBackgroundThreadTypeForWorkerThread();
 
 }  // namespace internal
 }  // namespace base

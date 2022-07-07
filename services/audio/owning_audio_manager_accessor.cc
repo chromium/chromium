@@ -127,7 +127,7 @@ base::SingleThreadTaskRunner* MainThread::GetWorkerTaskRunner() {
   if (!worker_task_runner_) {
     base::Thread::Options options;
     options.timer_slack = base::TIMER_SLACK_NONE;
-    options.priority = base::ThreadPriority::REALTIME_AUDIO;
+    options.thread_type = base::ThreadType::kRealtimeAudio;
     CHECK(worker_thread_.StartWithOptions(std::move(options)));
     worker_task_runner_ = worker_thread_.task_runner();
   }

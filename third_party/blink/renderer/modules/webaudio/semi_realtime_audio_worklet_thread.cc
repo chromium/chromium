@@ -44,9 +44,9 @@ SemiRealtimeAudioWorkletThread::SemiRealtimeAudioWorkletThread(
           features::kAudioWorkletThreadRealtimePriority)) {
     // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL on
     // Linux and Chrome OS regardless of this thread priority setting.
-    params.thread_priority = base::ThreadPriority::DISPLAY;
+    params.base_thread_type = base::ThreadType::kDisplayCritical;
   } else {
-    params.thread_priority = base::ThreadPriority::NORMAL;
+    params.base_thread_type = base::ThreadType::kDefault;
   }
 
   if (++ref_count == 1) {

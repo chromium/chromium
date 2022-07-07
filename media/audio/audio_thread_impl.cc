@@ -22,7 +22,7 @@ AudioThreadImpl::AudioThreadImpl()
 #elif BUILDFLAG(IS_FUCHSIA)
   // FIDL-based APIs require async_t, which is initialized on IO thread.
   thread_options.message_pump_type = base::MessagePumpType::IO;
-  thread_options.priority = base::ThreadPriority::REALTIME_AUDIO;
+  thread_options.thread_type = base::ThreadType::kRealtimeAudio;
 #endif
   CHECK(thread_.StartWithOptions(std::move(thread_options)));
 

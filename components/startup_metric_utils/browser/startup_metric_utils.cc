@@ -309,12 +309,13 @@ base::TimeTicks StartupTimeToTimeTicks(base::Time time) {
   absl::optional<base::ScopedBoostPriority> scoped_boost_priority;
 
 // Enabling this logic on OS X causes a significant performance regression.
-// https://crbug.com/601270
+// TODO(crbug.com/601270): Remove IS_APPLE ifdef once priority changes are
+// ignored on Mac main thread.
 #if !BUILDFLAG(IS_APPLE)
   static bool statics_initialized = false;
   if (!statics_initialized) {
     statics_initialized = true;
-    scoped_boost_priority.emplace(base::ThreadPriority::DISPLAY);
+    scoped_boost_priority.emplace(base::ThreadType::kDisplayCritical);
   }
 #endif  // !BUILDFLAG(IS_APPLE)
 

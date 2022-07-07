@@ -200,7 +200,7 @@ int UtilityMain(MainFunctionParams parameters) {
   g_utility_target_services = parameters.sandbox_info->target_services;
 #endif
 
-  ChildProcess utility_process(base::ThreadPriority::NORMAL);
+  ChildProcess utility_process(base::ThreadType::kDefault);
   GetContentClient()->utility()->PostIOThreadCreated(
       utility_process.io_task_runner());
   base::RunLoop run_loop;

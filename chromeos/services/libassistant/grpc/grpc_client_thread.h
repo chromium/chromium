@@ -22,7 +22,7 @@ class GrpcClientThread {
  public:
   explicit GrpcClientThread(
       const std::string& thread_name,
-      base::ThreadPriority priority = base::ThreadPriority::NORMAL);
+      base::ThreadType thread_type = base::ThreadType::kDefault);
   GrpcClientThread(const GrpcClientThread&) = delete;
   GrpcClientThread& operator=(const GrpcClientThread&) = delete;
   ~GrpcClientThread();

@@ -108,13 +108,15 @@ Thread::Options::Options() = default;
 Thread::Options::Options(MessagePumpType type, size_t size)
     : message_pump_type(type), stack_size(size) {}
 
+Thread::Options::Options(ThreadType thread_type) : thread_type(thread_type) {}
+
 Thread::Options::Options(Options&& other)
     : message_pump_type(std::move(other.message_pump_type)),
       delegate(std::move(other.delegate)),
       timer_slack(std::move(other.timer_slack)),
       message_pump_factory(std::move(other.message_pump_factory)),
       stack_size(std::move(other.stack_size)),
-      priority(std::move(other.priority)),
+      thread_type(std::move(other.thread_type)),
       joinable(std::move(other.joinable)) {
   other.moved_from = true;
 }
@@ -127,7 +129,7 @@ Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
   timer_slack = std::move(other.timer_slack);
   message_pump_factory = std::move(other.message_pump_factory);
   stack_size = std::move(other.stack_size);
-  priority = std::move(other.priority);
+  thread_type = std::move(other.thread_type);
   joinable = std::move(other.joinable);
   other.moved_from = true;
 
@@ -204,12 +206,13 @@ bool Thread::StartWithOptions(Options options) {
   // fixed).
   {
     AutoLock lock(thread_lock_);
-    bool success =
-        options.joinable
-            ? PlatformThread::CreateWithPriority(options.stack_size, this,
-                                                 &thread_, options.priority)
-            : PlatformThread::CreateNonJoinableWithPriority(
-                  options.stack_size, this, options.priority);
+    bool success = options.joinable
+                       ? PlatformThread::CreateWithType(
+                             options.stack_size, this, &thread_,
+                             options.thread_type, options.message_pump_type)
+                       : PlatformThread::CreateNonJoinableWithType(
+                             options.stack_size, this, options.thread_type,
+                             options.message_pump_type);
     if (!success) {
       DLOG(ERROR) << "failed to create thread";
       return false;

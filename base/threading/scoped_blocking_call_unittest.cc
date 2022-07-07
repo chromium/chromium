@@ -212,9 +212,9 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
  protected:
   // A member initialized before |task_environment_| that forces worker threads
   // to be started synchronously. This avoids a tricky race where Linux invokes
-  // SetCurrentThreadPriority() from early main, before invoking ThreadMain and
+  // SetCurrentThreadType() from early main, before invoking ThreadMain and
   // yielding control to the thread pool impl. That causes a ScopedBlockingCall
-  // in platform_thread_linux.cc:SetThreadCgroupForThreadPriority and interferes
+  // in platform_thread_linux.cc:SetThreadCgroupForThreadType and interferes
   // with this test. This solution is quite intrusive but is the simplest we can
   // do for this unique corner case.
   struct SetSynchronousThreadStart {
@@ -699,8 +699,8 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, SleepWithLongJank) {
 }
 
 // Verifies that blocking calls on background workers aren't monitored.
-// Platforms where !CanUseBackgroundPriorityForWorkerThread() will still monitor
-// this jank (as it may interfere with other foreground work).
+// Platforms where !CanUseBackgroundThreadTypeForWorkerThread() will still
+// monitor this jank (as it may interfere with other foreground work).
 TEST_F(ScopedBlockingCallIOJankMonitoringTest, BackgroundBlockingCallsIgnored) {
   constexpr auto kJankTiming =
       internal::IOJankMonitoringWindow::kIOJankInterval * 7;
@@ -728,7 +728,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, BackgroundBlockingCallsIgnored) {
   task_environment_->FastForwardBy(
       internal::IOJankMonitoringWindow::kMonitoringWindow);
 
-  if (internal::CanUseBackgroundPriorityForWorkerThread())
+  if (internal::CanUseBackgroundThreadTypeForWorkerThread())
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(0, 0)));
   else
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(7, 7)));
@@ -774,7 +774,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   task_environment_->FastForwardBy(
       internal::IOJankMonitoringWindow::kMonitoringWindow);
 
-  if (internal::CanUseBackgroundPriorityForWorkerThread())
+  if (internal::CanUseBackgroundThreadTypeForWorkerThread())
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(7, 7)));
   else
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(7, 14)));

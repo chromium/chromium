@@ -12,21 +12,10 @@
 
 namespace content {
 
-namespace {
-
-base::ThreadPriority GetRenderIOThreadPriority() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBlinkCompositorUseDisplayThreadPriority))
-    return base::ThreadPriority::DISPLAY;
-  return base::ThreadPriority::NORMAL;
-}
-
-}  // namespace
-
 RenderProcess::RenderProcess(
     std::unique_ptr<base::ThreadPoolInstance::InitParams>
         thread_pool_init_params)
-    : ChildProcess(GetRenderIOThreadPriority(),
+    : ChildProcess(base::ThreadType::kCompositing,
                    std::move(thread_pool_init_params)) {}
 
 }  // namespace content

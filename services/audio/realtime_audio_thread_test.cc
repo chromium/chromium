@@ -38,7 +38,7 @@ TEST_F(RealtimeAudioThreadTest, StartStop) {
 
   base::Thread::Options options;
   options.timer_slack = base::TIMER_SLACK_NONE;
-  options.priority = base::ThreadPriority::REALTIME_AUDIO;
+  options.thread_type = base::ThreadType::kRealtimeAudio;
   EXPECT_TRUE(thread.StartWithOptions(std::move(options)));
 
   thread.Stop();
@@ -51,7 +51,7 @@ TEST_F(RealtimeAudioThreadTest, StartDestroy) {
 
   base::Thread::Options options;
   options.timer_slack = base::TIMER_SLACK_NONE;
-  options.priority = base::ThreadPriority::REALTIME_AUDIO;
+  options.thread_type = base::ThreadType::kRealtimeAudio;
   EXPECT_TRUE(thread.StartWithOptions(std::move(options)));
 
   // ~RealtimeAudioThread() will be called without Stop() here.

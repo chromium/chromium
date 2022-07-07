@@ -50,7 +50,7 @@ CastGpuFactoryImpl::CastGpuFactoryImpl(
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  options.priority = base::ThreadPriority::DISPLAY;
+  options.thread_type = base::ThreadType::kDisplayCritical;
   gpu_io_thread_.StartWithOptions(std::move(options));
 
   mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;

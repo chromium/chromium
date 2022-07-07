@@ -191,7 +191,7 @@ CaptureServiceReceiver::CaptureServiceReceiver(
   DCHECK(delegate_);
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  options.priority = base::ThreadPriority::DISPLAY;
+  options.thread_type = base::ThreadType::kDisplayCritical;
   CHECK(io_thread_.StartWithOptions(std::move(options)));
   task_runner_ = io_thread_.task_runner();
   DCHECK(task_runner_);

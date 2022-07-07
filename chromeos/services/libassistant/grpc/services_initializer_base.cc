@@ -18,7 +18,7 @@ ServicesInitializerBase::ServicesInitializerBase(
     : cq_thread_(cq_thread_name), main_task_runner_(main_task_runner) {
   base::Thread::Options options(base::MessagePumpType::IO,
                                 0 /* default maximum stack size */);
-  options.priority = base::ThreadPriority::NORMAL;
+  options.thread_type = base::ThreadType::kDefault;
   cq_thread_.StartWithOptions(std::move(options));
 }
 

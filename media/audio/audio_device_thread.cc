@@ -42,7 +42,7 @@ void AudioDeviceThread::Callback::InitializeOnAudioThread() {
 AudioDeviceThread::AudioDeviceThread(Callback* callback,
                                      base::SyncSocket::ScopedHandle socket,
                                      const char* thread_name,
-                                     base::ThreadPriority thread_priority)
+                                     base::ThreadType thread_type)
     : callback_(callback),
       thread_name_(thread_name),
       socket_(std::move(socket)) {
@@ -55,8 +55,8 @@ AudioDeviceThread::AudioDeviceThread(Callback* callback,
   constexpr size_t kStackSize = 0;  // Default.
 #endif
 
-  CHECK(base::PlatformThread::CreateWithPriority(
-      kStackSize, this, &thread_handle_, thread_priority));
+  CHECK(base::PlatformThread::CreateWithType(kStackSize, this, &thread_handle_,
+                                             thread_type));
 
   DCHECK(!thread_handle_.is_null());
 }

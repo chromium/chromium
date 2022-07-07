@@ -38,7 +38,7 @@ InProcessGpuThread::~InProcessGpuThread() {
 }
 
 void InProcessGpuThread::Init() {
-  base::ThreadPriority io_thread_priority = base::ThreadPriority::NORMAL;
+  base::ThreadType io_thread_type = base::ThreadType::kDefault;
 
 #if BUILDFLAG(IS_ANDROID)
   // Call AttachCurrentThreadWithName, before any other AttachCurrentThread()
@@ -47,10 +47,10 @@ void InProcessGpuThread::Init() {
   // will not change the thread name kept in Java VM.
   base::android::AttachCurrentThreadWithName(thread_name());
   // Up the priority of the |io_thread_| on Android.
-  io_thread_priority = base::ThreadPriority::DISPLAY;
+  io_thread_type = base::ThreadType::kDisplayCritical;
 #endif
 
-  gpu_process_ = new ChildProcess(io_thread_priority);
+  gpu_process_ = new ChildProcess(io_thread_type);
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   gpu_init->InitializeInProcess(base::CommandLine::ForCurrentProcess(),

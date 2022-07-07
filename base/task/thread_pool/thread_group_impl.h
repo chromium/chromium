@@ -53,12 +53,12 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // |histogram_label| is used to label the thread group's histograms as
   // "ThreadPool." + histogram_name + "." + |histogram_label| + extra suffixes.
   // It must not be empty. |thread group_label| is used to label the thread
-  // group's threads, it must not be empty. |priority_hint| is the preferred
-  // thread priority; the actual thread priority depends on shutdown state and
-  // platform capabilities. |task_tracker| keeps track of tasks.
+  // group's threads, it must not be empty. |thread_type_hint| is the preferred
+  // thread type; the actual thread type depends on shutdown state and platform
+  // capabilities. |task_tracker| keeps track of tasks.
   ThreadGroupImpl(StringPiece histogram_label,
                   StringPiece thread_group_label,
-                  ThreadPriority priority_hint,
+                  ThreadType thread_type_hint,
                   TrackedRef<TaskTracker> task_tracker,
                   TrackedRef<Delegate> delegate);
 
@@ -280,7 +280,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   }
 
   const std::string thread_group_label_;
-  const ThreadPriority priority_hint_;
+  const ThreadType thread_type_hint_;
 
   // All workers owned by this thread group.
   std::vector<scoped_refptr<WorkerThread>> workers_ GUARDED_BY(lock_);

@@ -44,8 +44,7 @@ VizCompositorThreadRunnerWebView::GetInstance() {
 
 VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
     : viz_thread_("VizWebView") {
-  base::Thread::Options options;
-  options.priority = base::ThreadPriority::DISPLAY;
+  base::Thread::Options options(base::ThreadType::kCompositing);
   CHECK(viz_thread_.StartWithOptions(std::move(options)));
   viz_task_runner_ = viz_thread_.task_runner();
   TaskQueueWebView::GetInstance()->InitializeVizThread(viz_task_runner_);

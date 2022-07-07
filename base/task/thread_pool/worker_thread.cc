@@ -134,19 +134,19 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
         // defined(PA_THREAD_CACHE_SUPPORTED)
 }
 
-WorkerThread::WorkerThread(ThreadPriority priority_hint,
+WorkerThread::WorkerThread(ThreadType thread_type_hint,
                            std::unique_ptr<Delegate> delegate,
                            TrackedRef<TaskTracker> task_tracker,
                            const CheckedLock* predecessor_lock)
     : thread_lock_(predecessor_lock),
       delegate_(std::move(delegate)),
       task_tracker_(std::move(task_tracker)),
-      priority_hint_(priority_hint),
-      current_thread_priority_(GetDesiredThreadPriority()) {
+      thread_type_hint_(thread_type_hint),
+      current_thread_type_(GetDesiredThreadType()) {
   DCHECK(delegate_);
   DCHECK(task_tracker_);
-  DCHECK(CanUseBackgroundPriorityForWorkerThread() ||
-         priority_hint_ != ThreadPriority::BACKGROUND);
+  DCHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
+         thread_type_hint_ != ThreadType::kBackground);
   wake_up_event_.declare_only_used_while_idle();
 }
 
@@ -171,8 +171,8 @@ bool WorkerThread::Start(
   self_ = this;
 
   constexpr size_t kDefaultStackSize = 0;
-  PlatformThread::CreateWithPriority(kDefaultStackSize, this, &thread_handle_,
-                                     current_thread_priority_);
+  PlatformThread::CreateWithType(kDefaultStackSize, this, &thread_handle_,
+                                 current_thread_type_);
 
   if (thread_handle_.is_null()) {
     self_ = nullptr;
@@ -236,8 +236,8 @@ void WorkerThread::Cleanup() {
   wake_up_event_.Signal();
 }
 
-void WorkerThread::MaybeUpdateThreadPriority() {
-  UpdateThreadPriority(GetDesiredThreadPriority());
+void WorkerThread::MaybeUpdateThreadType() {
+  UpdateThreadType(GetDesiredThreadType());
 }
 
 void WorkerThread::BeginUnusedPeriod() {
@@ -266,21 +266,20 @@ bool WorkerThread::ShouldExit() const {
          task_tracker_->IsShutdownComplete();
 }
 
-ThreadPriority WorkerThread::GetDesiredThreadPriority() const {
-  // To avoid shutdown hangs, disallow a priority below NORMAL during shutdown
+ThreadType WorkerThread::GetDesiredThreadType() const {
+  // To avoid shutdown hangs, disallow a type below kNormal during shutdown
   if (task_tracker_->HasShutdownStarted())
-    return ThreadPriority::NORMAL;
+    return ThreadType::kDefault;
 
-  return priority_hint_;
+  return thread_type_hint_;
 }
 
-void WorkerThread::UpdateThreadPriority(
-    ThreadPriority desired_thread_priority) {
-  if (desired_thread_priority == current_thread_priority_)
+void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
+  if (desired_thread_type == current_thread_type_)
     return;
 
-  PlatformThread::SetCurrentThreadPriority(desired_thread_priority);
-  current_thread_priority_ = desired_thread_priority;
+  PlatformThread::SetCurrentThreadType(desired_thread_type);
+  current_thread_type_ = desired_thread_type;
 }
 
 void WorkerThread::ThreadMain() {
@@ -289,7 +288,7 @@ void WorkerThread::ThreadMain() {
   FileDescriptorWatcher file_descriptor_watcher(io_thread_task_runner_);
 #endif
 
-  if (priority_hint_ == ThreadPriority::BACKGROUND) {
+  if (thread_type_hint_ == ThreadType::kBackground) {
     switch (delegate_->GetThreadLabel()) {
       case ThreadLabel::POOLED:
         RunBackgroundPooledWorker();
@@ -398,7 +397,7 @@ void WorkerThread::RunWorker() {
   // watch them for hangs. Ignore priority boosting for now.
   const bool watch_for_hangs =
       base::HangWatcher::IsThreadPoolHangWatchingEnabled() &&
-      GetDesiredThreadPriority() != ThreadPriority::BACKGROUND;
+      GetDesiredThreadType() != ThreadType::kBackground;
 
   // If this process has a HangWatcher register this thread for watching.
   base::ScopedClosureRunner unregister_for_hang_watching;
@@ -424,7 +423,7 @@ void WorkerThread::RunWorker() {
     if (watch_for_hangs)
       hang_watch_scope.emplace();
 
-    UpdateThreadPriority(GetDesiredThreadPriority());
+    UpdateThreadType(GetDesiredThreadType());
 
     // Get the task source containing the next task to execute.
     RegisteredTaskSource task_source = delegate_->GetWork(this);

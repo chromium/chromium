@@ -131,7 +131,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
 
   AudioParameters audio_parameters_;
 
-  const base::ThreadPriority thread_priority_;
+  const base::ThreadType thread_type_;
 
   const bool enable_uma_;
 

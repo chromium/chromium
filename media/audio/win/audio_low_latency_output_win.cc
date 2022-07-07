@@ -371,7 +371,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   // render events.
   render_thread_ = std::make_unique<base::DelegateSimpleThread>(
       this, "wasapi_render_thread",
-      base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO));
+      base::SimpleThread::Options(base::ThreadType::kRealtimeAudio));
   render_thread_->Start();
   if (!render_thread_->HasBeenStarted()) {
     RecordAudioFailure(kStartFailureHistogram, GetLastError());

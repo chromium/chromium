@@ -90,7 +90,8 @@ void SetNameInternal(PlatformThreadId thread_id, const char* name) {
 struct ThreadParams {
   raw_ptr<PlatformThread::Delegate> delegate;
   bool joinable;
-  ThreadPriority priority;
+  ThreadType thread_type;
+  MessagePumpType message_pump_type;
 };
 
 DWORD __stdcall ThreadFunc(void* params) {
@@ -99,8 +100,9 @@ DWORD __stdcall ThreadFunc(void* params) {
   if (!thread_params->joinable)
     base::DisallowSingleton();
 
-  if (thread_params->priority != ThreadPriority::NORMAL)
-    PlatformThread::SetCurrentThreadPriority(thread_params->priority);
+  if (thread_params->thread_type != ThreadType::kDefault)
+    internal::SetCurrentThreadType(thread_params->thread_type,
+                                   thread_params->message_pump_type);
 
   // Retrieve a copy of the thread handle to use as the key in the
   // thread name mapping.
@@ -142,19 +144,20 @@ DWORD __stdcall ThreadFunc(void* params) {
   // destruction. Thread destruction on Windows holds the LdrLock while
   // performing TLS destruction which causes hangs if performed at background
   // priority (priority inversion) (see: http://crbug.com/1096203).
-  if (PlatformThread::GetCurrentThreadPriority() < ThreadPriority::NORMAL)
-    PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
+  if (::GetThreadPriority(::GetCurrentThread()) < THREAD_PRIORITY_NORMAL)
+    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
 
   return 0;
 }
 
-// CreateThreadInternal() matches PlatformThread::CreateWithPriority(), except
+// CreateThreadInternal() matches PlatformThread::CreateWithType(), except
 // that |out_thread_handle| may be nullptr, in which case a non-joinable thread
 // is created.
 bool CreateThreadInternal(size_t stack_size,
                           PlatformThread::Delegate* delegate,
                           PlatformThreadHandle* out_thread_handle,
-                          ThreadPriority priority) {
+                          ThreadType thread_type,
+                          MessagePumpType message_pump_type) {
   unsigned int flags = 0;
   if (stack_size > 0) {
     flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
@@ -182,7 +185,8 @@ bool CreateThreadInternal(size_t stack_size,
   ThreadParams* params = new ThreadParams;
   params->delegate = delegate;
   params->joinable = out_thread_handle != nullptr;
-  params->priority = priority;
+  params->thread_type = thread_type;
+  params->message_pump_type = message_pump_type;
 
   // Using CreateThread here vs _beginthreadex makes thread creation a bit
   // faster and doesn't require the loader lock to be available.  Our code will
@@ -308,25 +312,28 @@ const char* PlatformThread::GetName() {
 }
 
 // static
-bool PlatformThread::CreateWithPriority(size_t stack_size, Delegate* delegate,
-                                        PlatformThreadHandle* thread_handle,
-                                        ThreadPriority priority) {
+bool PlatformThread::CreateWithType(size_t stack_size,
+                                    Delegate* delegate,
+                                    PlatformThreadHandle* thread_handle,
+                                    ThreadType thread_type,
+                                    MessagePumpType pump_type_hint) {
   DCHECK(thread_handle);
-  return CreateThreadInternal(stack_size, delegate, thread_handle, priority);
+  return CreateThreadInternal(stack_size, delegate, thread_handle, thread_type,
+                              pump_type_hint);
 }
 
 // static
 bool PlatformThread::CreateNonJoinable(size_t stack_size, Delegate* delegate) {
-  return CreateNonJoinableWithPriority(stack_size, delegate,
-                                       ThreadPriority::NORMAL);
+  return CreateNonJoinableWithType(stack_size, delegate, ThreadType::kDefault);
 }
 
 // static
-bool PlatformThread::CreateNonJoinableWithPriority(size_t stack_size,
-                                                   Delegate* delegate,
-                                                   ThreadPriority priority) {
+bool PlatformThread::CreateNonJoinableWithType(size_t stack_size,
+                                               Delegate* delegate,
+                                               ThreadType thread_type,
+                                               MessagePumpType pump_type_hint) {
   return CreateThreadInternal(stack_size, delegate, nullptr /* non-joinable */,
-                              priority);
+                              thread_type, pump_type_hint);
 }
 
 // static
@@ -362,17 +369,26 @@ void PlatformThread::Detach(PlatformThreadHandle thread_handle) {
 }
 
 // static
-bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
-                                             ThreadPriority to) {
+bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
   return true;
 }
 
-// static
-void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
+namespace internal {
+
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
+  if (thread_type == ThreadType::kCompositing &&
+      pump_type_hint == MessagePumpType::UI) {
+    // Ignore kCompositing thread type for UI thread as Windows has a
+    // priority boost mechanism. See
+    // https://docs.microsoft.com/en-us/windows/win32/procthread/priority-boosts
+    return;
+  }
+
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
-  if (!g_use_thread_priority_lowest && priority != ThreadPriority::BACKGROUND) {
+  if (!g_use_thread_priority_lowest && thread_type != ThreadType::kBackground) {
     // Exit background mode if the new priority is not BACKGROUND. This is a
     // no-op if not in background mode.
     ::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_END);
@@ -382,8 +398,8 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
   }
 
   int desired_priority = THREAD_PRIORITY_ERROR_RETURN;
-  switch (priority) {
-    case ThreadPriority::BACKGROUND:
+  switch (thread_type) {
+    case ThreadType::kBackground:
       // Using THREAD_MODE_BACKGROUND_BEGIN instead of THREAD_PRIORITY_LOWEST
       // improves input latency and navigation time. See
       // https://docs.google.com/document/d/16XrOwuwTwKWdgPbcKKajTmNqtB4Am8TgS9GjbzBYLc0
@@ -396,34 +412,31 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
               ? THREAD_PRIORITY_LOWEST
               : THREAD_MODE_BACKGROUND_BEGIN;
       break;
-    case ThreadPriority::NORMAL:
+    case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
       break;
-    case ThreadPriority::DISPLAY:
+    case ThreadType::kCompositing:
+    case ThreadType::kDisplayCritical:
       desired_priority = THREAD_PRIORITY_ABOVE_NORMAL;
       break;
-    case ThreadPriority::REALTIME_AUDIO:
+    case ThreadType::kRealtimeAudio:
       desired_priority = THREAD_PRIORITY_TIME_CRITICAL;
-      break;
-    default:
-      NOTREACHED() << "Unknown priority.";
       break;
   }
   DCHECK_NE(desired_priority, THREAD_PRIORITY_ERROR_RETURN);
 
-#if DCHECK_IS_ON()
-  const BOOL success =
-#endif
+  [[maybe_unused]] const BOOL success =
       ::SetThreadPriority(thread_handle, desired_priority);
-  DPLOG_IF(ERROR, !success) << "Failed to set thread priority to "
-                            << desired_priority;
+  DPLOG_IF(ERROR, !success)
+      << "Failed to set thread priority to " << desired_priority;
 
-  if (!g_use_thread_priority_lowest && priority == ThreadPriority::BACKGROUND) {
+  if (!g_use_thread_priority_lowest && thread_type == ThreadType::kBackground) {
     // In a background process, THREAD_MODE_BACKGROUND_BEGIN lowers the memory
     // and I/O priorities but not the CPU priority (kernel bug?). Use
     // THREAD_PRIORITY_LOWEST to also lower the CPU priority.
     // https://crbug.com/901483
-    if (GetCurrentThreadPriority() != ThreadPriority::BACKGROUND) {
+    if (PlatformThread::GetCurrentThreadPriorityForTest() !=
+        ThreadPriorityForTest::kBackground) {
       ::SetThreadPriority(thread_handle, THREAD_PRIORITY_LOWEST);
       // We used to DCHECK that memory priority is MEMORY_PRIORITY_VERY_LOW
       // here, but found that it is not always the case (e.g. in the installer).
@@ -432,8 +445,10 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
   }
 }
 
+}  // namespace internal
+
 // static
-ThreadPriority PlatformThread::GetCurrentThreadPriority() {
+ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   static_assert(
       THREAD_PRIORITY_IDLE < 0,
       "THREAD_PRIORITY_IDLE is >= 0 and will incorrectly cause errors.");
@@ -446,19 +461,19 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
   static_assert(
       THREAD_PRIORITY_NORMAL == 0,
       "The logic below assumes that THREAD_PRIORITY_NORMAL is zero. If it is "
-      "not, ThreadPriority::BACKGROUND may be incorrectly detected.");
+      "not, ThreadPriorityForTest::kBackground may be incorrectly detected.");
   static_assert(THREAD_PRIORITY_ABOVE_NORMAL >= 0,
                 "THREAD_PRIORITY_ABOVE_NORMAL is < 0 and will incorrectly be "
-                "translated to ThreadPriority::BACKGROUND.");
+                "translated to ThreadPriorityForTest::kBackground.");
   static_assert(THREAD_PRIORITY_HIGHEST >= 0,
                 "THREAD_PRIORITY_HIGHEST is < 0 and will incorrectly be "
-                "translated to ThreadPriority::BACKGROUND.");
+                "translated to ThreadPriorityForTest::kBackground.");
   static_assert(THREAD_PRIORITY_TIME_CRITICAL >= 0,
                 "THREAD_PRIORITY_TIME_CRITICAL is < 0 and will incorrectly be "
-                "translated to ThreadPriority::BACKGROUND.");
+                "translated to ThreadPriorityForTest::kBackground.");
   static_assert(THREAD_PRIORITY_ERROR_RETURN >= 0,
                 "THREAD_PRIORITY_ERROR_RETURN is < 0 and will incorrectly be "
-                "translated to ThreadPriority::BACKGROUND.");
+                "translated to ThreadPriorityForTest::kBackground.");
 
   const int priority =
       ::GetThreadPriority(PlatformThread::CurrentHandle().platform_handle());
@@ -468,32 +483,32 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
   // THREAD_PRIORITY_LOWEST and THREAD_PRIORITY_BELOW_NORMAL are other possible
   // negative values.
   if (priority < THREAD_PRIORITY_NORMAL)
-    return ThreadPriority::BACKGROUND;
+    return ThreadPriorityForTest::kBackground;
 
   switch (priority) {
     case kWin7BackgroundThreadModePriority:
       DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
-      return ThreadPriority::BACKGROUND;
+      return ThreadPriorityForTest::kBackground;
     case kWin7NormalPriority:
       DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
       [[fallthrough]];
     case THREAD_PRIORITY_NORMAL:
-      return ThreadPriority::NORMAL;
+      return ThreadPriorityForTest::kNormal;
     case kWinNormalPriority1:
       [[fallthrough]];
     case kWinNormalPriority2:
-      return ThreadPriority::NORMAL;
+      return ThreadPriorityForTest::kNormal;
     case THREAD_PRIORITY_ABOVE_NORMAL:
     case THREAD_PRIORITY_HIGHEST:
-      return ThreadPriority::DISPLAY;
+      return ThreadPriorityForTest::kDisplay;
     case THREAD_PRIORITY_TIME_CRITICAL:
-      return ThreadPriority::REALTIME_AUDIO;
+      return ThreadPriorityForTest::kRealtimeAudio;
     case THREAD_PRIORITY_ERROR_RETURN:
       DPCHECK(false) << "::GetThreadPriority error";
   }
 
   NOTREACHED() << "::GetThreadPriority returned " << priority << ".";
-  return ThreadPriority::NORMAL;
+  return ThreadPriorityForTest::kNormal;
 }
 
 void InitializePlatformThreadFeatures() {

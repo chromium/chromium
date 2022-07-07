@@ -36,7 +36,7 @@ WorkerThread::WorkerThread(const ThreadCreationParams& params)
                                   : nullptr),
       supports_gc_(params.supports_gc) {
   base::SimpleThread::Options options;
-  options.priority = params.thread_priority;
+  options.thread_type = params.base_thread_type;
   thread_ = std::make_unique<SimpleThreadImpl>(
       params.name ? params.name : String(), options, supports_gc_,
       const_cast<scheduler::WorkerThread*>(this));

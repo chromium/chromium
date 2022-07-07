@@ -47,13 +47,12 @@ const int kCheckMissingCallbacksIntervalSeconds = 5;
 // data from the source.
 const int kGotDataCallbackIntervalSeconds = 1;
 
-base::ThreadPriority ThreadPriorityFromPurpose(
-    AudioInputDevice::Purpose purpose) {
+base::ThreadType ThreadTypeFromPurpose(AudioInputDevice::Purpose purpose) {
   switch (purpose) {
     case AudioInputDevice::Purpose::kUserInput:
-      return base::ThreadPriority::REALTIME_AUDIO;
+      return base::ThreadType::kRealtimeAudio;
     case AudioInputDevice::Purpose::kLoopback:
-      return base::ThreadPriority::NORMAL;
+      return base::ThreadType::kDefault;
   }
 }
 
@@ -104,7 +103,7 @@ class AudioInputDevice::AudioThreadCallback
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
                                    Purpose purpose,
                                    DeadStreamDetection detect_dead_stream)
-    : thread_priority_(ThreadPriorityFromPurpose(purpose)),
+    : thread_type_(ThreadTypeFromPurpose(purpose)),
       enable_uma_(purpose == AudioInputDevice::Purpose::kUserInput),
       callback_(nullptr),
       ipc_(std::move(ipc)),
@@ -287,7 +286,7 @@ void AudioInputDevice::OnStreamCreated(
       notify_alive_closure);
   audio_thread_ = std::make_unique<AudioDeviceThread>(
       audio_callback_.get(), std::move(socket_handle), "AudioInputDevice",
-      thread_priority_);
+      thread_type_);
 
   state_ = RECORDING;
   ipc_->RecordStream();

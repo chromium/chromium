@@ -124,7 +124,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
     switch (GetGroupType()) {
       case test::GroupType::GENERIC:
         thread_group_ = std::make_unique<ThreadGroupImpl>(
-            "TestThreadGroup", "A", ThreadPriority::NORMAL,
+            "TestThreadGroup", "A", ThreadType::kDefault,
             task_tracker_.GetTrackedRef(),
             tracked_ref_factory_.GetTrackedRef());
         break;
@@ -132,7 +132,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
       case test::GroupType::NATIVE:
         thread_group_ = std::make_unique<ThreadGroupNativeType>(
 #if BUILDFLAG(IS_APPLE)
-            ThreadPriority::NORMAL, service_thread_.task_runner(),
+            ThreadType::kDefault, service_thread_.task_runner(),
 #endif
             task_tracker_.GetTrackedRef(),
             tracked_ref_factory_.GetTrackedRef());

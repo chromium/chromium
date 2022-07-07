@@ -129,9 +129,9 @@ void RenderMessageFilter::GenerateFrameRoutingID(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RenderMessageFilter::SetThreadPriorityOnFileThread(
+void RenderMessageFilter::SetThreadTypeOnWorkerThread(
     base::PlatformThreadId ns_tid,
-    base::ThreadPriority priority) {
+    base::ThreadType thread_type) {
   bool ns_pid_supported = false;
   pid_t peer_tid = base::FindThreadID(peer_pid(), ns_tid, &ns_pid_supported);
   if (peer_tid == -1) {
@@ -145,20 +145,20 @@ void RenderMessageFilter::SetThreadPriorityOnFileThread(
     return;
   }
 
-  base::PlatformThread::SetThreadPriority(peer_pid(), peer_tid, priority);
+  base::PlatformThread::SetThreadType(peer_pid(), peer_tid, thread_type);
 }
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RenderMessageFilter::SetThreadPriority(int32_t ns_tid,
-                                            base::ThreadPriority priority) {
+void RenderMessageFilter::SetThreadType(int32_t ns_tid,
+                                        base::ThreadType thread_type) {
   constexpr base::TaskTraits kTraits = {
       base::MayBlock(), base::TaskPriority::USER_BLOCKING,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
   base::ThreadPool::PostTask(
       FROM_HERE, kTraits,
-      base::BindOnce(&RenderMessageFilter::SetThreadPriorityOnFileThread, this,
-                     static_cast<base::PlatformThreadId>(ns_tid), priority));
+      base::BindOnce(&RenderMessageFilter::SetThreadTypeOnWorkerThread, this,
+                     static_cast<base::PlatformThreadId>(ns_tid), thread_type));
 }
 #endif
 

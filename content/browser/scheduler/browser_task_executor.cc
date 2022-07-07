@@ -366,11 +366,18 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   options.delegate = std::move(browser_io_thread_delegate);
+// TODO(1329208): Consider doing this on Windows as well. The platform
+// discrepancy stems from organic evolution of the thread priorities on each
+// platform and while it might make sense not to bump the priority of the IO
+// thread per Windows' priority boosts capabilities on MessagePumpForIO, this
+// should at least be aligned with what platform_thread_win.cc does for
+// ThreadType::kDisplayCritical (IO pumps in other processes) and it currently
+// does not.
+#if !BUILDFLAG(IS_WIN)
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks.
-  if (base::FeatureList::IsEnabled(
-          ::features::kBrowserUseDisplayThreadPriority))
-    options.priority = base::ThreadPriority::DISPLAY;
+  options.thread_type = base::ThreadType::kCompositing;
+#endif
   if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";
   return io_thread;

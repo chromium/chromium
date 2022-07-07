@@ -178,17 +178,6 @@ const base::Feature kBrokerFileOperationsOnDiskCacheInNetworkService{
     "BrokerFileOperationsOnDiskCacheInNetworkService",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use ThreadPriority::DISPLAY for browser UI and IO threads.
-const base::Feature kBrowserUseDisplayThreadPriority {
-  "BrowserUseDisplayThreadPriority",
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 // When enabled, keyboard user activation will be verified by the browser side.
 const base::Feature kBrowserVerifiedUserActivationKeyboard{
     "BrowserVerifiedUserActivationKeyboard", base::FEATURE_DISABLED_BY_DEFAULT};

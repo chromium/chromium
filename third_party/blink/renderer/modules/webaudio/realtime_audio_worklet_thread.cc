@@ -45,13 +45,13 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
           features::kAudioWorkletThreadRealtimePriority)) {
     // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL on
     // Linux and Chrome OS regardless of this thread priority setting.
-    params.thread_priority = base::ThreadPriority::REALTIME_AUDIO;
+    params.base_thread_type = base::ThreadType::kRealtimeAudio;
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-                 "RealtimeAudioWorkletThread() - REALTIME_AUDIO");
+                 "RealtimeAudioWorkletThread() - kRealtimeAudio");
   } else {
-    params.thread_priority = base::ThreadPriority::NORMAL;
+    params.base_thread_type = base::ThreadType::kDefault;
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-                 "RealtimeAudioWorkletThread() - NORMAL");
+                 "RealtimeAudioWorkletThread() - kNormal");
   }
 
   if (++ref_count == 1) {

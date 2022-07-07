@@ -166,16 +166,6 @@ const base::Feature kDisableVideoOverlayIfMoving{
     "DisableVideoOverlayIfMoving", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.
-const base::Feature kGpuUseDisplayThreadPriority{
-  "GpuUseDisplayThreadPriority",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 #if BUILDFLAG(IS_MAC)
 // Enable use of Metal for OOP rasterization.
 const base::Feature kMetal{"Metal", base::FEATURE_DISABLED_BY_DEFAULT};

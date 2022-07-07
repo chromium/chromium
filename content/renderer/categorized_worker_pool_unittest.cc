@@ -154,8 +154,8 @@ TEST_F(CategorizedWorkerPoolTest,
   cc::TaskGraph graph;
 
   tasks.push_back(base::MakeRefCounted<ClosureTask>(base::BindOnce([]() {
-    EXPECT_NE(base::ThreadPriority::BACKGROUND,
-              base::PlatformThread::GetCurrentThreadPriority());
+    EXPECT_NE(base::ThreadType::kBackground,
+              base::PlatformThread::GetCurrentThreadType());
   })));
   graph.nodes.push_back(cc::TaskGraph::Node(
       tasks.back(), cc::TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY,

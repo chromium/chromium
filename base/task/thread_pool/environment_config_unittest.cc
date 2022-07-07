@@ -13,10 +13,10 @@ namespace internal {
 // This test summarizes which platforms use background thread priority.
 TEST(ThreadPoolEnvironmentConfig, CanUseBackgroundPriorityForWorker) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  EXPECT_TRUE(CanUseBackgroundPriorityForWorkerThread());
+  EXPECT_TRUE(CanUseBackgroundThreadTypeForWorkerThread());
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_NACL)
-  EXPECT_FALSE(CanUseBackgroundPriorityForWorkerThread());
+  EXPECT_FALSE(CanUseBackgroundThreadTypeForWorkerThread());
 #else
 #error Platform doesn't match any block
 #endif

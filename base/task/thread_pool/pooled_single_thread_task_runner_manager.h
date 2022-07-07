@@ -120,7 +120,7 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
   WorkerThread* CreateAndRegisterWorkerThread(
       const std::string& name,
       SingleThreadTaskRunnerThreadMode thread_mode,
-      ThreadPriority priority_hint) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      ThreadType thread_type_hint) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   template <typename DelegateType>
   WorkerThread*& GetSharedWorkerThreadForTraits(const TaskTraits& traits);

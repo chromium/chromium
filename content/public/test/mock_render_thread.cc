@@ -64,8 +64,8 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetThreadPriority(int32_t platform_thread_id,
-                         base::ThreadPriority thread_priority) override {}
+  void SetThreadType(int32_t platform_thread_id,
+                     base::ThreadType thread_type) override {}
 #endif
 };
 

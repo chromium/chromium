@@ -139,10 +139,8 @@ void ProcessingAudioFifo::StartInternal(
   // Start should only be called once.
   DCHECK(!audio_processing_thread_.IsRunning());
 
-  base::Thread::Options options;
-  options.priority = base::ThreadPriority::REALTIME_AUDIO;
-
-  audio_processing_thread_.StartWithOptions(std::move(options));
+  audio_processing_thread_.StartWithOptions(
+      base::Thread::Options(base::ThreadType::kRealtimeAudio));
 
   audio_processing_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ProcessingAudioFifo::ProcessAudioLoop,

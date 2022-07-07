@@ -36,7 +36,7 @@ class DefaultAudioThread {
  public:
   DefaultAudioThread() : thread_("FuchsiaAudioOutputDevice") {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    options.priority = base::ThreadPriority::REALTIME_AUDIO;
+    options.thread_type = base::ThreadType::kRealtimeAudio;
     thread_.StartWithOptions(std::move(options));
   }
   ~DefaultAudioThread() = default;

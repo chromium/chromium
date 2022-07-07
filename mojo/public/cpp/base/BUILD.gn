@@ -43,8 +43,8 @@ component("typemap_traits") {
     "string16_mojom_traits.h",
     "text_direction_mojom_traits.cc",
     "text_direction_mojom_traits.h",
-    "thread_priority_mojom_traits.cc",
-    "thread_priority_mojom_traits.h",
+    "thread_type_mojom_traits.cc",
+    "thread_type_mojom_traits.h",
   ]
 
   if (is_android) {
@@ -142,7 +142,7 @@ source_set("tests") {
     "shared_memory_unittest.cc",
     "string16_unittest.cc",
     "text_direction_unittest.cc",
-    "thread_priority_unittest.cc",
+    "thread_type_unittest.cc",
     "time_unittest.cc",
     "token_unittest.cc",
     "unguessable_token_unittest.cc",

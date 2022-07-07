@@ -12,7 +12,7 @@ namespace base {
 namespace internal {
 
 ThreadGroupNativeMac::ThreadGroupNativeMac(
-    ThreadPriority priority_hint,
+    ThreadType thread_type_hint,
     scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
     TrackedRef<TaskTracker> task_tracker,
     TrackedRef<Delegate> delegate,
@@ -20,11 +20,11 @@ ThreadGroupNativeMac::ThreadGroupNativeMac(
     : ThreadGroupNative(std::move(task_tracker),
                         std::move(delegate),
                         predecessor_thread_group),
-      priority_hint_(priority_hint),
+      thread_type_hint_(thread_type_hint),
       io_thread_task_runner_(std::move(io_thread_task_runner)) {
-  // The thread group only support NORMAL or BACKGROUND priority.
-  DCHECK(priority_hint_ == ThreadPriority::NORMAL ||
-         priority_hint_ == ThreadPriority::BACKGROUND);
+  // The thread group only support kNormal or kBackground type.
+  DCHECK(thread_type_hint_ == ThreadType::kDefault ||
+         thread_type_hint_ == ThreadType::kBackground);
   DCHECK(io_thread_task_runner_);
 }
 
@@ -33,8 +33,8 @@ ThreadGroupNativeMac::~ThreadGroupNativeMac() {}
 void ThreadGroupNativeMac::StartImpl() {
   dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(
       DISPATCH_QUEUE_CONCURRENT,
-      priority_hint_ == ThreadPriority::NORMAL ? QOS_CLASS_USER_INITIATED
-                                               : QOS_CLASS_BACKGROUND,
+      thread_type_hint_ == ThreadType::kDefault ? QOS_CLASS_USER_INITIATED
+                                                : QOS_CLASS_BACKGROUND,
       /*relative_priority=*/-1);
   queue_.reset(dispatch_queue_create("org.chromium.base.ThreadPool.ThreadGroup",
                                      attributes));

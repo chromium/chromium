@@ -539,7 +539,7 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK(!capture_thread_.get());
   capture_thread_ = std::make_unique<base::DelegateSimpleThread>(
       this, "wasapi_capture_thread",
-      base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO));
+      base::SimpleThread::Options(base::ThreadType::kRealtimeAudio));
   capture_thread_->Start();
 
   // Start streaming data between the endpoint buffer and the audio engine.

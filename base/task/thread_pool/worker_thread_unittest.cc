@@ -93,8 +93,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
 
   void SetUp() override {
     worker_ = MakeRefCounted<WorkerThread>(
-        ThreadPriority::NORMAL,
-        std::make_unique<TestWorkerThreadDelegate>(this),
+        ThreadType::kDefault, std::make_unique<TestWorkerThreadDelegate>(this),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_);
     worker_->Start(service_thread_.task_runner());
@@ -553,9 +552,8 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupFromGetWork) {
       delegate->controls();
   controls->set_can_cleanup(true);
   EXPECT_CALL(*delegate, OnMainEntry(_));
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, WrapUnique(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, WrapUnique(delegate), task_tracker.GetTrackedRef());
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
   controls->WaitForWorkToRun();
@@ -581,9 +579,8 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWork) {
 
   controls->HaveWorkBlock();
 
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
 
@@ -608,9 +605,8 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWait) {
   scoped_refptr<ControllableCleanupDelegate::Controls> controls =
       delegate->controls();
 
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
 
@@ -636,9 +632,8 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringShutdown) {
 
   controls->HaveWorkBlock();
 
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
 
@@ -666,9 +661,8 @@ TEST(ThreadPoolWorkerTest, CleanupBeforeStart) {
       delegate->controls();
   controls->set_expect_get_work(false);
 
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
 
   worker->Cleanup();
   worker->Start(service_thread.task_runner());
@@ -720,9 +714,8 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringJoin) {
 
   controls->HaveWorkBlock();
 
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
   worker->Start(service_thread.task_runner());
   worker->WakeUp();
 
@@ -744,53 +737,50 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringJoin) {
 
 namespace {
 
-class ExpectThreadPriorityDelegate : public WorkerThreadDefaultDelegate {
+class ExpectThreadTypeDelegate : public WorkerThreadDefaultDelegate {
  public:
-  ExpectThreadPriorityDelegate()
-      : priority_verified_in_get_work_event_(
-            WaitableEvent::ResetPolicy::AUTOMATIC),
-        expected_thread_priority_(ThreadPriority::BACKGROUND) {}
-  ExpectThreadPriorityDelegate(const ExpectThreadPriorityDelegate&) = delete;
-  ExpectThreadPriorityDelegate& operator=(const ExpectThreadPriorityDelegate&) =
-      delete;
+  ExpectThreadTypeDelegate()
+      : thread_type_verified_in_get_work_event_(
+            WaitableEvent::ResetPolicy::AUTOMATIC) {}
+  ExpectThreadTypeDelegate(const ExpectThreadTypeDelegate&) = delete;
+  ExpectThreadTypeDelegate& operator=(const ExpectThreadTypeDelegate&) = delete;
 
-  void SetExpectedThreadPriority(ThreadPriority expected_thread_priority) {
-    expected_thread_priority_ = expected_thread_priority;
+  void SetExpectedThreadType(ThreadType expected_thread_type) {
+    expected_thread_type_ = expected_thread_type;
   }
 
-  void WaitForPriorityVerifiedInGetWork() {
-    priority_verified_in_get_work_event_.Wait();
+  void WaitForThreadTypeVerifiedInGetWork() {
+    thread_type_verified_in_get_work_event_.Wait();
   }
 
   // WorkerThread::Delegate:
-  void OnMainEntry(WorkerThread* worker) override { VerifyThreadPriority(); }
+  void OnMainEntry(WorkerThread* worker) override { VerifyThreadType(); }
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
-    VerifyThreadPriority();
-    priority_verified_in_get_work_event_.Signal();
+    VerifyThreadType();
+    thread_type_verified_in_get_work_event_.Signal();
     return nullptr;
   }
 
  private:
-  void VerifyThreadPriority() {
-    CheckedAutoLock auto_lock(expected_thread_priority_lock_);
-    EXPECT_EQ(expected_thread_priority_,
-              PlatformThread::GetCurrentThreadPriority());
+  void VerifyThreadType() {
+    CheckedAutoLock auto_lock(expected_thread_type_lock_);
+    EXPECT_EQ(expected_thread_type_, PlatformThread::GetCurrentThreadType());
   }
 
-  // Signaled after GetWork() has verified the priority of the worker thread.
-  TestWaitableEvent priority_verified_in_get_work_event_;
+  // Signaled after GetWork() has verified the thread type of the worker thread.
+  TestWaitableEvent thread_type_verified_in_get_work_event_;
 
-  // Synchronizes access to |expected_thread_priority_|.
-  CheckedLock expected_thread_priority_lock_;
+  // Synchronizes access to |expected_thread_type_|.
+  CheckedLock expected_thread_type_lock_;
 
-  // Expected thread priority for the next call to OnMainEntry() or GetWork().
-  ThreadPriority expected_thread_priority_;
+  // Expected thread type for the next call to OnMainEntry() or GetWork().
+  ThreadType expected_thread_type_ = ThreadType::kDefault;
 };
 
 }  // namespace
 
-TEST(ThreadPoolWorkerTest, BumpPriorityOfAliveThreadDuringShutdown) {
-  if (!CanUseBackgroundPriorityForWorkerThread())
+TEST(ThreadPoolWorkerTest, BumpThreadTypeOfAliveThreadDuringShutdown) {
+  if (!CanUseBackgroundThreadTypeForWorkerThread())
     return;
 
   TaskTracker task_tracker;
@@ -807,25 +797,25 @@ TEST(ThreadPoolWorkerTest, BumpPriorityOfAliveThreadDuringShutdown) {
   auto registered_task_source =
       task_tracker.RegisterTaskSource(std::move(sequence));
 
-  std::unique_ptr<ExpectThreadPriorityDelegate> delegate(
-      new ExpectThreadPriorityDelegate);
-  ExpectThreadPriorityDelegate* delegate_raw = delegate.get();
-  delegate_raw->SetExpectedThreadPriority(ThreadPriority::BACKGROUND);
-  auto worker = MakeRefCounted<WorkerThread>(ThreadPriority::BACKGROUND,
-                                             std::move(delegate),
-                                             task_tracker.GetTrackedRef());
+  std::unique_ptr<ExpectThreadTypeDelegate> delegate(
+      new ExpectThreadTypeDelegate);
+  ExpectThreadTypeDelegate* delegate_raw = delegate.get();
+  delegate_raw->SetExpectedThreadType(ThreadType::kBackground);
+  auto worker =
+      MakeRefCounted<WorkerThread>(ThreadType::kBackground, std::move(delegate),
+                                   task_tracker.GetTrackedRef());
   worker->Start(service_thread.task_runner());
 
-  // Verify that the initial thread priority is BACKGROUND (or NORMAL if thread
-  // priority can't be increased).
+  // Verify that the initial thread type is kBackground (or kNormal if thread
+  // type can't be increased).
   worker->WakeUp();
-  delegate_raw->WaitForPriorityVerifiedInGetWork();
+  delegate_raw->WaitForThreadTypeVerifiedInGetWork();
 
-  // Verify that the thread priority is bumped to NORMAL during shutdown.
-  delegate_raw->SetExpectedThreadPriority(ThreadPriority::NORMAL);
+  // Verify that the thread type is bumped to kNormal during shutdown.
+  delegate_raw->SetExpectedThreadType(ThreadType::kDefault);
   task_tracker.StartShutdown();
   worker->WakeUp();
-  delegate_raw->WaitForPriorityVerifiedInGetWork();
+  delegate_raw->WaitForThreadTypeVerifiedInGetWork();
 
   worker->JoinForTesting();
 }
@@ -866,9 +856,8 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   service_thread_options.message_pump_type = MessagePumpType::IO;
   service_thread.StartWithOptions(std::move(service_thread_options));
   auto delegate = std::make_unique<VerifyCallsToObserverDelegate>(&observer);
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
   EXPECT_CALL(observer, OnWorkerThreadMainEntry());
   worker->Start(service_thread.task_runner(), &observer);
   worker->Cleanup();
@@ -933,9 +922,8 @@ TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
   auto* delegate_raw = delegate.get();
-  auto worker =
-      MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
-                                   task_tracker.GetTrackedRef());
+  auto worker = MakeRefCounted<WorkerThread>(
+      ThreadType::kDefault, std::move(delegate), task_tracker.GetTrackedRef());
   // Wake up before the thread is started to make sure the first sleep is short.
   worker->WakeUp();
   worker->Start(service_thread.task_runner(), nullptr);

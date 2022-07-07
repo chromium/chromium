@@ -91,26 +91,21 @@ void Thread::CreateAndSetCompositorThread() {
   DCHECK(!GetCompositorThread());
 
   ThreadCreationParams params(ThreadType::kCompositorThread);
-  if (base::FeatureList::IsEnabled(
-          features::kBlinkCompositorUseDisplayThreadPriority))
-    params.thread_priority = base::ThreadPriority::DISPLAY;
+  params.base_thread_type = base::ThreadType::kCompositing;
 
   auto compositor_thread =
       std::make_unique<scheduler::CompositorThread>(params);
   compositor_thread->Init();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          features::kBlinkCompositorUseDisplayThreadPriority)) {
-    compositor_thread->GetTaskRunner()->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&base::PlatformThread::CurrentId),
-        base::BindOnce([](base::PlatformThreadId compositor_thread_id) {
-          // Chrome OS moves tasks between control groups on thread priority
-          // changes. This is not possible inside the sandbox, so ask the
-          // browser to do it.
-          Platform::Current()->SetDisplayThreadPriority(compositor_thread_id);
-        }));
-  }
+  compositor_thread->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PlatformThread::CurrentId),
+      base::BindOnce([](base::PlatformThreadId compositor_thread_id) {
+        // Chrome OS moves tasks between control groups on thread priority
+        // changes. This is not possible inside the sandbox, so ask the
+        // browser to do it.
+        Platform::Current()->SetCompositingThreadType(compositor_thread_id);
+      }));
 #endif
 
   GetCompositorThread() = std::move(compositor_thread);

@@ -15,8 +15,8 @@ class WorkerReportingProxy;
 
 // RealtimeAudioWorkletThread is a per-AudioWorkletGlobalScope object that has
 // a reference count to the backing thread that performs AudioWorklet tasks.
-// The backing thread uses REALTIME_AUDIO priority and the associated
-// AudioWorklet MUST be spawned from the top-level (main) frame.
+// The backing thread uses kRealtimeAudio type and the associated AudioWorklet
+// MUST be spawned from the top-level (main) frame.
 class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
  public:
   explicit RealtimeAudioWorkletThread(WorkerReportingProxy&);

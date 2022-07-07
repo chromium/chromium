@@ -60,7 +60,7 @@ size_t GetEnvironmentIndexForTraits(const TaskTraits& traits) {
   const bool is_background =
       traits.priority() == TaskPriority::BEST_EFFORT &&
       traits.thread_policy() == ThreadPolicy::PREFER_BACKGROUND &&
-      CanUseBackgroundPriorityForWorkerThread();
+      CanUseBackgroundThreadTypeForWorkerThread();
   if (traits.may_block() || traits.with_base_sync_primitives())
     return is_background ? BACKGROUND_BLOCKING : FOREGROUND_BLOCKING;
   return is_background ? BACKGROUND : FOREGROUND;
@@ -630,9 +630,9 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
       worker_name += environment_params.name_suffix;
       worker = CreateAndRegisterWorkerThread<DelegateType>(
           worker_name, thread_mode,
-          CanUseBackgroundPriorityForWorkerThread()
-              ? environment_params.priority_hint
-              : ThreadPriority::NORMAL);
+          CanUseBackgroundThreadTypeForWorkerThread()
+              ? environment_params.thread_type_hint
+              : ThreadType::kDefault);
       new_worker = true;
     }
     started = started_;
@@ -706,13 +706,13 @@ WorkerThread*
 PooledSingleThreadTaskRunnerManager::CreateAndRegisterWorkerThread(
     const std::string& name,
     SingleThreadTaskRunnerThreadMode thread_mode,
-    ThreadPriority priority_hint) {
+    ThreadType thread_type_hint) {
   int id = next_worker_id_++;
   std::unique_ptr<WorkerThreadDelegate> delegate =
       CreateWorkerThreadDelegate<DelegateType>(name, id, thread_mode);
   WorkerThreadDelegate* delegate_raw = delegate.get();
   scoped_refptr<WorkerThread> worker = MakeRefCounted<WorkerThread>(
-      priority_hint, std::move(delegate), task_tracker_);
+      thread_type_hint, std::move(delegate), task_tracker_);
   delegate_raw->set_worker(worker.get());
   workers_.emplace_back(std::move(worker));
   return workers_.back().get();

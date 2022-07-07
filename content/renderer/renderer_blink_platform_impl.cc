@@ -279,11 +279,11 @@ RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RendererBlinkPlatformImpl::SetDisplayThreadPriority(
+void RendererBlinkPlatformImpl::SetCompositingThreadType(
     base::PlatformThreadId thread_id) {
   if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
-    render_thread->render_message_filter()->SetThreadPriority(
-        thread_id, base::ThreadPriority::DISPLAY);
+    render_thread->render_message_filter()->SetThreadType(
+        thread_id, base::ThreadType::kCompositing);
   }
 }
 #endif

@@ -44,7 +44,7 @@ bool g_only_monitor_observed_threads = false;
 
 bool IsBackgroundPriorityWorker() {
   return GetTaskPriorityForCurrentThread() == TaskPriority::BEST_EFFORT &&
-         CanUseBackgroundPriorityForWorkerThread();
+         CanUseBackgroundThreadTypeForWorkerThread();
 }
 
 }  // namespace

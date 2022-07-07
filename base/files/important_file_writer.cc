@@ -224,7 +224,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   DWORD last_error;
   int retry_count = 0;
   {
-    ScopedBoostPriority scoped_boost_priority(ThreadPriority::DISPLAY);
+    ScopedBoostPriority scoped_boost_priority(ThreadType::kDisplayCritical);
     tmp_file.Close();
     result = ReplaceFile(tmp_file_path, path, &replace_file_error);
     // Save and restore the last error code so that it's not polluted by the
@@ -254,7 +254,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   if (!result) {
 #if BUILDFLAG(IS_WIN)
     // Restore the error code from ReplaceFile so that it will be available for
-    // the log message, otherwise failures in SetCurrentThreadPriority may be
+    // the log message, otherwise failures in SetCurrentThreadType may be
     // reported instead.
     ::SetLastError(last_error);
 #endif

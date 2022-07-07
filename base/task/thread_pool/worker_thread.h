@@ -98,14 +98,14 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Creates a WorkerThread that runs Tasks from TaskSources returned by
   // |delegate|. No actual thread will be created for this WorkerThread
-  // before Start() is called. |priority_hint| is the preferred thread priority;
-  // the actual thread priority depends on shutdown state and platform
+  // before Start() is called. |thread_type_hint| is the preferred thread type;
+  // the actual thread type depends on shutdown state and platform
   // capabilities. |task_tracker| is used to handle shutdown behavior of Tasks.
   // |predecessor_lock| is a lock that is allowed to be held when calling
   // methods on this WorkerThread. |backward_compatibility| indicates
   // whether backward compatibility is enabled. Either JoinForTesting() or
   // Cleanup() must be called before releasing the last external reference.
-  WorkerThread(ThreadPriority priority_hint,
+  WorkerThread(ThreadType thread_type_hint,
                std::unique_ptr<Delegate> delegate,
                TrackedRef<TaskTracker> task_tracker,
                const CheckedLock* predecessor_lock = nullptr);
@@ -155,10 +155,10 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   //   worker_ = nullptr;
   void Cleanup();
 
-  // Possibly updates the thread priority to the appropriate priority based on
-  // the priority hint, current shutdown state, and platform capabilities. Must
-  // be called on the thread managed by |this|.
-  void MaybeUpdateThreadPriority();
+  // Possibly updates the thread type to the appropriate type based on the
+  // thread type hint, current shutdown state, and platform capabilities.
+  // Must be called on the thread managed by |this|.
+  void MaybeUpdateThreadType();
 
   // Informs this WorkerThread about periods during which it is not being
   // used. Thread-safe.
@@ -176,13 +176,13 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   bool ShouldExit() const;
 
-  // Returns the thread priority to use based on the priority hint, current
+  // Returns the thread type to use based on the thread type hint, current
   // shutdown state, and platform capabilities.
-  ThreadPriority GetDesiredThreadPriority() const;
+  ThreadType GetDesiredThreadType() const;
 
-  // Changes the thread priority to |desired_thread_priority|. Must be called on
-  // the thread managed by |this|.
-  void UpdateThreadPriority(ThreadPriority desired_thread_priority);
+  // Changes the thread type to |desired_thread_type|. Must be called on the
+  // thread managed by |this|.
+  void UpdateThreadType(ThreadType desired_thread_type);
 
   // PlatformThread::Delegate:
   void ThreadMain() override;
@@ -204,7 +204,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // The real main, invoked through :
   //     ThreadMain() -> RunLabeledWorker() -> RunWorker().
-  // "RunLabeledWorker()" is a dummy frame based on ThreadLabel+ThreadPriority
+  // "RunLabeledWorker()" is a dummy frame based on ThreadLabel+ThreadType
   // and used to easily identify threads in stack traces.
   void NOT_TAIL_CALLED RunWorker();
 
@@ -237,13 +237,13 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // function. Set in Start() and never modified afterwards.
   raw_ptr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
 
-  // Desired thread priority.
-  const ThreadPriority priority_hint_;
+  // Desired thread type.
+  const ThreadType thread_type_hint_;
 
-  // Actual thread priority. Can be different than |priority_hint_| depending on
-  // system capabilities and shutdown state. No lock required because all post-
-  // construction accesses occur on the thread.
-  ThreadPriority current_thread_priority_;
+  // Actual thread type. Can be different than |thread_type_hint_|
+  // depending on system capabilities and shutdown state. No lock required
+  // because all post-construction accesses occur on the thread.
+  ThreadType current_thread_type_;
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;

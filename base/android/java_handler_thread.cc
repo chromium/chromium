@@ -26,13 +26,13 @@ namespace base {
 namespace android {
 
 JavaHandlerThread::JavaHandlerThread(const char* name,
-                                     base::ThreadPriority priority)
+                                     base::ThreadType thread_type)
     : JavaHandlerThread(
           name,
           Java_JavaHandlerThread_create(
               AttachCurrentThread(),
               ConvertUTF8ToJavaString(AttachCurrentThread(), name),
-              base::internal::ThreadPriorityToNiceValue(priority))) {}
+              base::internal::ThreadTypeToNiceValue(thread_type))) {}
 
 JavaHandlerThread::JavaHandlerThread(
     const char* name,

@@ -62,9 +62,8 @@ VSyncThreadWin::VSyncThreadWin()
   is_suspended_ =
       base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
 
-  base::Thread::Options options;
-  options.priority = base::ThreadPriority::DISPLAY;
-  vsync_thread_.StartWithOptions(std::move(options));
+  vsync_thread_.StartWithOptions(
+      base::Thread::Options(base::ThreadType::kDisplayCritical));
 }
 
 VSyncThreadWin::~VSyncThreadWin() {

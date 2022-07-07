@@ -18,8 +18,8 @@ class JavaHandlerThreadForTest : public android::JavaHandlerThread {
  public:
   explicit JavaHandlerThreadForTest(
       const char* name,
-      base::ThreadPriority priority = base::ThreadPriority::NORMAL)
-      : android::JavaHandlerThread(name, priority) {}
+      base::ThreadType thread_type = base::ThreadType::kDefault)
+      : android::JavaHandlerThread(name, thread_type) {}
 
   using android::JavaHandlerThread::state;
   using android::JavaHandlerThread::State;

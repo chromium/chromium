@@ -548,17 +548,10 @@ int BrowserMainLoop::EarlyInitialization() {
       return pre_early_init_error_code;
   }
 
-  // Up the priority of the UI thread unless it was already high (since Mac
-  // and recent versions of Android (O+) do this automatically).
-#if !BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          features::kBrowserUseDisplayThreadPriority) &&
-      base::PlatformThread::GetCurrentThreadPriority() <
-          base::ThreadPriority::DISPLAY) {
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::DISPLAY);
-  }
-#endif  // !BUILDFLAG(IS_MAC)
+  // SetCurrentThreadType relies on CurrentUIThread on some platforms. The
+  // MessagePumpForUI needs to be bound to the main thread by this point.
+  DCHECK(base::CurrentUIThread::IsSet());
+  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)

@@ -239,9 +239,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kBlinkHeapIncrementalMarking;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlinkHeapIncrementalMarkingStress;
 
-BLINK_COMMON_EXPORT extern const base::Feature
-    kBlinkCompositorUseDisplayThreadPriority;
-
 BLINK_COMMON_EXPORT extern const base::Feature kBackfaceVisibilityInterop;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSetLowPriorityForBeacon;

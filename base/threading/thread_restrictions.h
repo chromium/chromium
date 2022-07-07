@@ -196,7 +196,7 @@ class CronetPrefsManager;
 class CronetContext;
 }  // namespace cronet
 namespace crosapi {
-class LacrosThreadPriorityDelegate;
+class LacrosThreadTypeDelegate;
 }  // namespace crosapi
 namespace dbus {
 class Bus;
@@ -464,7 +464,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::WebContentsViewMac;
   friend class cronet::CronetPrefsManager;
   friend class cronet::CronetContext;
-  friend class crosapi::LacrosThreadPriorityDelegate;
+  friend class crosapi::LacrosThreadTypeDelegate;
   friend class ios_web_view::WebViewBrowserState;
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;

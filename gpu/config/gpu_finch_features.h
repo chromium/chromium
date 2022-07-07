@@ -42,8 +42,6 @@ GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
 GPU_EXPORT extern const base::Feature kDisableVideoOverlayIfMoving;
 #endif
 
-GPU_EXPORT extern const base::Feature kGpuUseDisplayThreadPriority;
-
 #if BUILDFLAG(IS_MAC)
 GPU_EXPORT extern const base::Feature kMetal;
 

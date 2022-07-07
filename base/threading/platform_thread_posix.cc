@@ -57,12 +57,12 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes);
 namespace {
 
 struct ThreadParams {
-  ThreadParams()
-      : delegate(nullptr), joinable(false), priority(ThreadPriority::NORMAL) {}
+  ThreadParams() = default;
 
-  raw_ptr<PlatformThread::Delegate> delegate;
-  bool joinable;
-  ThreadPriority priority;
+  raw_ptr<PlatformThread::Delegate> delegate = nullptr;
+  bool joinable = false;
+  ThreadType thread_type = ThreadType::kDefault;
+  MessagePumpType message_pump_type = MessagePumpType::DEFAULT;
 };
 
 void* ThreadFunc(void* params) {
@@ -90,7 +90,7 @@ void* ThreadFunc(void* params) {
     // Threads on linux/android may inherit their priority from the thread
     // where they were created. This explicitly sets the priority of all new
     // threads.
-    PlatformThread::SetCurrentThreadPriority(thread_params->priority);
+    PlatformThread::SetCurrentThreadType(thread_params->thread_type);
 #endif
   }
 
@@ -116,7 +116,8 @@ bool CreateThread(size_t stack_size,
                   bool joinable,
                   PlatformThread::Delegate* delegate,
                   PlatformThreadHandle* thread_handle,
-                  ThreadPriority priority) {
+                  ThreadType thread_type,
+                  MessagePumpType message_pump_type) {
   DCHECK(thread_handle);
   base::InitThreading();
 
@@ -138,7 +139,8 @@ bool CreateThread(size_t stack_size,
   std::unique_ptr<ThreadParams> params(new ThreadParams);
   params->delegate = delegate;
   params->joinable = joinable;
-  params->priority = priority;
+  params->thread_type = thread_type;
+  params->message_pump_type = message_pump_type;
 
   pthread_t handle;
   int err = pthread_create(&handle, &attributes, ThreadFunc, params.get());
@@ -299,27 +301,29 @@ const char* PlatformThread::GetName() {
 }
 
 // static
-bool PlatformThread::CreateWithPriority(size_t stack_size, Delegate* delegate,
-                                        PlatformThreadHandle* thread_handle,
-                                        ThreadPriority priority) {
+bool PlatformThread::CreateWithType(size_t stack_size,
+                                    Delegate* delegate,
+                                    PlatformThreadHandle* thread_handle,
+                                    ThreadType thread_type,
+                                    MessagePumpType pump_type_hint) {
   return CreateThread(stack_size, true /* joinable thread */, delegate,
-                      thread_handle, priority);
+                      thread_handle, thread_type, pump_type_hint);
 }
 
 // static
 bool PlatformThread::CreateNonJoinable(size_t stack_size, Delegate* delegate) {
-  return CreateNonJoinableWithPriority(stack_size, delegate,
-                                       ThreadPriority::NORMAL);
+  return CreateNonJoinableWithType(stack_size, delegate, ThreadType::kDefault);
 }
 
 // static
-bool PlatformThread::CreateNonJoinableWithPriority(size_t stack_size,
-                                                   Delegate* delegate,
-                                                   ThreadPriority priority) {
+bool PlatformThread::CreateNonJoinableWithType(size_t stack_size,
+                                               Delegate* delegate,
+                                               ThreadType thread_type,
+                                               MessagePumpType pump_type_hint) {
   PlatformThreadHandle unused;
 
   bool result = CreateThread(stack_size, false /* non-joinable thread */,
-                             delegate, &unused, priority);
+                             delegate, &unused, thread_type, pump_type_hint);
   return result;
 }
 
@@ -341,13 +345,12 @@ void PlatformThread::Detach(PlatformThreadHandle thread_handle) {
   CHECK_EQ(0, pthread_detach(thread_handle.platform_handle()));
 }
 
-// Mac and Fuchsia have their own Set/GetCurrentThreadPriority()
-// implementations.
+// Mac and Fuchsia have their own SetCurrentThreadType() and
+// GetCurrentThreadPriorityForTest() implementations.
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 
 // static
-bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
-                                             ThreadPriority to) {
+bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
 #if BUILDFLAG(IS_NACL)
   return false;
 #else
@@ -355,20 +358,22 @@ bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
     // Decreasing thread priority on POSIX is always allowed.
     return true;
   }
-  if (to == ThreadPriority::REALTIME_AUDIO) {
-    return internal::CanSetThreadPriorityToRealtimeAudio();
+  if (to == ThreadType::kRealtimeAudio) {
+    return internal::CanSetThreadTypeToRealtimeAudio();
   }
 
-  return internal::CanLowerNiceTo(internal::ThreadPriorityToNiceValue(to));
+  return internal::CanLowerNiceTo(internal::ThreadTypeToNiceValue(to));
 #endif  // BUILDFLAG(IS_NACL)
 }
 
-// static
-void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
+namespace internal {
+
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
 #if BUILDFLAG(IS_NACL)
   NOTIMPLEMENTED();
 #else
-  if (internal::SetCurrentThreadPriorityForPlatform(priority))
+  if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint))
     return;
 
   // setpriority(2) should change the whole thread group's (i.e. process)
@@ -377,7 +382,7 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
   // Linux/NPTL implementation of POSIX threads, the nice value is a per-thread
   // attribute". Also, 0 is prefered to the current thread id since it is
   // equivalent but makes sandboxing easier (https://crbug.com/399473).
-  const int nice_setting = internal::ThreadPriorityToNiceValue(priority);
+  const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
   if (setpriority(PRIO_PROCESS, 0, nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread ("
               << PlatformThread::CurrentId() << ") to " << nice_setting;
@@ -385,29 +390,23 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
 #endif  // BUILDFLAG(IS_NACL)
 }
 
+}  // namespace internal
+
 // static
-ThreadPriority PlatformThread::GetCurrentThreadPriority() {
+ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
 #if BUILDFLAG(IS_NACL)
   NOTIMPLEMENTED();
-  return ThreadPriority::NORMAL;
+  return ThreadPriorityForTest::kNormal;
 #else
   // Mirrors SetCurrentThreadPriority()'s implementation.
   auto platform_specific_priority =
-      internal::GetCurrentThreadPriorityForPlatform();
+      internal::GetCurrentThreadPriorityForPlatformForTest();  // IN-TEST
   if (platform_specific_priority)
     return platform_specific_priority.value();
 
-  // Need to clear errno before calling getpriority():
-  // http://man7.org/linux/man-pages/man2/getpriority.2.html
-  errno = 0;
-  int nice_value = getpriority(PRIO_PROCESS, 0);
-  if (errno != 0) {
-    DVPLOG(1) << "Failed to get nice value of thread ("
-              << PlatformThread::CurrentId() << ")";
-    return ThreadPriority::NORMAL;
-  }
+  int nice_value = internal::GetCurrentThreadNiceValue();
 
-  return internal::NiceValueToThreadPriority(nice_value);
+  return internal::NiceValueToThreadPriorityForTest(nice_value);  // IN-TEST
 #endif  // !BUILDFLAG(IS_NACL)
 }
 

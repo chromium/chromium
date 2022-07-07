@@ -43,13 +43,10 @@ namespace {
 const char kThreadName[] = "VizCompositorThread";
 
 std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
-  const base::ThreadPriority thread_priority =
-      base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)
-          ? base::ThreadPriority::DISPLAY
-          : base::ThreadPriority::NORMAL;
+  const base::ThreadType thread_type = base::ThreadType::kCompositing;
 #if BUILDFLAG(IS_ANDROID)
-  auto thread = std::make_unique<base::android::JavaHandlerThread>(
-      kThreadName, thread_priority);
+  auto thread = std::make_unique<base::android::JavaHandlerThread>(kThreadName,
+                                                                   thread_type);
   thread->Start();
   return thread;
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -73,13 +70,13 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
 #if BUILDFLAG(IS_APPLE)
   // Increase the thread priority to get more reliable values in performance
   // test of macOS.
-  thread_options.priority =
+  thread_options.thread_type =
       (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseHighGPUThreadPriorityForPerfTests))
-          ? base::ThreadPriority::REALTIME_AUDIO
-          : thread_priority;
+          ? base::ThreadType::kRealtimeAudio
+          : thread_type;
 #else
-  thread_options.priority = thread_priority;
+  thread_options.thread_type = thread_type;
 #endif  // !BUILDFLAG(IS_APPLE)
 
   CHECK(thread->StartWithOptions(std::move(thread_options)));

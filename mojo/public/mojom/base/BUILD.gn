@@ -30,7 +30,7 @@ mojom_component("base") {
     "shared_memory.mojom",
     "string16.mojom",
     "text_direction.mojom",
-    "thread_priority.mojom",
+    "thread_type.mojom",
     "time.mojom",
     "token.mojom",
     "unguessable_token.mojom",
@@ -482,12 +482,11 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojo_base.mojom.ThreadPriority"
-          cpp = "::base::ThreadPriority"
+          mojom = "mojo_base.mojom.ThreadType"
+          cpp = "::base::ThreadType"
         },
       ]
-      traits_headers =
-          [ "//mojo/public/cpp/base/thread_priority_mojom_traits.h" ]
+      traits_headers = [ "//mojo/public/cpp/base/thread_type_mojom_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base:typemap_traits",

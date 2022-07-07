@@ -79,8 +79,8 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
       return true;
     if (was_stopped())
       return false;
-    base::PlatformThread::CreateWithPriority(
-        0, this, &thread_, base::ThreadPriority::REALTIME_AUDIO);
+    base::PlatformThread::CreateWithType(0, this, &thread_,
+                                         base::ThreadType::kRealtimeAudio);
     return true;
   }
 

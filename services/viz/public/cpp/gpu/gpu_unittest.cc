@@ -94,7 +94,7 @@ class GpuTest : public testing::Test {
  public:
   GpuTest() : io_thread_("GPUIOThread") {
     base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
-    thread_options.priority = base::ThreadPriority::NORMAL;
+    thread_options.thread_type = base::ThreadType::kDefault;
     CHECK(io_thread_.StartWithOptions(std::move(thread_options)));
   }
 

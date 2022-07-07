@@ -988,8 +988,8 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
                                    const base::FilePath& path) {
   // This function may load DLL's so ensure it is running in a foreground
   // thread.
-  DCHECK_GT(base::PlatformThread::GetCurrentThreadPriority(),
-            base::ThreadPriority::BACKGROUND);
+  DCHECK_GT(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kBackground);
 
   // Enumerate all pinned shortcuts in the given path directly.
   base::FileEnumerator shortcuts_enum(

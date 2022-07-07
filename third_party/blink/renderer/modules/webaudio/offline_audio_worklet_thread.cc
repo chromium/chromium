@@ -37,8 +37,8 @@ OfflineAudioWorkletThread::OfflineAudioWorkletThread(
   ThreadCreationParams params =
       ThreadCreationParams(ThreadType::kOfflineAudioWorkletThread);
 
-  // OfflineAudioWorkletThread always uses a NORMAL priority thread.
-  params.thread_priority = base::ThreadPriority::NORMAL;
+  // OfflineAudioWorkletThread always uses a kNormal type thread.
+  params.base_thread_type = base::ThreadType::kDefault;
 
   if (++ref_count == 1) {
     EnsureSharedBackingThread(params);

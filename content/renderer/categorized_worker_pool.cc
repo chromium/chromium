@@ -212,8 +212,9 @@ void CategorizedWorkerPool::Start(int num_normal_threads) {
       std::end(kBackgroundThreadPriorityCategories)};
 
   base::SimpleThread::Options thread_options;
+// TODO(1326996): Figure out whether !IS_MAC can be lifted here.
 #if !BUILDFLAG(IS_MAC)
-  thread_options.priority = base::ThreadPriority::BACKGROUND;
+  thread_options.thread_type = base::ThreadType::kBackground;
 #endif
 
   auto thread = std::make_unique<CategorizedWorkerPoolThread>(

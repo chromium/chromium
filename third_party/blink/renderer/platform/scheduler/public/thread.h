@@ -68,7 +68,7 @@ struct PLATFORM_EXPORT ThreadCreationParams {
 
   // Do NOT set the thread priority for non-WebAudio usages. Please consult
   // scheduler-dev@ first in order to use an elevated thread priority.
-  base::ThreadPriority thread_priority = base::ThreadPriority::NORMAL;
+  base::ThreadType base_thread_type = base::ThreadType::kDefault;
 
   bool supports_gc = false;
 };

@@ -155,8 +155,8 @@ class StreamMixer::MixerThread : public base::PlatformThread::Delegate,
     tasks_.reserve(64);
     swapped_tasks_.reserve(64);
 
-    CHECK(base::PlatformThread::CreateWithPriority(
-        256 * 1024, this, &thread_, base::ThreadPriority::REALTIME_AUDIO));
+    CHECK(base::PlatformThread::CreateWithType(
+        256 * 1024, this, &thread_, base::ThreadType::kRealtimeAudio));
   }
 
   void Stop() {

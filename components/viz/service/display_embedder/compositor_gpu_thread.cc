@@ -191,8 +191,7 @@ CompositorGpuThread::GetSharedContextState() {
 bool CompositorGpuThread::Initialize() {
   // Setup thread options.
   base::Thread::Options thread_options(base::MessagePumpType::DEFAULT, 0);
-  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority))
-    thread_options.priority = base::ThreadPriority::DISPLAY;
+  thread_options.thread_type = base::ThreadType::kCompositing;
   StartWithOptions(std::move(thread_options));
 
   // Wait until thread is started and Init() is executed in order to return

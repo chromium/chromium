@@ -41,12 +41,12 @@ class CONTENT_EXPORT ChildProcess {
  public:
   // Child processes should have an object that derives from this class.
   // Normally you would immediately call set_main_thread after construction.
-  // |io_thread_priority| is the priority of the IO thread.
+  // |io_thread_type| is the type of the IO thread.
   // |thread_pool_init_params| is used to start the ThreadPool. Default params
   // are used if |thread_pool_init_params| is nullptr. It is ignored if a
   // ThreadPool is already running.
   explicit ChildProcess(
-      base::ThreadPriority io_thread_priority = base::ThreadPriority::NORMAL,
+      base::ThreadType io_thread_type = base::ThreadType::kDefault,
       std::unique_ptr<base::ThreadPoolInstance::InitParams>
           thread_pool_init_params = nullptr);
 

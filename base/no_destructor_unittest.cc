@@ -150,14 +150,13 @@ subtle::Atomic32 BlockingConstructor::constructor_called_ = 0;
 // static
 subtle::Atomic32 BlockingConstructor::complete_construction_ = 0;
 
-// A SimpleThread running at |thread_priority| which invokes |before_get|
-// (optional) and then invokes thread-safe
-// scoped-static-initializationconstruction on its NoDestructor instance.
+// A SimpleThread running at |thread_type| which invokes |before_get| (optional)
+// and then invokes thread-safe scoped-static-initializationconstruction on its
+// NoDestructor instance.
 class BlockingConstructorThread : public SimpleThread {
  public:
-  BlockingConstructorThread(ThreadPriority thread_priority,
-                            OnceClosure before_get)
-      : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
+  BlockingConstructorThread(ThreadType thread_type, OnceClosure before_get)
+      : SimpleThread("BlockingConstructorThread", Options(thread_type)),
         before_get_(std::move(before_get)) {}
   BlockingConstructorThread(const BlockingConstructorThread&) = delete;
   BlockingConstructorThread& operator=(const BlockingConstructorThread&) =
@@ -191,7 +190,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
   // other threads that will be constructed. This thread used to be BACKGROUND
   // priority but that caused it to be starved by other simultaneously running
   // test processes, leading to false-positive failures.
-  BlockingConstructorThread background_getter(ThreadPriority::NORMAL,
+  BlockingConstructorThread background_getter(ThreadType::kDefault,
                                               OnceClosure());
   background_getter.Start();
 
@@ -210,7 +209,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
     // Create threads that are higher priority than background_getter. See above
     // for why these particular priorities are chosen.
     foreground_threads.push_back(std::make_unique<BlockingConstructorThread>(
-        ThreadPriority::DISPLAY, foreground_thread_ready_callback));
+        ThreadType::kDisplayCritical, foreground_thread_ready_callback));
     foreground_threads.back()->Start();
   }
 

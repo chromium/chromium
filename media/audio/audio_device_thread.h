@@ -72,7 +72,7 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   AudioDeviceThread(Callback* callback,
                     base::SyncSocket::ScopedHandle socket,
                     const char* thread_name,
-                    base::ThreadPriority thread_priority);
+                    base::ThreadType thread_type);
 
   AudioDeviceThread(const AudioDeviceThread&) = delete;
   AudioDeviceThread& operator=(const AudioDeviceThread&) = delete;

@@ -29,7 +29,7 @@ class BASE_EXPORT ThreadGroupNativeMac : public ThreadGroupNative {
   // threads. `io_thread_task_runner` must refer to a Thread with
   // MessgaePumpType::IO
   ThreadGroupNativeMac(
-      ThreadPriority priority_hint,
+      ThreadType thread_type_hint,
       scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
       TrackedRef<TaskTracker> task_tracker,
       TrackedRef<Delegate> delegate,
@@ -45,7 +45,7 @@ class BASE_EXPORT ThreadGroupNativeMac : public ThreadGroupNative {
   void StartImpl() override;
   void SubmitWork() override;
 
-  const ThreadPriority priority_hint_;
+  const ThreadType thread_type_hint_;
 
   // Dispatch queue on which work is scheduled. Backed by a shared thread pool
   // managed by libdispatch.

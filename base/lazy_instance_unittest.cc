@@ -242,15 +242,15 @@ class BlockingConstructor {
   bool done_construction_ = false;
 };
 
-// A SimpleThread running at |thread_priority| which invokes |before_get|
-// (optional) and then invokes Get() on the LazyInstance it's assigned.
+// A SimpleThread running at |thread_type| which invokes |before_get| (optional)
+// and then invokes Get() on the LazyInstance it's assigned.
 class BlockingConstructorThread : public base::SimpleThread {
  public:
   BlockingConstructorThread(
-      base::ThreadPriority thread_priority,
+      base::ThreadType thread_type,
       base::LazyInstance<BlockingConstructor>::DestructorAtExit* lazy,
       base::OnceClosure before_get)
-      : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
+      : SimpleThread("BlockingConstructorThread", Options(thread_type)),
         lazy_(lazy),
         before_get_(std::move(before_get)) {}
   BlockingConstructorThread(const BlockingConstructorThread&) = delete;
@@ -287,7 +287,7 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
 
   // Construct BlockingConstructor from a background thread.
   BlockingConstructorThread background_getter(
-      base::ThreadPriority::BACKGROUND, &lazy_blocking, base::OnceClosure());
+      base::ThreadType::kBackground, &lazy_blocking, base::OnceClosure());
   background_getter.Start();
 
   while (!BlockingConstructor::WasConstructorCalled())
@@ -304,7 +304,7 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
           base::BindOnce(&BlockingConstructor::CompleteConstructionNow));
   for (int i = 0; i < kNumForegroundThreads; ++i) {
     foreground_threads.push_back(std::make_unique<BlockingConstructorThread>(
-        base::ThreadPriority::NORMAL, &lazy_blocking,
+        base::ThreadType::kDefault, &lazy_blocking,
         foreground_thread_ready_callback));
     foreground_threads.back()->Start();
   }

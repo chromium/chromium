@@ -426,19 +426,18 @@ BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
 
 BrowserManager::RestoreFromDeskTemplate::~RestoreFromDeskTemplate() = default;
 
-// To be sure the lacros is running with neutral priority.
-class LacrosThreadPriorityDelegate
-    : public base::LaunchOptions::PreExecDelegate {
+// To be sure the lacros is running with neutral thread type.
+class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
  public:
   void RunAsyncSafe() override {
     // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
     // It looks like inside the function, we seem to call async unsafe API.
     // For the mitigation, disabling this temporarily.
     // We should revisit here, and see the impact of performance.
-    // SetCurrentThreadPriority() needs file I/O on /proc and /sys.
+    // SetCurrentThreadType() needs file I/O on /proc and /sys.
     // base::ScopedAllowBlocking allow_blocking;
-    // base::PlatformThread::SetCurrentThreadPriority(
-    //     base::ThreadPriority::NORMAL);
+    // base::PlatformThread::SetCurrentThreadType(
+    //     base::ThreadType::kDefault);
   }
 };
 
@@ -1130,9 +1129,9 @@ void BrowserManager::StartWithLogFile(
   // Set up Mojo channel.
   base::CommandLine command_line(argv);
 
-  // Lacros-chrome starts with NORMAL priority
-  LacrosThreadPriorityDelegate thread_priority_delegate;
-  options.pre_exec_delegate = &thread_priority_delegate;
+  // Lacros-chrome starts with kNormal type
+  LacrosThreadTypeDelegate thread_type_delegate;
+  options.pre_exec_delegate = &thread_type_delegate;
 
   // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
   mojo::PlatformChannel channel;
