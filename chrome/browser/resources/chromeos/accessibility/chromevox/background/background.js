@@ -25,6 +25,7 @@ import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {RangeAutomationHandler} from '/chromevox/background/range_automation_handler.js';
 import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
+import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
 import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {JaPhoneticMap} from '/chromevox/third_party/tamachiyomi/ja_phonetic_map.js';
 import {CursorRange} from '/common/cursors/range.js';

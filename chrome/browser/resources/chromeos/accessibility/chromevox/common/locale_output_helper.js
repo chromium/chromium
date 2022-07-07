@@ -10,9 +10,7 @@
  * https://en.wikipedia.org/wiki/Locale_(computer_software)
  */
 
-goog.provide('LocaleOutputHelper');
-
-LocaleOutputHelper = class {
+export class LocaleOutputHelper {
   /** @private */
   constructor() {
     /**
@@ -183,7 +181,7 @@ LocaleOutputHelper = class {
     return chrome.accessibilityPrivate.getDisplayNameForLocale(
                locale, locale) !== '';
   }
-};
+}
 
 /** @type {LocaleOutputHelper} */
 LocaleOutputHelper.instance;

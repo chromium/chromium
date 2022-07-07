@@ -11,6 +11,7 @@ import {EventSourceType} from '/chromevox/common/event_source_type.js';
 import {GestureCommandData} from '/chromevox/common/gesture_command_data.js';
 import {KeyMap} from '/chromevox/common/key_map.js';
 import {KeyUtil} from '/chromevox/common/key_util.js';
+import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
 import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
 import {ISearchUI} from '/chromevox/panel/i_search_ui.js';
 import {PanelInterface} from '/chromevox/panel/panel_interface.js';

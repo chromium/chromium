@@ -13,6 +13,7 @@ import {OutputFormatTree} from '/chromevox/background/output/output_format_tree.
 import {OutputRulesStr} from '/chromevox/background/output/output_logger.js';
 import {PhoneticData} from '/chromevox/background/phonetic_data.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
+import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
 import {CursorRange} from '/common/cursors/range.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;

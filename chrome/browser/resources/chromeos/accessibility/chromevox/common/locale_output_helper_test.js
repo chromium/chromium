@@ -30,8 +30,12 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
   }
 
   /** @override */
-  setUp() {
-    super.setUp();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+
+    await importModule(
+        'LocaleOutputHelper', '/chromevox/common/locale_output_helper.js');
+
     // Mock this api to return a predefined set of voices.
     chrome.tts.getVoices = function(callback) {
       callback([

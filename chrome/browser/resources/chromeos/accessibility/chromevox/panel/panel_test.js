@@ -18,6 +18,8 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
     await importModule(
+        'LocaleOutputHelper', '/chromevox/common/locale_output_helper.js');
+    await importModule(
         ['PanelCommand', 'PanelCommandType'],
         '/chromevox/common/panel_command.js');
     await importModule('CursorRange', '/common/cursors/range.js');

@@ -13,7 +13,6 @@ goog.require('BridgeHelper');
 goog.require('EarconDescription');
 goog.require('FocusBounds');
 goog.require('KeyCode');
-goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('Msgs');
 goog.require('NavBraille');

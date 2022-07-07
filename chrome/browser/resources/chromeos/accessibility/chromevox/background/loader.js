@@ -21,7 +21,6 @@ goog.require('JaPhoneticData');
 goog.require('KeyCode');
 goog.require('LibLouis');
 goog.require('LibLouis.FormType');
-goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('LogType');
 goog.require('Msgs');
