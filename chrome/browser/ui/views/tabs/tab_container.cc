@@ -364,6 +364,16 @@ void TabContainer::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
   }
 }
 
+void TabContainer::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
+  // If a tab was removed, the underline bounds might be stale.
+  group_views()[group]->UpdateBounds();
+
+  // The group header may be in the wrong place if the tab didn't actually
+  // move in terms of model indices.
+  OnGroupMoved(group);
+  StartBasicAnimation();
+}
+
 void TabContainer::OnGroupMoved(const tab_groups::TabGroupId& group) {
   DCHECK(group_views()[group]);
 

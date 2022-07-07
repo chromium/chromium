@@ -1109,10 +1109,7 @@ void TabStrip::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
 }
 
 void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
-  // The group header may be in the wrong place if the tab didn't actually
-  // move in terms of model indices.
-  OnGroupMoved(group);
-  tab_container_->StartBasicAnimation();
+  tab_container_->OnGroupContentsChanged(group);
 }
 
 void TabStrip::OnGroupVisualsChanged(

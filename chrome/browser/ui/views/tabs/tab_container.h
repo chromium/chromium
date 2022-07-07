@@ -62,6 +62,7 @@ class TabContainer : public views::View,
   // action to create the |group|.
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group);
   void OnGroupMoved(const tab_groups::TabGroupId& group);
+  void OnGroupContentsChanged(const tab_groups::TabGroupId& group);
   void OnGroupClosed(const tab_groups::TabGroupId& group);
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id);
 
