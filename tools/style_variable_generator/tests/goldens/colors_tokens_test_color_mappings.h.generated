@@ -18,47 +18,24 @@ class ColorMixer;
 
 namespace test_tokens {
 
-#include "ui/color/color_id_macros.inc"
-
-
-#define CROSREF_COLOR_IDS \
-E_CPONLY(kCrosRefPrimary50, kCrosRefColorsStart, kCrosRefColorsStart)
-
-
 enum CrosRefColorIds : ui::ColorId {
   kCrosRefColorsStart = 0xF000,
-
-  CROSREF_COLOR_IDS
-
+  kCrosRefPrimary50 = kCrosRefColorsStart,
   kCrosRefColorsEnd,
 };
 
-
 COMPONENT_EXPORT(test_tokens_COLOR_MAPPINGS) void AddCrosRefColorsToMixer(ui::ColorMixer& mixer, bool dark_mode);
-
-
-#define CROSSYS_COLOR_IDS \
-E_CPONLY(kCrosSysPrimary, kCrosSysColorsStart, kCrosSysColorsStart) \
-E_CPONLY(kCrosSysOnPrimary) \
-E_CPONLY(kCrosSysPrimaryContainer) \
-E_CPONLY(kCrosSysOnPrimaryContainer)
-
 
 enum CrosSysColorIds : ui::ColorId {
   kCrosSysColorsStart = kCrosRefColorsEnd,
-
-  CROSSYS_COLOR_IDS
-
+  kCrosSysPrimary = kCrosSysColorsStart,
+  kCrosSysOnPrimary,
+  kCrosSysPrimaryContainer,
+  kCrosSysOnPrimaryContainer,
   kCrosSysColorsEnd,
 };
 
-
 COMPONENT_EXPORT(test_tokens_COLOR_MAPPINGS) void AddCrosSysColorsToMixer(ui::ColorMixer& mixer, bool dark_mode);
-
-#include "ui/color/color_id_macros.inc"
-
-// clang-format on
-
 
 COMPONENT_EXPORT(test_tokens_COLOR_MAPPINGS) std::string ColorIdName(ui::ColorId id);
 
