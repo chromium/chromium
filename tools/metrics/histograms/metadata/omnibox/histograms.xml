@@ -2055,12 +2055,16 @@ chromium-metrics-reviews@google.com.
     Counts the number of non-prefetch zero suggest requests (requests for
     suggestions when the user has focused but not modified the omnibox) the
     omnibox sent, requests that were invalidated, responses that were received,
-    and the subset of responses that were loaded from HTTP cache.
+    the subset of responses that were loaded from HTTP cache, and finally the
+    subset of responses that ended up updating the displayed results.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestRequests.NonPrefetch.RoundTripTime"
     units="ms" expires_after="2022-12-11">
+  <obsolete>
+    Obsolete as of M105.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2079,12 +2083,16 @@ chromium-metrics-reviews@google.com.
     Counts the number of prefetch zero suggest requests (requests for
     suggestions when the user opens a new tab or brings one to foreground) the
     omnibox sent, requests that were invalidated, responses that were received,
-    and the subset of responses that were loaded from HTTP cache.
+    the subset of responses that were loaded from HTTP cache, and finally the
+    subset of responses that ended up updating the displayed results.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestRequests.Prefetch.RoundTripTime" units="ms"
     expires_after="2022-12-11">
+  <obsolete>
+    Obsolete as of M105.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

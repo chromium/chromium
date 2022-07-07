@@ -6070,10 +6070,7 @@
                         "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8",
-                        "ZeroSuggestCacheCounterfactual": "true",
-                        "ZeroSuggestCacheDurationSec": "0",
-                        "ZeroSuggestIgnoreDuplicateVisits": "false",
-                        "ZeroSuggestPrefetchBypassCache": "true"
+                        "ZeroSuggestCacheDurationSec": "0"
                     },
                     "enable_features": [
                         "LocalHistorySuggestRevamp",
@@ -6109,9 +6106,7 @@
                         "OmniboxLocalZeroSuggestAgeThreshold": "30",
                         "OmniboxMaxURLMatches": "8",
                         "UIMaxAutocompleteMatches": "10",
-                        "ZeroSuggestCacheCounterfactual": "true",
-                        "ZeroSuggestCacheDurationSec": "0",
-                        "ZeroSuggestPrefetchBypassCache": "true"
+                        "ZeroSuggestCacheDurationSec": "0"
                     },
                     "enable_features": [
                         "AndroidAuxiliarySearch",

@@ -1264,19 +1264,6 @@ const FeatureEntry::FeatureVariation
         {"Signed-out Users", {}, 0, "t4693176"},
         {"All Users", {}, 0, "t4693177"}};
 
-constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestInMemoryCache[] = {
-    {"ZeroSuggestCacheCounterfactual", "true"}};
-constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration15Secs[] =
-    {{"ZeroSuggestCacheDurationSec", "15"},
-     {"ZeroSuggestCacheCounterfactual", "true"}};
-
-constexpr FeatureEntry::FeatureVariation
-    kOmniboxZeroSuggestPrefetchingVariations[] = {
-        {"In-memory cache", kOmniboxZeroSuggestInMemoryCache,
-         std::size(kOmniboxZeroSuggestInMemoryCache), nullptr},
-        {"15 sec HTTP cache", kOmniboxZeroSuggestCacheDuration15Secs,
-         std::size(kOmniboxZeroSuggestCacheDuration15Secs), nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -5015,9 +5002,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kZeroSuggestPrefetching,
-                                    kOmniboxZeroSuggestPrefetchingVariations,
-                                    "OmniboxBundledExperimentV1")},
+     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetching)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)

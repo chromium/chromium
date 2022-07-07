@@ -522,14 +522,6 @@ extern const base::FeatureParam<int>
 // Shortcut Expanding.
 bool IsShortcutExpandingEnabled();
 
-// Local history zero-prefix (aka zero-suggest) and prefix suggestions.
-// Indicates whether the user is in the counterfactual group in the experiment
-// for prefetching zero prefix suggestions on the NTP. Users in the
-// counterfactual group issue a follow-up non-cacheable request if the response
-// is loaded from the HTTP cache in order to determine HTTP cache validity.
-// This param is tied to omnibox::kZeroSuggestPrefetching and is to be used when
-// a valid HTTP cache duration is provided via kZeroSuggestCacheDurationSec.
-extern const base::FeatureParam<bool> kZeroSuggestCacheCounterfactual;
 // Specifies the HTTP cache duration for the zero prefix suggest responses. If
 // the provided value is a positive number, the cache duration will be sent as a
 // query string parameter in the zero suggest requests and relayed back in the
@@ -538,11 +530,6 @@ extern const base::FeatureParam<bool> kZeroSuggestCacheCounterfactual;
 // prefetching and theoretically works with any caching mechanism. If no valid
 // HTTP cache duration is provided the existing caching mechanism is used.
 extern const base::FeatureParam<int> kZeroSuggestCacheDurationSec;
-// Indicates whether the zero suggest prefetch requests should bypass the HTTP
-// cache, i.e., not get loaded from the HTTP cache. This helps ensure the HTTP
-// cache duration clock is reset and the subsequent non-prefetch zero suggest
-// requests, depending on the cache duration, are loaded from the HTTP cache.
-extern const base::FeatureParam<bool> kZeroSuggestPrefetchBypassCache;
 // Whether duplicative visits should be ignored for local history zero-suggest.
 // A duplicative visit is a visit to the same search term in an interval smaller
 // than kAutocompleteDuplicateVisitIntervalThreshold.

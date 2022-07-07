@@ -547,12 +547,8 @@ TEST_P(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
     histogram_tester.ExpectBucketCount(
         "Omnibox.ZeroSuggestRequests.NonPrefetch",
         3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.ZeroSuggestRequests.NonPrefetch.RoundTripTime", 1);
     histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.Prefetch",
                                       0);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.ZeroSuggestRequests.Prefetch.RoundTripTime", 0);
 
     // Expect the same results after the response has been handled.
     ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
@@ -644,12 +640,8 @@ TEST_P(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetch) {
                                      1 /*ZERO_SUGGEST_REQUEST_SENT*/, 1);
   histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.Prefetch",
                                      3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.ZeroSuggestRequests.Prefetch.RoundTripTime", 1);
   histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
                                     0);
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.ZeroSuggestRequests.NonPrefetch.RoundTripTime", 0);
 
   // Expect the provider not to have notified the provider listener.
   EXPECT_FALSE(provider_did_notify_);

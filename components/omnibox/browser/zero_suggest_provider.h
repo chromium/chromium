@@ -118,8 +118,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Contains the implementation to start a request for suggestions.
   void Start(const AutocompleteInput& input,
              bool minimal_changes,
-             bool is_prefetch,
-             bool bypass_cache);
+             bool is_prefetch);
 
   // BaseSearchProvider:
   const TemplateURL* GetTemplateURL(bool is_keyword) const override;
@@ -134,20 +133,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void OnURLLoadComplete(const base::WeakPtr<AutocompleteProviderClient> client,
                          TemplateURLRef::SearchTermsArgs search_terms_args,
                          bool is_prefetch,
-                         const std::string& original_response,
                          base::TimeTicks request_time,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
-
-  // Called when the counterfactual network request for suggestions has
-  // completed. `original_is_prefetch` and `original_response` are bound to this
-  // callback and indicate if the original request was a prefetch one and the
-  // original cached response received in OnURLLoadComplete() respectively.
-  void OnCounterfactualURLLoadComplete(
-      bool original_is_prefetch,
-      const std::string& original_response,
-      const network::SimpleURLLoader* source,
-      std::unique_ptr<std::string> response_body);
 
   // Called when the remote response is received, populates |results_| with
   // |json_data|; and converts them to |matches_|.
@@ -165,9 +153,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // Called in Start(), populates |results_| with the zero suggest response
   // stored in user prefs, if applicable; and converts them to |matches_|.
-  //
-  // Returns the stored response whether |results_| changed or not.
-  std::string MaybeUpdateResultsWithStoredResponse();
+  void MaybeUpdateResultsWithStoredResponse();
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
@@ -212,9 +198,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // metrics when the provider is stopped. `done_` and `prefetch_done_` should
   // never both be true, a `Start()` request stops ongoing requests.
   bool prefetch_done_;
-
-  // Loader used to retrieve counterfactual results.
-  std::unique_ptr<network::SimpleURLLoader> counterfactual_loader_;
 
   // Contains suggest and navigation results as well as relevance parsed from
   // the response for the most recent zero suggest input URL.
