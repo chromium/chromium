@@ -9,6 +9,7 @@
  */
 import {BrailleTranslatorManager} from '/chromevox/background/braille/braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from '/chromevox/background/braille/expanding_braille_translator.js';
+import {ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from '/chromevox/background/braille/spans.js';
 import {EventGenerator} from '/common/event_generator.js';
 
 export class BrailleInputHandler {

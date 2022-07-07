@@ -7,6 +7,7 @@
  * appropriate spoken and braille feedback.
  */
 import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
+import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '/chromevox/background/braille/spans.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
 import {Color} from '/chromevox/background/color.js';
 import {EditableLine} from '/chromevox/background/editing/editable_line.js';

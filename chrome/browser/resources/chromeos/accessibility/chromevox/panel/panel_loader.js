@@ -31,8 +31,6 @@ goog.require('QueueMode');
 goog.require('Spannable');
 goog.require('TextLog');
 goog.require('TtsCategory');
-goog.require('ValueSelectionSpan');
-goog.require('ValueSpan');
 
 goog.require('constants');
 goog.require('cursors.Cursor');

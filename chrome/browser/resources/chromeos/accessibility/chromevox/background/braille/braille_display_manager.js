@@ -9,6 +9,7 @@ import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_c
 import {BrailleTranslatorManager} from '/chromevox/background/braille/braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from '/chromevox/background/braille/expanding_braille_translator.js';
 import {PanStrategy} from '/chromevox/background/braille/pan_strategy.js';
+import {ValueSpan} from '/chromevox/background/braille/spans.js';
 
 export class BrailleDisplayManager {
   /**

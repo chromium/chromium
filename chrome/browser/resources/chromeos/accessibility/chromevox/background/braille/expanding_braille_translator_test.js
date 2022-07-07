@@ -15,6 +15,9 @@ ChromeVoxExpandingBrailleTranslatorUnitTest =
     await importModule(
         'ExpandingBrailleTranslator',
         '/chromevox/background/braille/expanding_braille_translator.js');
+    await importModule(
+        ['ExtraCellsSpan', 'ValueSelectionSpan', 'ValueSpan'],
+        '/chromevox/background/braille/spans.js');
   }
 };
 
@@ -24,7 +27,6 @@ ChromeVoxExpandingBrailleTranslatorUnitTest.prototype.extraLibraries = [
   '../../testing/fake_dom.js',
   '../../common/spannable.js',
   'liblouis.js',
-  'spans.js',
 ];
 
 /**

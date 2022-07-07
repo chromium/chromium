@@ -5,6 +5,7 @@
 /**
  * @fileoverview Provides output services for ChromeVox.
  */
+import {ValueSelectionSpan, ValueSpan} from '/chromevox/background/braille/spans.js';
 import {EventSourceState} from '/chromevox/background/event_source.js';
 import {OutputAncestryInfo} from '/chromevox/background/output/output_ancestry_info.js';
 import {OutputFormatParser, OutputFormatParserObserver} from '/chromevox/background/output/output_format_parser.js';

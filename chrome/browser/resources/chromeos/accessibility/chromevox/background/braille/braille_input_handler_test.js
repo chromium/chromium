@@ -440,6 +440,9 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'ExpandingBrailleTranslator',
         '/chromevox/background/braille/expanding_braille_translator.js');
+    await importModule(
+        ['ExtraCellsSpan', 'ValueSelectionSpan', 'ValueSpan'],
+        '/chromevox/background/braille/spans.js');
 
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();
