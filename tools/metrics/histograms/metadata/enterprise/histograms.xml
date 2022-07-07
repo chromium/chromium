@@ -155,20 +155,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Enterprise.AutoEnrollmentExtraTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2021-03-01">
-  <owner>pmarko@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <summary>
-    Time since the user logged in until the auto-enrollment protocol completed.
-    0 is sampled when the protocol is done by the time the user logs in.
-    {EnterpriseAutoEnrollmentType}
-  </summary>
-  <token key="EnterpriseAutoEnrollmentType"
-      variants="EnterpriseAutoEnrollmentType"/>
-</histogram>
-
-<histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
     units="ms" expires_after="2022-07-09">
   <owner>amraboelkher@chromium.org</owner>

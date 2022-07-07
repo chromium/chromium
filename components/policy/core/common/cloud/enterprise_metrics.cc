@@ -140,7 +140,6 @@ const char kUMAHashDanceProtocolTime[] =
     "Enterprise.AutoEnrollmentProtocolTime";
 const char kUMAHashDanceBucketDownloadTime[] =
     "Enterprise.AutoEnrollmentBucketDownloadTime";
-const char kUMAHashDanceExtraTime[] = "Enterprise.AutoEnrollmentExtraTime";
 const char kUMAHashDanceRequestStatus[] =
     "Enterprise.AutoEnrollmentRequestStatus";
 const char kUMAHashDanceNetworkErrorCode[] =

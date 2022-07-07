@@ -250,10 +250,7 @@ class AutoEnrollmentClientImpl
   // Times used to determine the duration of the protocol, and the extra time
   // needed to complete after the signin was complete.
   // If |hash_dance_time_start_| is not null, the protocol is still running.
-  // If |time_extra_start_| is not null, the protocol is still running but our
-  // owner has relinquished ownership.
   base::TimeTicks hash_dance_time_start_;
-  base::TimeTicks time_extra_start_;
 
   // The time when the bucket download part of the protocol started.
   base::TimeTicks time_start_bucket_download_;

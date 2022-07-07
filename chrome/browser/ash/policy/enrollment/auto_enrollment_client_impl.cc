@@ -188,9 +188,7 @@ void AutoEnrollmentClientImpl::CancelAndDeleteSoon() {
     delete this;
   } else {
     // Client still running, but our owner isn't interested in the result
-    // anymore. Wait until the protocol completes to measure the extra time
-    // needed.
-    time_extra_start_ = base::TimeTicks::Now();
+    // anymore. Wait until the protocol completes.
     progress_callback_.Reset();
   }
 }
@@ -673,8 +671,6 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   // The minimum time can't be 0, must be at least 1.
   static const base::TimeDelta kMin = base::Milliseconds(1);
   static const base::TimeDelta kMax = base::Minutes(5);
-  // However, 0 can still be sampled.
-  static const base::TimeDelta kZero = base::Milliseconds(0);
   static const int kBuckets = 50;
 
   base::TimeTicks now = base::TimeTicks::Now();
@@ -688,14 +684,6 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
     base::UmaHistogramCustomTimes(kUMAHashDanceBucketDownloadTime + uma_suffix_,
                                   delta, kMin, kMax, kBuckets);
   }
-  base::TimeDelta delta = kZero;
-  if (!time_extra_start_.is_null())
-    delta = now - time_extra_start_;
-  // This samples |kZero| when there was no need for extra time, so that we can
-  // measure the ratio of users that succeeded without needing a delay to the
-  // total users going through OOBE.
-  base::UmaHistogramCustomTimes(kUMAHashDanceExtraTime + uma_suffix_, delta,
-                                kMin, kMax, kBuckets);
 }
 
 void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
