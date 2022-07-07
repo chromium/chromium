@@ -330,7 +330,7 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.6.21.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.7.0.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib"
   supports_android = true
   deps = [
@@ -635,7 +635,7 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.6.21.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.7.0.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
   supports_android = true
 
@@ -1445,6 +1445,7 @@ if (!limit_android_deps) {
     deps = [
       ":javax_annotation_javax_annotation_api_java",
       ":javax_inject_javax_inject_java",
+      ":org_bouncycastle_bcprov_jdk15on_java",
       ":org_robolectric_annotations_java",
       ":org_robolectric_junit_java",
       ":org_robolectric_pluginapi_java",
@@ -1455,7 +1456,6 @@ if (!limit_android_deps) {
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/bouncycastle:bouncycastle_java",
     ]
     is_robolectric = true
   }
@@ -2147,6 +2147,21 @@ if (!limit_android_deps) {
 
     # Target needs to exclude *xmlpull* files as already included in Android SDK.
     jar_excluded_patterns = [ "*xmlpull*" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_bouncycastle_bcprov_jdk15on_java") {
+    jar_path = "libs/org_bouncycastle_bcprov_jdk15on/bcprov-jdk15on-1.68.jar"
+    output_name = "org_bouncycastle_bcprov_jdk15on"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
