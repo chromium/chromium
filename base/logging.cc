@@ -911,6 +911,10 @@ LogMessage::~LogMessage() {
   }
 }
 
+std::string LogMessage::GetMessageWithoutPrefix() const {
+  return str().substr(message_start_);
+}
+
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
   base::StringPiece filename(file);

@@ -905,6 +905,14 @@ TEST_F(LoggingTest, ScopedVmoduleSwitches) {
   }
 }
 
+TEST_F(LoggingTest, GetMessageWithoutPrefixStripsPrefix) {
+  EXPECT_EQ("", LogMessage("", 0, LOGGING_ERROR).GetMessageWithoutPrefix());
+
+  LogMessage msg("", 0, LOGGING_ERROR);
+  msg.stream() << "Hello";
+  EXPECT_EQ("Hello", msg.GetMessageWithoutPrefix());
+}
+
 #if !BUILDFLAG(USE_RUNTIME_VLOG)
 TEST_F(LoggingTest, BuildTimeVLOG) {
   // Use a static because only captureless lambdas can be converted to a
