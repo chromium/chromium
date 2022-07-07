@@ -1623,6 +1623,24 @@ None
 
 The following Abseil library features are allowed in the Chromium codebase.
 
+### Attribute macros <sup>[allowed]</sup>
+
+```c++
+const char* name() ABSL_ATTRIBUTE_RETURNS_NONNULL { return "hello world"; }
+```
+
+**Description:** Macros that conditionally resolve to attributes. Prefer to use
+standard C++ attributes, such as `[[fallthrough]]`. Use these macros for
+non-standard attributes, which may not be present in all compilers.
+
+**Documentation:**
+[attributes.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/attributes.h)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/vQmaBfbyBGM/m/HHOYUZ5YAwAJ)
+***
+
 ### 128bit integer <sup>[allowed]</sup>
 
 ```c++
