@@ -32,6 +32,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/notification_types.h"
@@ -86,6 +87,24 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    // Select to speak loads part of itself (eventually all of itself) via a
+    // dynamic import. This means that the background page signals a load event
+    // prior to the import being fully finished. Wait for it here.
+    std::string script =
+        R"JS(
+          (async function() {
+            await import("/select_to_speak/select_to_speak_main.js");
+            window.domAutomationController.send('ok');
+          })();
+        )JS";
+
+    std::string result =
+        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+            browser()->profile(), extension_misc::kSelectToSpeakExtensionId,
+            script,
+            extensions::browsertest_util::ScriptUserActivation::kDontActivate);
+    ASSERT_EQ(result, "ok");
   }
 
   void SetUpInProcessBrowserTestFixture() override {
