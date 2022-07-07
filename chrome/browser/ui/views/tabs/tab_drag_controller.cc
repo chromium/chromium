@@ -2436,9 +2436,6 @@ void TabDragController::UpdateGroupForDraggedTabs() {
   const absl::optional<tab_groups::TabGroupId> updated_group =
       GetTabGroupForTargetIndex(selected_unpinned);
 
-  if (updated_group == attached_model->GetTabGroupForTab(selected_unpinned[0]))
-    return;
-
   attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
                                       updated_group);
 }
