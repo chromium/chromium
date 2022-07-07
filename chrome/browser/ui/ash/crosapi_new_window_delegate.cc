@@ -67,6 +67,7 @@ void CrosapiNewWindowDelegate::WindowObserver::OnWindowVisibilityChanged(
   if (crosapi::GetShellSurfaceWindow(window_id_) == window) {
     std::move(closure_).Run(window);
     owner_->DestroyWindowObserver();
+    return;
   }
 }
 
@@ -84,6 +85,7 @@ void CrosapiNewWindowDelegate::WindowObserver::SetWindowID(
     if (window == it) {
       std::move(closure_).Run(window);
       owner_->DestroyWindowObserver();
+      return;
     }
   }
 }
