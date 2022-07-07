@@ -300,7 +300,7 @@ struct PopupView: View {
                 listContent(geometry: geometry)
               },
               emptySpace: {
-                PopupEmptySpaceView()
+                PopupEmptySpaceView.View()
               }
             )
             .frame(width: geometry.size.width, height: geometry.size.height)

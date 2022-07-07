@@ -6,11 +6,13 @@ import SwiftUI
 
 /// An empty UIKit view wrapped in a SwiftUI view,
 /// to identity the empty space below the omnibox popup during hit testing.
-final class PopupEmptySpaceView: UIView, UIViewRepresentable {
-  func makeUIView(context: Context) -> PopupEmptySpaceView {
-    PopupEmptySpaceView()
-  }
+final class PopupEmptySpaceView: UIView {
+  struct View: UIViewRepresentable {
+    func makeUIView(context: Context) -> PopupEmptySpaceView {
+      PopupEmptySpaceView()
+    }
 
-  func updateUIView(_ uiView: PopupEmptySpaceView, context: Context) {
+    func updateUIView(_ uiView: PopupEmptySpaceView, context: Context) {
+    }
   }
 }
