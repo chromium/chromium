@@ -39,10 +39,11 @@ namespace internal {
 
 constexpr int kMemTagGranuleSize = 16u;
 #if defined(PA_HAS_MEMORY_TAGGING)
-constexpr uint64_t kMemTagUnmask = 0x00ffffffffffffffuLL;
+constexpr uint64_t kPtrTagMask = 0xff00000000000000uLL;
 #else
-constexpr uint64_t kMemTagUnmask = 0xffffffffffffffffuLL;
+constexpr uint64_t kPtrTagMask = 0;
 #endif  // defined(PA_HAS_MEMORY_TAGGING)
+constexpr uint64_t kPtrUntagMask = ~kPtrTagMask;
 
 #if BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
@@ -86,6 +87,7 @@ extern PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
 // TODO(bartekn): Remove the T* variant.
+// TODO(bartekn): Consider removing the return value.
 template <typename T>
 PA_ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
 #if defined(PA_HAS_MEMORY_TAGGING)
@@ -94,9 +96,8 @@ PA_ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
   return ptr;
 #endif
 }
-PA_ALWAYS_INLINE uintptr_t TagMemoryRangeIncrement(uintptr_t ptr, size_t size) {
-  return reinterpret_cast<uintptr_t>(
-      TagMemoryRangeIncrement(reinterpret_cast<void*>(ptr), size));
+PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t ptr, size_t size) {
+  return TagMemoryRangeIncrement(reinterpret_cast<void*>(ptr), size);
 }
 
 // Randomly changes the tag of the ptr memory range. Useful for initial random
@@ -114,45 +115,44 @@ PA_ALWAYS_INLINE T* TagMemoryRangeRandomly(T* ptr,
   return ptr;
 #endif
 }
-PA_ALWAYS_INLINE uintptr_t TagMemoryRangeRandomly(uintptr_t ptr,
-                                                  size_t size,
-                                                  uint64_t mask = 0u) {
-  return reinterpret_cast<uintptr_t>(
-      TagMemoryRangeRandomly(reinterpret_cast<void*>(ptr), size, mask));
+PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t ptr,
+                                              size_t size,
+                                              uint64_t mask = 0u) {
+  return TagMemoryRangeRandomly(reinterpret_cast<void*>(ptr), size, mask);
 }
 
 // Gets a version of ptr that's safe to dereference.
-// TODO(bartekn): Remove the T* variant.
 template <typename T>
-PA_ALWAYS_INLINE T* RemaskPtr(T* ptr) {
+PA_ALWAYS_INLINE T* TagPtr(T* ptr) {
 #if defined(PA_HAS_MEMORY_TAGGING)
   return reinterpret_cast<T*>(global_remask_void_ptr_fn(ptr));
 #else
   return ptr;
 #endif
 }
-// Gets a version of address that's safe to dereference, if cast to a pointer.
-PA_ALWAYS_INLINE uintptr_t RemaskPtr(uintptr_t address) {
-  return reinterpret_cast<uintptr_t>(
-      RemaskPtr(reinterpret_cast<void*>(address)));
+
+// Gets a version of |address| that's safe to dereference, and casts to a
+// pointer.
+PA_ALWAYS_INLINE void* TagAddr(uintptr_t address) {
+  return TagPtr(reinterpret_cast<void*>(address));
 }
 
-// Strips the tag bits off address.
-PA_ALWAYS_INLINE uintptr_t UnmaskPtr(uintptr_t address) {
+// Strips the tag bits off |address|.
+PA_ALWAYS_INLINE uintptr_t UntagAddr(uintptr_t address) {
 #if defined(PA_HAS_MEMORY_TAGGING)
-  return address & kMemTagUnmask;
+  return address & internal::kPtrUntagMask;
 #else
   return address;
 #endif
 }
-// Strips the tag bits off ptr.
-// TODO(bartekn): Remove the T* variant.
-template <typename T>
-PA_ALWAYS_INLINE T* UnmaskPtr(T* ptr) {
-  return reinterpret_cast<T*>(UnmaskPtr(reinterpret_cast<uintptr_t>(ptr)));
-}
 
 }  // namespace internal
+
+// Strips the tag bits off |ptr|.
+template <typename T>
+PA_ALWAYS_INLINE uintptr_t UntagPtr(T* ptr) {
+  return internal::UntagAddr(reinterpret_cast<uintptr_t>(ptr));
+}
 
 }  // namespace partition_alloc
 

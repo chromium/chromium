@@ -142,7 +142,6 @@ class QuarantineCardTable final {
   // slots. May return false positives for but should never return false
   // negatives, as otherwise this breaks security.
   PA_ALWAYS_INLINE bool IsQuarantined(uintptr_t address) const {
-    address = ::partition_alloc::internal::UnmaskPtr(address);
     const size_t byte = Byte(address);
     PA_SCAN_DCHECK(byte < bytes_.size());
     return bytes_[byte];
@@ -653,6 +652,7 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
 PA_SCAN_INLINE size_t
 PCScanTask::TryMarkSlotInNormalBuckets(uintptr_t maybe_ptr) const {
   // Check if |maybe_ptr| points somewhere to the heap.
+  // The caller has to make sure that |maybe_ptr| isn't MTE-tagged.
   auto* state_map = TryFindScannerBitmapForPointer(maybe_ptr);
   if (!state_map)
     return 0;
@@ -722,8 +722,7 @@ void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
       // ScanPartitions.
       const size_t size = slot_span->GetUsableSize(root);
       if (clear_type == PCScan::ClearType::kLazy) {
-        void* object = ::partition_alloc::internal::RemaskPtr(
-            root->SlotStartToObject(slot_start));
+        void* object = root->SlotStartToObject(slot_start);
         memset(object, 0, size);
       }
 #if PA_STARSCAN_USE_CARD_TABLE
@@ -774,9 +773,10 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   }
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-  PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr) {
-    quarantine_size_ += task_.TryMarkSlotInNormalBuckets(
-        ::partition_alloc::internal::UnmaskPtr(maybe_ptr));
+  PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr_maybe_tagged) {
+    // |maybe_ptr| may have an MTE tag, so remove it first.
+    quarantine_size_ +=
+        task_.TryMarkSlotInNormalBuckets(UntagAddr(maybe_ptr_maybe_tagged));
   }
 
   const PCScanTask& task_;
@@ -937,8 +937,6 @@ void UnmarkInCardTable(uintptr_t slot_start,
     SlotSpanMetadata<ThreadSafe>* slot_span,
     uintptr_t slot_start) {
   void* object = root->SlotStartToObject(slot_start);
-  // TODO(bartekn): Move MTE masking into SlotStartToObject.
-  object = ::partition_alloc::internal::RemaskPtr(object);
   root->FreeNoHooksImmediate(object, slot_span, slot_start);
   UnmarkInCardTable(slot_start, slot_span);
   return slot_span->bucket->slot_size;
@@ -1003,8 +1001,7 @@ void UnmarkInCardTable(uintptr_t slot_start,
 
   const auto bitmap_iterator = [&](uintptr_t slot_start) {
     SlotSpan* current_slot_span = SlotSpan::FromSlotStart(slot_start);
-    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
-        ::partition_alloc::internal::RemaskPtr(slot_start));
+    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
 
     if (current_slot_span != previous_slot_span) {
       // We started scanning a new slot span. Flush the accumulated freelist to

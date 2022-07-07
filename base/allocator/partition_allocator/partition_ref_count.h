@@ -331,7 +331,6 @@ static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
-  PA_DCHECK(slot_start == ::partition_alloc::internal::RemaskPtr(slot_start));
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif
@@ -340,13 +339,16 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
-    // Have to remask because the previous pointer's tag is unpredictable. There
-    // could be a race condition though if the previous slot is freed/retagged
-    // concurrently, so ideally the ref count should occupy its own MTE granule.
+    // Have to MTE-tag, because the address is untagged, but lies within a slot
+    // area, which is protected by MTE.
+    //
+    // There could be a race condition though if the previous slot is
+    // freed/retagged concurrently, so ideally the ref count should occupy its
+    // own MTE granule.
     // TODO(richard.townsend@arm.com): improve this.
-    return ::partition_alloc::internal::RemaskPtr(
-        reinterpret_cast<PartitionRefCount*>(refcount_address));
+    return static_cast<PartitionRefCount*>(TagAddr(refcount_address));
   } else {
+    // No need to tag, as the metadata region isn't protected by MTE.
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
     size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift()) *
@@ -375,7 +377,9 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif
-  return reinterpret_cast<PartitionRefCount*>(slot_start);
+  // Have to MTE-tag, because the address is untagged, but lies within a slot
+  // area, which is protected by MTE.
+  return static_cast<PartitionRefCount*>(TagAddr(slot_start));
 }
 
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)

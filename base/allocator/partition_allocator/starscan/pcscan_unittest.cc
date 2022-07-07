@@ -8,6 +8,7 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
+#include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
@@ -146,12 +147,13 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   }
 
   EXPECT_EQ(SlotSpan::FromSlotStart(first), SlotSpan::FromSlotStart(last));
-  if (bucket.num_system_pages_per_slot_span == NumSystemPagesPerPartitionPage())
+  if (bucket.num_system_pages_per_slot_span ==
+      NumSystemPagesPerPartitionPage()) {
     // Pointers are expected to be in the same partition page, but have a
     // different MTE-tag.
-    EXPECT_EQ(
-        ::partition_alloc::internal::UnmaskPtr(first & PartitionPageBaseMask()),
-        ::partition_alloc::internal::UnmaskPtr(last & PartitionPageBaseMask()));
+    EXPECT_EQ(UntagAddr(first & PartitionPageBaseMask()),
+              UntagAddr(last & PartitionPageBaseMask()));
+  }
   EXPECT_EQ(num_slots, bucket.active_slot_spans_head->num_allocated_slots);
   EXPECT_EQ(nullptr, bucket.active_slot_spans_head->get_freelist_head());
   EXPECT_TRUE(bucket.is_valid());
@@ -164,12 +166,11 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 
 bool IsInFreeList(uintptr_t slot_start) {
   // slot_start isn't MTE-tagged, whereas pointers in the freelist are.
-  uintptr_t slot_start_tagged =
-      ::partition_alloc::internal::RemaskPtr(slot_start);
+  void* slot_start_tagged = SlotStartAddr2Ptr(slot_start);
   auto* slot_span = SlotSpan::FromSlotStart(slot_start);
   for (auto* entry = slot_span->get_freelist_head(); entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {
-    if (reinterpret_cast<uintptr_t>(entry) == slot_start_tagged)
+    if (entry == slot_start_tagged)
       return true;
   }
   return false;
@@ -703,11 +704,10 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   // This not only points past the object, but past all extras around it.
   // However, there should be enough space between this and the end of slot, to
   // store some data.
-  // Since we stripped the MTE-tag to get |slot_start|, we need to retag it.
-  uintptr_t source_end = ::partition_alloc::internal::RemaskPtr(
-      slot_start + slot_span->GetRawSize());
+  uintptr_t source_end = slot_start + slot_span->GetRawSize();
   // Write the pointer.
-  *reinterpret_cast<ValueList**>(source_end) = value;
+  // Since we stripped the MTE-tag to get |slot_start|, we need to retag it.
+  *static_cast<ValueList**>(TagAddr(source_end)) = value;
 
   TestDanglingReferenceNotVisited(*this, value, root());
 }
@@ -830,10 +830,9 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
     // quarantine, assert that the obj2 is the same as obj1 and the tags are
     // different.
     // MTE-retag |obj1|, as the tag changed when freeing it.
-    if (!HasOverflowTag(::partition_alloc::internal::RemaskPtr(obj1))) {
+    if (!HasOverflowTag(TagPtr(obj1))) {
       // Assert that the pointer is the same.
-      ASSERT_EQ(::partition_alloc::internal::UnmaskPtr(obj1),
-                ::partition_alloc::internal::UnmaskPtr(obj2));
+      ASSERT_EQ(UntagPtr(obj1), UntagPtr(obj2));
       // Assert that the tag is different.
       ASSERT_NE(obj1, obj2);
     }
@@ -843,7 +842,7 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
     auto* obj = ListType::Create(root());
     ListType::Destroy(root(), obj);
     // MTE-retag |obj|, as the tag changed when freeing it.
-    obj = ::partition_alloc::internal::RemaskPtr(obj);
+    obj = TagPtr(obj);
     // Check if the tag overflows. If so, the object must be in quarantine.
     if (HasOverflowTag(obj)) {
       EXPECT_TRUE(IsInQuarantine(obj));

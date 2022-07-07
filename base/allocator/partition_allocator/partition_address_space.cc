@@ -17,7 +17,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -137,7 +136,7 @@ void PartitionAddressSpace::Init() {
   if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
-  setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1) & kMemTagUnmask;
+  setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
 #endif
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
   setup_.regular_pool_ = AddressPoolManager::GetInstance().Add(
@@ -164,7 +163,7 @@ void PartitionAddressSpace::Init() {
     HandleGigaCageAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
-  setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1) & kMemTagUnmask;
+  setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
 #endif
   PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
   setup_.brp_pool_ = AddressPoolManager::GetInstance().Add(

@@ -883,9 +883,8 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   }
 
   if (PA_LIKELY(size <= kMaxMemoryTaggingSize)) {
-    // Ensure the memory tag of the return_slot is unguessable.
-    return_slot =
-        ::partition_alloc::internal::TagMemoryRangeRandomly(return_slot, size);
+    // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
+    TagMemoryRangeRandomly(return_slot, size);
   }
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   PartitionTagSetValue(return_slot, size, root->GetNewPartitionTag());
@@ -896,14 +895,20 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   uintptr_t next_slot_end = next_slot + size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
+    void* next_slot_ptr;
     if (PA_LIKELY(size <= kMaxMemoryTaggingSize)) {
-      next_slot =
-          ::partition_alloc::internal::TagMemoryRangeRandomly(next_slot, size);
+      // Ensure the MTE-tag of the memory pointed by other provisioned slot is
+      // unguessable. They will be returned to the app as is, and the MTE-tag
+      // will only change upon calling Free().
+      next_slot_ptr = TagMemoryRangeRandomly(next_slot, size);
+    } else {
+      // No MTE-tagging for larger slots, just cast.
+      next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     PartitionTagSetValue(next_slot, size, root->GetNewPartitionTag());
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot);
+    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);

@@ -28,7 +28,7 @@ class TestScanLoop final : public ScanLoop<TestScanLoop> {
 
  private:
   static constexpr uintptr_t kCageMask = 0xffffff0000000000;
-  static constexpr uintptr_t kBasePtr = 0x1234560000000000;
+  static constexpr uintptr_t kBasePtr = 0x0000560000000000;
 
   static uintptr_t CageBase() { return kBasePtr; }
   static uintptr_t CageMask() { return kCageMask; }
@@ -38,8 +38,8 @@ class TestScanLoop final : public ScanLoop<TestScanLoop> {
   size_t visited_ = 0;
 };
 
-static constexpr uintptr_t kValidPtr = 0x123456789abcdef0;
-static constexpr uintptr_t kInvalidPtr = 0xaaaaaaaaaaaaaaaa;
+static constexpr uintptr_t kValidPtr = 0x000056789abcdef0;
+static constexpr uintptr_t kInvalidPtr = 0x0000aaaaaaaaaaaa;
 static constexpr uintptr_t kZeroPtr = 0x0;
 
 // Tests all possible compbinations of incoming args.
