@@ -99,6 +99,107 @@ class AutoEnrollmentClientImpl::DeviceIdentifierProviderFRE {
   std::string server_backed_state_key_hash_;
 };
 
+enum class AutoEnrollmentClientImpl::ServerStateRetrievalResult {
+  // Indicates that request has been successful and server state is available.
+  kSuccess = 0,
+  // Indicates a connection error during request.
+  kConnectionError = 1,
+  // Indicates an invalid response from server.
+  kServerError = 2,
+};
+
+// Responsible fro resolving server state status for both force re-enrollment
+// and initial enrollment.
+class AutoEnrollmentClientImpl::ServerStateRetriever {
+ public:
+  using CompletionCallback =
+      base::OnceCallback<void(ServerStateRetrievalResult)>;
+
+  ServerStateRetriever(
+      DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* local_state,
+      const std::string& device_id,
+      const std::string& uma_suffix,
+      std::unique_ptr<AutoEnrollmentStateMessageProcessor>
+          state_download_message_processor)
+      : device_management_service_(device_management_service),
+        url_loader_factory_(url_loader_factory),
+        local_state_(local_state),
+        device_id_(device_id),
+        uma_suffix_(uma_suffix),
+        state_download_message_processor_(
+            std::move(state_download_message_processor)) {}
+
+  ServerStateRetriever(const ServerStateRetriever&) = delete;
+  ServerStateRetriever& operator=(const ServerStateRetriever&) = delete;
+
+  void Start(CompletionCallback callback) { StartImpl(std::move(callback)); }
+
+  absl::optional<AutoEnrollmentState> GetAutoEnrollmentStateIfObtained() const {
+    if (!device_state_available_) {
+      return absl::nullopt;
+    }
+
+    const DeviceStateMode device_state_mode = GetDeviceStateMode();
+    switch (device_state_mode) {
+      case RESTORE_MODE_NONE:
+        return AUTO_ENROLLMENT_STATE_NO_ENROLLMENT;
+      case RESTORE_MODE_DISABLED:
+        return AUTO_ENROLLMENT_STATE_DISABLED;
+      case RESTORE_MODE_REENROLLMENT_REQUESTED:
+      case RESTORE_MODE_REENROLLMENT_ENFORCED:
+      case INITIAL_MODE_ENROLLMENT_ENFORCED:
+        return AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT;
+      case RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:
+      case INITIAL_MODE_ENROLLMENT_ZERO_TOUCH:
+        return AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH;
+    }
+  }
+
+  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
+  void Reset() {
+    request_job_.reset();
+    completion_callback_.Reset();
+    device_state_available_ = false;
+  }
+
+  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
+  bool IsInProgress() const { return request_job_ != nullptr; }
+
+ private:
+  // TODO(crbug.com/1294843): Move the definition here.
+  void StartImpl(CompletionCallback callback);
+
+  // TODO(crbug.com/1294843): Move the definition here.
+  void HandleRequestCompletion(DeviceManagementService::Job* job,
+                               DeviceManagementStatus status,
+                               int net_error,
+                               const em::DeviceManagementResponse& response);
+
+  void RunCallback(ServerStateRetrievalResult result) {
+    DCHECK(completion_callback_);
+    std::move(completion_callback_).Run(result);
+  }
+
+  DeviceManagementService* device_management_service_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  PrefService* local_state_;
+  const std::string device_id_;
+  const std::string uma_suffix_;
+
+  // Whether the download of server-kept device state completed successfully.
+  bool device_state_available_ = false;
+
+  std::unique_ptr<DeviceManagementService::Job> request_job_;
+
+  // Fills and parses state retrieval request / response.
+  std::unique_ptr<AutoEnrollmentStateMessageProcessor>
+      state_download_message_processor_;
+
+  CompletionCallback completion_callback_;
+};
+
 AutoEnrollmentClientImpl::FactoryImpl::FactoryImpl() {}
 AutoEnrollmentClientImpl::FactoryImpl::~FactoryImpl() {}
 
@@ -111,14 +212,18 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
     const std::string& server_backed_state_key,
     int power_initial,
     int power_limit) {
+  const std::string device_id = base::GenerateGUID();
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
       url_loader_factory,
       std::make_unique<DeviceIdentifierProviderFRE>(server_backed_state_key),
-      AutoEnrollmentStateMessageProcessor::CreateForFRE(
-          server_backed_state_key),
-      power_initial, power_limit, kUMASuffixFRE,
-      /*private_set_membership_helper=*/nullptr));
+      std::make_unique<ServerStateRetriever>(
+          device_management_service, url_loader_factory, local_state, device_id,
+          kUMASuffixFRE,
+          AutoEnrollmentStateMessageProcessor::CreateForFRE(
+              server_backed_state_key)),
+      device_id, power_initial, power_limit, kUMASuffixFRE,
+      /*psm_rlwe_dmserver_client=*/nullptr));
 }
 
 std::unique_ptr<AutoEnrollmentClient>
@@ -132,13 +237,17 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     int power_initial,
     int power_limit,
     std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client) {
+  const std::string device_id = base::GenerateGUID();
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
       url_loader_factory,
       /*device_identifier_provider_fre=*/nullptr,
-      AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
-          device_serial_number, device_brand_code),
-      power_initial, power_limit, kUMASuffixInitialEnrollment,
+      std::make_unique<ServerStateRetriever>(
+          device_management_service, url_loader_factory, local_state, device_id,
+          kUMASuffixInitialEnrollment,
+          AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
+              device_serial_number, device_brand_code)),
+      device_id, power_initial, power_limit, kUMASuffixInitialEnrollment,
       std::move(psm_rlwe_dmserver_client)));
 }
 
@@ -167,7 +276,7 @@ void AutoEnrollmentClientImpl::Start() {
   state_ = AUTO_ENROLLMENT_STATE_PENDING;
   modulus_updates_received_ = 0;
   has_server_state_ = false;
-  device_state_available_ = false;
+  server_state_retriever_->Reset();
 
   NextStep();
 }
@@ -189,8 +298,8 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre,
-    std::unique_ptr<AutoEnrollmentStateMessageProcessor>
-        state_download_message_processor,
+    std::unique_ptr<ServerStateRetriever> server_state_retriever,
+    const std::string& device_id,
     int power_initial,
     int power_limit,
     std::string uma_suffix,
@@ -198,8 +307,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
     : progress_callback_(callback),
       state_(AUTO_ENROLLMENT_STATE_IDLE),
       has_server_state_(false),
-      device_state_available_(false),
-      device_id_(base::GenerateGUID()),
+      device_id_(device_id),
       current_power_(power_initial),
       power_limit_(power_limit),
       modulus_updates_received_(0),
@@ -208,8 +316,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       url_loader_factory_(url_loader_factory),
       device_identifier_provider_fre_(
           std::move(device_identifier_provider_fre)),
-      state_download_message_processor_(
-          std::move(state_download_message_processor)),
+      server_state_retriever_(std::move(server_state_retriever)),
       psm_rlwe_dmserver_client_(std::move(psm_rlwe_dmserver_client)),
       uma_suffix_(uma_suffix) {
   DCHECK_LE(current_power_, power_limit_);
@@ -259,12 +366,12 @@ bool AutoEnrollmentClientImpl::IsClientForInitialEnrollment() const {
 
 bool AutoEnrollmentClientImpl::ShouldSendDeviceStateRequest() const {
   return has_server_state_.has_value() && has_server_state_.value() &&
-         !device_state_available_;
+         !server_state_retriever_->GetAutoEnrollmentStateIfObtained();
 }
 
 bool AutoEnrollmentClientImpl::RetryStep() {
   // If there is a pending request job, let it finish.
-  if (request_job_)
+  if (request_job_ || server_state_retriever_->IsInProgress())
     return true;
 
   if (IsClientForInitialEnrollment()) {
@@ -379,23 +486,13 @@ void AutoEnrollmentClientImpl::NextStep() {
     return;
 
   // Protocol finished successfully, report result.
-  const DeviceStateMode device_state_mode = GetDeviceStateMode();
-  switch (device_state_mode) {
-    case RESTORE_MODE_NONE:
-      ReportProgress(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-      break;
-    case RESTORE_MODE_DISABLED:
-      ReportProgress(AUTO_ENROLLMENT_STATE_DISABLED);
-      break;
-    case RESTORE_MODE_REENROLLMENT_REQUESTED:
-    case RESTORE_MODE_REENROLLMENT_ENFORCED:
-    case INITIAL_MODE_ENROLLMENT_ENFORCED:
-      ReportProgress(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
-      break;
-    case RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:
-    case INITIAL_MODE_ENROLLMENT_ZERO_TOUCH:
-      ReportProgress(AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH);
-      break;
+  const auto auto_enrollment_state_result =
+      server_state_retriever_->GetAutoEnrollmentStateIfObtained();
+  if (auto_enrollment_state_result) {
+    ReportProgress(auto_enrollment_state_result.value());
+  } else {
+    DCHECK(!ShouldSendDeviceStateRequest());
+    ReportProgress(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
   }
 }
 
@@ -459,16 +556,28 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
 void AutoEnrollmentClientImpl::SendDeviceStateRequest() {
   ReportProgress(AUTO_ENROLLMENT_STATE_PENDING);
 
+  server_state_retriever_->Start(
+      base::BindOnce(&AutoEnrollmentClientImpl::OnStateRetrievalCompleted,
+                     base::Unretained(this)));
+}
+
+void AutoEnrollmentClientImpl::ServerStateRetriever::StartImpl(
+    CompletionCallback callback) {
+  DCHECK(!request_job_);
+  DCHECK(callback);
+  DCHECK(!completion_callback_);
+  DCHECK(!device_state_available_);
+
+  completion_callback_ = std::move(callback);
+
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           device_management_service_,
           state_download_message_processor_->GetJobType(), device_id_,
           /*critical=*/false, DMAuth::NoAuth(),
           /*oauth_token=*/absl::nullopt, url_loader_factory_,
-          base::BindRepeating(
-              &AutoEnrollmentClientImpl::HandleRequestCompletion,
-              base::Unretained(this),
-              &AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion));
+          base::BindRepeating(&ServerStateRetriever::HandleRequestCompletion,
+                              base::Unretained(this)));
 
   state_download_message_processor_->FillRequest(config->request());
   request_job_ = device_management_service_->CreateJob(std::move(config));
@@ -571,16 +680,51 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
   return progress;
 }
 
-bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
+void AutoEnrollmentClientImpl::OnStateRetrievalCompleted(
+    ServerStateRetrievalResult result) {
+  switch (result) {
+    case ServerStateRetrievalResult::kSuccess:
+      NextStep();
+      break;
+    case ServerStateRetrievalResult::kConnectionError:
+      ReportProgress(AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+      break;
+    case ServerStateRetrievalResult::kServerError:
+      ReportProgress(AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+      break;
+  }
+}
+
+void AutoEnrollmentClientImpl::ServerStateRetriever::HandleRequestCompletion(
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
+  DCHECK(request_job_);
+  DCHECK(completion_callback_);
+
+  request_job_.reset();
+
+  base::UmaHistogramSparse(kUMAHashDanceRequestStatus + uma_suffix_, status);
+  // TODO(crbug.com/1312919): Check `status` for specific errors.
+  if (status != DM_STATUS_SUCCESS) {
+    LOG(ERROR) << "Auto enrollment error: " << status;
+    if (status == DM_STATUS_REQUEST_FAILED)
+      base::UmaHistogramSparse(kUMAHashDanceNetworkErrorCode + uma_suffix_,
+                               -net_error);
+    RunCallback(status == DM_STATUS_REQUEST_FAILED
+                    ? ServerStateRetrievalResult::kConnectionError
+                    : ServerStateRetrievalResult::kServerError);
+    return;
+  }
+
   absl::optional<AutoEnrollmentStateMessageProcessor::ParsedResponse>
       parsed_response_opt =
           state_download_message_processor_->ParseResponse(response);
-  if (!parsed_response_opt)
-    return false;
+  if (!parsed_response_opt) {
+    RunCallback(ServerStateRetrievalResult::kServerError);
+    return;
+  }
 
   AutoEnrollmentStateMessageProcessor::ParsedResponse parsed_response =
       std::move(parsed_response_opt.value());
@@ -612,8 +756,9 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
                    parsed_response.license_type.value_or(std::string())));
   }
   local_state_->CommitPendingWrite();
+
   device_state_available_ = true;
-  return true;
+  RunCallback(ServerStateRetrievalResult::kSuccess);
 }
 
 bool AutoEnrollmentClientImpl::IsIdHashInProtobuf(

@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -28,8 +27,6 @@ class DeviceManagementResponse;
 }
 
 namespace policy {
-
-class AutoEnrollmentStateMessageProcessor;
 
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
@@ -95,6 +92,11 @@ class AutoEnrollmentClientImpl
       int,
       const enterprise_management::DeviceManagementResponse&);
 
+  // Responsible for resolving server state status for both Forced Re-Enrollment
+  // (FRE) and Initial Enrollment.
+  class ServerStateRetriever;
+  enum class ServerStateRetrievalResult;
+
   AutoEnrollmentClientImpl(
       const ProgressCallback& progress_callback,
       DeviceManagementService* device_management_service,
@@ -102,8 +104,8 @@ class AutoEnrollmentClientImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<DeviceIdentifierProviderFRE>
           device_identifier_provider_fre,
-      std::unique_ptr<AutoEnrollmentStateMessageProcessor>
-          state_download_message_processor,
+      std::unique_ptr<ServerStateRetriever> server_state_retriever,
+      const std::string& device_id,
       int power_initial,
       int power_limit,
       std::string uma_suffix,
@@ -170,12 +172,9 @@ class AutoEnrollmentClientImpl
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
 
-  // Parses the server response to a device state request.
-  bool OnDeviceStateRequestCompletion(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  // Handles result of server state retrieval request. Proceeds to the next
+  // step on success. Reports failure otherwise.
+  void OnStateRetrievalCompleted(ServerStateRetrievalResult result);
 
   // Returns true if the identifier hash provided by
   // |device_identifier_provider_fre_| is contained in |hashes|.
@@ -204,9 +203,6 @@ class AutoEnrollmentClientImpl
 
   // Holds the cached PSM execution result.
   absl::optional<PsmRlweDmserverClient::ResultHolder> psm_result_holder_;
-
-  // Whether the download of server-kept device state completed successfully.
-  bool device_state_available_;
 
   // Randomly generated device id for the auto-enrollment requests.
   std::string device_id_;
@@ -238,9 +234,8 @@ class AutoEnrollmentClientImpl
   // Specifies the device identifier for FRE and its corresponding hash.
   std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre_;
 
-  // Fills and parses state retrieval request / response.
-  std::unique_ptr<AutoEnrollmentStateMessageProcessor>
-      state_download_message_processor_;
+  // Sends server state retrieval request and parses response. Reports results.
+  std::unique_ptr<ServerStateRetriever> server_state_retriever_;
 
   // Obtains the device state using PSM protocol. Handles all communications
   // related to PSM protocol with DMServer.
