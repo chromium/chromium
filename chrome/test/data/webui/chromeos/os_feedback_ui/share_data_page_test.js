@@ -132,7 +132,8 @@ export function shareDataPageTestSuite() {
     assertTrue(!!getElement('#userEmailDropDown'));
 
     // URL elements.
-    assertEquals('share url:', getElementContent('#pageUrlLabel'));
+    assertEquals('Share URL:', getElementContent('#pageUrlLabel'));
+    assertTrue(page.i18nExists('sharePageUrlLabel'));
     assertTrue(!!getElement('#pageUrlCheckbox'));
     assertTrue(!!getElement('#pageUrlText'));
 
@@ -188,7 +189,7 @@ export function shareDataPageTestSuite() {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
 
-    assertEquals('chrome://tab/', getElement('#pageUrlText').value);
+    assertEquals('chrome://tab/', getElementContent('#pageUrlText'));
   });
 
   /**

@@ -3437,6 +3437,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_ANONYMOUS_EMAIL_OPTION" desc="Option in the drop down menu to let the user send the feedback report without attaching their email.">
         Don't include email address
       </message>
+      <message name="IDS_FEEDBACK_TOOL_SHARE_PAGE_URL_LABEL" desc="Label showing the share page url.">
+        Share URL:
+      </message>
       <message name="IDS_FEEDBACK_TOOL_SHARE_DIAGNOSTIC_DATA_LABEL" desc="Label showing the share diagnostic data.">
         Share diagnostic data
       </message>

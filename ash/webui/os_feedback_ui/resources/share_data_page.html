@@ -1,5 +1,7 @@
 <style include="os-feedback-shared">
-  a[href] {
+  #legalHelpPageUrl,
+  #privacyPolicyUrl,
+  #termsOfServiceUrl {
     text-decoration: none;
   }
 
@@ -92,6 +94,16 @@
     margin-bottom: 24px;
   }
 
+  #pageUrl {
+    display: flex;
+    white-space: nowrap;
+  }
+
+  #tooltipContent {
+    white-space: normal;
+    word-wrap: break-word
+  }
+
   .disabled-input-text {
     color: var(--cros-text-color-disabled);
   }
@@ -144,9 +156,13 @@
       <div id="pageUrl" class="checkbox-field-container">
         <input id="pageUrlCheckbox" type="checkbox" aria-labelledby="pageUrlLabel"
             checked>
-        <label id="pageUrlLabel">share url:</label>
-        <input id="pageUrlText" aria-labelledby="pageUrlLabel" type="text"
-            value$="[[feedbackContext.pageUrl.url]]" dir="ltr">
+        <label id="pageUrlLabel">[[i18n('sharePageUrlLabel')]]&nbsp;</label>
+        <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
+          [[feedbackContext.pageUrl.url]]
+        </a>
+        <paper-tooltip for="pageUrlText" fitToVisibleBounds>
+          <div id="tooltipContent">[[feedbackContext.pageUrl.url]]</div>
+        </paper-tooltip>
       </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">

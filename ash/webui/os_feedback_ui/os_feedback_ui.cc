@@ -61,6 +61,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"userEmailLabel", IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL},
       {"shareDiagnosticDataLabel",
        IDS_FEEDBACK_TOOL_SHARE_DIAGNOSTIC_DATA_LABEL},
+      {"sharePageUrlLabel", IDS_FEEDBACK_TOOL_SHARE_PAGE_URL_LABEL},
       {"confirmationTitleOnline", IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT},
       {"confirmationTitleOffline", IDS_FEEDBACK_TOOL_PAGE_TITLE_SEND_OFFLINE},
       {"exploreAppDescription",
