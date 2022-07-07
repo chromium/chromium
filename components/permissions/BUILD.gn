@@ -80,6 +80,8 @@ source_set("permissions") {
     "permission_request_id.h",
     "permission_request_manager.cc",
     "permission_request_manager.h",
+    "permission_request_queue.cc",
+    "permission_request_queue.h",
     "permission_result.cc",
     "permission_result.h",
     "permission_ui_selector.cc",
@@ -260,6 +262,7 @@ source_set("unit_tests") {
     "permission_decision_auto_blocker_unittest.cc",
     "permission_manager_unittest.cc",
     "permission_request_manager_unittest.cc",
+    "permission_request_queue_unittest.cc",
     "permission_uma_util_unittest.cc",
   ]
   if (!is_android) {

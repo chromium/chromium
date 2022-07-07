@@ -6,16 +6,14 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_MANAGER_H_
 
 #include <algorithm>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_request_queue.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -221,14 +219,14 @@ class PermissionRequestManager
   CurrentRequestFate GetCurrentRequestFateInFaceOfNewRequest(
       PermissionRequest* request);
 
-  // Adds `request` into `queued_requests_`, and request's `source_frame` into
-  // `request_sources_map_`.
+  // Adds `request` into `pending_permission_requests_`, and request's
+  // `source_frame` into `request_sources_map_`.
   void QueueRequest(content::RenderFrameHost* source_frame,
                     PermissionRequest* request);
 
   // Because the requests are shown in a different order for Normal and Quiet
-  // Chip, pending requests are returned back to queued_requests_ to process
-  // them after the new requests.
+  // Chip, pending requests are returned back to pending_permission_requests_ to
+  // process them after the new requests.
   void PreemptAndRequeueCurrentRequest();
 
   // Posts a task which will allow the bubble to become visible.
@@ -264,10 +262,10 @@ class PermissionRequestManager
   // main frame.
   void CleanUpRequests();
 
-  // Searches |requests_|, |queued_requests_| and |queued_frame_requests_| - but
-  // *not* |duplicate_requests_| - for a request matching |request|, and returns
-  // the matching request, or |nullptr| if no match. Note that the matching
-  // request may or may not be the same object as |request|.
+  // Searches |requests_| and |pending_permission_requests_| - but *not*
+  // |duplicate_requests_| - for a request matching |request|, and returns the
+  // matching request, or |nullptr| if no match. Note that the matching request
+  // may or may not be the same object as |request|.
   PermissionRequest* GetExistingRequest(PermissionRequest* request);
 
   // Calls PermissionGranted on a request and all its duplicates.
@@ -324,28 +322,16 @@ class PermissionRequestManager
     bool IsSourceFrameInactiveAndDisallowActivation() const;
   };
 
-  PermissionRequest* PeekNextQueuedRequest();
-
-  PermissionRequest* PopNextQueuedRequest();
-
-  // Encapsulate enqueuing `request` into `queued_requests_`. Based on the chip
-  // / quiet chip experiments, the `request` is added into the back or front of
-  // the queue.
-  void PushQueuedRequest(PermissionRequest* request);
-
-  // TODO(crbug.com/1221150): Create a separate entity to handle Enqueue /
-  // Dequeue with all edge cases. Expose to `PermissionRequestManager` only a
-  // clear API like `Peek()` and `Pop()`, etc.
-  base::circular_deque<PermissionRequest*> queued_requests_;
+  PermissionRequestQueue pending_permission_requests_;
 
   // Maps from the first request of a kind to subsequent requests that were
   // duped against it.
   std::unordered_multimap<PermissionRequest*, PermissionRequest*>
       duplicate_requests_;
 
-  // Maps each PermissionRequest currently in |requests_| or |queued_requests_|
-  // to which RenderFrameHost it originated from. Note that no date is stored
-  // for |duplicate_requests_|.
+  // Maps each PermissionRequest currently in |requests_| or
+  // |pending_permission_requests_| to which RenderFrameHost it originated from.
+  // Note that no date is stored for |duplicate_requests_|.
   std::map<PermissionRequest*, PermissionRequestSource> request_sources_map_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
