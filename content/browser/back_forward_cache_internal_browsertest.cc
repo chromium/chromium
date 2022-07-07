@@ -289,42 +289,40 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // committing.
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL(
-      "b.com", "/back_forward_cache/page_with_dedicated_worker.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
 
   // 1. Navigate to a cacheable page (A).
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
 
   // 2. Navigate from a cacheable page to an uncacheable page (A->B).
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_b);
-  RenderFrameHostImpl* rfh_b = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
   // Page A should be in the cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_FALSE(rfh_a.IsDestroyed());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3. Navigate from an uncacheable to a cached page page (B->A).
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
 
-  // Page B should be deleted (not cached).
-  delete_observer_rfh_b.WaitUntilDeleted();
+  // Evict page B and wait until it is deleted.
+  rfh_b->DisableBackForwardCache(RenderFrameHostDisabledForTestingReason());
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
 
   ExpectRestored(FROM_HERE);
 
   // 4. Navigate from a cacheable page to a cacheable page (A->C).
-  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_c);
   RenderFrameHostImpl* rfh_c = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_c(rfh_c);
 
   // Page A should be in the cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_FALSE(rfh_a.IsDestroyed());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 5. Navigate from a cacheable page to a cached page (C->A).
@@ -380,8 +378,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(i,j)"));
-  GURL url_b(embedded_test_server()->GetURL(
-      "b.com", "/back_forward_cache/page_with_dedicated_worker.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_c(embedded_test_server()->GetURL(
       "c.com", "/cross_site_iframe_factory.html?c(k,l,m)"));
 
@@ -389,26 +386,24 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   BackForwardCacheImpl& cache = controller.GetBackForwardCache();
 
   // 1. Navigate to a cacheable page (A).
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_EQ(2u, render_frame_host_manager()
                     ->current_frame_host()
                     ->browsing_context_state()
                     ->GetProxyCount());
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
   std::string frame_tree_a = DepictFrameTree(rfh_a->frame_tree_node());
 
   // 2. Navigate from a cacheable page to an uncacheable page (A->B).
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_EQ(0u, render_frame_host_manager()
                     ->current_frame_host()
                     ->browsing_context_state()
                     ->GetProxyCount());
-  RenderFrameHostImpl* rfh_b = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
   // Page A should be in the cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_FALSE(rfh_a.IsDestroyed());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // Verify proxies are stored as well.
@@ -425,8 +420,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     ->browsing_context_state()
                     ->GetProxyCount());
 
-  // Page B should be deleted (not cached).
-  delete_observer_rfh_b.WaitUntilDeleted();
+  // Evict page B and wait until it is deleted.
+  rfh_b->DisableBackForwardCache(RenderFrameHostDisabledForTestingReason());
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
   EXPECT_EQ(2u, render_frame_host_manager()
                     ->current_frame_host()
                     ->browsing_context_state()
@@ -437,16 +433,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
             DepictFrameTree(current_frame_host()->frame_tree_node()));
 
   // 4. Navigate from a cacheable page to a cacheable page (A->C).
-  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
   EXPECT_EQ(3u, render_frame_host_manager()
                     ->current_frame_host()
                     ->browsing_context_state()
                     ->GetProxyCount());
-  RenderFrameHostImpl* rfh_c = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_c(rfh_c);
+  RenderFrameHostImplWrapper rfh_c(current_frame_host());
 
   // Page A should be in the cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_FALSE(rfh_a.IsDestroyed());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // Verify proxies are stored as well.
@@ -465,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
             DepictFrameTree(current_frame_host()->frame_tree_node()));
 
   // Page C should be in the cache.
-  EXPECT_FALSE(delete_observer_rfh_c.deleted());
+  EXPECT_FALSE(rfh_c.IsDestroyed());
   EXPECT_TRUE(rfh_c->IsInBackForwardCache());
 
   // Verify proxies are stored as well.
