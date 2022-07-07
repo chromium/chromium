@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "sql/statement.h"
 #include "sql/transaction.h"
 
 namespace content {
@@ -52,10 +51,7 @@ bool MigrateToVersion34(sql::Database* db, sql::MetaTable* meta_table) {
       "aggregation_id,source_id,trigger_time,debug_key,external_report_id,"
       "report_time,failed_send_attempts,report_time "
       "FROM aggregatable_report_metadata";
-  sql::Statement populate_new_aggregatable_report_metadata_statement(
-      db->GetCachedStatement(SQL_FROM_HERE,
-                             kPopulateNewAggregatableReportMetadataSql));
-  if (!populate_new_aggregatable_report_metadata_statement.Run())
+  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql))
     return false;
 
   static constexpr char kDropOldAggregatableReportMetadataTableSql[] =
