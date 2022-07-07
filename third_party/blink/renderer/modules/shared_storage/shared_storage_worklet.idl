@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 [
-    Exposed=SharedStorage
+  RuntimeEnabled=SharedStorageAPI,
+  Exposed=(Window)
 ] interface SharedStorageWorklet {
     [
       CallWith=ScriptState,
