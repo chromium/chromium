@@ -83,7 +83,6 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
-  web_view_->SetID(kViewIdWebView);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxDialogURL));
 
   auto width =

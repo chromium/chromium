@@ -23,15 +23,6 @@ namespace {
 constexpr int kAverageBrowserWidth = 800;
 constexpr int kAverageBrowserHeight = 700;
 
-void ExpandLearnMoreSection(content::WebContents* web_contents) {
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  EXPECT_TRUE(
-      content::ExecJs(main_frame,
-                      "(async () => { return await "
-                      "document.querySelector('privacy-sandbox-dialog-app')."
-                      "expandLearnMoreSectionForTesting(); })()"));
-}
-
 }  // namespace
 
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
@@ -50,9 +41,6 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     if (name == "Consent") {
       prompt_type = PrivacySandboxService::PromptType::kConsent;
     }
-    if (name == "ConsentExpanded") {
-      prompt_type = PrivacySandboxService::PromptType::kConsent;
-    }
     if (name == "Notice") {
       prompt_type = PrivacySandboxService::PromptType::kNotice;
     }
@@ -66,13 +54,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
     ShowPrivacySandboxPrompt(browser(), prompt_type);
-    auto* dialog = waiter.WaitIfNeededAndGet();
-    if (name == "ConsentExpanded") {
-      auto* web_view = dialog->GetRootView()->GetViewByID(
-          PrivacySandboxDialogView::kViewIdWebView);
-      ExpandLearnMoreSection(
-          static_cast<views::WebView*>(web_view)->GetWebContents());
-    }
+    waiter.WaitIfNeededAndGet();
 
     base::RunLoop().RunUntilIdle();
   }
@@ -87,21 +69,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       InvokeUi_ConsentExpanded) {
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentMoreInfoOpened));
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(

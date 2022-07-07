@@ -131,39 +131,13 @@ export class PrivacySandboxDialogAppElement extends PolymerElement {
         // ...and scroll the content area up to make the section content
         // visible.
         const rect = this.$.expandSection.getBoundingClientRect();
-        // If the section is expanding, scroll the content area so the learn
-        // more section is at the top. If the section is collapsing, scroll
-        // the content area to the top.
-        this.$.contentArea.scrollTo({top: newVal ? rect.top : 0});
+        this.$.contentArea.scrollTo({top: rect.top, behavior: 'smooth'});
       }, duration * 0.7);
     }
   }
 
   private promptActionOccurred(action: PrivacySandboxPromptAction) {
     PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
-  }
-
-  // Methods to be used only for testing, in WebUI or native browser tests.
-  public waitForScrollToEndForTesting() {
-    return new Promise(resolve => {
-      let timer: ReturnType<typeof setTimeout>|null = null;
-      this.$.contentArea.addEventListener('scroll', _ => {
-        if (timer !== null) {
-          clearTimeout(timer);
-        }
-        timer = setTimeout(resolve, 150);
-      });
-    });
-  }
-
-  public async expandLearnMoreSectionForTesting() {
-    this.expanded_ = true;
-    const collapseElement: HTMLElement|null =
-        this.$.expandSection.querySelector('iron-collapse');
-    collapseElement!.style.setProperty(
-        '--iron-collapse-transition-duration', '0ms');
-    this.$.contentArea.style.setProperty('scroll-behavior', 'auto');
-    await this.waitForScrollToEndForTesting();
   }
 }
 
