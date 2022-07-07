@@ -169,7 +169,7 @@ xcode = struct(
     # A newer Xcode 13 version used on beta bots.
     x13betabots = xcode_enum("13f17a"),
     # A newer Xcode 14 version used on beta bots.
-    x14betabots = xcode_enum("14a5229c"),
+    x14betabots = xcode_enum("14a5270f"),
     # in use by ios-webkit-tot
     x13wk = xcode_enum("13a1030dwk"),
 )
