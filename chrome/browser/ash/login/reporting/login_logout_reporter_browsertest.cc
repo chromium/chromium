@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginSuccessful) {
   EXPECT_FALSE(record_data.login_event().has_failure());
 }
 
-IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginFailed) {
+IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, DISABLED_LoginFailed) {
   SetIsReportLoginLogoutPolicyEnabled(true);
 
   SetUpStubAuthenticatorAndAttemptLogin(
