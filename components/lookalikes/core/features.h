@@ -21,7 +21,7 @@ extern const base::Feature kLookalikeDigitalAssetLinks;
 COMPONENT_EXPORT(LOOKALIKES_FEATURES)
 extern const char kLookalikeDigitalAssetLinksTimeoutParameter[];
 
-// This feature enables warnings for ComboSquatting heuristic.
+// This feature enables warnings for Combo Squatting heuristic.
 COMPONENT_EXPORT(LOOKALIKES_FEATURES)
 extern const base::Feature kDetectComboSquattingLookalikes;
 

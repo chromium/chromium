@@ -587,3 +587,72 @@ TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
       reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
       "example3.com", Channel::BETA));
 }
+
+// Test for Combo Squatting check of domains.
+TEST(CombosquattingTest, IsComboSquatting) {
+  const struct TestCase {
+    const char* domain;
+    const char* expected_suggested_domain;
+    bool expected_result;
+  } kTestCases[] = {
+      // Not Combo Squatting (CSQ)
+      {"google.com", "google.com", false},
+      {"youtube.ca", "youtube.ca", false},
+
+      // Not CSQ, contains subdomains.
+      {"login.google.com", "login.google.com", false},
+
+      // Not CSQ, non registrable domains
+      {"google-login.test", "", false},
+
+      // CSQ with "-"
+      {"google-online.com", "google.com", true},
+
+      // CSQ with more than one keyword with "-"
+      {"google-login-online.com", "google.com", true},
+
+      // CSQ with one keyword and one random word with "-"
+      {"one-youtube-online.com", "youtube.com", true},
+
+      // Not CSQ, with a keyword as TLD.
+      // I think TLD should be a valid TLD which we don't have in the keywords
+      // now.
+      {"www.youtube.test", "", false},
+
+      // CSQ with more than one brand with "-"
+      {"google-youtube-account.com", "google.com", true},
+
+      // CSQ without separator
+      {"loginyoutube.com", "youtube.com", true},
+
+      // CSQ but in allowlist
+      // TODO(crbug.com/1341023): We will use one of the allowlists here.
+      //{"googleusercontent.com", false},
+
+      // TODO(crbug.com/1341323): Should define a list of brand names and
+      // keywords for testing in future cls.
+
+      // Not CSQ with a keyword inside brand name
+      // TODO(crbug.com/1341323): Should find one brand name with this
+      // condition.
+
+      // CSQ with a keyword inside brand name and as an added keyword to the
+      // domain
+      // TODO(crbug.com/1341323): Should find a domain with this condition.
+
+      // CSQ with more than one keyword without separator.
+      {"signinyoutubeonline.com", "youtube.com", true},
+
+      // CSQ with one keyword and one random word without "-"
+      {"oneyoutubelogin.com", "youtube.com", true},
+  };
+  for (const TestCase& test_case : kTestCases) {
+    auto navigated =
+        GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
+                           url::kStandardSchemeSeparator + test_case.domain));
+    std::string matched_domain;
+    bool result = IsComboSquatting(navigated, &matched_domain);
+    EXPECT_EQ(std::string(test_case.expected_suggested_domain), matched_domain);
+    EXPECT_EQ(test_case.expected_result, result);
+  }
+}

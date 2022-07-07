@@ -95,6 +95,29 @@ const size_t kMinimumE2LDLengthToShowPunycodeInterstitial = 2;
 const int kDefaultLaunchPercentageOnCanaryDev = 90;
 const int kDefaultLaunchPercentageOnBeta = 50;
 
+// Define brand names and popular keywords for using in Combo Squatting
+// heuristic. These lists are manually curated using Chrome metrics.
+// We will check combinations of brand names and popular keywords.
+// e. g. google-login.com or youtubesecure.com.
+const char* kBrandNamesforCSQ[] = {
+    "adobe",     "airbnb",    "alibaba",     "aliexpress",    "amazon",
+    "baidu",     "bestbuy",   "blogspot",    "costco",        "craigslist",
+    "dropbox",   "ebay",      "etsy",        "expedia",       "facebook",
+    "fedex",     "flickr",    "github",      "glassdoor",     "gofundme",
+    "google",    "homedepot", "hulu",        "icloud",        "ikea",
+    "imdb",      "indeed",    "instagram",   "intuit",        "microsoft",
+    "nbcnews",   "netflix",   "norton",      "nytimes",       "office365",
+    "paypal",    "pinterest", "playstation", "quora",         "reddit",
+    "reuters",   "samsung",   "spotify",     "stackexchange", "stackoverflow",
+    "trello",    "twitch",    "twitter",     "udemy",         "usps",
+    "wikipedia", "wordpress", "xbox",        "xfinity",       "yahoo",
+    "yelp",      "youtube",   "zillow"};
+
+const char* kPopularKeywordsforCSQ[] = {
+    // Security
+    "account", "activate", "active",   "admin", "login",
+    "online",  "password", "security", "signin"};
+
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
   DCHECK(!skeletons1.empty());
@@ -796,6 +819,13 @@ bool GetMatchingDomain(
     return true;
   }
 
+  // If none of the previous heuristics work, check it for Combo Squatting.
+  if (IsComboSquatting(navigated_domain, matched_domain)) {
+    *match_type = LookalikeUrlMatchType::kComboSquatting;
+    DCHECK(!matched_domain->empty());
+    return true;
+  }
+
   DCHECK(embedding_type == TargetEmbeddingType::kNone);
   return false;
 }
@@ -832,6 +862,9 @@ void RecordUMAFromMatchType(LookalikeUrlMatchType match_type) {
       break;
     case LookalikeUrlMatchType::kCharacterSwapTop500:
       RecordEvent(NavigationSuggestionEvent::kMatchCharacterSwapTop500);
+      break;
+    case LookalikeUrlMatchType::kComboSquatting:
+      RecordEvent(NavigationSuggestionEvent::kComboSquatting);
       break;
     case LookalikeUrlMatchType::kNone:
       break;
@@ -1156,5 +1189,31 @@ bool IsHeuristicEnabledForHostname(
       }
     }
   }
+  return false;
+}
+
+bool IsComboSquatting(const DomainInfo& navigated_domain,
+                      std::string* matched_domain) {
+  // TODO(crbug.com/1341023): We should check the domain in allowlist once we
+  // start getting metrics in future iterations.
+
+  // Check if the domain has any brand name and any popular keyword.
+  for (auto* const brand : kBrandNamesforCSQ) {
+    if (navigated_domain.domain_and_registry.find(brand) != std::string::npos &&
+        navigated_domain.domain_and_registry.size() != strlen(brand)) {
+      for (auto* const keyword : kPopularKeywordsforCSQ) {
+        if (navigated_domain.domain_and_registry.find(keyword) !=
+                std::string::npos &&
+            std::string(brand).find(keyword) == std::string::npos &&
+            std::string(keyword).find(brand) == std::string::npos) {
+          // TODO(crbug.com/1341320): In future cls we will compute a better
+          // suggestion for each domain.
+          *matched_domain = std::string(brand) + ".com";
+          return true;
+        }
+      }
+    }
+  }
+  *matched_domain = navigated_domain.hostname;
   return false;
 }
