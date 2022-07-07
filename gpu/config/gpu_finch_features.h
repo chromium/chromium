@@ -32,6 +32,8 @@ GPU_EXPORT extern const base::Feature kDefaultEnableGpuRasterization;
 
 GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
 
+GPU_EXPORT extern const base::Feature kEnableMSAAOnNewIntelGPUs;
+
 GPU_EXPORT extern const base::Feature kDefaultEnableANGLEValidation;
 
 GPU_EXPORT extern const base::Feature kCanvasContextLostInBackground;

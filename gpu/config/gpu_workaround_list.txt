@@ -101,6 +101,7 @@ max_msaa_sample_count_2
 max_msaa_sample_count_4
 max_texture_size_limit_4096
 msaa_is_slow
+msaa_is_slow_2
 multisample_renderbuffer_resize_emulation
 needs_offscreen_buffer_workaround
 no_downscaled_overlay_promotion

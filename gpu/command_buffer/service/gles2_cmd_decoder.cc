@@ -4268,7 +4268,10 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   bool is_offscreen = !!offscreen_target_frame_buffer_.get();
   caps.surface_origin =
       !is_offscreen ? surface_->GetOrigin() : gfx::SurfaceOrigin::kBottomLeft;
-  caps.msaa_is_slow = workarounds().msaa_is_slow;
+  caps.msaa_is_slow =
+      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs)
+          ? workarounds().msaa_is_slow_2
+          : workarounds().msaa_is_slow;
   caps.avoid_stencil_buffers = workarounds().avoid_stencil_buffers;
   caps.multisample_compatibility =
       feature_info_->feature_flags().ext_multisample_compatibility;

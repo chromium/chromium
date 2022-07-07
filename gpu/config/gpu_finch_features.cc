@@ -146,6 +146,10 @@ const base::Feature kDefaultEnableGpuRasterization{
 const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the use of MSAA in skia on Ice Lake and later intel architectures.
+const base::Feature kEnableMSAAOnNewIntelGPUs{
+    "EnableMSAAOnNewIntelGPUs", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the use of ANGLE validation for non-WebGL contexts.
 const base::Feature kDefaultEnableANGLEValidation{
     "DefaultEnableANGLEValidation", base::FEATURE_DISABLED_BY_DEFAULT};

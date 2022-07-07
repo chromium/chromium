@@ -11,6 +11,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/skia_limits.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -90,6 +91,9 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
   // in a more granular way.  For OOPR-Canvas we want 8, but for other purposes,
   // a texture atlas with sample count of 4 would be sufficient
   options.fInternalMultisampleCount = 8;
+  options.fAllowMSAAOnNewIntel =
+      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs);
+
   if (type == GrContextType::kMetal)
     options.fRuntimeProgramCacheSize = 1024;
 

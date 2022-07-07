@@ -1683,7 +1683,10 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.surfaceless = !offscreen_ && surface_->IsSurfaceless();
   caps.surface_origin =
       !offscreen_ ? surface_->GetOrigin() : gfx::SurfaceOrigin::kBottomLeft;
-  caps.msaa_is_slow = feature_info_->workarounds().msaa_is_slow;
+  caps.msaa_is_slow =
+      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs)
+          ? feature_info_->workarounds().msaa_is_slow_2
+          : feature_info_->workarounds().msaa_is_slow;
   caps.avoid_stencil_buffers =
       feature_info_->workarounds().avoid_stencil_buffers;
   caps.multisample_compatibility =

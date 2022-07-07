@@ -4066,6 +4066,43 @@
       "features": [
         "disable_accelerated_vp9_decode"
       ]
-    }
+    },
+    {
+      "id": 398,
+      "description": "On pre-Ice Lake Intel GPUs MSAA performance is not acceptable for GPU rasterization",
+      "cr_bugs": [527565, 1298585, 1341830],
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "multi_gpu_category": "active",
+      "exceptions": [
+        {
+          "os": {
+            "type": "fuchsia"
+          }
+        }
+      ],
+      "features": [
+        "msaa_is_slow_2"
+      ]
+    },
+    {
+      "id": 399,
+      "description": "On pre-Ice Lake Intel GPUs MSAA performance is not acceptable for GPU rasterization. Duplicate of 398 for Android",
+      "cr_bugs": [759471],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Intel.*",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "features": [
+        "msaa_is_slow_2"
+      ]
+    }    
   ]
 }
