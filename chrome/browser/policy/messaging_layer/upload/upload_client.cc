@@ -42,7 +42,7 @@ void UploadClient::Create(
 Status UploadClient::EnqueueUpload(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
-    ScopedReservation scoped_reservation,
+    absl::optional<ScopedReservation> scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   if (records.empty() && !need_encryption_key) {

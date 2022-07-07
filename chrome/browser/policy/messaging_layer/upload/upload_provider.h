@@ -54,7 +54,7 @@ class EncryptedReportingUploadProvider {
   void RequestUploadEncryptedRecords(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
-      ScopedReservation scoped_reservation,
+      absl::optional<ScopedReservation> scoped_reservation,
       base::OnceCallback<void(Status)> result_cb);
 
  private:

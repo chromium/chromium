@@ -23,7 +23,7 @@ class FakeUploadClient : public UploadClient {
   Status EnqueueUpload(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
-      ScopedReservation scoped_reservation,
+      absl::optional<ScopedReservation> scoped_reservation,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
 
@@ -31,7 +31,7 @@ class FakeUploadClient : public UploadClient {
   explicit FakeUploadClient(policy::CloudPolicyClient* cloud_policy_client);
 
   void OnUploadComplete(
-      ScopedReservation scoped_reservation,
+      absl::optional<ScopedReservation> scoped_reservation,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       absl::optional<base::Value::Dict> response);

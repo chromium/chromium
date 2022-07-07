@@ -77,8 +77,10 @@ void ReportingClient::CreateLocalStorageModule(
 // UploadClient.
 class ReportingClient::Uploader : public UploaderInterface {
  public:
-  using UploadCallback = base::OnceCallback<
-      Status(bool, std::vector<EncryptedRecord>, ScopedReservation)>;
+  using UploadCallback =
+      base::OnceCallback<Status(bool,
+                                std::vector<EncryptedRecord>,
+                                absl::optional<ScopedReservation>)>;
 
   static std::unique_ptr<Uploader> Create(bool need_encryption_key,
                                           UploadCallback upload_callback) {
@@ -127,7 +129,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     bool completed_{false};
     const bool need_encryption_key_;
     std::vector<EncryptedRecord> encrypted_records_;
-    ScopedReservation encrypted_records_reservation_;
+    absl::optional<ScopedReservation> encrypted_records_reservation_;
 
     UploadCallback upload_callback_;
   };
@@ -155,7 +157,9 @@ void ReportingClient::Uploader::Helper::ProcessRecord(
     return;
   }
   encrypted_records_.emplace_back(std::move(data));
-  encrypted_records_reservation_.HandOver(scoped_reservation);
+  if (encrypted_records_reservation_.has_value()) {
+    encrypted_records_reservation_.value().HandOver(scoped_reservation);
+  }
   std::move(processed_cb).Run(true);
 }
 
@@ -194,6 +198,8 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
       std::move(upload_callback_)
           .Run(need_encryption_key_, std::move(encrypted_records_),
                std::move(encrypted_records_reservation_));
+  // Make sure the reservation is invalidated.
+  encrypted_records_reservation_.reset();
   if (!upload_status.ok()) {
     LOG(ERROR) << "Unable to upload records: " << upload_status;
   }
@@ -350,10 +356,12 @@ void ReportingClient::DeliverAsyncStartUploader(
                     [](EncryptedReportingUploadProvider* upload_provider,
                        bool need_encryption_key,
                        std::vector<EncryptedRecord> records,
-                       ScopedReservation scoped_reservation) {
+                       absl::optional<ScopedReservation> scoped_reservation) {
                       upload_provider->RequestUploadEncryptedRecords(
                           need_encryption_key, std::move(records),
                           std::move(scoped_reservation), base::DoNothing());
+                      // Make sure reservation is invalidated.
+                      scoped_reservation.reset();
                       return Status::StatusOK();
                     },
                     base::Unretained(instance->upload_provider_.get())));

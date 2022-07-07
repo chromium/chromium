@@ -16,8 +16,6 @@
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/resources/memory_resource_impl.h"
-#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,8 +87,6 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    memory_resource_ = base::MakeRefCounted<MemoryResourceImpl>(
-        4u * 1024LLu * 1024LLu);  // 4 MiB
     cloud_policy_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
@@ -110,14 +106,10 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
     sequence_information->set_priority(reporting::Priority::SLOW_BATCH);
   }
 
-  void TearDown() override {
-    EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
-  }
-
   Status CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
-      ScopedReservation scoped_reservation) {
+      absl::optional<ScopedReservation> scoped_reservation) {
     test::TestEvent<Status> result;
     service_provider_->RequestUploadEncryptedRecords(
         need_encryption_key, std::move(records), std::move(scoped_reservation),
@@ -130,8 +122,6 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   reporting::EncryptedRecord record_;
-
-  scoped_refptr<ResourceInterface> memory_resource_;
 
   std::unique_ptr<TestEncryptedReportingUploadProvider> service_provider_;
 };
@@ -148,12 +138,9 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
 
   std::vector<EncryptedRecord> records;
   records.emplace_back(record_);
-  ScopedReservation record_reservation(records.back().ByteSizeLong(),
-                                       memory_resource_);
-  EXPECT_TRUE(record_reservation.reserved());
   const auto status = CallRequestUploadEncryptedRecord(
       /*need_encryption_key=*/false, std::move(records),
-      std::move(record_reservation));
+      /*scoped_reservation=*/absl::nullopt);
   EXPECT_OK(status) << status;
   auto uploaded_result = uploaded_event.result();
   EXPECT_THAT(std::get<0>(uploaded_result),
