@@ -27,20 +27,6 @@ class MockReadAnythingCoordinatorObserver
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
 };
 
-class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
- public:
-  MOCK_METHOD(void,
-              OnFontNameUpdated,
-              (const std::string& new_font_name),
-              (override));
-  MOCK_METHOD(void,
-              OnAXTreeDistilled,
-              (const ui::AXTreeUpdate& snapshot,
-               const std::vector<ui::AXNodeID>& content_node_ids),
-              (override));
-  MOCK_METHOD(void, OnFontSizeChanged, (float new_font_size), (override));
-};
-
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
@@ -82,7 +68,6 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   raw_ptr<ReadAnythingCoordinator> read_anything_coordinator_ = nullptr;
 
   MockReadAnythingCoordinatorObserver coordinator_observer_;
-  MockReadAnythingModelObserver model_observer_;
 };
 
 TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {
@@ -110,19 +95,6 @@ TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
 TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
   AddObserver(&coordinator_observer_);
   EXPECT_CALL(coordinator_observer_, OnCoordinatorDestroyed()).Times(1);
-}
-
-TEST_F(ReadAnythingCoordinatorTest, ModelObserversReceiveNotifications) {
-  GetModel()->AddObserver(&model_observer_);
-
-  EXPECT_CALL(model_observer_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_, OnFontNameUpdated(_)).Times(1);
-
-  GetModel()->SetDistilledAXTree(ui::AXTreeUpdate(),
-                                 std::vector<ui::AXNodeID>());
-  GetModel()->SetSelectedFontByIndex(3);
-
-  GetModel()->RemoveObserver(&model_observer_);
 }
 
 TEST_F(ReadAnythingCoordinatorTest, ActivatesAndDeactivatesController) {
