@@ -7,8 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -23,6 +25,14 @@ struct NGPhysicalAnchorQuery {
 
 struct NGLogicalAnchorQuery {
   bool IsEmpty() const { return anchor_references.IsEmpty(); }
+
+  // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
+  // the query is invalid (e.g., no targets or wrong axis.)
+  absl::optional<LayoutUnit> Evaluate(const AtomicString& anchor_name,
+                                      AnchorValue anchor_value,
+                                      LayoutUnit available_size,
+                                      bool is_block_direction,
+                                      bool is_end) const;
 
   HashMap<AtomicString, LogicalRect> anchor_references;
 };

@@ -263,28 +263,56 @@ bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
 
 NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
-    const LogicalSize& available_size) {
-  // TODO(crbug.com/1309178): Support anchor positioning.
+    const LogicalSize& available_size,
+    const NGLogicalAnchorQuery& anchor_query) {
+  struct AnchorEvaluatorImpl : public Length::AnchorEvaluator {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query)
+        : anchor_query(anchor_query) {}
+
+    absl::optional<LayoutUnit> Evaluate(
+        const AtomicString& anchor_name,
+        AnchorValue anchor_value) const override {
+      return anchor_query.Evaluate(anchor_name, anchor_value, available_size,
+                                   is_block_direction, is_end);
+    }
+
+    const NGLogicalAnchorQuery& anchor_query;
+    LayoutUnit available_size;
+    bool is_block_direction = false;
+    bool is_end = false;
+  } anchor_evaluator(anchor_query);
+
+  anchor_evaluator.available_size = available_size.inline_size;
   absl::optional<LayoutUnit> inline_start;
   if (!style.LogicalInlineStart().IsAuto()) {
-    inline_start = MinimumValueForLength(style.LogicalInlineStart(),
-                                         available_size.inline_size);
+    inline_start =
+        MinimumValueForLength(style.LogicalInlineStart(),
+                              available_size.inline_size, &anchor_evaluator);
   }
   absl::optional<LayoutUnit> inline_end;
   if (!style.LogicalInlineEnd().IsAuto()) {
-    inline_end = MinimumValueForLength(style.LogicalInlineEnd(),
-                                       available_size.inline_size);
+    anchor_evaluator.is_end = true;
+    inline_end =
+        MinimumValueForLength(style.LogicalInlineEnd(),
+                              available_size.inline_size, &anchor_evaluator);
   }
 
+  anchor_evaluator.is_block_direction = true;
+  anchor_evaluator.available_size = available_size.block_size;
   absl::optional<LayoutUnit> block_start;
   if (!style.LogicalTop().IsAuto()) {
-    block_start =
-        MinimumValueForLength(style.LogicalTop(), available_size.block_size);
+    anchor_evaluator.is_end = false;
+    block_start = MinimumValueForLength(
+        style.LogicalTop(), available_size.block_size, &anchor_evaluator);
   }
   absl::optional<LayoutUnit> block_end;
   if (!style.LogicalBottom().IsAuto()) {
-    block_end =
-        MinimumValueForLength(style.LogicalBottom(), available_size.block_size);
+    anchor_evaluator.is_end = true;
+    block_end = MinimumValueForLength(
+        style.LogicalBottom(), available_size.block_size, &anchor_evaluator);
   }
 
   return {inline_start, inline_end, block_start, block_end};

@@ -10,7 +10,9 @@ namespace blink {
 
 // ------ CalculationExpressionNumberNode ------
 
-float CalculationExpressionNumberNode::Evaluate(float max_value) const {
+float CalculationExpressionNumberNode::Evaluate(
+    float max_value,
+    const Length::AnchorEvaluator*) const {
   return value_;
 }
 
@@ -37,7 +39,8 @@ CalculationExpressionNumberNode::ResolvedResultType() const {
 // ------ CalculationExpressionPixelsAndPercentNode ------
 
 float CalculationExpressionPixelsAndPercentNode::Evaluate(
-    float max_value) const {
+    float max_value,
+    const Length::AnchorEvaluator*) const {
   return value_.pixels + value_.percent / 100 * max_value;
 }
 
@@ -178,45 +181,51 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
   }
 }
 
-float CalculationExpressionOperationNode::Evaluate(float max_value) const {
+float CalculationExpressionOperationNode::Evaluate(
+    float max_value,
+    const Length::AnchorEvaluator* anchor_evaluator) const {
   switch (operator_) {
     case CalculationOperator::kAdd: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value);
-      float right = children_[1]->Evaluate(max_value);
+      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
       return left + right;
     }
     case CalculationOperator::kSubtract: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value);
-      float right = children_[1]->Evaluate(max_value);
+      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
       return left - right;
     }
     case CalculationOperator::kMultiply: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value);
-      float right = children_[1]->Evaluate(max_value);
+      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
       return left * right;
     }
     case CalculationOperator::kMin: {
       DCHECK(!children_.IsEmpty());
-      float minimum = children_[0]->Evaluate(max_value);
-      for (auto& child : children_)
-        minimum = std::min(minimum, child->Evaluate(max_value));
+      float minimum = children_[0]->Evaluate(max_value, anchor_evaluator);
+      for (auto& child : children_) {
+        minimum =
+            std::min(minimum, child->Evaluate(max_value, anchor_evaluator));
+      }
       return minimum;
     }
     case CalculationOperator::kMax: {
       DCHECK(!children_.IsEmpty());
-      float maximum = children_[0]->Evaluate(max_value);
-      for (auto& child : children_)
-        maximum = std::max(maximum, child->Evaluate(max_value));
+      float maximum = children_[0]->Evaluate(max_value, anchor_evaluator);
+      for (auto& child : children_) {
+        maximum =
+            std::max(maximum, child->Evaluate(max_value, anchor_evaluator));
+      }
       return maximum;
     }
     case CalculationOperator::kClamp: {
       DCHECK(!children_.IsEmpty());
-      float min = children_[0]->Evaluate(max_value);
-      float val = children_[1]->Evaluate(max_value);
-      float max = children_[2]->Evaluate(max_value);
+      float min = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float val = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float max = children_[2]->Evaluate(max_value, anchor_evaluator);
       // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
       return std::max(min, std::min(val, max));
     }
@@ -387,8 +396,15 @@ CalculationExpressionAnchorQueryNode::Zoom(double factor) const {
       type_, anchor_name_, value_, side_percentage_, fallback_.Zoom(factor));
 }
 
-float CalculationExpressionAnchorQueryNode::Evaluate(float) const {
-  // TODO(crbug.com/1309178): Implement.
+float CalculationExpressionAnchorQueryNode::Evaluate(
+    float max_value,
+    const Length::AnchorEvaluator* anchor_evaluator) const {
+  if (anchor_evaluator) {
+    if (const absl::optional<LayoutUnit> value =
+            anchor_evaluator->Evaluate(anchor_name_, AnchorSide()))
+      return value->ToFloat();
+  }
+  // TODO(crbug.com/1309178): Support fallback.
   return 0;
 }
 

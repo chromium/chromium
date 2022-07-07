@@ -99,8 +99,9 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const NGLogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
-    const NGLogicalOutOfFlowInsets insets =
-        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize());
+    NGLogicalAnchorQuery anchor_query;
+    const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
+        node.Style(), space.AvailableSize(), anchor_query);
     LogicalSize computed_available_size =
         ComputeOutOfFlowAvailableSize(node, space, insets, static_position);
     blink::ComputeOutOfFlowInlineDimensions(
@@ -116,8 +117,9 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const NGLogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
-    const NGLogicalOutOfFlowInsets insets =
-        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize());
+    NGLogicalAnchorQuery anchor_query;
+    const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
+        node.Style(), space.AvailableSize(), anchor_query);
     LogicalSize computed_available_size =
         ComputeOutOfFlowAvailableSize(node, space, insets, static_position);
     blink::ComputeOutOfFlowBlockDimensions(

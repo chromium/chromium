@@ -31,7 +31,8 @@ enum class CalculationOperator {
 class PLATFORM_EXPORT CalculationExpressionNode
     : public RefCounted<CalculationExpressionNode> {
  public:
-  virtual float Evaluate(float max_value) const = 0;
+  virtual float Evaluate(float max_value,
+                         const Length::AnchorEvaluator*) const = 0;
   virtual bool operator==(const CalculationExpressionNode& other) const = 0;
   bool operator!=(const CalculationExpressionNode& other) const {
     return !operator==(other);
@@ -69,7 +70,7 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
   float Value() const { return value_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value) const final;
+  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
   bool operator==(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -106,7 +107,7 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
   PixelsAndPercent GetPixelsAndPercent() const { return value_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value) const final;
+  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
   bool operator==(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -149,7 +150,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
   CalculationOperator GetOperator() const { return operator_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value) const final;
+  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
   bool operator==(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -206,7 +207,7 @@ class PLATFORM_EXPORT CalculationExpressionAnchorQueryNode final
   const Length& GetFallback() const { return fallback_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value) const final;
+  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
   bool operator==(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;

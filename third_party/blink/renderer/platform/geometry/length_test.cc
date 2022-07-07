@@ -417,7 +417,8 @@ TEST_F(LengthTest, MultiplyPixelsAndPercent) {
   const auto& non_simplified_calc_value = non_simplified.GetCalculationValue();
   EXPECT_TRUE(non_simplified_calc_value.IsExpression());
   float result_for_non_simplified =
-      non_simplified_calc_value.GetOrCreateExpression()->Evaluate(100);
+      non_simplified_calc_value.GetOrCreateExpression()->Evaluate(
+          100, /* anchor_evaluator */ nullptr);
   EXPECT_EQ(60.0f, result_for_non_simplified);
 
   Length simplified =

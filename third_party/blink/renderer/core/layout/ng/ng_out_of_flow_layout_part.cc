@@ -1442,7 +1442,9 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   }
 
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
-      candidate_style, node_info.constraint_space.AvailableSize());
+      candidate_style, node_info.constraint_space.AvailableSize(),
+      container_builder_->AnchorQuery());
+
   const LogicalSize computed_available_size =
       ComputeOutOfFlowAvailableSize(node_info.node, node_info.constraint_space,
                                     insets, node_info.static_position);

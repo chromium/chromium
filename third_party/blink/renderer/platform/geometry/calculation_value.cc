@@ -44,10 +44,12 @@ CalculationValue::~CalculationValue() {
     data_.value.~PixelsAndPercent();
 }
 
-float CalculationValue::Evaluate(float max_value) const {
-  float value =
-      ClampTo<float>(is_expression_ ? data_.expression->Evaluate(max_value)
-                                    : Pixels() + Percent() / 100 * max_value);
+float CalculationValue::Evaluate(
+    float max_value,
+    const Length::AnchorEvaluator* anchor_evaluator) const {
+  float value = ClampTo<float>(
+      is_expression_ ? data_.expression->Evaluate(max_value, anchor_evaluator)
+                     : Pixels() + Percent() / 100 * max_value);
   return (IsNonNegative() && value < 0) ? 0 : value;
 }
 
