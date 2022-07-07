@@ -234,7 +234,7 @@ TEST(UnsafeSVGAttributeSanitizationTest, stringsShouldNotSupportAddition) {
 
 TEST(UnsafeSVGAttributeSanitizationTest,
      stripScriptingAttributes_animateElement) {
-  Vector<Attribute> attributes;
+  Vector<Attribute, kAttributePrealloc> attributes;
   attributes.push_back(Attribute(xlink_names::kHrefAttr, "javascript:alert()"));
   attributes.push_back(Attribute(svg_names::kHrefAttr, "javascript:alert()"));
   attributes.push_back(Attribute(svg_names::kFromAttr, "/home"));

@@ -605,11 +605,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual const QualifiedName& SubResourceAttributeName() const;
 
   // Only called by the parser immediately after element construction.
-  void ParserSetAttributes(const Vector<Attribute>&);
+  void ParserSetAttributes(const Vector<Attribute, kAttributePrealloc>&);
 
   // Remove attributes that might introduce scripting from the vector leaving
   // the element unchanged.
-  void StripScriptingAttributes(Vector<Attribute>&) const;
+  void StripScriptingAttributes(Vector<Attribute, kAttributePrealloc>&) const;
 
   bool SharesSameElementData(const Element& other) const {
     return GetElementData() == other.GetElementData();

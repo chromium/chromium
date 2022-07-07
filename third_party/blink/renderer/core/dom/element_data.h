@@ -159,9 +159,10 @@ class ElementData : public GarbageCollected<ElementData> {
 // duplicate sets of attributes (ex. the same classes).
 class ShareableElementData final : public ElementData {
  public:
-  static ShareableElementData* CreateWithAttributes(const Vector<Attribute>&);
+  static ShareableElementData* CreateWithAttributes(
+      const Vector<Attribute, kAttributePrealloc>&);
 
-  explicit ShareableElementData(const Vector<Attribute>&);
+  explicit ShareableElementData(const Vector<Attribute, kAttributePrealloc>&);
   explicit ShareableElementData(const UniqueElementData&);
   ~ShareableElementData();
 

@@ -82,12 +82,12 @@ class CORE_EXPORT AtomicHTMLToken {
     return FindAttributeInVector(attributes_, attribute_name);
   }
 
-  Vector<Attribute>& Attributes() {
+  Vector<Attribute, kAttributePrealloc>& Attributes() {
     DCHECK(UsesAttributes());
     return attributes_;
   }
 
-  const Vector<Attribute>& Attributes() const {
+  const Vector<Attribute, kAttributePrealloc>& Attributes() const {
     DCHECK(UsesAttributes());
     return attributes_;
   }
@@ -206,7 +206,7 @@ class CORE_EXPORT AtomicHTMLToken {
 
   bool duplicate_attribute_ = false;
 
-  Vector<Attribute> attributes_;
+  Vector<Attribute, kAttributePrealloc> attributes_;
 };
 
 template <bool DedupWithHash>

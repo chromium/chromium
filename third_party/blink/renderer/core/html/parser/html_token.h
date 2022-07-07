@@ -58,9 +58,9 @@ class DoctypeData {
 
 static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
                                                const QualifiedName& name) {
-  for (unsigned i = 0; i < attributes.size(); ++i) {
-    if (attributes[i].GetName().Matches(name))
-      return &attributes[i];
+  for (Attribute& attr : attributes) {
+    if (attr.GetName().Matches(name))
+      return &attr;
   }
   return nullptr;
 }
@@ -152,7 +152,7 @@ class HTMLToken {
     Range value_range_;
   };
 
-  typedef Vector<Attribute, 10> AttributeList;
+  typedef Vector<Attribute, kAttributePrealloc> AttributeList;
 
   // By using an inline capacity of 256, we avoid spilling over into an malloced
   // buffer approximately 99% of the time based on a non-scientific browse

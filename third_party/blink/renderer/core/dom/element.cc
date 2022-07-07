@@ -3236,7 +3236,7 @@ bool Element::IsScriptingAttribute(const Attribute& attribute) const {
 }
 
 void Element::StripScriptingAttributes(
-    Vector<Attribute>& attribute_vector) const {
+    Vector<Attribute, kAttributePrealloc>& attribute_vector) const {
   wtf_size_t destination = 0;
   for (wtf_size_t source = 0; source < attribute_vector.size(); ++source) {
     if (IsScriptingAttribute(attribute_vector[source]))
@@ -3250,7 +3250,8 @@ void Element::StripScriptingAttributes(
   attribute_vector.Shrink(destination);
 }
 
-void Element::ParserSetAttributes(const Vector<Attribute>& attribute_vector) {
+void Element::ParserSetAttributes(
+    const Vector<Attribute, kAttributePrealloc>& attribute_vector) {
   DCHECK(!isConnected());
   DCHECK(!parentNode());
   DCHECK(!element_data_);

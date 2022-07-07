@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_CACHE_H_
 
+#include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -34,7 +35,6 @@
 
 namespace blink {
 
-class Attribute;
 class ShareableElementData;
 
 class ElementDataCache final : public GarbageCollected<ElementDataCache> {
@@ -42,7 +42,7 @@ class ElementDataCache final : public GarbageCollected<ElementDataCache> {
   ElementDataCache();
 
   ShareableElementData* CachedShareableElementDataWithAttributes(
-      const Vector<Attribute>&);
+      const Vector<Attribute, kAttributePrealloc>&);
 
   void Trace(Visitor*) const;
 

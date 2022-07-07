@@ -32,6 +32,16 @@
 
 namespace blink {
 
+// This value is set fairly arbitrarily, to get above what we expect to be
+// the maximum number of attributes on a normal element. It is used for
+// preallocation in Vectors holding Attributes, e.g. to avoid allocations
+// in HTMLAtomicToken (which is short-lived, and thus does not need to worry
+// much about extra memory usage).
+//
+// Many places that use this constant don't actually care directly about
+// preallocation, but the value tends to propagate out through APIs.
+static constexpr int kAttributePrealloc = 10;
+
 // This is the internal representation of an attribute, consisting of a name and
 // value. It is distinct from the web-exposed Attr, which also knows of the
 // element to which it attached, if any.

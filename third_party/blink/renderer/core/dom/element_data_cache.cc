@@ -30,13 +30,15 @@
 
 namespace blink {
 
-inline unsigned AttributeHash(const Vector<Attribute>& attributes) {
+inline unsigned AttributeHash(
+    const Vector<Attribute, kAttributePrealloc>& attributes) {
   return StringHasher::HashMemory(attributes.data(),
                                   attributes.size() * sizeof(Attribute));
 }
 
-inline bool HasSameAttributes(const Vector<Attribute>& attributes,
-                              ShareableElementData& element_data) {
+inline bool HasSameAttributes(
+    const Vector<Attribute, kAttributePrealloc>& attributes,
+    ShareableElementData& element_data) {
   if (attributes.size() != element_data.Attributes().size())
     return false;
   return !memcmp(attributes.data(), element_data.attribute_array_,
@@ -45,7 +47,7 @@ inline bool HasSameAttributes(const Vector<Attribute>& attributes,
 
 ShareableElementData*
 ElementDataCache::CachedShareableElementDataWithAttributes(
-    const Vector<Attribute>& attributes) {
+    const Vector<Attribute, kAttributePrealloc>& attributes) {
   DCHECK(!attributes.IsEmpty());
 
   ShareableElementDataCache::ValueType* it =
