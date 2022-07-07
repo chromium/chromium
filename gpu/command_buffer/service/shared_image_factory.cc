@@ -430,7 +430,7 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // defined(USE_OZONE)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC)
   // TODO(hitawala): Temporary factory that will be replaced with Ozone and
   // other backings
   if (use_gl) {
