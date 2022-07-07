@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <meta charset=utf-8 />
-<meta name="timeout" content="long">
-<title>Event Timing: first-input-interactionId-tap.</title>
-<button id='test'>Tap</button>
+<title>First Input: interactionId-click.</title>
+<button id='testButtonId'>Click me</button>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/testdriver.js></script>
-<script src=/resources/testdriver-actions.js></script>
 <script src=/resources/testdriver-vendor.js></script>
 <script src=resources/event-timing-test-utils.js></script>
 
@@ -49,8 +47,8 @@
       }
     })).observe({ entryTypes: ["event", "first-input"] });
 
-    addListenersAndTap(document.getElementById('test'), ['pointerdown', 'pointerup']);
-  }, "Event Timing: The interactionId of first input should match the event timing pointerdown entry when tap.");
+    addListenersAndClick(document.getElementById('testButtonId'));
+  }, "The interactionId of the first input entry should match the same pointerdown entry of event timing when click.");
 </script>
 
 </html>

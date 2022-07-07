@@ -11,18 +11,7 @@
 <script>
   let observedEntries = [];
   let map = new Map();
-  async function clickOnElement(id) {
-  const element = document.getElementById(id);
-  const clickHandler = () => {
-    mainThreadBusy(200);
-  };
-  element.addEventListener("mousedown", clickHandler);
-  element.addEventListener("mouseup", clickHandler);
-  element.addEventListener("pointerdown", clickHandler);
-  element.addEventListener("pointerup", clickHandler);
-  element.addEventListener("click", clickHandler);
-  await test_driver.click(element);
-  }
+
   function eventsForCheck(entry) {
       if (entry.name === 'pointerdown' || entry.name === 'pointerup' || entry.name === 'click'
       || entry.name === 'mousedown' || entry.name === 'mouseup') {
@@ -44,7 +33,7 @@
       assert_equals(map.get('pointerdown'), map.get('click'), 'Pointerdown and click should have the same interactionId');
       t.done();
     })).observe({type: 'event'});
-    clickOnElement('button');
+    addListenersAndClick(document.getElementById('button'));
   }, "Event Timing: compare event timing interactionId.");
 </script>
 </html>

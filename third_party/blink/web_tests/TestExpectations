@@ -7078,9 +7078,6 @@ crbug.com/webrtc/14147 external/wpt/webrtc-stats/supported-stats.html [ Failure 
 crbug.com/1229084 [ Linux ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
 crbug.com/1229084 [ Win ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
 
-# Sheriff 2022-06-09
-crbug.com/1335002 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Skip ]
-
 # Flaky on multiple platforms
 crbug.com/1277696 fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
 

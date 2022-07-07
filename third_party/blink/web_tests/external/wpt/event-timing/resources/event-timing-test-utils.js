@@ -314,6 +314,13 @@ async function addListenersAndPress(element, key, events) {
   pressKey(element, key);
 }
 
+// The testdriver.js, testdriver-vendor.js need to be included to use this
+// function.
+async function addListenersAndClick(element) {
+  addListeners(element, ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'click']);
+  await test_driver.click(element);
+}
+
 function filterAndAddToMap(events, map) {
   return function (entry) {
     if (events.includes(entry.name)) {
