@@ -1062,8 +1062,8 @@ export class FileTable extends Table {
     const item = this.metadataModel_.getCache(
         [entry], ['modificationTime', 'modificationByMeTime'])[0];
     const modTime = this.useModificationByMeTime_ ?
-        item.modificationByMeTime || item.modificationTime || null :
-        item.modificationTime || null;
+        item.modificationByMeTime || item.modificationTime :
+        item.modificationTime;
 
     div.textContent = this.formatter_.formatModDate(modTime);
   }
