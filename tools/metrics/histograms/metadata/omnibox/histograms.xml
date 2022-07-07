@@ -1275,6 +1275,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.PrefetchServingReason.Prerender"
+    enum="SearchPrefetchServingReason" expires_after="2022-12-11">
+  <owner>lingqi@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether a search prerender request uses the prefetched response.
+    SearchPrefetchService records this metric when
+    SearchPrefetchURLLoaderInterceptor attempts to intercept a prerendering main
+    resource request, for prerender main frame navigations with the feature flag
+    of SearchPrefetchUpgradeToPrerender enabled.
+
+    Backgound: A search prerender request should use the prefetched response
+    instead of resending the same request, otherwise it will waste resources.
+    The search suggestion service may suggest to prefetch a result page, and
+    then ask the client to prerender the page. When the client attempts
+    prerender the page, it has received the response associated with the
+    prefetch request (by design), and should serve the prefetched response to
+    the prerender request.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPrefetch.StartTime.NavigationPrefetch"
     units="ms" expires_after="2022-10-30">
   <owner>ryansturm@chromium.org</owner>

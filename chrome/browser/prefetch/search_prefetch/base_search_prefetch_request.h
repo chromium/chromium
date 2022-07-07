@@ -16,7 +16,10 @@ class PrerenderManager;
 class Profile;
 class SearchPrefetchURLLoader;
 
-// Any updates to this class need to be propagated to enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Any updates to this class need to be propagated to SearchPrefetchFinalStatus
+// in enums.xml.
 enum class SearchPrefetchStatus {
   // The request has not started yet. This status should ideally never be
   // recorded as Start() should be called on the same stack as creating the
@@ -39,11 +42,23 @@ enum class SearchPrefetchStatus {
   kComplete = 4,
   // The request hit an error and cannot be served.
   kRequestFailed = 5,
-  // The request was cancelled before completion. This is terminal state.
+  // The request was cancelled before completion. This is a terminal state.
   kRequestCancelled = 6,
-  // The request was served to the navigation stack. This is terminal state.
+  // The request was served to the navigation stack. This is a terminal state.
   kServed = 7,
-  kMaxValue = kServed,
+  // The request was served to the prerender navigation stack. It may move to
+  // |kPrerenderedAndClicked| when the user navigates to the result in omnibox
+  // or |kRequestCancelled| if the user closes omnibox.
+  kPrerendered = 8,
+  // Similar to |kCanBeServedAndUserClicked|, the request was served to the
+  // prerender navigation stack, and is marked as being
+  // clicked by the user. It is expected to move to |kPrerenderActivated| after
+  // the corresponding prerender is fully activated by the user.
+  kPrerenderedAndClicked = 9,
+  // The request was served to the prerender navigation stack, and the prerender
+  // page is fully activated by the user. This is a terminal state.
+  kPrerenderActivated = 10,
+  kMaxValue = kPrerenderActivated,
 };
 
 // A class representing a prefetch used by the Search Prefetch Service.
@@ -79,6 +94,10 @@ class BaseSearchPrefetchRequest {
   // Marks a prefetch as canceled and stops any ongoing fetch.
   void CancelPrefetch();
 
+  // Returns true if this request should be canceled when the Autocomplete
+  // suggestion no longer lists this search prefetch.
+  bool ShouldBeCancelledOnResultChanges() const;
+
   // Called when SearchPrefetchService receives the hint that this prefetch
   // request can be upgraded to a prerender attempt.
   void MaybeStartPrerenderSearchResult(PrerenderManager& prerender_manager);
@@ -102,8 +121,16 @@ class BaseSearchPrefetchRequest {
   void MarkPrefetchAsClicked();
 
   // Update the status when the request is actually served to the navigation
-  // stack.
+  // stack of a real navigation request.
   void MarkPrefetchAsServed();
+
+  // Updates the status when the request is served to a prerendering navigation
+  // stack. Note that after this point, this request cannot be served to a real
+  // navigation anymore.
+  void MarkPrefetchAsPrerendered();
+
+  // Updates the status when the prerendering page it is serving was activated.
+  void MarkPrefetchAsPrerenderActivated();
 
   // Called when AutocompleteMatches changes. It resets PrerenderUpgrader.
   // And if the AutocompleteMatches suggests to prerender a search result,

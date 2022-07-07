@@ -152,7 +152,7 @@ class PrerenderManager::SearchPrerenderTask {
     return prerendered_search_terms_;
   }
 
-  void MaybeAppendUrlEntry(content::WebContents& web_contents) const {
+  void OnActivated(content::WebContents& web_contents) const {
     if (!search_prerender_handle_) {
       return;
     }
@@ -165,6 +165,12 @@ class PrerenderManager::SearchPrerenderTask {
         SearchPrefetchServiceFactory::GetForProfile(
             Profile::FromBrowserContext(web_contents.GetBrowserContext()));
     if (!search_prefetch_service) {
+      return;
+    }
+
+    if (SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+      search_prefetch_service->OnPrerenderedRequestUsed(
+          prerendered_search_terms_, web_contents.GetLastCommittedURL());
       return;
     }
 
@@ -454,10 +460,9 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
       search_prerender_task_->RecordLifeTimeMetric();
     }
 
-    if (prerender_utils::ShouldUpdateCacheEntryManually() &&
-        is_search_destination_match &&
+    if (is_search_destination_match &&
         navigation_handle->IsPrerenderedPageActivation()) {
-      search_prerender_task_->MaybeAppendUrlEntry(*web_contents());
+      search_prerender_task_->OnActivated(*web_contents());
     }
 
     search_prerender_task_.reset();
