@@ -60,6 +60,7 @@ class GPUDevice final : public EventTargetWithInlineData,
                         public ExecutionContextClient,
                         public DawnObject<WGPUDevice> {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(GPUDevice, Dispose);
 
  public:
   explicit GPUDevice(ExecutionContext* execution_context,
@@ -151,6 +152,9 @@ class GPUDevice final : public EventTargetWithInlineData,
  private:
   using LostProperty =
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
+
+  // Used by USING_PRE_FINALIZER.
+  void Dispose();
 
   void DestroyAllExternalTextures();
 

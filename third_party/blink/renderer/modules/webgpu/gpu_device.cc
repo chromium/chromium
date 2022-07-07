@@ -108,7 +108,9 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 }
 
 GPUDevice::~GPUDevice() {
-  DestroyAllExternalTextures();
+  // Perform destruction that's safe to do inside a GC (as in it doesn't touch
+  // other GC objects).
+
   // Clear the callbacks since we can't handle callbacks after finalization.
   // error_callback_, logging_callback_, and lost_callback_ will be deleted.
   GetProcs().deviceSetUncapturedErrorCallback(GetHandle(), nullptr, nullptr);
@@ -596,6 +598,12 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(active_external_textures_);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+void GPUDevice::Dispose() {
+  // This call accesses other GC objects, so it cannot be called inside GC
+  // objects destructors. Instead call it in the pre-finalizer.
+  DestroyAllExternalTextures();
 }
 
 void GPUDevice::DestroyAllExternalTextures() {
