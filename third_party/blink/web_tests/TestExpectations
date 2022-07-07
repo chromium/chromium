@@ -7161,3 +7161,7 @@ crbug.com/1342050 [ Mac10.15 ] virtual/prerender/wpt_internal/prerender/activate
 crbug.com/1340763 external/wpt/pointerevents/pointerevent_capture_mouse.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/with-ports/021.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/without-ports/021.html [ Failure Pass ]
+
+# Sheriff 2022-07-07
+crbug.com/1339538 [ Mac ] fast/frames/002.html [ Failure Pass ]
+crbug.com/1339538 [ Linux ] fast/frames/002.html [ Failure Pass ]
