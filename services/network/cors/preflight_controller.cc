@@ -439,7 +439,7 @@ class PreflightController::PreflightLoader final {
     // wait a short while then move on. See also https://crbug.com/1299382.
     if (private_network_access_behavior_ ==
         PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout) {
-      loader_->SetTimeoutDuration(base::Milliseconds(100));
+      loader_->SetTimeoutDuration(base::Milliseconds(200));
     }
   }
 
