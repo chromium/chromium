@@ -8,6 +8,9 @@
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 
 namespace media {
+
+class IvfParser;
+
 namespace vaapi_test {
 
 class VaapiDevice;
@@ -22,7 +25,8 @@ class VideoDecoder {
     kEOStream,
   };
 
-  VideoDecoder(const VaapiDevice& va_device,
+  VideoDecoder(std::unique_ptr<IvfParser> ivf_parser,
+               const VaapiDevice& va_device,
                SharedVASurface::FetchPolicy fetch_policy);
   // Implementations of VideoDecoder are expected to handle the destruction of
   // |last_decoded_surface_| and in particular ensure it is done in the right
@@ -54,6 +58,9 @@ class VideoDecoder {
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
 
  protected:
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
+
   // VA handles.
   const VaapiDevice& va_device_;
   scoped_refptr<SharedVASurface> last_decoded_surface_;
