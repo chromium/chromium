@@ -9,8 +9,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
+#include "ui/ozone/common/native_pixmap_egl_binding.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/gpu/gl_surface_egl_readback_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gl_surface_wayland.h"
@@ -45,6 +48,17 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
 
   ~GLOzoneEGLWayland() override {}
 
+  bool CanImportNativePixmap() override;
+
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) override;
+
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
       gfx::AcceleratedWidget widget) override;
 
@@ -62,6 +76,23 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
 };
+
+bool GLOzoneEGLWayland::CanImportNativePixmap() {
+  return gl::GLSurfaceEGL::GetGLDisplayEGL()
+      ->ext->b_EGL_EXT_image_dma_buf_import;
+}
+
+std::unique_ptr<NativePixmapGLBinding> GLOzoneEGLWayland::ImportNativePixmap(
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    gfx::BufferFormat plane_format,
+    gfx::BufferPlane plane,
+    gfx::Size plane_size,
+    const gfx::ColorSpace& color_space,
+    GLenum target,
+    GLuint texture_id) {
+  return NativePixmapEGLBinding::Create(pixmap, plane_format, plane, plane_size,
+                                        color_space, target, texture_id);
+}
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
     gfx::AcceleratedWidget widget) {

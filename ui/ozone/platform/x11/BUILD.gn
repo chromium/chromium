@@ -16,8 +16,6 @@ source_set("x11") {
     "client_native_pixmap_factory_x11.h",
     "gl_egl_utility_x11.cc",
     "gl_egl_utility_x11.h",
-    "gl_ozone_egl_x11.cc",
-    "gl_ozone_egl_x11.h",
     "gl_ozone_glx.cc",
     "gl_ozone_glx.h",
     "gl_surface_egl_readback_x11.cc",

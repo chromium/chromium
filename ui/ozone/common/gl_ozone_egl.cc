@@ -12,7 +12,6 @@
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/ozone/common/native_pixmap_egl_binding.h"
 
 namespace ui {
 
@@ -57,7 +56,7 @@ void GLOzoneEGL::ShutdownGL(gl::GLDisplay* display) {
 }
 
 bool GLOzoneEGL::CanImportNativePixmap() {
-  return gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_KHR_image;
+  return false;
 }
 
 std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
@@ -68,8 +67,7 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
-  return NativePixmapEGLBinding::Create(pixmap, plane_format, plane, plane_size,
-                                        color_space, target, texture_id);
+  return nullptr;
 }
 
 bool GLOzoneEGL::GetGLWindowSystemBindingInfo(
