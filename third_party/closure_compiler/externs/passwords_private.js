@@ -154,6 +154,14 @@ chrome.passwordsPrivate.AddPasswordOptions;
 chrome.passwordsPrivate.ChangeSavedPasswordParams;
 
 /**
+ * @typedef {{
+ *   accountId: (number|undefined),
+ *   deviceId: (number|undefined)
+ * }}
+ */
+chrome.passwordsPrivate.CredentialIds;
+
+/**
  * Function that logs that the Passwords page was accessed from the Chrome
  * Settings WebUI.
  */
@@ -167,8 +175,8 @@ chrome.passwordsPrivate.recordPasswordsPageAccessInSettings = function() {};
  * @param {!Array<number>} ids The ids for the password entry being updated.
  * @param {!chrome.passwordsPrivate.ChangeSavedPasswordParams} params The
  *     dictionary which holds the changed parameters.
- * @param {function(): void=} callback The callback that gets invoked in the
- *     end.
+ * @param {function(!chrome.passwordsPrivate.CredentialIds): void=} callback The
+ *     callback that gets invoked in the end.
  */
 chrome.passwordsPrivate.changeSavedPassword = function(ids, params, callback) {};
 

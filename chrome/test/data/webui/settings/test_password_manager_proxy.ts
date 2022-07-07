@@ -85,6 +85,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private isAccountStoreDefault_: boolean = false;
   private getUrlCollectionResponse_: chrome.passwordsPrivate.UrlCollection|
       null = null;
+  private changeSavedPasswordResponse_: chrome.passwordsPrivate.CredentialIds|
+      null = null;
 
   constructor() {
     super([
@@ -361,11 +363,18 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('recordPasswordCheckReferrer', referrer);
   }
 
+  setChangeSavedPasswordResponse(newIds:
+                                     chrome.passwordsPrivate.CredentialIds) {
+    this.changeSavedPasswordResponse_ = newIds;
+  }
+
   changeSavedPassword(
       ids: number[],
       params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
     this.methodCalled('changeSavedPassword', {ids, params});
-    return Promise.resolve();
+    return !this.changeSavedPasswordResponse_ ?
+        Promise.reject(new Error('Could not change password.')) :
+        Promise.resolve(this.changeSavedPasswordResponse_);
   }
 
   /**

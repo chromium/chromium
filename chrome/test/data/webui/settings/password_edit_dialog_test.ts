@@ -168,6 +168,7 @@ async function changeSavedPasswordTestHelper(
   assertFalse(editDialog.$.passwordInput.invalid);
   assertFalse(editDialog.$.actionButton.disabled);
 
+  passwordManager.setChangeSavedPasswordResponse({accountId: 999});
   editDialog.$.actionButton.click();
 
   // Check that the changeSavedPassword is called with the right arguments.
@@ -642,6 +643,7 @@ suite('PasswordEditDialog', function() {
 
   test('changesPasswordWithNote', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
+    loadTimeData.overrideValues({enablePasswordViewPage: true});
     const entry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', accountId: 42, note: 'some note'});
     const editDialog = elementFactory.createPasswordEditDialog(entry);
@@ -660,13 +662,20 @@ suite('PasswordEditDialog', function() {
     assertFalse(editDialog.$.passwordInput.invalid);
     assertFalse(editDialog.$.actionButton.disabled);
 
+    passwordManager.setChangeSavedPasswordResponse({accountId: 43});
     editDialog.$.actionButton.click();
 
     // Check that the changeSavedPassword is called with the right arguments.
+    const dispatchedEvent = eventToPromise('saved-password-edited', editDialog);
     const {params} = await passwordManager.whenCalled('changeSavedPassword');
     assertEquals(expectedParams.password, params.password);
     assertEquals(expectedParams.username, params.username);
     assertEquals(expectedParams.note, params.note);
+
+    await dispatchedEvent.then((event) => {
+      assertEquals(43, event.detail.accountId);
+      assertEquals(undefined, event.detail.deviceId);
+    });
   });
 
   test('noChangesWhenNotesIsNotEnabled', async function() {

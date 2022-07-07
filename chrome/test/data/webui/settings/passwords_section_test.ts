@@ -222,6 +222,7 @@ async function openPasswordEditDialogHelper(
   // Close the dialog, verify that the list item password remains hidden.
   // Note that the password only gets hidden in the on-close handler, thus we
   // need to await this event first.
+  passwordManager.setChangeSavedPasswordResponse({deviceId: 1});
   passwordEditDialog.$.actionButton.click();
   await eventToPromise('close', passwordEditDialog);
 

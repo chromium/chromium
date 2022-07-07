@@ -86,7 +86,8 @@ var availableTests = [
 
   function changeSavedPasswordSucceeds() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [0], {username: 'new_user', password: 'new_pass'}, () => {
+        [0], {username: 'new_user', password: 'new_pass'}, (credentialIds) => {
+          chrome.test.assertEq({deviceId: 0}, credentialIds);
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
@@ -94,7 +95,8 @@ var availableTests = [
 
   function changeSavedPasswordWithIncorrectIdFails() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [-1], {username: 'new_user', password: 'new_pass'}, () => {
+        [-1], {username: 'new_user', password: 'new_pass'}, (credentialIds) => {
+          chrome.test.assertEq(undefined, credentialIds);
           chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
           chrome.test.succeed();
         });
@@ -102,7 +104,9 @@ var availableTests = [
 
   function changeSavedPasswordWithOneIncorrectIdFromArrayFails() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [0, -1], {username: 'new_user', password: 'new_pass'}, () => {
+        [0, -1], {username: 'new_user', password: 'new_pass'},
+        (credentialIds) => {
+          chrome.test.assertEq(undefined, credentialIds);
           chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
           chrome.test.succeed();
         });
@@ -110,7 +114,8 @@ var availableTests = [
 
   function changeSavedPasswordWithEmptyPasswordFails() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [0], {username: 'new_user', password: ''}, () => {
+        [0], {username: 'new_user', password: ''}, (credentialIds) => {
+          chrome.test.assertEq(undefined, credentialIds);
           chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
           chrome.test.succeed();
         });
@@ -118,7 +123,8 @@ var availableTests = [
 
   function changeSavedPasswordWithEmptyArrayIdFails() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [], {username: 'new_user', password: ''}, () => {
+        [], {username: 'new_user', password: ''}, (credentialIds) => {
+          chrome.test.assertEq(undefined, credentialIds);
           chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
           chrome.test.succeed();
         });
@@ -127,7 +133,8 @@ var availableTests = [
   function changeSavedPasswordWithNoteSucceeds() {
     chrome.passwordsPrivate.changeSavedPassword(
         [0], {username: 'new_user', password: 'new_pass', note: 'some note'},
-        () => {
+        (credentialIds) => {
+          chrome.test.assertEq({deviceId: 0}, credentialIds);
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });

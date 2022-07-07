@@ -41,6 +41,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -235,7 +236,8 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   return success;
 }
 
-bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
+absl::optional<api::passwords_private::CredentialIds>
+PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     const std::vector<int>& ids,
     const api::passwords_private::ChangeSavedPasswordParams& params) {
   DCHECK(!ids.empty());
@@ -245,7 +247,7 @@ bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   // |saved_passwords_presenter_| will update both of them anyway.
   const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(ids[0]);
   if (!entry)
-    return false;
+    return absl::nullopt;
 
   CredentialUIEntry to_edit = *entry;
   to_edit.username = base::UTF8ToUTF16(params.username);
@@ -254,7 +256,32 @@ bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     to_edit.note = password_manager::PasswordNote(
         base::UTF8ToUTF16(*params.note), base::Time::Now());
   }
-  return saved_passwords_presenter_.EditSavedCredentials(to_edit);
+  // Collect the credentials that will be edited before executing the edit
+  // process.
+  auto forms_to_edit =
+      saved_passwords_presenter_.GetCorrespondingPasswordForms(entry->key());
+  bool success = saved_passwords_presenter_.EditSavedCredentials(to_edit);
+  if (!success) {
+    return absl::nullopt;
+  }
+
+  api::passwords_private::CredentialIds new_ids;
+  for (auto& form : forms_to_edit) {
+    // Calculate the new IDs using the new username and password.
+    form.username_value = to_edit.username;
+    form.password_value = to_edit.password;
+
+    auto new_id = std::make_unique<int>(
+        credential_id_generator_.GenerateId(CredentialUIEntry(form)));
+
+    if (form.IsUsingProfileStore()) {
+      new_ids.device_id = std::move(new_id);
+    }
+    if (form.IsUsingAccountStore()) {
+      new_ids.account_id = std::move(new_id);
+    }
+  }
+  return new_ids;
 }
 
 void PasswordsPrivateDelegateImpl::RemoveSavedPasswords(

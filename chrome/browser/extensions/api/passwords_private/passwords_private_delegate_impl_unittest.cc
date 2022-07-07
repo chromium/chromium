@@ -54,7 +54,9 @@ using password_manager::ReauthPurpose;
 using password_manager::TestPasswordStore;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::Ne;
+using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
@@ -464,7 +466,15 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   api::passwords_private::ChangeSavedPasswordParams params;
   params.password = "new_pass";
   params.username = "new_user";
-  EXPECT_TRUE(delegate.ChangeSavedPassword({sample_form_id}, params));
+
+  sample_form.username_value = u"new_user";
+  sample_form.password_value = u"new_pass";
+  int new_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(sample_form));
+
+  auto result = delegate.ChangeSavedPassword({sample_form_id}, params);
+  EXPECT_THAT(result->account_id, IsNull());
+  EXPECT_THAT(result->device_id, Pointee(new_form_id));
 
   // Spin the loop to allow PasswordStore tasks posted when changing the
   // password to be completed.
@@ -511,7 +521,15 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   params.password = "new_pass";
   params.username = "new_user";
   params.note = std::make_unique<std::string>("new note");
-  EXPECT_TRUE(delegate.ChangeSavedPassword({sample_form_id}, params));
+
+  sample_form.password_value = u"new_pass";
+  sample_form.username_value = u"new_user";
+  int new_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(sample_form));
+
+  auto result = delegate.ChangeSavedPassword({sample_form_id}, params);
+  EXPECT_THAT(result->account_id, IsNull());
+  EXPECT_THAT(result->device_id, Pointee(new_form_id));
 
   // Spin the loop to allow PasswordStore tasks posted when changing the
   // password to be completed.
@@ -524,6 +542,70 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
         EXPECT_EQ("new note", passwords[0].password_note);
       });
   delegate.GetSavedPasswordsList(callback.Get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInBothStores) {
+  password_manager::PasswordForm profile_form = CreateSampleForm();
+  password_manager::PasswordForm account_form = profile_form;
+  account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  SetUpPasswordStores({profile_form, account_form});
+
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  int profile_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(profile_form));
+  int account_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(account_form));
+
+  api::passwords_private::ChangeSavedPasswordParams params;
+  params.password = "new_pass";
+  params.username = "new_user";
+
+  profile_form.username_value = u"new_user";
+  profile_form.password_value = u"new_pass";
+  int new_profile_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(profile_form));
+  account_form.username_value = u"new_user";
+  account_form.password_value = u"new_pass";
+  int new_account_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(account_form));
+
+  auto result =
+      delegate.ChangeSavedPassword({profile_form_id, account_form_id}, params);
+  EXPECT_THAT(result->account_id, Pointee(new_account_form_id));
+  EXPECT_THAT(result->device_id, Pointee(new_profile_form_id));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInAccountStore) {
+  password_manager::PasswordForm profile_form = CreateSampleForm();
+  profile_form.password_value = u"different_pass";
+  password_manager::PasswordForm account_form = CreateSampleForm();
+  account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  SetUpPasswordStores({profile_form, account_form});
+
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  int account_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(account_form));
+
+  api::passwords_private::ChangeSavedPasswordParams params;
+  params.password = "new_pass";
+  params.username = "new_user";
+
+  account_form.username_value = u"new_user";
+  account_form.password_value = u"new_pass";
+  int new_account_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(account_form));
+
+  auto result = delegate.ChangeSavedPassword({account_form_id}, params);
+  EXPECT_THAT(result->account_id, Pointee(new_account_form_id));
+  EXPECT_THAT(result->device_id, IsNull());
 }
 
 // Checking callback result of RequestPlaintextPassword with reason Copy.

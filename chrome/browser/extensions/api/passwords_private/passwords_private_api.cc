@@ -22,6 +22,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -52,15 +53,17 @@ ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
       api::passwords_private::ChangeSavedPassword::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  if (!GetDelegate(browser_context())
-           ->ChangeSavedPassword(parameters->ids, parameters->params)) {
-    return RespondNow(Error(
-        "Could not change the password. Either the password is empty, the user "
-        "is not authenticated, vector of ids is empty or no matching password "
-        "could be found at least for one of the ids."));
+  auto new_ids = GetDelegate(browser_context())
+                     ->ChangeSavedPassword(parameters->ids, parameters->params);
+  if (new_ids.has_value()) {
+    return RespondNow(ArgumentList(
+        api::passwords_private::ChangeSavedPassword::Results::Create(
+            new_ids.value())));
   }
-
-  return RespondNow(NoArguments());
+  return RespondNow(Error(
+      "Could not change the password. Either the password is empty, the user "
+      "is not authenticated, vector of ids is empty or no matching password "
+      "could be found at least for one of the ids."));
 }
 
 // PasswordsPrivateRemoveSavedPasswordFunction

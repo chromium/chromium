@@ -42,7 +42,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // Fake implementation of ChangeSavedPassword. This succeeds if the current
   // list of entries has each of the ids, vector of ids isn't empty and if the
   // new password isn't empty.
-  bool ChangeSavedPassword(
+  absl::optional<api::passwords_private::CredentialIds> ChangeSavedPassword(
       const std::vector<int>& ids,
       const api::passwords_private::ChangeSavedPasswordParams& params) override;
   void RemoveSavedPasswords(const std::vector<int>& id) override;

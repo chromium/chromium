@@ -33,11 +33,13 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
 export type SavedPasswordEditedEvent =
-    CustomEvent<chrome.passwordsPrivate.ChangeSavedPasswordParams>;
+    CustomEvent<chrome.passwordsPrivate.CredentialIds>;
+
+const SAVED_PASSWORD_EDITED_EVENT_NAME = 'saved-password-edited';
 
 declare global {
   interface HTMLElementEventMap {
-    'saved-password-edited': SavedPasswordEditedEvent;
+    [SAVED_PASSWORD_EDITED_EVENT_NAME]: SavedPasswordEditedEvent;
   }
 }
 
@@ -524,20 +526,22 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
     PasswordManagerImpl.getInstance()
         .changeSavedPassword(idsToChange, params)
-        .finally(() => {
+        .then(newIds => {
           if (this.isPasswordViewPageEnabled_) {
-            this.dispatchChangePasswordEvent_(params);
+            this.dispatchChangePasswordEvent_(newIds);
           }
+        })
+        .finally(() => {
           this.close();
         });
   }
 
   private dispatchChangePasswordEvent_(
-      params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
-    this.dispatchEvent(new CustomEvent('saved-password-edited', {
+      newIds: chrome.passwordsPrivate.CredentialIds) {
+    this.dispatchEvent(new CustomEvent(SAVED_PASSWORD_EDITED_EVENT_NAME, {
       bubbles: true,
       composed: true,
-      detail: params,
+      detail: newIds,
     }));
   }
 
