@@ -189,7 +189,8 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
 
 // Tests that a deterministic memory dump request performs a GC.
 // TODO(crbug.com/1318974): Fix the flakiness on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1342599): Fix the falkiness on linux-chromeos-dbg.
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_Deterministic DISABLED_Deterministic
 #else
 #define MAYBE_Deterministic Deterministic
