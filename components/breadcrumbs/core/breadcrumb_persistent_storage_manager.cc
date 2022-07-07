@@ -49,8 +49,13 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
                       base::MemoryMappedFile::READ_WRITE_EXTEND);
 
   if (file_valid) {
+    // TODO(crbug.com/1327267):  Writing past the end of the memory-mapped file
+    // is suspected to cause a crash. Remove CHECK once the crash is understood.
+    const size_t remaining_length = kPersistedFilesizeInBytes - position;
+    CHECK(events.length() < remaining_length);
+
     char* data = reinterpret_cast<char*>(file.data());
-    strcpy(&data[position], events.data());
+    base::strlcpy(&data[position], events.c_str(), remaining_length);
   }
 }
 
