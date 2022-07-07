@@ -210,7 +210,6 @@
 <translation id="2100314319871056947">ცადეთ ტექსტის გაზიარება უფრო მცირე ფრაგმენტებად</translation>
 <translation id="2111511281910874386">გვერდზე გადასვლა</translation>
 <translation id="2122601567107267586">აპის გახსნა ვერ მოხერხდა</translation>
-<translation id="2126426811489709554">უზრუნველყოფილია Chrome-ის მიერ</translation>
 <translation id="2132122640199389833">ყველა მიბმული მოწყობილობის ამოშლა</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> დაიხურა</translation>
 <translation id="2134927169889348449">Chrome-ის გამოყენებით ეთანხმებით <ph name="BEGIN_TOS_LINK" />Google-ის მომსახურების პირობებს<ph name="END_TOS_LINK" />, ასევე, <ph name="BEGIN_ATOS_LINK" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_ATOS_LINK" />.</translation>
@@ -443,6 +442,7 @@
 <translation id="3334729583274622784">გსურთ ფაილის გაფართოების შეცვლა?</translation>
 <translation id="3341262203274374114">თვალის მიდევნების გაუქმება ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="3359667936385849800">სერვისის ამჟამინდელი პროვაიდერის გამოყენება</translation>
+<translation id="3365271666488085187">Chrome-ს შეუძლია ამ ინტერესის გათვალისწინება</translation>
 <translation id="3367813778245106622">სინქრონიზაციის დასაწყებად, შედით ხელახლა</translation>
 <translation id="3373979091428520308">ამ გვერდის სხვა მოწყობილობაზე გასაზიარებლად მასზე საჭიროა სინქრონიზაციის ჩართვა Chrome-ის პარამეტრებიდან</translation>
 <translation id="3374023511497244703">თქვენი სანიშნეები, ისტორია, პაროლები და სხვა Chrome მონაცემები აღარ იქნება სინქრონიზებული თქვენს Google ანგარიშთან</translation>
@@ -476,6 +476,7 @@
 <translation id="3542235761944717775">ხელმისაწვდომია <ph name="KILOBYTES" /> კბაიტი</translation>
 <translation id="3549657413697417275">თქვენს ისტორიაში ძიება</translation>
 <translation id="3557336313807607643">კონტაქტებში დამატება</translation>
+<translation id="3560491354538957576">საიტს შეუძლია ინტერესების განსაზღვრა</translation>
 <translation id="3563767357928833671">გაცვლის ბუფერის შიგთავსი ნაჩვენებია</translation>
 <translation id="3566923219790363270">Chrome ჯერ კიდევ მზადდება VR-ისთვის. გადატვირთეთ Chrome მოგვიანებით.</translation>
 <translation id="3568688522516854065">თქვენს სხვა მოწყობილობაზე არსებულ ჩანართებზე წვდომისთვის შედით სისტემაში და ჩართეთ სინქრონიზაცია</translation>

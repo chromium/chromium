@@ -380,6 +380,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1374844444528092021">El certificado que requiere la red "<ph name="NETWORK_NAME" />" no está instalado o ya no es válido. Obtén un nuevo certificado e intenta volver a conectarte.</translation>
 <translation id="1375321115329958930">Contraseñas guardadas</translation>
 <translation id="1375557162880614858">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS Flex?</translation>
+<translation id="1375938286942050085">Se completó la configuración; prepara tu dispositivo para jugar</translation>
 <translation id="137651782282853227">Las direcciones guardadas aparecerán aquí</translation>
 <translation id="1376771218494401509">Nombrar la &amp;ventana…</translation>
 <translation id="1377600615067678409">Omitir por ahora</translation>
@@ -394,6 +395,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="138784436342154190">¿Deseas restaurar la página de inicio predeterminada?</translation>
 <translation id="1388253969141979417">Puede usar el micrófono</translation>
 <translation id="1388728792929436380">Cuando se completen las actualizaciones, se reiniciará el dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1389601498324964367">Almacenamiento administrado por cuota</translation>
 <translation id="139013308650923562">Pueden usar las fuentes instaladas en el dispositivo</translation>
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> no se puede imprimir en <ph name="PRINTER_NAME" />. Comunícate con tu administrador.</translation>
@@ -1060,6 +1062,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1992924914582925289">Quitar del dispositivo</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="1995916364271252349">Controla qué información pueden usar y mostrar los sitios (ubicación, cámara, ventanas emergentes y más)</translation>
+<translation id="1997433994358798851">Chrome necesita permiso para conectarse a tu dispositivo mediante Bluetooth.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas de la barra de direcciones y del cuadro de búsqueda a tu motor de búsqueda predeterminado</translation>
@@ -1721,6 +1724,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="25899519884572181">Salir del modo de lectura</translation>
 <translation id="2593499352046705383">Antes de comenzar, asegúrate de tener una copia de seguridad de los datos. Cuando instales <ph name="DEVICE_OS" />, se reemplazarán todos los datos de tu disco duro. Obtén más información en g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Buscar en Google o escribir una URL</translation>
+<translation id="2599048253926156421">Se copió el nombre de usuario en el portapapeles</translation>
 <translation id="2602501489742255173">Desliza hacia arriba para comenzar</translation>
 <translation id="2603115962224169880">Limpiar la computadora</translation>
 <translation id="2603355571917519942">Voice Match está listo</translation>
@@ -1944,6 +1948,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2804043232879091219">No se pudo abrir el otro navegador</translation>
 <translation id="2804667941345577550">Saldrás de este sitio y de las pestañas abiertas</translation>
 <translation id="2804680522274557040">Se desactivó la cámara</translation>
+<translation id="280518252911523675">Si continúas sin ingresar la contraseña anterior, se borrarán los datos locales. Para volver a configurar este usuario, deberás acceder con tu Cuenta de Google.</translation>
 <translation id="2805539617243680210">¡Todo listo!</translation>
 <translation id="2805646850212350655">Sistema de encriptación de archivos de Microsoft</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
@@ -3059,6 +3064,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3895090224522145010">Nombre de usuario de Kerberos</translation>
 <translation id="389521680295183045">Los sitios pueden solicitar permiso para saber en qué momento estás usando activamente el dispositivo</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{una imagen}other{# imágenes}}</translation>
+<translation id="3897746662269329507">Tu <ph name="DEVICE_TYPE" /> se diseñó para los videojuegos. A continuación, se abrirá la app de Explorar, donde podrás acceder a cientos de juegos nuevos, ver ofertas y descubrir las funciones dedicadas para videojuegos que incluye tu dispositivo.</translation>
 <translation id="3898233949376129212">Idioma del dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> desea hacer lo siguiente: <ph name="FIRST_PERMISSION" /> y <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Seleccionar teclado</translation>
@@ -3209,6 +3215,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
 <translation id="4033711848170683365">Esta acción borrará permanentemente los datos de navegación de este dispositivo. Es posible que otras apps de tu <ph name="DEVICE_TYPE" /> utilicen las Cuentas de Google de este perfil. Puedes quitar esas cuentas en <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Es posible que los sitios seguros incluyan contenido no seguro, como ciertas imágenes o marcos web</translation>
+<translation id="4034741552964543387">Continuar sin datos locales</translation>
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4035758313003622889">Adminis&amp;trador de &amp;tareas</translation>
 <translation id="4035877632587724847">No permitir</translation>
@@ -3400,6 +3407,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4242577469625748426">Se produjo un error al instalar la configuración de la política en el dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">Se pausó la impresora</translation>
+<translation id="424423026762293842">Restablece tus datos locales</translation>
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
 <translation id="4246980464509998944">Comentarios adicionales:</translation>
 <translation id="424726838611654458">Abrir siempre en Adobe Reader</translation>
@@ -4957,6 +4965,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5792728279623964091">Presiona el botón de encendido</translation>
 <translation id="5793339252089865437">Si descargas la actualización mediante tu red móvil, es posible que se apliquen cargos por exceso de datos.</translation>
 <translation id="5793420564274426163">Confirmación de vinculación</translation>
+<translation id="5793430094159150686">Se cambió tu contraseña. Para restablecer los datos locales, debes ingresar la contraseña anterior.</translation>
 <translation id="5794034487966529952">El escritorio <ph name="DESK_TITLE" /> tiene <ph name="NUM_BROWSERS" /> ventanas del navegador abiertas</translation>
 <translation id="5794414402486823030">Abrir siempre con el visualizador del sistema</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
@@ -5881,6 +5890,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6700093763382332031">Bloqueo de la SIM de red móvil</translation>
 <translation id="6700480081846086223">Transmitir <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">No se pudo obtener el perfil.</translation>
+<translation id="6701824422332982935">Vuelve a cargar la página para usar estas extensiones</translation>
 <translation id="6702639462873609204">&amp;Editar</translation>
 <translation id="6703212423117969852">Vuelve a intentarlo más tarde desde Chrome.</translation>
 <translation id="6703254819490889819">Restablecer la copia de seguridad</translation>
@@ -7108,6 +7118,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7903742244674067440">Tienes certificados archivados que identifican estas autoridades de certificación</translation>
 <translation id="7903925330883316394">Utilidad: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Haz que los puertos de Linux estén disponibles para otros dispositivos en tu red.</translation>
+<translation id="7906440585529721295">Se borrarán los datos locales</translation>
 <translation id="7907837847548254634">Destacar brevemente el objeto enfocado</translation>
 <translation id="7908378463497120834">Lo sentimos, no se pudo activar al menos una partición en tu dispositivo de almacenamiento externo.</translation>
 <translation id="7909324225945368569">Cambia el nombre de tu perfil</translation>
@@ -7446,6 +7457,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="822050276545350872">A partir de ahora, no tendrás que esperar</translation>
 <translation id="8221491193165283816">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio las muestre, haz clic aquí.</translation>
 <translation id="822347941086490485">Buscando dispositivos HID…</translation>
+<translation id="8223573963214454788">Continuar y borrar datos</translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet.</translation>
 <translation id="8225265270453771718">Compartir la ventana de una aplicación</translation>
 <translation id="8226222018808695353">Prohibido</translation>
@@ -7546,6 +7558,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8314381333424235892">Falta la extensión o no está instalada</translation>
 <translation id="831440797644402910">No se puede abrir esta carpeta</translation>
 <translation id="8314835274931377415">¿Deseas iniciar la configuración de Accesibilidad con interruptores?</translation>
+<translation id="8317582043908962055">Reconocer texto de P&amp;DF</translation>
 <translation id="8317671367883557781">Agregar conexión de red</translation>
 <translation id="8319414634934645341">Uso extendido de la clave</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> administrará este dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -8279,7 +8292,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9052404922357793350">Seguir bloqueando</translation>
 <translation id="9053563360605707198">Imprimir de ambos lados</translation>
-<translation id="9053893665344928494">Recordar mi selección</translation>
 <translation id="9055636786322918818">Aplica la encriptación RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
 <translation id="9056810968620647706">No se encontraron coincidencias.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> desea acceder al siguiente contenido:</translation>
@@ -8431,6 +8443,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9203398526606335860">&amp;Perfiles activados</translation>
 <translation id="9203904171912129171">Seleccionar un dispositivo</translation>
 <translation id="9206889157914079472">Tomar notas con la pluma stylus cuando la pantalla está bloqueada</translation>
+<translation id="9208192193641542858">Los datos locales están protegidos por tu contraseña anterior. Si cambiaste tu contraseña recientemente, vuelve a probar con la anterior.</translation>
 <translation id="9209563766569767417">Revisando la configuración del contenedor de Linux</translation>
 <translation id="9209689095351280025">Los sitios no pueden usar cookies para rastrearte en la Web</translation>
 <translation id="9211177926627870898">Actualización necesaria</translation>

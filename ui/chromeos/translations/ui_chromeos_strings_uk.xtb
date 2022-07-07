@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Клавіатура хангул (ромаджа)</translation>
 <translation id="112387589102719461">Англійська (США), розкладка Дворака для програмістів</translation>
 <translation id="1134697384939541955">Англійська (США), розширена розкладка</translation>
+<translation id="1138691154716715755">Раніше цього місяця</translation>
 <translation id="1148097584170732637">Знайдено: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Недостатньо місця в локальній пам’яті. Потрібно додати <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, мережею керує адміністратор, відомості</translation>
 <translation id="4387004326333427325">Сертифікат автентифікації відхилений дистанційно</translation>
 <translation id="4394214039309501350">Зовнішнє посилання</translation>
+<translation id="4394980935660306080">Раніше цього тижня</translation>
 <translation id="4401287888955153199">Видобути все</translation>
 <translation id="4410695710508688828">Не вдалося виконати операцію видобування. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Створіть ярлики для своїх файлів</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Файл "<ph name="PATH" />" відкривається</translation>
 <translation id="4720185134442950733">Мережа мобільного передавання даних</translation>
 <translation id="4724850507808590449">Імпортовано <ph name="FILE_COUNT" /> фото</translation>
+<translation id="4725096204469550614">Раніше цього року</translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4737050008115666127">Посадка</translation>
 <translation id="4747271164117300400">Македонська</translation>

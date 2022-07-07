@@ -210,7 +210,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2100314319871056947">Intenta compartir el texto en fragmentos más pequeños</translation>
 <translation id="2111511281910874386">Ir a la página</translation>
 <translation id="2122601567107267586">No se pudo abrir la app</translation>
-<translation id="2126426811489709554">Con tecnología de Chrome</translation>
 <translation id="2132122640199389833">Quitar todos los dispositivos vinculados</translation>
 <translation id="213279576345780926">Pestaña <ph name="TAB_TITLE" /> cerrada</translation>
 <translation id="2134927169889348449">Si usas Chrome, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio de Google<ph name="END_TOS_LINK" /> y las <ph name="BEGIN_ATOS_LINK" />Condiciones del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_ATOS_LINK" />.</translation>
@@ -443,6 +442,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3334729583274622784">¿Quieres cambiar la extensión del archivo?</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
 <translation id="3359667936385849800">Usa tu proveedor de servicios actual</translation>
+<translation id="3365271666488085187">Chrome puede tener en cuenta este interés.</translation>
 <translation id="3367813778245106622">Volver a acceder para iniciar la sincronización</translation>
 <translation id="3373979091428520308">Para compartir esta página con otro dispositivo, activa la sincronización en la configuración de Chrome en el otro dispositivo</translation>
 <translation id="3374023511497244703">Ya no se sincronizarán con tu Cuenta de Google los favoritos, el historial, las contraseñas ni otros datos de Chrome.</translation>
@@ -476,6 +476,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3542235761944717775">KB disponibles: <ph name="KILOBYTES" /></translation>
 <translation id="3549657413697417275">Buscar en el historial</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
+<translation id="3560491354538957576">El sitio puede definir intereses.</translation>
 <translation id="3563767357928833671">Se muestra el contenido del Portapapeles</translation>
 <translation id="3566923219790363270">Chrome todavía se está preparando para la RV. Reinicia Chrome más tarde.</translation>
 <translation id="3568688522516854065">Para obtener las pestañas de tus otros dispositivos, accede a tu cuenta y activa la sincronización</translation>

@@ -1604,6 +1604,7 @@
 <translation id="264771271300359481">不允许任何网站使用剪贴板网站权限</translation>
 <translation id="2649896281375932517">由用户决定</translation>
 <translation id="2650049181907741121">当用户合上屏幕时执行的操作</translation>
+<translation id="2656559539624760733">不使用 Chrome 根存储区。</translation>
 <translation id="2658653824183107970">使用旧版 <ph name="CORS" /> 实现方案（而非新版 <ph name="CORS" />）</translation>
 <translation id="2660846099862559570">从不使用代理</translation>
 <translation id="2661628029848851543">允许受管理的帐号的所有使用情况</translation>
@@ -3482,6 +3483,12 @@
 
       如果未设置此政策，则默认情况下，受企业管理的用户和不受管理的用户都可以使用该功能。</translation>
 <translation id="487460824085252184">自动迁移，不询问用户是否同意。</translation>
+<translation id="48749493657448872">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
+      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书，除非已启用 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />。
+      如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
+
+      按照我们的计划，此政策将会从 <ph name="MAC_OS_NAME" /> 上的 <ph name="PRODUCT_NAME" /> 107 版中移除，该版本将不再支持在 <ph name="MAC_OS_NAME" /> 上使用旧版证书验证程序。
+      </translation>
 <translation id="4874982543810021567">禁止这些网站使用 WebUSB</translation>
 <translation id="4876805738539874299">启用最高 SSL 版本</translation>
 <translation id="4877402532842958110">此政策已被弃用，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。
@@ -4277,6 +4284,7 @@
 <translation id="5733040281451845496">如果此政策已启用，仅当在会话内察觉到首项用户活动后，系统才会开始应用电源管理延迟时间和会话时长限制。
 
       如果此政策已停用或未设置，系统会在会话启动后立即开始应用电源管理延迟时间和时长限制。</translation>
+<translation id="5733357908790472408">使用 Chrome 根存储区。</translation>
 <translation id="5735915264686983150">隐藏并禁用已停用的功能</translation>
 <translation id="5737394734996319911">无障碍功能“<ph name="PRODUCT_NAME" />”让使用屏幕阅读器的视障用户能够获取对无标签网络图片的说明。如果选择启用该功能，用户将能选择使用匿名 Google 服务为他们遇到的无标签网络图片提供自动说明。
 
@@ -4736,6 +4744,7 @@
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">报告机器标识信息</translation>
 <translation id="6265892395051519509">允许在这些网站上使用传感器</translation>
+<translation id="6266043141694454734">确定是否使用 Chrome 根存储区和内置的证书验证程序来验证服务器证书</translation>
 <translation id="6273015149273504999">
       以列表形式指定一系列无需用户干预即会在登录屏幕上静默安装且无法由用户卸载或停用的应用和扩展程序。
 
@@ -5721,6 +5730,23 @@
       如果 <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> 和 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 均未设置，用户便可自行选择主页。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="7258250780552783197">让您能够指定一系列要应用于 <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在有人在 <ph name="PRODUCT_OS_NAME" /> 中传输文件时调用。
+
+      <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户在源位置和目标位置之间传输某个文件时，该接口是否应将此文件发送给系统进行分析，以及要将哪些标记添加到此文件的分析请求中。如果相应的源位置和目标位置与某个标记关联的“enable”规则相匹配，那么只要此标记关联的“disable”规则不与此传输匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会分析此文件。<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> 规则由对列表定义，其中每个对都包含源位置列表和目标位置列表。<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> 用于定义规则应该应用到哪个文件系统。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置对应于哪个分析服务提供商。
+
+      如果您将 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 字段设为 1，<ph name="PRODUCT_OS_NAME" /> 需要先等到分析服务做出响应，再确定是否要允许传输。如果您将该字段设为任何其他整数值，<ph name="PRODUCT_OS_NAME" /> 就会立即允许传输。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 字段用于控制 <ph name="PRODUCT_OS_NAME" /> 是禁止还是允许传输受密码保护的文件。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 字段用于控制 <ph name="PRODUCT_OS_NAME" /> 是禁止还是允许传输因过大而无法分析的文件。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 字段用于确定该接口应要求用户为哪些标记输入理由，以绕过那些触发了可绕过式警告的扫描。如果该字段未设置，系统会假设不需要输入理由。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定数据有问题后向用户显示的警告消息。message 字段包含要向用户显示的文字，最多只能有 200 个字符。<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> 字段包含管理员提供的网址，用户可点击该网址以从客户提供的信息中详细了解相应操作被禁止的原因。<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 字段是可选字段，包含消息所用的语言。如果 <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 字段留空或值为“default”，则说明要显示的消息不是以用户所用语言设定的。tag 字段用于指定要针对哪类扫描显示消息。<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> 列表可包含零个或多个条目，每个条目都必须具有非空的 message 和 tag 字段。
+
+      此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="7258823566580374486">启用远程访问主机的屏蔽设置</translation>
 <translation id="7260204423892780600">控制 Google 助理的设置。</translation>
 <translation id="7261140115553020049">启用悬浮式工作区服务</translation>
@@ -7157,6 +7183,7 @@
 
       如果您未设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>
 <translation id="8836975838488342340">访问代码的有效时长（以秒为单位）。</translation>
+<translation id="883744045558067826">可能会使用 Chrome 根存储区，具体取决于功能启动流程。</translation>
 <translation id="8839799083601163225">此政策用于控制网络服务进程是否在已沙盒化的环境中运行。
       如果此政策已启用，网络服务进程将在已沙盒化的环境中运行。
       如果此政策已停用，网络服务进程将在未沙盒化的环境中运行。这会导致用户面临与在未沙盒化的环境中运行网络服务相关的更多安全风险。
@@ -7331,6 +7358,12 @@
 
       该政策值应该以毫秒为单位。值的范围限定在 30 秒到 24 小时之间。</translation>
 <translation id="9040042535845939426">设置“隐私保护屏”在登录屏幕上的状态</translation>
+<translation id="9046609670147277653">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书，并将 Chrome 根存储区作为公共信任来源。
+      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将不会使用 Chrome 根存储区。如果 <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> 政策可用且未停用，可能会使用系统证书验证程序或内置的验证程序进行验证。
+      如果此设置未配置，则既可能会使用 Chrome 根存储区，也可能会使用系统提供的根目录。
+
+      按照我们的计划，此政策将会从 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 上的 <ph name="PRODUCT_NAME" /> 111 版中移除，该版本将不再支持使用平台提供的证书验证程序和根目录。
+      </translation>
 <translation id="9050853837490399534">此政策用于控制相应设备是否应该更新至 Quick Fix Build。
 
       如果此政策的值设为与 Quick Fix Build 对应的令牌，那么只要更新未被其他政策阻止，该设备就会更新至相应的 Quick Fix Build。
@@ -7380,6 +7413,7 @@
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统便会报告这类设备上的登录/退出事件。</translation>
+<translation id="9087652369391570821">OnFileTransfer Chrome 企业版接口的配置政策</translation>
 <translation id="9088191250434406767">如果此政策未设置或已启用，用户便可借助 <ph name="GOOGLE_LENS_PRODUCT_NAME" />使用摄像头进行搜索。如果此政策已停用，那么即使可以使用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能，用户也不会在搜索框中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>

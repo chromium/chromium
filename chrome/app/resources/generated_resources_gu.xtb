@@ -381,6 +381,7 @@
 <translation id="1374844444528092021">નેટવર્ક "<ph name="NETWORK_NAME" />" દ્વારા આવશ્યક પ્રમાણપત્ર કાં તો ઇન્સ્ટોલ કરેલું નથી અથવા માન્ય નહીં હોય. કૃપા કરીને એક નવું પ્રમાણપત્ર લો અને ફરીથી કનેક્ટ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1375321115329958930">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="1375557162880614858">શું તમે ChromeOS Flex માટેનું બિલ્ટ-ઇન સ્ક્રીન રીડર, ChromeVox સક્રિય કરવા માગો છો?</translation>
+<translation id="1375938286942050085">સેટઅપ પૂર્ણ થયું! આગલી ગેમ રમવા માટે, તમારું ડિવાઇસ તૈયાર કરો</translation>
 <translation id="137651782282853227">સાચવેલા સરનામાં અહીં દેખાશે</translation>
 <translation id="1376771218494401509">નામ અને વિંડો…</translation>
 <translation id="1377600615067678409">હાલ પૂરતું છોડો</translation>
@@ -395,6 +396,7 @@
 <translation id="138784436342154190">ડિફૉલ્ટ શરૂઆતના પેજને રિસ્ટોર કરીએ?</translation>
 <translation id="1388253969141979417">તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="1388728792929436380">અપડેટ પૂર્ણ થશે ત્યારે તમારું <ph name="DEVICE_TYPE" /> ફરી શરૂ થશે.</translation>
+<translation id="1389601498324964367">ક્વોટા દ્વારા મેનેજ કરેલો સ્ટોરેજ</translation>
 <translation id="139013308650923562">તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="1390548061267426325">નિયમિત ટૅબ તરીકે ખોલો</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવા માટે અધિકૃત નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
@@ -1060,6 +1062,7 @@
 <translation id="1992924914582925289">ડિવાઇસમાંથી કાઢી નાખો</translation>
 <translation id="1994173015038366702">સાઈટ URL</translation>
 <translation id="1995916364271252349">સાઇટ કઈ માહિતીનો ઉપયોગ કરી શકે અને કઈ માહિતી બતાવી શકે તે નિયંત્રિત કરો (સ્થાન, કૅમેરા, પૉપ-અપ અને અન્ય ઘણું)</translation>
+<translation id="1997433994358798851">તમારા ડિવાઇસ સાથે કનેક્ટ થવા માટે, Chromeને બ્લૂટૂથનો ઉપયોગ કરવાની પરવાનગીની જરૂર છે</translation>
 <translation id="1997616988432401742">તમારા પ્રમાણપત્રો</translation>
 <translation id="1999115740519098545">સ્ટાર્ટઅપ પર</translation>
 <translation id="2000419248597011803">ઍડ્રેસ બાર અને શોધ બૉક્સમાંથી કેટલીક કુકી અને શોધને તમારા ડિફૉલ્ટ શોધ એન્જિન પર મોકલે છે</translation>
@@ -1722,6 +1725,7 @@
 <translation id="25899519884572181">રીડર મોડમાંથી બહાર નીકળો</translation>
 <translation id="2593499352046705383">શરૂ કરતા પહેલાં, ખાતરી કરો કે તમારી પાસે તમારા ડેટાનું બૅકઅપ ઉપલબ્ધ છે. <ph name="DEVICE_OS" />ને ઇન્સ્ટૉલ કરવાથી, તમારી હાર્ડ ડ્રાઇવ ઓવરરાઇટ થઈ જશે. g.co/flex/InstallGuide પર વધુ જાણો.</translation>
 <translation id="2594999711683503743">Googleમાં શોધો અથવા URL ટાઇપ કરો</translation>
+<translation id="2599048253926156421">વપરાશકર્તાનું નામ ક્લિપબોર્ડ પર કૉપિ કર્યું</translation>
 <translation id="2602501489742255173">શરૂ કરવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="2603115962224169880">કમ્પ્યુટર સાફ કરો</translation>
 <translation id="2603355571917519942">Voice Match તૈયાર છે</translation>
@@ -1945,6 +1949,7 @@
 <translation id="2804043232879091219">વૈકલ્પિક બ્રાઉઝર ખોલી શકાયું નથી</translation>
 <translation id="2804667941345577550">ખુલ્લા ટૅબ સહિત, આ સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="2804680522274557040">કૅમેરા બંધ કર્યો</translation>
+<translation id="280518252911523675">જો તમે તમારો જૂનો પાસવર્ડ દાખલ કર્યા વિના આગળ વધશો, તો તમારો સ્થાનિક ડેટા ડિલીટ કરવામાં આવશે. આ વપરાશકર્તાનું ફરીથી સેટઅપ કરવા માટે, તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરશો.</translation>
 <translation id="2805539617243680210">આગળ વધવા માટે તમે સંપૂર્ણ રીતે સજ્જ છો!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ઍપ</translation>
@@ -3060,6 +3065,7 @@
 <translation id="3895090224522145010">Kerberosનું વપરાશકર્તાનામ</translation>
 <translation id="389521680295183045">તમે સક્રિય રીતે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણકારી મેળવવા માટે સાઇટ પૂછી શકે છે</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{એક છબી}one{# છબી}other{# છબી}}</translation>
+<translation id="3897746662269329507">તમારું <ph name="DEVICE_TYPE" /> ગેમ રમવા માટે બનાવવામાં આવ્યું છે. આગળ વધવાથી Explore ઍપ ખુલશે કે જ્યાં તમે સેંકડો લેટેસ્ટ ગેમ ઍક્સેસ કરી શકો છો, ગેમ રમવાની ઑફરો જોઈ શકો છો અને તમારા ડિવાઇસ સાથે આવતી ગેમ રમવાની સુવિધાઓ શોધી શકો છો.</translation>
 <translation id="3898233949376129212">ડિવાઇસની ભાષા</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" />ની પરવાનગી માગે છે: <ph name="FIRST_PERMISSION" /> અને <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">કીબોર્ડ પસંદ કરો</translation>
@@ -3210,6 +3216,7 @@
 <translation id="4033471457476425443">નવું ફોલ્ડર ઉમેરો</translation>
 <translation id="4033711848170683365">આને કારણે બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી કાયમી રીતે ડિલીટ થઈ જશે. તમારી <ph name="DEVICE_TYPE" /> પર અન્ય ઍપ દ્વારા કદાચ આ પ્રોફાઇલમાંના Google એકાઉન્ટનો ઉપયોગ કરવામાં આવી શકે. તમે <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />માં જઈને આ એકાઉન્ટ કાઢી નાખી શકો છો.</translation>
 <translation id="4033963223187371752">સુરક્ષિત સાઇટ છબીઓ અથવા વેબ ફ્રેમ જેવું અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે</translation>
+<translation id="4034741552964543387">સ્થાનિક ડેટા વિના આગળ વધો</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4035758313003622889">&amp;કાર્ય વ્યવસ્થાપક</translation>
 <translation id="4035877632587724847">મંજૂરી આપશો નહીં</translation>
@@ -3401,6 +3408,7 @@
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4242577469625748426">આ ડિવાઇસ પર પૉલિસી સેટિંગ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">પ્રિન્ટર થોભાવેલું છે</translation>
+<translation id="424423026762293842">તમારો સ્થાનિક ડેટા રિસ્ટોર કરો</translation>
 <translation id="4244238649050961491">વધુ સ્ટાઇલસ ઍપ મેમરીનો શોધો</translation>
 <translation id="4246980464509998944">વધારાની કૉમેન્ટ:</translation>
 <translation id="424726838611654458">હંમેશાં Adobe Reader માં ખોલો</translation>
@@ -4959,6 +4967,7 @@
 <translation id="5792728279623964091">કૃપા કરીને તમારા પાવર બટન પર ટૅપ કરો</translation>
 <translation id="5793339252089865437">જો તમે તમારા મોબાઇલ નેટવર્ક પરથી અપડેટ ડાઉનલોડ કરો છો, તો આના કારણે વધારાનો શુલ્ક વસૂલવામાં આવી શકે છે.</translation>
 <translation id="5793420564274426163">જોડાણનું કન્ફર્મેશન</translation>
+<translation id="5793430094159150686">તમારો પાસવર્ડ બદલાઈ ગયો છે. તમારા સ્થાનિક ડેટાને રિસ્ટોર કરવા માટે, તમારે તમારો જૂનો પાસવર્ડ દાખલ કરવો જરૂરી છે.</translation>
 <translation id="5794034487966529952">ડેસ્ક <ph name="DESK_TITLE" />માં <ph name="NUM_BROWSERS" /> બ્રાઉઝર વિન્ડો ખુલ્લી છે</translation>
 <translation id="5794414402486823030">હંમેશા સિસ્ટમ દર્શક સાથે ખોલો</translation>
 <translation id="5794700615121138172">Linuxએ શેર કરેલા ફોલ્ડરો</translation>
@@ -5886,6 +5895,7 @@ USB ડિવાઇસ</translation>
 <translation id="6700093763382332031">સેલ્યુલર સિમ લૉક</translation>
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> કાસ્ટ કરો</translation>
 <translation id="6701535245008341853">પ્રોફાઇલ મેળવી શકાઈ નથી.</translation>
+<translation id="6701824422332982935">આ એક્સ્ટેન્શનનો ઉપયોગ કરવા માટે પેજને ફરીથી લોડ કરો</translation>
 <translation id="6702639462873609204">&amp;સંપાદિત કરો...</translation>
 <translation id="6703212423117969852">તમે પછીથી Chromeમાં જઈને ફરી પ્રયાસ કરી શકો છો.</translation>
 <translation id="6703254819490889819">બૅકઅપ રિસ્ટોર કરો</translation>
@@ -7112,6 +7122,7 @@ USB ડિવાઇસ</translation>
 <translation id="7903742244674067440">તમારી પાસે ફાઇલ પર પ્રમાણપત્રો છે જે આ પ્રમાણપત્ર અધિકારીઓને ઓળખે છે</translation>
 <translation id="7903925330883316394">ઉપયોગિતા: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">તમારા નેટવર્ક પરના અન્ય ડિવાઇસ માટે Linux પોર્ટને ઉપલબ્ધ કરાવો.</translation>
+<translation id="7906440585529721295">સ્થાનિક ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="7907837847548254634">જેના પર ફોકસ કરેલું હોય તે ઑબ્જેક્ટ વિશે ઝડપી હાઇલાઇટ બતાવો</translation>
 <translation id="7908378463497120834">માફ કરશો, તમારા બાહ્ય સ્ટોરેજ ઉપકરણ પર ઓછામાં ઓછું એક પાર્ટિશન માઉન્ટ કરી શકાયું નથી.</translation>
 <translation id="7909324225945368569">તમારી પ્રોફાઇલનું નામ બદલો</translation>
@@ -7445,6 +7456,7 @@ USB ડિવાઇસ</translation>
 <translation id="822050276545350872">હવેથી રાહ જોવાની કોઈ જરૂર નહીં પડે</translation>
 <translation id="8221491193165283816">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. આ સાઇટને તમને નોટિફિકેશન આપવાની મંજૂરી આપવા માટે, અહીં ક્લિક કરો.</translation>
 <translation id="822347941086490485">HID ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
+<translation id="8223573963214454788">આગળ વધો અને ડેટા ડિલીટ કરો</translation>
 <translation id="8225046344534779393">ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="8225265270453771718">ઍપ્લિકેશન વિંડો શેર કરો</translation>
 <translation id="8226222018808695353">પ્રતિબંધિત</translation>
@@ -7545,6 +7557,7 @@ USB ડિવાઇસ</translation>
 <translation id="8314381333424235892">એક્સ્ટેંશન ખૂટે છે અથવા અનઇન્સ્ટૉલ કરેલું છે</translation>
 <translation id="831440797644402910">આ ફોલ્ડર ખોલી શકાતું નથી</translation>
 <translation id="8314835274931377415">સ્વિચ ઍક્સેસનું સેટઅપ શરૂ કરીએ?</translation>
+<translation id="8317582043908962055">P&amp;DF ટેક્સ્ટને ઓળખો</translation>
 <translation id="8317671367883557781">નેટવર્ક કનેક્શન ઉમેરો</translation>
 <translation id="8319414634934645341">વિસ્તૃત કી ઉપયોગ</translation>
 <translation id="8321837372750396788">આ <ph name="DEVICE_TYPE" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવશે.</translation>
@@ -8279,7 +8292,6 @@ USB ડિવાઇસ</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>
 <translation id="9052404922357793350">બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="9053563360605707198">બન્ને બાજુએ પ્રિન્ટ કરો</translation>
-<translation id="9053893665344928494">મારી પસંદગી યાદ રાખો</translation>
 <translation id="9055636786322918818">RC4 એન્ક્રિપ્શન લાગુ કરો. આનાથી વિકલ્પનો ઉપયોગ કરવાનું તમારું જોખમ વધે છે, કારણ કે RC4 સાઇફર અસુરક્ષિત હોય છે.</translation>
 <translation id="9056810968620647706">કોઈ મેળ મળ્યાં નથી.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> નીચેનું કન્ટેન્ટ ઍક્સેસ કરવા માગે છે:</translation>
@@ -8431,6 +8443,7 @@ USB ડિવાઇસ</translation>
 <translation id="9203398526606335860">&amp;પ્રોફાઇલિંગ સક્ષમ</translation>
 <translation id="9203904171912129171">ઉપકરણ પસંદ કરો</translation>
 <translation id="9206889157914079472">લૉક સ્ક્રીનમાંથી સ્ટાઇલસ વડે નોંધ લેવાના સેટિંગ</translation>
+<translation id="9208192193641542858">સ્થાનિક ડેટા તમારા જૂના પાસવર્ડ વડે સુરક્ષિત છે. જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડને ફરીથી અજમાવી જુઓ.</translation>
 <translation id="9209563766569767417">Linux કન્ટેનરનું સેટઅપ ચેક કરી રહ્યાં છીએ</translation>
 <translation id="9209689095351280025">સાઇટ તમને વેબ પર બધે ટ્રૅક કરતી કુકીનો ઉપયોગ કરી શકશે નહીં</translation>
 <translation id="9211177926627870898">અપડેટ જરૂરી છે</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">engelska (USA) med Dvorak-tangentbord för programmerare</translation>
 <translation id="1134697384939541955">engelska (USA) med utökat tangentbord</translation>
+<translation id="1138691154716715755">Tidigare den här månaden</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> hittades.
     <ph name="LINE_BREAK1" />
     Det finns inte tillräckligt med utrymme i det lokala lagringsutrymmet. Det behövs ytterligare <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="4387004326333427325">Autentiseringscertifikatet godkändes inte av fjärrvärden</translation>
 <translation id="4394214039309501350">Extern länk</translation>
+<translation id="4394980935660306080">Tidigare den här veckan</translation>
 <translation id="4401287888955153199">Extrahera alla</translation>
 <translation id="4410695710508688828">Extraheringen misslyckades. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Skapa en genväg till dina filer</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Öppnar <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Mobilt datanätverk</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foton har säkerhetskopierats</translation>
+<translation id="4725096204469550614">Tidigare i år</translation>
 <translation id="4725511304875193254">Welsh corgi</translation>
 <translation id="4737050008115666127">Landning</translation>
 <translation id="4747271164117300400">makedonska</translation>

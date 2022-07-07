@@ -384,6 +384,7 @@
 <translation id="1374844444528092021">الشهادة المطلوبة من الشبكة "<ph name="NETWORK_NAME" />" لم يتم تثبيتها أو لم تعد صالحة.  يُرجى الحصول على شهادة جديدة وإعادة الاتصال من جديد.</translation>
 <translation id="1375321115329958930">كلمات المرور المحفوظة</translation>
 <translation id="1375557162880614858">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن لنظام التشغيل ChromeOS Flex؟</translation>
+<translation id="1375938286942050085">اكتملت عملية إعداد جهازك وحان وقت تجهيزه لتشغيل أحدث الألعاب</translation>
 <translation id="137651782282853227">ستظهر هنا العناوين المحفوظة</translation>
 <translation id="1376771218494401509">‏تسمية &amp;Window...</translation>
 <translation id="1377600615067678409">التخطي الآن</translation>
@@ -398,6 +399,7 @@
 <translation id="138784436342154190">هل تريد استعادة صفحة بدء التشغيل التلقائية؟</translation>
 <translation id="1388253969141979417">المواقع الإلكترونية التي يُسمح لها باستخدام الميكروفون</translation>
 <translation id="1388728792929436380">ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> عند اكتمال التحديثات.</translation>
+<translation id="1389601498324964367">مساحة التخزين المُدارة وفقًا للحصص</translation>
 <translation id="139013308650923562">المواقع الإلكترونية التي يُسمح لها باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="1390548061267426325">فتح كعلامة تبويب عادية</translation>
 <translation id="1390907927270446471">غير مسموح لحساب <ph name="PROFILE_USERNAME" /> باستخدام الطابعة <ph name="PRINTER_NAME" />. يُرجى التواصل مع المشرف.</translation>
@@ -1066,6 +1068,7 @@
 <translation id="1992924914582925289">إزالة من الجهاز</translation>
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
 <translation id="1995916364271252349">يمكنك التحكّم بالمعلومات التي يمكن للمواقع الإلكترونية استخدامها وعرضها (مثل معلومات الموقع الجغرافي، والكاميرا، والنوافذ المنبثقة، وغيرها).</translation>
+<translation id="1997433994358798851">‏يحتاج Chrome إلى إذن لاستخدام البلوتوث للاتصال بجهازك.</translation>
 <translation id="1997616988432401742">شهاداتك</translation>
 <translation id="1999115740519098545">عند بدء التشغيل</translation>
 <translation id="2000419248597011803">يُرسِل بعض ملفات تعريف الارتباط وعمليات البحث من شريط العناوين ومربّع البحث إلى محرِّك البحث التلقائي.</translation>
@@ -1727,6 +1730,7 @@
 <translation id="25899519884572181">الخروج من وضع القارئ</translation>
 <translation id="2593499352046705383">‏احرص قبل البدء على الاحتفاظ بنسخة احتياطية من بياناتك. سيؤدي تثبيت نظام التشغيل <ph name="DEVICE_OS" /> إلى استبدال جميع البيانات على محرّك الأقراص الثابتة. تعرّف على مزيد من المعلومات على الرابط g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">‏البحث في Google أو كتابة عنوان URL</translation>
+<translation id="2599048253926156421">تم نسخ اسم المستخدم إلى الحافظة.</translation>
 <translation id="2602501489742255173">مرِّر سريعًا للأعلى للبدء.</translation>
 <translation id="2603115962224169880">إزالة البرامج الضارة من جهاز الكمبيوتر</translation>
 <translation id="2603355571917519942">‏ميزة Voice Match جاهزة للاستخدام</translation>
@@ -1951,6 +1955,7 @@
 <translation id="2804043232879091219">تعذَّر فتح المتصفّح البديل</translation>
 <translation id="2804667941345577550">سيتم تسجيل خروجك من هذا الموقع الإلكتروني، بما في ذلك ضمن علامات التبويب المفتوحة.</translation>
 <translation id="2804680522274557040">تم إيقاف الكاميرا</translation>
+<translation id="280518252911523675">‏ستُحذَف البيانات المُخزّنة على جهازك في حال المتابعة بدون إدخال كلمة المرور القديمة. لإعداد الملف الشخصي لهذا المستخدم مرّة أخرى، عليك تسجيل الدخول باستخدام حسابك على Google.</translation>
 <translation id="2805539617243680210">انتهت عملية الإعداد.</translation>
 <translation id="2805646850212350655">‏نظام ترميز الملفات لـ Microsoft</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
@@ -3067,6 +3072,7 @@
 <translation id="3895090224522145010">‏اسم مستخدم Kerberos</translation>
 <translation id="389521680295183045">السماح للمواقع الإلكترونية بطلب إذن لمعرفة الأوقات التي تستخدم فيها الجهاز بشكل نشط</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{صورة واحدة}zero{# صورة}two{صورتان}few{# صور}many{# صورة}other{# صورة}}</translation>
+<translation id="3897746662269329507">إنّ جهاز <ph name="DEVICE_TYPE" /> الخاص بك مُصمّم لتشغيل الألعاب. سيتم فتح تطبيق "استكشاف" بعد ذلك ليتيح لك الوصول إلى مئات الألعاب الجديدة والاطّلاع على عروض الألعاب والتعرُّف على ميزات الألعاب المتوفّرة على جهازك.</translation>
 <translation id="3898233949376129212">لغة الجهاز</translation>
 <translation id="3898327728850887246">يحتاج <ph name="SITE_NAME" /> إلى الإذنَين: <ph name="FIRST_PERMISSION" /> و<ph name="SECOND_PERMISSION" />.</translation>
 <translation id="389901847090970821">تحديد لوحة مفاتيح</translation>
@@ -3214,6 +3220,7 @@
 <translation id="4033471457476425443">إضافة مجلد جديد</translation>
 <translation id="4033711848170683365">‏سيؤدي هذا الإجراء إلى حذف بيانات التصفُّح من هذا الجهاز نهائيًا. قد يتم استخدام حسابات Google في هذا الملف الشخصي من خلال تطبيقات أخرى على الجهاز <ph name="DEVICE_TYPE" />. يمكنك إزالة هذه الحسابات من خلال <ph name="BEGIN_LINK" /> <ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">قد تضمِّن المواقع الإلكترونية الآمنة محتوى غير آمن، مثلًا صور أو إطارات ويب غير آمنة.</translation>
+<translation id="4034741552964543387">المتابعة بدون البيانات المُخزّنة على الجهاز</translation>
 <translation id="4034824040120875894">الطابعة</translation>
 <translation id="4035758313003622889">مدير الم&amp;هام</translation>
 <translation id="4035877632587724847">عدم السماح</translation>
@@ -3405,6 +3412,7 @@
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4242577469625748426">تعذّر تثبيت إعدادات السياسة على الجهاز: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">الطابعة متوقفة مؤقتًا</translation>
+<translation id="424423026762293842">استعادة البيانات المُخزّنة على الجهاز</translation>
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
 <translation id="4246980464509998944">التعليقات الإضافية:</translation>
 <translation id="424726838611654458">‏الفتح دائمًا باستخدام Adobe Reader</translation>
@@ -4962,6 +4970,7 @@
 <translation id="5792728279623964091">يُرجى النقر على زر التشغيل.</translation>
 <translation id="5793339252089865437">قد يؤدي تنزيل التحديث عبر شبكة الجوّال إلى تحصيل رسوم زائدة منك.</translation>
 <translation id="5793420564274426163">تأكيد الإقران</translation>
+<translation id="5793430094159150686">تم تغيير كلمة المرور. لاستعادة بياناتك المُخزّنة على الجهاز، عليك إدخال كلمة المرور القديمة.</translation>
 <translation id="5794034487966529952">عدد نوافذ المتصفّح المفتوحة على سطح مكتب <ph name="DESK_TITLE" />: <ph name="NUM_BROWSERS" /></translation>
 <translation id="5794414402486823030">افتح دائمًا باستخدام عرض النظام</translation>
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
@@ -5894,6 +5903,7 @@
 <translation id="6700093763382332031">‏قفل شريحة SIM الخاص بشبكة الجوّال</translation>
 <translation id="6700480081846086223">إرسال <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">تعذر الحصول على الملف الشخصي.</translation>
+<translation id="6701824422332982935">إعادة تحميل الصفحة لاستخدام هذه الإضافات</translation>
 <translation id="6702639462873609204">تعد&amp;يل...</translation>
 <translation id="6703212423117969852">‏يمكنك إعادة المحاولة لاحقًا في Chrome.</translation>
 <translation id="6703254819490889819">استعادة النسخة الاحتياطية</translation>
@@ -7122,6 +7132,7 @@
 <translation id="7903742244674067440">لديك شهادات في الملف تحدد صلاحيات الشهادة هذه</translation>
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">‏اجعل منافذ نظام التشغيل Linux متاحة لأجهزة أخرى على الشبكة.</translation>
+<translation id="7906440585529721295">سيتم حذف البيانات المُخزّنة على الجهاز</translation>
 <translation id="7907837847548254634">تحديد سريع للعنصر الذي تم التركيز عليه</translation>
 <translation id="7908378463497120834">عذرًا، تعذر تركيب جزء واحد على الأقل من جهاز مساحة التخزين الخارجية.</translation>
 <translation id="7909324225945368569">إعادة تسمية ملفك الشخصي</translation>
@@ -7461,6 +7472,7 @@
 <translation id="822050276545350872">لا داعي للانتظار بعد الآن.</translation>
 <translation id="8221491193165283816">أنت تحظر الإشعارات عادةً. للسماح لهذا الموقع الإلكتروني بإرسال إشعارات لك، انقر هنا.</translation>
 <translation id="822347941086490485">‏جارٍ البحث عن أجهزة HID...</translation>
+<translation id="8223573963214454788">المتابعة وحذف البيانات</translation>
 <translation id="8225046344534779393">يُرجى التحقق من الاتصال بالإنترنت.</translation>
 <translation id="8225265270453771718">مشاركة نافذة التطبيق</translation>
 <translation id="8226222018808695353">محظور </translation>
@@ -7561,6 +7573,7 @@
 <translation id="8314381333424235892">إضافة مفقودة أو غير مُثبتة</translation>
 <translation id="831440797644402910">يتعذّر فتح هذا المجلد</translation>
 <translation id="8314835274931377415">هل تريد بدء عملية إعداد ميزة "الوصول عبر مفتاح تحكّم"؟</translation>
+<translation id="8317582043908962055">‏التعرُّف على النص في ملفات P&amp;DF</translation>
 <translation id="8317671367883557781">إضافة اتصال شبكة</translation>
 <translation id="8319414634934645341">استخدام المفتاح الموسع</translation>
 <translation id="8321837372750396788">ستتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
@@ -8298,7 +8311,6 @@
 <translation id="9050666287014529139">عبارة المرور</translation>
 <translation id="9052404922357793350">متابعة الحظر</translation>
 <translation id="9053563360605707198">الطباعة على كلا الجانبين</translation>
-<translation id="9053893665344928494">تذكَّر اختياري</translation>
 <translation id="9055636786322918818">‏فرض ترميز RC4: يؤدي استخدام هذا الخيار إلى زيادة المخاطر، لأن رموز RC4 غير آمنة.</translation>
 <translation id="9056810968620647706">لم يتم العثور على نتائج مطابقة.</translation>
 <translation id="9057007989365783744">هناك طلب من <ph name="SUPERVISED_USER_NAME" /> بالوصول إلى المحتوى التالي:</translation>
@@ -8450,6 +8462,7 @@
 <translation id="9203398526606335860">&amp;التوصيف مفعّل</translation>
 <translation id="9203904171912129171">اختيار جهاز</translation>
 <translation id="9206889157914079472">تدوين الملاحظات باستخدام قلم الشاشة في وضع قفل الشاشة</translation>
+<translation id="9208192193641542858">البيانات المُخزّنة على الجهاز محمية بكلمة مرور قديمة. في حال غيّرت كلمة المرور مؤخرًا، يمكنك تجربة استخدام كلمة المرور القديمة مرة أخرى.</translation>
 <translation id="9209563766569767417">‏جارٍ التحقُّق من إعداد حاوية نظام التشغيل Linux</translation>
 <translation id="9209689095351280025">لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط لتتبّع نشاط تصفحّك على الإنترنت.</translation>
 <translation id="9211177926627870898">التحديث مطلوب</translation>

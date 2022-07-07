@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Romaja hangul</translation>
 <translation id="112387589102719461">Inglés (EUA) con teclado Dvorak para programadores</translation>
 <translation id="1134697384939541955">Inglés (EUA) con teclado ampliado</translation>
+<translation id="1138691154716715755">Máis cedo este mes</translation>
 <translation id="1148097584170732637">Atopáronse <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Non hai espazo suficiente no almacenamento local. Precísase un espazo adicional de <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="4387004326333427325">Certificado de autenticación rexeitado de forma remota</translation>
 <translation id="4394214039309501350">Ligazón externa</translation>
+<translation id="4394980935660306080">Máis cedo esta semana</translation>
 <translation id="4401287888955153199">Extraer todo</translation>
 <translation id="4410695710508688828">Produciuse un erro durante a extracción. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Crea un atallo para acceder aos teus ficheiros</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Abrindo <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Rede de datos móbiles</translation>
 <translation id="4724850507808590449">Creouse unha copia de seguranza de <ph name="FILE_COUNT" /> fotos</translation>
+<translation id="4725096204469550614">Máis cedo este ano</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Aterraxe</translation>
 <translation id="4747271164117300400">Macedonio</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">Movendo <ph name="NUMBER_OF_ITEMS" /> elementos a <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
 <translation id="5098629044894065541">Hebreo</translation>
+<translation id="5102922915594634436">Xestionar cartafoles sincronizados</translation>
 <translation id="5109254780565519649">Produciuse un erro. Pode que non se restaurasen algúns elementos.</translation>
 <translation id="5110329002213341433">Inglés (Canadá)</translation>
 <translation id="5123433949759960244">Baloncesto</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Tiếng Anh (Mỹ) bằng bàn phím Dvorak cho lập trình viên</translation>
 <translation id="1134697384939541955">Tiếng Anh (Mỹ) bằng Bàn phím mở rộng</translation>
+<translation id="1138691154716715755">Đầu tháng này</translation>
 <translation id="1148097584170732637">Đã tìm thấy <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Không còn đủ dung lượng trong bộ nhớ cục bộ. Cần có thêm <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
 <translation id="4387004326333427325">Chứng chỉ xác thực bị từ chối từ xa</translation>
 <translation id="4394214039309501350">Đường liên kết ngoài</translation>
+<translation id="4394980935660306080">Đầu tuần này</translation>
 <translation id="4401287888955153199">Trích xuất tất cả</translation>
 <translation id="4410695710508688828">Thao tác trích xuất không thành công. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Tạo một lối tắt cho tệp của bạn</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Đang mở "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Mạng dữ liệu di động</translation>
 <translation id="4724850507808590449">Đã sao lưu <ph name="FILE_COUNT" /> ảnh</translation>
+<translation id="4725096204469550614">Đầu năm nay</translation>
 <translation id="4725511304875193254">Chó Corgi</translation>
 <translation id="4737050008115666127">Hạ cánh</translation>
 <translation id="4747271164117300400">Tiếng Macedonia</translation>

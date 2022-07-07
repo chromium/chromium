@@ -1645,6 +1645,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="264771271300359481">No permitir que ningún sitio use el permiso para sitios del portapapeles</translation>
 <translation id="2649896281375932517">Dejar que los usuarios decidan</translation>
 <translation id="2650049181907741121">Medida que se debe tomar cuando el usuario cierra la tapa</translation>
+<translation id="2656559539624760733">No utilizar Chrome Root Store</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
 <translation id="2661628029848851543">Se permiten todos los usos de cuentas administradas</translation>
@@ -3543,6 +3544,12 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
 <translation id="487460824085252184">Migra automáticamente y no solicita el consentimiento del usuario.</translation>
+<translation id="48749493657448872">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
+      Si la inhabilitas, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma, a menos que se habilite <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
+      Si no la estableces, podrá utilizarse el verificador de certificados integrado o el heredado.
+
+      Se planea quitar esta política en la versión 107 de <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> cuando se quite la compatibilidad con el verificador de certificados heredado de <ph name="MAC_OS_NAME" />.
+      </translation>
 <translation id="4874982543810021567">Bloquea WebUSB en estos sitios</translation>
 <translation id="4876805738539874299">Versión de SSL máxima habilitada</translation>
 <translation id="4877402532842958110">Esta política dejó de estar disponible. Usa la política "<ph name="URL_ALLOWLIST_POLICY_NAME" />" en su lugar.
@@ -4345,6 +4352,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5733040281451845496">Si habilitas la política, se iniciarán los tiempos de espera para la administración de la energía y los límites de extensión de la sesión después de la primera actividad del usuario en una sesión.
 
       Si la inhabilitas o no la estableces, se iniciarán los tiempos de espera para la administración de la energía y el límite de tiempo inmediatamente al iniciarse la sesión.</translation>
+<translation id="5733357908790472408">Usar Chrome Root Store</translation>
 <translation id="5735915264686983150">Oculta y bloquea las funciones inhabilitadas</translation>
 <translation id="5737394734996319911">La función de accesibilidad de <ph name="PRODUCT_NAME" />
           permite que los usuarios de lectores de pantalla para personas con discapacidad visual
@@ -4830,6 +4838,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6258658183356534534">Controlar la función de actualización de GREASE de optimización del cliente de usuario-cliente</translation>
 <translation id="6261643884958898336">Enviar la información de identificación de la máquina</translation>
 <translation id="6265892395051519509">Permite el acceso a los sensores en estos sitios</translation>
+<translation id="6266043141694454734">Determina si se usarán Chrome Root Store y el verificador de certificados integrado para verificar los certificados de servidores</translation>
 <translation id="6273015149273504999">
       Especifica una lista de apps y extensiones que se instalan de manera silenciosa en la pantalla de acceso, sin interacción del usuario y que este no puede desinstalar ni inhabilitar.
 
@@ -5827,6 +5836,23 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si no estableces <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> ni <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, los usuarios podrán elegir la página principal.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
+<translation id="7258250780552783197">Lista de parámetros de configuración para los servicios de Chrome Enterprise Connectors que se aplicarán al Enterprise Connector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se transfiere un archivo en <ph name="PRODUCT_OS_NAME" />.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para que se analice cuando se transfiere entre una fuente y un destino, y qué etiquetas debe incluir la solicitud de análisis del archivo. La solicitud de análisis incluirá la etiqueta correspondiente a una regla "enable" si la fuente y el destino coinciden con la regla asociada a esa etiqueta, siempre y cuando la regla "disable" que tenga la misma etiqueta no coincida con la transferencia. Si la solicitud incluye al menos 1 etiqueta, se realizará el análisis. Una regla <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> se define mediante una lista de pares, en la que cada par contiene una lista de fuentes y una lista de destinos. El campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> define para qué sistema de archivos se debe aplicar una regla.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> especifica el proveedor de servicios de análisis al que corresponde la configuración.
+
+      Si se establece el valor "1" en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, <ph name="PRODUCT_OS_NAME" /> esperará a recibir una respuesta del servicio de análisis para permitir la transferencia. Si se indica cualquier otro valor entero, <ph name="PRODUCT_OS_NAME" /> permitirá la transferencia de inmediato.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si <ph name="PRODUCT_OS_NAME" /> bloquea o permite el acceso a archivos protegidos con contraseña.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si <ph name="PRODUCT_OS_NAME" /> bloquea o permite los archivos que son demasiado grandes para ser analizados.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> se utiliza para determinar en qué etiquetas el conector requerirá que el usuario ingrese una justificación para evitar un análisis que derive en una advertencia evitable. Si no estableces el campo, se asumirá que no se requiere una justificación.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar el mensaje que verá el usuario cuando se muestre una advertencia después de que un análisis determine una infracción de política. El campo del mensaje incluye el texto que se le mostrará al usuario. Este puede tener un máximo de 200 caracteres. El administrador puede incluir una URL en el campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> a fin de que el usuario obtenga con un clic más información del cliente sobre los motivos para bloquear la acción. El campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> es opcional. Indica el idioma del mensaje. Si el campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> se deja vacío o con el valor "default", se utilizará el mensaje correspondiente cuando no haya ningún mensaje en el idioma del usuario. El campo de la etiqueta especifica para qué tipo de análisis se mostrará el mensaje. La lista <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> puede tener cero o más entradas, y cada una deberá tener completos los campos del mensaje y de la etiqueta.
+
+      Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="7258823566580374486">Habilitar modo de cortina en hosts de acceso remoto</translation>
 <translation id="7260204423892780600">Controla la configuración del Asistente de Google.</translation>
 <translation id="7261140115553020049">Habilitar el servicio Floating Workspace</translation>
@@ -7295,6 +7321,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces la política, se utilizará la configuración predeterminada específica de la plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> o <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. En <ph name="LINUX_OS_NAME" />, se producirá un error al intentar ejecutar un navegador alternativo.</translation>
 <translation id="8836975838488342340">El período durante el cual es válido el código de acceso (en segundos).</translation>
+<translation id="883744045558067826">Chrome Root Store se puede usar según el proceso de lanzamiento de funciones</translation>
 <translation id="8839799083601163225">Esta política controla si el proceso del servicio de red se ejecuta o no en una zona de pruebas.
       Si habilitas esta política, el proceso del servicio de red se ejecutará en una zona de pruebas.
       Si la inhabilitas, el proceso del servicio de red se ejecutará fuera de una zona de pruebas. Esta acción deja a los usuarios desprotegidos ante riesgos de seguridad adicionales relacionados con la ejecución del servicio de red fuera de una zona de pruebas.
@@ -7472,6 +7499,12 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       El valor de la política debe especificarse en milisegundos. Los valores están fijados en un intervalo de entre 30 segundos y 24 horas.</translation>
 <translation id="9040042535845939426">Establecer el estado de la pantalla de privacidad en la pantalla de acceso</translation>
+<translation id="9046609670147277653">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado con Chrome Root Store como fuente de confianza pública.
+      Si la inhabilitas, <ph name="PRODUCT_NAME" /> no usará Chrome Root Store. La verificación puede usar el verificador de certificados del sistema o el verificador integrado si la política <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> está disponible y habilitada.
+      Si no estableces esta configuración, se podrán usar las raíces provistas por el sistema o Chrome Root Store.
+
+      Se planea quitar esta política en la versión 111 de <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />, cuando se quiten las raíces que proporciona la plataforma y la compatibilidad para usar el verificador de certificados.
+      </translation>
 <translation id="9050853837490399534">Esta política controla si se debe actualizar el dispositivo a una versión de corrección rápida.
 
       Si se establece el valor de esta política en un token que se mapee a una versión de corrección rápida, se actualizará el dispositivo a la versión de corrección rápida correspondiente en caso de que otra política no haya bloqueado la actualización.
@@ -7521,6 +7554,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si estableces la política como falsa o no la estableces, no se informarán los eventos.
       Si la estableces como verdadera, se informarán los eventos de acceso y salida desde el dispositivo.</translation>
+<translation id="9087652369391570821">Política de configuración para Chrome Enterprise Connector OnFileTransfer</translation>
 <translation id="9088191250434406767">Si no estableces la política o la habilitas, los usuarios podrán realizar búsquedas con sus cámaras mediante <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si la inhabilitas, los usuarios no verán el botón de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda, independientemente de que sea compatible la búsqueda asistida por cámara mediante <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="9088433379343318874">Habilitar el proveedor de contenido de un usuario supervisado</translation>
 <translation id="9088444059179765143">Configurar el método de detección automática de la zona horaria</translation>

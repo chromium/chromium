@@ -210,7 +210,6 @@
 <translation id="2100314319871056947">Спробуйте надіслати текст меншими частинами</translation>
 <translation id="2111511281910874386">Перейти на сторінку</translation>
 <translation id="2122601567107267586">Не вдалося відкрити додаток</translation>
-<translation id="2126426811489709554">Технології Chrome</translation>
 <translation id="2132122640199389833">Видалити всі зв’язані пристрої</translation>
 <translation id="213279576345780926">Вкладку "<ph name="TAB_TITLE" />" закрито</translation>
 <translation id="2134927169889348449">Використовуючи Chrome, ви приймаєте <ph name="BEGIN_TOS_LINK" />Загальні положення та умови Google<ph name="END_TOS_LINK" /> і <ph name="BEGIN_ATOS_LINK" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_ATOS_LINK" />.</translation>
@@ -443,6 +442,7 @@
 <translation id="3334729583274622784">Змінити розширення файлу?</translation>
 <translation id="3341262203274374114">Не вдалося скасувати підписку. Сталася помилка.</translation>
 <translation id="3359667936385849800">Використовувати поточного постачальника послуг</translation>
+<translation id="3365271666488085187">Chrome може враховувати цей інтерес</translation>
 <translation id="3367813778245106622">Увійдіть знову, щоб почати синхронізацію</translation>
 <translation id="3373979091428520308">Щоб ця сторінка була доступна на іншому пристрої, увімкніть на ньому синхронізацію в налаштуваннях Chrome.</translation>
 <translation id="3374023511497244703">Закладки, історія, паролі й інші дані Chrome більше не синхронізуватимуться з обліковим записом Google</translation>
@@ -476,6 +476,7 @@
 <translation id="3542235761944717775">Доступно <ph name="KILOBYTES" /> КБ</translation>
 <translation id="3549657413697417275">Пошук в історії</translation>
 <translation id="3557336313807607643">Додати до контактів</translation>
+<translation id="3560491354538957576">Сайт може визначати інтереси</translation>
 <translation id="3563767357928833671">Показано вміст буфера обміну</translation>
 <translation id="3566923219790363270">Chrome готується до запуску VR. Перезапустіть Chrome пізніше.</translation>
 <translation id="3568688522516854065">Щоб мати доступ до вкладок з інших пристроїв, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>

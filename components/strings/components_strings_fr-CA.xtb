@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">Utilisation et mouvement de la caméra</translation>
 <translation id="191374271204266022">Copier au format JSON</translation>
 <translation id="1914326953223720820">Service de décompression</translation>
-<translation id="1915697529809968049">Utiliser Touch ID au lieu du code CVC?</translation>
 <translation id="1916770123977586577">Pour appliquer à ce site vos paramètres mis à jour, actualisez cette page</translation>
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919367280705858090">Obtenir de l'aide pour un message d'erreur spécifique</translation>
@@ -831,6 +830,7 @@
 <translation id="3226387218769101247">Miniatures</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3229041911291329567">Renseignements sur la version de votre appareil et de votre navigateur</translation>
+<translation id="3229277193950731405">Copier la chaîne de version</translation>
 <translation id="323107829343500871">Entrez le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Toujours détecter le contenu important sur ce site</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser le style de votre navigateur</translation>
@@ -1123,7 +1123,6 @@
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4073797364926776829">Affichez la carte</translation>
 <translation id="4075732493274867456">Le client et le serveur ne prennent pas en charge une version habituelle du protocole SSL et de la suite de chiffrement.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">La configuration du mandataire est réglée à l'utilisation d'une adresse URL de script .pac, et non des serveurs mandataires fixes.</translation>
 <translation id="4082393374666368382">Paramètres - Gestion</translation>
 <translation id="4087296516249690906">Bouton Créer un événement, appuyez sur Entrée pour rapidement créer un événement dans Google Agenda</translation>
@@ -1295,7 +1294,6 @@
 <translation id="4506176782989081258">Erreur de validation : <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">De communiquer avec l'administrateur système</translation>
 <translation id="450710068430902550">Partage avec l'administrateur</translation>
-<translation id="4508814173490746936">Impossible d'utiliser Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Entrée pour traduire cette page avec Google Traduction</translation>
 <translation id="4510487217173779431">Enveloppe Chou4</translation>
 <translation id="4514308731478712184">Désactiver la fonctionnalité Explorations</translation>
@@ -1969,7 +1967,6 @@
 <translation id="6406765186087300643">Enveloppe C0</translation>
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
-<translation id="6423385022588644828">Vérifiez vos cartes plus rapidement en vous servant de Touch ID à partir de maintenant</translation>
 <translation id="6425092077175753609">Matériel</translation>
 <translation id="6427730057873428458">Pli fenêtre</translation>
 <translation id="6428450836711225518">Vérifier votre numéro de téléphone</translation>
@@ -2738,7 +2735,6 @@ Détails supplémentaires :
 <translation id="8559762987265718583">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car la date et l'heure de votre appareil (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="8564182942834072828">Documents séparés/Copies non assemblées</translation>
 <translation id="8564985650692024650">Chromium recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
-<translation id="8574899947864779331">Utiliser Touch ID pour vérifier les cartes plus rapidement</translation>
 <translation id="8576310925653847813">Chaînes de cinéma maison</translation>
 <translation id="8577348305244205642">Votre carte virtuelle n'est plus valide</translation>
 <translation id="858637041960032120">Ajouter un numéro de téléphone</translation>
@@ -2894,7 +2890,6 @@ Détails supplémentaires :
 <translation id="9039213469156557790">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer le comportement de cette page.</translation>
 <translation id="9040464167025094690">Bouton Localiser mon appareil, appuyez sur la touche Entrée pour accéder à la fonctionnalité Localiser mon appareil dans le compte Google</translation>
 <translation id="9042617223719777575">Grande capacité</translation>
-<translation id="9044359186343685026">Utiliser Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide.</translation>
 <translation id="9050666287014529139">Phrase de passe</translation>

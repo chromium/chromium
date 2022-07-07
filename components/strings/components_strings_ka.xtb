@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="191374271204266022">JSON-ის სახით კოპირება</translation>
 <translation id="1914326953223720820">არქივიდან ამოღების სერვისი</translation>
-<translation id="1915697529809968049">გსურთ გამოიყენოთ Touch ID ნაცვლად CVC-ისა?</translation>
 <translation id="1916770123977586577">განახლებული პარამეტრების ამ საიტისთვის მისასადაგებლად საჭიროა გვერდის გადატვირთვა</translation>
 <translation id="1919345977826869612">რეკლამა</translation>
 <translation id="1919367280705858090">შეცდომის შესახებ კონკრეტულ შეტყობინებებთან დაკავშირებული დახმარება</translation>
@@ -831,6 +830,7 @@
 <translation id="3226387218769101247">ესკიზები</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="3229041911291329567">თქვენი მოწყობილობისა და ბრაუზერის ვერსიების ინფორმაცია</translation>
+<translation id="3229277193950731405">ვერსიის ფრაზის კოპირება</translation>
 <translation id="323107829343500871">შეიყვანეთ <ph name="CREDIT_CARD" />-ის CVC</translation>
 <translation id="3234666976984236645">ამ საიტზე ყოველთვის აღმოაჩინოს მნიშვნელოვანი შინაარსი</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, თქვენი ბრაუზერის იერსახის მოსარგებად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -1123,7 +1123,6 @@
 <translation id="4072486802667267160">თქვენი შეკვეთის დამუშავება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="4073797364926776829">ბარათის ნახვა</translation>
 <translation id="4075732493274867456">კლიენტისა და სერვერის მიერ არ არის მხარდაჭერილი SSL პროტოკოლის საერთო ვერსია ან შიფრატორების ნაკრები.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">პროქსის კონფიგურაცია დაყენებულია .pac სკრიპტის URL-ის გამოსაყენებლად, ფიქსირებული პროქსი სერვერების ნაცვლად.</translation>
 <translation id="4082393374666368382">პარამეტრები — მართვა</translation>
 <translation id="4087296516249690906">მოვლენის შექმნის ღილაკი, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Enter</translation>
@@ -1295,7 +1294,6 @@
 <translation id="4506176782989081258">შეცდომა დამოწმებისას: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">სისტემის ადმინისტრატორთან დაკავშირება</translation>
 <translation id="450710068430902550">ადმინისტრატორთან გაზიარება</translation>
-<translation id="4508814173490746936">Touch ID-ს გამოყენება ვერ მოხერხდა</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ამ გვერდის Google Translate-ით სათარგმნად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="4510487217173779431">Chou4 (კონვერტი)</translation>
 <translation id="4514308731478712184">პროცესების გამორთვა</translation>
@@ -1969,7 +1967,6 @@
 <translation id="6406765186087300643">C0 (კონვერტი)</translation>
 <translation id="6410264514553301377">შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC</translation>
 <translation id="6415778972515849510">Chromium-ს შეუძლია დაგეხმაროთ თქვენი Google ანგარიშის დაცვასა და პაროლის შეცვლაში.</translation>
-<translation id="6423385022588644828">დაადასტურეთ ბარათები უფრო სწრაფად ამიერიდან Touch ID-ს გამოყენების მეშვეობით</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">დაკეცვა ჭიშკრის ფორმით</translation>
 <translation id="6428450836711225518">დაადასტურეთ თქვენი ტელეფონის ნომერი</translation>
@@ -2738,7 +2735,6 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-თან პირადი კავშირის დამყარება შეუძლებელია, რადგან თქვენი მოწყობილობის თარიღი და დრო (<ph name="DATE_AND_TIME" />) არასწორია.</translation>
 <translation id="8564182942834072828">სხვადასხვა დოკუმენტი/შეურჩეველი ასლები</translation>
 <translation id="8564985650692024650">Chromium გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
-<translation id="8574899947864779331">Touch ID-ს გამოყენება ბარათების უფრო სწრაფად დასადასტურებლად</translation>
 <translation id="8576310925653847813">სახლის კინოთეატრის სისტემები</translation>
 <translation id="8577348305244205642">ვირტუალური ბარათი მიუწვდომელია</translation>
 <translation id="858637041960032120">დაამატეთ ტელეფონის ნომერი</translation>
@@ -2894,7 +2890,6 @@
 <translation id="9039213469156557790">გარდა ამისა, ეს გვერდი შეიცავს სხვა არაუსაფრთხო რესურსებს. ამ რესურსების დათვალიერება გადაცემისას სხვა პირებს შეუძლიათ, ხოლო თავდამსხმელს მათი მოდიფიკაცია გვერდის მუშაობის შეცვლის მიზნით შეუძლია.</translation>
 <translation id="9040464167025094690">ჩემი მოწყობილობის პოვნის ღილაკი, Google ანგარიშში თქვენი მოწყობილობის საპოვნელად დააჭირეთ კლავიშს Enter</translation>
 <translation id="9042617223719777575">დიდი მოცულობის</translation>
-<translation id="9044359186343685026">Touch ID-ს გამოყენება</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">თქვენ სცადეთ <ph name="DOMAIN" />-თან დაკავშირება, მაგრამ სერვერმა წარმოადგინა არასწორი სერტიფიკატი.</translation>
 <translation id="9050666287014529139">საიდუმლო ფრაზა</translation>

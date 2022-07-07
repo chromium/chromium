@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Desactivar el modo oscuro</translation>
 <translation id="1881188606372070653">Ve a la <ph name="BEGIN_LINK1" />página de ayuda legal<ph name="END_LINK1" /> para solicitar cambios de contenido por motivos legales. Es posible que se envíe a Google cierta información de la cuenta y el sistema. Usaremos los datos que nos proporciones para solucionar problemas técnicos y mejorar nuestros servicios, sujeto a nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y nuestras <ph name="BEGIN_LINK3" />Condiciones del Servicio<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
+<translation id="1904932688895783618">A continuación, se incluyen otros recursos útiles:</translation>
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1908234395526491708">Fallos de solicitudes de UDP</translation>
 <translation id="1932611479324127242">Corte de batería</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Probar los pasos para solucionar el problema</translation>
 <translation id="2016848882344942759">--sin etiqueta blanca--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Conéctate a una red y vuelve a cargar la página para ver el protector de pantalla.</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2085089206770112532">Disminuir el brillo de la pantalla</translation>
 <translation id="2105810540595158374">El dispositivo es un control de juegos.</translation>
@@ -773,6 +775,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7763470514545477072">Coincidencia del sufijo de dominio</translation>
 <translation id="7769672763586021400">ID del modelo</translation>
 <translation id="7784116172884276937">No hay ningún servidor DNS configurado</translation>
+<translation id="779591286616261875">Enviar informe nuevo</translation>
 <translation id="7799817062559422778">Modo claro</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -925,6 +928,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="9082718469794970195">Usar este video</translation>
 <translation id="9087578468327036362">Denuncia esta búsqueda</translation>
 <translation id="9088306295921699330">Uso actual</translation>
+<translation id="9092255287806472980">Tus comentarios ayudan a mejorar Chrome OS. Nuestro equipo los revisará. Debido a la gran cantidad de informes, no podremos enviarte una respuesta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Tendrás que desarmar el dispositivo</translation>
 <translation id="9098156406873149060">Guardar datos del usuario</translation>

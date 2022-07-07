@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="1198865190323699001">टच जेस्चरहरू</translation>
 <translation id="1201402288615127009">अर्को</translation>
+<translation id="1202112913213080585">रद्द गर</translation>
 <translation id="1206619573307042055">मार्की</translation>
 <translation id="1207086294218137981">अर्को कुनै पनि लेभल ४ शीर्षक छैन</translation>
 <translation id="1212770441379271564">अब आउने केही सर्टकटहरू ChromeVox का आदेशहरू नभए तापनि तिनीहरू Chrome बाट धेरैभन्दा धेरै लाभ लिनका लागि अत्यन्त उपयोगी छन्।
@@ -43,6 +44,7 @@
     Chrome ब्राउजरको मेनु खोल्न Alt+F थिच्नुहोस्।</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome लाई आवाज दिँदै</translation>
 <translation id="1225969361094801578">गाढा स्लेट मिश्रित खैरो</translation>
+<translation id="122928249241119550">कर्सर सारेर अघिल्लो वाक्यमा लैजाऊ</translation>
 <translation id="1230503547248836149">छनौट कार्य सुरु गर्नुहोस्</translation>
 <translation id="1236794971743289975">एन्डनोट</translation>
 <translation id="1237797094773582699">यसका साथै, चार औँलाले दायाँबाट बायाँतिर स्वाइप गरेर अघिल्लो मुख्य एलिमेन्टमा जान सकिन्छ। अहिले नै यसो गरी हेर्नुहोस्!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">डोजर निलो</translation>
 <translation id="2438712309510062123">सुझाव दिनुहोस्</translation>
 <translation id="2450814015951372393">चेक बाकस</translation>
+<translation id="2450992626945324272">कर्सर सारेर अर्को वाक्यमा लैजाऊ</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="2462626033734746142">रेडियो बटन समूह</translation>
 <translation id="2467741090055146971">चयन रद्द गर्नुहोस्</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">खैरो मिश्रित निलो</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ड्यास}other{# ड्यासहरू}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> देखि <ph name="END_PHRASE" /> सम्म चयन गर</translation>
 <translation id="4221012616705981690">अघिल्लो कुनै पनि सूची छैन</translation>
 <translation id="4225355998815256469">फारमसम्बन्धी नियन्त्रणहरू</translation>
 <translation id="4230834257931120629">हल्का स्लेट मिश्रित खैरो</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">बटन</translation>
 <translation id="6132506484792346370">एउटा सूचीबाकस वा कम्बो बाकस</translation>
+<translation id="613344593214611552">अघिल्लो वाक्य मेटाऊ</translation>
 <translation id="6142308968191113180">शीर्षक 4</translation>
 <translation id="6150023170003443621">पहेँलो मिश्रित हरियो</translation>
 <translation id="6158882249329863701">पङ्क्ति <ph name="TABLECELLROWINDEX" /> स्तम्भ <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">पृष्ठको तल जानुहोस्</translation>
 <translation id="6187190722927752226">अक्वाम्यारिन</translation>
 <translation id="6197361807490522975">गाढा निलो</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> को ठाउँमा <ph name="INSERT_PHRASE" /> राख</translation>
 <translation id="6236061028292614533">अर्को शीर्षक</translation>
 <translation id="6254901459154107917">अर्को सम्पादन योग्य पाठ क्षेत्र</translation>
 <translation id="6259464875943891919">बाहिर निस्कियो <ph name="TYPE" /></translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">विवरणको सूचीको विस्तार</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ एम्परसेण्ड}other{ # एम्परसेण्ड्स}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">अघिल्लो वर्ण मेटाऊ</translation>
 <translation id="738899727977260036">स्लेट मिश्रित निलो</translation>
 <translation id="7393979322571982935">ध्वनि तथा सेटिङ</translation>
 <translation id="739763518212184081">अघिल्लो रेखा</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">सुनौलो रड जस्तो हल्का पहेँलो</translation>
 <translation id="7543255924852002459">लेबल खारेज गर्नुहोस्</translation>
 <translation id="7552432549459840808">Chrome का उपयोगी सर्टकटहरू</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> अघि <ph name="INSERT_PHRASE" /> हाल</translation>
 <translation id="7569983096843329377">कालो</translation>
 <translation id="7579911500627256166">थोप्ला <ph name="DOT" /></translation>
 <translation id="7592060599656252486">केही</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">पाठ सम्पादन गर्नुहोस्, युआरएल प्रविष्टि</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">अघिल्लो रेडियो बटन</translation>
+<translation id="7696631298608145306">कर्सर सारेर अर्को शब्दमा लैजाऊ</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">उच्च गुणस्तरको आवाज</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">अधिकतम <ph name="X" /></translation>
 <translation id="84575901236241018">पहुँच कुञ्जी छ, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">व्याकरणसम्बन्धी त्रुटि छाड्दै</translation>
+<translation id="8465573210279050749">अघिल्लो शब्द मेटाऊ</translation>
 <translation id="847040613207937740">अर्को कुनै पनि जाँच बाकस छैन</translation>
 <translation id="8473540203671727883">माउसभन्दा तलको पाठ पढ्नुहोस्</translation>
 <translation id="8476408756881832830">ChromeVox बोलिरहेको बेला प्लेब्याक पज गर्नुहोस्</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}other{# ठाडो पाइपहरू}}</translation>
 <translation id="8741370088760768424">ध्यान दिनुहोस्: हालको पाठ खोलेर फेरि प्रयोग गर्न Search + Space की थिच्नुहोस्।</translation>
 <translation id="8743786158317878347">तालिकाहरू जस्ता संरचना गरिएको सामग्री प्रविष्टि गर्नुहोस्</translation>
+<translation id="8746846427395705317">कर्सर सारेर अघिल्लो शब्दमा लैजाऊ</translation>
 <translation id="8747966237988593539">क्रम मिलाइएको सूची</translation>
 <translation id="8749988712346667988">चाँदी</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> डाउनलोड भइसक्यो</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">अघिल्लो कुनै पनि खण्ड छैन</translation>
 <translation id="89720367119469899">भाग</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> मेटाऊ</translation>
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="8989104346085848538">ChromeVox मा अन रहेको जुनसुकै वाक् सुविधा अफ गर्न Control की थिच्नुहोस्।</translation>
 <translation id="8993737615451556423">तपाईं यो सुविधा प्रयोग गरी वाचन गरिने आवाजको गति बढाउन, कम गर्न र पज गर्न सक्नुहुन्छ</translation>

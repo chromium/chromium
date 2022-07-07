@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Tryckrörelser</translation>
 <translation id="1201402288615127009">Nästa</translation>
+<translation id="1202112913213080585">avbryt</translation>
 <translation id="1206619573307042055">markör</translation>
 <translation id="1207086294218137981">Det finns inga fler rubriker på nivå 4</translation>
 <translation id="1212770441379271564">De följande kortkommandona är inte ChromeVox-kommandon, men de är fortfarande mycket användbara för att få ut så mycket som möjligt av Chrome.
@@ -43,6 +44,7 @@
     Öppna Chrome-menyn genom att trycka på Alt + F.</translation>
 <translation id="1213216066620407844">ChromeVox – ger röst åt Chrome</translation>
 <translation id="1225969361094801578">Mörkt skiffergrå</translation>
+<translation id="122928249241119550">flytta till föregående mening</translation>
 <translation id="1230503547248836149">Textmarkeringens början</translation>
 <translation id="1236794971743289975">Slutnot</translation>
 <translation id="1237797094773582699">På liknande sätt kan du komma tillbaka till föregående avsnitt genom att svepa från höger till vänster med fyra fingrar. Testa nu!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">Dodgers-blå</translation>
 <translation id="2438712309510062123">Föreslå</translation>
 <translation id="2450814015951372393">Kryssruta</translation>
+<translation id="2450992626945324272">flytta till nästa mening</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2462626033734746142">Alternativknappsgrupp</translation>
 <translation id="2467741090055146971">avmarkera</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">Kadettblå</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{bindestreck}other{# bindestreck}}</translation>
+<translation id="4220024144662591089">välj från <ph name="START_PHRASE" /> till <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">Det finns ingen föregående lista</translation>
 <translation id="4225355998815256469">Formulärkontroller</translation>
 <translation id="4230834257931120629">Ljust skiffergrå</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">besökt</translation>
 <translation id="6122013438240733403">knapp</translation>
 <translation id="6132506484792346370">En listruta eller kombinationsruta</translation>
+<translation id="613344593214611552">radera föregående mening</translation>
 <translation id="6142308968191113180">Rubrik 4</translation>
 <translation id="6150023170003443621">Gulgrön</translation>
 <translation id="6158882249329863701">rad <ph name="TABLECELLROWINDEX" /> kolumn <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">Till slutet av sidan</translation>
 <translation id="6187190722927752226">Akvamarin</translation>
 <translation id="6197361807490522975">Mörkblå</translation>
+<translation id="6218813441317556731">ersätt <ph name="DELETE_PHRASE" /> med <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Nästa rubrik</translation>
 <translation id="6254901459154107917">Nästa redigerbara textområde</translation>
 <translation id="6259464875943891919">Lämnade <ph name="TYPE" />.</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">Detalj i beskrivningslista</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et-tecken}other{# et-tecken}}</translation>
 <translation id="737396357417333429">klickbart</translation>
+<translation id="7388656272362719103">radera föregående tecken</translation>
 <translation id="738899727977260036">Skifferblå</translation>
 <translation id="7393979322571982935">Ljud och inställningar</translation>
 <translation id="739763518212184081">Föregående rad</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">Ljust gullrisgul</translation>
 <translation id="7543255924852002459">Ignorera etikett</translation>
 <translation id="7552432549459840808">Användbara kortkommandon i Chrome</translation>
+<translation id="7553679324939294712">infoga <ph name="INSERT_PHRASE" /> före <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7579911500627256166">punkt <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Vissa</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">Textinmatning, webbadress</translation>
 <translation id="7685589220304187312">verktygsfält</translation>
 <translation id="7693840228159394336">Föregående alternativknapp</translation>
+<translation id="7696631298608145306">flytta till nästa ord</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7701196182766842984">autoslutför i lista</translation>
 <translation id="7713139339518499741">Naturlig röst</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">Högst <ph name="X" /></translation>
 <translation id="84575901236241018">har snabbtangenten <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Grammatikfelet lämnas</translation>
+<translation id="8465573210279050749">radera föregående ord</translation>
 <translation id="847040613207937740">Det finns inga fler kryssrutor</translation>
 <translation id="8473540203671727883">Läs upp text under muspekaren</translation>
 <translation id="8476408756881832830">Pausa uppspelningen när ChromeVox används</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{lodstreck}other{# lodstreck}}</translation>
 <translation id="8741370088760768424">Tips! Tryck på Sök + blanksteg för att aktivera det aktuella objektet.</translation>
 <translation id="8743786158317878347">öppna strukturerat innehåll, t.ex. tabeller</translation>
+<translation id="8746846427395705317">flytta till föregående ord</translation>
 <translation id="8747966237988593539">Sorterad lista</translation>
 <translation id="8749988712346667988">Silverfärgad</translation>
 <translation id="875769700429317857">Nedladdningen är klar <ph name="FILE_NAME" /></translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">Det finns inget föregående avsnitt</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">beskrivning</translation>
+<translation id="898089897833732740">ta bort <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Glöm</translation>
 <translation id="8989104346085848538">Tryck på Ctrl-tangenten för att stoppa en pågående ChromeVox-uppläsning.</translation>
 <translation id="8993737615451556423">Reglage som du kan använda för att göra uppläsningen snabbare eller långsammare eller pausa den</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ሃንጉል ሮማጃ</translation>
 <translation id="112387589102719461">እንግሊዝኛ (አሜሪካ) በፕሮግራመር ድቮራክ ቁልፍ ሰሌዳ</translation>
 <translation id="1134697384939541955">እንግሊዝኛ (አሜሪካ) በተራዘመ ቁልፍ ሰሌዳ</translation>
+<translation id="1138691154716715755">በዚህ ወር ቀደም ብሎ</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> ተገኝቷል።
     <ph name="LINE_BREAK1" />
     በአካባቢያዊ ማከማቻ ውስጥ በቂ ቦታ የለም። ተጨማሪ <ph name="FILE_SIZE" /> ያስፈልጋል።
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="4387004326333427325">የማረጋገጫ ምስክር ወረቀት በርቀት ተቀባይነት አላገኘም</translation>
 <translation id="4394214039309501350">ውጫዊ አገናኝ</translation>
+<translation id="4394980935660306080">በዚህ ሳምንት ቀደም ብሎ</translation>
 <translation id="4401287888955153199">ሁሉንም ያውጡ</translation>
 <translation id="4410695710508688828">የማውጣት ክወና አልተሳካም። <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ለፋይሎችዎ አቋራጭ ይፍጠሩ</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">«<ph name="PATH" />»ን በመክፈት ላይ</translation>
 <translation id="4720185134442950733">የተንቀሳቃሽ ውሂብ አውታረ መረብ</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ፎቶዎች በምትኬ ተቀምጠዋል</translation>
+<translation id="4725096204469550614">በዚህ ዓመት ቀደም ብሎ</translation>
 <translation id="4725511304875193254">ኮርጂ</translation>
 <translation id="4737050008115666127">ማረፊያ</translation>
 <translation id="4747271164117300400">መቄዶኒያኛ</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመውሰድ ላይ</translation>
 <translation id="509429900233858213">ስህተት አጋጥሟል።</translation>
 <translation id="5098629044894065541">ዕብራስጥ</translation>
+<translation id="5102922915594634436">የሰመሩ ማቀፊያዎችን አስተዳድር</translation>
 <translation id="5109254780565519649">ስህተት አጋጥሟል። አንዳንድ ንጥሎች ወደነበሩበት አልተመለሱም።</translation>
 <translation id="5110329002213341433">እንግሊዝኛ (ካናዳ)</translation>
 <translation id="5123433949759960244">ቅርጫት ኳስ</translation>

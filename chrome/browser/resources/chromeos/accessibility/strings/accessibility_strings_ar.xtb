@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">برتقالي</translation>
 <translation id="1198865190323699001">إيماءات اللمس</translation>
 <translation id="1201402288615127009">التالي</translation>
+<translation id="1202112913213080585">إلغاء</translation>
 <translation id="1206619573307042055">صورة بها نص متحرك</translation>
 <translation id="1207086294218137981">ليس هناك عنوان تالٍ من المستوى الرابع.</translation>
 <translation id="1212770441379271564">‏إن الاختصارات القليلة التالية ليست طلبات في ChromeVox، ولكنها تساعد كثيرًا على الاستفادة إلى أقصى حد من Chrome.
@@ -43,6 +44,7 @@
     ولفتح قائمة متصفّح Chrome، يُرجى الضغط على Alt+F.</translation>
 <translation id="1213216066620407844">‏ChromeVox - تزويد Chrome بالصوت</translation>
 <translation id="1225969361094801578">رمادي داكن مائل إلى الأزرق</translation>
+<translation id="122928249241119550">الانتقال إلى الجملة السابقة</translation>
 <translation id="1230503547248836149">بدء الاختيار</translation>
 <translation id="1236794971743289975">تعليق ختامي</translation>
 <translation id="1237797094773582699">يمكنك أيضًا التمرير بأربعة أصابع من اليسار إلى اليمين للانتقال إلى القسم السابق. جرِّب ذلك الآن.</translation>
@@ -214,6 +216,7 @@
 <translation id="2435422727584637732">أزرق سماوي خفيف</translation>
 <translation id="2438712309510062123">اقتراح</translation>
 <translation id="2450814015951372393">مربع الاختيار</translation>
+<translation id="2450992626945324272">الانتقال إلى الجملة التالية</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="2462626033734746142">مجموعة أزرار الاختيار</translation>
 <translation id="2467741090055146971">إلغاء الاختيار</translation>
@@ -490,6 +493,7 @@
 <translation id="42164919740161077">أزرق رمادي</translation>
 <translation id="4217571870635786043">إملاء</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{شرطة واحدة}zero{# dashes}two{شرطتان (#)}few{# شرطات}many{# شرطة}other{# من الشرطات}}</translation>
+<translation id="4220024144662591089">تحديد النص بدءًا من عبارة "<ph name="START_PHRASE" />" إلى عبارة "<ph name="END_PHRASE" />"</translation>
 <translation id="4221012616705981690">ليست هناك قائمة سابقة.</translation>
 <translation id="4225355998815256469">عناصر التحكُّم بالنموذج</translation>
 <translation id="4230834257931120629">رمادي فاتح مائل إلى الأزرق</translation>
@@ -760,6 +764,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">مربع القائمة أو مربع التحرير والسرد</translation>
+<translation id="613344593214611552">حذف الجملة السابقة</translation>
 <translation id="6142308968191113180">العنوان الرابع</translation>
 <translation id="6150023170003443621">أخضر مصفر</translation>
 <translation id="6158882249329863701">الصف <ph name="TABLECELLROWINDEX" /> العمود <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -769,6 +774,7 @@
 <translation id="6186305613600865047">انتقال إلى أسفل الصفحة</translation>
 <translation id="6187190722927752226">أزرق مخضر</translation>
 <translation id="6197361807490522975">أزرق داكن</translation>
+<translation id="6218813441317556731">استبدال "<ph name="DELETE_PHRASE" />" بـ "<ph name="INSERT_PHRASE" />"</translation>
 <translation id="6236061028292614533">العنوان التالي</translation>
 <translation id="6254901459154107917">منطقة النص التالي القابل للتعديل</translation>
 <translation id="6259464875943891919">تم الخروج من <ph name="TYPE" />.</translation>
@@ -922,6 +928,7 @@
 <translation id="7356610683936413584">تفاصيل قائمة الوصف</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{علامة عطف واحدة}zero{# ampersands}two{علامتا عطف (#)}few{# علامات عطف}many{# علامة عطف}other{# من علامات العطف}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">حذف الحرف السابق</translation>
 <translation id="738899727977260036">أزرق مائل إلى الرمادي</translation>
 <translation id="7393979322571982935">الأصوات والإعدادات</translation>
 <translation id="739763518212184081">السطر السابق</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">أصفر ذهبي فاتح</translation>
 <translation id="7543255924852002459">تجاهُل التصنيف</translation>
 <translation id="7552432549459840808">‏اختصارات Chrome المفيدة</translation>
+<translation id="7553679324939294712">إدخال "<ph name="INSERT_PHRASE" />" قبل "<ph name="BEFORE_PHRASE" />"</translation>
 <translation id="7569983096843329377">أسود</translation>
 <translation id="7579911500627256166">نقطة <ph name="DOT" /></translation>
 <translation id="7592060599656252486">بعض</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">‏تعديل النص، إدخال عنوان URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">زر الاختيار السابق</translation>
+<translation id="7696631298608145306">الانتقال إلى الكلمة التالية</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">صوت طبيعي</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">الحد الأقصى <ph name="X" /></translation>
 <translation id="84575901236241018">لديه مفتاح دخول، <ph name="KEY" /></translation>
 <translation id="8463645336674919227">جارٍ تجاهل الخطأ النحوي</translation>
+<translation id="8465573210279050749">حذف الكلمة السابقة</translation>
 <translation id="847040613207937740">ليس هناك مربع اختيار تالٍ.</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8476408756881832830">‏إيقاف التشغيل مؤقتًا أثناء تحدُّث ChromeVox</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{شريط رأسي واحد}zero{# vertical pipes}two{شريطان رأسيان (#)}few{# أشرطة رأسية}many{# شريطًا رأسيًا}other{# من الأشرطة الرأسية}}</translation>
 <translation id="8741370088760768424">معلومة: اضغط على مفتاح البحث + مفتاح المسافة لتنشيط العنصر الحالي.</translation>
 <translation id="8743786158317878347">دخول إلى المحتوى المنظم، مثل الجداول</translation>
+<translation id="8746846427395705317">الانتقال إلى الكلمة السابقة</translation>
 <translation id="8747966237988593539">قائمة مرتبة</translation>
 <translation id="8749988712346667988">فضي</translation>
 <translation id="875769700429317857">اكتمل تنزيل <ph name="FILE_NAME" />.</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">ليس هناك قسم سابق.</translation>
 <translation id="89720367119469899">خروج</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">حذف "<ph name="PHRASE" />"</translation>
 <translation id="8986362086234534611">حذف</translation>
 <translation id="8989104346085848538">‏لإيقاف ChromeVox عن الكلام، اضغط على مفتاح Control.</translation>
 <translation id="8993737615451556423">يوفِّر هذا الخيار عناصر تحكُّم لتسريع صوت القراءة أو إبطائه أو إيقافه مؤقتًا.</translation>

@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
 <translation id="1198865190323699001">ທ່າທາງສຳຜັດ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
+<translation id="1202112913213080585">ຍົກເລີກ</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">ບໍ່ມີຫົວຂໍ້ລະດັບ 4 ຖັດໄປ</translation>
 <translation id="1212770441379271564">ທາງລັດສອງສາມອັນຕໍ່ໄປບໍ່ແມ່ນຄຳສັ່ງ ChromeVox, ແຕ່ພວກມັນກໍເປັນປະໂຫຍດຫຼາຍເຊັ່ນກັນສຳລັບການໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.
@@ -43,6 +44,7 @@
 ເພື່ອເປີດເມນູໂປຣແກຣມທ່ອງເວັບ Chrome, ກະລຸນາກົດ Alt+F.</translation>
 <translation id="1213216066620407844">ChromeVox - ໃຫ້​ສຽງ​ກັບ Chrome</translation>
 <translation id="1225969361094801578">ສີເທົາອົມຟ້າເຂັ້ມ</translation>
+<translation id="122928249241119550">ຍ້າຍໄປຫາປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="1230503547248836149">ຈຸດເລີ່ມຕົ້ນສ່ວນທີ່ເລືອກ</translation>
 <translation id="1236794971743289975">ໝາຍເຫດທ້າຍເລື່ອງ</translation>
 <translation id="1237797094773582699">ໃນລັກສະນະດຽວກັນ, ທ່ານສາມາດປັດຈາກຂວາໄປຊ້າຍດ້ວຍສີ່ນິ້ວເພື່ອເລື່ອນໄປພາກສ່ວນກ່ອນໜ້າໄດ້. ລອງຕອນນີ້ເລີຍ!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">ສີຟ້າດອດເຈີບລູ</translation>
 <translation id="2438712309510062123">ແນະນຳ</translation>
 <translation id="2450814015951372393">ກ່ອງໝາຍຕິກ</translation>
+<translation id="2450992626945324272">ຍ້າຍໄປຫາປະໂຫຍກຕໍ່ໄປ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="2462626033734746142">ກຸ່ມ​ປຸ່ມ​ວິ​ທະ​ຍຸ</translation>
 <translation id="2467741090055146971">ບໍ່ເລືອກ</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">ສີຟ້າດຄາເດດບລູ</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ ເຄື່ອງໝາຍ -}other{ # ເຄື່ອງໝາຍ -}}</translation>
+<translation id="4220024144662591089">ເລືອກຈາກ <ph name="START_PHRASE" /> ເຖິງ <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">ບໍ່ມີລາຍການກ່ອນໜ້າ</translation>
 <translation id="4225355998815256469">ການຄວບຄຸມຟອມ</translation>
 <translation id="4230834257931120629">ສີຂຽວສະເລດອ່ອນ</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">ປຸ່ມ</translation>
 <translation id="6132506484792346370">ກ່ອງລາຍການ ຫຼື ກ່ອງຄອມໂບ</translation>
+<translation id="613344593214611552">ລຶບປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="6142308968191113180">ຫົວ​ຂໍ້ 4</translation>
 <translation id="6150023170003443621">ສີຂຽວອົມເຫຼືອງ</translation>
 <translation id="6158882249329863701">ແຖວ <ph name="TABLECELLROWINDEX" /> ຖັນ <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">ໂດດໄປຫາດ້ານລຸ່ມຂອງໜ້າ</translation>
 <translation id="6187190722927752226">ສີຂຽວອົມຟ້າ</translation>
 <translation id="6197361807490522975">ສີຟ້າເຂັ້ມ</translation>
+<translation id="6218813441317556731">ແທນທີ່ <ph name="DELETE_PHRASE" /> ດ້ວຍ <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">ຫົວ​ຂໍ້​ຕໍ່​ໄປ</translation>
 <translation id="6254901459154107917">ພື້ນທີ່ຂໍ້ຄວາມດັດແກ້ໄດ້ຕໍ່ໄປ</translation>
 <translation id="6259464875943891919">ອອກແລ້ວ <ph name="TYPE" /> .</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">ລາຍລະອຽດລາຍການຄຳອະທິບາຍ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ ເຄື່ອງໝາຍ &amp;}other{ # ເຄື່ອງໝາຍ &amp;}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">ລຶບຕົວອັກສອນກ່ອນໜ້າ</translation>
 <translation id="738899727977260036">ສີຟ້າອົມເທົາ</translation>
 <translation id="7393979322571982935">ສຽງ ແລະ ການຕັ້ງຄ່າ</translation>
 <translation id="739763518212184081">ແຖວຜ່ານ​ມາ</translation>
@@ -940,6 +947,7 @@
 <translation id="7533226154149229506">ສີເຫຼືອງໂກນເດິນຣອດອ່ອນ</translation>
 <translation id="7543255924852002459">ຍົກເລີກປ້າຍກຳກັບ</translation>
 <translation id="7552432549459840808">ທາງລັດທີ່ເປັນປະໂຫຍດຂອງ Chrome</translation>
+<translation id="7553679324939294712">ແຊກ <ph name="INSERT_PHRASE" /> ກ່ອນ <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">ສີ​ດໍາ</translation>
 <translation id="7579911500627256166">ຈໍ້າ <ph name="DOT" /></translation>
 <translation id="7592060599656252486">ບາງສ່ວນ</translation>
@@ -963,6 +971,7 @@
 <translation id="7684431668231950609">ດັດ​ແກ້​ຂໍ້​ຄວາມ​, ການປ້ອນເຂົ້າ URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ປຸ່ມ​ວິ​ທະ​ຍຸ​ຜ່ານ​ມາ​</translation>
+<translation id="7696631298608145306">ຍ້າຍໄປຫາຄຳຕໍ່ໄປ</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">ສຽງທຳມະຊາດ</translation>
@@ -1070,6 +1079,7 @@
 <translation id="8455868257606149352">ສູງສຸດ <ph name="X" /></translation>
 <translation id="84575901236241018">ມີປຸ່ມເຂົ້າຫາ, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">ອອກຈາກຂໍ້ຜິດພາດທາງໄວຍະກອນ</translation>
+<translation id="8465573210279050749">ລຶບຄຳກ່ອນໜ້າ</translation>
 <translation id="847040613207937740">ບໍ່ມີກ່ອງໝາຍຖັດໄປ</translation>
 <translation id="8473540203671727883">ເວົ້າຂໍ້ຄວາມຢູ່ກ້ອງເມົ້າ</translation>
 <translation id="8476408756881832830">ຢຸດການຫຼິ້ນໄວ້ຊົ່ວຄາວ ເມື່ອ ChromeVox ກຳລັງເວົ້າ</translation>
@@ -1106,6 +1116,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{ ເຄື່ອງໝາຍ |}other{ # ເຄື່ອງໝາຍ | ລວງຕັ້ງ}}</translation>
 <translation id="8741370088760768424">ຄຳບອກໃບ້: ກົດຊອກຫາ + ຍະຫວ່າງເພື່ອເປີດໃຊ້ລາຍການປັດຈຸບັນ.</translation>
 <translation id="8743786158317878347">ເຂົ້າເນື້ອ​ໃນທີ່ເຮັດເປັນໂຄງຮ່າງໄວ້​, ເຊັ່ນ​: ຕາ​ຕະ​ລາງ</translation>
+<translation id="8746846427395705317">ຍ້າຍໄປຫາຄຳກ່ອນໜ້າ</translation>
 <translation id="8747966237988593539">ລາຍການທີ່ສັ່ງແລ້ວ</translation>
 <translation id="8749988712346667988">ສີເງິນ</translation>
 <translation id="875769700429317857">ດາວໂຫລດສຳເລັດແລ້ວ <ph name="FILE_NAME" /></translation>
@@ -1133,6 +1144,7 @@
 <translation id="8970172509886453271">ບໍ່ມີພາກສ່ວນກ່ອນໜ້າ</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">ລຶບ <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="8989104346085848538">ເພື່ອຢຸດສຽງເວົ້າປັດຈຸບັນໃນ ChromeVox ໃດໆກໍຕາມ, ກະລຸນາກົດປຸ່ມ Control.</translation>
 <translation id="8993737615451556423">ໃຫ້ການຄວບຄຸມເພື່ອເພີ່ມຄວາມໄວ, ຜ່ອນຄວາມໄວ ແລະ ຢຸດສຽງການອ່ານໄວ້ຊົ່ວຄາວ</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ჰანგული რომაული</translation>
 <translation id="112387589102719461">ინგლისური (აშშ) საერთაშორისო პროგრამისტთა Dvorak კლავიატურით</translation>
 <translation id="1134697384939541955">ინგლისური (აშშ) გაფართოებული კლავიატურით</translation>
+<translation id="1138691154716715755">ამ თვის დასაწყისში</translation>
 <translation id="1148097584170732637">დისკი <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     ადგილობრივ მეხსიერებაში სივრცე არასაკმარისია. საჭიროა კიდევ <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
 <translation id="4387004326333427325">ავთენტიფიკაციის სერტიფიკატი დისტანციურად უარყოფილი იქნა</translation>
 <translation id="4394214039309501350">გარე ბმული</translation>
+<translation id="4394980935660306080">ამ კვირის დასაწყისში</translation>
 <translation id="4401287888955153199">ყველას ამოღება</translation>
 <translation id="4410695710508688828">ამოღების ოპერაცია ვერ შესრულდა. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">შექმენით თქვენი ფაილების მალსახმობი</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">მიმდინარეობს „<ph name="PATH" />“-ის გახსნა</translation>
 <translation id="4720185134442950733">მობილური ინტერნეტის ქსელი</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ფოტოს სარეზერვო ასლი შენახულია</translation>
+<translation id="4725096204469550614">ამ წლის დასაწყისში</translation>
 <translation id="4725511304875193254">კორგი</translation>
 <translation id="4737050008115666127">დაშვება</translation>
 <translation id="4747271164117300400">მაკედონიური</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის გადატანა „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="509429900233858213">შეცდომა მოხდა.</translation>
 <translation id="5098629044894065541">ებრაული</translation>
+<translation id="5102922915594634436">სინქრონიზებული საქაღალდეების მართვა</translation>
 <translation id="5109254780565519649">მოხდა შეცდომა. შესაძლოა, ზოგიერთი ერთეულის აღდგენა ვერ მოხერხებულიყო.</translation>
 <translation id="5110329002213341433">ინგლისური (კანადა)</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>

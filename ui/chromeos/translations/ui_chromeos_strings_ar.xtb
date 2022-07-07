@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">الهانغولية روماجا</translation>
 <translation id="112387589102719461">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح المطوّر الأمريكية Dvorak</translation>
 <translation id="1134697384939541955">الإنجليزية (الولايات المتحدة) باستخدام لوحة المفاتيح الموسَّعة</translation>
+<translation id="1138691154716715755">في وقت سابق من هذا الشهر</translation>
 <translation id="1148097584170732637">تم العثور على <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     لا توجد مساحة كافية في مساحة التخزين المحلية. ويتطلب وجود <ph name="FILE_SIZE" /> إضافي.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يدير المشرف هذه الشبكة، التفاصيل</translation>
 <translation id="4387004326333427325">تم رفض شهادة المصادقة عن بُعد</translation>
 <translation id="4394214039309501350">رابط خارجي</translation>
+<translation id="4394980935660306080">في وقت سابق من هذا الأسبوع</translation>
 <translation id="4401287888955153199">استخراج الكل</translation>
 <translation id="4410695710508688828">تعذّرت عملية استخراج الملفات. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">إنشاء اختصار للملفات</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">جارٍ فتح "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">شبكة بيانات الجوّال</translation>
 <translation id="4724850507808590449">تم نسخ <ph name="FILE_COUNT" /> من الصور احتياطيًا</translation>
+<translation id="4725096204469550614">في وقت سابق من هذا العام</translation>
 <translation id="4725511304875193254">كورجي</translation>
 <translation id="4737050008115666127">هبوط</translation>
 <translation id="4747271164117300400">المقدونية</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
 <translation id="5098629044894065541">العبرية</translation>
+<translation id="5102922915594634436">إدارة المجلدات التي تمت مزامنتها</translation>
 <translation id="5109254780565519649">حدث خطأ. وقد لا تتم استعادة بعض الملفات.</translation>
 <translation id="5110329002213341433">الإنجليزية (كندا)</translation>
 <translation id="5123433949759960244">كرة السلة</translation>

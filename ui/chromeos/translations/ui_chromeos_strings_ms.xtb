@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inggeris (AS) dengan papan kekunci Dvorak Pengatur Cara</translation>
 <translation id="1134697384939541955">Inggeris (AS) dengan papan kekunci Lanjutan</translation>
+<translation id="1138691154716715755">Awal bulan ini</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> ditemui.
     <ph name="LINE_BREAK1" />
     Ruang pada storan setempat tidak mencukupi. Tambahan sebanyak <ph name="FILE_SIZE" /> diperlukan.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
 <translation id="4387004326333427325">Sijil pengesahan ditolak dari jauh</translation>
 <translation id="4394214039309501350">Pautan luaran</translation>
+<translation id="4394980935660306080">Awal minggu ini</translation>
 <translation id="4401287888955153199">Ekstrak semua</translation>
 <translation id="4410695710508688828">Operasi ekstrak gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Buat pintasan untuk fail anda</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Membuka "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Rangkaian data mudah alih</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto disandarkan</translation>
+<translation id="4725096204469550614">Awal tahun ini</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Mendarat</translation>
 <translation id="4747271164117300400">Macedonia</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">Mengalihkan <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Ralat telah berlaku.</translation>
 <translation id="5098629044894065541">Bahasa Ibrani</translation>
+<translation id="5102922915594634436">Urus folder yang disegerakkan</translation>
 <translation id="5109254780565519649">Ralat telah berlaku. Sesetengah item mungkin belum dipulihkan.</translation>
 <translation id="5110329002213341433">Inggeris (Kanada)</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>

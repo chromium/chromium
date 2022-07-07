@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">କ୍ୟାମେରାର ବ୍ୟବହାର ଓ ଗତିବିଧି</translation>
 <translation id="191374271204266022">JSON ଭାବେ କପି କରନ୍ତୁ</translation>
 <translation id="1914326953223720820">ଅନ୍‍ଜିପ୍‌ ସେବା</translation>
-<translation id="1915697529809968049">CVC ପରିବର୍ତ୍ତେ Touch ID ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="1916770123977586577">ଏହି ସାଇଟ୍‌ରେ ଆପଣଙ୍କର ଅପ୍‌ଡେଟ୍ ହୋଇଥିବା ସେଟିଂସ୍‌କୁ ଲାଗୁ କରିବା ପାଇଁ, ଏହି ପୃଷ୍ଠାକୁ ରିଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1919345977826869612">ବିଜ୍ଞାପନ</translation>
 <translation id="1919367280705858090">କୌଣସି ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ତ୍ରୁଟି ମେସେଜ୍ ବିଷୟରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
@@ -829,6 +828,7 @@
 <translation id="3226387218769101247">ଥମ୍ବନେଲଗୁଡ଼ିକ</translation>
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3229041911291329567">ଆପଣଙ୍କର ଡିଭାଇସ୍ ଏବଂ ବ୍ରାଉଜର୍ ସଂସ୍କରଣ ବିଷୟରେ ସୂଚନା</translation>
+<translation id="3229277193950731405">ସଂସ୍କରଣ ଷ୍ଟ୍ରିଂ କପି କରନ୍ତୁ</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> ପାଇଁ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="3234666976984236645">ସର୍ବଦା ଏହି ସାଇଟ୍‍‍ରେ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବିଷୟବସ୍ତୁ ଚିହ୍ନଟ କରେ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -1120,7 +1120,6 @@
 <translation id="4072486802667267160">ଆପଣଙ୍କର ଅର୍ଡର୍ ପ୍ରକ୍ରିୟାକରଣ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋଇଛି। ଦୟାକରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4073797364926776829">କାର୍ଡ ଦେଖନ୍ତୁ</translation>
 <translation id="4075732493274867456">କ୍ଲାଏଣ୍ଟ ଓ ସର୍ଭର୍ ଏକ ସାଧାରଣ SSL ପ୍ରୋଟୋକଲ୍ ସଂସ୍କରଣ କିମ୍ବା ସାଇଫର୍ ସୁଟ୍‍ର ସମର୍ଥନ କରନ୍ତି ନାହିଁ।</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">ପ୍ରକ୍ସି କନଫିଗ୍‍‍ରେସନ୍ ଏକ .pac ସ୍କ୍ରିପ୍ଟ URL ବ୍ୟବହାର କରିବାକୁ ସେଟ୍ କରାଯାଇଛି, ସ୍ଥିରୀକୃତ ପ୍ରକ୍ସି ସର୍ଭର୍ ନୁହେଁ।</translation>
 <translation id="4082393374666368382">ସେଟିଂସ୍ - ପରିଚାଳନା</translation>
 <translation id="4087296516249690906">"ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ" ବଟନ୍, Google Calendarରେ ଶୀଘ୍ର ଏକ ନୂଆ ଇଭେଣ୍ଟ ତିଆରି କରିବାକୁ Enter ଦବାନ୍ତୁ</translation>
@@ -1292,7 +1291,6 @@
 <translation id="4506176782989081258">ଅନୁମୋଦନ ତ୍ରୁଟି <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକଙ୍କ ସହ ଯୋଗାଯୋଗ କରାଯାଉଛି</translation>
 <translation id="450710068430902550">ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ସହିତ ସେୟାର୍ କରାଯାଉଛି</translation>
-<translation id="4508814173490746936">ଟଚ୍ ID ବ୍ୟବହାର କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate ବ୍ୟବହାର କରି ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="4510487217173779431">Chou4 (ଏନଭଲପ୍)</translation>
 <translation id="4514308731478712184">ସନ୍ଧାନ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1966,7 +1964,6 @@
 <translation id="6406765186087300643">C0 (ଏନଭଲପ୍)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ପାଇଁ ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ ଏବଂ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="6415778972515849510">Chromium ଆପଣଙ୍କୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟକୁ ସୁରକ୍ଷିତ ରଖିବା ଏବଂ ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡ ବଦଳାଇବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
-<translation id="6423385022588644828">ବର୍ତ୍ତମାନ ଠାରୁ Touch ID ବ୍ୟବହାର କରି ଆପଣଙ୍କର କାର୍ଡଗୁଡ଼ିକୁ ଅତି ଶୀଘ୍ର ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6425092077175753609">ସାମଗ୍ରୀ</translation>
 <translation id="6427730057873428458">ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="6428450836711225518">ଆପଣଙ୍କ ଫୋନ୍ ନମ୍ବର ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -2735,7 +2732,6 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />କୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ, ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ତାରିଖ ଏବଂ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ ଅଛି।</translation>
 <translation id="8564182942834072828">ଅଲଗା ଡକ୍ୟୁମେଣ୍ଟଗୁଡ଼ିକ/ସଂଗ୍ରହ କରାଯାଇନଥିବା କପିଗୁଡ଼ିକ</translation>
 <translation id="8564985650692024650">ଆପଣ ଯଦି ଆପଣଙ୍କର <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ପାସ୍‌ୱାର୍ଡକୁ ଅନ୍ୟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chromium ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱାର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
-<translation id="8574899947864779331">କାର୍ଡଗୁଡ଼ିକୁ ଅତି ଶୀଘ୍ର ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ Touch ID ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8576310925653847813">ହୋମ ଥିଏଟର ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="8577348305244205642">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="858637041960032120">ଫୋନ୍‌ ନମ୍ବର୍‍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -2891,7 +2887,6 @@
 <translation id="9039213469156557790">ସେ ଯାହା ହେଉ, ଏହି ପୃଷ୍ଠାଟି ସେହି ଅନ୍ୟ ଉତ୍ସଗୁଡିକ ଅନ୍ତର୍ଭୂକ୍ତ କରେ ଯେଉଁଗୁଡିକ ସୁରକ୍ଷିତ ନୁହେଁ। ଗମନାଗମନ ସମୟରେ ଏହି ଉତ୍ସଗୁଡିକ ଅନ୍ୟମାନଙ୍କ ଦ୍ଵାରା ପରିଦୃଷ୍ଟ ହୋଇ ପାରିବ, ତଥା ପୃଷ୍ଠାଟିର ରୂପ ବା ଆଚରଣ ପରିବର୍ତ୍ତନ କରିବାକୁ ଏକ ଆକ୍ରମଣକାରୀଙ୍କ ଦ୍ଵାରା ରୂପାନ୍ତରିତ କରାଯାଇ ପାରିବ।</translation>
 <translation id="9040464167025094690">"Find My Device" ବଟନ, Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଖୋଜିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="9042617223719777575">ଅଧିକ କ୍ଷମତା</translation>
-<translation id="9044359186343685026">Touch ID ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ କିନ୍ତୁ ସର୍ଭର୍‌ ଏକ ଅବୈଧ ସାର୍ଟିଫିକେଟ୍‍ ଉପସ୍ଥାପନ କରିଛି।</translation>
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>

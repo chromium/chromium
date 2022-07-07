@@ -152,6 +152,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
 <translation id="1774796056689732716">Təqvim, <ph name="CURRENT_MONTH_YEAR" />, hazırda <ph name="DATE" /> seçilib.</translation>
 <translation id="1787955149152357925">Deaktiv</translation>
+<translation id="1797271123677381264">Şifrəni unutmuşam</translation>
 <translation id="181103072419391116">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="1812997170047690955">Ekranımda nə var?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ayrılmış cihazlar</translation>
 <translation id="4505050298327493054">Aktiv masa.</translation>
+<translation id="450584155212756404">Gəlişim Kanalı</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="4518404433291145981">Chromebook'u kiliddən çıxarmaq üçün əvvəlcə telefonunuzu kiliddən çıxarın</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" cihazı cütlənmək üçün icazə istəyir.</translation>
@@ -876,6 +878,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ərzində avtomatik çıxış edəcəksiniz.</translation>
 <translation id="6064463340679478396">Fayldan istifadə bitib</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
+<translation id="6074087755403037157">Beta Kanalı</translation>
 <translation id="6099678161144790572">Keçən ay redaktə edilib</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dilində danışıq faylları endirilib</translation>
@@ -1226,6 +1229,7 @@ Yeni quraşdırma</translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8203795194971602413">Sağ düymə</translation>
 <translation id="8209010265547628927">Sıfırlayın</translation>
+<translation id="8214996719228530800">Kanarya Kanalı</translation>
 <translation id="8219451629189078428">Bu müddət ərzində Chromebook cihazınız yanılı və şəbəkəyə qoşulu vəziyətdə olmalıdır. Doldurma qurğusu və ya adapter naqillərinin həm Chromebook cihazınıza, həm də elektrik yuvasına tam şəkildə taxılı olduğundan əmin olun. Chromebook cihazını söndürməyin.</translation>
 <translation id="8236042855478648955">Fasilə vaxtı</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Telefonun Batareyası <ph name="BATTERY_STATUS" /></translation>

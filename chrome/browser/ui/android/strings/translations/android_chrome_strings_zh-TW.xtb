@@ -209,7 +209,6 @@
 <translation id="2100314319871056947">請嘗試將要分享的文字分成多個片段</translation>
 <translation id="2111511281910874386">前往指定頁面</translation>
 <translation id="2122601567107267586">無法開啟應用程式</translation>
-<translation id="2126426811489709554">技術提供：Chrome</translation>
 <translation id="2132122640199389833">移除所有連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="2134927169889348449">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。</translation>
@@ -312,7 +311,7 @@
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
-<translation id="271033894570825754">新</translation>
+<translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2718846868787000099">如要以偏好的語言顯示內容，你所造訪的網站將可查看你的偏好設定</translation>
@@ -442,6 +441,7 @@
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
+<translation id="3365271666488085187">Chrome 可根據這項興趣顯示廣告</translation>
 <translation id="3367813778245106622">如要開始同步處理，請重新登入</translation>
 <translation id="3373979091428520308">如要將這個頁面分享至另一部裝置，你必須在另一部裝置的 Chrome 設定中開啟同步功能</translation>
 <translation id="3374023511497244703">你的書籤、歷史記錄、密碼和其他 Chrome 資料將停止同步到你的 Google 帳戶</translation>
@@ -475,6 +475,7 @@
 <translation id="3542235761944717775">可用空間：<ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">搜尋你的記錄</translation>
 <translation id="3557336313807607643">新增為聯絡人</translation>
+<translation id="3560491354538957576">網站可以定義興趣</translation>
 <translation id="3563767357928833671">已顯示剪貼簿內容</translation>
 <translation id="3566923219790363270">Chrome 仍在準備 VR 模組。請稍後再重新啟動 Chrome。</translation>
 <translation id="3568688522516854065">如要存取你在其他裝置上開啟的分頁，請登入並開啟同步處理功能</translation>

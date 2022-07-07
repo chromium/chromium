@@ -210,7 +210,6 @@
 <translation id="2100314319871056947">मजकूर लहान भागांमध्ये शेअर करून पहा</translation>
 <translation id="2111511281910874386">पेजवर जा</translation>
 <translation id="2122601567107267586">ॲप उघडता आले नाही</translation>
-<translation id="2126426811489709554">Chrome द्वारे समर्थित</translation>
 <translation id="2132122640199389833">सर्व लिंक केलेली डिव्हाइस काढून टाका</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद केले</translation>
 <translation id="2134927169889348449">Chrome वापरून, तुम्ही <ph name="BEGIN_TOS_LINK" />Google सेवा अटी<ph name="END_TOS_LINK" /> आणि <ph name="BEGIN_ATOS_LINK" />Google Chrome व ChromeOS अतिरिक्त सेवा अटी<ph name="END_ATOS_LINK" /> यांना सहमती दर्शवता.</translation>
@@ -443,6 +442,7 @@
 <translation id="3334729583274622784">फाइल एक्स्टेंशन बदलायचे आहे का?</translation>
 <translation id="3341262203274374114">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
+<translation id="3365271666488085187">Chrome या स्वारस्याबद्दल विचार करू शकते</translation>
 <translation id="3367813778245106622">सिंक सुरू करण्‍यासाठी पुन्हा साइन इन करा</translation>
 <translation id="3373979091428520308">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, दुसर्‍या डिव्हाइसवर Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
 <translation id="3374023511497244703">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
@@ -476,6 +476,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB उपलब्ध</translation>
 <translation id="3549657413697417275">तुमचा इतिहास शोधा</translation>
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
+<translation id="3560491354538957576">साइट स्वारस्याची व्याख्या सांगू शकते</translation>
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566923219790363270">Chrome अजूनही VR ची तयारी करत आहे. Chrome नंतर रीस्टार्ट करा.</translation>
 <translation id="3568688522516854065">तुमच्या इतर डिव्हाइसवरून तुमचे टॅब मिळविण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>

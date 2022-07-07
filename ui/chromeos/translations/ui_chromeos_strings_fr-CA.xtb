@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangûl romaja</translation>
 <translation id="112387589102719461">Anglais (É.-U.) avec clavier Dvorak pour développeurs</translation>
 <translation id="1134697384939541955">Anglais (É.-U.) avec clavier étendu</translation>
+<translation id="1138691154716715755">Plus tôt ce mois-ci</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> trouvées.
     <ph name="LINE_BREAK1" />
     Espace de stockage local disponible insuffisant. <ph name="FILE_SIZE" /> supplémentaires sont nécessaires.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puissance du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, renseignements</translation>
 <translation id="4387004326333427325">Certificat d'authentification rejeté à distance.</translation>
 <translation id="4394214039309501350">Lien externe</translation>
+<translation id="4394980935660306080">Plus tôt cette semaine</translation>
 <translation id="4401287888955153199">Tout extraire</translation>
 <translation id="4410695710508688828">Échec de l'opération d'extraction. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Créer un raccourci vers vos fichiers</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Ouverture de « <ph name="PATH" /> » en cours…</translation>
 <translation id="4720185134442950733">Réseau de données mobiles</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos sauvegardées</translation>
+<translation id="4725096204469550614">Plus tôt cette année</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Piste d'atterrissage</translation>
 <translation id="4747271164117300400">Macédonien</translation>

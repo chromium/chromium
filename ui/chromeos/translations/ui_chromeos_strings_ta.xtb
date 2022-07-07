@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ஹாங்குல் ரோமஜா</translation>
 <translation id="112387589102719461">ஆங்கிலம் (யூஎஸ்) - புரோகிராமர் டிவோர்க் கீபோர்டு</translation>
 <translation id="1134697384939541955">ஆங்கிலம் (யூஎஸ்) - நீட்டிக்கப்பட்ட கீபோர்டு</translation>
+<translation id="1138691154716715755">இந்த மாதத் தொடக்கத்தில்</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> உள்ளது.
     <ph name="LINE_BREAK1" />
     அகச் சேமிப்பகத்தில் போதுமான இடம் இல்லை. கூடுதலாக <ph name="FILE_SIZE" /> தேவை.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="4387004326333427325">அங்கீகரிப்புச் சான்றிதழ் தொலைநிலையில் நிராகரிக்கப்பட்டது</translation>
 <translation id="4394214039309501350">வெளிப்புற இணைப்பு</translation>
+<translation id="4394980935660306080">இந்த வாரத் தொடக்கத்தில்</translation>
 <translation id="4401287888955153199">அனைத்தையும் பிரி</translation>
 <translation id="4410695710508688828">பிரித்தெடுக்க முடியவில்லை. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">உங்கள் ஃபைல்களுக்கான ஷார்ட்கட்டை உருவாக்குதல்</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" காப்பகத்தைத் திறக்கிறது</translation>
 <translation id="4720185134442950733">மொபைல் டேட்டா நெட்வொர்க்</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> படங்கள் காப்புப் பிரதி எடுக்கப்பட்டன</translation>
+<translation id="4725096204469550614">இந்த ஆண்டு தொடக்கத்தில்</translation>
 <translation id="4725511304875193254">கோர்கி</translation>
 <translation id="4737050008115666127">லேண்டிங்</translation>
 <translation id="4747271164117300400">மாஸிடோனியன்</translation>

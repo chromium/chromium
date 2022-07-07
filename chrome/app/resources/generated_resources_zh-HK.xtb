@@ -382,6 +382,7 @@
 <translation id="1374844444528092021">網絡「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
 <translation id="1375321115329958930">已儲存的密碼</translation>
 <translation id="1375557162880614858">要啟用 ChromeOS Flex 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
+<translation id="1375938286942050085">設定完成！備妥裝置以進行接下來的遊戲</translation>
 <translation id="137651782282853227">已儲存的地址會在這裡顯示</translation>
 <translation id="1376771218494401509">為視窗命名…(&amp;W)</translation>
 <translation id="1377600615067678409">暫時略過</translation>
@@ -396,6 +397,7 @@
 <translation id="138784436342154190">要將起始網頁還原至預設值嗎？</translation>
 <translation id="1388253969141979417">已允許使用麥克風</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> 將在更新完成時重新啟動。</translation>
+<translation id="1389601498324964367">以配額管理的儲存空間</translation>
 <translation id="139013308650923562">可以使用裝置上安裝的字型</translation>
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
 <translation id="1390907927270446471">「<ph name="PROFILE_USERNAME" />」無權透過「<ph name="PRINTER_NAME" />」列印。請聯絡您的管理員。</translation>
@@ -1075,6 +1077,7 @@
 <translation id="1992924914582925289">從裝置中移除</translation>
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1995916364271252349">控制網站可使用和顯示的資料 (位置、攝錄機和彈出式視窗等等)</translation>
+<translation id="1997433994358798851">Chrome 需要權限才能使用藍牙連線至你的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
@@ -1739,6 +1742,7 @@
 <translation id="25899519884572181">離開閱讀器模式</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。請前往 g.co/flex/InstallGuide 以瞭解詳情。</translation>
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
+<translation id="2599048253926156421">使用者名稱已複製到剪貼簿</translation>
 <translation id="2602501489742255173">向上滑動即可開始</translation>
 <translation id="2603115962224169880">清理電腦</translation>
 <translation id="2603355571917519942">Voice Match 已準備就緒</translation>
@@ -1962,6 +1966,7 @@
 <translation id="2804043232879091219">無法開啟替代瀏覽器</translation>
 <translation id="2804667941345577550">您將會從此網站 (包括在開啟的分頁) 登出。</translation>
 <translation id="2804680522274557040">相機已關閉</translation>
+<translation id="280518252911523675">如果在沒有輸入舊密碼的情況下繼續操作，系統將刪除本機資料。你必須登入 Google 帳戶才能再次設定這位使用者。</translation>
 <translation id="2805539617243680210">大功告成！</translation>
 <translation id="2805646850212350655">Microsoft 加密檔案系統</translation>
 <translation id="2805756323405976993">應用程式</translation>
@@ -3077,6 +3082,7 @@
 <translation id="3895090224522145010">Kerberos 使用者名稱</translation>
 <translation id="389521680295183045">網站可以要求偵測您使用裝置的時間</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{1 張圖片}other{# 張圖片}}</translation>
+<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> 是專為遊戲量身打造。「探索」應用程式會隨即開啟，方便你存取數百款最新遊戲、查看遊戲優惠，並探索裝置內建的遊戲功能。</translation>
 <translation id="3898233949376129212">裝置語言</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 需要你批准：<ph name="FIRST_PERMISSION" />同埋<ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">選取鍵盤</translation>
@@ -3227,6 +3233,7 @@
 <translation id="4033471457476425443">新增資料夾</translation>
 <translation id="4033711848170683365">這會永久刪除此裝置上的瀏覽資料。<ph name="DEVICE_TYPE" /> 上的其他應用程式可能會使用此設定檔中的 Google 帳戶。您可在 <ph name="BEGIN_LINK" />「<ph name="SETTING_SECTION" />」&gt;「<ph name="ACCOUNTS_SECTION" />」<ph name="END_LINK" /> 移除這些帳戶。</translation>
 <translation id="4033963223187371752">即使是安全的網站，仍有可能嵌入不安全的圖片或網站頁框等內容</translation>
+<translation id="4034741552964543387">繼續但不使用本機資料</translation>
 <translation id="4034824040120875894">打印機</translation>
 <translation id="4035758313003622889">工作管理員(&amp;T)</translation>
 <translation id="4035877632587724847">不允許</translation>
@@ -3418,6 +3425,7 @@
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4242577469625748426">無法在裝置上安裝政策設定：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4243504193894350135">打印機已暫停</translation>
+<translation id="424423026762293842">還原本機資料</translation>
 <translation id="4244238649050961491">尋找更多觸控筆應用程式</translation>
 <translation id="4246980464509998944">其他意見：</translation>
 <translation id="424726838611654458">永遠在 Adobe Reader 中開啟</translation>
@@ -4974,6 +4982,7 @@
 <translation id="5792728279623964091">請輕按您的開關按鈕</translation>
 <translation id="5793339252089865437">如果您透過流動網絡下載更新，可能需要支付超額費用。</translation>
 <translation id="5793420564274426163">配對確認</translation>
+<translation id="5793430094159150686">你的密碼已變更。如要還原本機資料，你必須輸入舊密碼。</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" />電腦開咗 <ph name="NUM_BROWSERS" /> 個瀏覽器視窗</translation>
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
@@ -5898,6 +5907,7 @@
 <translation id="6700093763382332031">流動網絡 SIM 卡鎖定</translation>
 <translation id="6700480081846086223">投放 <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">無法取得設定檔。</translation>
+<translation id="6701824422332982935">重新載入頁面以使用這些擴充功能</translation>
 <translation id="6702639462873609204">編輯(&amp;E)…</translation>
 <translation id="6703212423117969852">您稍後可在 Chrome 再試一次。</translation>
 <translation id="6703254819490889819">還原備份</translation>
@@ -7125,6 +7135,7 @@
 <translation id="7903742244674067440">您的檔案具備可以識別這些憑證授權的憑證</translation>
 <translation id="7903925330883316394">程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">將 Linux 連接埠提供給網絡上的其他裝置使用。</translation>
+<translation id="7906440585529721295">本機資料將遭到刪除</translation>
 <translation id="7907837847548254634">快速突顯焦點物件</translation>
 <translation id="7908378463497120834">很抱歉，您的外部儲存裝置上至少有一個分區無法掛載。</translation>
 <translation id="7909324225945368569">重新命名設定檔</translation>
@@ -7463,6 +7474,7 @@
 <translation id="822050276545350872">從此無需再等</translation>
 <translation id="8221491193165283816">您通常會封鎖通知。如要允許此網站向您傳送通知，請按這裡。</translation>
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
+<translation id="8223573963214454788">繼續並刪除資料</translation>
 <translation id="8225046344534779393">檢查互聯網連線</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>
 <translation id="8226222018808695353">禁止</translation>
@@ -7563,6 +7575,7 @@
 <translation id="8314381333424235892">缺少或未安裝擴充程式</translation>
 <translation id="831440797644402910">無法開啟此資料夾</translation>
 <translation id="8314835274931377415">要開始設定按鈕控制功能嗎？</translation>
+<translation id="8317582043908962055">識別 P&amp;DF 文字</translation>
 <translation id="8317671367883557781">新增網絡連線</translation>
 <translation id="8319414634934645341">擴充金鑰使用方法</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
@@ -8296,7 +8309,6 @@
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>
 <translation id="9053563360605707198">雙面列印</translation>
-<translation id="9053893665344928494">記住我的選擇</translation>
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
 <translation id="9056810968620647706">找不到相符的項目。</translation>
 <translation id="9057007989365783744">「<ph name="SUPERVISED_USER_NAME" />」要求存取以下內容：</translation>
@@ -8448,6 +8460,7 @@
 <translation id="9203398526606335860">分析已啟用(&amp;P)</translation>
 <translation id="9203904171912129171">選取裝置</translation>
 <translation id="9206889157914079472">在上鎖畫面使用觸控筆筆記功能</translation>
+<translation id="9208192193641542858">本機資料受舊密碼保護。如果你最近變更了密碼，請重新輸入舊密碼。</translation>
 <translation id="9209563766569767417">正在檢查 Linux 容器設定</translation>
 <translation id="9209689095351280025">網站不能使用 Cookie 追蹤您的網絡活動</translation>
 <translation id="9211177926627870898">必須更新</translation>

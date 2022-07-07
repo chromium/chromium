@@ -152,6 +152,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1771761307086386028">Faire défiler vers la droite</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, le <ph name="DATE" /> est actuellement sélectionné.</translation>
 <translation id="1787955149152357925">Désactivé</translation>
+<translation id="1797271123677381264">Mot de passe oublié</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1812997170047690955">Qu'y a-t-il sur mon écran?</translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
+<translation id="450584155212756404">Version développeur</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4518404433291145981">Pour déverrouiller votre Chromebook, déverrouillez d'abord votre téléphone</translation>
 <translation id="4527045527269911712">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer.</translation>
@@ -876,6 +878,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6062360702481658777">Vous serez automatiquement déconnecté dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Fini d'utiliser le fichier</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
+<translation id="6074087755403037157">Version bêta</translation>
 <translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
 <translation id="6103838137565245112">système</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
@@ -1226,6 +1229,7 @@ Nouvelle installation</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8203795194971602413">Clic droit</translation>
 <translation id="8209010265547628927">Réinitialiser</translation>
+<translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché sur une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise de courant. N'éteignez pas votre Chromebook.</translation>
 <translation id="8236042855478648955">C'est le moment de prendre une pause</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone <ph name="BATTERY_STATUS" /></translation>

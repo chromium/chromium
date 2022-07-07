@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">Користење и движење на камерата</translation>
 <translation id="191374271204266022">Копирај како JSON</translation>
 <translation id="1914326953223720820">Услуга за отпакување</translation>
-<translation id="1915697529809968049">Да се користи Touch ID наместо CVC?</translation>
 <translation id="1916770123977586577">За да ги примените изменетите поставки на страницава, вчитајте ја повторно</translation>
 <translation id="1919345977826869612">Реклами</translation>
 <translation id="1919367280705858090">Добивање помош околу конкретна порака за грешка</translation>
@@ -1124,7 +1123,6 @@
 <translation id="4072486802667267160">Настана грешка при обработката на вашата нарачка. Обидете се повторно.</translation>
 <translation id="4073797364926776829">Прикажи картичка</translation>
 <translation id="4075732493274867456">Клиентот и серверот не ја поддржуваат верзијата на заедничкиот SSL-протокол или пакетот за шифрирање.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Конфигурацијата на прокси е поставена да користи URL на скрипта .pac, а не фиксни прокси-сервери.</translation>
 <translation id="4082393374666368382">Поставки - Управување</translation>
 <translation id="4087296516249690906">Копче за создавање настан, притиснете го копчето Enter за да набрзина создадете нов настан во „Календар на Google“</translation>
@@ -1296,7 +1294,6 @@
 <translation id="4506176782989081258">Грешка при проверката: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Да контактирате со системскиот администратор</translation>
 <translation id="450710068430902550">Споделување со администратор</translation>
-<translation id="4508814173490746936">Не може да се користи Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ја преведете страницава со „Преведи на Google“</translation>
 <translation id="4510487217173779431">Chou4 (плик)</translation>
 <translation id="4514308731478712184">Исклучи ги „Патувања“</translation>
@@ -1970,7 +1967,6 @@
 <translation id="6406765186087300643">C0 (плик)</translation>
 <translation id="6410264514553301377">Внесете ги датумот на истекување и CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium може да ви помогне да ја заштитите сметката на Google и да ја промените лозинката.</translation>
-<translation id="6423385022588644828">Отсега, потврдувајте ги картичките побрзо со Touch ID</translation>
 <translation id="6425092077175753609">Материјален</translation>
 <translation id="6427730057873428458">Превиткување како брошура</translation>
 <translation id="6428450836711225518">Потврдете го телефонскиот број</translation>
@@ -2739,7 +2735,6 @@
 <translation id="8559762987265718583">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот уред (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="8564182942834072828">Одделни документи/неподредени примероци</translation>
 <translation id="8564985650692024650">Chromium препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
-<translation id="8574899947864779331">Користете Touch ID за побрзо потврдување на картичките</translation>
 <translation id="8576310925653847813">Системи за домашно кино</translation>
 <translation id="8577348305244205642">Виртуелната картичка не е достапна</translation>
 <translation id="858637041960032120">Додај телефонски број</translation>
@@ -2895,7 +2890,6 @@
 <translation id="9039213469156557790">Понатаму, страницава опфаќа други ресурси што не се безбедни. Нив може да ги гледаат други лица при преносот и може да ги менува напаѓач за да го смени однесувањето на страницата.</translation>
 <translation id="9040464167025094690">Копче „Најди го мојот уред“, притиснете Enter за да отидете на „Најди го мојот уред“ во сметката на Google</translation>
 <translation id="9042617223719777575">Голем капацитет</translation>
-<translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Се обидовте да го добиете <ph name="DOMAIN" />, но серверот даде неважечки сертификат.</translation>
 <translation id="9050666287014529139">Пристапна фраза</translation>

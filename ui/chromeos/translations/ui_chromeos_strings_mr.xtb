@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">हँगल Romaja</translation>
 <translation id="112387589102719461">ड्वोझॅक प्रोग्रामर कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="1134697384939541955">विस्‍तारित कीबोर्डसह इंग्रजी (यूएस)</translation>
+<translation id="1138691154716715755">या महिन्याच्या सुरुवातीला</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> आढळले.
     <ph name="LINE_BREAK1" />
     स्थानिक स्टोरेजमध्ये पुरेशी जागा उपलब्ध नाही. अतिरिक्त <ph name="FILE_SIZE" /> आवश्यक आहे.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="4387004326333427325">ऑथेंटिकेशन प्रमाणपत्र रिमोट पद्धतीने नाकारले</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
+<translation id="4394980935660306080">या आठवड्याच्या सुरुवातीला</translation>
 <translation id="4401287888955153199">सर्व काढा</translation>
 <translation id="4410695710508688828">काढून टाकता आले नाही. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">तुमच्या फाइलसाठी शॉर्टकट तयार करणे</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" उघडत आहे</translation>
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
+<translation id="4725096204469550614">या वर्षाच्या सुरुवातीला</translation>
 <translation id="4725511304875193254">कॉर्गी</translation>
 <translation id="4737050008115666127">लँड करत आहे</translation>
 <translation id="4747271164117300400">मॅसे‍डोनियन</translation>

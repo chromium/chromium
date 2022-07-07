@@ -123,6 +123,7 @@
 <translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
 <translation id="1881188606372070653">કાનૂની કારણોસર કન્ટેન્ટમાં ફેરફારની વિનંતી કરવા માટે <ph name="BEGIN_LINK1" />કાનૂની સહાય પેજ<ph name="END_LINK1" /> પર જાઓ. એકાઉન્ટ અને સિસ્ટમની અમુક માહિતી Googleને મોકલવામાં આવી શકે છે. તમે અમને જે માહિતી આપશો, તેનો ઉપયોગ અમે અમારી <ph name="BEGIN_LINK2" />પ્રાઇવસી પૉલિસી<ph name="END_LINK2" /> અને <ph name="BEGIN_LINK3" />સેવાની શરતો<ph name="END_LINK3" />ને આધીન રહીને ટેક્નિકલ સમસ્યાઓના નિવારણ માટે અને અમારી સેવાઓને બહેતર બનાવવા માટે કરીશું.</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
+<translation id="1904932688895783618">અહીં કેટલાક અન્ય સહાયરૂપ સંસાધનો આપવામાં આવ્યા છે:</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="1932611479324127242">બૅટરી કટઑફ</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">સમસ્યા નિવારણના પગલાં અજમાવી જુઓ</translation>
 <translation id="2016848882344942759">--કોઈ સફેદ-લેબલ નથી--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને સ્ક્રીન સેવર જોવા માટે પેજને ફરીથી લોડ કરો.</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2085089206770112532">ડિસ્પ્લેનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="2105810540595158374">ડિવાઇસ એક ગેમ કન્ટ્રોલર છે.</translation>
@@ -772,6 +774,7 @@
 <translation id="7763470514545477072">ડોમેન સફિક્સનો મેળ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
 <translation id="7784116172884276937">કોઈપણ DNS સર્વરનું સેટઅપ કરવામાં આવ્યું નથી</translation>
+<translation id="779591286616261875">નવો રિપોર્ટ મોકલો</translation>
 <translation id="7799817062559422778">લાઇટ મોડ</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
@@ -924,6 +927,7 @@
 <translation id="9082718469794970195">આ વીડિયોનો ઉપયોગ કરો</translation>
 <translation id="9087578468327036362">આ ક્વેરીની જાણ કરો</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
+<translation id="9092255287806472980">તમારો પ્રતિસાદ Chrome OSને બહેતર બનાવવામાં મદદ કરે છે અને અમારી ટીમ દ્વારા તેનો રિવ્યૂ કરવામાં આવે છે. મોટી સંખ્યામાં મળેલા રિપોર્ટને કારણે, અમે કોઈ જવાબ મોકલી શકીશું નહીં.</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="90977145661420967">તમારે ડિવાઇસને અલગ કરવાની જરૂર પડશે</translation>
 <translation id="9098156406873149060">વપરાશકર્તાનો ડેટા રાખો</translation>

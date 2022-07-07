@@ -382,6 +382,7 @@
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" द्वारे आवश्यक सर्टिफिकेट एकतर स्थापित झाले नाही किंवा यापुढे वैध नाही. कृपया एक नवीन सर्टिफिकेट मिळवा आणि पुन्हा कनेक्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="1375321115329958930">सेव्ह केलेले पासवर्ड</translation>
 <translation id="1375557162880614858">तुम्हाला ChromeOS Flex साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का?</translation>
+<translation id="1375938286942050085">सेटअप पूर्ण झाले आहे! तुमचे डिव्हाइस पुढील गेमिंगसाठी तयार करा</translation>
 <translation id="137651782282853227">सेव्ह केलेले पत्ते येथे दिसून येतील</translation>
 <translation id="1376771218494401509">नाव आणि विंडो...</translation>
 <translation id="1377600615067678409">सध्यासाठी वगळा</translation>
@@ -396,6 +397,7 @@
 <translation id="138784436342154190">डीफॉल्ट स्टार्टअप पेज रिस्टोअर करायचे?</translation>
 <translation id="1388253969141979417">तुमचा मायक्रोफोन वापरण्याची अनुमती आहे</translation>
 <translation id="1388728792929436380">अपडेट पूर्ण झाल्यावर <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
+<translation id="1389601498324964367">कोट्याद्वारे व्यवस्थापित स्टोरेज</translation>
 <translation id="139013308650923562">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची अनुमती द्या</translation>
 <translation id="1390548061267426325">नियमित टॅब म्हणून उघडा</translation>
 <translation id="1390907927270446471"><ph name="PRINTER_NAME" /> वर प्रिंट करण्यासाठी<ph name="PROFILE_USERNAME" /> ना परवानगी नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -1074,6 +1076,7 @@
 <translation id="1992924914582925289">डिव्हाइसमधून काढून टाका</translation>
 <translation id="1994173015038366702">साइट URL</translation>
 <translation id="1995916364271252349">साइट कोणती माहिती वापरू आणि दाखवू शकतात ते नियंत्रित करते (स्थान, कॅमेरा, पॉप-अप आणि बरेच काही)</translation>
+<translation id="1997433994358798851">तुमच्या डिव्हाइसशी कनेक्ट करण्यासाठी ब्लूटूथ वापरण्याकरिता Chrome ला परवानगीची आवश्यकता आहे</translation>
 <translation id="1997616988432401742">तुमची प्रमाणपत्रे</translation>
 <translation id="1999115740519098545">स्टार्टअप वर</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
@@ -1738,6 +1741,7 @@
 <translation id="25899519884572181">वाचक मोडमधून बाहेर पडा</translation>
 <translation id="2593499352046705383">सुरुवात करण्यापूर्वी, तुम्ही तुमच्या सर्व डेटाचा बॅकअप घेतला आहे याची खात्री करा. <ph name="DEVICE_OS" /> हे इंस्टॉल केल्याने, तुमची हार्ड ड्राइव्ह ओव्हरराइट होईल. g.co/flex/InstallGuide येथे अधिक जाणून घ्या.</translation>
 <translation id="2594999711683503743">Google वर शोधा किंवा URL टाइप करा</translation>
+<translation id="2599048253926156421">वापरकर्ता नाव क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2602501489742255173">सुरू करण्यासाठी वर स्वाइप करा</translation>
 <translation id="2603115962224169880">काँप्युटर साफ करा</translation>
 <translation id="2603355571917519942">Voice Match तयार आहे</translation>
@@ -1961,6 +1965,7 @@
 <translation id="2804043232879091219">पर्यायी ब्राउझर उघडता आला नाही</translation>
 <translation id="2804667941345577550">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल.</translation>
 <translation id="2804680522274557040">कॅमेरा बंद केला आहे</translation>
+<translation id="280518252911523675">तुम्ही तुमचा जुना पासवर्ड एंटर न करता पुढे सुरू ठेवल्यास, तुमचा स्थानिक डेटा हटवला जाईल. हा वापरकर्ता पुन्हा सेट करण्यासाठी, तुम्ही तुमचे Google खाते वापरून साइन इन कराल.</translation>
 <translation id="2805539617243680210">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
@@ -3076,6 +3081,7 @@
 <translation id="3895090224522145010">Kerberos वापरकर्ता नाव</translation>
 <translation id="389521680295183045">तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्यासाठी साइट विचारू शकतात</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{इमेज}other{# इमेज}}</translation>
+<translation id="3897746662269329507">तुमचे <ph name="DEVICE_TYPE" /> गेमिंगसाठी तयार केलेले आहे. पुढे Explore अ‍ॅप उघडेल, ज्यामध्ये तुम्ही शेकडो नवीनतम गेम अ‍ॅक्सेस करू शकता, गेमिंगच्या ऑफर पाहू शकता आणि तुमच्या डिव्हाइसमध्ये असलेली गेमिंगसंबंधित वैशिष्‍ट्ये पाहू शकता.</translation>
 <translation id="3898233949376129212">डिव्हाइसची भाषा</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ला हे करायचे आहे: <ph name="FIRST_PERMISSION" /> आणि <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">कीबोर्ड निवडा</translation>
@@ -3226,6 +3232,7 @@
 <translation id="4033471457476425443">नवीन फोल्डर जोडा</translation>
 <translation id="4033711848170683365">यामुळे या डिव्‍हाइसवरून ब्राउझिंग डेटा कायमचा हटवला जाईल. या प्रोफाइलमधील Google खाती इतर अ‍ॅप्सद्वारे तुमच्या <ph name="DEVICE_TYPE" /> वर वापरली जाऊ शकतात. तुम्ही ही खाती <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> येथे हटवू शकता.</translation>
 <translation id="4033963223187371752">सुरक्षित साइट या इमेज किंवा वेब फ्रेम यांसारखा सुरक्षित नसलेला आशय एम्बेड करू शकतात</translation>
+<translation id="4034741552964543387">स्थानिक डेटाशिवाय पुढे सुरू ठेवा</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4035758313003622889">&amp;कार्य व्यवस्थापक</translation>
 <translation id="4035877632587724847">अनुमती देऊ नका</translation>
@@ -3415,6 +3422,7 @@
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4242577469625748426">डिव्हाइसवर धोरण सेटिंग्ज इंस्टॉल करण्यात अयशस्वी: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">प्रिंटर थांबवला आहे</translation>
+<translation id="424423026762293842">तुमचा स्थानिक डेटा रिस्टोअर करा</translation>
 <translation id="4244238649050961491">अधिक स्टायलस अ‍ॅप्स शोधा</translation>
 <translation id="4246980464509998944">अतिरिक्त टिप्पण्या:</translation>
 <translation id="424726838611654458">Adobe Reader मध्ये नेहमी उघडा</translation>
@@ -4973,6 +4981,7 @@
 <translation id="5792728279623964091">कृपया तुमच्या पॉवर बटणावर टॅप करा</translation>
 <translation id="5793339252089865437">तुम्ही तुमच्या मोबाइल नेटवर्कवरून अपडेट डाउनलोड केल्यास, याचा परिणाम म्हणून अतिरिक्त शुल्क आकारले जाऊ शकते.</translation>
 <translation id="5793420564274426163">पेअर करण्याशी संबंधित कंफर्मेशन</translation>
+<translation id="5793430094159150686">तुमचा पासवर्ड बदलला आहे. तुमचा स्थानिक डेटा रिस्टोअर करण्यासाठी, तुम्ही तुमचा जुना पासवर्ड एंटर करणे आवश्यक आहे.</translation>
 <translation id="5794034487966529952">डेस्क <ph name="DESK_TITLE" /> वर <ph name="NUM_BROWSERS" /> ब्राउझर विंडो सुरू आहेत</translation>
 <translation id="5794414402486823030">नेहमी सिस्टम दर्शकासह उघडा</translation>
 <translation id="5794700615121138172">Linux ने शेअर केलेले फोल्डर</translation>
@@ -5898,6 +5907,7 @@
 <translation id="6700093763382332031">मोबाइल सिम लॉक</translation>
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> कास्ट करा</translation>
 <translation id="6701535245008341853">प्रोफाइल मिळविणे शक्य नाही.</translation>
+<translation id="6701824422332982935">ही एक्स्टेंशन वापरण्यासाठी पेज रीलोड करा</translation>
 <translation id="6702639462873609204">&amp;संपादन...</translation>
 <translation id="6703212423117969852">तुम्ही Chrome मध्ये नंतर पुन्हा प्रयत्न करू शकता.</translation>
 <translation id="6703254819490889819">बॅकअप रिस्टोअर करा</translation>
@@ -7123,6 +7133,7 @@
 <translation id="7903742244674067440">तुमच्याकडे फाइलवर अशी सर्टिफिकेट आहेत जी या सर्टिफिकेट अधिकार्‍यांची ओळख पटवतात</translation>
 <translation id="7903925330883316394">उयुक्तता: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">तुमच्या नेटवर्कवरील इतर डिव्हाइसना Linux पोर्ट उपलब्ध करून द्या.</translation>
+<translation id="7906440585529721295">स्थानिक डेटा हटवला जाईल</translation>
 <translation id="7907837847548254634">फोकस केलेल्या ऑब्जेक्टवर झटपट हायलाइट दाखवा</translation>
 <translation id="7908378463497120834">सॉरी, तुमच्या बाह्य डिव्हाइस स्टोरेजमधील कमीत कमी एक विभाग बसविला जाऊ शकत नाही.</translation>
 <translation id="7909324225945368569">तुमच्या प्रोफाइलचे नाव बदला</translation>
@@ -7461,6 +7472,7 @@
 <translation id="822050276545350872">इथून पुढे, प्रतीक्षा करण्याची आवश्यकता नाही</translation>
 <translation id="8221491193165283816">तुम्ही सहसा सूचना ब्लॉक करता. या साइटला तुम्हाला सूचित करू देण्यासाठी, येथे क्लिक करा.</translation>
 <translation id="822347941086490485">HID डिव्हाइस शोधत आहे…</translation>
+<translation id="8223573963214454788">पुढे सुरू ठेवा आणि डेटा हटवा</translation>
 <translation id="8225046344534779393">इंटरनेट कनेक्शन तपासा</translation>
 <translation id="8225265270453771718">ॲप्लिकेशन विंडो शेअर करा</translation>
 <translation id="8226222018808695353">निषिद्ध केलेले</translation>
@@ -7561,6 +7573,7 @@
 <translation id="8314381333424235892">गहाळ किंवा अनइंस्टॉल केलेले एक्स्टेंशन</translation>
 <translation id="831440797644402910">हे फोल्डर उघडू शकत नाही</translation>
 <translation id="8314835274931377415">स्विच अ‍ॅक्सेसचा सेटअप सुरू करायचा आहे का?</translation>
+<translation id="8317582043908962055">P&amp;DF मजकूर ओळखा</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोडा</translation>
 <translation id="8319414634934645341">विस्तारित की वापर</translation>
 <translation id="8321837372750396788">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले जाईल.</translation>
@@ -8295,7 +8308,6 @@
 <translation id="9050666287014529139">सांकेतिक पासफ्रेझ</translation>
 <translation id="9052404922357793350">ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="9053563360605707198">दोन्ही बाजूंवर प्रिंट करा</translation>
-<translation id="9053893665344928494">माझी निवड लक्षात ठेवा</translation>
 <translation id="9055636786322918818">RC4 एंक्रिप्शन लागू करा. हा पर्याय वापरल्याने तुमचा धोका वाढतो, कारण RC4 सायफर असुरक्षित आहेत.</translation>
 <translation id="9056810968620647706">जुळण्या आढळल्या नाहीत.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ला खालील आशय ॲक्सेस करायचा आहे:</translation>
@@ -8447,6 +8459,7 @@
 <translation id="9203398526606335860">&amp;प्रोफाइलिंग सक्षम</translation>
 <translation id="9203904171912129171">एक डिव्हाइस निवडा</translation>
 <translation id="9206889157914079472">लॉक स्क्रीनवरून स्टायलस टिपा घेणे</translation>
+<translation id="9208192193641542858">स्थानिक डेटा तुमच्या जुन्या पासवर्डने संरक्षित केलेला आहे. तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, पुन्हा जुना पासवर्ड वापरून पहा.</translation>
 <translation id="9209563766569767417">Linux कंटेनर सेटअप तपासत आहे</translation>
 <translation id="9209689095351280025">साइट संपूर्ण वेबवर तुमचा माग ठेवणाऱ्या कुकी वापरू शकत नाहीत</translation>
 <translation id="9211177926627870898">अपडेट आवश्‍यक</translation>

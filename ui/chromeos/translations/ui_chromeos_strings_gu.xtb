@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">હંગુલ રોમાજા</translation>
 <translation id="112387589102719461">અંગ્રેજી (યુએસ), પ્રોગ્રામર Dvorak કીબોર્ડ સાથે</translation>
 <translation id="1134697384939541955">અંગ્રેજી (યુએસ), વધારાની કી ધરાવતા કીબોર્ડ સાથે</translation>
+<translation id="1138691154716715755">આ મહિનાની શરૂઆતમાં</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> મળી.
     <ph name="LINE_BREAK1" />
     સ્થાનિક સ્ટોરેજમાં પર્યાપ્ત જગ્યા ઉપલબ્ધ નથી. વધારાના <ph name="FILE_SIZE" />ની જરૂર છે.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="4387004326333427325">પ્રમાણીકરણ પ્રમાણપત્ર રિમોટલી નકારવામાં આવ્યું છે</translation>
 <translation id="4394214039309501350">બાહ્ય લિંક</translation>
+<translation id="4394980935660306080">આ અઠવાડિયાની શરૂઆતમાં</translation>
 <translation id="4401287888955153199">બધું એક્સટ્રેક્ટ કરો</translation>
 <translation id="4410695710508688828">એક્સટ્રેક્ટ કરવામાં નિષ્ફ્ળ રહ્યાં. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">તમારી ફાઇલો માટે શૉર્ટકટ બનાવો</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" ખોલી રહ્યાં છીએ</translation>
 <translation id="4720185134442950733">મોબાઇલ ડેટા નેટવર્ક</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
+<translation id="4725096204469550614">આ વર્ષની શરૂઆતમાં</translation>
 <translation id="4725511304875193254">કોર્ગી - કૂતરાની એક પ્રજાતિ</translation>
 <translation id="4737050008115666127">લેન્ડિંગ</translation>
 <translation id="4747271164117300400">મેસેડોનિયન</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> આઇટમને <ph name="FOLDER_NAME" />માં ખસેડી રહ્યાં છીએ</translation>
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
 <translation id="5098629044894065541">હીબ્રુ</translation>
+<translation id="5102922915594634436">સિંક કરેલા ફોલ્ડરો મેનેજ કરો</translation>
 <translation id="5109254780565519649">કોઈ ભૂલ આવી છે. અમુક આઇટમ રિસ્ટોર ન થઈ હોય તેવું બની શકે.</translation>
 <translation id="5110329002213341433">અંગ્રેજી (કેનેડા)</translation>
 <translation id="5123433949759960244">બાસ્કેટબૉલ</translation>

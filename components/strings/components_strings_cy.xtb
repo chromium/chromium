@@ -379,7 +379,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1908217026282415406">Symudiad a defnydd camera</translation>
 <translation id="191374271204266022">Copïo fel JSON</translation>
 <translation id="1914326953223720820">Gwasanaeth Dadsipio</translation>
-<translation id="1915697529809968049">Defnyddio Touch ID yn lle CVC?</translation>
 <translation id="1916770123977586577">I gymhwyso'ch gosodiadau sydd wedi'u diweddaru i'r wefan hon, ail-lwythwch y dudalen hon</translation>
 <translation id="1919345977826869612">Hysbysebion</translation>
 <translation id="1919367280705858090">Cael help gyda neges wall benodol</translation>
@@ -1124,7 +1123,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4072486802667267160">Bu gwall wrth brosesu eich archeb. Rhowch gynnig arall arni.</translation>
 <translation id="4073797364926776829">Gweld y cerdyn</translation>
 <translation id="4075732493274867456">Nid yw'r cleient na'r gweinydd yn cefnogi fersiwn protocol SSL cyffredin na chyfres seiffr.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Mae'r ffurfweddiad dirprwy weinyddion wedi'i osod i ddefnyddio URL sgript .pac, nid dirprwy weinyddion sefydlog.</translation>
 <translation id="4082393374666368382">Gosodiadau - Rheoli</translation>
 <translation id="4087296516249690906">Botwm creu digwyddiad, pwyswch Enter i greu digwyddiad newydd yn Google Calendar yn gyflym</translation>
@@ -1296,7 +1294,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4506176782989081258">Gwall dilysu: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Cysylltu â gweinyddwr y system</translation>
 <translation id="450710068430902550">Rhannu â'r Gweinyddwr</translation>
-<translation id="4508814173490746936">Methu â defnyddio Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab ac Enter i gyfieithu'r dudalen hon gyda Google Translate</translation>
 <translation id="4510487217173779431">Chou4 (Amlen)</translation>
 <translation id="4514308731478712184">Diffodd Teithiau</translation>
@@ -1970,7 +1967,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6406765186087300643">C0 (Amlen)</translation>
 <translation id="6410264514553301377">Rhowch y dyddiad darfod a'r CVC ar gyfer <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Gall Chromium eich helpu i amddiffyn eich Cyfrif Google ac i newid eich cyfrinair.</translation>
-<translation id="6423385022588644828">Cadarnhewch eich cardiau'n gynt gan ddefnyddio Touch ID o hyn ymlaen</translation>
 <translation id="6425092077175753609">Deunydd</translation>
 <translation id="6427730057873428458">Plyg giât</translation>
 <translation id="6428450836711225518">Dilysu'ch rhif ffôn</translation>
@@ -2739,7 +2735,6 @@ Manylion ychwanegol:
 <translation id="8559762987265718583">Ni ellir sefydlu cysylltiad preifat â <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> oherwydd bod dyddiad ac amser eich dyfais (<ph name="DATE_AND_TIME" />) yn anghywir.</translation>
 <translation id="8564182942834072828">Dogfennau ar wahân/Copïau heb eu coladu</translation>
 <translation id="8564985650692024650">Mae Chromium yn argymell ailosod eich cyfrinair ar gyfer <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
-<translation id="8574899947864779331">Defnyddiwch Touch ID i gadarnhau cardiau yn gynt</translation>
 <translation id="8576310925653847813">Systemau theatr cartref</translation>
 <translation id="8577348305244205642">Nid yw'r cerdyn rhithwir ar gael</translation>
 <translation id="858637041960032120">Ychwanegu rhif ffôn</translation>
@@ -2895,7 +2890,6 @@ Manylion ychwanegol:
 <translation id="9039213469156557790">Ymhellach, mae'r dudalen hon yn cynnwys adnoddau eraill nad ydynt yn ddiogel. Gall eraill weld yr adnoddau hyn wrth iddynt gael eu trosglwyddo, a gall ymosodwr eu haddasu i newid ymddygiad y dudalen.</translation>
 <translation id="9040464167025094690">Botwm Find my device, pwyswch Enter i ymweld â Find my device yn eich Cyfrif Google</translation>
 <translation id="9042617223719777575">Capasiti Mawr</translation>
-<translation id="9044359186343685026">Defnyddio Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Gwnaethoch geisio cyrraedd <ph name="DOMAIN" />, ond cyflwynodd y gweinydd dystysgrif annilys.</translation>
 <translation id="9050666287014529139">Cyfrinymadrodd</translation>

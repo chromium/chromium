@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
 <translation id="191374271204266022">JSON ഫോർമാറ്റിൽ പകർത്തുക</translation>
 <translation id="1914326953223720820">അൺസിപ്പ് സേവനം</translation>
-<translation id="1915697529809968049">CVC-യ്ക്ക് പകരം ടച്ച് ഐഡി ഉപയോഗിക്കണോ?</translation>
 <translation id="1916770123977586577">ഈ സൈറ്റിലേക്ക് നിങ്ങളുടെ അപ്‌ഡേറ്റ് ചെയ്ത ക്രമീകരണം ഉപയോഗിക്കുന്നതിന്, ഈ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="1919345977826869612">പരസ്യങ്ങള്‍</translation>
 <translation id="1919367280705858090">നിർദ്ദിഷ്ട പിശക് സന്ദേശവുമായി ബന്ധപ്പെട്ട് സഹായം നേടുക</translation>
@@ -1123,7 +1122,6 @@
 <translation id="4072486802667267160">നിങ്ങളുടെ ഓർഡർ പ്രോസസ് ചെയ്യുന്നതിൽ ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിച്ചുനോക്കൂ.</translation>
 <translation id="4073797364926776829">കാർഡ് കാണുക</translation>
 <translation id="4075732493274867456">ഒരു സാധാരണ SSL പ്രോട്ടോക്കോൾ പതിപ്പിനെയോ സൈഫർ സ്യൂട്ടിനെയോ ക്ലയന്റും സെർവറും പിന്തുണയ്‌ക്കില്ല.</translation>
-<translation id="4075941231477579656">ടച്ച് ഐഡി</translation>
 <translation id="4079302484614802869">പ്രോക്‌സി കോൺഫിഗറേഷൻ .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനായി സജ്ജീകരിച്ചിരിക്കുന്നു, സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായല്ല.</translation>
 <translation id="4082393374666368382">ക്രമീകരണം - മാനേജ്‌മെൻ്റ്</translation>
 <translation id="4087296516249690906">'ഇവന്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
@@ -1295,7 +1293,6 @@
 <translation id="4506176782989081258">മൂല്യനിർണ്ണയ പിശക്: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">സിസ്റ്റം അഡ്‌മിനെ ബന്ധപ്പെടുന്നു</translation>
 <translation id="450710068430902550">അഡ്‌മിനിസ്‌ട്രേറ്ററുമായി പങ്കിടുന്നു</translation>
-<translation id="4508814173490746936">ടച്ച് ഐഡി ഉപയോഗിക്കാനായില്ല</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="4510487217173779431">Chou4 (എൻവലപ്പ്)</translation>
 <translation id="4514308731478712184">തിരയലുകൾ ഓഫാക്കുക</translation>
@@ -1969,7 +1966,6 @@
 <translation id="6406765186087300643">C0 (എൻവലപ്പ്)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-ന്‍റെ കാലാവധി തീരുന്ന തീയതിയും CVC-യും നൽകുക</translation>
 <translation id="6415778972515849510">നിങ്ങളുടെ Google അക്കൗണ്ട് പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chromium സഹായിക്കും.</translation>
-<translation id="6423385022588644828">ടച്ച് ഐഡി ഉപയോഗിച്ച് നിങ്ങളുടെ കാർഡുകൾ ഇപ്പോൾ മുതൽ വേഗത്തിൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="6425092077175753609">മെറ്റീരിയൽ</translation>
 <translation id="6427730057873428458">ഗേറ്റ് മടക്ക്</translation>
 <translation id="6428450836711225518">നിങ്ങളുടെ ഫോൺ നമ്പർ പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -2736,7 +2732,6 @@
 <translation id="8559762987265718583">നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
 <translation id="8564182942834072828">വെവ്വേറെ ഡോക്യുമെന്റുകൾ/ക്രമത്തിലല്ലാത്ത പകർപ്പുകൾ</translation>
 <translation id="8564985650692024650">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
-<translation id="8574899947864779331">കാർഡുകൾ വേഗത്തിൽ സ്ഥിരീകരിക്കാൻ ടച്ച് ഐഡി ഉപയോഗിക്കുക</translation>
 <translation id="8576310925653847813">ഹോം തീയറ്റർ സംവിധാനങ്ങൾ</translation>
 <translation id="8577348305244205642">വെർച്വൽ കാർഡ് ലഭ്യമല്ല</translation>
 <translation id="858637041960032120">ഫോണ്‍ നമ്പര്‍ ചേര്‍ക്കുക</translation>
@@ -2892,7 +2887,6 @@
 <translation id="9039213469156557790">ഈ പേജിൽ സുരക്ഷിതമല്ലാത്ത മറ്റ് ഉറവിടങ്ങൾ ഉൾപ്പെടുന്നു. ഈ ഉറവിടങ്ങൾ കൈമാറുന്നതിനിടെ മറ്റുള്ളവർക്ക് കാണാനും പേജിന്റെ പ്രവർത്തനരീതി മാറ്റുന്ന തരത്തിൽ ഒരു ആക്രമണകാരിയ്‌ക്ക് പരിഷ്‌ക്കരിക്കാനുമായേക്കും.</translation>
 <translation id="9040464167025094690">Find My Device ബട്ടൺ, Google അക്കൗണ്ടിൽ 'നിങ്ങളുടെ ഉപകരണം കണ്ടെത്തുക' വിഭാഗം സന്ദർശിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="9042617223719777575">ഉയർന്ന ശേഷി</translation>
-<translation id="9044359186343685026">ടച്ച് ഐഡി ഉപയോഗിക്കുക</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">നിങ്ങള്‍ <ph name="DOMAIN" /> എന്നതില്‍ എത്താന്‍ ശ്രമിച്ചു, പക്ഷേ സെര്‍വര്‍ ഒരു അസാധുവായ സര്‍ട്ടിഫിക്കറ്റ് അവതരിപ്പിച്ചു.</translation>
 <translation id="9050666287014529139">പാസ്ഫ്രെയ്‍സ്</translation>

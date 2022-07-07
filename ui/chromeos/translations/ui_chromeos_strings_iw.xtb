@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">‏מקלדת Programmer Dvorak באנגלית (ארה"ב)</translation>
 <translation id="1134697384939541955">מקלדת מורחבת באנגלית (ארה"ב)</translation>
+<translation id="1138691154716715755">מוקדם יותר החודש</translation>
 <translation id="1148097584170732637">נמצאו <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     אין מספיק מקום באחסון המקומי. יש צורך ב-<ph name="FILE_SIZE" /> נוספים.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="4387004326333427325">אישור האימות נדחה מרחוק</translation>
 <translation id="4394214039309501350">קישור חיצוני</translation>
+<translation id="4394980935660306080">מוקדם יותר השבוע</translation>
 <translation id="4401287888955153199">חילוץ הכול</translation>
 <translation id="4410695710508688828">פעולת החילוץ נכשלה. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">יצירת קיצור דרך לקבצים</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">הפתיחה של "<ph name="PATH" />" מתבצעת</translation>
 <translation id="4720185134442950733">חבילת הגלישה</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> תמונות גובו</translation>
+<translation id="4725096204469550614">מוקדם יותר השנה</translation>
 <translation id="4725511304875193254">קורגי</translation>
 <translation id="4737050008115666127">נחיתה</translation>
 <translation id="4747271164117300400">מקדונית</translation>

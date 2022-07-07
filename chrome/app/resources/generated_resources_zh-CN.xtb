@@ -380,6 +380,7 @@
 <translation id="1374844444528092021">网络“<ph name="NETWORK_NAME" />”所需的证书尚未安装或已无效。请获取新的证书并尝试重新连接。</translation>
 <translation id="1375321115329958930">已保存的密码</translation>
 <translation id="1375557162880614858">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？</translation>
+<translation id="1375938286942050085">设置完毕！准备好您的设备，畅享接下来的精彩游戏</translation>
 <translation id="137651782282853227">已保存的地址将显示在这里</translation>
 <translation id="1376771218494401509">为窗口命名(&amp;W)…</translation>
 <translation id="1377600615067678409">暂时跳过</translation>
@@ -394,6 +395,7 @@
 <translation id="138784436342154190">要恢复默认启动页吗？</translation>
 <translation id="1388253969141979417">允许使用您的麦克风</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
+<translation id="1389601498324964367">通过配额管理的存储空间</translation>
 <translation id="139013308650923562">可以使用您设备上安装的字体</translation>
 <translation id="1390548061267426325">在常规标签页中打开</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />无权通过“<ph name="PRINTER_NAME" />”进行打印。请与您的管理员联系。</translation>
@@ -1056,6 +1058,7 @@
 <translation id="1992924914582925289">从设备中移除</translation>
 <translation id="1994173015038366702">网站网址</translation>
 <translation id="1995916364271252349">控制网站可以使用和显示什么信息（如位置信息、摄像头、弹出式窗口及其他）</translation>
+<translation id="1997433994358798851">Chrome 需要获得使用蓝牙的权限，才能连接到您的设备</translation>
 <translation id="1997616988432401742">您的证书</translation>
 <translation id="1999115740519098545">启动时</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
@@ -1716,6 +1719,7 @@
 <translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
+<translation id="2599048253926156421">用户名已复制到剪贴板</translation>
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
 <translation id="2603355571917519942">Voice Match 已设置完毕</translation>
@@ -1938,6 +1942,7 @@
 <translation id="2804043232879091219">无法打开替代浏览器</translation>
 <translation id="2804667941345577550">您将会自动退出这个网站（包括打开的标签页）</translation>
 <translation id="2804680522274557040">摄像头已关闭</translation>
+<translation id="280518252911523675">如果您在没输入旧密码的情况下继续操作，您的本地数据将被删除。您需要使用您的 Google 帐号登录，才能再次设置此用户。</translation>
 <translation id="2805539617243680210">您已设置完毕！</translation>
 <translation id="2805646850212350655">Microsoft 加密文件系统</translation>
 <translation id="2805756323405976993">应用</translation>
@@ -3053,6 +3058,7 @@
 <translation id="3895090224522145010">Kerberos 用户名</translation>
 <translation id="389521680295183045">网站可以询问能否了解您何时在主动使用自己的设备</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{1 张图片}other{# 张图片}}</translation>
+<translation id="3897746662269329507">您的 <ph name="DEVICE_TYPE" /> 专为游戏打造。接下来系统会打开“探索”应用，以便您从中获取数百款最新游戏、查看游戏优惠，以及发现设备自带的游戏功能。</translation>
 <translation id="3898233949376129212">设备语言</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />和<ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">选择键盘</translation>
@@ -3202,6 +3208,7 @@
 <translation id="4033471457476425443">添加新文件夹</translation>
 <translation id="4033711848170683365">此操作会将相关浏览数据从该设备上永久删除。这份个人资料名下的 Google 帐号可能会被您 <ph name="DEVICE_TYPE" /> 上的其他应用使用。若要移除这些帐号，请前往<ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />。</translation>
 <translation id="4033963223187371752">安全网站可能会内嵌不安全的内容，例如图片或 Web 框架</translation>
+<translation id="4034741552964543387">继续，不恢复本地数据</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4035758313003622889">任务管理器(&amp;T)</translation>
 <translation id="4035877632587724847">不允许</translation>
@@ -3393,6 +3400,7 @@
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4243504193894350135">打印机已暂停运行</translation>
+<translation id="424423026762293842">恢复本地数据</translation>
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
 <translation id="4246980464509998944">其他评论：</translation>
 <translation id="424726838611654458">始终用Adobe Reader打开</translation>
@@ -4946,6 +4954,7 @@
 <translation id="5792728279623964091">请点按您的电源按钮</translation>
 <translation id="5793339252089865437">如果您通过移动网络下载更新，则可能需要支付超额费用。</translation>
 <translation id="5793420564274426163">配对确认</translation>
+<translation id="5793430094159150686">您的密码已更改。若要恢复本地数据，您需输入旧密码。</translation>
 <translation id="5794034487966529952">桌面“<ph name="DESK_TITLE" />”打开了 <ph name="NUM_BROWSERS" /> 个浏览器窗口</translation>
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
@@ -5869,6 +5878,7 @@
 <translation id="6700093763382332031">移动网络 SIM 卡锁定</translation>
 <translation id="6700480081846086223">投射 <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">无法获取个人资料。</translation>
+<translation id="6701824422332982935">若要使用以下扩展程序，请重新加载此页面</translation>
 <translation id="6702639462873609204">修改(&amp;E)...</translation>
 <translation id="6703212423117969852">您可以稍后在 Chrome 中重试。</translation>
 <translation id="6703254819490889819">恢复备份</translation>
@@ -7095,6 +7105,7 @@
 <translation id="7903742244674067440">您有证书可标识以下证书授权中心</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">使 Linux 端口可供您网络上的其他设备使用。</translation>
+<translation id="7906440585529721295">本地数据将被删除</translation>
 <translation id="7907837847548254634">短暂地突出显示焦点对象</translation>
 <translation id="7908378463497120834">抱歉，您的外部存储设备上至少有一个分区无法加载。</translation>
 <translation id="7909324225945368569">重命名您的个人资料</translation>
@@ -7433,6 +7444,7 @@
 <translation id="822050276545350872">从现在开始，无需再等待</translation>
 <translation id="8221491193165283816">您通常会屏蔽通知。要允许此网站向您发送通知，请点击此处。</translation>
 <translation id="822347941086490485">正在查找 HID 设备…</translation>
+<translation id="8223573963214454788">继续并删除数据</translation>
 <translation id="8225046344534779393">请检查互联网连接状况</translation>
 <translation id="8225265270453771718">共享应用窗口</translation>
 <translation id="8226222018808695353">已被禁止</translation>
@@ -7533,6 +7545,7 @@
 <translation id="8314381333424235892">扩展程序缺失或已卸载</translation>
 <translation id="831440797644402910">无法打开此文件夹</translation>
 <translation id="8314835274931377415">开始进行开关控制设置？</translation>
+<translation id="8317582043908962055">识别 PDF 文本(&amp;D)</translation>
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
@@ -8266,7 +8279,6 @@
 <translation id="9050666287014529139">密码</translation>
 <translation id="9052404922357793350">继续拦截</translation>
 <translation id="9053563360605707198">双面打印</translation>
-<translation id="9053893665344928494">记住我的选择</translation>
 <translation id="9055636786322918818">强制执行 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想访问以下内容：</translation>
@@ -8418,6 +8430,7 @@
 <translation id="9203398526606335860">分析已启用(&amp;P)</translation>
 <translation id="9203904171912129171">选择设备</translation>
 <translation id="9206889157914079472">在锁定屏幕上使用触控笔记事</translation>
+<translation id="9208192193641542858">本地数据受旧密码保护。如果您最近更改了密码，请用旧密码重试。</translation>
 <translation id="9209563766569767417">正在检查 Linux 容器设置</translation>
 <translation id="9209689095351280025">网站无法使用 Cookie 来跟踪您在网上的活动</translation>
 <translation id="9211177926627870898">需要更新</translation>

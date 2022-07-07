@@ -210,7 +210,6 @@
 <translation id="2100314319871056947">पाठलाई विभाजन गरी साना खण्ड बनाएर आदान प्रदान गरी हेर्नुहोस्</translation>
 <translation id="2111511281910874386">पृष्ठमा जानुहोस्</translation>
 <translation id="2122601567107267586">एप खोल्न सकिएन</translation>
-<translation id="2126426811489709554">Chrome द्वारा संचालित</translation>
 <translation id="2132122640199389833">लिंक गरिएका सबै डिभाइस हटाउनुहोस्</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बन्द भयो</translation>
 <translation id="2134927169889348449">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
@@ -443,6 +442,7 @@
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341262203274374114">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="3359667936385849800">तपाईंको हालको सेवा प्रदायक प्रयोग गर्नुहोस्</translation>
+<translation id="3365271666488085187">Chrome ले यो रुचि याद राख्न सक्छ</translation>
 <translation id="3367813778245106622">सिंक सुरु गर्न फेरि साइन इन गर्नुहोस्</translation>
 <translation id="3373979091428520308">यो पृष्ठ अर्को यन्त्रसँग आदान प्रदान गर्न अर्को यन्त्रमा रहेको Chrome ब्राउजरको सेटिङमा गई सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="3374023511497244703">अब उप्रान्त तपाईंको Google खातामा तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र Chrome का अन्य डेटा सिंक हुने छैनन्</translation>
@@ -476,6 +476,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> के.बि. उपलब्ध छ</translation>
 <translation id="3549657413697417275">आफ्नो ब्राउजिङको इतिहासमा खोज्नुहोस्।</translation>
 <translation id="3557336313807607643">सम्पर्क ठेगानामा थप्नुहोस्</translation>
+<translation id="3560491354538957576">साइटले रुचिहरू पत्ता लगाउन सक्छ</translation>
 <translation id="3563767357928833671">क्लिपबोर्डमा भएका सामग्री देखाइए</translation>
 <translation id="3566923219790363270">Chrome ले अझै VR का लागि तयारी गर्दै छ। Chrome पछि पुनः सुरु गर्नुहोस्।</translation>
 <translation id="3568688522516854065">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा अन गर्नुहोस्</translation>

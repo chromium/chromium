@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Хангъл, ромаджа</translation>
 <translation id="112387589102719461">Английски (САЩ) с клавиатура за програмисти (Дворак)</translation>
 <translation id="1134697384939541955">Английски (САЩ) с разширена клавиатура</translation>
+<translation id="1138691154716715755">По-рано този месец</translation>
 <translation id="1148097584170732637">Намерихме <ph name="FILE_COUNT" />.
 <ph name="LINE_BREAK1" />
 Мястото в локалното хранилище не е достатъчно. Има нужда от още <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="4387004326333427325">Сертификатът за удостоверяване бе отхвърлен отдалечено</translation>
 <translation id="4394214039309501350">Външна връзка</translation>
+<translation id="4394980935660306080">По-рано тази седмица</translation>
 <translation id="4401287888955153199">Извличане на всички</translation>
 <translation id="4410695710508688828">Извличането не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Създавайте преки пътища към файловете си</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">„<ph name="PATH" />“ се отваря</translation>
 <translation id="4720185134442950733">Мобилна мрежа за пренос на данни</translation>
 <translation id="4724850507808590449">На <ph name="FILE_COUNT" /> снимки бяха създадени резервни копия</translation>
+<translation id="4725096204469550614">По-рано тази година</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4737050008115666127">Приземяване</translation>
 <translation id="4747271164117300400">македонски</translation>

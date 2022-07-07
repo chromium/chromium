@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Çaktivizo modalitetin e errët</translation>
 <translation id="1881188606372070653">Shko te <ph name="BEGIN_LINK1" />faqja e Ndihmës ligjore<ph name="END_LINK1" /> për të kërkuar ndryshime të përmbajtjes për arsye ligjore. Disa prej informacioneve të llogarisë dhe të sistemit mund të dërgohen në Google. Informacionet që na jep do t'i përdorim për zgjidhjen e problemeve teknike për përmirësimin e shërbimeve tona, sipas <ph name="BEGIN_LINK2" />Politikës së privatësisë<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />Kushteve të shërbimit<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
+<translation id="1904932688895783618">Këtu janë disa burime të tjera të dobishme:</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
 <translation id="1932611479324127242">Fikja e baterisë së brendshme</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="2016848882344942759">--pa etiketë të bardhë--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Lidhu në një rrjet dhe ringarko faqen për të parë mbrojtësin e ekranit.</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2085089206770112532">Ulja e ndriçimit të ekranit</translation>
 <translation id="2105810540595158374">Pajisja është një kontrollues loje.</translation>
@@ -772,6 +774,7 @@
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
 <translation id="7784116172884276937">Nuk është konfiguruar asnjë server DNS</translation>
+<translation id="779591286616261875">Dërgo një raportim të ri</translation>
 <translation id="7799817062559422778">Modaliteti i ndriçuar</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7805768142964895445">Statusi</translation>
@@ -924,6 +927,7 @@
 <translation id="9082718469794970195">Përdor këtë video</translation>
 <translation id="9087578468327036362">Raportoje këtë kërkesë</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
+<translation id="9092255287806472980">Komentet e tua ndihmojnë në përmirësimin e Chrome OS dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Do të duhet ta shkëputësh pajisjen</translation>
 <translation id="9098156406873149060">Mbaji të dhënat e përdoruesit</translation>

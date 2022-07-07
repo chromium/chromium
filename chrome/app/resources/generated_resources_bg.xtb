@@ -382,6 +382,7 @@
 <translation id="1374844444528092021">Сертификатът, който се изисква от мрежата „<ph name="NETWORK_NAME" />“, не е инсталиран или вече не е валиден.  Моля, получете нов сертификат и опитайте пак да се свържете.</translation>
 <translation id="1375321115329958930">Запазени пароли</translation>
 <translation id="1375557162880614858">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex?</translation>
+<translation id="1375938286942050085">Настройването завърши! Сега подгответе устройството си за игри</translation>
 <translation id="137651782282853227">Тук ще се покажат запазените адреси</translation>
 <translation id="1376771218494401509">Наименуване на &amp;прозореца...</translation>
 <translation id="1377600615067678409">Пропускане засега</translation>
@@ -396,6 +397,7 @@
 <translation id="138784436342154190">Да се възстанови ли стандартната страница при стартиране?</translation>
 <translation id="1388253969141979417">Сайтове с разрешение за използване на микрофона ви</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ще се рестартира, когато актуализациите завършат.</translation>
+<translation id="1389601498324964367">Хранилище, управлявано чрез квота</translation>
 <translation id="139013308650923562">Разрешено е използването на шрифтовете, инсталирани на устройството ви</translation>
 <translation id="1390548061267426325">Отваряне като нормален раздел</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> няма разрешение да отпечатва чрез <ph name="PRINTER_NAME" />. Моля, обърнете се към администратора си.</translation>
@@ -1071,6 +1073,7 @@
 <translation id="1992924914582925289">Премахване от устройството</translation>
 <translation id="1994173015038366702">URL адрес на сайт</translation>
 <translation id="1995916364271252349">Контролира каква информация могат да използват и показват сайтовете (местоположение, камера, изскачащи прозорци и др.)</translation>
+<translation id="1997433994358798851">Chrome се нуждае от разрешение да използва Bluetooth, за да се свърже с устройството ви</translation>
 <translation id="1997616988432401742">Вашите сертификати</translation>
 <translation id="1999115740519098545">При стартиране</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
@@ -1735,6 +1738,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="25899519884572181">Изход от режима за четене</translation>
 <translation id="2593499352046705383">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Потърсете с Google или въведете URL адрес</translation>
+<translation id="2599048253926156421">Потребителското име е копирано в буферната памет</translation>
 <translation id="2602501489742255173">Прекарайте пръст нагоре, за да започнете</translation>
 <translation id="2603115962224169880">Почистване на компютъра</translation>
 <translation id="2603355571917519942">Функцията Voice Match е готова за използване</translation>
@@ -1958,6 +1962,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2804043232879091219">Алтернативният браузър не можа да се отвори</translation>
 <translation id="2804667941345577550">Ще излезете от профила си в този сайт, включително в отворените раздели</translation>
 <translation id="2804680522274557040">Камерата е изключена</translation>
+<translation id="280518252911523675">Ако продължите, без да въведете старата си парола, локалните ви данни ще бъдат изтрити. Ще влезете с профила си в Google, за да настроите този потребител отново.</translation>
 <translation id="2805539617243680210">Всичко е готово!</translation>
 <translation id="2805646850212350655">Шифроване на файлова система от Microsoft</translation>
 <translation id="2805756323405976993">Приложения</translation>
@@ -3074,6 +3079,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3895090224522145010">Потребителско име за Kerberos</translation>
 <translation id="389521680295183045">Сайтовете могат да извеждат запитване за разпознаване на това кога използвате устройството си активно</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{изображение}other{# изображения}}</translation>
+<translation id="3897746662269329507">Устройството ви <ph name="DEVICE_TYPE" /> е създадено за игри. Сега ще се отвори приложението Explore. То ви дава възможност да осъществявате достъп до стотици от най-новите игри, да преглеждате оферти за тях и да откривате функции за игри, които се предлагат с устройството ви.</translation>
 <translation id="3898233949376129212">Език на устройството</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> иска да <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
@@ -3224,6 +3230,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4033471457476425443">Добавяне на нова папка</translation>
 <translation id="4033711848170683365">Данните за сърфирането ще се изтрият за постоянно от това устройство. Профилите в Google в този потребителски профил може да се използват от други приложения на вашия <ph name="DEVICE_TYPE" />. Можете да премахнете тези профили от <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">В защитените сайтове може да има незащитено вградено съдържание, например изображения или мрежови рамки</translation>
+<translation id="4034741552964543387">Продължаване без локални данни</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4035758313003622889">Мени&amp;джър на задачите</translation>
 <translation id="4035877632587724847">Забраняване</translation>
@@ -3415,6 +3422,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4242577469625748426">Настройките за правила не бяха инсталирани успешно на устройството: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">Принтерът е поставен на пауза</translation>
+<translation id="424423026762293842">Възстановяване на локалните ви данни</translation>
 <translation id="4244238649050961491">Намиране на още приложения за писалка</translation>
 <translation id="4246980464509998944">Допълнителни коментари:</translation>
 <translation id="424726838611654458">Отваряне винаги в Adobe Reader</translation>
@@ -4974,6 +4982,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5792728279623964091">Моля, докоснете бутона за захранване</translation>
 <translation id="5793339252089865437">Ако изтеглите актуализацията през мобилната си мрежа, може да бъдете таксувани допълнително.</translation>
 <translation id="5793420564274426163">Потвърждение за сдвояване</translation>
+<translation id="5793430094159150686">Паролата ви е променена. За да възстановите локалните си данни, трябва да въведете старата.</translation>
 <translation id="5794034487966529952">В работния кът „<ph name="DESK_TITLE" />“ има <ph name="NUM_BROWSERS" /> отворени прозорци на браузъра</translation>
 <translation id="5794414402486823030">Отваряне винаги със системния визуализатор</translation>
 <translation id="5794700615121138172">Споделяне на папки в Linux</translation>
@@ -5898,6 +5907,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6700093763382332031">Заключване на SIM картата за мобилна мрежа</translation>
 <translation id="6700480081846086223">Предаване на <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Потребителският профил не можа да се зареди.</translation>
+<translation id="6701824422332982935">Презаредете страницата, за да използвате тези разширения</translation>
 <translation id="6702639462873609204">&amp;Редактиране...</translation>
 <translation id="6703212423117969852">Можете да опитате отново по-късно в Chrome.</translation>
 <translation id="6703254819490889819">Възстановяване от резервно копие</translation>
@@ -7125,6 +7135,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7903742244674067440">Разполагате със сертификати, които идентифицират тези сертифициращи органи</translation>
 <translation id="7903925330883316394">Помощен процес: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Портовете в Linux да бъдат достъпни за други устройства в мрежата ви.</translation>
+<translation id="7906440585529721295">Локалните данни ще бъдат изтрити</translation>
 <translation id="7907837847548254634">Бързо открояване на обекта, върху който е поставен фокусът</translation>
 <translation id="7908378463497120834">За съжаление поне един дял на външното ви устройство за съхранение не можа да бъде свързан.</translation>
 <translation id="7909324225945368569">Преименуване на потребителския ви профил</translation>
@@ -7463,6 +7474,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="822050276545350872">Оттук нататък не се изисква чакане</translation>
 <translation id="8221491193165283816">Обикновено блокирате известията. Кликнете тук, за да разрешите на този сайт да ви изпраща известия.</translation>
 <translation id="822347941086490485">Търсят се HID устройства...</translation>
+<translation id="8223573963214454788">Продължаване и изтриване на данните</translation>
 <translation id="8225046344534779393">Проверете връзката с интернет</translation>
 <translation id="8225265270453771718">Споделяне на прозорец на приложение</translation>
 <translation id="8226222018808695353">Забранено</translation>
@@ -7563,6 +7575,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8314381333424235892">Разширението липсва или е деинсталирано</translation>
 <translation id="831440797644402910">Папката не може да се отвори</translation>
 <translation id="8314835274931377415">Да започне ли настройването на „Достъп с превключване“?</translation>
+<translation id="8317582043908962055">Разпознаване на текста в &amp;PDF файла</translation>
 <translation id="8317671367883557781">Добавяне на мрежова връзка</translation>
 <translation id="8319414634934645341">Удължена употреба на ключа</translation>
 <translation id="8321837372750396788">Това устройство <ph name="DEVICE_TYPE" /> ще се управлява от <ph name="MANAGER" />.</translation>
@@ -8296,7 +8309,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9050666287014529139">Парола</translation>
 <translation id="9052404922357793350">Продължаване на блокирането</translation>
 <translation id="9053563360605707198">Двустранно отпечатване</translation>
-<translation id="9053893665344928494">Запомняне на избора ми</translation>
 <translation id="9055636786322918818">Задължително прилагане на RC4 шифроване. Използването на тази опция увеличава риска, тъй като шифрите RC4 са несигурни.</translation>
 <translation id="9056810968620647706">Няма намерени съответствия.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> иска достъп до следното съдържание:</translation>
@@ -8448,6 +8460,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9203398526606335860">&amp;Профилирането е активирано</translation>
 <translation id="9203904171912129171">Избор на устройство</translation>
 <translation id="9206889157914079472">Водене на бележки с писалка от заключения екран</translation>
+<translation id="9208192193641542858">Локалните данни са защитени със старата ви парола. Ако наскоро сте променили паролата си, опитайте отново със старата.</translation>
 <translation id="9209563766569767417">Настройките на контейнера за Linux се проверяват</translation>
 <translation id="9209689095351280025">Сайтовете не могат да използват „бисквитки“, които ви следят в мрежата</translation>
 <translation id="9211177926627870898">Изисква се актуализация</translation>

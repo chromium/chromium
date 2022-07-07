@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">Выкарыстоўванне і рух камеры</translation>
 <translation id="191374271204266022">Скапіраваць як JSON</translation>
 <translation id="1914326953223720820">Сэрвіс распакоўвання архіваў</translation>
-<translation id="1915697529809968049">Выкарыстоўваць Touch ID замест CVC?</translation>
 <translation id="1916770123977586577">Каб прымяніць змененыя налады гэтага сайта, абнавіце гэту старонку</translation>
 <translation id="1919345977826869612">Рэклама</translation>
 <translation id="1919367280705858090">Дапамога пры асобных паведамленнях аб памылцы</translation>
@@ -1123,7 +1122,6 @@
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
 <translation id="4073797364926776829">Праглядзець картку</translation>
 <translation id="4075732493274867456">Кліент і сервер не падтрымліваюць агульную версію пратакола SLL або набор шыфраў.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Канфігурацыяй проксі зададзена выкарыстоўваць URL-адрас сцэнарыя .pac, а не фіксаваныя проксі-серверы.</translation>
 <translation id="4082393374666368382">Налады – Кіраванне</translation>
 <translation id="4087296516249690906">Кнопка "Стварыць падзею". Каб хутка стварыць новую падзею ў Google Календары, націсніце Enter</translation>
@@ -1295,7 +1293,6 @@
 <translation id="4506176782989081258">Памылка праверкі: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Звярнуцца да сістэмнага адміністратара.</translation>
 <translation id="450710068430902550">Абагульванне з адміністратарам</translation>
-<translation id="4508814173490746936">Не ўдалося выкарыстаць Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб перакласці гэту старонку ў Перакладчыку Google, націсніце Tab, затым Enter</translation>
 <translation id="4510487217173779431">Chou4 (канверт)</translation>
 <translation id="4514308731478712184">Выключыць функцыю "Шляхі карыстальніка"</translation>
@@ -1969,7 +1966,6 @@
 <translation id="6406765186087300643">C0 (канверт)</translation>
 <translation id="6410264514553301377">Увядзіце тэрмін дзеяння і код CVC з карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium можа дапамагчы абараніць ваш Уліковы запіс Google і змяніць ваш пароль.</translation>
-<translation id="6423385022588644828">Калі выкарыстоўваць Touch ID, пацвярджаць карткі можна будзе хутчэй</translation>
 <translation id="6425092077175753609">Матэрыял</translation>
 <translation id="6427730057873428458">Згіб "вароты"</translation>
 <translation id="6428450836711225518">Спраўдзіце свой нумар тэлефона</translation>
@@ -2739,7 +2735,6 @@
 <translation id="8559762987265718583">Памылка прыватнага падключэння да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />: дата і час на вашай прыладзе (<ph name="DATE_AND_TIME" />) няправільныя.</translation>
 <translation id="8564182942834072828">Асобныя дакументы, неразабраныя копіі</translation>
 <translation id="8564985650692024650">Chromium рэкамендуе скінуць пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, калі вы карысталіся ім на іншых сайтах.</translation>
-<translation id="8574899947864779331">Выкарыстоўваць Touch ID для хутчэйшага пацвярджэння картак</translation>
 <translation id="8576310925653847813">Дамашнія кінатэатры</translation>
 <translation id="8577348305244205642">Віртуальная картка недаступная</translation>
 <translation id="858637041960032120">Дадайце нумар тэлефона</translation>
@@ -2895,7 +2890,6 @@
 <translation id="9039213469156557790">Акрамя таго, на гэтай старонцы ёсць іншыя рэсурсы, якія не з'яўляюцца бяспечнымі: яны могуць быць прагледжаны іншымі падчас перадачы, а таксама могуць быць мадыфікаваны зламыснікам з мэтай змяніць паводзіны старонкі.</translation>
 <translation id="9040464167025094690">Кнопка "Знайсці прыладу". Каб знайсці сваю прыладу ва Уліковым запісе Google, націсніце Enter</translation>
 <translation id="9042617223719777575">Вялікая ёмістасць</translation>
-<translation id="9044359186343685026">Выкарыстоўваць Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />.–.<ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў несапраўдны сертыфікат.</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>

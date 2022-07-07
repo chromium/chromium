@@ -210,7 +210,6 @@
 <translation id="2100314319871056947">சிறுசிறு பகுதியாக உரையைப் பகிர முயலவும்</translation>
 <translation id="2111511281910874386">பக்கத்திற்குச் செல்லவும்</translation>
 <translation id="2122601567107267586">பயன்பாட்டைத் திறக்க முடியவில்லை</translation>
-<translation id="2126426811489709554">Chromeஇல் இயங்குகிறது</translation>
 <translation id="2132122640199389833">இணைக்கப்பட்டுள்ள சாதனங்கள் அனைத்தையும் அகற்று</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> மூடப்பட்டது</translation>
 <translation id="2134927169889348449">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_TOS_LINK" />Google சேவை விதிமுறைகள்<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_ATOS_LINK" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
@@ -443,6 +442,7 @@
 <translation id="3334729583274622784">ஃபைல் நீட்டிப்பை மாற்றவா?</translation>
 <translation id="3341262203274374114">பின்தொடர்வதை நிறுத்த முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="3359667936385849800">எனது தற்போதைய சேவை வழங்குநரைப் பயன்படுத்து</translation>
+<translation id="3365271666488085187">இந்த ஆர்வத்தின்படி விளம்பரங்களை Chrome காட்டலாம்</translation>
 <translation id="3367813778245106622">ஒத்திசைப்பதைத் தொடங்க, மீண்டும் உள்நுழையவும்</translation>
 <translation id="3373979091428520308">வேறொரு சாதனத்திற்கு இந்தப் பக்கத்தைப் பகிர, மற்ற சாதனத்தில் உள்ள Chrome அமைப்புகளில் 'ஒத்திசை' என்பதை இயக்கவும்</translation>
 <translation id="3374023511497244703">இனி உங்கள் Google கணக்குடன் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் போன்ற பிற Chrome தரவு ஒத்திசைக்கப்படாது</translation>
@@ -476,6 +476,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> கி.பை. உள்ளது</translation>
 <translation id="3549657413697417275">உங்கள் வரலாற்றைத் தேடுக</translation>
 <translation id="3557336313807607643">தொடர்புகளில் சேர்</translation>
+<translation id="3560491354538957576">தளம் ஆர்வங்களை வரையறுக்கலாம்</translation>
 <translation id="3563767357928833671">கிளிப்போர்டில் உள்ளவை காட்டப்படுகிறது</translation>
 <translation id="3566923219790363270">VRருக்காக Chrome இன்னமும் தயார்செய்கிறது. Chromeமைப் பின்னர் மீண்டும் தொடங்கவும்.</translation>
 <translation id="3568688522516854065">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, உள்நுழைந்து, ஒத்திசைவை இயக்கவும்</translation>

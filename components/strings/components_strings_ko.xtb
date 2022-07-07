@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">카메라 사용 및 이동</translation>
 <translation id="191374271204266022">JSON으로 복사</translation>
 <translation id="1914326953223720820">압축 해제 서비스</translation>
-<translation id="1915697529809968049">CVC 대신 Touch ID를 사용하시겠습니까?</translation>
 <translation id="1916770123977586577">이 사이트에 업데이트된 설정을 적용하려면 이 페이지를 다시 로드하세요.</translation>
 <translation id="1919345977826869612">광고</translation>
 <translation id="1919367280705858090">특정 오류 메시지에 관한 도움말 보기</translation>
@@ -1124,7 +1123,6 @@
 <translation id="4072486802667267160">주문을 처리하는 중에 오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="4073797364926776829">카드 보기</translation>
 <translation id="4075732493274867456">클라이언트와 서버가 일반적인 SSL 프로토콜 버전 또는 암호화 제품군을 지원하지 않습니다.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">프록시 설정이 고정 프록시 서버가 아닌 .pac 스크립트 URL을 사용하도록 설정됩니다.</translation>
 <translation id="4082393374666368382">설정 - 관리</translation>
 <translation id="4087296516249690906">일정 만들기 버튼, Enter를 눌러 Google Calendar에서 빠르게 새 일정 만들기</translation>
@@ -1296,7 +1294,6 @@
 <translation id="4506176782989081258">유효성 검사 오류 <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">시스템 관리자에게 문의</translation>
 <translation id="450710068430902550">관리자와 공유</translation>
-<translation id="4508814173490746936">Touch ID를 사용할 수 없음</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 번역으로 이 페이지를 번역하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="4510487217173779431">Chou4(봉투)</translation>
 <translation id="4514308731478712184">탐색 여정 사용 중지</translation>
@@ -1970,7 +1967,6 @@
 <translation id="6406765186087300643">C0(봉투)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />의 만료일과 CVC를 입력하세요.</translation>
 <translation id="6415778972515849510">Chromium을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
-<translation id="6423385022588644828">지금부터 Touch ID를 사용하여 빠르게 카드를 확인합니다.</translation>
 <translation id="6425092077175753609">머티리얼</translation>
 <translation id="6427730057873428458">게이트 폴드</translation>
 <translation id="6428450836711225518">전화번호 인증</translation>
@@ -2738,7 +2734,6 @@
 <translation id="8559762987265718583">기기의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="8564182942834072828">별도 문서/모으지 않은 사본</translation>
 <translation id="8564985650692024650">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
-<translation id="8574899947864779331">Touch ID를 사용하여 빠르게 카드 확인</translation>
 <translation id="8576310925653847813">홈시어터 시스템</translation>
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
 <translation id="858637041960032120">번호 추가</translation>
@@ -2894,7 +2889,6 @@
 <translation id="9039213469156557790">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 작동을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
 <translation id="9040464167025094690">내 기기 찾기 버튼, Google 계정에서 내 기기 찾기 페이지를 방문하려면 Enter를 누르세요</translation>
 <translation id="9042617223719777575">대용량</translation>
-<translation id="9044359186343685026">Touch ID 사용</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" />에 접속하려 했지만 서버가 잘못된 인증서를 전달했습니다.</translation>
 <translation id="9050666287014529139">암호</translation>

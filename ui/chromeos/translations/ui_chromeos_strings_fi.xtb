@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">englanti (Yhdysvallat), Dvorak-näppäimistö ohjelmoijille</translation>
 <translation id="1134697384939541955">englanti (Yhdysvallat), laajennettu näppäimistö</translation>
+<translation id="1138691154716715755">Aiemmin tässä kuussa</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> löytyi.
     <ph name="LINE_BREAK1" />
     Paikallinen tallennustila ei riitä. Tarvitaan vielä <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan ylläpitämä, lisätietoja</translation>
 <translation id="4387004326333427325">Todennusvarmenne on hylätty etäyhteyden kautta</translation>
 <translation id="4394214039309501350">Ulkoinen linkki</translation>
+<translation id="4394980935660306080">Aiemmin tällä viikolla</translation>
 <translation id="4401287888955153199">Laajenna kaikki</translation>
 <translation id="4410695710508688828">Purkaminen epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Luo tiedostoille pikakuvake</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Avataan <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Mobiiliverkko</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu.</translation>
+<translation id="4725096204469550614">Aiemmin tänä vuonna</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Kiitorata</translation>
 <translation id="4747271164117300400">makedonia</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">Siirretään <ph name="NUMBER_OF_ITEMS" /> kohdetta kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">Tapahtui virhe.</translation>
 <translation id="5098629044894065541">heprea</translation>
+<translation id="5102922915594634436">Ylläpidä synkronoituja kansioita</translation>
 <translation id="5109254780565519649">Tapahtui virhe. Kaikkia kohteita ei välttämättä palautettu.</translation>
 <translation id="5110329002213341433">englanti (Kanada)</translation>
 <translation id="5123433949759960244">Koripallo</translation>

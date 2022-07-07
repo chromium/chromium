@@ -123,6 +123,7 @@
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
 <translation id="1881188606372070653">ເຂົ້າໄປ <ph name="BEGIN_LINK1" />ໜ້າຊ່ວຍເຫຼືອທາງກົດໝາຍ<ph name="END_LINK1" /> ເພື່ອຮ້ອງຂໍການປ່ຽນແປງເນື້ອຫາດ້ວຍເຫດຜົນທາງກົດໝາຍ. ຂໍ້ມູນບັນຊີ ແລະ ຂໍ້ມູນລະບົບບາງຢ່າງອາດຖືກສົ່ງໄປໃຫ້ Google. ພວກເຮົາຈະໃຊ້ຂໍ້ມູນທີ່ທ່ານມອບໃຫ້ພວກເຮົາເພື່ອແກ້ໄຂບັນຫາທາງເທັກນິກ ແລະ ປັບປຸງບໍລິການຂອງພວກເຮົາ, ເຊິ່ງຈະເປັນໄປຕາມ <ph name="BEGIN_LINK2" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK2" /> ແລະ <ph name="BEGIN_LINK3" />ຂໍ້ກຳນົດບໍລິການຂອງພວກເຮົາ<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
+<translation id="1904932688895783618">ນີ້ແມ່ນຊັບພະຍາກອນທີ່ມີປະໂຫຍດຈຳນວນໜຶ່ງ:</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
 <translation id="1932611479324127242">ຕັດແຮງດັນໄຟຟ້າຂອງແບັດເຕີຣີ</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">ກະລຸນາລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາ</translation>
 <translation id="2016848882344942759">--ບໍ່ມີ white-label--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">ກະລຸນາເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ ແລະ ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຕົວພັກໜ້າຈໍ.</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2085089206770112532">ຫຼຸດຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="2105810540595158374">ອຸປະກອນແມ່ນມືເກມ.</translation>
@@ -775,6 +777,7 @@
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
 <translation id="7769672763586021400">ID ຮຸ່ນ</translation>
 <translation id="7784116172884276937">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
+<translation id="779591286616261875">ສົ່ງລາຍງານໃໝ່</translation>
 <translation id="7799817062559422778">ໂໝດແຈ້ງ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
@@ -927,6 +930,7 @@
 <translation id="9082718469794970195">ໃຊ້ວິດີໂອ</translation>
 <translation id="9087578468327036362">ລາຍງານຄຳຊອກຫານີ້</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
+<translation id="9092255287806472980">ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍປັບປຸງລະບົບປະຕິບັດການ Chrome ແລະ ຈະຖືກກວດສອບໂດຍທີມງານຂອງພວກເຮົາ. ເນື່ອງຈາກມີລາຍງານຈຳນວນຫຼາຍ, ພວກເຮົາຈະບໍ່ສາມາດຕອບກັບໄດ້.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">ທ່ານຈະຕ້ອງຖອດແຍກອຸປະກອນ</translation>
 <translation id="9098156406873149060">ເກັບຂໍ້ມູນຜູ້ໃຊ້ໄວ້</translation>

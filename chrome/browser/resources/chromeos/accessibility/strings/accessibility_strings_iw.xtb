@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">כתום</translation>
 <translation id="1198865190323699001">פקודות מגע</translation>
 <translation id="1201402288615127009">הבא</translation>
+<translation id="1202112913213080585">cancel</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">אין עוד כותרות מרמה 4</translation>
 <translation id="1212770441379271564">‏מקשי הקיצור הבאים אינם פקודות ChromeVox, אבל הם עדיין שימושיים מאוד אם רוצים לנצל את כל היתרונות של Chrome.
@@ -43,6 +44,7 @@
     כדי לפתוח את התפריט של דפדפן Chrome, מקישים על Alt+F.</translation>
 <translation id="1213216066620407844">‏ChromeVox - מתן קול ל-Chrome</translation>
 <translation id="1225969361094801578">אפור תכלת כהה</translation>
+<translation id="122928249241119550">move to the previous sentence</translation>
 <translation id="1230503547248836149">התחלת בחירה</translation>
 <translation id="1236794971743289975">הערת סיום</translation>
 <translation id="1237797094773582699">אפשר גם להחליק בעזרת ארבע אצבעות משמאל לימין כדי לעבור לקטע הקודם. אפשר לנסות עכשיו!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">כחול בהיר</translation>
 <translation id="2438712309510062123">הצעה</translation>
 <translation id="2450814015951372393">תיבת סימון</translation>
+<translation id="2450992626945324272">move to the next sentence</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2462626033734746142">קבוצת לחצני בחירה</translation>
 <translation id="2467741090055146971">ביטול הבחירה</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">כחול אפרפר</translation>
 <translation id="4217571870635786043">הכתבה</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{מקף}two{# סימני מקף}many{# סימני מקף}other{# סימני מקף}}</translation>
+<translation id="4220024144662591089">select from <ph name="START_PHRASE" /> to <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">אין רשימה קודמת</translation>
 <translation id="4225355998815256469">פקדי טופס</translation>
 <translation id="4230834257931120629">אפור תכלת בהיר</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">תיבת רשימה או תיבה משולבת</translation>
+<translation id="613344593214611552">delete the previous sentence</translation>
 <translation id="6142308968191113180">כותרת 4</translation>
 <translation id="6150023170003443621">ירוק צהוב</translation>
 <translation id="6158882249329863701">שורה <ph name="TABLECELLROWINDEX" /> עמודה <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">דילוג לתחתית הדף</translation>
 <translation id="6187190722927752226">ירוק כחלחל</translation>
 <translation id="6197361807490522975">כחול כהה</translation>
+<translation id="6218813441317556731">replace <ph name="DELETE_PHRASE" /> with <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">הכותרת הבאה</translation>
 <translation id="6254901459154107917">האזור הבא בטקסט הניתן לעריכה</translation>
 <translation id="6259464875943891919">יצאת מ-<ph name="TYPE" />.</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">פרטי רשימת תיאורים</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{אמפרסנד (&amp;)}two{# סימני אמפרסנד (&amp;)}many{# סימני אמפרסנד (&amp;)}other{# סימני אמפרסנד (&amp;)}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">delete the previous character</translation>
 <translation id="738899727977260036">כחול סגלגל</translation>
 <translation id="7393979322571982935">צלילים והגדרות</translation>
 <translation id="739763518212184081">השורה הקודמת</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">צהוב מטה-זהב בהיר</translation>
 <translation id="7543255924852002459">מחיקת תווית</translation>
 <translation id="7552432549459840808">‏מקשי קיצור מועילים ב-Chrome</translation>
+<translation id="7553679324939294712">insert <ph name="INSERT_PHRASE" /> before <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">שחור</translation>
 <translation id="7579911500627256166">נקודה <ph name="DOT" /></translation>
 <translation id="7592060599656252486">חלק</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">עריכת טקסט, רשומת כתובת אתר</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">לחצן הבחירה הקודם</translation>
+<translation id="7696631298608145306">move to the next word</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">קול טבעי</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">מקסימום <ph name="X" /></translation>
 <translation id="84575901236241018">כולל מקש גישה, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">יציאה משגיאת דקדוק</translation>
+<translation id="8465573210279050749">delete the previous word</translation>
 <translation id="847040613207937740">אין עוד תיבות סימון</translation>
 <translation id="8473540203671727883">הקראת הטקסט שנמצא מתחת לסמן של העכבר</translation>
 <translation id="8476408756881832830">‏אני רוצה להשהות את ההשמעה כשתוסף ה-ChromeVox מקריא</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{קו ניצב}two{# סימני קו ניצב}many{# סימני קו ניצב}other{# סימני קו ניצב}}</translation>
 <translation id="8741370088760768424">רמז: עליך להקיש על מקש החיפוש ועל הרווח כדי להפעיל את הפריט הנוכחי.</translation>
 <translation id="8743786158317878347">כניסה לתוכן מובנה, כמו טבלאות</translation>
+<translation id="8746846427395705317">move to the previous word</translation>
 <translation id="8747966237988593539">רשימה לפי סדר</translation>
 <translation id="8749988712346667988">כסף</translation>
 <translation id="875769700429317857">ההורדה של <ph name="FILE_NAME" /> הושלמה</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">אין קטע קודם</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">delete <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">לשכוח</translation>
 <translation id="8989104346085848538">‏כדי להפסיק את הדיבור הפעיל של ChromeVox, יש להקיש על מקש Control.</translation>
 <translation id="8993737615451556423">מספקת פקדים כדי להאיץ, להאט ולהשהות את קול ההקראה</translation>

@@ -1611,6 +1611,7 @@
 <translation id="264771271300359481">不允許任何網站使用剪貼簿網站權限</translation>
 <translation id="2649896281375932517">讓使用者決定</translation>
 <translation id="2650049181907741121">使用者蓋上螢幕時所採取的動作</translation>
+<translation id="2656559539624760733">不要使用 Chrome Root Store。</translation>
 <translation id="2658653824183107970">使用舊版 <ph name="CORS" /> 模式，而不使用新版 <ph name="CORS" /></translation>
 <translation id="2660846099862559570">永不使用 Proxy</translation>
 <translation id="2661628029848851543">允許受管理帳戶的所有使用情況</translation>
@@ -3485,6 +3486,12 @@
 
       如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
 <translation id="487460824085252184">自動遷移，不要求使用者同意。</translation>
+<translation id="48749493657448872">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
+      除非 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 已啟用，否則如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
+      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
+
+      我們計劃將這項政策從 <ph name="MAC_OS_NAME" /> 107 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援 <ph name="MAC_OS_NAME" /> 的舊版憑證驗證器。
+      </translation>
 <translation id="4874982543810021567">在這些網站上封鎖 WebUSB</translation>
 <translation id="4876805738539874299">已啟用 SSL 最高版本</translation>
 <translation id="4877402532842958110">這項政策已遭淘汰，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。
@@ -4277,6 +4284,7 @@
 <translation id="5733040281451845496">如果將這項政策設為啟用，系統會等到電源管理工作階段中出現第一項使用者活動後，才開始套用延遲時間和工作階段長度限制。
 
       如果將這項政策設為停用或不設定，系統會在電源管理工作階段一開始便套用延遲時間設定和時間限制。</translation>
+<translation id="5733357908790472408">使用 Chrome Root Store。</translation>
 <translation id="5735915264686983150">隱藏並封鎖已停用的功能</translation>
 <translation id="5737394734996319911">「<ph name="PRODUCT_NAME" />」無障礙功能可讓螢幕閱讀器的視障使用者取得無標籤網路圖片的說明。啟用這項功能的使用者可利用去識別化的 Google 服務，取得系統針對無標籤網路圖片自動產生的說明。啟用這項功能後，系統會將圖片內容傳送給 Google 伺服器以產生說明內容。系統不會傳送 Cookie 或其他使用者資料，且 Google 不會儲存或記錄任何圖片內容。如果將這項政策設為「啟用」，「<ph name="PRODUCT_NAME" />」功能便會開啟，不過這項設定只會影響螢幕閱讀器或其他類似輔助技術的使用者。如果將這項政策設為「停用」，使用者將無法啟用這項功能。如未設定這項政策，則使用者可自行選擇是否要使用此功能
           </translation>
@@ -4725,6 +4733,7 @@
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">回報裝置識別資訊</translation>
 <translation id="6265892395051519509">允許在這些網站上存取感應器</translation>
+<translation id="6266043141694454734">決定是否要使用 Chrome Root Store 和內建的憑證驗證器來驗證伺服器憑證</translation>
 <translation id="6273015149273504999">
       指定要在登入畫面上以無訊息方式 (使用者無需操作) 安裝的應用程式和擴充功能清單；使用者無法解除安裝或停用這些網站。
 
@@ -5706,6 +5715,23 @@
       如果未設定 <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> 和 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />，使用者將可選擇首頁。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="7258250780552783197">要套用至 <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，該連接器會在檔案於 <ph name="PRODUCT_OS_NAME" /> 內轉移時觸發。
+
+      在來源和目的地之間轉移檔案時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送檔案進行分析，以及要為該檔案在分析要求中加入哪些標記。系統會比對標記對應的規則，如果來源和目的地符合與該標記相關聯的規則，且該標記的「disable」規則不符合該項轉移作業，系統就會在分析要求中加入與「enable」規則相對應的標記。當要求中加入至少 1 個標記時，系統就會進行分析。<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> 規則是由配對清單所定義，每組配對皆包含來源清單和目的地清單。<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> 會定義規則應套用至哪個檔案系統。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定設定是對應至哪個分析服務供應商。
+
+      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，<ph name="PRODUCT_OS_NAME" /> 會先等候分析服務的回應，再允許轉移作業。如果設為其他整數值，<ph name="PRODUCT_OS_NAME" /> 會立即允許轉移作業。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 欄位可控制 <ph name="PRODUCT_OS_NAME" /> 要封鎖還是允許受到密碼保護的檔案。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 欄位可控制 <ph name="PRODUCT_OS_NAME" /> 要封鎖還是允許因太大而無法分析的檔案。
+
+      當掃描結果顯示可略過的警告時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 欄位來判斷連接器該在哪些標記中要求使用者輸入略過掃描的原因。如果不設定這個欄位，系統會認定不需要輸入原因。
+
+      當掃描結果判定檔案有問題時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位來設定要向使用者顯示的訊息。「message」欄位包含要向使用者顯示的文字，長度上限為 200 個半形字元。「<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />」欄位包含由管理員提供的網址，使用者點選後可取得更多由客戶提供的資訊，瞭解動作遭到封鎖的原因。「<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />」欄位為選填，包含訊息所用語言。如果將「<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />」欄位留空或設為「default」值，表示在找不到使用者語言的訊息時，系統會使用預設訊息。「tag」欄位可用來指定要顯示訊息的掃描類型。「<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />」清單可以有零或多個項目，每個項目都必須包括非空白的「message」和「tag」欄位。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="7258823566580374486">啟用遠端存取主機遮幕</translation>
 <translation id="7260204423892780600">控管 Google 助理的設定。</translation>
 <translation id="7261140115553020049">啟用浮動工作區服務</translation>
@@ -7127,6 +7153,7 @@
 
       如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
 <translation id="8836975838488342340">存取碼的有效時限 (以秒為單位)。</translation>
+<translation id="883744045558067826">視功能啟動程序而定，系統可能會使用 Chrome Root Store。</translation>
 <translation id="8839799083601163225">這項政策可控管系統是否會採用沙箱機制執行網路服務程序。
       如果啟用這項政策，系統會採用沙箱機制執行網路服務程序。
       如果停用這項政策，系統將不採用沙箱機制執行網路服務程序。如果不採用沙箱機制執行網路服務，可能會讓使用者面臨額外的安全性風險。
@@ -7302,6 +7329,12 @@
 
       指定政策值時需以毫秒為單位。該值必須介於 30 秒至 24 小時之間。</translation>
 <translation id="9040042535845939426">設定登入畫面上的隱私保護畫面狀態</translation>
+<translation id="9046609670147277653">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源，驗證伺服器憑證。
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將不會使用 Chrome Root Store。如果 <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> 政策可供使用且沒有遭到停用，系統可能會使用系統憑證驗證器或內建的驗證器進行驗證。
+      如果不進行設定，系統可能會使用 Chrome Root Store 或系統提供的根層級。
+
+      我們計劃將這項政策從 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 111 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援平台提供的憑證驗證器和根層級。
+      </translation>
 <translation id="9050853837490399534">這項政策可控管是否要將裝置更新為「快速修復版本」。
 
       如果將政策值設為對應至快速修復版本的符記，且其他政策未封鎖更新，則裝置會更新為相應的快速修復版本。
@@ -7350,6 +7383,7 @@
 
       如果將這項政策設為 False 或未設定，系統不會回報這項資訊。
       如果設為 True，則系統會回報裝置的登入/登出事件。</translation>
+<translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 連接器的設定政策</translation>
 <translation id="9088191250434406767">如果將這項政策設為 Enabled 或不設定，使用者就可以使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />透過相機進行搜尋。如果將這項政策設為 Disabled，即使裝置支援 <ph name="GOOGLE_LENS_PRODUCT_NAME" />相機輔助搜尋功能，使用者在搜尋框中也不會看到 [<ph name="GOOGLE_LENS_PRODUCT_NAME" />] 按鈕。</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>

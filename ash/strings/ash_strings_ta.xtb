@@ -152,6 +152,7 @@
 <translation id="1771761307086386028">வலப்புறம் செல்</translation>
 <translation id="1774796056689732716">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" />, தற்போது <ph name="DATE" /> என்ற தேதி தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="1787955149152357925">முடக்கு</translation>
+<translation id="1797271123677381264">கடவுச்சொல் மறந்துவிட்டது</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="1812997170047690955">எனது திரையில் இருப்பவையா?</translation>
 <translation id="1823873187264960516">ஈதர்நெட்: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4481530544597605423">இணைக்காத சாதனங்கள்</translation>
 <translation id="4505050298327493054">செயலிலுள்ள டெஸ்க்.</translation>
+<translation id="450584155212756404">டெவ் சேனல்</translation>
 <translation id="4513946894732546136">கருத்து</translation>
 <translation id="4518404433291145981">Chromebookகை திறக்க உங்கள் ஃபோனை அன்லாக் செய்க</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
@@ -876,6 +878,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> இல் தானாகவே வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="6064463340679478396">இதற்கு மேல் ஃபைலைப் பயன்படுத்தாதே</translation>
 <translation id="6073451960410192870">பதிவுசெய்வதை நிறுத்து</translation>
+<translation id="6074087755403037157">பீட்டா அலைவரிசை</translation>
 <translation id="6099678161144790572">கடந்த மாதம் திருத்தப்பட்டது</translation>
 <translation id="6103838137565245112">சிஸ்டம்</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
@@ -1226,6 +1229,7 @@
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8203795194971602413">வலது கிளிக் செய்யும்</translation>
 <translation id="8209010265547628927">மீட்டமை</translation>
+<translation id="8214996719228530800">Canary சேனல்</translation>
 <translation id="8219451629189078428">இந்தச் சமயத்தின்போது உங்கள் Chromebook ஆனில் இருப்பதுடன் பிளக் பாயிண்ட்டில் செருகப்பட்டிருக்கவும் வேண்டும். சார்ஜர், அடாப்டர் கேபிள்கள் போன்றவை உங்கள் Chromebook, பிளக் பாயிண்ட் ஆகிய இரண்டிலும் சரியாகச் செருகப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். Chromebookகை ஆஃப் செய்ய வேண்டாம்.</translation>
 <translation id="8236042855478648955">இடைவேளைக்கான நேரம்</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" /></translation>

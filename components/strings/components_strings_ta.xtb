@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">கேமரா உபயோகம் &amp; நகர்வு</translation>
 <translation id="191374271204266022">JSON ஆக நகலெடு</translation>
 <translation id="1914326953223720820">ஜிப் ஃபைல்களைத் திறக்கும் சேவை</translation>
-<translation id="1915697529809968049">CVCக்குப் பதிலாக Touch IDயைப் பயன்படுத்தவா?</translation>
 <translation id="1916770123977586577">மாற்றிய அமைப்புகளை இந்தத் தளத்தில் பயன்படுத்த, பக்கத்தை மீண்டும் ஏற்றவும்</translation>
 <translation id="1919345977826869612">விளம்பரங்கள்</translation>
 <translation id="1919367280705858090">குறிப்பிட்ட பிழைச் செய்திக்கான உதவியைப் பெறுங்கள்</translation>
@@ -828,6 +827,7 @@
 <translation id="3226387218769101247">சிறுபடங்கள்</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3229041911291329567">உங்கள் சாதனம் மற்றும் உலாவியின் பதிப்புத் தகவல்</translation>
+<translation id="3229277193950731405">பதிப்பு வார்த்தையை நகலெடு</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> இன் CVC எண்ணை உள்ளிடவும்</translation>
 <translation id="3234666976984236645">இந்தத் தளத்தின் முக்கிய உள்ளடக்கத்தை எப்போதும் இயக்கவும்</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. உலாவியின் தோற்றத்தைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -1119,7 +1119,6 @@
 <translation id="4072486802667267160">ஆர்டரைச் செயல்படுத்துவதில் பிழை ஏற்பட்டது. பிறகு முயலவும்.</translation>
 <translation id="4073797364926776829">கார்டைக் காட்டு</translation>
 <translation id="4075732493274867456">க்ளையன்ட்டும் சேவையகமும் பொதுவான SSL நெறிமுறைப் பதிப்பையோ சைஃபர் பொதியையோ ஆதரிக்கவில்லை.</translation>
-<translation id="4075941231477579656">Touch ஐடி</translation>
 <translation id="4079302484614802869">ப்ராக்ஸி உள்ளமைவானது, .pac ஸ்கிரிப்ட் URL ஐப் பயன்படுத்தும்படி அமைக்கப்பட்டிருக்கிறது, நிலையான ப்ராக்ஸி சேவையகங்களுக்கு அல்ல.</translation>
 <translation id="4082393374666368382">அமைப்புகள் - நிர்வாகம்</translation>
 <translation id="4087296516249690906">நிகழ்வை உருவாக்குவதற்கான பட்டன். Google Calendarரில் புதிய நிகழ்வை விரைவாக உருவாக்க Enter பட்டனை அழுத்துங்கள்</translation>
@@ -1291,7 +1290,6 @@
 <translation id="4506176782989081258">சரிபார்ப்புப் பிழை: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">கணினி நிர்வாகியைத் தொடர்புகொள்ளுதல்</translation>
 <translation id="450710068430902550">நிர்வாகியுடன் பகிர்பவை</translation>
-<translation id="4508814173490746936">Touch IDயைப் பயன்படுத்த இயலவில்லை</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate மூலம் இந்தப் பக்கத்தை மொழிபெயர்க்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="4510487217173779431">Chou4 (என்வலப்)</translation>
 <translation id="4514308731478712184">‘குறிப்பிட்ட தேடல் விவரங்கள்’ அம்சத்தை முடக்கு</translation>
@@ -1964,7 +1962,6 @@
 <translation id="6406765186087300643">C0 (என்வலப்)</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />க்கான காலாவதித் தேதியையும் CVC எண்ணையும் உள்ளிடவும்</translation>
 <translation id="6415778972515849510">உங்கள் Google கணக்கைப் பாதுகாக்கவும் கடவுச்சொல்லை மாற்றவும் Chromium உதவும்.</translation>
-<translation id="6423385022588644828">இப்போதிலிருந்து Touch IDயைப் பயன்படுத்தி மேலும் விரைவாக உங்கள் கார்டுகளை உறுதிப்படுத்துங்கள்</translation>
 <translation id="6425092077175753609">மெட்டீரியல்</translation>
 <translation id="6427730057873428458">கேட் ஃபோல்டு</translation>
 <translation id="6428450836711225518">மொபைல் எண்ணைச் சரிபார்த்தல்</translation>
@@ -2733,7 +2730,6 @@
 <translation id="8559762987265718583">உங்கள் சாதனத்தின் தேதி மற்றும் நேரம் (<ph name="DATE_AND_TIME" />) தவறாக உள்ளதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
 <translation id="8564182942834072828">தனித்தனி ஆவணங்கள்/தொகுக்கப்படாத நகல்கள்</translation>
 <translation id="8564985650692024650">பிற தளங்களில் உங்கள் <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chromium பரிந்துரைக்கிறது.</translation>
-<translation id="8574899947864779331">கார்டுகளை மேலும் விரைவாக உறுதிப்படுத்த Touch IDயைப் பயன்படுத்துங்கள்</translation>
 <translation id="8576310925653847813">ஹோம் தியேட்டர் சிஸ்டங்கள்</translation>
 <translation id="8577348305244205642">விர்ச்சுவல் கார்டு கிடைக்கவில்லை</translation>
 <translation id="858637041960032120">ஃபோன் எண்ணைச் சேர்</translation>
@@ -2889,7 +2885,6 @@
 <translation id="9039213469156557790">மேலும், பாதுகாப்பற்ற பிற ஆதாரங்கள் இந்தப் பக்கத்தில் உள்ளன. இந்த ஆதாரங்களை ட்ரான்ஸிட்டில் இருக்கும்போதும் பிறர் பார்வையிடலாம், மேலும் பக்கத்தின் செயல்பாட்டை மாற்ற, தீங்கிழைப்பவர் அதை மாற்றியமைக்கலாம்.</translation>
 <translation id="9040464167025094690">'Find My Device' ஆப்ஸிற்கான பட்டன். Google கணக்கில் உங்கள் சாதனத்தைக் கண்டறிய, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="9042617223719777575">அதிகக் கொள்ளளவு</translation>
-<translation id="9044359186343685026">Touch IDயைப் பயன்படுத்து</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">நீங்கள் <ph name="DOMAIN" /> ஐ அடைய முயற்சி செய்தீர்கள், ஆனால் சேவையகம் ஒரு செல்லாத சான்றிதழை வழங்கியது.</translation>
 <translation id="9050666287014529139">கடவுச்சொற்றொடர்</translation>

@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">韩语（罗马字）</translation>
 <translation id="112387589102719461">英语（美国）Programmer Dvorak 键盘</translation>
 <translation id="1134697384939541955">英语（美国）扩展键盘</translation>
+<translation id="1138691154716715755">本月早些时候</translation>
 <translation id="1148097584170732637">找到了 <ph name="FILE_COUNT" />。
     <ph name="LINE_BREAK1" />
     可用的本地存储空间不足。还需要 <ph name="FILE_SIZE" />。
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="4387004326333427325">身份验证证书遭到远程拒绝</translation>
 <translation id="4394214039309501350">外部链接</translation>
+<translation id="4394980935660306080">本周早些时候</translation>
 <translation id="4401287888955153199">提取全部</translation>
 <translation id="4410695710508688828">提取操作失败。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">为您的文件创建快捷方式</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">正在打开“<ph name="PATH" />”</translation>
 <translation id="4720185134442950733">移动数据网络</translation>
 <translation id="4724850507808590449">已备份 <ph name="FILE_COUNT" /> 张照片</translation>
+<translation id="4725096204469550614">今年早些时候</translation>
 <translation id="4725511304875193254">柯基犬</translation>
 <translation id="4737050008115666127">起落场</translation>
 <translation id="4747271164117300400">马其顿语</translation>

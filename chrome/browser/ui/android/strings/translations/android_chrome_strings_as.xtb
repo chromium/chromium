@@ -210,7 +210,6 @@
 <translation id="2100314319871056947">পাঠখিনি সৰু সৰুকৈ ভাগ কৰি শ্বেয়াৰ কৰিবলৈ চেষ্টা কৰক</translation>
 <translation id="2111511281910874386">পৃষ্ঠালৈ যাওক</translation>
 <translation id="2122601567107267586">এপ্ খুলিব পৰা নগ’ল</translation>
-<translation id="2126426811489709554">Chromeৰ দ্বাৰা সঞ্চালিত</translation>
 <translation id="2132122640199389833">লিংক কৰি থোৱা আটাইবোৰ ডিভাইচ আঁতৰাওক</translation>
 <translation id="213279576345780926">বন্ধ <ph name="TAB_TITLE" /></translation>
 <translation id="2134927169889348449">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_TOS_LINK" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_ATOS_LINK" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_ATOS_LINK" />ত সন্মতি দিয়ে।</translation>
@@ -443,6 +442,7 @@
 <translation id="3334729583274622784">ফাইলটোৰ এক্সটেনশ্বন সলনি কৰিবনে?</translation>
 <translation id="3341262203274374114">আনফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="3359667936385849800">আপোনাৰ বৰ্তমানৰ সেৱা প্ৰদানকাৰী ব্যৱহাৰ কৰক</translation>
+<translation id="3365271666488085187">Chromeএ এই আগ্ৰহটো বিবেচনা কৰিব পাৰে</translation>
 <translation id="3367813778245106622">ছিংক আৰম্ভ কৰিবলৈ আকৌ ছাইন ইন কৰক</translation>
 <translation id="3373979091428520308">এই পৃষ্ঠাখন অন্য এটা ডিভাইচলৈ শ্বেয়াৰ কৰিবলৈ, অন্য ডিভাইচটোৰ Chromeৰ ছেটিংসমূহত ছিংক অন কৰক</translation>
 <translation id="3374023511497244703">আপোনাৰ বুকমাৰ্কসমূহ, ইতিহাস, পাছৱর্ডসমূহ আৰু অন্য Chrome ডেটা এতিয়া আৰু আপোনাৰ Google একাউণ্টত ছিংক কৰা নহ’ব</translation>
@@ -476,6 +476,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> কে.বি. উপলব্ধ</translation>
 <translation id="3549657413697417275">আপোনাৰ ব্ৰাউজিং ইতিহাসত সন্ধান কৰক</translation>
 <translation id="3557336313807607643">সর্ম্পকসূচীত যোগ কৰক</translation>
+<translation id="3560491354538957576">ছাইটে আগ্ৰহসমূহ সংজ্ঞাবদ্ধ কৰিব পাৰে</translation>
 <translation id="3563767357928833671">ক্লিপব'ৰ্ডৰ সমল দেখুওৱা হৈছে</translation>
 <translation id="3566923219790363270">Chromeএ এতিয়াও VR সাজু কৰি আছে। Chrome পিছত ৰিষ্টার্ট কৰক।</translation>
 <translation id="3568688522516854065">আপোনাৰ অন্য ডিভাইচসমূহৰ পৰা নিজৰ টেবসমূহ পাবলৈ ছাইন ইন আৰু ছিংক কৰা সুবিধাটো অন কৰক</translation>

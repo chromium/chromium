@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Kiingereza (Marekani) kwenye kibodi ya Wasanidi Programu ya Dvorak</translation>
 <translation id="1134697384939541955">Kiingereza (Marekani) kwenye kibodi Pana</translation>
+<translation id="1138691154716715755">Mapema mwezi huu</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> haikupatikana.
     <ph name="LINE_BREAK1" />
     Nafasi haitoshi kwenye hifadhi ya ndani ya kifaa. <ph name="FILE_SIZE" /> zaidi inahitajika.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Maelezo</translation>
 <translation id="4387004326333427325">Cheti cha uthibitishaji kimekataliwa kwa mbali</translation>
 <translation id="4394214039309501350">Kiungo cha nje</translation>
+<translation id="4394980935660306080">Mapema wiki hii</translation>
 <translation id="4401287888955153199">Toa maudhui yote</translation>
 <translation id="4410695710508688828">Shughuli ya kuondoa faili haikufanikiwa. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Unda njia ya mkato ya faili zako</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Inafungua "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Mtandao wa data ya simu ya mkononi</translation>
 <translation id="4724850507808590449">Picha <ph name="FILE_COUNT" /> zimehifadhiwa nakala</translation>
+<translation id="4725096204469550614">Mapema mwaka huu</translation>
 <translation id="4725511304875193254">Mbwa mlinzi</translation>
 <translation id="4737050008115666127">Uwanja wa kutua</translation>
 <translation id="4747271164117300400">Kimasedonia</translation>

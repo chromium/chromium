@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ହଂଗୁଲ୍ ରୋମାଜା</translation>
 <translation id="112387589102719461">ପ୍ରୋଗାମର୍ ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="1134697384939541955">ବିସ୍ତାରିତ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="1138691154716715755">ଏହି ମାସର ଆରମ୍ଭରେ</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" />ଟି ମିଳିଛି।
     <ph name="LINE_BREAK1" />
     ସ୍ଥାନୀୟ ଷ୍ଟୋରେଜ୍‌ରେ ପର୍ଯ୍ୟାପ୍ତ ଖାଲି ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ। ଅତିରିକ୍ତ <ph name="FILE_SIZE" /> ଆବଶ୍ୟକ ଅଟେ।
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="4387004326333427325">ପ୍ରମାଣିକିକରଣ ସାର୍ଟିଫିକେଟ୍‌ ରିମୋଟ୍‍ ଭାବେ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="4394214039309501350">ଏକ୍ସଟର୍ନଲ୍ ଲିଙ୍କ୍</translation>
+<translation id="4394980935660306080">ଏହି ସପ୍ତାହର ଆରମ୍ଭରେ</translation>
 <translation id="4401287888955153199">ସବୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4410695710508688828">ଏକ୍ସଟ୍ରାକ୍ଟ କରିବା ଅପରେସନ ବିଫଳ ହୋଇଛି। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକ ପାଇଁ ଏକ ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" ଖୋଲାଯାଉଛି</translation>
 <translation id="4720185134442950733">ମୋବାଇଲ୍ ଡାଟା ନେଟ୍‍ୱାର୍କ</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" />ଟି ଫଟୋର ବ୍ୟାକ୍-ଅପ୍ ନିଆଯାଇଛି</translation>
+<translation id="4725096204469550614">ଏହି ବର୍ଷର ଆରମ୍ଭରେ</translation>
 <translation id="4725511304875193254">କୋର୍ଗି</translation>
 <translation id="4737050008115666127">ଲ୍ୟାଣ୍ଡିଙ୍ଗ୍‌</translation>
 <translation id="4747271164117300400">ମାସିଡୋନିୟ</translation>

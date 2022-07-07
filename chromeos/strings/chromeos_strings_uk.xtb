@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Вимкнути темний режим</translation>
 <translation id="1881188606372070653">Щоб надіслати запит на змінення контенту з юридичних причин, перейдіть на <ph name="BEGIN_LINK1" />сторінку правової довідки<ph name="END_LINK1" />. Певні дані про ваш обліковий запис і систему можуть надсилатися в Google. Ми використовуватимемо їх відповідно до <ph name="BEGIN_LINK2" />Політики конфіденційності<ph name="END_LINK2" /> й <ph name="BEGIN_LINK3" />Умов використання<ph name="END_LINK3" />, щоб вирішувати технічні проблеми та покращувати наші сервіси.</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
+<translation id="1904932688895783618">Нижче наведено інші корисні ресурси.</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
 <translation id="1932611479324127242">Відключити акумулятор</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="2016848882344942759">--немає бренду продавця--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Щоб переглянути заставку, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="2080070583977670716">Інші налаштування</translation>
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
+<translation id="779591286616261875">Надіслати новий звіт</translation>
 <translation id="7799817062559422778">Світлий режим</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">Використати це відео</translation>
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
+<translation id="9092255287806472980">Наша команда розгляне ваш відгук. Він допоможе покращити ОС Chrome. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="90977145661420967">Вам доведеться розібрати пристрій</translation>
 <translation id="9098156406873149060">Зберегти дані користувача</translation>

@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Desativar o modo escuro</translation>
 <translation id="1881188606372070653">Acesse a <ph name="BEGIN_LINK1" />página de Ajuda do Jurídico<ph name="END_LINK1" /> para pedir mudanças no conteúdo por questões legais. Talvez alguns dados sobre a conta e o sistema sejam enviados ao Google. As informações que você fornecer vão ser usadas para ajudar a resolver problemas técnicos e melhorar nossos serviços, conforme descrito na <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e nos <ph name="BEGIN_LINK3" />Termos de Serviço<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisão do hardware</translation>
+<translation id="1904932688895783618">Veja outros recursos úteis:</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
 <translation id="1908234395526491708">Falhas de solicitações UDP</translation>
 <translation id="1932611479324127242">Desligar a bateria</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Testar etapas de solução de problemas</translation>
 <translation id="2016848882344942759">--limpar marca branca--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Conecte-se a uma rede e atualize a página para conferir o protetor de tela.</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2085089206770112532">Diminuir o brilho da tela</translation>
 <translation id="2105810540595158374">Este dispositivo é um controle de jogo.</translation>
@@ -773,6 +775,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7763470514545477072">Correspondência do sufixo de domínio</translation>
 <translation id="7769672763586021400">Código do modelo</translation>
 <translation id="7784116172884276937">Nenhum servidor DNS está configurado</translation>
+<translation id="779591286616261875">Enviar nova denúncia</translation>
 <translation id="7799817062559422778">Modo claro</translation>
 <translation id="780301667611848630">Não</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -925,6 +928,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Denuncie essa consulta</translation>
 <translation id="9088306295921699330">Uso atual</translation>
+<translation id="9092255287806472980">Seu feedback ajuda a melhorar o Chrome OS e vai ser analisado pela nossa equipe. Devido ao grande número de denúncias, não podemos dar uma resposta.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">Você vai precisar desmontar o dispositivo</translation>
 <translation id="9098156406873149060">Manter os dados do usuário</translation>

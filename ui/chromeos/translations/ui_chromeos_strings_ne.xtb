@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">हंगुल रोमाजा</translation>
 <translation id="112387589102719461">अङ्ग्रेजी (सं. रा. अमेरिकी) प्रोग्रामर ड्भोराक किबोर्ड</translation>
 <translation id="1134697384939541955">अङ्ग्रेजी (सं. रा. अमेरिकी) विस्तारित किबोर्ड</translation>
+<translation id="1138691154716715755">यो महिनाको सुरुवातमा</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> फेला पर्‍यो।
     <ph name="LINE_BREAK1" />
     स्थानीय भण्डारणमा पर्याप्त खाली ठाउँ उपलब्ध छैन। अतिरिक्त <ph name="FILE_SIZE" /> आवश्यक छ।
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको, विवरणहरू</translation>
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्रलाई सीधै अस्वीकार गर्‍यो</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
+<translation id="4394980935660306080">यो हप्ताको सुरुवातमा</translation>
 <translation id="4401287888955153199">सबै सामग्री एक्स्ट्र्याक्ट गर्नुहोस्</translation>
 <translation id="4410695710508688828">एक्स्ट्र्याक्ट गर्न सकिएन। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">आफ्ना फाइलहरूको सर्टकट बनाउनुहोस्</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" खोलिँदै</translation>
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> तस्बिरहरू जगेडा गरियो</translation>
+<translation id="4725096204469550614">यो वर्षको सुरुवातमा</translation>
 <translation id="4725511304875193254">कोर्गी</translation>
 <translation id="4737050008115666127">ल्यान्डिङ</translation>
 <translation id="4747271164117300400">म्यासेडोनेयाली</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158"><ph name="FOLDER_NAME" /> मा <ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिँदै छन्</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
 <translation id="5098629044894065541">हिब्रू</translation>
+<translation id="5102922915594634436">सिंक गरिएका फोल्डरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5109254780565519649">कुनै त्रुटि भयो। केही वस्तुहरू रिस्टोर नभएका हुन सक्छन्।</translation>
 <translation id="5110329002213341433">अङ्ग्रेजी (क्यानाडा)</translation>
 <translation id="5123433949759960244">बास्केटबल</translation>

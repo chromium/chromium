@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">କମଳା</translation>
 <translation id="1198865190323699001">ଟଚ ଜେଶ୍ଚର</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
+<translation id="1202112913213080585">ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="1206619573307042055">ମାର୍କୀ</translation>
 <translation id="1207086294218137981">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ତର 4 ହେଡିଂ ନାହିଁ</translation>
 <translation id="1212770441379271564">ପରବର୍ତ୍ତୀ କିଛି ସର୍ଟକଟ୍ ChromeVox କମାଣ୍ଡ ନୁହେଁ, କିନ୍ତୁ ଏବେ ବି Chromeରୁ ଅନେକ କିଛି ପାଇବା ପାଇଁ ସେଗୁଡ଼ିକ ବହୁତ ଉପଯୋଗୀ ଅଟେ।
@@ -43,6 +44,7 @@
     Chrome ବ୍ରାଉଜର୍ ମେନୁ ଖୋଲିବା ପାଇଁ, Alt+F ଦବାନ୍ତୁ।</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome ପାଇଁ ଭଏସ୍ ଦିଅନ୍ତୁ</translation>
 <translation id="1225969361094801578">ଗାଢ଼ ସ୍ଲେଟ୍ ଧୂସର</translation>
+<translation id="122928249241119550">ପୂର୍ବବର୍ତ୍ତୀ ବାକ୍ୟକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="1230503547248836149">ଚୟନର ଆରମ୍ଭ</translation>
 <translation id="1236794971743289975">ଗୀତର ଅନ୍ତିମ ସ୍ତର</translation>
 <translation id="1237797094773582699">ସେହିଭଳି, ପୂର୍ବବର୍ତ୍ତୀ ବିଭାଗକୁ ମୁଭ୍ କରିବାକୁ ଚାରି ଆଙ୍ଗୁଠିରେ ଡାହାଣରୁ ବାମକୁ ସ୍ୱାଇପ୍ କରାଯାଇପାରିବ। ବର୍ତ୍ତମାନ ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">ଡୋଜର୍ ନୀଳ</translation>
 <translation id="2438712309510062123">ପରାମର୍ଶ ଦିଅନ୍ତୁ</translation>
 <translation id="2450814015951372393">ଚେକ୍ ବକ୍ସ</translation>
+<translation id="2450992626945324272">ପରବର୍ତ୍ତୀ ବାକ୍ୟକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
 <translation id="2462626033734746142">ରେଡିଓ ବଟନ୍ ଗୋଷ୍ଠୀ</translation>
 <translation id="2467741090055146971">ଅଚୟନ କରନ୍ତୁ</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">ହାଲୁକା ନୀଳ</translation>
 <translation id="4217571870635786043">ଶ୍ରୁତଲିଖନ</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ଡ୍ୟାଶ୍}other{# ଡ୍ୟାଶ୍}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" />ରୁ <ph name="END_PHRASE" /> ପର୍ଯ୍ୟନ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4221012616705981690">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ତାଲିକା ନାହିଁ</translation>
 <translation id="4225355998815256469">ଫର୍ମ କଣ୍ଟ୍ରୋଲ୍</translation>
 <translation id="4230834257931120629">ହାଲୁକା ସ୍ଲେଟ୍ ଧୂସର</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">ବଟନ୍</translation>
 <translation id="6132506484792346370">ଏକ ଲିଷ୍ଟବକ୍ସ କିମ୍ୱା କମ୍ୱୋ ବକ୍ସ</translation>
+<translation id="613344593214611552">ପୂର୍ବବର୍ତ୍ତୀ ବାକ୍ୟକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6142308968191113180">ଶୀର୍ଷକ 4</translation>
 <translation id="6150023170003443621">ହଳଦିଆ ସବୁଜ</translation>
 <translation id="6158882249329863701">ଧାଡ଼ି <ph name="TABLECELLROWINDEX" /> ସ୍ତମ୍ଭ <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">ସିଧାସଳଖ ପୃଷ୍ଠାର ତଳକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6187190722927752226">ନୀଳ ସବୁଜ</translation>
 <translation id="6197361807490522975">ଗାଢ଼ ନୀଳ</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" />କୁ <ph name="INSERT_PHRASE" />ରେ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6236061028292614533">ପରବର୍ତ୍ତୀ ଶୀର୍ଷକ</translation>
 <translation id="6254901459154107917">ପରବର୍ତ୍ତୀ ଏଡିଟ୍ ହେବା ଯୋଗ୍ୟ କ୍ଷେତ୍ର</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> ପ୍ରସ୍ଥାନ କଲେ।</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">ଡେସକ୍ରିପସନ୍ ଲିଷ୍ଟ ବିବରଣୀ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ଆମ୍ପର୍ସାଣ୍ଡ୍}other{#ଟି ଆମ୍ପର୍ସାଣ୍ଡ୍}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">ପୂର୍ବବର୍ତ୍ତୀ କେରେକ୍ଟରକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="738899727977260036">ସ୍ଲେଟ୍ ନୀଳ</translation>
 <translation id="7393979322571982935">ସାଉଣ୍ଡ ଏବଂ ସେଟିଂସ୍</translation>
 <translation id="739763518212184081">ପୂର୍ବ ଧାଡ଼ି</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">ଗୋଲ୍ଡେନ୍ ରଡ୍ ପରି ହାଲୁକା ହଳଦିଆ</translation>
 <translation id="7543255924852002459">ଲେବଲ୍ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="7552432549459840808">ଉପଯୋଗୀ Chrome ସର୍ଟକଟ୍‍ଗୁଡ଼ିକ</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> ପୂର୍ବରୁ <ph name="INSERT_PHRASE" /> ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7569983096843329377">କଳା</translation>
 <translation id="7579911500627256166">ଡଟ୍ <ph name="DOT" /></translation>
 <translation id="7592060599656252486">କିଛି</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">ଟେକ୍ସଟ୍ ଏଡିଟ୍ କରନ୍ତୁ, URL ଲେଖନ୍ତୁ</translation>
 <translation id="7685589220304187312">ଟୁଲ୍ ବାର୍</translation>
 <translation id="7693840228159394336">ପୂର୍ବବର୍ତ୍ତୀ ରେଡିଓ ବଟନ୍</translation>
+<translation id="7696631298608145306">ପରବର୍ତ୍ତୀ ଶବ୍ଦକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">ପ୍ରକୃତ ଭଏସ୍</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">ସର୍ବାଧିକ <ph name="X" /></translation>
 <translation id="84575901236241018">ଆକ୍ସେସ୍ କୀ' ଅଛି, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">ବ୍ୟାକରଣ ତ୍ରୁଟି ଛାଡ଼ି ଦେଉଛି</translation>
+<translation id="8465573210279050749">ପୂର୍ବବର୍ତ୍ତୀ ଶଦ୍ଦକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="847040613207937740">କୌଣସି ପରବର୍ତ୍ତୀ ଚେକବକ୍ସ ନାହିଁ</translation>
 <translation id="8473540203671727883">ମାଉସର ତଳେ ଥିବା ଟେକ୍ସଟ କୁହନ୍ତୁ</translation>
 <translation id="8476408756881832830">ChromeVox କହୁଥିବା ସମୟରେ ପ୍ଲେବ୍ୟାକ୍‌ ବିରତ କରନ୍ତୁ</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{ପାଇପ୍}other{#ଟି ଭୂଲମ୍ୱ ପାଇପ୍}}</translation>
 <translation id="8741370088760768424">ସୂଚନା: ବର୍ତ୍ତମାନର ଆଇଟମକୁ ସକ୍ରିୟ କରିବା ପାଇଁ Search + Space ଦବାନ୍ତୁ।</translation>
 <translation id="8743786158317878347">ସଂଗଠିତ ବିଷୟବସ୍ତୁ ପ୍ରବେଶ କରନ୍ତୁ, ଯେପରିକି ଟେବଲ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="8746846427395705317">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="8747966237988593539">କ୍ରମାନୁସାରେ ସଜାଯାଇଥିବା ତାଲିକା</translation>
 <translation id="8749988712346667988">ରୂପେଲି</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ସଂପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ବିଭାଗ ନାହିଁ</translation>
 <translation id="89720367119469899">ଏସ୍କେପ୍</translation>
 <translation id="8978496506222343566">ଟୁଲ୍ ଟିପ୍</translation>
+<translation id="898089897833732740"><ph name="PHRASE" />କୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="8986362086234534611">ଭୁଲିଗଲେ</translation>
 <translation id="8989104346085848538">ବର୍ତ୍ତମାନର ଯେ କୌଣସି ChromeVox ସ୍ପିଚକୁ ବନ୍ଦ କରିବା ପାଇଁ, Control କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="8993737615451556423">ପଢ଼ିବା ଭଏସର ଗତିକୁ ବଢ଼ାଇବା, କମାଇବା ଏବଂ ବିରତ କରିବା ପାଇଁ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ପ୍ରଦାନ କରେ</translation>

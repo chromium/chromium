@@ -123,6 +123,7 @@
 <translation id="188114911237521550">Tắt chế độ tối</translation>
 <translation id="1881188606372070653">Nếu bạn muốn yêu cầu thay đổi nội dung vì lý do pháp lý, hãy truy cập <ph name="BEGIN_LINK1" />trang Trợ giúp pháp lý<ph name="END_LINK1" />. Một số thông tin về tài khoản và hệ thống có thể được gửi đến Google. Chúng tôi sẽ dùng thông tin mà bạn cung cấp để giúp khắc phục các vấn đề kỹ thuật, đồng thời cải thiện các dịch vụ theo <ph name="BEGIN_LINK2" />Chính sách quyền riêng tư<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ<ph name="END_LINK3" /> của chúng tôi.</translation>
 <translation id="1887850431809612466">Hiệu chỉnh phần cứng</translation>
+<translation id="1904932688895783618">Dưới đây là một số tài nguyên hữu ích khác:</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
 <translation id="1932611479324127242">Tắt hẳn pin</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">Thử các bước khắc phục vấn đề</translation>
 <translation id="2016848882344942759">--không nhãn trắng--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Vui lòng kết nối mạng và tải lại trang để xem trình bảo vệ màn hình.</translation>
 <translation id="2080070583977670716">Chế độ cài đặt khác</translation>
 <translation id="2085089206770112532">Giảm độ sáng màn hình</translation>
 <translation id="2105810540595158374">Thiết bị là tay điều khiển trò chơi.</translation>
@@ -773,6 +775,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7763470514545477072">Khớp hậu tố tên miền</translation>
 <translation id="7769672763586021400">ID kiểu máy</translation>
 <translation id="7784116172884276937">Không có máy chủ DNS nào được thiết lập</translation>
+<translation id="779591286616261875">Gửi báo cáo mới</translation>
 <translation id="7799817062559422778">Chế độ sáng</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
@@ -925,6 +928,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="9082718469794970195">Dùng video này</translation>
 <translation id="9087578468327036362">Báo lỗi truy vấn này</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
+<translation id="9092255287806472980">Ý kiến phản hồi của bạn giúp cải thiện Chrome OS và sẽ được nhóm của chúng tôi xem xét. Do nhận được số lượng lớn báo cáo nên chúng tôi sẽ không thể gửi thư trả lời cho bạn.</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="90977145661420967">Bạn cần phải tháo rời thiết bị</translation>
 <translation id="9098156406873149060">Giữ lại dữ liệu người dùng</translation>

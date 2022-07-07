@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hanqıl Romaca</translation>
 <translation id="112387589102719461">Proqramçı Dvorak klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="1134697384939541955">Genişləndirilmiş klaviatura ilə İngilis dili (ABŞ)</translation>
+<translation id="1138691154716715755">Bu ayın əvvəlində</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> nəticə.
     <ph name="LINE_BREAK1" />
     Lokal yaddaşda kifayət qədər yer yoxdur. Əlavə <ph name="FILE_SIZE" /> lazımdır.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="4387004326333427325">Doğrulama təsdiqi uzaqdan ləğv edildi</translation>
 <translation id="4394214039309501350">Xarici keçid</translation>
+<translation id="4394980935660306080">Bu həftənin əvvəlində</translation>
 <translation id="4401287888955153199">Hamısını çıxarın</translation>
 <translation id="4410695710508688828">Çıxarılma əməliyyatı alınmadı. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">"<ph name="PATH" />" açılır</translation>
 <translation id="4720185134442950733">Mobil data şəbəkəsi</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto yedəkləndi</translation>
+<translation id="4725096204469550614">Bu ilin əvvəlində</translation>
 <translation id="4725511304875193254">Korqi</translation>
 <translation id="4737050008115666127">Eniş</translation>
 <translation id="4747271164117300400">Makedoniya</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> element <ph name="FOLDER_NAME" /> qovluğuna köçürülür</translation>
 <translation id="509429900233858213">Xəta baş verdi.</translation>
 <translation id="5098629044894065541">İvrit</translation>
+<translation id="5102922915594634436">Sinxronlaşdırılmış qovluqları idarə edin</translation>
 <translation id="5109254780565519649">Xəta baş verdi. Bəzi elementlər bərpa edilməmiş ola bilər.</translation>
 <translation id="5110329002213341433">İngilis dili (Kanada)</translation>
 <translation id="5123433949759960244">Basketbol</translation>

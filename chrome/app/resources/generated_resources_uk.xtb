@@ -385,6 +385,7 @@
 <translation id="1374844444528092021">Сертифікат, який вимагає мережа "<ph name="NETWORK_NAME" />", не встановлено або він більше не дійсний. Отримайте новий сертифікат і повторіть спробу під’єднатися.</translation>
 <translation id="1375321115329958930">Збережені паролі</translation>
 <translation id="1375557162880614858">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome Flex?</translation>
+<translation id="1375938286942050085">Налаштування завершено! Підготуйте пристрій до ігор</translation>
 <translation id="137651782282853227">Тут відображатимуться збережені адреси</translation>
 <translation id="1376771218494401509">Додати &amp;назву вікна…</translation>
 <translation id="1377600615067678409">Наразі пропустити</translation>
@@ -399,6 +400,7 @@
 <translation id="138784436342154190">Відновити стартову сторінку за умовчанням?</translation>
 <translation id="1388253969141979417">Дозволено використовувати мікрофон</translation>
 <translation id="1388728792929436380">Пристрій <ph name="DEVICE_TYPE" /> перезапуститься після оновлення.</translation>
+<translation id="1389601498324964367">Сховище з квотами</translation>
 <translation id="139013308650923562">Дозволено використовувати шрифти, установлені на пристрої</translation>
 <translation id="1390548061267426325">Відкрити як звичайну вкладку</translation>
 <translation id="1390907927270446471">Користувач <ph name="PROFILE_USERNAME" /> не має дозволу друкувати через принтер "<ph name="PRINTER_NAME" />". Зв’яжіться з адміністратором.</translation>
@@ -1078,6 +1080,7 @@
 <translation id="1992924914582925289">Видалити з пристрою</translation>
 <translation id="1994173015038366702">URL-адреса сайту</translation>
 <translation id="1995916364271252349">Контролює, яку інформацію можуть використовувати й показувати сайти (місцезнаходження, камера, спливаючі вікна тощо)</translation>
+<translation id="1997433994358798851">Веб-переглядачу Chrome потрібен дозвіл використовувати Bluetooth, щоб підключитися до вашого пристрою.</translation>
 <translation id="1997616988432401742">Ваші сертифікати</translation>
 <translation id="1999115740519098545">Після запуску</translation>
 <translation id="2000419248597011803">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням</translation>
@@ -1742,6 +1745,7 @@
 <translation id="25899519884572181">Вийти з режиму читання</translation>
 <translation id="2593499352046705383">Перш ніж почати, переконайтеся, що ви створили резервну копію даних. Під час встановлення ОС <ph name="DEVICE_OS" /> буде перезаписано всі дані жорсткого диска. Докладніше: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Пошукайте в Google або введіть URL-адресу</translation>
+<translation id="2599048253926156421">Ім’я користувача скопійовано в буфер обміну</translation>
 <translation id="2602501489742255173">Гортайте вгору, щоб почати</translation>
 <translation id="2603115962224169880">Очистити комп’ютер</translation>
 <translation id="2603355571917519942">Voice Match налаштовано</translation>
@@ -1965,6 +1969,7 @@
 <translation id="2804043232879091219">Не вдалося відкрити альтернативний веб-переглядач</translation>
 <translation id="2804667941345577550">Ви вийдете з облікового запису на цьому сайті, зокрема у відкритих вкладках</translation>
 <translation id="2804680522274557040">Камеру вимкнено</translation>
+<translation id="280518252911523675">Якщо ви продовжите, не ввівши старий пароль, локальні дані буде видалено. Щоб знову налаштувати цей профіль, потрібно ввійти в обліковий запис Google.</translation>
 <translation id="2805539617243680210">Готово!</translation>
 <translation id="2805646850212350655">Система шифрування файлів Microsoft</translation>
 <translation id="2805756323405976993">Додатки</translation>
@@ -3080,6 +3085,7 @@
 <translation id="3895090224522145010">Ім'я користувача Kerberos</translation>
 <translation id="389521680295183045">Сайти можуть запитувати, чи ви активно використовуєте пристрій</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{зображення}one{# зображення}few{# зображення}many{# зображень}other{# зображення}}</translation>
+<translation id="3897746662269329507">Ваш пристрій <ph name="DEVICE_TYPE" /> створено для ігор. Далі відкриється додаток Можливості, де ви знайдете сотні найновіших ігор, спеціальні пропозиції та інформацію про ігрові можливості пристрою.</translation>
 <translation id="3898233949376129212">Мова пристрою</translation>
 <translation id="3898327728850887246">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="FIRST_PERMISSION" /> та <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Виберіть клавіатуру</translation>
@@ -3230,6 +3236,7 @@
 <translation id="4033471457476425443">Додати нову папку</translation>
 <translation id="4033711848170683365">Дані веб-перегляду буде видалено з цього пристрою назавжди. Облікові записи Google із цього профілю можуть використовувати інші додатки на вашому пристрої <ph name="DEVICE_TYPE" />. Ви можете вилучити ці облікові записи в меню <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Безпечні сайти можуть вбудовувати незахищений контент (як-от зображення чи веб-фрейми)</translation>
+<translation id="4034741552964543387">Продовжити без локальних даних</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4035758313003622889">&amp;Диспетчер завдань</translation>
 <translation id="4035877632587724847">Не дозволяти</translation>
@@ -3421,6 +3428,7 @@
 <translation id="4242533952199664413">Відкрити налаштування</translation>
 <translation id="4242577469625748426">Помилка встановлення налаштувань правил на пристрої: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">Принтер призупинено</translation>
+<translation id="424423026762293842">Відновіть локальні дані</translation>
 <translation id="4244238649050961491">Більше додатків із використанням стилуса</translation>
 <translation id="4246980464509998944">Додаткові коментарі:</translation>
 <translation id="424726838611654458">Завжди відкривати в Adobe Reader</translation>
@@ -4977,6 +4985,7 @@
 <translation id="5792728279623964091">Натисніть кнопку живлення</translation>
 <translation id="5793339252089865437">Завантаження оновлень через мобільну мережу може призвести до стягнення значно вищої плати.</translation>
 <translation id="5793420564274426163">Підтвердження підключення</translation>
+<translation id="5793430094159150686">Ваш пароль змінено. Щоб відновити локальні дані, потрібно ввести старий пароль.</translation>
 <translation id="5794034487966529952">На робочому столі "<ph name="DESK_TITLE" />" відкрито стільки вікон веб-переглядача: <ph name="NUM_BROWSERS" /></translation>
 <translation id="5794414402486823030">Завжди відкривати за допомогою системного переглядача</translation>
 <translation id="5794700615121138172">Спільні папки Linux</translation>
@@ -5906,6 +5915,7 @@
 <translation id="6700093763382332031">Блокування SIM-карти</translation>
 <translation id="6700480081846086223">Транслювати <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не вдалося завантажити профіль.</translation>
+<translation id="6701824422332982935">Щоб використовувати ці розширення, оновіть сторінку</translation>
 <translation id="6702639462873609204">&amp;Редагувати...</translation>
 <translation id="6703212423117969852">Спробуйте пізніше у веб-переглядачі Chrome.</translation>
 <translation id="6703254819490889819">Відновити резервну копію</translation>
@@ -7133,6 +7143,7 @@
 <translation id="7903742244674067440">У вас є сертифікати, які ідентифікують ці центри сертифікації</translation>
 <translation id="7903925330883316394">Службовий додаток: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Порти Linux стануть доступними для інших пристроїв у вашій мережі.</translation>
+<translation id="7906440585529721295">Локальні дані буде видалено</translation>
 <translation id="7907837847548254634">Ненадовго виділяти вибраний об'єкт</translation>
 <translation id="7908378463497120834">На жаль, підключити принаймні один розділ пристрою зовнішньої пам’яті неможливо.</translation>
 <translation id="7909324225945368569">Перейменувати профіль</translation>
@@ -7471,6 +7482,7 @@
 <translation id="822050276545350872">Надалі більше не доведеться чекати</translation>
 <translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
 <translation id="822347941086490485">Пошук пристроїв HID…</translation>
+<translation id="8223573963214454788">Продовжити й видалити дані</translation>
 <translation id="8225046344534779393">Перевірте інтернет-з’єднання</translation>
 <translation id="8225265270453771718">Поділитися вікном додатка</translation>
 <translation id="8226222018808695353">Заборонено</translation>
@@ -7571,6 +7583,7 @@
 <translation id="8314381333424235892">Розширення відсутнє або його видалено</translation>
 <translation id="831440797644402910">Не вдається відкрити цю папку</translation>
 <translation id="8314835274931377415">Почати налаштування кнопкового доступу?</translation>
+<translation id="8317582043908962055">Розпізнати текст із файлу у форматі PDF</translation>
 <translation id="8317671367883557781">Додати з’єднання з мережею</translation>
 <translation id="8319414634934645341">Використання розширеного ключа</translation>
 <translation id="8321837372750396788">Цим пристроєм <ph name="DEVICE_TYPE" /> керуватиме <ph name="MANAGER" />.</translation>
@@ -8307,7 +8320,6 @@
 <translation id="9050666287014529139">Парольна фраза</translation>
 <translation id="9052404922357793350">Продовжити блокування</translation>
 <translation id="9053563360605707198">Друкувати на обох сторонах</translation>
-<translation id="9053893665344928494">Запам’ятати мій вибір</translation>
 <translation id="9055636786322918818">Застосовує шифрування RC4. Використання цієї опції підвищує ризик, оскільки шифри RC4 ненадійні.</translation>
 <translation id="9056810968620647706">Збігів не знайдено.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> хоче отримати доступ до контенту нижче:</translation>
@@ -8459,6 +8471,7 @@
 <translation id="9203398526606335860">&amp;Профілювання ввімкнено</translation>
 <translation id="9203904171912129171">Виберіть пристрій</translation>
 <translation id="9206889157914079472">Створення нотаток на заблокованому екрані за допомогою стилуса</translation>
+<translation id="9208192193641542858">Локальні дані захищено старим паролем. Якщо ви нещодавно змінювали пароль, спробуйте ввести старий.</translation>
 <translation id="9209563766569767417">Перевірка налаштувань контейнера Linux</translation>
 <translation id="9209689095351280025">Сайти не можуть використовувати файли cookie, щоб відстежувати ваші дії в Інтернеті</translation>
 <translation id="9211177926627870898">Потрібне оновлення</translation>

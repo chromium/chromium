@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">韓文羅馬拼音</translation>
 <translation id="112387589102719461">英文 (美國) 搭配 Programmer Dvorak 鍵盤</translation>
 <translation id="1134697384939541955">英文 (美國) 搭配改良鍵盤</translation>
+<translation id="1138691154716715755">本月稍早</translation>
 <translation id="1148097584170732637">找到 <ph name="FILE_COUNT" />。
     <ph name="LINE_BREAK1" />
     可用的本機儲存空間不足，還需要 <ph name="FILE_SIZE" />。
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>
 <translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4394214039309501350">外部連結</translation>
+<translation id="4394980935660306080">本週稍早</translation>
 <translation id="4401287888955153199">解壓縮全部</translation>
 <translation id="4410695710508688828">擷取作業失敗：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">正在開啟「<ph name="PATH" />」</translation>
 <translation id="4720185134442950733">行動數據網路</translation>
 <translation id="4724850507808590449">已備份 <ph name="FILE_COUNT" /> 張相片</translation>
+<translation id="4725096204469550614">今年稍早</translation>
 <translation id="4725511304875193254">柯基犬</translation>
 <translation id="4737050008115666127">降落跑道</translation>
 <translation id="4747271164117300400">馬其頓文</translation>
@@ -470,6 +473,7 @@
 <translation id="508423945471810158">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目移至「<ph name="FOLDER_NAME" />」</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="5098629044894065541">希伯來文</translation>
+<translation id="5102922915594634436">管理已同步的資料夾</translation>
 <translation id="5109254780565519649">發生錯誤，某些項目可能未順利還原。</translation>
 <translation id="5110329002213341433">英文 (加拿大)</translation>
 <translation id="5123433949759960244">籃球</translation>

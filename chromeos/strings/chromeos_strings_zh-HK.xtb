@@ -123,6 +123,7 @@
 <translation id="188114911237521550">關閉暗光模式</translation>
 <translation id="1881188606372070653">如因法律理由而需要變更內容，請於<ph name="BEGIN_LINK1" />「法律說明」頁面<ph name="END_LINK1" />提出要求。部分帳戶及系統資料可能會傳送予 Google。我們會根據《<ph name="BEGIN_LINK2" />私隱權政策<ph name="END_LINK2" />》及《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》，利用您提供的資料以解決技術問題和改善服務。</translation>
 <translation id="1887850431809612466">硬件版本</translation>
+<translation id="1904932688895783618">其他實用資源如下：</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1932611479324127242">切斷電池供電</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">請嘗試解決疑難步驟</translation>
 <translation id="2016848882344942759">--沒有白色標籤--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">如要查看螢幕保護程式，請連上網路並重新載入頁面。</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2085089206770112532">顯示屏校暗亮度</translation>
 <translation id="2105810540595158374">裝置類型係遊戲控制器。</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
 <translation id="7784116172884276937">沒有設定 DNS 伺服器</translation>
+<translation id="779591286616261875">傳送新的回報內容</translation>
 <translation id="7799817062559422778">明亮模式</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7805768142964895445">狀態</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">使用這段影片</translation>
 <translation id="9087578468327036362">報告此查詢</translation>
 <translation id="9088306295921699330">目前使用量</translation>
+<translation id="9092255287806472980">你的寶貴意見有助於改善 Chrome OS，且提交的內容將由 Google 團隊進行審查。由於回報數量眾多，我們將不會逐一回覆。</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">您需要拆解裝置</translation>
 <translation id="9098156406873149060">保留使用者資料</translation>

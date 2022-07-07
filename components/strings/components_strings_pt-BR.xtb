@@ -379,7 +379,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1908217026282415406">Uso e movimento da câmera</translation>
 <translation id="191374271204266022">Copiar como JSON</translation>
 <translation id="1914326953223720820">Serviço Descompactar</translation>
-<translation id="1915697529809968049">Usar o Touch ID em vez do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
@@ -831,6 +830,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3226387218769101247">Miniaturas</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3229041911291329567">Informações sobre a versão do seu dispositivo e navegador</translation>
+<translation id="3229277193950731405">Copiar string da versão</translation>
 <translation id="323107829343500871">Digite o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sempre detectar conteúdo importante neste site</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar a aparência do navegador</translation>
@@ -1123,7 +1123,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4072486802667267160">Ocorreu um erro ao processar seu pedido. Tente novamente.</translation>
 <translation id="4073797364926776829">Ver cartão</translation>
 <translation id="4075732493274867456">O cliente e o servidor não são compatíveis com uma versão do protocolo SSL comum ou com o pacote de criptografia.</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuração do proxy definida utiliza um URL de script .pac, e não servidores proxy fixos.</translation>
 <translation id="4082393374666368382">Configurações: gerenciamento</translation>
 <translation id="4087296516249690906">Botão para criar evento. Pressione Enter para criar rapidamente um novo evento no Google Agenda</translation>
@@ -1295,7 +1294,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4506176782989081258">Erro de validação: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Entrar em contato com o administrador do sistema</translation>
 <translation id="450710068430902550">Compartilhar com o administrador</translation>
-<translation id="4508814173490746936">Não foi possível usar o Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para traduzir esta página com o Google Tradutor</translation>
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4514308731478712184">Desativar as jornadas</translation>
@@ -1969,7 +1967,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6410264514553301377">Digite a data de validade e o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">No Chromium, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha.</translation>
-<translation id="6423385022588644828">Confirme seus cartões mais rapidamente usando o Touch ID de agora em diante</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Dobra janela</translation>
 <translation id="6428450836711225518">Verificar seu número de telefone</translation>
@@ -2738,7 +2735,6 @@ Mais detalhes:
 <translation id="8559762987265718583">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="8564182942834072828">Documentos separados/Cópias não reunidas</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
-<translation id="8574899947864779331">Use o Touch ID para confirmar seus cartões mais rapidamente</translation>
 <translation id="8576310925653847813">Sistemas de home theater</translation>
 <translation id="8577348305244205642">Cartão virtual indisponível</translation>
 <translation id="858637041960032120">Ad. nº. telefone
@@ -2895,7 +2891,6 @@ Mais detalhes:
 <translation id="9039213469156557790">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="9040464167025094690">Botão "Encontre meu dispositivo". Pressione Enter para encontrar o dispositivo com a Conta do Google</translation>
 <translation id="9042617223719777575">Grande capacidade</translation>
-<translation id="9044359186343685026">Usar o Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado inválido.</translation>
 <translation id="9050666287014529139">Senha</translation>

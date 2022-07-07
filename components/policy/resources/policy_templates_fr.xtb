@@ -1641,6 +1641,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="264771271300359481">Interdire à tous les sites d'utiliser l'autorisation d'accès au presse-papiers</translation>
 <translation id="2649896281375932517">Choix laissé aux utilisateurs</translation>
 <translation id="2650049181907741121">Action à effectuer lorsque l'utilisateur ferme le couvercle</translation>
+<translation id="2656559539624760733">Ne pas utiliser pas le Chrome Root Store.</translation>
 <translation id="2658653824183107970">Utiliser l'ancienne mise en œuvre de <ph name="CORS" /> plutôt que la nouvelle mise en œuvre de <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Ne jamais utiliser de proxy</translation>
 <translation id="2661628029848851543">L'utilisation des comptes gérés n'est pas limitée</translation>
@@ -3526,6 +3527,12 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si cette règle n'est pas définie, le paramètre par défaut est autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="487460824085252184">Effectuer automatiquement la migration, sans demander l'autorisation de l'utilisateur.</translation>
+<translation id="48749493657448872">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
+      Lorsqu'il est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme, sauf si <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est activé.
+      Lorsqu'il n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
+
+      Il est prévu que cette règle soit supprimée dans la version 107 de <ph name="PRODUCT_NAME" /> pour <ph name="MAC_OS_NAME" />, car l'ancien outil de vérification des certificats sur <ph name="MAC_OS_NAME" /> ne devrait alors plus être pris en charge.
+      </translation>
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
 <translation id="4877402532842958110">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).
@@ -4324,6 +4331,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
 
       Si la règle est désactivée ou qu'elle n'est pas configurée, ces délais et limites sont activés dès le lancement de la session.</translation>
+<translation id="5733357908790472408">Utiliser le Chrome Root Store.</translation>
 <translation id="5735915264686983150">Masquer et bloquer les fonctionnalités désactivées</translation>
 <translation id="5737394734996319911">La fonctionnalité d'accessibilité <ph name="PRODUCT_NAME" />
          permet aux déficients visuels qui utilisent un lecteur d'écran
@@ -4795,6 +4803,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
 <translation id="6261643884958898336">Enregistrer les informations d'identification de l'ordinateur</translation>
 <translation id="6265892395051519509">Autoriser l'accès aux capteurs sur ces sites</translation>
+<translation id="6266043141694454734">Détermine si le Chrome Root Store et l'outil de vérification des certificats intégré seront utilisés pour vérifier les certificats de serveur</translation>
 <translation id="6273015149273504999">
       Définit la liste des applications et extensions qui sont installées silencieusement sur l'écran de connexion, sans aucune intervention de l'utilisateur, et que celui-ci ne peut pas désinstaller ni désactiver.
 
@@ -5781,6 +5790,23 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
       Si les règles <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> et <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> ne sont pas configurées, les utilisateurs peuvent choisir leur page d'accueil.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+<translation id="7258250780552783197">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est déplacé dans <ph name="PRODUCT_OS_NAME" />.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsqu'il est déplacé entre une source et une destination, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à une règle "enable" sera inclus dans la demande d'analyse si la source et la destination correspondent à la règle associée à ce tag, à condition qu'aucune règle "disable" associée à ce même tag ne corresponde au transfert. L'analyse a lieu si au moins un tag doit être inclus dans la demande. Une règle "<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />" consiste en une liste de paires, où chaque paire contient une liste de sources et une liste de destinations. "<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" />" définit le système de fichiers auquel une règle doit s'appliquer.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+      Si la valeur du champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />" est 1, <ph name="PRODUCT_OS_NAME" /> attend de recevoir une réponse du service d'analyse avant d'autoriser le transfert. Pour toute autre valeur entière, <ph name="PRODUCT_OS_NAME" /> autorise le transfert immédiatement.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />" permet de définir si <ph name="PRODUCT_OS_NAME" /> doit bloquer ou autoriser les fichiers protégés par un mot de passe.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />" permet de spécifier si <ph name="PRODUCT_OS_NAME" /> doit bloquer ou autoriser les fichiers trop volumineux pour être analysés.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />" permet d'indiquer les tags pour lesquels le connecteur doit demander à l'utilisateur d'indiquer pourquoi une analyse entraînant l'affichage d'un avertissement doit être ignorée. Si ce champ n'est pas renseigné, nous partons du principe qu'aucune justification n'est requise.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />" permettent de configurer le message à montrer à l'utilisateur lorsqu'un avertissement s'affiche après une analyse dont le résultat révèle un problème. Le message saisi dans le champ ne doit pas comporter plus de 200 caractères. Le champ "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />" contient une URL fournie par l'administrateur. L'utilisateur peut cliquer sur cette URL pour obtenir des informations supplémentaires fournies par le client et savoir pourquoi l'action a été bloquée. Le champ "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" est facultatif. Il indique la langue dans laquelle est saisi le message. Si ce champ "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" est vide ou contient la valeur "par défaut", un message est proposé par défaut en l'absence de message disponible dans la langue de l'utilisateur. Le champ "tag" spécifie pour quel type d'analyses le message est affiché. Le champ "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />" peut être vide ou contenir plusieurs entrées. Les champs "message" et "tag" doivent être renseignés pour chaque entrée.
+
+      Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7258823566580374486">Activer la protection des hôtes d'accès à distance</translation>
 <translation id="7260204423892780600">Contrôle les paramètres de l'Assistant Google.</translation>
 <translation id="7261140115553020049">Activer le service d'espace de travail flottant</translation>
@@ -7232,6 +7258,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Si cette règle n'est pas définie, l'URL s'ouvre par défaut dans un navigateur spécifique à la plate-forme : <ph name="IE_PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> sous <ph name="MAC_OS_NAME" />. Sous <ph name="LINUX_OS_NAME" />, le lancement d'un navigateur secondaire entraîne une erreur.</translation>
 <translation id="8836975838488342340">Durée de validité du code d'accès (en secondes).</translation>
+<translation id="883744045558067826">Le Chrome Root Store peut être utilisé, selon le processus employé pour son lancement.</translation>
 <translation id="8839799083601163225">Cette règle détermine si le processus de service réseau doit être exécuté en bac à sable.
       Si elle est activée, le processus de service réseau sera exécuté en bac à sable.
       Si elle est désactivée, celui-ci sera exécuté sans bac à sable. Les utilisateurs sont alors exposés à des risques de sécurité supplémentaires liés à l'exécution du service réseau hors bac à sable.
@@ -7406,6 +7433,12 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       La valeur de la règle doit être indiquée en millisecondes. Cette valeur doit être comprise entre 30 secondes et 24 heures.</translation>
 <translation id="9040042535845939426">Définir l'état de l'écran de confidentialité sur l'écran de connexion</translation>
+<translation id="9046609670147277653">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
+      Lorsqu'il est désactivé, <ph name="PRODUCT_NAME" /> n'utilise pas le Chrome Root Store. La vérification peut utiliser l'outil de vérification des certificats du système, ou l'outil de vérification intégré si la règle "<ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" />" est disponible et qu'elle n'est pas désactivée.
+      Lorsque ce paramètre n'est pas défini, le Chrome Root Store ou les racines fournies par le système peuvent être utilisés.
+
+      Il est prévu que cette règle soit supprimée dans la version 111 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, car l'outil de vérification des certificats et les racines fournies par la plate-forme ne seront plus pris en charge.
+      </translation>
 <translation id="9050853837490399534">Cette règle détermine si un build Quick Fix doit être installé sur l'appareil.
 
       Si la règle est définie sur un jeton qui correspond à un build Quick Fix, l'appareil sera mis à jour avec le build Quick Fix correspondant à condition que la mise à jour ne soit pas bloquée par une autre règle.
@@ -7455,6 +7488,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
       Si elle est définie sur "True", les événements de connexion/déconnexion de l'appareil seront transmis.</translation>
+<translation id="9087652369391570821">Règle de configuration du connecteur Chrome Enterprise OnFileTransfer</translation>
 <translation id="9088191250434406767">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent rechercher avec leur appareil photo à l'aide de <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche lorsque la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo est compatible.</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>

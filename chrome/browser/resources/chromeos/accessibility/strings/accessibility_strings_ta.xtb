@@ -32,6 +32,7 @@
 <translation id="1197088940767939838">ஆரஞ்சு</translation>
 <translation id="1198865190323699001">தொடுதல் சைகைகள்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
+<translation id="1202112913213080585">ரத்துசெய்</translation>
 <translation id="1206619573307042055">மார்கியூ</translation>
 <translation id="1207086294218137981">அடுத்த 4ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
 <translation id="1212770441379271564">அடுத்துவரும் சில ஷார்ட்கட்கள் ChromeVox கட்டளைகள் இல்லை, எனினும் அவை Chromeமைச் சிறப்பாகப் பயன்படுத்த உதவியாக இருக்கும்.
@@ -43,6 +44,7 @@
     Chrome உலாவி மெனுவைத் திறக்க, Alt+F விசைகளை அழுத்தவும்.</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome க்கு குரல் கொடுக்கிறது</translation>
 <translation id="1225969361094801578">டார்க் ஸ்லேட் கிரே</translation>
+<translation id="122928249241119550">முந்தைய வாக்கியத்திற்குச் செல்</translation>
 <translation id="1230503547248836149">தேர்வுசெய்த உரையின் தொடக்கம்</translation>
 <translation id="1236794971743289975">முடிவுக்குறிப்பு</translation>
 <translation id="1237797094773582699">இதேபோல, நான்கு விரல்களால் வலதுபுறத்திலிருந்து இடதுபுறம் ஸ்வைப் செய்து முந்தைய பிரிவுக்குச் செல்லலாம். இப்போதே செய்து பாருங்கள்!</translation>
@@ -213,6 +215,7 @@
 <translation id="2435422727584637732">டோட்ஜ்ர் புளூ</translation>
 <translation id="2438712309510062123">பரிந்துரை</translation>
 <translation id="2450814015951372393">செக்பாக்ஸ்</translation>
+<translation id="2450992626945324272">அடுத்த வாக்கியத்திற்குச் செல்</translation>
 <translation id="2461822463642141190">தற்போதைய மின் உபயோகம்</translation>
 <translation id="2462626033734746142">ரேடியோ பட்டன் குழு</translation>
 <translation id="2467741090055146971">தேர்வுநீக்கு</translation>
@@ -489,6 +492,7 @@
 <translation id="42164919740161077">காடெட் புளூ</translation>
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{சிறுகோடு}other{# சிறுகோடுகள்}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> என்பதில் இருந்து <ph name="END_PHRASE" /> என்பது வரை தேர்ந்தெடு</translation>
 <translation id="4221012616705981690">முந்தைய பட்டியல் எதுவும் இல்லை</translation>
 <translation id="4225355998815256469">படிவக் கட்டுப்பாடுகள்</translation>
 <translation id="4230834257931120629">லைட் ஸ்லேட் கிரே</translation>
@@ -759,6 +763,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">பட்டியல்பெட்டி அல்லது சேர்க்கைப் பெட்டி</translation>
+<translation id="613344593214611552">முந்தைய வாக்கியத்தை நீக்கு</translation>
 <translation id="6142308968191113180">தலைப்பு 4</translation>
 <translation id="6150023170003443621">எல்லோ க்ரீன்</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" /> வரிசை <ph name="TABLECELLCOLUMNINDEX" /> நெடுவரிசை</translation>
@@ -768,6 +773,7 @@
 <translation id="6186305613600865047">பக்கத்தின் கீழ்பகுதிக்குச் செல்லவும்</translation>
 <translation id="6187190722927752226">அக்வாமெரைன்</translation>
 <translation id="6197361807490522975">டார்க் புளூ</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> என்பதை <ph name="INSERT_PHRASE" /> என மாற்று</translation>
 <translation id="6236061028292614533">அடுத்த தலைப்பு</translation>
 <translation id="6254901459154107917">அடுத்த திருத்தக்கூடிய உரைப் பகுதி</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> இலிருந்து வெளியேறினார்.</translation>
@@ -921,6 +927,7 @@
 <translation id="7356610683936413584">விளக்கப் பட்டியல் விவரம்</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{உம்மைக்குறி}other{# உம்மைக்குறிகள்}}</translation>
 <translation id="737396357417333429">clk</translation>
+<translation id="7388656272362719103">முந்தைய எழுத்தை நீக்கு</translation>
 <translation id="738899727977260036">ஸ்லேட் புளூ</translation>
 <translation id="7393979322571982935">ஒலிகளும் அமைப்புகளும்</translation>
 <translation id="739763518212184081">முந்தைய வரி</translation>
@@ -941,6 +948,7 @@
 <translation id="7533226154149229506">லைட் கோல்டன் ராட் எல்லோ</translation>
 <translation id="7543255924852002459">நிராகரி லேபிள்</translation>
 <translation id="7552432549459840808">உதவிகரமான Chrome ஷார்ட்கட்கள்</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> என்பதற்கு முன் <ph name="INSERT_PHRASE" /> என்பதைச் சேர்</translation>
 <translation id="7569983096843329377">கருப்பு</translation>
 <translation id="7579911500627256166">புள்ளி <ph name="DOT" /></translation>
 <translation id="7592060599656252486">சில நிறுத்தற்குறிகள்</translation>
@@ -964,6 +972,7 @@
 <translation id="7684431668231950609">உரையைத் திருத்து, URL உள்ளீடு</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">முந்தைய ரேடியோ பட்டன்</translation>
+<translation id="7696631298608145306">அடுத்த வார்த்தைக்குச் செல்</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">இயல்பான குரல்</translation>
@@ -1071,6 +1080,7 @@
 <translation id="8455868257606149352">அதிகபட்சம் <ph name="X" /></translation>
 <translation id="84575901236241018">அணுகல் விசை உள்ளது, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">இலக்கணப் பிழையைத் தவிர்த்துச் செல்கிறீர்கள்</translation>
+<translation id="8465573210279050749">முந்தைய வார்த்தையை நீக்கு</translation>
 <translation id="847040613207937740">அடுத்த செக்பாக்ஸ் எதுவும் இல்லை</translation>
 <translation id="8473540203671727883">மவுஸை நகர்த்துகையில் கர்சர் காட்டும் உரையைப் பேசு</translation>
 <translation id="8476408756881832830">ChromeVox பேசும் போது, பிளேபேக்கை இடைநிறுத்து</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8697111817566059991">{COUNT,plural, =1{குத்துக் கோடு}other{# செங்குத்தான குத்துக் கோடுகள்}}</translation>
 <translation id="8741370088760768424">குறிப்பு: தற்போதைய உறுப்பைச் செயல்படுத்த, Search + Space விசைகளை அழுத்துங்கள்.</translation>
 <translation id="8743786158317878347">அட்டவணைகள் போன்ற கட்டமைக்கப்பட்ட உள்ளடக்கத்தை உள்ளிடும்</translation>
+<translation id="8746846427395705317">முந்தைய வார்த்தைக்குச் செல்</translation>
 <translation id="8747966237988593539">வரிசைப்படுத்தப்பட்ட பட்டியல்</translation>
 <translation id="8749988712346667988">சில்வர்</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> பதிவிறக்கப்பட்டது</translation>
@@ -1134,6 +1145,7 @@
 <translation id="8970172509886453271">முந்தைய பிரிவு எதுவும் இல்லை</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> என்பதை நீக்கு</translation>
 <translation id="8986362086234534611">மற</translation>
 <translation id="8989104346085848538">ChromeVox தற்போது வாசித்துக் காட்டுவதை நிறுத்த, Ctrl விசையை அழுத்தவும்.</translation>
 <translation id="8993737615451556423">வேகமாக &amp; மெதுவாகப் படிப்பதற்கும், படிப்பதை இடைநிறுத்துவதற்குமான கட்டுப்பாடுகள் காட்டப்படும்</translation>

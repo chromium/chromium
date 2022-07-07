@@ -210,7 +210,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2100314319871056947">Essayez de scinder le texte pour le partager en plusieurs fois</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
 <translation id="2122601567107267586">Impossible d'ouvrir l'application</translation>
-<translation id="2126426811489709554">Proposé par Chrome</translation>
 <translation id="2132122640199389833">Supprimer tous les appareils associés</translation>
 <translation id="213279576345780926">L'onglet "<ph name="TAB_TITLE" />" a été fermé.</translation>
 <translation id="2134927169889348449">En utilisant Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_ATOS_LINK" />.</translation>
@@ -443,6 +442,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
 <translation id="3341262203274374114">Impossible de vous désabonner en raison d'une erreur.</translation>
 <translation id="3359667936385849800">Utiliser votre fournisseur de services actuel</translation>
+<translation id="3365271666488085187">Chrome peut prendre en compte ce centre d'intérêt</translation>
 <translation id="3367813778245106622">Connectez-vous de nouveau à votre compte pour démarrer la synchronisation.</translation>
 <translation id="3373979091428520308">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres Chrome de ce second appareil</translation>
 <translation id="3374023511497244703">Vos favoris, votre historique, vos mots de passe et d'autres données Chrome ne seront plus synchronisés avec votre compte Google</translation>
@@ -476,6 +476,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> Ko disponibles</translation>
 <translation id="3549657413697417275">Recherchez dans l'historique</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
+<translation id="3560491354538957576">Le site peut définir des centres d'intérêt</translation>
 <translation id="3563767357928833671">Contenu du presse-papiers affiché</translation>
 <translation id="3566923219790363270">Le mode de réalité virtuelle n'est pas encore prêt. Redémarrez Chrome plus tard.</translation>
 <translation id="3568688522516854065">Connectez-vous et activez la synchronisation pour accéder à vos onglets sur vos autres appareils</translation>

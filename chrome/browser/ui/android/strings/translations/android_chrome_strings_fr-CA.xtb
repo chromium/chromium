@@ -210,7 +210,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2100314319871056947">Essayez de partager le texte en plusieurs parties plus petites</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
 <translation id="2122601567107267586">Impossible d'ouvrir l'application</translation>
-<translation id="2126426811489709554">Optimisé par Chrome</translation>
 <translation id="2132122640199389833">Retirer tous les appareils associés</translation>
 <translation id="213279576345780926">Onglet <ph name="TAB_TITLE" /> fermé</translation>
 <translation id="2134927169889348449">Par votre utilisation de Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_ATOS_LINK" />.</translation>
@@ -443,6 +442,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
 <translation id="3341262203274374114">Le désabonnement a échoué. Un problème est survenu.</translation>
 <translation id="3359667936385849800">Utiliser votre fournisseur de services actuel</translation>
+<translation id="3365271666488085187">Chrome peut prendre en compte ce centre d'intérêt</translation>
 <translation id="3367813778245106622">Reconnectez-vous pour commencer la synchronisation</translation>
 <translation id="3373979091428520308">Pour partager cette page sur un autre appareil, activez la synchronisation dans les paramètres de Chrome sur l'autre appareil</translation>
 <translation id="3374023511497244703">Vos favoris, votre historique, vos mots de passe et d'autres données de Chrome ne seront plus synchronisés avec votre compte Google.</translation>
@@ -476,6 +476,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> ko disponible(s)</translation>
 <translation id="3549657413697417275">Rechercher dans votre historique</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
+<translation id="3560491354538957576">Le site peut définir les centres d'intérêt</translation>
 <translation id="3563767357928833671">Le contenu du presse-papier est affiché</translation>
 <translation id="3566923219790363270">Chrome prépare ses modules pour la RV. Redémarrez Chrome plus tard.</translation>
 <translation id="3568688522516854065">Pour synchroniser vos onglets sur vos autres appareils, connectez-vous et activez la synchronisation</translation>

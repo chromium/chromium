@@ -1622,6 +1622,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="264771271300359481">Keiner Website erlauben, die Zwischenablage zu verwenden</translation>
 <translation id="2649896281375932517">Nutzer entscheiden lassen</translation>
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
+<translation id="2656559539624760733">Chrome Root Store nicht verwenden.</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
 <translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
@@ -3509,6 +3510,12 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Wenn diese Richtlinie nicht konfiguriert ist, kann die Funktion von durch Unternehmen verwaltete Nutzer und nicht verwaltete Nutzer standardmäßig verwendet werden.</translation>
 <translation id="487460824085252184">Automatisch migrieren, ohne die Zustimmung des Nutzers einzuholen</translation>
+<translation id="48749493657448872">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
+      Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der von der Plattform bereitgestellten Legacy-Zertifikatsprüfung, es sei denn <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> ist aktiviert.
+      Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.
+
+      Diese Richtlinie wird voraussichtlich in Version 107 von <ph name="PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" /> entfernt, wenn auch die Legacy-Zertifikatsprüfung in <ph name="MAC_OS_NAME" /> voraussichtlich nicht mehr unterstützt wird.
+      </translation>
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
 <translation id="4877402532842958110">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -4305,6 +4312,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird der Start der Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.</translation>
+<translation id="5733357908790472408">Chrome Root Store verwenden.</translation>
 <translation id="5735915264686983150">Deaktivierte Funktionen ausblenden und sperren</translation>
 <translation id="5737394734996319911">Über die Bedienungshilfe „<ph name="PRODUCT_NAME" />“ erhalten sehbehinderte Screenreader-Nutzer Beschreibungen für unbeschriftete Bilder im Internet. Nutzer, die diese Funktion aktivieren, können einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder im Internet zu erhalten.
 
@@ -4767,6 +4775,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6258658183356534534">Steuert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern.</translation>
 <translation id="6261643884958898336">Gerätebezogene Daten erfassen</translation>
 <translation id="6265892395051519509">Diesen Websites den Zugriff auf Sensoren erlauben</translation>
+<translation id="6266043141694454734">Legt fest, ob der Chrome Root Store und die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet werden</translation>
 <translation id="6273015149273504999">Hierdurch wird eine Liste von Apps und Erweiterungen festgelegt, die automatisch auf dem Anmeldebildschirm installiert werden, also ohne Interaktion des Nutzers, und die vom Nutzer weder deinstalliert noch deaktiviert werden können.
 
       Von den Apps und Erweiterungen angeforderte Berechtigungen werden implizit, ohne Eingriff durch den Nutzer, gewährt. Dazu gehören auch alle weiteren Berechtigungen, die von künftigen Versionen der Apps oder Erweiterungen angefordert werden. <ph name="PRODUCT_NAME" /> schränkt das Set von Berechtigungen ein, das von Erweiterungen angefragt werden kann.
@@ -5749,6 +5758,23 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Sind weder <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> noch <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> konfiguriert, können Nutzer ihre Homepage auswählen.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
+<translation id="7258250780552783197">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei über <ph name="PRODUCT_OS_NAME" /> übertragen wird.
+
+      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie zwischen einer Quelle und einem Ziel übertragen wird, und welche Tags in der Analyseanfrage für diese Datei enthalten sein sollen. Ein Tag, das einer „enable“-Regel entspricht, wird der Analyseanfrage hinzugefügt, wenn die Quelle und das Ziel mit der Regel für dieses Tag übereinstimmen – jedoch nur, wenn keine „disable“-Regel mit demselben Tag mit der Übertragung übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält. Eine „<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />“-Regel wird durch eine Paarliste definiert, wobei jedes Paar eine Liste mit Quellen und eine Liste mit Zielen enthält. Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" />“ wird definiert, auf welches Dateisystem eine Regel angewendet werden soll.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
+
+      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet <ph name="PRODUCT_OS_NAME" /> auf eine Antwort des Analyseanbieters, bevor die Übertragung zugelassen wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, ermöglicht <ph name="PRODUCT_OS_NAME" /> die sofortige Übertragung.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_OS_NAME" /> den Zugriff auf Dateien, die durch ein Passwort geschützt sind, blockiert oder erlaubt.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_OS_NAME" /> den Zugriff auf Dateien, die zu groß für die Analyse sind, blockiert oder erlaubt.
+
+      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
+
+      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Nachricht der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />” ist optional und enthält die Sprache der Nachricht. Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Nachricht gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Nachricht angezeigt wird. Die Liste „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
+
+      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu finden Sie unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7258823566580374486">Zugangsbeschränkung für Remotezugriff-Hosts aktivieren</translation>
 <translation id="7260204423892780600">Legt die Einstellungen für Google Assistant fest.</translation>
 <translation id="7261140115553020049">Dienst für unverankerten Arbeitsbereich aktivieren</translation>
@@ -7207,6 +7233,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Ist die Richtlinie nicht konfiguriert, wird eine plattformspezifische Standardeinstellung verwendet: <ph name="IE_PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> oder <ph name="SAFARI_PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" />. Unter <ph name="LINUX_OS_NAME" /> wird kein alternativer Browser geöffnet.</translation>
 <translation id="8836975838488342340">Dauer in Sekunden, für die der Zugriffscode gültig ist.</translation>
+<translation id="883744045558067826">Die Verfügbarkeit des Chrome Root Stores hängt vom Einführungsprozess dieser Funktion ab.</translation>
 <translation id="8839799083601163225">Mit dieser Richtlinie kann festgelegt werden, ob der Netzwerkdienstprozess in einer Sandbox ausgeführt wird.
       Wenn die Richtlinie aktiviert ist, wird der Netzwerkdienstprozess in einer Sandbox ausgeführt.
       Ist sie deaktiviert, erfolgt die Ausführung des Netzwerkdienstprozesses nicht in einer Sandbox. Dadurch entstehen zusätzliche Sicherheitsrisiken für den Nutzer, die auf die Ausführung des Netzwerkdienstes ohne Sandbox zurückzuführen sind.
@@ -7384,6 +7411,12 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Der Richtlinienwert sollte in Millisekunden angegeben werden. Der Wert kann zwischen 30 Sekunden und 24 Stunden liegen.</translation>
 <translation id="9040042535845939426">Mit dieser Richtlinie legst du den Status des Datenschutzbildschirms auf dem Anmeldebildschirm fest</translation>
+<translation id="9046609670147277653">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung und dem Chrome Root Store als vertrauenswürdige Quelle.
+      Wenn diese Einstellung deaktiviert ist, verwendet <ph name="PRODUCT_NAME" /> den Chrome Root Store nicht. Bei der Verifizierung kann die Systemzertifikatsprüfung oder die integrierte Prüfung verwendet werden, wenn die Richtlinie <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> verfügbar und nicht deaktiviert ist.
+      Wenn diese Einstellung nicht konfiguriert ist, werden der Chrome Root Store oder die systemeigenen Stämme verwendet.
+
+      Diese Richtlinie wird voraussichtlich in Version 111 von <ph name="PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> und für <ph name="MAC_OS_NAME" /> entfernt, wenn auch die Verwendung der von der Plattform bereitgestellten Zertifikatsprüfung und Stämme nicht mehr unterstützt wird.
+      </translation>
 <translation id="9050853837490399534">Diese Richtlinie gibt vor, ob das Gerät auf einen Quick-Fix-Build aktualisiert werden soll.
 
       Wenn als Richtlinienwert ein Token festgelegt ist, das mit einem Quick-Fix-Build verknüpft ist, wird das Gerät auf den entsprechenden Build aktualisiert, sofern eine solche Aktualisierung nicht durch eine andere Richtlinie blockiert wird.
@@ -7433,6 +7466,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Wenn sie auf „true“ gesetzt wird, werden die Anmelde-/Abmeldeereignisse auf den Geräten gemeldet.</translation>
+<translation id="9087652369391570821">Konfigurationsrichtlinie für den Chrome Enterprise Connector „OnFileTransfer”</translation>
 <translation id="9088191250434406767">Wenn diese Richtlinie nicht konfiguriert oder auf „Enabled“ gesetzt wird, können Nutzer mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ihre Kamera für die Suche verwenden. Ist die Richtlinie auf „Disabled“ gesetzt, wird Nutzern die Schaltfläche „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld nicht angezeigt, wenn die kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> verfügbar ist.</translation>
 <translation id="9088433379343318874">Contentanbieter für betreute Nutzer aktivieren</translation>
 <translation id="9088444059179765143">Methode für die automatische Erkennung der Zeitzone konfigurieren</translation>

@@ -210,7 +210,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2100314319871056947">Proba a compartir o texto dividíndoo en fragmentos máis pequenos</translation>
 <translation id="2111511281910874386">Ir á páxina</translation>
 <translation id="2122601567107267586">Non se puido abrir a aplicación</translation>
-<translation id="2126426811489709554">Con tecnoloxía de Chrome</translation>
 <translation id="2132122640199389833">Quitar todos os dispositivos vinculados</translation>
 <translation id="213279576345780926">Pechouse <ph name="TAB_TITLE" /></translation>
 <translation id="2134927169889348449">Ao utilizar Chrome, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo de Google<ph name="END_TOS_LINK" /> e as <ph name="BEGIN_ATOS_LINK" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />.</translation>
@@ -443,6 +442,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
 <translation id="3341262203274374114">Non se puido deixar de seguir o feed. Produciuse un erro.</translation>
 <translation id="3359667936385849800">Utilizar o teu fornecedor de servizo actual</translation>
+<translation id="3365271666488085187">Chrome pode ter en conta este interese</translation>
 <translation id="3367813778245106622">Inicia sesión de novo para comezar a sincronización</translation>
 <translation id="3373979091428520308">Para compartir esta páxina con outro dispositivo, activa a sincronización na configuración de Chrome dese dispositivo</translation>
 <translation id="3374023511497244703">Os marcadores, o historial, os contrasinais e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google</translation>
@@ -476,6 +476,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3542235761944717775">Almacenamento dispoñible: <ph name="KILOBYTES" /> kB</translation>
 <translation id="3549657413697417275">Buscar no historial</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
+<translation id="3560491354538957576">O sitio pode definir intereses</translation>
 <translation id="3563767357928833671">Móstranse os contidos do portapapeis</translation>
 <translation id="3566923219790363270">Chrome aínda se está preparando para a RV. Reinicia Chrome máis tarde.</translation>
 <translation id="3568688522516854065">Inicia sesión e activa a sincronización para sincronizar as pestanas dos demais dispositivos</translation>

@@ -379,7 +379,6 @@
 <translation id="1908217026282415406">カメラの使用と移動</translation>
 <translation id="191374271204266022">JSON 形式でコピー</translation>
 <translation id="1914326953223720820">解凍サービス</translation>
-<translation id="1915697529809968049">CVC の代わりに Touch ID を使用しますか？</translation>
 <translation id="1916770123977586577">更新後の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="1919345977826869612">広告</translation>
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
@@ -1123,7 +1122,6 @@
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="4073797364926776829">カードを表示</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
-<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">プロキシは固定プロキシ サーバーではなく .pac スクリプト URL を使用するように設定されています。</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
 <translation id="4087296516249690906">[イベントを作成] ボタンです。Enter キーを押すと、Google カレンダーで新しいイベントをすばやく作成します</translation>
@@ -1295,7 +1293,6 @@
 <translation id="4506176782989081258">検証エラー: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">システム管理者に問い合わせる</translation>
 <translation id="450710068430902550">管理者との共有</translation>
-<translation id="4508814173490746936">Touch ID を使用できませんでした</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google 翻訳を使用してこのページを翻訳します</translation>
 <translation id="4510487217173779431">長4（封筒）</translation>
 <translation id="4514308731478712184">ジャーニーをオフにする</translation>
@@ -1969,7 +1966,6 @@
 <translation id="6406765186087300643">C0（封筒）</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> の有効期限と CVC を入力</translation>
 <translation id="6415778972515849510">Chromium には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
-<translation id="6423385022588644828">今後 Touch ID を使用して、カードの確認をより迅速に行います</translation>
 <translation id="6425092077175753609">マテリアル</translation>
 <translation id="6427730057873428458">観音折り</translation>
 <translation id="6428450836711225518">電話番号の確認</translation>
@@ -2738,7 +2734,6 @@
 <translation id="8559762987265718583">デバイスの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="8564182942834072828">個別のドキュメント（丁合いなし）</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
-<translation id="8574899947864779331">Touch ID を使用してカードをすばやく確認する</translation>
 <translation id="8576310925653847813">ホームシアター システム</translation>
 <translation id="8577348305244205642">仮想カードを使用できません</translation>
 <translation id="858637041960032120">電話番号を追加
@@ -2895,7 +2890,6 @@
 <translation id="9039213469156557790">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの動作が変わる可能性もあります。</translation>
 <translation id="9040464167025094690">[デバイスを探す] ボタンです。Enter キーを押すと、Google アカウントで「デバイスを探す」に移動します</translation>
 <translation id="9042617223719777575">大容量</translation>
-<translation id="9044359186343685026">Touch ID を使用</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから無効な証明書が提示されました。</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>

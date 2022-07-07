@@ -123,6 +123,7 @@
 <translation id="188114911237521550">关闭深色模式</translation>
 <translation id="1881188606372070653">若要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将一些帐号信息和系统信息发送给 Google。我们会借助您向我们提供的信息来解决技术问题和提升服务质量，并且会在使用这些信息的过程中严格遵守 Google 的<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />。</translation>
 <translation id="1887850431809612466">硬件版本</translation>
+<translation id="1904932688895783618">以下是一些其他的实用资源：</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1908234395526491708">UDP 请求失败</translation>
 <translation id="1932611479324127242">切断电池供电</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="2016848882344942759">--无白标签--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">若要查看屏保，请连接到网络并重新加载此页面。</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2085089206770112532">调低显示屏亮度</translation>
 <translation id="2105810540595158374">设备类型是游戏控制器。</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7784116172884276937">未设置 DNS 服务器</translation>
+<translation id="779591286616261875">发送新报告</translation>
 <translation id="7799817062559422778">浅色模式</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">使用此视频</translation>
 <translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
+<translation id="9092255287806472980">您的反馈将有助于我们改进 Chrome OS，并将由我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">您将需要拆开此设备</translation>
 <translation id="9098156406873149060">保留用户数据</translation>
