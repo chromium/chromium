@@ -4,9 +4,29 @@
     height: 100%;
   }
 
-  textarea {
+  #descriptionText {
+    background-color: var(--cros-textfield-background-color);
+    border: none;
+    border-radius: 4px;
+    color: var(--cros-text-color-primary);
+    font-family: var(--feedback-roboto-font-family);
+    font-size: 13px;
     height: 162px;
+    line-height: 20px;
+    padding: 10px;
+    resize: none;
     width: 514px;
+  }
+
+  #descriptionText:focus {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
+  #descriptionText::placeholder {
+    color: var(--cros-color-disabled);
+    font-family: var(--feedback-roboto-font-family);
+    font-size: 13px;
+    line-height: 20px;
   }
 
   #descriptionHeader {
