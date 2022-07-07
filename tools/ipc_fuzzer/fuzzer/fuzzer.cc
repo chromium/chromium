@@ -1366,7 +1366,7 @@ struct FuzzTraits<net::IPEndPoint> {
   }
 };
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 // PP_ traits.
 template <>
 struct FuzzTraits<PP_Bool> {
@@ -1528,7 +1528,7 @@ struct FuzzTraits<ppapi::SocketOptionData> {
     return true;
   }
 };
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 template <>
 struct FuzzTraits<printing::mojom::MarginType> {

@@ -32,7 +32,7 @@ static_library("ipc_message_lib") {
   if (is_win) {
     public_deps += [ "//chrome/chrome_elf:test_stubs" ]
   }
-  if (enable_plugins) {
+  if (enable_ppapi) {
     public_deps += [ "//ppapi/proxy:ipc" ]
   }
   deps = [ "//remoting/host/base" ]
