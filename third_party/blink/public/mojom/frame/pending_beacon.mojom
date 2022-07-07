@@ -15,7 +15,7 @@ enum BeaconMethod {
 
 // Interface for creating browser-side pending beacon objects.
 // API explainer here:
-// https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+// https://github.com/WICG/unload-beacon/blob/main/README.md
 interface PendingBeaconHost {
 
   // Creates a new pending beacon object in the browser side.

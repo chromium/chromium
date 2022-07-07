@@ -75,7 +75,7 @@ class Beacon : public blink::mojom::PendingBeacon {
   // Browser-side pending beacon constructor. Parameters correspond to the
   // renderer-side PendingBeacon class.
   // API explainer can be found at:
-  // https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+  // https://github.com/WICG/unload-beacon/blob/main/README.md
   Beacon(const GURL& url,
          blink::mojom::BeaconMethod method,
          base::TimeDelta timeout,

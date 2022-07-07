@@ -1,30 +1,49 @@
 <!DOCTYPE html>
 <head>
+<meta charset="utf-8">
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-    test(() => {
-        let beacon = new PendingBeacon('https://www.google.com',
-                        {method: 'GET', pageHideTimeout: 200});
-        assert_equals("pending", beacon.state);
-        assert_equals("https://www.google.com", beacon.url);
-        assert_equals(200, beacon.pageHideTimeout);
-        beacon.pageHideTimeout = 400;
-        assert_equals(400, beacon.pageHideTimeout);
-        assert_equals("GET", beacon.method);
-        beacon.method = "POST";
-        assert_equals("POST", beacon.method);
-        // Non-valid methods get ignored in the setter.
-        beacon.method = "FOO";
-        assert_equals("POST", beacon.method);
-    }, "Basic configuration of a pending beacon.");
+  test(() => {
+    assert_throws_js(TypeError, () => new PendingBeacon());
+  }, "PendingBeacon constructor throws TypeError if no url is provided");
 
-    test(() => {
-        let beacon = new PendingBeacon("https://www.google.com");
-        assert_equals("POST", beacon.method);
-    }, "Verify that beacons default to POST if no options are provided.");
+  test(() => {
+    const beacon = new PendingBeacon("/");
+    assert_equals(beacon.url, "/");
+    assert_equals(beacon.method, "POST");
+    assert_equals(beacon.pageHideTimeout, -1);
+    assert_true(beacon.isPending);
+  }, "PendingBeacon constructor sets default properties when not provided.");
+
+  test(() => {
+    const beacon = new PendingBeacon("https://www.google.com",
+                    {method: "GET", pageHideTimeout: 200});
+    assert_equals(beacon.url, "https://www.google.com");
+    assert_equals(beacon.method, "GET");
+    assert_equals(beacon.pageHideTimeout, 200);
+    assert_true(beacon.isPending);
+  }, "PendingBeacon constructor can set properties.");
+
+  test(() => {
+    assert_throws_js(TypeError, () => new PendingBeacon("/", {method: "FOO"}));
+  }, "Setting an invalid method throws exception.");
+
+  test(() => {
+    let beacon = new PendingBeacon("https://www.google.com",
+                    {method: "GET", pageHideTimeout: 200});
+
+    beacon.url = "/";
+    assert_equals(beacon.url, "https://www.google.com");
+
+    beacon.pageHideTimeout = 400;
+    assert_equals(beacon.pageHideTimeout, 200);
+
+    beacon.method = "POST";
+    assert_equals(beacon.method, "GET");
+  }, "Properties cannot be mutated.");
 </script>
 </body>
 </html>

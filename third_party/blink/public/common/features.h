@@ -742,7 +742,7 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kSubstringSetTreeForAttributeBuckets;
 
 // Whether the pending beacon API is enabled or not.
-// https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+// https://github.com/WICG/unload-beacon/blob/main/README.md
 BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

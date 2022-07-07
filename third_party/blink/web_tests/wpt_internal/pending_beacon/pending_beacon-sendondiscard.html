@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+<meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -7,51 +8,51 @@
 </head>
 <body>
 <script>
-    promise_test(async t => {
-      const uuid = token();
+  promise_test(async t => {
+    const uuid = token();
 
-      // Create an iframe that contains a document that creates two beacons.
-      const iframe = document.createElement("iframe");
-      iframe.src = `resources/iframe_create_beacon_no_send.html?uuid=${uuid}`;
+    // Create an iframe that contains a document that creates two beacons.
+    const iframe = document.createElement("iframe");
+    iframe.src = `resources/iframe_create_beacon_no_send.html?uuid=${uuid}`;
 
-      const iframe_load_promise = new Promise(
-        resolve => iframe.onload = () => resolve());
-      document.body.appendChild(iframe);
-      await iframe_load_promise;
+    const iframe_load_promise = new Promise(
+      resolve => iframe.onload = () => resolve());
+    document.body.appendChild(iframe);
+    await iframe_load_promise;
 
-      // Delete the iframe to trigger beacon sending.
-      document.body.removeChild(iframe);
-      await wait(1000);
+    // Delete the iframe to trigger beacon sending.
+    document.body.removeChild(iframe);
+    await wait(1000);
 
-      // The iframe should have sent two beacons.
-      let beacon_count = await getBeaconCount(uuid);
-      assert_equals(beacon_count, 2);
-    }, "Verify that a discarded document sends its beacons.");
+    // The iframe should have sent two beacons.
+    const beaconCount = await getBeaconCount(uuid);
+    assert_equals(beaconCount, 2);
+  }, "Verify that a discarded document sends its beacons.");
 
-    promise_test(async t => {
-      const uuid = token();
+  promise_test(async t => {
+    const uuid = token();
 
-      // Create an iframe that contains a document that creates a beacon,
-      // then sends it with `sendNow()`
-      const iframe = document.createElement("iframe");
-      iframe.src = `resources/iframe_create_beacon_then_send.html?uuid=${uuid}`;
+    // Create an iframe that contains a document that creates a beacon,
+    // then sends it with `sendNow()`
+    const iframe = document.createElement("iframe");
+    iframe.src = `resources/iframe_create_beacon_then_send.html?uuid=${uuid}`;
 
-      const iframe_load_promise = new Promise(
-        resolve => iframe.onload = () => resolve());
-      document.body.appendChild(iframe);
-      await iframe_load_promise;
-      await wait(1000);
+    const iframe_load_promise = new Promise(
+      resolve => iframe.onload = () => resolve());
+    document.body.appendChild(iframe);
+    await iframe_load_promise;
+    await wait(1000);
 
-      // The iframe should have sent one beacon.
-      let beacon_count = await getBeaconCount(uuid);
-      assert_equals(beacon_count, 1);
+    // The iframe should have sent one beacon.
+    let beaconCount = await getBeaconCount(uuid);
+    assert_equals(beaconCount, 1);
 
-      // Delete the document and verify no more beacons are sent.
-      document.body.removeChild(iframe);
-      await wait(1000);
-      beacon_count = await getBeaconCount(uuid);
-      assert_equals(beacon_count, 1);
-    }, "Verify that a discarded document does not send an already sent beacon.");
+    // Delete the document and verify no more beacons are sent.
+    document.body.removeChild(iframe);
+    await wait(1000);
+    beaconCount = await getBeaconCount(uuid);
+    assert_equals(beaconCount, 1);
+  }, "Verify that a discarded document does not send an already sent beacon.");
 </script>
 </body>
 </html>

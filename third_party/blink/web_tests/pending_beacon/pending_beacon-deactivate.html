@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <head>
+<meta charset="utf-8">
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-    test(() => {
-        let beacon = new PendingBeacon('https://www.google.com',
-                            {method: 'GET', pageHideTimeout: 200});
-        assert_equals("pending", beacon.state);
-        beacon.deactivate();
-        assert_equals("deactivated", beacon.state);
-    }, "Tests deactivating a pending beacon");
+  test(() => {
+    const beacon = new PendingBeacon('https://www.google.com',
+                        {method: 'GET', pageHideTimeout: 200});
+    assert_true(beacon.isPending);
+    beacon.deactivate();
+    // TODO(https://github.com/WICG/unload-beacon/issues/11): Update once the issue is resolved.
+    assert_true(beacon.isPending);
+  }, "Tests deactivating a pending beacon");
 </script>
 </body>
 </html>

@@ -20,7 +20,7 @@ namespace blink {
 class BeaconOptions;
 
 // Implementation of the Pending Beacon API.
-// https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+// https://github.com/WICG/unload-beacon/blob/main/README.md
 class CORE_EXPORT PendingBeacon : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -32,18 +32,18 @@ class CORE_EXPORT PendingBeacon : public ScriptWrappable {
                                const String& targetURL,
                                BeaconOptions* options);
 
-  explicit PendingBeacon(ExecutionContext* context);
+  explicit PendingBeacon(ExecutionContext* context,
+                         String url,
+                         String method,
+                         int32_t page_hide_timeout);
 
-  void setUrl(const String& url);
   const String& url() { return url_; }
 
-  void setPageHideTimeout(int32_t pageHideTimeout);
   int32_t pageHideTimeout() { return page_hide_timeout_; }
 
-  void setMethod(const String& method);
   const String& method() { return method_; }
 
-  const String& state() { return state_; }
+  bool isPending() { return is_pending_; }
 
   void deactivate();
 
@@ -54,11 +54,11 @@ class CORE_EXPORT PendingBeacon : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  int32_t page_hide_timeout_;
-  String url_;
-  String method_;
-  String state_;
   HeapMojoRemote<mojom::blink::PendingBeacon> remote_;
+  const String url_;
+  const String method_;
+  const int32_t page_hide_timeout_;
+  bool is_pending_ = true;
 };
 
 }  // namespace blink

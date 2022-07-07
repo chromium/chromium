@@ -40643,12 +40643,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4272" label="H1UserAgentFontSizeInSectionApplied"/>
   <int value="4273" label="V8PendingBeacon_Constructor"/>
   <int value="4274" label="V8PendingBeacon_Url_AttributeGetter"/>
-  <int value="4275" label="V8PendingBeacon_Url_AttributeSetter"/>
+  <int value="4275" label="OBSOLETE_kV8PendingBeacon_Url_AttributeSetter"/>
   <int value="4276" label="V8PendingBeacon_Method_AttributeGetter"/>
-  <int value="4277" label="V8PendingBeacon_Method_AttributeSetter"/>
+  <int value="4277" label="OBSOLETE_kV8PendingBeacon_Method_AttributeSetter"/>
   <int value="4278" label="V8PendingBeacon_PageHideTimeout_AttributeGetter"/>
-  <int value="4279" label="V8PendingBeacon_PageHideTimeout_AttributeSetter"/>
-  <int value="4280" label="V8PendingBeacon_State_AttributeGetter"/>
+  <int value="4279"
+      label="OBSOLETE_kV8PendingBeacon_PageHideTimeout_AttributeSetter"/>
+  <int value="4280" label="OBSOLETE_kV8PendingBeacon_State_AttributeGetter"/>
   <int value="4281" label="V8PendingBeacon_Deactivate_Method"/>
   <int value="4282" label="V8PendingBeacon_SetData_Method"/>
   <int value="4283" label="V8PendingBeacon_SendNow_Method"/>
@@ -40663,6 +40664,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4292" label="DeviceMotionUsedWithoutPermissionRequest"/>
   <int value="4293" label="PrivateNetworkAccessPermissionPrompt"/>
   <int value="4294" label="PseudoBeforeAfterForDateTimeInputElement"/>
+  <int value="4295" label="V8PendingBeacon_IsPending_AttributeGetter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

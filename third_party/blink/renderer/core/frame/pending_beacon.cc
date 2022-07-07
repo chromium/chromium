@@ -7,7 +7,6 @@
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_beacon_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_beacon_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_formdata_readablestream_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -67,21 +66,12 @@ PendingBeacon* PendingBeacon::Create(ExecutionContext* ec,
 PendingBeacon* PendingBeacon::Create(ExecutionContext* ec,
                                      const String& targetURL,
                                      BeaconOptions* options) {
-  PendingBeacon* beacon = MakeGarbageCollected<PendingBeacon>(ec);
-  beacon->url_ = targetURL;
-  beacon->state_ = V8BeaconState(V8BeaconState::Enum::kPending);
-  beacon->method_ = options->method();
-  if (options->hasPageHideTimeout()) {
-    beacon->page_hide_timeout_ = options->pageHideTimeout();
-  }
+  PendingBeacon* beacon = MakeGarbageCollected<PendingBeacon>(
+      ec, targetURL, options->method(), options->pageHideTimeout());
   mojom::blink::BeaconMethod method;
-  if (options->method() == V8BeaconMethod::Enum::kPOST) {
-    method = mojom::blink::BeaconMethod::kPost;
-  } else if (options->method() == V8BeaconMethod::Enum::kGET) {
+  if (options->method() == V8BeaconMethod::Enum::kGET) {
     method = mojom::blink::BeaconMethod::kGet;
   } else {
-    // TODO(crbug.com/1293679):Throw an exception for invalid method here. For
-    // now fallback to post.
     method = mojom::blink::BeaconMethod::kPost;
   }
 
@@ -102,23 +92,18 @@ PendingBeacon* PendingBeacon::Create(ExecutionContext* ec,
   return beacon;
 }
 
-PendingBeacon::PendingBeacon(ExecutionContext* ec) : remote_(ec) {}
+PendingBeacon::PendingBeacon(ExecutionContext* context,
+                             String url,
+                             String method,
+                             int32_t page_hide_timeout)
+    : remote_(context),
+      url_(url),
+      method_(method),
+      page_hide_timeout_(page_hide_timeout) {}
 
 void PendingBeacon::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(remote_);
-}
-
-void PendingBeacon::setUrl(const String& url) {
-  url_ = url;
-}
-
-void PendingBeacon::setMethod(const String& method) {
-  method_ = method;
-}
-
-void PendingBeacon::setPageHideTimeout(int32_t pageHideTimeout) {
-  page_hide_timeout_ = pageHideTimeout;
 }
 
 void PendingBeacon::setData(
@@ -146,16 +131,14 @@ void PendingBeacon::setData(
 }
 
 void PendingBeacon::deactivate() {
-  state_ = V8BeaconState(V8BeaconState::Enum::kDeactivated);
   remote_->Deactivate();
 }
 
 void PendingBeacon::sendNow() {
-  if (state_ ==
-      static_cast<WTF::String>(V8BeaconState(V8BeaconState::Enum::kPending))) {
+  if (is_pending_) {
     remote_->SendNow();
+    is_pending_ = false;
   }
-  state_ = V8BeaconState(V8BeaconState::Enum::kSent);
 }
 
 }  // namespace blink

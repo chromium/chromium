@@ -1,21 +1,19 @@
-[RuntimeEnabled = PendingBeaconAPI] enum BeaconState { "pending", "sending", "sent", "failed", "deactivated" };
-
 [RuntimeEnabled = PendingBeaconAPI] enum BeaconMethod { "POST", "GET" };
 
 [RuntimeEnabled = PendingBeaconAPI] dictionary BeaconOptions {
   BeaconMethod method = "POST";
-  long pageHideTimeout;
+  long pageHideTimeout = -1;
 };
 
 // Interface for the PendingBeacon API.
-// https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+// https://github.com/WICG/unload-beacon/blob/main/README.md
 [RuntimeEnabled = PendingBeaconAPI, Exposed = Window] interface PendingBeacon {
   [Measure, CallWith = ExecutionContext] constructor(
       USVString url, optional BeaconOptions options);
-  [Measure] attribute USVString url;
-  [Measure] attribute BeaconMethod method;
-  [Measure] attribute long pageHideTimeout;
-  [Measure] readonly attribute BeaconState state;
+  [Measure] readonly attribute USVString url;
+  [Measure] readonly attribute BeaconMethod method;
+  [Measure] readonly attribute long pageHideTimeout;
+  [Measure] readonly attribute boolean isPending;
   [Measure] void deactivate();
   [Measure] void setData((ReadableStream or XMLHttpRequestBodyInit) data);
   [Measure] void sendNow();
