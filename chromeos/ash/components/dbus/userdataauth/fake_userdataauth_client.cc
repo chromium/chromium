@@ -79,42 +79,68 @@ constexpr char kGuestUserName[] = "$guest";
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeUserDataAuthClient* g_instance = nullptr;
 
-// Used to construct a functor/visitor with overloaded `operator()` from a list
-// of lambdas. Useful for visiting absl::variant.
-template <class... Ts>
-struct OverloadedFunctor : Ts... {
-  using Ts::operator()...;
+// `OverloadedFunctor` and `FunctorWithReturnType` are used to implement
+// `Overload`, which constructs a visitor appropriate for use with
+// `absl::visit` from lambdas for each case.
+
+// A functor combining the `operator()` definitions of a list of functors into
+// a single functor with overloaded `operator()`.
+template <class... Functors>
+struct OverloadedFunctor : Functors... {
+  using Functors::operator()...;
 };
-template <class... Ts>
-OverloadedFunctor<Ts...> Overload(Ts&&... ts) {
-  return OverloadedFunctor<Ts...>{std::forward<Ts>(ts)...};
+
+// Used to fix the return type of a functor with overloaded `operator()`.
+// This is useful in case the `operator()` overloads have different return
+// types, but all return types are convertible into the intended fixed
+// `ReturnType`.
+template <class ReturnType, class Functor>
+struct FunctorWithReturnType {
+  template <class Arg>
+  ReturnType operator()(Arg&& arg) {
+    return functor(std::forward<Arg>(arg));
+  }
+
+  Functor functor;
+};
+
+// `Overload` constructs a visitor appropriate for use with `absl::visit` from
+// a number of lambdas for each case. The return type of each provided lambda
+// must be convertible to `ReturnType`, and the `operator()` of the combined
+// visitor will always return `ReturnType`.
+template <class ReturnType, class... Functors>
+FunctorWithReturnType<ReturnType, OverloadedFunctor<Functors...>> Overload(
+    Functors... functors) {
+  return {{std::move(functors)...}};
 }
 
 absl::optional<cryptohome::KeyData> AuthFactorToKeyData(
     std::string label,
     const FakeAuthFactor& factor) {
-  absl::optional<cryptohome::KeyData> data;
-  absl::visit(Overload(
-                  [&](const PasswordFactor& password) {
-                    data = cryptohome::KeyData();
-                    data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-                    data->set_label(std::move(label));
-                  },
-                  [&](const PinFactor& pin) {
-                    data = cryptohome::KeyData();
-                    data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-                    data->set_label(std::move(label));
-                    data->mutable_policy()->set_low_entropy_credential(true);
-                    data->mutable_policy()->set_auth_locked(pin.locked);
-                  },
-                  [&](const RecoveryFactor& recovery) { data = absl::nullopt; },
-                  [&](const KioskFactor& kiosk) {
-                    data = cryptohome::KeyData();
-                    data->set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-                    data->set_label(std::move(label));
-                  }),
-              factor);
-  return data;
+  return absl::visit(
+      Overload<absl::optional<cryptohome::KeyData>>(
+          [&](const PasswordFactor& password) {
+            cryptohome::KeyData data;
+            data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+            data.set_label(std::move(label));
+            return data;
+          },
+          [&](const PinFactor& pin) {
+            cryptohome::KeyData data;
+            data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+            data.set_label(std::move(label));
+            data.mutable_policy()->set_low_entropy_credential(true);
+            data.mutable_policy()->set_auth_locked(pin.locked);
+            return data;
+          },
+          [&](const RecoveryFactor&) { return absl::nullopt; },
+          [&](const KioskFactor& kiosk) {
+            cryptohome::KeyData data;
+            data.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
+            data.set_label(std::move(label));
+            return data;
+          }),
+      factor);
 }
 
 // Helper that automatically sends a reply struct to a supplied callback when
@@ -407,7 +433,7 @@ void FakeUserDataAuthClient::CheckKey(
   const FakeAuthFactor& factor = factor_it->second;
 
   absl::visit(
-      Overload(
+      Overload<void>(
           [&](const PasswordFactor& password) {
             const std::string& secret = key.secret();
             if (password.password != secret) {
