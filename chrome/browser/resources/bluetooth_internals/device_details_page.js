@@ -8,6 +8,8 @@
  * served from chrome://bluetooth-internals/.
  */
 
+import './service_list.js';
+
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {DeviceInfo, DeviceRemote, ServiceInfo} from './device.mojom-webui.js';
@@ -16,7 +18,6 @@ import {ConnectionStatus} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
-import {ServiceList} from './service_list.js';
 import {Snackbar, SnackbarType} from './snackbar.js';
 
 /**
@@ -61,7 +62,7 @@ export class DeviceDetailsPage extends Page {
     this.deviceFieldSet_.setPropertyDisplayNames(PROPERTY_NAMES);
 
     /** @private {!ServiceList} */
-    this.serviceList_ = new ServiceList();
+    this.serviceList_ = document.createElement('service-list');
 
     /** @private {!ConnectionStatus} */
     this.status_ = ConnectionStatus.DISCONNECTED;
@@ -178,7 +179,6 @@ export class DeviceDetailsPage extends Page {
     };
 
     this.deviceFieldSet_.setObject(deviceViewObj);
-    this.serviceList_.redraw();
   }
 
   /**

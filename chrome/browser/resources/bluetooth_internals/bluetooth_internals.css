@@ -26,10 +26,6 @@ h1 {
   color: rgb(92, 97, 102);
 }
 
-.info-container h4 button.show-all-properties {
-  margin: 10px;
-}
-
 .toggle-status {
   background-image: url(chrome://resources/images/cancel_red.svg);
   background-repeat: no-repeat;
@@ -40,60 +36,6 @@ h1 {
 .toggle-status.checked {
   background-image:
       url(chrome://resources/images/check_circle_green.svg);
-}
-
-/* Expandable List */
-list {
-  list-style-type: none;
-  outline: none;
-}
-
-list .spinner {
-  height: 48px;
-  margin: 0 auto;
-  pointer-events: none;
-  width: 48px;
-}
-
-.expandable-list-item .brief-content {
-  align-items: center;
-  border-bottom: var(--divider-border);
-  color: white;
-  cursor: pointer;
-  display: flex;
-  font-weight: 600;
-  height: 40px;
-  padding: 8px;
-}
-
-.service-list-item > .brief-content {
-  background-color: var(--primary-color);
-}
-
-.characteristic-list-item > .brief-content {
-  background-color: var(--dark-primary-color);
-}
-
-.descriptor-list-item > .brief-content {
-  background-color: var(--darker-primary-color);
-}
-
-.expandable-list-item > .expanded-content {
-  height: 0;
-  overflow: hidden;
-}
-
-.expandable-list-item.expanded > .expanded-content {
-  height: auto;
-}
-
-.expandable-list-item .info-container > h4,
-.expandable-list-item .info-container > div {
-  margin: var(--section-padding);
-}
-
-.empty-message {
-  padding-inline-start: calc(2 * var(--section-padding));
 }
 
 /* Page container */
@@ -400,6 +342,12 @@ table .removed {
   visibility: visible;
 }
 
+@media screen and (min-width: 601px) {
+  .flex {
+    display: flex;
+  }
+}
+
 /* Object Fieldset */
 .object-fieldset .status {
   align-items: center;
@@ -427,22 +375,9 @@ table .removed {
   }
 }
 
+
 /* Device Details Page */
 .device-details-page section,
 .info-container fieldset {
   margin-inline-start: 1em;
-}
-
-/* Value Control */
-.value-control > div {
-  display: flex;
-  margin: 4px 0;
-}
-
-.value-control > div > input {
-  flex-grow: 1;
-}
-
-.value-control > div:nth-of-type(2) {
-  justify-content: flex-end;
 }

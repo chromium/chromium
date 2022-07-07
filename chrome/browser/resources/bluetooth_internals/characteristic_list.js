@@ -2,214 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Javascript for CharacteristicList and CharacteristicListItem, served from
- *     chrome://bluetooth-internals/.
- */
+import './characteristic_list_item.js';
+import './expandable_list.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
-import {DescriptorList} from './descriptor_list.js';
-import {CharacteristicInfo, Property} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
-import {ExpandableList, ExpandableListItem} from './expandable_list.js';
-import {ObjectFieldSet} from './object_fieldset.js';
+import {ExpandableListElement} from './expandable_list.js';
 import {Snackbar, SnackbarType} from './snackbar.js';
-import {ValueControl} from './value_control.js';
 
-
-/** Property names for the CharacteristicInfo fieldset */
-const INFO_PROPERTY_NAMES = {
-  id: 'ID',
-  'uuid.uuid': 'UUID',
-};
-
-/** Property names for the Properties fieldset. */
-const PROPERTIES_PROPERTY_NAMES = {
-  broadcast: 'Broadcast',
-  read: 'Read',
-  write_without_response: 'Write Without Response',
-  write: 'Write',
-  notify: 'Notify',
-  indicate: 'Indicate',
-  authenticated_signed_writes: 'Authenticated Signed Writes',
-  extended_properties: 'Extended Properties',
-  reliable_write: 'Reliable Write',
-  writable_auxiliaries: 'Writable Auxiliaries',
-  read_encrypted: 'Read Encrypted',
-  write_encrypted: 'Write Encrypted',
-  read_encrypted_authenticated: 'Read Encrypted Authenticated',
-  write_encrypted_authenticated: 'Write Encrypted Authenticated',
-};
-
-/**
- * A list item that displays the properties of a CharacteristicInfo object.
- * Two fieldsets are created within the element: one for the primitive
- * properties, 'id' and 'uuid', and one for the 'properties' bitfield in the
- * CharacteristicInfo object.
- * @constructor
- * @param {!CharacteristicInfo} characteristicInfo
- * @param {string} deviceAddress
- * @param {string} serviceId
- * @extends {ExpandableListItem}
- */
-export function CharacteristicListItem(
-    characteristicInfo, deviceAddress, serviceId) {
-  const listItem = new ExpandableListItem();
-  listItem.__proto__ = CharacteristicListItem.prototype;
-
-  /** @type {!CharacteristicInfo} */
-  listItem.info = characteristicInfo;
-  /** @private {string} */
-  listItem.deviceAddress_ = deviceAddress;
-  /** @private {string} */
-  listItem.serviceId_ = serviceId;
-
-  listItem.decorate();
-  return listItem;
-}
-
-CharacteristicListItem.prototype = {
-  __proto__: ExpandableListItem.prototype,
-
-  /**
-   * Decorates the element as a characteristic list item. Creates and caches
-   * two fieldsets for displaying property values.
-   * @override
-   */
-  decorate() {
-    this.classList.add('characteristic-list-item');
-
-    /** @private {!ObjectFieldSet} */
-    this.characteristicFieldSet_ = new ObjectFieldSet();
-    this.characteristicFieldSet_.setPropertyDisplayNames(INFO_PROPERTY_NAMES);
-    this.characteristicFieldSet_.setObject({
-      id: this.info.id,
-      'uuid.uuid': this.info.uuid.uuid,
-    });
-
-    /** @private {!ObjectFieldSet} */
-    this.propertiesFieldSet_ = new ObjectFieldSet();
-    this.propertiesFieldSet_.setPropertyDisplayNames(PROPERTIES_PROPERTY_NAMES);
-    this.propertiesFieldSet_.showAll = false;
-    this.propertiesFieldSet_.setObject({
-      broadcast: (this.info.properties & Property.BROADCAST) > 0,
-      read: (this.info.properties & Property.READ) > 0,
-      write_without_response:
-          (this.info.properties & Property.WRITE_WITHOUT_RESPONSE) > 0,
-      write: (this.info.properties & Property.WRITE) > 0,
-      notify: (this.info.properties & Property.NOTIFY) > 0,
-      indicate: (this.info.properties & Property.INDICATE) > 0,
-      authenticated_signed_writes:
-          (this.info.properties & Property.AUTHENTICATED_SIGNED_WRITES) > 0,
-      extended_properties:
-          (this.info.properties & Property.EXTENDED_PROPERTIES) > 0,
-      reliable_write: (this.info.properties & Property.RELIABLE_WRITE) > 0,
-      writable_auxiliaries:
-          (this.info.properties & Property.WRITABLE_AUXILIARIES) > 0,
-      read_encrypted: (this.info.properties & Property.READ_ENCRYPTED) > 0,
-      write_encrypted: (this.info.properties & Property.WRITE_ENCRYPTED) > 0,
-      read_encrypted_authenticated:
-          (this.info.properties & Property.READ_ENCRYPTED_AUTHENTICATED) > 0,
-      write_encrypted_authenticated:
-          (this.info.properties & Property.WRITE_ENCRYPTED_AUTHENTICATED) > 0,
-    });
-
-    /** @private {!ValueControl} */
-    this.valueControl_ = new ValueControl();
-
-    this.valueControl_.load({
-      deviceAddress: this.deviceAddress_,
-      serviceId: this.serviceId_,
-      characteristicId: this.info.id,
-      properties: this.info.properties,
-    });
-    this.valueControl_.setValue(this.info.lastKnownValue);
-
-    /** @private {!DescriptorList} */
-    this.descriptorList_ = new DescriptorList();
-
-    // Create content for display in brief content container.
-    const characteristicHeaderText = document.createElement('div');
-    characteristicHeaderText.textContent = 'Characteristic:';
-
-    const characteristicHeaderValue = document.createElement('div');
-    characteristicHeaderValue.textContent = this.info.uuid.uuid;
-
-    const characteristicHeader = document.createElement('div');
-    characteristicHeader.appendChild(characteristicHeaderText);
-    characteristicHeader.appendChild(characteristicHeaderValue);
-    this.briefContent_.appendChild(characteristicHeader);
-
-    // Create content for display in expanded content container.
-    const characteristicInfoHeader = document.createElement('h4');
-    characteristicInfoHeader.textContent = 'Characteristic Info';
-
-    const characteristicDiv = document.createElement('div');
-    characteristicDiv.classList.add('flex');
-    characteristicDiv.appendChild(this.characteristicFieldSet_);
-
-    const propertiesHeader = document.createElement('h4');
-    propertiesHeader.textContent = 'Properties';
-
-    const propertiesBtn = document.createElement('button');
-    propertiesBtn.textContent = 'Show All';
-    propertiesBtn.classList.add('show-all-properties');
-    propertiesBtn.addEventListener('click', () => {
-      this.propertiesFieldSet_.showAll = !this.propertiesFieldSet_.showAll;
-      propertiesBtn.textContent =
-          this.propertiesFieldSet_.showAll ? 'Hide' : 'Show all';
-      this.propertiesFieldSet_.redraw();
-    });
-    propertiesHeader.appendChild(propertiesBtn);
-
-    const propertiesDiv = document.createElement('div');
-    propertiesDiv.classList.add('flex');
-    propertiesDiv.appendChild(this.propertiesFieldSet_);
-
-    const descriptorsHeader = document.createElement('h4');
-    descriptorsHeader.textContent = 'Descriptors';
-
-    const infoDiv = document.createElement('div');
-    infoDiv.classList.add('info-container');
-
-    const valueHeader = document.createElement('h4');
-    valueHeader.textContent = 'Value';
-
-    infoDiv.appendChild(characteristicInfoHeader);
-    infoDiv.appendChild(characteristicDiv);
-    infoDiv.appendChild(propertiesHeader);
-    infoDiv.appendChild(propertiesDiv);
-    infoDiv.appendChild(valueHeader);
-    infoDiv.appendChild(this.valueControl_);
-    infoDiv.appendChild(descriptorsHeader);
-    infoDiv.appendChild(this.descriptorList_);
-
-    this.expandedContent_.appendChild(infoDiv);
-  },
-
-  /** @override */
-  onExpandInternal(expanded) {
-    this.descriptorList_.load(
-        this.deviceAddress_, this.serviceId_, this.info.id);
-  },
-};
-
-/**
- * A list that displays CharacteristicListItems.
- * @constructor
- * @extends {ExpandableList}
- */
-export const CharacteristicList = crUiDefine('list');
-
-CharacteristicList.prototype = {
-  __proto__: ExpandableList.prototype,
-
-  /** @override */
-  decorate() {
-    ExpandableList.prototype.decorate.call(this);
+export class CharacteristicListElement extends ExpandableListElement {
+  constructor() {
+    super();
 
     /** @private {?string} */
     this.deviceAddress_ = null;
@@ -217,15 +21,18 @@ CharacteristicList.prototype = {
     this.serviceId_ = null;
     /** @private {boolean} */
     this.characteristicsRequested_ = false;
+  }
 
+  connectedCallback() {
+    super.connectedCallback();
     this.classList.add('characteristic-list');
-    this.setEmptyMessage('No Characteristics Found');
-  },
+  }
 
   createItem(data) {
-    return new CharacteristicListItem(
-        data, assert(this.deviceAddress_), assert(this.serviceId_));
-  },
+    const item = document.createElement('characteristic-list-item');
+    item.initialize(data, assert(this.deviceAddress_), assert(this.serviceId_));
+    return item;
+  }
 
   /**
    * Loads the characteristic list with an array of CharacteristicInfo from
@@ -235,6 +42,7 @@ CharacteristicList.prototype = {
    * @param {string} serviceId
    */
   load(deviceAddress, serviceId) {
+    this.setEmptyMessage('No Characteristics Found');
     if (this.characteristicsRequested_ || !this.isSpinnerShowing()) {
       return;
     }
@@ -248,7 +56,7 @@ CharacteristicList.prototype = {
           return device.getCharacteristics(serviceId);
         }.bind(this))
         .then(function(response) {
-          this.setData(new ArrayDataModel(response.characteristics || []));
+          this.setData(response.characteristics || []);
           this.setSpinnerShowing(false);
           this.characteristicsRequested_ = false;
         }.bind(this))
@@ -260,5 +68,7 @@ CharacteristicList.prototype = {
                 this.load(deviceAddress, serviceId);
               }.bind(this));
         }.bind(this));
-  },
-};
+  }
+}
+
+customElements.define('characteristic-list', CharacteristicListElement);
