@@ -19,6 +19,7 @@
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -464,6 +465,22 @@ TEST(IdentifiabilityStudyStateStandaloneTest, Disabled) {
 
   // The specific surface doesn't matter.
   EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface1));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, ShouldReportEncounteredSurface) {
+  auto params = test::ScopedPrivacyBudgetConfig::Parameters{};
+  params.enabled = true;
+  test::ScopedPrivacyBudgetConfig config(params);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+
+  // The specific surface doesn't matter.
+  EXPECT_TRUE(settings.ShouldReportEncounteredSurface(ukm::AssignNewSourceId(),
+                                                      kRegularSurface1));
+  EXPECT_FALSE(settings.ShouldReportEncounteredSurface(ukm::NoURLSourceId(),
+                                                       kRegularSurface1));
 }
 
 TEST(IdentifiabilityStudyStateStandaloneTest, ClearsPrefsIfStudyIsDisabled) {
