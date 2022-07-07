@@ -81,14 +81,16 @@ export class ScanOptions implements CameraUI {
     }
   }
 
-  async waitUntilDocumentModeReady(): Promise<boolean> {
+  setDocumentModeEnabled(enabled: boolean): void {
     const documentModeBtn = dom.get('#scan-document-option', HTMLDivElement);
-    documentModeBtn.hidden = true;
+    documentModeBtn.hidden = !enabled;
+  }
+
+  async waitUntilDocumentModeReady(): Promise<boolean> {
     const isLoaded =
         await ChromeHelper.getInstance().waitUntilDocumentModeReady();
     if (isLoaded) {
       this.onDocumentModeReady();
-      documentModeBtn.hidden = false;
     }
     return isLoaded;
   }
@@ -97,6 +99,7 @@ export class ScanOptions implements CameraUI {
     if (!state.get(Mode.SCAN)) {
       dom.get('#scan-document', HTMLInputElement).checked = true;
     }
+    this.setDocumentModeEnabled(true);
   }
 
   /**
