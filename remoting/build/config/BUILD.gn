@@ -22,12 +22,6 @@ config("version") {
   ]
 }
 
-config("enable_webrtc_remoting_client") {
-  if (!is_official_build) {
-    defines = [ "ENABLE_WEBRTC_REMOTING_CLIENT=1" ]
-  }
-}
-
 config("remoting_me2me_host") {
   defines = []
 

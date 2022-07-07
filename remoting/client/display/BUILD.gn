@@ -85,10 +85,7 @@ if (is_win) {
       "gl_renderer_unittest.cc",
     ]
 
-    configs += [
-      "//remoting/build/config:version",
-      "//remoting/build/config:enable_webrtc_remoting_client",
-    ]
+    configs += [ "//remoting/build/config:version" ]
 
     deps = [
       ":display",

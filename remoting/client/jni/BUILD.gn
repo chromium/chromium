@@ -52,10 +52,7 @@ shared_library("remoting_client_jni") {
     "EGL",
   ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-  configs += [
-    "//build/config/android:hide_all_but_jni",
-    "//remoting/build/config:enable_webrtc_remoting_client",
-  ]
+  configs += [ "//build/config/android:hide_all_but_jni" ]
   assert_no_deps = [ "//third_party/ffmpeg:*" ]
 }
 

@@ -76,10 +76,7 @@ source_set("unit_tests") {
     "touch_input_scaler_unittest.cc",
   ]
 
-  configs += [
-    "//remoting/build/config:version",
-    "//remoting/build/config:enable_webrtc_remoting_client",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   deps = [
     ":input",
@@ -102,10 +99,7 @@ source_set("normalizing_input_filter_unit_tests") {
     "normalizing_input_filter_win_unittest.cc",
   ]
 
-  configs += [
-    "//remoting/build/config:version",
-    "//remoting/build/config:enable_webrtc_remoting_client",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   deps = [
     ":input",

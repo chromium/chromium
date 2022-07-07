@@ -85,12 +85,7 @@ void ChromotingClient::Start(
 
   if (!connection_) {
     if (protocol_config_->webrtc_supported()) {
-      DCHECK(!protocol_config_->ice_supported());
-#if !defined(ENABLE_WEBRTC_REMOTING_CLIENT)
       LOG(FATAL) << "WebRTC is not supported.";
-#else
-      connection_ = std::make_unique<protocol::WebrtcConnectionToHost>();
-#endif
     } else {
       DCHECK(protocol_config_->ice_supported());
       connection_ = std::make_unique<protocol::IceConnectionToHost>();
