@@ -10,14 +10,9 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// True to enable user policy.
-const char kEnableUserPolicy[] = "enable-user-policy-for-ios";
-
-}  // namespace
-
 namespace policy {
+
+const char kEnableUserPolicy[] = "enable-user-policy-for-ios";
 
 void EnableUserPolicy() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

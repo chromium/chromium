@@ -2901,6 +2901,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-user-policy",
+    "owners": [ "vincb" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-vaapi-av1-decode-acceleration",
     "owners": [ "andrescj", "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 100
