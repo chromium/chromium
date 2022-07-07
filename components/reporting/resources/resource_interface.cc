@@ -15,11 +15,13 @@
 
 namespace reporting {
 
+ScopedReservation::ScopedReservation() noexcept = default;
+
 ScopedReservation::ScopedReservation(
     uint64_t size,
     scoped_refptr<ResourceInterface> resource_interface) noexcept
     : resource_interface_(resource_interface) {
-  if (!resource_interface->Reserve(size)) {
+  if (size == 0uL || !resource_interface->Reserve(size)) {
     return;
   }
   size_ = size;
@@ -50,8 +52,13 @@ bool ScopedReservation::Reduce(uint64_t new_size) {
 }
 
 void ScopedReservation::HandOver(ScopedReservation& other) {
-  DCHECK_EQ(resource_interface_.get(), other.resource_interface_.get())
-      << "Reservations are not related";
+  if (resource_interface_.get()) {
+    DCHECK_EQ(resource_interface_.get(), other.resource_interface_.get())
+        << "Reservations are not related";
+  } else {
+    DCHECK(!reserved()) << "Unattached reservation may not have size";
+    resource_interface_ = other.resource_interface_;
+  }
   if (!other.reserved()) {
     return;  // Nothing changes.
   }

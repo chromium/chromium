@@ -7,6 +7,7 @@ import("//build/config/features.gni")
 static_library("resource_interface") {
   visibility = [
     "//chrome/browser/*",
+    "//chrome/test/*",
     "//components/reporting/*",
   ]
   sources = [

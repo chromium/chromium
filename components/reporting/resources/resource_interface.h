@@ -57,9 +57,22 @@ class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
 //    ...
 //  }   // Automatically discarded.
 //
-// Can be handed over to another owner.
+// Can be handed over to another owner by move-constructor or using HandOver
+// method:
+// {
+//   ScopedReservation summary;
+//   for (const uint64_t size : sizes) {
+//     ScopedReservation single_reservation(size, resource);
+//     ...
+//     summary.HandOver(single_reservation);
+//   }
+// }
 class ScopedReservation {
  public:
+  // Zero-size reservation with no resource interface attached.
+  // reserved() returns false.
+  ScopedReservation() noexcept;
+  // Specified reservation, must have resource interface attached.
   ScopedReservation(
       uint64_t size,
       scoped_refptr<ResourceInterface> resource_interface) noexcept;
@@ -81,7 +94,7 @@ class ScopedReservation {
   void HandOver(ScopedReservation& other);
 
  private:
-  const scoped_refptr<ResourceInterface> resource_interface_;
+  scoped_refptr<ResourceInterface> resource_interface_;
   absl::optional<uint64_t> size_;
 };
 
