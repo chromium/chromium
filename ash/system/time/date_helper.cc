@@ -207,9 +207,12 @@ void DateHelper::CalculateLocalWeekTitles() {
     bool result = base::StringToInt(day_of_week, &day_int);
     DCHECK(result);
     ++safe_index;
-    // Should already find the first day within 7 times, since there are only 7
-    // days in a week.
-    DCHECK_NE(safe_index, calendar_utils::kDateInOneWeek);
+    if (safe_index == calendar_utils::kDateInOneWeek) {
+      NOTREACHED() << "Should already find the first day within 7 times, since "
+                      "there are only 7 days in a week";
+      week_titles_ = kDefaultWeekTitle;
+      return;
+    }
   }
 
   int day_index = 0;
