@@ -344,5 +344,5 @@ message WebAppProto {
 
   // Contains customisations to the web app tab strip. Only present when the
   // display_mode is tabbed.
-  optional TabStripProto tab_strip = 57;
+  optional proto.TabStrip tab_strip = 57;
 }

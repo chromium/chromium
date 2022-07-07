@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package web_app;
+package web_app.proto;
 
 message NewTabButtonParams {
   optional string url = 1;
@@ -15,7 +15,7 @@ message NewTabButtonParams {
 // A proto representing the "tab_strip" manifest field.
 // This mirrors ManifestTabStrip in:
 // third_party/blink/public/mojom/manifest/manifest.mojom
-message TabStripProto {
+message TabStrip {
   enum Visibility {
     AUTO = 0;
     ABSENT = 1;

@@ -249,22 +249,22 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
   }
 }
 
-TabStripProto::Visibility TabStripVisibilityToProto(
+proto::TabStrip::Visibility TabStripVisibilityToProto(
     TabStrip::Visibility visibility) {
   switch (visibility) {
     case TabStrip::Visibility::kAuto:
-      return TabStripProto_Visibility_AUTO;
+      return proto::TabStrip_Visibility_AUTO;
     case TabStrip::Visibility::kAbsent:
-      return TabStripProto_Visibility_ABSENT;
+      return proto::TabStrip_Visibility_ABSENT;
   }
 }
 
 TabStrip::Visibility ProtoToTabStripVisibility(
-    TabStripProto::Visibility visibility) {
+    proto::TabStrip::Visibility visibility) {
   switch (visibility) {
-    case TabStripProto_Visibility_AUTO:
+    case proto::TabStrip_Visibility_AUTO:
       return TabStrip::Visibility::kAuto;
-    case TabStripProto_Visibility_ABSENT:
+    case proto::TabStrip_Visibility_ABSENT:
       return TabStrip::Visibility::kAbsent;
   }
 }
