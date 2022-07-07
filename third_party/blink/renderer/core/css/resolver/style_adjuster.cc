@@ -808,9 +808,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
           style.GetPosition() == EPosition::kRelative) {
         style.SetPosition(EPosition::kAbsolute);
       }
-      if (style.Display() == EDisplay::kContents &&
-          (IsA<HTMLDialogElement>(element) ||
-           style.StyleType() == kPseudoIdBackdrop)) {
+      if (style.Display() == EDisplay::kContents) {
         // See crbug.com/1240701 for more details.
         // https://fullscreen.spec.whatwg.org/#new-stacking-layer
         // If its specified display property is contents, it computes to block.
