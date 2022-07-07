@@ -84,9 +84,9 @@ class VideoPlayer {
   bool Initialize(const Video* video);
   // Play the video asynchronously.
   void Play();
-  // Play the video asynchronously. Automatically pause decoding when the
-  // specified |event| occurred |event_count| times.
-  void PlayUntil(VideoPlayerEvent event, size_t event_count = 1);
+  // Play the video asynchronously. Automatically pause decoding when |event|
+  // occurs.
+  void PlayUntil(VideoPlayerEvent event);
   // Reset the decoder to the beginning of the video stream.
   void Reset();
   // Flush the decoder.
@@ -139,10 +139,8 @@ class VideoPlayer {
   // The next event ID to start at, when waiting for events.
   size_t event_id_ GUARDED_BY(event_lock_);
 
-  // Automatically pause decoding once the video player has seen the specified
-  // number of events occur.
-  std::pair<VideoPlayerEvent, size_t> play_until_{
-      VideoPlayerEvent::kNumEvents, std::numeric_limits<size_t>::max()};
+  // Set by PlayUntil() to automatically pause decoding once this event occurs.
+  absl::optional<VideoPlayerEvent> play_until_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

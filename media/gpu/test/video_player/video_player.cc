@@ -112,16 +112,15 @@ void VideoPlayer::Play() {
   DVLOGF(4);
 
   // Play until the end of the video.
-  PlayUntil(VideoPlayerEvent::kNumEvents, std::numeric_limits<size_t>::max());
+  PlayUntil(VideoPlayerEvent::kNumEvents);
 }
 
-void VideoPlayer::PlayUntil(VideoPlayerEvent event, size_t event_count) {
+void VideoPlayer::PlayUntil(VideoPlayerEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(video_player_state_, VideoPlayerState::kIdle);
   DVLOGF(4);
 
-  // Start decoding the video.
-  play_until_ = std::make_pair(event, event_count);
+  play_until_ = event;
   video_player_state_ = VideoPlayerState::kDecoding;
   decoder_client_->Play();
 }
@@ -226,9 +225,7 @@ bool VideoPlayer::NotifyEvent(VideoPlayerEvent event) {
   event_cv_.Signal();
 
   // Check whether video playback should be paused after this event.
-  if (play_until_.first == event &&
-      play_until_.second ==
-          video_player_event_counts_[static_cast<size_t>(event)]) {
+  if (play_until_.has_value() && play_until_ == event) {
     video_player_state_ = VideoPlayerState::kIdle;
     return false;
   }
