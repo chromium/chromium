@@ -147,8 +147,16 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                   ->IsKeyboardLockActive());
 }
 
+// Disabled for flaky SEGFAULTs on Lacros: crbug.com/1340114
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode \
+  DISABLED_KeyboardLockNotLockedInExtensionFullscreenMode
+#else
+#define MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode \
+  KeyboardLockNotLockedInExtensionFullscreenMode
+#endif  // IS_CHROMEOS_LACROS
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
-                       KeyboardLockNotLockedInExtensionFullscreenMode) {
+                       MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode) {
   EnterExtensionInitiatedFullscreen();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_FALSE(GetExclusiveAccessManager()
