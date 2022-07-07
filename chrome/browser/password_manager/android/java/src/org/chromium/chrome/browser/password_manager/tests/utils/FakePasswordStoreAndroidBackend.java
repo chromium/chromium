@@ -15,12 +15,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.Predicate;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.password_manager.AndroidBackendErrorType;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBackend {
     private final Map<Account, List<PasswordWithLocalData>> mSavedPasswords = new HashMap<>();
     private SequencedTaskRunner mTaskRunner =
-            PostTask.createSequencedTaskRunner(TaskTraits.THREAD_POOL);
+            PostTask.createSequencedTaskRunner(UiThreadTaskTraits.USER_BLOCKING);
 
     public static final Account sLocalDefaultAccount = new Account("Test user", "Local");
 

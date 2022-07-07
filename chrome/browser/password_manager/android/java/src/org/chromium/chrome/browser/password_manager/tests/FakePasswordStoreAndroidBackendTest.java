@@ -23,6 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -41,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for {@link FakePasswordStoreAndroidBackend}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
 public class FakePasswordStoreAndroidBackendTest {
     private FakePasswordStoreAndroidBackend mBackend;
 
@@ -98,7 +100,7 @@ public class FakePasswordStoreAndroidBackendTest {
         mBackend.addLogin(sPwdWithLocalData.toByteArray(), sTestAccount,
                 successCallback::notifyCalled, unexpected -> fail());
 
-        successCallback.waitForCallback(successCallback.getCallCount());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
         assertThat(successCallback.getCallCount(), is(1));
         assertThat(allPasswords.get(sTestAccount.get()), hasSize(1));
@@ -112,6 +114,7 @@ public class FakePasswordStoreAndroidBackendTest {
         PayloadCallbackHelper<byte[]> successCallback = new PayloadCallbackHelper<>();
         mBackend.getAllLogins(sTestAccount, successCallback::notifyCalled, unexpected -> fail());
 
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         ListPasswordsResult actualPasswords =
                 parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
         ListPasswordsResult expectedPasswords =
@@ -131,6 +134,7 @@ public class FakePasswordStoreAndroidBackendTest {
         mBackend.getAutofillableLogins(
                 sTestAccount, successCallback::notifyCalled, unexpected -> fail());
 
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         ListPasswordsResult actualPasswords =
                 parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
         ListPasswordsResult expectedPasswords =
@@ -150,6 +154,7 @@ public class FakePasswordStoreAndroidBackendTest {
                 sPwdWithLocalData.getPasswordSpecificsData().getSignonRealm(), sTestAccount,
                 successCallback::notifyCalled, unexpected -> fail());
 
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         ListPasswordsResult actualPasswords =
                 parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
         ListPasswordsResult expectedPasswords =
@@ -181,7 +186,7 @@ public class FakePasswordStoreAndroidBackendTest {
         mBackend.updateLogin(updatedPwdWithLocalData.toByteArray(), sTestAccount,
                 successCallback::notifyCalled, unexpected -> fail());
 
-        successCallback.waitForCallback(successCallback.getCallCount());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
         assertThat(successCallback.getCallCount(), is(1));
         assertThat(allPasswords.get(sTestAccount.get()), hasSize(3));
@@ -197,25 +202,21 @@ public class FakePasswordStoreAndroidBackendTest {
         mBackend.removeLogin(sPasswordData.toByteArray(), sTestAccount,
                 successCallback::notifyCalled, unexpected -> fail());
 
-        successCallback.waitForCallback(successCallback.getCallCount());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Map<Account, List<PasswordWithLocalData>> allPasswords = mBackend.getAllSavedPasswords();
         assertThat(successCallback.getCallCount(), is(1));
         assertThat(allPasswords.get(sTestAccount.get()), hasSize(2));
         assertThat(allPasswords, hasEntry(is(sTestAccount.get()), not(hasItem(sPwdWithLocalData))));
     }
 
-    private void fillPasswordStore() throws TimeoutException {
-        CallbackHelper successCallback = new CallbackHelper();
-
-        mBackend.addLogin(sPwdWithLocalData.toByteArray(), sTestAccount,
-                successCallback::notifyCalled, unexpected -> fail());
-        successCallback.waitForCallback(successCallback.getCallCount());
+    private void fillPasswordStore() {
+        mBackend.addLogin(
+                sPwdWithLocalData.toByteArray(), sTestAccount, () -> {}, unexpected -> fail());
         mBackend.addLogin(sPwdWithLocalDataBlocklisted.toByteArray(), sTestAccount,
-                successCallback::notifyCalled, unexpected -> fail());
-        successCallback.waitForCallback(successCallback.getCallCount());
+                () -> {}, unexpected -> fail());
         mBackend.addLogin(sPwdWithLocalDataNoSignonRealm.toByteArray(), sTestAccount,
-                successCallback::notifyCalled, unexpected -> fail());
-        successCallback.waitForCallback(successCallback.getCallCount());
+                () -> {}, unexpected -> fail());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     private static @Nullable ListPasswordsResult parseListPasswordResultOrFail(
