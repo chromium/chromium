@@ -31,12 +31,12 @@
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -369,22 +369,22 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        MediaAppWithLaunchSystemWebAppAsync) {
   WaitForTestSystemAppInstall();
   // Launch the App for the first time.
-  web_app::SystemAppLaunchParams audio_params;
+  ash::SystemAppLaunchParams audio_params;
   audio_params.launch_paths.push_back(TestFile(kFilePng800x600));
-  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                                   audio_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                               audio_params);
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
   Browser* first_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* app = PrepareActiveBrowserForTest();
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
 
   // Launch the App for the second time.
-  web_app::SystemAppLaunchParams image_params;
+  ash::SystemAppLaunchParams image_params;
   image_params.launch_paths.push_back(TestFile(kFileJpeg640x480));
-  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                                   image_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                               image_params);
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
   app = PrepareActiveBrowserForTest(3);
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
 
@@ -395,13 +395,13 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 // Test that the Media App launches a single window for images.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   WaitForTestSystemAppInstall();
-  web_app::SystemAppLaunchParams image_params;
+  ash::SystemAppLaunchParams image_params;
   image_params.launch_paths = {TestFile(kFilePng800x600),
                                TestFile(kFileJpeg640x480)};
 
-  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                                   image_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                               image_params);
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
@@ -415,12 +415,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
 // Test that the Media App launches multiple windows for PDFs.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   WaitForTestSystemAppInstall();
-  web_app::SystemAppLaunchParams pdf_params;
+  ash::SystemAppLaunchParams pdf_params;
   pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
 
-  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                                   pdf_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                               pdf_params);
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   const BrowserList* browser_list = BrowserList::GetInstance();
@@ -1122,10 +1122,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   PrepareAppForTest(image_web_ui);
 
   EXPECT_NE(image_app_browser, audio_app_browser);
-  EXPECT_TRUE(web_app::IsBrowserForSystemWebApp(image_app_browser,
-                                                ash::SystemWebAppType::MEDIA));
-  EXPECT_TRUE(web_app::IsBrowserForSystemWebApp(audio_app_browser,
-                                                ash::SystemWebAppType::MEDIA));
+  EXPECT_TRUE(ash::IsBrowserForSystemWebApp(image_app_browser,
+                                            ash::SystemWebAppType::MEDIA));
+  EXPECT_TRUE(ash::IsBrowserForSystemWebApp(audio_app_browser,
+                                            ash::SystemWebAppType::MEDIA));
 
   // Verify that launch params were correctly proceed by the "second" app to
   // launch.

@@ -27,10 +27,10 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -60,8 +60,7 @@ apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
 absl::optional<AccountId> GetPrimaryAccountId(bool is_managed) {
   if (is_managed) {
     return AccountId::FromUserEmailGaiaId(
-        ash::FakeGaiaMixin::kEnterpriseUser1,
-        ash::FakeGaiaMixin::kEnterpriseUser1GaiaId);
+        FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
   }
   // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
   return absl::nullopt;
@@ -102,7 +101,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
   }
 
   ProjectorAppClientImpl* GetProjectorAppClientImpl() {
-    return static_cast<ProjectorAppClientImpl*>(ash::ProjectorAppClient::Get());
+    return static_cast<ProjectorAppClientImpl*>(ProjectorAppClient::Get());
   }
 
  private:
@@ -183,14 +182,14 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   auto* profile = browser()->profile();
-  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -201,14 +200,14 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
   auto* profile = browser()->profile();
-  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -223,14 +222,14 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   auto* profile = browser()->profile();
-  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -293,8 +292,8 @@ class ProjectorClientManagedTest
 
   std::string GetPolicy() {
     if (is_child())
-      return ash::prefs::kProjectorDogfoodForFamilyLinkEnabled;
-    return ash::prefs::kProjectorAllowByPolicy;
+      return prefs::kProjectorDogfoodForFamilyLinkEnabled;
+    return prefs::kProjectorAllowByPolicy;
   }
 
   apps::Readiness GetAppReadiness(const web_app::AppId& app_id) {
@@ -335,14 +334,14 @@ class ProjectorClientManagedTest
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
                        CantOpenProjectorAppWithoutPolicy) {
   auto* profile = browser()->profile();
-  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is not opened.
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   EXPECT_FALSE(app_browser);
 }
 
@@ -350,14 +349,14 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   auto* profile = browser()->profile();
   profile->GetPrefs()->SetBoolean(GetPolicy(), true);
-  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify the user can open the Projector App when the policy is enabled.
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();

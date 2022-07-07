@@ -24,9 +24,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feedback/feedback_report.h"
@@ -279,9 +279,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
 
   feedback_delegate_.OpenDiagnosticsApp();
 
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+  Browser* app_browser = ash::FindSystemWebAppBrowser(
       browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
 
   EXPECT_TRUE(app_browser);
@@ -296,9 +296,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
 
   feedback_delegate_.OpenExploreApp();
 
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
-  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+  Browser* app_browser = ash::FindSystemWebAppBrowser(
       browser()->profile(), ash::SystemWebAppType::HELP);
 
   EXPECT_TRUE(app_browser);

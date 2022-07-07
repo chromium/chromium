@@ -31,9 +31,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_restore/app_launch_info.h"
@@ -113,8 +113,8 @@ void LaunchTerminalImpl(Profile* profile,
 
   // Launch without a pinned home tab (settings page).
   if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
-    web_app::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::TERMINAL,
-                                    url, params);
+    ash::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::TERMINAL, url,
+                                params);
     return;
   }
 
@@ -122,7 +122,7 @@ void LaunchTerminalImpl(Profile* profile,
   // If opening a new tab, first pin home tab.
   full_restore::FullRestoreSaveHandler::GetInstance();
   GURL home(GetTerminalHomeUrl());
-  Browser* browser = web_app::LaunchSystemWebAppImpl(
+  Browser* browser = ash::LaunchSystemWebAppImpl(
       profile, ash::SystemWebAppType::TERMINAL, home, params);
   if (!browser) {
     return;
@@ -216,7 +216,7 @@ void LaunchTerminalWithUrl(Profile* profile,
 
   crostini::RecordAppLaunchHistogram(
       crostini::CrostiniAppLaunchAppType::kTerminal);
-  auto params = web_app::CreateSystemWebAppLaunchParams(
+  auto params = ash::CreateSystemWebAppLaunchParams(
       profile, ash::SystemWebAppType::TERMINAL, display_id);
   if (!params.has_value()) {
     LOG(WARNING) << "Empty launch params for terminal";
@@ -301,7 +301,7 @@ void LaunchTerminalWithIntent(Profile* profile,
 }
 
 void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
-  auto params = web_app::CreateSystemWebAppLaunchParams(
+  auto params = ash::CreateSystemWebAppLaunchParams(
       profile, ash::SystemWebAppType::TERMINAL, display_id);
   if (!params.has_value()) {
     LOG(WARNING) << "Empty launch params for terminal";

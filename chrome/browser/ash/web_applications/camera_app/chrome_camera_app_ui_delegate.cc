@@ -28,8 +28,8 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -237,11 +237,11 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
     return;
   }
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.launch_paths = {path};
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
-  web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
-                                   ash::SystemWebAppType::MEDIA, params);
+  ash::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
+                               ash::SystemWebAppType::MEDIA, params);
 }
 
 void ChromeCameraAppUIDelegate::OpenFeedbackDialog(

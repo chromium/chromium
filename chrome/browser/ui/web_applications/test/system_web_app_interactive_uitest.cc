@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -812,9 +812,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Verifies the tab has an associated tab helper for System App's AppId.
-  EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
-            *web_app::GetAppIdForSystemWebApp(browser()->profile(),
-                                              GetMockAppType()));
+  EXPECT_EQ(
+      *web_app::WebAppTabHelper::GetAppId(web_contents),
+      *ash::GetAppIdForSystemWebApp(browser()->profile(), GetMockAppType()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

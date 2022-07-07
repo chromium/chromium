@@ -4407,6 +4407,7 @@ static_library("browser") {
       "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/support_tool:support_tool_proto",
+      "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
@@ -4481,6 +4482,7 @@ static_library("browser") {
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ui/ash/system_web_apps",
 
       # TODO(crbug.com/1292435): Remove once AppServiceProxy is extracted from
       # //chrome/browser.

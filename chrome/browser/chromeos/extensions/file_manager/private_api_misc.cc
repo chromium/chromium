@@ -59,9 +59,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/api/manifest_types.h"
@@ -1336,13 +1336,13 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
           /*show_android_picker_apps=*/false,
           /*volume_filter=*/{});
 
-  web_app::SystemAppLaunchParams launch_params;
+  ash::SystemAppLaunchParams launch_params;
   launch_params.url = files_swa_url;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
-                                   launch_params);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                               launch_params);
 
   return RespondNow(OneArgument(base::Value(true)));
 }

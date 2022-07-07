@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -59,7 +60,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -233,7 +233,7 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
                                   ash::SystemWebAppType app_type) {
   DCHECK(app_type == ash::SystemWebAppType::SETTINGS ||
          app_type == ash::SystemWebAppType::HELP);
-  web_app::AppId app_id = *web_app::GetAppIdForSystemWebApp(profile, app_type);
+  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
@@ -242,7 +242,7 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
                           : kHelpWindowId;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       std::move(params));
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  ash::FlushSystemWebAppLaunchesForTesting(profile);
   return app_id;
 }
 

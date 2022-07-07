@@ -21,8 +21,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -135,21 +135,21 @@ bool ProjectorClientImpl::IsDriveFsMountFailed() const {
 
 void ProjectorClientImpl::OpenProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PROJECTOR);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PROJECTOR);
 }
 
 void ProjectorClientImpl::MinimizeProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  auto* browser =
+      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
   if (browser)
     browser->window()->Minimize();
 }
 
 void ProjectorClientImpl::CloseProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* browser = web_app::FindSystemWebAppBrowser(
-      profile, ash::SystemWebAppType::PROJECTOR);
+  auto* browser =
+      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
   if (browser)
     browser->window()->Close();
 }

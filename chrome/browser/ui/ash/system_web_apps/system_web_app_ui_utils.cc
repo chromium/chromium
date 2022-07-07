@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 
 #include <string>
 #include <utility>
@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #endif
 
-namespace web_app {
+namespace ash {
 
 namespace {
 
@@ -54,7 +54,7 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
   if (profile->IsSystemProfile())
     return nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::ProfileHelper::IsSigninProfile(profile))
+  if (ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
 
@@ -77,34 +77,36 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
 }  // namespace
 
-absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
+absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
-    const AppId& app_id) {
-  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
+    const web_app::AppId& app_id) {
+  auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetSystemAppTypeForAppId(app_id)
                      : absl::nullopt;
 }
 
-absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
-                                              ash::SystemWebAppType app_type) {
-  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
+absl::optional<web_app::AppId> GetAppIdForSystemWebApp(
+    Profile* profile,
+    SystemWebAppType app_type) {
+  auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetAppIdForSystemApp(app_type)
                      : absl::nullopt;
 }
 
 absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
-    ash::SystemWebAppType app_type,
+    SystemWebAppType app_type,
     int64_t display_id) {
-  absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
+  absl::optional<web_app::AppId> app_id =
+      GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
   if (!app_id)
     return absl::nullopt;
 
-  auto* provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
+  auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
 
-  DisplayMode display_mode =
+  web_app::DisplayMode display_mode =
       provider->registrar().GetAppEffectiveDisplayMode(app_id.value());
 
   // TODO(crbug/1113502): Plumb through better launch sources from callsites.
@@ -112,7 +114,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
       app_id.value(), /*event_flags=*/0,
       apps::mojom::LaunchSource::kFromChromeInternal, display_id,
       /*fallback_container=*/
-      ConvertDisplayModeToAppLaunchContainer(display_mode));
+      web_app::ConvertDisplayModeToAppLaunchContainer(display_mode));
 
   return params;
 }
@@ -121,12 +123,12 @@ SystemAppLaunchParams::SystemAppLaunchParams() = default;
 SystemAppLaunchParams::~SystemAppLaunchParams() = default;
 
 void LaunchSystemWebAppAsync(Profile* profile,
-                             const ash::SystemWebAppType type,
+                             const SystemWebAppType type,
                              const SystemAppLaunchParams& params,
                              apps::mojom::WindowInfoPtr window_info) {
   DCHECK(profile);
   // Terminal should be launched with crostini::LaunchTerminal*.
-  DCHECK(type != ash::SystemWebAppType::TERMINAL);
+  DCHECK(type != SystemWebAppType::TERMINAL);
 
   // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
   // changing to a different profile.
@@ -148,7 +150,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
     return;
   }
 
-  const absl::optional<AppId> app_id =
+  const absl::optional<web_app::AppId> app_id =
       GetAppIdForSystemWebApp(profile_for_launch, type);
   if (!app_id)
     return;
@@ -181,7 +183,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,
-                                ash::SystemWebAppType app_type,
+                                SystemWebAppType app_type,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params) {
   // Exit early if we can't create browser windows (e.g. when browser is
@@ -191,12 +193,11 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
     return nullptr;
   }
 
-  ash::SystemWebAppManager* swa_manager =
-      ash::SystemWebAppManager::Get(profile);
+  SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
   if (!swa_manager)
     return nullptr;
 
-  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return nullptr;
 
@@ -250,16 +251,17 @@ void FlushSystemWebAppLaunchesForTesting(Profile* profile) {
 }
 
 Browser* FindSystemWebAppBrowser(Profile* profile,
-                                 ash::SystemWebAppType app_type,
+                                 SystemWebAppType app_type,
                                  Browser::Type browser_type,
                                  const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
-  absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
+  absl::optional<web_app::AppId> app_id =
+      GetAppIdForSystemWebApp(profile, app_type);
   if (!app_id)
     return nullptr;
 
-  auto* provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
+  auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
 
   if (!provider->registrar().IsInstalled(app_id.value()))
@@ -272,7 +274,8 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
     if (browser->profile() != profile || browser->type() != browser_type)
       continue;
 
-    if (GetAppIdFromApplicationName(browser->app_name()) != app_id.value())
+    if (web_app::GetAppIdFromApplicationName(browser->app_name()) !=
+        app_id.value())
       continue;
 
     if (!url.is_empty()) {
@@ -299,17 +302,15 @@ bool IsSystemWebApp(Browser* browser) {
   return browser->app_controller() && browser->app_controller()->system_app();
 }
 
-bool IsBrowserForSystemWebApp(Browser* browser, ash::SystemWebAppType type) {
+bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type) {
   DCHECK(browser);
   return browser->app_controller() && browser->app_controller()->system_app() &&
          browser->app_controller()->system_app()->GetType() == type;
 }
 
-absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
-    Profile* profile,
-    const GURL& url) {
-  ash::SystemWebAppManager* swa_manager =
-      ash::SystemWebAppManager::Get(profile);
+absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
+                                                             const GURL& url) {
+  SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetCapturingSystemAppForURL(url)
                      : absl::nullopt;
 }
@@ -322,4 +323,4 @@ gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   return gfx::Size();
 }
 
-}  // namespace web_app
+}  // namespace ash

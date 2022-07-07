@@ -22,11 +22,11 @@
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_data.h"
@@ -118,7 +118,7 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   // A SWA can handle multiple instances if it can open multiple windows.
   if (is_system_web_app) {
     absl::optional<ash::SystemWebAppType> swa_type =
-        web_app::GetSystemWebAppTypeForAppId(profile(), app_id);
+        ash::GetSystemWebAppTypeForAppId(profile(), app_id);
     if (swa_type.has_value()) {
       auto* system_app =
           ash::SystemWebAppManager::Get(profile())->GetSystemApp(*swa_type);

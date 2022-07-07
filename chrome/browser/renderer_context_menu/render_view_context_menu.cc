@@ -78,6 +78,7 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -95,7 +96,6 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -652,7 +652,7 @@ absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
   if (!link_app_id)
     return absl::nullopt;
 
-  return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
+  return ash::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1573,7 +1573,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   // current app, and the app is single windowed.
   if (system_app_ &&
       system_app_->GetType() ==
-          web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id) &&
+          ash::GetSystemWebAppTypeForAppId(profile, *link_app_id) &&
       system_app_->ShouldReuseExistingWindow()) {
     return;
   }

@@ -9,7 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -50,8 +50,8 @@ IN_PROC_BROWSER_TEST_P(ShortcutCustomizationAppIntegrationTest,
                        LaunchMetricsTest) {
   WaitForTestSystemAppInstall();
 
-  web_app::LaunchSystemWebAppAsync(
-      profile(), ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+  ash::LaunchSystemWebAppAsync(profile(),
+                               ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
 
   histogram_tester_.ExpectUniqueSample(
       "Apps.DefaultAppLaunch.FromChromeInternal", 44, 1);

@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -101,7 +101,7 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 void LaunchReleaseNotesImpl(Profile* profile,
                             apps::mojom::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/updates");
   params.launch_source = source;
   LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
@@ -131,7 +131,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
       NOTREACHED() << "Unhandled help source" << source;
   }
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.launch_source = app_launch_source;
   LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 #else
@@ -500,28 +500,27 @@ void ShowAppManagementPage(Profile* profile,
 }
 
 void ShowPrintManagementApp(Profile* profile) {
-  web_app::LaunchSystemWebAppAsync(profile,
-                                   ash::SystemWebAppType::PRINT_MANAGEMENT);
+  ash::LaunchSystemWebAppAsync(profile,
+                               ash::SystemWebAppType::PRINT_MANAGEMENT);
 }
 
 void ShowConnectivityDiagnosticsApp(Profile* profile) {
-  web_app::LaunchSystemWebAppAsync(
-      profile, ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
+  ash::LaunchSystemWebAppAsync(profile,
+                               ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
 }
 
 void ShowScanningApp(Profile* profile) {
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::SCANNING);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::SCANNING);
 }
 
 void ShowDiagnosticsApp(Profile* profile) {
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DIAGNOSTICS);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DIAGNOSTICS);
 }
 
 void ShowFirmwareUpdatesApp(Profile* profile) {
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
 
-  web_app::LaunchSystemWebAppAsync(profile,
-                                   ash::SystemWebAppType::FIRMWARE_UPDATE);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {

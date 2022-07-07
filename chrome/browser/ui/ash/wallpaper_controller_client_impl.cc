@@ -50,7 +50,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -614,13 +614,13 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
 void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = GURL(
       std::string(ash::personalization_app::kChromeUIPersonalizationAppURL) +
       ash::personalization_app::kWallpaperSubpageRelativeUrl);
   params.launch_source = apps::mojom::LaunchSource::kFromShelf;
-  web_app::LaunchSystemWebAppAsync(
-      profile, ash::SystemWebAppType::PERSONALIZATION, params);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PERSONALIZATION,
+                               params);
 }
 
 void WallpaperControllerClientImpl::SetDefaultWallpaper(

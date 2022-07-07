@@ -25,6 +25,7 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -225,7 +225,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   if (provider && provider->registrar().IsInstalled(app_id)) {
     const ash::SystemWebAppDelegate* system_app = nullptr;
     auto system_app_type =
-        GetSystemWebAppTypeForAppId(browser->profile(), app_id);
+        ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
     if (system_app_type) {
       system_app =
           ash::SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile())
@@ -296,7 +296,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
   Browser* browser = nav_params.browser;
   const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
-      GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
+      ash::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
   // TODO(crbug.com/1201820): This block creates conditions where Navigate()
   // returns early and causes a crash. Fail gracefully instead. Further
   // debugging state will be implemented via Chrometto UMA traces.

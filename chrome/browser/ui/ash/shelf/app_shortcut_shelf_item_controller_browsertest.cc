@@ -11,13 +11,13 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -67,8 +67,8 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
     ash::SystemWebAppManager::GetForTest(browser()->profile())
         ->InstallSystemAppsForTesting();
 
-    app_id_ = *web_app::GetAppIdForSystemWebApp(
-        browser()->profile(), ash::SystemWebAppType::TERMINAL);
+    app_id_ = *ash::GetAppIdForSystemWebApp(browser()->profile(),
+                                            ash::SystemWebAppType::TERMINAL);
     app_shelf_id_ = ash::ShelfID(app_id_);
     PinAppWithIDToShelf(app_id_);
   }

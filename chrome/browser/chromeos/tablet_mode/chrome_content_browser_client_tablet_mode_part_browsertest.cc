@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabletModePartTest,
 
   // The above ShowOSSettings() should trigger an asynchronous call to launch
   // OS Settings SWA. Flush Mojo calls so the browser window is created.
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   // The OS settings window still uses the default font sizes.
   Browser* browser = settings->FindBrowserForProfile(profile);

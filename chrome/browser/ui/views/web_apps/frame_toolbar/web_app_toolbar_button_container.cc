@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -122,7 +122,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
   // Do not create the extensions or browser actions container if it is a
   // System Web App.
-  if (!web_app::IsSystemWebApp(browser_view_->browser())) {
+  if (!ash::IsSystemWebApp(browser_view_->browser())) {
     // Extensions toolbar area with pinned extensions is lower priority than,
     // for example, the menu button or other toolbar buttons, and pinned
     // extensions should hide before other toolbar buttons.

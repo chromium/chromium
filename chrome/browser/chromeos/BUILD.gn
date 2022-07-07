@@ -231,6 +231,7 @@ source_set("chromeos") {
     "//chrome/browser/resources/chromeos:app_icon_resources",
     "//chrome/browser/resources/settings:resources_grit",
     "//chrome/browser/supervised_user/supervised_user_features",
+    "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
@@ -591,6 +592,7 @@ source_set("chromeos") {
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/policy:onc",
   ]
 

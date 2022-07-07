@@ -9,9 +9,9 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
 
   // The above ShowOSSettings() should trigger an asynchronous call to launch
   // OS Settings SWA. Flush Mojo calls so the browser window is created.
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  ash::FlushSystemWebAppLaunchesForTesting(profile);
 
   auto* settings_browser = manager->FindBrowserForProfile(profile);
   ASSERT_TRUE(settings_browser);

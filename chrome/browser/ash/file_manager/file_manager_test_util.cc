@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_system.h"
@@ -85,7 +85,7 @@ OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   // That used to be enough to also launch a Browser for the WebApp. However,
   // since https://crrev.com/c/2121860, ExecuteFileTaskForUrl() goes through the
   // mojoAppService, so it's necessary to flush those calls for WebApps to open.
-  web_app::FlushSystemWebAppLaunchesForTesting(profile_);
+  ash::FlushSystemWebAppLaunchesForTesting(profile_);
 
   return open_result;
 }

@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -54,7 +55,6 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
@@ -159,10 +159,10 @@ bool OpenFilesSwa(Profile* const profile,
           /*show_android_picker_apps=*/false,
           /*volume_filter=*/{});
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = files_swa_url;
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
-                                   params);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                               params);
   return true;
 }
 
@@ -438,7 +438,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 void ChromeNewWindowClient::OpenCrosh() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
-    web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::CROSH);
+    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::CROSH);
   } else {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     Browser* browser = displayer.browser();
@@ -504,8 +504,7 @@ void ChromeNewWindowClient::OpenFeedbackPage(
 
 void ChromeNewWindowClient::OpenPersonalizationHub() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  web_app::LaunchSystemWebAppAsync(profile,
-                                   ash::SystemWebAppType::PERSONALIZATION);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PERSONALIZATION);
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,

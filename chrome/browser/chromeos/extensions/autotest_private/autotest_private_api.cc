@@ -126,6 +126,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -136,7 +137,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -2256,12 +2256,12 @@ AutotestPrivateIsSystemWebAppOpenFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   DVLOG(1) << "AutotestPrivateIsSystemWebAppOpenFunction " << params->app_id;
   absl::optional<ash::SystemWebAppType> app_type =
-      web_app::GetSystemWebAppTypeForAppId(profile, params->app_id);
+      ash::GetSystemWebAppTypeForAppId(profile, params->app_id);
   if (!app_type)
     return RespondNow(Error("No system web app is found by given app id."));
 
   return RespondNow(OneArgument(base::Value(
-      web_app::FindSystemWebAppBrowser(profile, *app_type) != nullptr)));
+      ash::FindSystemWebAppBrowser(profile, *app_type) != nullptr)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2342,10 +2342,10 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   if (!app_type.has_value())
     return RespondNow(Error("No mapped system web app found"));
 
-  web_app::SystemAppLaunchParams swa_params;
+  ash::SystemAppLaunchParams swa_params;
   swa_params.url = GURL(params->url);
-  web_app::LaunchSystemWebAppAsync(profile, *app_type, swa_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+  ash::LaunchSystemWebAppAsync(profile, *app_type, swa_params);
+  ash::FlushSystemWebAppLaunchesForTesting(profile);
 
   return RespondNow(NoArguments());
 }

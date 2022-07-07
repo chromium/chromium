@@ -572,6 +572,7 @@ static_library("test_support") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:print_job_info_proto",
+      "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
@@ -2443,6 +2444,7 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/web_applications/app_service",
         "//chromeos/constants",
         "//chromeos/ui/frame",
@@ -4112,6 +4114,7 @@ if (!is_android) {
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
         "//chrome/browser/ui:ash_test_support",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
+        "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
         "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
         "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings",
@@ -9543,6 +9546,8 @@ if (!is_android) {
           "../browser/ui/webui/management/management_a11y_browsertest.h",
         ]
       }
+
+      deps += [ "//chrome/browser/ui/ash/system_web_apps" ]
     }
 
     # These tests currently require `enable_system_notifications`, which is not

@@ -11,8 +11,8 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -57,7 +57,7 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
 
   // Ensure apps are registered with the |AppService| and populated in
   // |AppListModel|.
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 }
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
@@ -161,10 +161,10 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl() {
 size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
     SystemWebAppType type) {
   auto* browser_list = BrowserList::GetInstance();
-  return std::count_if(
-      browser_list->begin(), browser_list->end(), [&](Browser* browser) {
-        return web_app::IsBrowserForSystemWebApp(browser, type);
-      });
+  return std::count_if(browser_list->begin(), browser_list->end(),
+                       [&](Browser* browser) {
+                         return ash::IsBrowserForSystemWebApp(browser, type);
+                       });
 }
 
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(

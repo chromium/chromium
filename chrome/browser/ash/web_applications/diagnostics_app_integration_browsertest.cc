@@ -9,8 +9,8 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -77,9 +77,8 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest, LaunchMetricsTest) {
   WaitForTestSystemAppInstall();
 
-  web_app::LaunchSystemWebAppAsync(profile(),
-                                   ash::SystemWebAppType::DIAGNOSTICS);
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::DIAGNOSTICS);
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   histogram_tester_.ExpectUniqueSample(kFromChromeLaunch, kDiagnosticsApp, 1);
 }
@@ -92,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest, UsageMetricsTest) {
   LaunchApp(ash::SystemWebAppType::DIAGNOSTICS, &system_app_browser);
 
   // Find system browser for diagnostics and close it to trigger usage metrics.
-  EXPECT_TRUE(web_app::IsSystemWebApp(system_app_browser));
+  EXPECT_TRUE(ash::IsSystemWebApp(system_app_browser));
   chrome::CloseWindow(system_app_browser);
   ui_test_utils::WaitForBrowserToClose();
 
@@ -150,10 +149,10 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
 
   EXPECT_TRUE(content::ExecuteScript(
       web_contents, "chrome.send('recordNavigation', [0, 1]);"));
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   chrome::CloseAllBrowsers();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.DiagnosticsUi.System.OpenDuration", 1);
@@ -177,10 +176,10 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
       content::ExecuteScript(web_contents, "chrome.send('recordNavigation');"));
   EXPECT_TRUE(content::ExecuteScript(web_contents,
                                      "chrome.send('recordNavigation', []);"));
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   chrome::CloseAllBrowsers();
-  web_app::FlushSystemWebAppLaunchesForTesting(profile());
+  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.DiagnosticsUi.System.OpenDuration", 1);

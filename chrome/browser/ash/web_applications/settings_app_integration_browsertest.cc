@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -101,9 +101,9 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
   // original profile.
   Profile* incognito_profile =
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  web_app::LaunchSystemWebAppAsync(incognito_profile,
-                                   ash::SystemWebAppType::SETTINGS);
-  web_app::FlushSystemWebAppLaunchesForTesting(
+  ash::LaunchSystemWebAppAsync(incognito_profile,
+                               ash::SystemWebAppType::SETTINGS);
+  ash::FlushSystemWebAppLaunchesForTesting(
       incognito_profile->GetOriginalProfile());
 
   // There should be a browser for the original profile, but not the incognito

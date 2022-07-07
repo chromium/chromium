@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -120,25 +120,25 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void LaunchMockPopup() {
-    auto params = web_app::CreateSystemWebAppLaunchParams(
+    auto params = ash::CreateSystemWebAppLaunchParams(
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_POPUP;
 
-    app_browser_ = web_app::LaunchSystemWebAppImpl(
+    app_browser_ = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
   }
 
   Browser* LaunchMockSWA() {
-    auto params = web_app::CreateSystemWebAppLaunchParams(
+    auto params = ash::CreateSystemWebAppLaunchParams(
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_WINDOW;
 
-    return web_app::LaunchSystemWebAppImpl(
+    return ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
   }

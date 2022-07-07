@@ -1,0 +1,31 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+# TODO(crbug.com/1321984): Make System Web Apps ash-only and move all the GN
+# dependencies under `if (is_chromeos_ash)` section.
+# assert(is_chromeos_ash)
+
+source_set("system_web_apps") {
+  sources = [
+    "system_web_app_ui_utils.cc",
+    "system_web_app_ui_utils.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//components/services/app_service/public/mojom",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/display",
+  ]
+}

@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -109,11 +109,11 @@ void HelpAppZeroStateResult::Open(int event_flags) {
   // Note: event_flags is ignored, LaunchSWA doesn't need it.
   if (id() == kHelpAppDiscoverResult) {
     // Launch discover tab suggestion chip.
-    web_app::SystemAppLaunchParams params;
+    ash::SystemAppLaunchParams params;
     params.url = GURL("chrome://help-app/discover");
     params.launch_source =
         apps::mojom::LaunchSource::kFromAppListRecommendation;
-    web_app::LaunchSystemWebAppAsync(
+    ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
         apps::MakeWindowInfo(display::kDefaultDisplayId));
 
@@ -123,11 +123,11 @@ void HelpAppZeroStateResult::Open(int event_flags) {
     base::RecordAction(
         base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
 
-    web_app::SystemAppLaunchParams params;
+    ash::SystemAppLaunchParams params;
     params.url = GURL("chrome://help-app/updates");
     params.launch_source =
         apps::mojom::LaunchSource::kFromAppListRecommendation;
-    web_app::LaunchSystemWebAppAsync(
+    ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
         apps::MakeWindowInfo(display::kDefaultDisplayId));
 

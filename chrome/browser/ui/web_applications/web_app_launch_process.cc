@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -90,19 +90,19 @@ content::WebContents* WebAppLaunchProcess::Run() {
   // Because URL Handlers is not implemented for Chrome OS we can perform this
   // DCHECK on the basic scope.
   DCHECK(provider_.registrar().IsUrlInAppScope(launch_url, params_.app_id) ||
-         GetSystemWebAppTypeForAppId(&profile_, params_.app_id) &&
+         ash::GetSystemWebAppTypeForAppId(&profile_, params_.app_id) &&
              ash::SystemWebAppManager::GetForLocalAppsUnchecked(&profile_)
-                 ->GetSystemApp(
-                     *GetSystemWebAppTypeForAppId(&profile_, params_.app_id)) &&
+                 ->GetSystemApp(*ash::GetSystemWebAppTypeForAppId(
+                     &profile_, params_.app_id)) &&
              ash::SystemWebAppManager::GetForLocalAppsUnchecked(&profile_)
-                 ->GetSystemApp(
-                     *GetSystemWebAppTypeForAppId(&profile_, params_.app_id))
+                 ->GetSystemApp(*ash::GetSystemWebAppTypeForAppId(
+                     &profile_, params_.app_id))
                  ->IsUrlInSystemAppScope(launch_url));
 #endif
 
   // System Web Apps have their own launch code path.
   absl::optional<ash::SystemWebAppType> system_app_type =
-      GetSystemWebAppTypeForAppId(&profile_, params_.app_id);
+      ash::GetSystemWebAppTypeForAppId(&profile_, params_.app_id);
   if (system_app_type) {
     Browser* browser = LaunchSystemWebAppImpl(&profile_, *system_app_type,
                                               launch_url, params_);

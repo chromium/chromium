@@ -8,9 +8,9 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
@@ -36,8 +36,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
 
   // Always find an existing window, so that we can offset the screen
   // coordinates from a previously opened one.
-  Browser* browser =
-      web_app::FindSystemWebAppBrowser(profile, GetType(), browser_type);
+  Browser* browser = FindSystemWebAppBrowser(profile, GetType(), browser_type);
 
   // System Web App windows can't be properly restored without storing the app
   // type. Until that is implemented, skip them for session restore.
@@ -73,7 +72,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
-      GetType() == ash::SystemWebAppType::HELP) {
+      GetType() == SystemWebAppType::HELP) {
     NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.

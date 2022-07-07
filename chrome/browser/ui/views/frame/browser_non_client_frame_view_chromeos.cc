@@ -15,6 +15,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -473,8 +473,8 @@ void BrowserNonClientFrameViewChromeOS::GetAccessibleNodeData(
 gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
   // System web apps (e.g. Settings) may have a fixed minimum size.
   Browser* browser = browser_view()->browser();
-  if (web_app::IsSystemWebApp(browser)) {
-    gfx::Size minimum_size = web_app::GetSystemWebAppMinimumWindowSize(browser);
+  if (ash::IsSystemWebApp(browser)) {
+    gfx::Size minimum_size = ash::GetSystemWebAppMinimumWindowSize(browser);
     if (!minimum_size.IsEmpty())
       return minimum_size;
   }
@@ -981,7 +981,7 @@ void BrowserNonClientFrameViewChromeOS::MaybeAnimateThemeChanged() {
   // Theme change events are only animated for system web apps which explicitly
   // request the behavior.
   Browser* browser = browser_view()->browser();
-  if (!browser || !web_app::IsSystemWebApp(browser) ||
+  if (!browser || !ash::IsSystemWebApp(browser) ||
       !browser->app_controller()->system_app()->ShouldAnimateThemeChanges()) {
     return;
   }

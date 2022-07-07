@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -601,17 +601,15 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // TODO(crbug.com/1096345): Remove this code after we integrate with intent
   // handling.
   const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
-      web_app::GetCapturingSystemAppForURL(params->initiating_profile,
-                                           params->url);
+      ash::GetCapturingSystemAppForURL(params->initiating_profile, params->url);
   if (capturing_system_app_type &&
       (!params->browser ||
-       !web_app::IsBrowserForSystemWebApp(params->browser,
-                                          capturing_system_app_type.value()))) {
-    web_app::SystemAppLaunchParams swa_params;
+       !ash::IsBrowserForSystemWebApp(params->browser,
+                                      capturing_system_app_type.value()))) {
+    ash::SystemAppLaunchParams swa_params;
     swa_params.url = params->url;
-    web_app::LaunchSystemWebAppAsync(params->initiating_profile,
-                                     capturing_system_app_type.value(),
-                                     swa_params);
+    ash::LaunchSystemWebAppAsync(params->initiating_profile,
+                                 capturing_system_app_type.value(), swa_params);
 
     // It's okay to early return here, because LaunchSystemWebAppAsync uses a
     // different logic to choose (and create if necessary) a browser window for

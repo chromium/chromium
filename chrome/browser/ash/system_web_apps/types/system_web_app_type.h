@@ -129,7 +129,7 @@ enum class SystemWebAppType {
   //
   // 4. Put a blank line after each enum (before next enum's comment).
   //
-  // 5. Use web_app::LaunchSystemWebAppAsync to launch your SWA (with the type
+  // 5. Use ash::LaunchSystemWebAppAsync to launch your SWA (with the type
   //    added above). This provides extra safety in edge cases (e.g. when in
   //    incognito or guest sessions).
   //

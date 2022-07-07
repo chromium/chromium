@@ -30,10 +30,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {
       maybe_installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.launch_source = apps::mojom::LaunchSource::kFromAppListGrid;
   LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
 
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
       maybe_installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.launch_paths = {temp_file_path};
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
   LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
@@ -1885,9 +1885,9 @@ class SystemWebAppAbortsLaunchTest : public SystemWebAppManagerBrowserTest {
 IN_PROC_BROWSER_TEST_P(SystemWebAppAbortsLaunchTest, LaunchAborted) {
   WaitForTestSystemAppInstall();
 
-  web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                   maybe_installation_->GetType());
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  ash::LaunchSystemWebAppAsync(browser()->profile(),
+                               maybe_installation_->GetType());
+  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   EXPECT_EQ(0U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }

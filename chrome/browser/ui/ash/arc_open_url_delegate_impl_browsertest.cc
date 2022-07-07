@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -42,7 +42,7 @@ size_t GetNumberOfSettingsWindows() {
   auto* browser_list = BrowserList::GetInstance();
   return std::count_if(browser_list->begin(), browser_list->end(),
                        [](Browser* browser) {
-                         return web_app::IsBrowserForSystemWebApp(
+                         return ash::IsBrowserForSystemWebApp(
                              browser, ash::SystemWebAppType::SETTINGS);
                        });
 }
@@ -107,8 +107,7 @@ void TestOpenSettingFromArc(Browser* browser,
 
   // The above OpenChromePageFromArc() should trigger an asynchronous call to
   // launch OS Settings SWA. Flush Mojo calls so the browser window is created.
-  web_app::FlushSystemWebAppLaunchesForTesting(
-      GetLastActiveBrowser()->profile());
+  ash::FlushSystemWebAppLaunchesForTesting(GetLastActiveBrowser()->profile());
 
   EXPECT_EQ(expected_setting_window_count, GetNumberOfSettingsWindows());
 
@@ -263,7 +262,7 @@ void TestOpenOSSettingsChromePage(ChromePage page, const GURL& expected_url) {
   chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
 
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
-  web_app::FlushSystemWebAppLaunchesForTesting(
+  ash::FlushSystemWebAppLaunchesForTesting(
       ProfileManager::GetActiveUserProfile());
 
   EXPECT_EQ(expected_url, test_manager.last_navigation_url());

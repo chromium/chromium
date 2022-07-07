@@ -8,9 +8,9 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -51,20 +51,20 @@ void ShowOsAppForProfile(Profile* profile,
     return;
   }
 
-  Browser* browser = web_app::FindSystemWebAppBrowser(profile, app_type,
-                                                      Browser::TYPE_APP, gurl);
+  Browser* browser =
+      ash::FindSystemWebAppBrowser(profile, app_type, Browser::TYPE_APP, gurl);
   if (browser) {
     // If there is a matching browser we simply activate it and be done!
     browser->window()->Activate();
     return;
   }
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = gurl;
   int64_t display_id =
       display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  web_app::LaunchSystemWebAppAsync(profile, app_type, params,
-                                   apps::MakeWindowInfo(display_id));
+  ash::LaunchSystemWebAppAsync(profile, app_type, params,
+                               apps::MakeWindowInfo(display_id));
 }
 
 }  // namespace

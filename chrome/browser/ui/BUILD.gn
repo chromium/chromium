@@ -5326,6 +5326,7 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/web_share_target",
       "//chrome/common/extensions/api",
       "//components/drive",
@@ -5342,6 +5343,7 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/ash/system_web_apps",
     ]
     sources += [
       "extensions/accelerator_priority.h",
@@ -5416,8 +5418,6 @@ static_library("ui") {
       "web_applications/sub_apps_service_impl.cc",
       "web_applications/sub_apps_service_impl.h",
       "web_applications/system_web_app_delegate_ui_impl.cc",
-      "web_applications/system_web_app_ui_utils.cc",
-      "web_applications/system_web_app_ui_utils.h",
       "web_applications/web_app_browser_controller.cc",
       "web_applications/web_app_browser_controller.h",
       "web_applications/web_app_dialog_manager.cc",

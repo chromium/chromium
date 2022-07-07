@@ -239,6 +239,7 @@ source_set("crosapi") {
     "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/chromeos:print_job_info_proto",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
     "//chrome/browser/web_applications",
     "//chrome/common",

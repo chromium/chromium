@@ -42,13 +42,13 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
@@ -505,11 +505,10 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
   if (!profile)
     return;
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP,
-                                   params);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {

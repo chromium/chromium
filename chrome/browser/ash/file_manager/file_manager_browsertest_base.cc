@@ -90,13 +90,13 @@
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -2329,14 +2329,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
     std::string baseURL = ash::file_manager::kChromeUIFileManagerURL;
     GURL fileAppURL(base::StrCat({baseURL, search}));
-    web_app::SystemAppLaunchParams params;
+    ash::SystemAppLaunchParams params;
     params.url = fileAppURL;
     params.launch_source = apps::mojom::LaunchSource::kFromTest;
 
     WebContentCapturingObserver observer(fileAppURL);
     observer.StartWatchingNewWebContents();
-    web_app::LaunchSystemWebAppAsync(
-        profile(), ash::SystemWebAppType::FILE_MANAGER, params);
+    ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::FILE_MANAGER,
+                                 params);
     observer.Wait();
     ASSERT_TRUE(observer.last_navigation_succeeded());
     LoadSwaTestUtils(observer.web_contents());

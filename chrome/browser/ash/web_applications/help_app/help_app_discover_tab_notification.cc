@@ -11,7 +11,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,7 +52,7 @@ void HelpAppDiscoverTabNotification::Show() {
 void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
   SystemNotificationHelper::GetInstance()->Close(
       kShowHelpAppDiscoverTabNotificationId);
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/discover");
   params.launch_source =
       apps::mojom::LaunchSource::kFromDiscoverTabNotification;

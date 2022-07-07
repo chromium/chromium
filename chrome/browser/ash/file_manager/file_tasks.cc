@@ -48,7 +48,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -936,11 +936,11 @@ bool ExecuteFileTask(Profile* profile,
             /*show_android_picker_apps=*/false,
             /*volume_filter=*/{});
 
-    web_app::SystemAppLaunchParams params;
+    ash::SystemAppLaunchParams params;
     params.url = files_swa_url;
 
-    web_app::LaunchSystemWebAppAsync(
-        profile, ash::SystemWebAppType::FILE_MANAGER, params);
+    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                 params);
     if (done) {
       std::move(done).Run(
           extensions::api::file_manager_private::TASK_RESULT_OPENED, "");

@@ -25,7 +25,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/capture_mode/recording_overlay_view_impl.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -122,11 +122,10 @@ void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
   if (!profile)
     return;
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.launch_paths = {file_path};
   params.launch_source = apps::mojom::LaunchSource::kFromFileManager;
-  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::MEDIA,
-                                   params);
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::MEDIA, params);
 }
 
 bool ChromeCaptureModeDelegate::Uses24HourFormat() const {

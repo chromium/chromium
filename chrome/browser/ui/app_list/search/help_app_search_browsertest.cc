@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ui/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ui/app_list/search/test/test_continue_files_search_provider.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
                               {ResultType::kHelpApp});
 
     // This gives a chance for the icon to load between searches.
-    web_app::FlushSystemWebAppLaunchesForTesting(GetProfile());
+    ash::FlushSystemWebAppLaunchesForTesting(GetProfile());
 
     result = FindResult("chrome://help-app/help/id/test");
   }

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
 
 namespace chromeos {
@@ -34,8 +34,8 @@ void PersonalizationHubHandler::HandleOpenPersonalizationHub(
   // Record entry point metric to Personalization Hub through Settings.
   ash::personalization_app::LogPersonalizationEntryPoint(
       ash::PersonalizationEntryPoint::kSettings);
-  web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
-                                   ash::SystemWebAppType::PERSONALIZATION);
+  ash::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
+                               ash::SystemWebAppType::PERSONALIZATION);
 }
 
 }  // namespace settings

@@ -14,11 +14,11 @@
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -161,12 +161,12 @@ void RequestFeedbackFlow(const GURL& page_url,
 #endif
 
   if (use_os_feedback) {
-    web_app::SystemAppLaunchParams params{};
+    ash::SystemAppLaunchParams params{};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     params.url = BuildFeedbackUrl(extra_diagnostics, description_template);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    web_app::LaunchSystemWebAppAsync(
-        profile, ash::SystemWebAppType::OS_FEEDBACK, std::move(params));
+    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
+                                 std::move(params));
   } else {
     extensions::FeedbackPrivateAPI* api =
         extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(profile);

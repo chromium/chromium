@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
-#define CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
+#ifndef CHROME_BROWSER_UI_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_UI_UTILS_H_
+#define CHROME_BROWSER_UI_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_UI_UTILS_H_
 
 #include <vector>
 
@@ -19,22 +19,23 @@
 
 class Profile;
 
-namespace web_app {
+namespace ash {
 
 class WebAppProvider;
 
 // Returns the system app type for the given App ID.
-absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
+absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
-    const AppId& app_id);
+    const web_app::AppId& app_id);
 
 // Returns the PWA system App ID for the given system app type.
-absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
-                                              ash::SystemWebAppType app_type);
+absl::optional<web_app::AppId> GetAppIdForSystemWebApp(
+    Profile* profile,
+    SystemWebAppType app_type);
 
 absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
-    ash::SystemWebAppType app_type,
+    SystemWebAppType app_type,
     int64_t display_id);
 
 // Additional parameters to control LaunchSystemAppAsync behaviors.
@@ -75,7 +76,7 @@ struct SystemAppLaunchParams {
 // |profile|, or use content::TestNavigationObserver to wait the navigation.
 void LaunchSystemWebAppAsync(
     Profile* profile,
-    ash::SystemWebAppType type,
+    SystemWebAppType type,
     const SystemAppLaunchParams& params = SystemAppLaunchParams(),
     apps::mojom::WindowInfoPtr window_info = nullptr);
 
@@ -96,32 +97,31 @@ void SetLaunchFiles(bool should_include_launch_directory,
 // This method returns `nullptr` if the app aborts the launch (e.g. delaying the
 // launch after some async operation).
 Browser* LaunchSystemWebAppImpl(Profile* profile,
-                                ash::SystemWebAppType type,
+                                SystemWebAppType type,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params);
 
 // Returns a browser that is hosting the given system |app_type|,
 // |browser_type| and |url| (if not empty) or nullptr if not found.
 Browser* FindSystemWebAppBrowser(Profile* profile,
-                                 ash::SystemWebAppType app_type,
+                                 SystemWebAppType app_type,
                                  Browser::Type browser_type = Browser::TYPE_APP,
                                  const GURL& url = GURL());
 
 // Returns true if the |browser| is a system web app.
 bool IsSystemWebApp(Browser* browser);
 
-// Returns the ash::SystemWebAppType that should capture the |url|.
-absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
-    Profile* profile,
-    const GURL& url);
+// Returns the SystemWebAppType that should capture the |url|.
+absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
+                                                             const GURL& url);
 
 // Returns whether the |browser| hosts the system app |type|.
-bool IsBrowserForSystemWebApp(Browser* browser, ash::SystemWebAppType type);
+bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type);
 
 // Returns the minimum window size for a system web app, or an empty size if
 // the app does not specify a minimum size.
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser);
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
+#endif  // CHROME_BROWSER_UI_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_UI_UTILS_H_

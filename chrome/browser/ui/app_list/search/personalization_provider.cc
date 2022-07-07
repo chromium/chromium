@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -66,13 +66,13 @@ PersonalizationResult::PersonalizationResult(
 PersonalizationResult::~PersonalizationResult() = default;
 
 void PersonalizationResult::Open(int event_flags) {
-  ::web_app::SystemAppLaunchParams launch_params;
+  ::ash::SystemAppLaunchParams launch_params;
   launch_params.url = GURL(id());
   // Record entry point to Personalization Hub through Launcher search.
   ash::personalization_app::LogPersonalizationEntryPoint(
       ash::PersonalizationEntryPoint::kLauncherSearch);
-  web_app::LaunchSystemWebAppAsync(
-      profile_, ash::SystemWebAppType::PERSONALIZATION, launch_params);
+  ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::PERSONALIZATION,
+                               launch_params);
 }
 
 PersonalizationProvider::PersonalizationProvider(Profile* profile)

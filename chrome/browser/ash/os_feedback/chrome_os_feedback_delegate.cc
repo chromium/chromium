@@ -24,9 +24,9 @@
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
@@ -228,12 +228,11 @@ void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
 }
 
 void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
-  web_app::LaunchSystemWebAppAsync(profile_,
-                                   ash::SystemWebAppType::DIAGNOSTICS);
+  ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::DIAGNOSTICS);
 }
 
 void ChromeOsFeedbackDelegate::OpenExploreApp() {
-  web_app::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP);
+  ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP);
 }
 
 }  // namespace ash

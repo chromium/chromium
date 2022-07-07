@@ -21,11 +21,11 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -699,8 +699,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSWACrashTest) {
       installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                   installation_->GetType());
+  ash::LaunchSystemWebAppAsync(browser()->profile(), installation_->GetType());
 
   navigation_observer.Wait();
 
