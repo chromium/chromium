@@ -19,7 +19,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -35,27 +34,22 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
-#include "ui/views/background.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/drag_controller.h"
 
 namespace ash {
 
@@ -325,6 +319,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   DCHECK(view_delegate_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
+  GetViewAccessibility().OverrideIsLeaf(true);
 
   auto title = std::make_unique<views::Label>();
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -676,6 +671,11 @@ void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
               IDS_APP_LIST_PAUSED_APP));
       break;
     default:
+      if (item_weak_->is_new_install()) {
+        node_data->SetDescription(
+            ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
+      }
       break;
   }
 }

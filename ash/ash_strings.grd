@@ -4332,6 +4332,9 @@ Here are some things you can try to get started.
       <message name="IDS_APP_LIST_BLOCKED_APP" desc="The spoken feedback text when a focused app is blocked.">
         Blocked
       </message>
+      <message name="IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION" desc="The spoken feedback text when a focused app is newly installed.">
+        New install
+      </message>
       <message name="IDS_APP_LIST_PAUSED_APP" desc="The spoken feedback text when a focused app is paused.">
         Paused
       </message>

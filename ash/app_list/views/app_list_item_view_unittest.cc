@@ -13,6 +13,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -89,6 +91,7 @@ TEST_F(AppListItemViewProductivityLauncherTest, NewInstallDot) {
 
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
+  ui::AXNodeData node_data;
 
   // By default, the new install dot is not visible.
   auto* apps_grid_view = helper->GetScrollableAppsGridView();
@@ -97,11 +100,19 @@ TEST_F(AppListItemViewProductivityLauncherTest, NewInstallDot) {
   ASSERT_TRUE(new_install_dot);
   EXPECT_FALSE(new_install_dot->GetVisible());
   EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz");
+  item_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(
+      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
+      "");
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
   EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz\nNew install");
+  item_view->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(
+      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
+      "New install");
 }
 
 TEST_F(AppListItemViewProductivityLauncherTest, LabelInsetWithNewInstallDot) {
