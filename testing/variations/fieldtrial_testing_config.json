@@ -4554,6 +4554,21 @@
             ]
         }
     ],
+    "HttpsOnlyMode": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsOnlyMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBookmarkString": [
         {
             "platforms": [
