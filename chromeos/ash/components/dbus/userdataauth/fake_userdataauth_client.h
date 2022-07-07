@@ -328,7 +328,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // The method takes serialized auth session id and returns an authenticated
   // auth session associated with the id. If the session is missing or not
-  // authenticated, |nullptr| is returned.
+  // authenticated, an error code is assigned to |*error| and |nullptr| is
+  // returned.
   const AuthSessionData* GetAuthenticatedAuthSession(
       const std::string& auth_session_id,
       ::user_data_auth::CryptohomeErrorCode* error) const;

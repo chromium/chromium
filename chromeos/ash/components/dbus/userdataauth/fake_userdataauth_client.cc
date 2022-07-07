@@ -1026,6 +1026,7 @@ FakeUserDataAuthClient::GetAuthenticatedAuthSession(
     LOG(ERROR) << "AuthSession not found";
     *error = ::user_data_auth::CryptohomeErrorCode::
         CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN;
+    return nullptr;
   }
 
   // Check if the AuthSession is properly authenticated.
@@ -1033,6 +1034,7 @@ FakeUserDataAuthClient::GetAuthenticatedAuthSession(
     LOG(ERROR) << "AuthSession is not authenticated";
     *error = ::user_data_auth::CryptohomeErrorCode::
         CRYPTOHOME_ERROR_INVALID_ARGUMENT;
+    return nullptr;
   }
 
   return &auth_session->second;
