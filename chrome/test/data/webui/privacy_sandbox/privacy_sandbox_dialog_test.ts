@@ -36,6 +36,8 @@ class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
 suite('PrivacySandboxDialogConsent', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+  // TODO(olesiamarukhno): Add tests with more dialog sizes.
+  const defaultSize: [string, string] = ['500px', '500px'];
 
   function testClickButton(buttonSelector: string) {
     const actionButton =
@@ -54,6 +56,12 @@ suite('PrivacySandboxDialogConsent', function() {
     PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
 
     document.body.innerHTML = '';
+    // Set a fixed size for the body to make the content area scrollable.
+    document.body.style.position = 'fixed';
+    const [width, height]: [string, string] = defaultSize;
+    document.body.style.width = width;
+    document.body.style.height = height;
+
     page = document.createElement('privacy-sandbox-dialog-app');
     document.body.appendChild(page);
 
@@ -96,10 +104,17 @@ suite('PrivacySandboxDialogConsent', function() {
     const collapseElement = page.shadowRoot!.querySelector('iron-collapse');
     const contentArea: HTMLElement|null =
         page.shadowRoot!.querySelector('#contentArea');
+    const expandSection = page.shadowRoot!.querySelector('#expandSection');
     let hasScrollbar = contentArea!.offsetHeight < contentArea!.scrollHeight;
+    // Set transition duration to 0 to save time in tests.
+    collapseElement!.style.setProperty(
+        '--iron-collapse-transition-duration', '0ms');
+
     assertFalse(collapseElement!.opened);
     assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
 
+    const expandSectionTop = expandSection!.getBoundingClientRect().top;
+    assertEquals(contentArea!.scrollTop, 0);
     // After clicking on the collapse section, the content area expands and
     // becomes scrollable with a separator in the bottom. The collapse section
     // is opened and the native UI is notified about the action.
@@ -111,6 +126,8 @@ suite('PrivacySandboxDialogConsent', function() {
         openedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
     assertTrue(contentArea!.classList.contains('can-scroll'));
+    await page.waitForScrollToEndForTesting();
+    assertEquals(contentArea!.scrollTop, expandSectionTop);
 
     // Reset proxy in between button clicks.
     browserProxy.reset();
@@ -125,6 +142,8 @@ suite('PrivacySandboxDialogConsent', function() {
         closedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
     assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
+    await page.waitForScrollToEndForTesting();
+    assertEquals(contentArea!.scrollTop, 0);
   });
 
   test('escPressed', async function() {

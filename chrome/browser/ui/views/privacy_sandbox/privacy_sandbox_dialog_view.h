@@ -24,6 +24,8 @@ class PrivacySandboxDialogView : public views::View {
   PrivacySandboxDialogView(Browser* browser,
                            PrivacySandboxService::PromptType dialog_type);
 
+  static constexpr int kViewIdWebView = 1;
+
   void Close();
 
  private:
