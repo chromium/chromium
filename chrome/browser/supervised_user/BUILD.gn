@@ -39,14 +39,14 @@ if (is_android) {
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegate.java",
       "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java",
       "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalDelegate.java",
-      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalDelegateImpl.java",
     ]
 
     # Add the actual implementation where necessary so that downstream targets
     # can provide their own implementations.
-    jar_excluded_patterns = [ "*/WebsiteParentApprovalDelegateImpl.class" ]
+    jar_excluded_patterns = [ "*/ParentAuthDelegateImpl.class" ]
   }
 
   generate_jni("jni_headers") {

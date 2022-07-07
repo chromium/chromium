@@ -20,8 +20,8 @@ class WebsiteParentApproval {
      */
     @CalledByNative
     private static boolean isLocalApprovalSupported() {
-        WebsiteParentApprovalDelegate delegate = new WebsiteParentApprovalDelegateImpl();
-        return delegate.isLocalApprovalSupported();
+        // TODO(crbug.com/1340913): wire in ParentAuthDelegateImpl once landed in internal.
+        return false;
     }
 
     /**
@@ -39,18 +39,8 @@ class WebsiteParentApproval {
      * */
     @CalledByNative
     private static void requestLocalApproval(WindowAndroid windowAndroid, GURL url) {
-        WebsiteParentApprovalDelegate delegate = new WebsiteParentApprovalDelegateImpl();
-        delegate.requestLocalApproval(windowAndroid, url, WebsiteParentApproval::onCompletion);
-    }
-
-    /**
-     * Method to be called on asynchronous completion of the local approval operation.
-     *
-     * @param success true if the parent successfully completed the flow and approved the website,
-     * false otherwise
-     */
-    private static void onCompletion(boolean success) {
-        WebsiteParentApprovalJni.get().onCompletion(success);
+        // TODO(crbug.com/1340913): finish moving the approve/deny screen to the Chromium repo.
+        throw new UnsupportedOperationException("Approve/deny screen not implemented");
     }
 
     @NativeMethods
