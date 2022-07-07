@@ -16,11 +16,17 @@ promise_test(async t => {
   const url = `resources/activate-from-iframe.html?mode=triggering&uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
-  const gotActivationMessage = await messageQueue.nextMessage();
-  assert_equals(gotActivationMessage,
-      'attempting prerender activation');
-  const gotReloadMessage = await messageQueue.nextMessage();
-  assert_equals(gotReloadMessage, 'loaded from scratch');
+  const messages = [];
+  messages.push(await messageQueue.nextMessage());
+  messages.push(await messageQueue.nextMessage());
+  // Sort them for the assertion. These messages come from separate frames
+  // (prerendered frame and navigated frame), so the message order is not
+  // guaranteed.
+  messages.sort();
+
+  assert_array_equals(
+      messages,
+      ['attempting prerender activation', 'loaded from scratch']);
 }, `Navigation on the main frame initiated by window opened by an ` +
     `iframe opening via window.parent.location should not activate a ` +
     `prerendered page`);
