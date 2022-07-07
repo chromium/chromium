@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
 import java.util.HashSet;
@@ -36,6 +37,7 @@ public class TabUsageTracker
     private int mNewlyAddedTabCount;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabModelSelector mModelSelector;
+    private TabModelSelectorObserver mTabModelSelectorObserver;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private boolean mApplicationResumed;
 
@@ -64,6 +66,7 @@ public class TabUsageTracker
     @Override
     public void onDestroy() {
         mLifecycleDispatcher.unregister(this);
+        mModelSelector.removeObserver(mTabModelSelectorObserver);
     }
 
     @Override
@@ -88,6 +91,7 @@ public class TabUsageTracker
 
         mTabsUsed.clear();
         mNewlyAddedTabCount = 0;
+        mInitialTabCount = 0;
         mTabModelSelectorTabModelObserver.destroy();
         mApplicationResumed = false;
     }
@@ -98,7 +102,18 @@ public class TabUsageTracker
      */
     @Override
     public void onResumeWithNative() {
-        mInitialTabCount = mModelSelector.getTotalTabCount();
+        if (mModelSelector.isTabStateInitialized()) {
+            mInitialTabCount = mModelSelector.getTotalTabCount();
+        } else {
+            mTabModelSelectorObserver = new TabModelSelectorObserver() {
+                @Override
+                public void onTabStateInitialized() {
+                    mInitialTabCount = mModelSelector.getTotalTabCount();
+                }
+            };
+            mModelSelector.addObserver(mTabModelSelectorObserver);
+        }
+
         Tab currentlySelectedTab =
                 mModelSelector.getCurrentModel().getTabAt(mModelSelector.getCurrentModelIndex());
         if (currentlySelectedTab != null) mTabsUsed.add(currentlySelectedTab.getId());
