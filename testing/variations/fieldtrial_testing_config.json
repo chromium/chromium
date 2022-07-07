@@ -6050,7 +6050,8 @@
                         "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8",
-                        "ZeroSuggestCacheDurationSec": "0"
+                        "ZeroSuggestCacheDurationSec": "0",
+                        "ZeroSuggestIgnoreDuplicateVisits": "false"
                     },
                     "enable_features": [
                         "LocalHistorySuggestRevamp",
