@@ -44,6 +44,7 @@ struct HostFrameStats {
   int bandwidth_estimate_kbps = -1;
   uint32_t capturer_id = webrtc::DesktopCapturerId::kUnknown;
   int frame_quality = -1;
+  webrtc::ScreenId screen_id = webrtc::kInvalidScreenId;
 };
 
 struct ClientFrameStats {

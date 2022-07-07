@@ -96,6 +96,9 @@ HostFrameStats HostFrameStats::FromFrameStatsMessage(
   if (message.has_frame_quality()) {
     result.frame_quality = message.frame_quality();
   }
+  if (message.has_screen_id()) {
+    result.screen_id = message.screen_id();
+  }
 
   return result;
 }
@@ -139,6 +142,9 @@ void HostFrameStats::ToFrameStatsMessage(FrameStatsMessage* message_out) const {
   }
   if (frame_quality != -1) {
     message_out->set_frame_quality(frame_quality);
+  }
+  if (screen_id != webrtc::kInvalidScreenId) {
+    message_out->set_screen_id(screen_id);
   }
 }
 

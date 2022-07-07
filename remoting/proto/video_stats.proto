@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting;
 
-// Next Id: 14
+// Next Id: 15
 message FrameStatsMessage {
   // Frame ID.
   optional uint32 frame_id = 1;
@@ -53,4 +53,8 @@ message FrameStatsMessage {
   // A simple indication of the quality of the frame, scored between 0 and 100,
   // with 100 representing a lossless encoded frame.
   optional uint32 frame_quality = 13;
+
+  // The screen ID of the desktop-capturer that captured this frame. The value
+  // matches the corresponding field of the VideoTrackLayout for the stream.
+  optional int64 screen_id = 14;
 }

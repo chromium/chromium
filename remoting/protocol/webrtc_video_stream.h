@@ -87,6 +87,9 @@ class WebrtcVideoStream : public VideoStream,
   // Called by |video_track_source_|.
   void OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants);
 
+  // Screen ID of the monitor being captured, from SelectSource().
+  webrtc::ScreenId screen_id_ = webrtc::kInvalidScreenId;
+
   // Label of the associated WebRTC video-stream.
   std::string stream_name_;
 

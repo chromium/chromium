@@ -38,6 +38,7 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   base::TimeDelta capture_delay;
 
   uint32_t capturer_id = 0;
+  webrtc::ScreenId screen_id = webrtc::kInvalidScreenId;
 };
 
 WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
@@ -96,6 +97,7 @@ void WebrtcVideoStream::Start(
 }
 
 void WebrtcVideoStream::SelectSource(webrtc::ScreenId id) {
+  screen_id_ = id;
   capturer_->SelectSource(id);
 }
 
@@ -176,6 +178,7 @@ void WebrtcVideoStream::CaptureNextFrame() {
   current_frame_stats_->capture_started_time = base::TimeTicks::Now();
   current_frame_stats_->input_event_timestamps =
       event_timestamps_source_->TakeLastEventTimestamps();
+  current_frame_stats_->screen_id = screen_id_;
 
   capturer_->CaptureFrame();
 }
@@ -251,6 +254,8 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     // TODO(crbug.com/891571): Remove |quantizer| from the WebrtcVideoEncoder
     // interface, and move this logic to the encoders.
     stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
+
+    stats.screen_id = current_frame_stats->screen_id;
 
     video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
   }
