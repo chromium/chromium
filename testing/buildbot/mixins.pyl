@@ -799,23 +799,6 @@
       },
     },
   },
-  # TODO(crbug.com/1325185) Remove Mac11 once testers have been upgraded to Mac12
-  'mac_11_or_12_arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-11|Mac-12',
-      },
-    },
-  },
-  'mac_11_or_12_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-11|Mac-10.16|Mac-12',
-      },
-    },
-  },
   'mac_11_x64': {
     'swarming': {
       'dimensions': {
@@ -824,18 +807,10 @@
       },
     },
   },
-  'mac_12_beta_arm64': {
+  'mac_12_arm64': {
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
-        'os': 'Mac-12',
-      },
-    },
-  },
-  'mac_12_beta_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
         'os': 'Mac-12',
       },
     },
@@ -867,6 +842,22 @@
         'os': 'Mac-11',
         'pool': 'chromium.tests',
         'display_attached': '1',
+      },
+    },
+  },
+  'mac_beta_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-12',
+      },
+    },
+  },
+  'mac_beta_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-12',
       },
     },
   },
