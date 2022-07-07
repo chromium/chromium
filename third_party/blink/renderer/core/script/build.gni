@@ -31,6 +31,7 @@ blink_core_sources_script = [
   "modulator.h",
   "modulator_impl_base.cc",
   "modulator_impl_base.h",
+  "module_import_meta.cc",
   "module_import_meta.h",
   "module_map.cc",
   "module_map.h",

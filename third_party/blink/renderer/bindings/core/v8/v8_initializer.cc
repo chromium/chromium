@@ -638,10 +638,18 @@ void HostGetImportMetaProperties(v8::Local<v8::Context> context,
 
   ModuleImportMeta host_meta = modulator->HostGetImportMetaProperties(module);
 
-  // 3. Return <<Record { [[Key]]: "url", [[Value]]: urlString }>>. [spec text]
+  // 6. Return « Record { [[Key]]: "url", [[Value]]: urlString }, Record {
+  // [[Key]]: "resolve", [[Value]]: resolveFunction } ». [spec text]
   v8::Local<v8::String> url_key = V8String(isolate, "url");
   v8::Local<v8::String> url_value = V8String(isolate, host_meta.Url());
+
+  v8::Local<v8::String> resolve_key = V8String(isolate, "resolve");
+  v8::Local<v8::Function> resolve_value =
+      host_meta.MakeResolveV8Function(modulator);
+  resolve_value->SetName(resolve_key);
+
   meta->CreateDataProperty(context, url_key, url_value).ToChecked();
+  meta->CreateDataProperty(context, resolve_key, resolve_value).ToChecked();
 }
 
 void InitializeV8Common(v8::Isolate* isolate) {
