@@ -288,6 +288,16 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.occlusionQuerySet = nullptr;
   }
 
+  WGPURenderPassDescriptorMaxDrawCount max_draw_count = {};
+  if (descriptor->hasMaxDrawCount()) {
+    max_draw_count.chain.sType = WGPUSType_RenderPassDescriptorMaxDrawCount;
+    max_draw_count.maxDrawCount = descriptor->maxDrawCount();
+    dawn_desc.nextInChain =
+        reinterpret_cast<WGPUChainedStruct*>(&max_draw_count);
+  } else {
+    dawn_desc.nextInChain = nullptr;
+  }
+
   GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
       device_,
       GetProcs().commandEncoderBeginRenderPass(GetHandle(), &dawn_desc));
