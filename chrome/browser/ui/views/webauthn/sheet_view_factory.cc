@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "device/fido/features.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace {
@@ -210,7 +212,17 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       break;
     case Step::kSelectAccount:
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
-          std::make_unique<AuthenticatorSelectAccountSheetModel>(dialog_model));
+          std::make_unique<AuthenticatorSelectAccountSheetModel>(
+              dialog_model,
+              AuthenticatorSelectAccountSheetModel::kPostUserVerification));
+      break;
+    case Step::kPreSelectAccount:
+      DCHECK(base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi));
+      sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
+          std::make_unique<AuthenticatorSelectAccountSheetModel>(
+              dialog_model,
+              AuthenticatorSelectAccountSheetModel::kPreUserVerification));
       break;
     case Step::kAttestationPermissionRequest:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

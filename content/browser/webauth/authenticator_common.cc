@@ -41,6 +41,8 @@
 #include "crypto/sha2.h"
 #include "device/base/features.h"
 #include "device/fido/attestation_statement.h"
+#include "device/fido/authenticator_data.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -1016,9 +1018,7 @@ void AuthenticatorCommon::GetAssertion(
           blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
       return;
     }
-    if (!options->is_conditional) {
-      maybe_show_account_picker_ = true;
-    }
+    discoverable_credential_request_ = true;
   }
 
   if (options->large_blob_read && options->large_blob_write) {
@@ -1510,31 +1510,40 @@ void AuthenticatorCommon::OnSignResponse(
       authenticator->GetType() == device::FidoAuthenticator::Type::kWinNative);
 #endif
 
-  // Show an account picker for requests with empty allow lists.
-  // Authenticators may omit the identifying information in the user entity
-  // if only one credential matches, or if they have account selection UI
-  // built-in. In that case, consider that credential pre-selected.
-  // Authenticators can also use the userSelected signal (from CTAP 2.1)
-  // to indicate that selection has already occurred.
-  if (maybe_show_account_picker_ && !response_data->at(0).user_selected &&
-      (response_data->size() > 1 ||
-       (response_data->at(0).user_entity &&
-        (response_data->at(0).user_entity->name ||
-         response_data->at(0).user_entity->display_name)))) {
-    std::vector<device::PublicKeyCredentialUserEntity> users_list;
-    users_list.reserve(response_data->size());
-    for (const auto& response : *response_data) {
-      if (response.user_entity) {
-        users_list.push_back(*response.user_entity);
-      }
+  // Show an account picker for discoverable credential requests (empty allow
+  // lists). Responses with a single credential are considered pre-selected if
+  // one of the following is true:
+  // - The authenticator omitted user entity information because only one
+  // credential matched (only valid in CTAP 2.0).
+  // - The `userSelected` flag is set, because the user chose an account on an
+  // integrated authenticator UI (CTAP 2.1).
+  // - The user already pre-selected a platform authenticator credential from
+  // browser UI prior to the actual GetAssertion request. (The request handler
+  // set the `userSelected` flag in this case.)
+  if (response_data->size() == 1) {
+    const device::AuthenticatorGetAssertionResponse& response =
+        response_data->at(0);
+    if (!discoverable_credential_request_ || response.user_selected ||
+        !response.user_entity || !response.user_entity->name ||
+        !response.user_entity->display_name) {
+      OnAccountSelected(std::move(response_data->at(0)));
+      return;
     }
-    request_delegate_->SelectAccount(
-        std::move(*response_data),
-        base::BindOnce(&AuthenticatorCommon::OnAccountSelected,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    OnAccountSelected(std::move(response_data->at(0)));
   }
+
+  // Discoverable credential request without preselection UI. Show an account
+  // picker.
+  std::vector<device::PublicKeyCredentialUserEntity> users_list;
+  users_list.reserve(response_data->size());
+  for (const auto& response : *response_data) {
+    if (response.user_entity) {
+      users_list.push_back(*response.user_entity);
+    }
+  }
+  request_delegate_->SelectAccount(
+      std::move(*response_data),
+      base::BindOnce(&AuthenticatorCommon::OnAccountSelected,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AuthenticatorCommon::OnAccountSelected(
@@ -1897,11 +1906,11 @@ void AuthenticatorCommon::Cleanup() {
   app_id_.reset();
   caller_origin_ = url::Origin();
   relying_party_id_.clear();
-  maybe_show_account_picker_ = false;
   error_awaiting_user_acknowledgement_ =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   requested_extensions_.clear();
   pending_proxied_request_id_.reset();
+  discoverable_credential_request_ = false;
 }
 
 void AuthenticatorCommon::DisableUI() {

@@ -1173,8 +1173,9 @@ void AuthenticatorResidentCredentialConfirmationSheetView::OnAccept() {
 // AuthenticatorSelectAccountSheetModel ---------------------------------------
 
 AuthenticatorSelectAccountSheetModel::AuthenticatorSelectAccountSheetModel(
-    AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model) {}
+    AuthenticatorRequestDialogModel* dialog_model,
+    Mode mode)
+    : AuthenticatorSheetModelBase(dialog_model), mode_(mode) {}
 
 AuthenticatorSelectAccountSheetModel::~AuthenticatorSelectAccountSheetModel() =
     default;
@@ -1186,7 +1187,14 @@ void AuthenticatorSelectAccountSheetModel::SetCurrentSelection(int selected) {
 }
 
 void AuthenticatorSelectAccountSheetModel::OnAccept() {
-  dialog_model()->OnAccountSelected(selected_);
+  switch (mode_) {
+    case kPreUserVerification:
+      dialog_model()->OnAccountPreselectedIndex(selected_);
+      break;
+    case kPostUserVerification:
+      dialog_model()->OnAccountSelected(selected_);
+      break;
+  }
 }
 
 const gfx::VectorIcon&

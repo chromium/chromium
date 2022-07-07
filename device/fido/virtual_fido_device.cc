@@ -498,7 +498,7 @@ VirtualFidoDevice::VirtualFidoDevice(scoped_refptr<State> state)
 VirtualFidoDevice::~VirtualFidoDevice() = default;
 
 std::string VirtualFidoDevice::GetId() const {
-  return id_;
+  return state_->device_id_override.value_or(id_);
 }
 
 // static
