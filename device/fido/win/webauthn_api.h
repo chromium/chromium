@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
@@ -40,8 +41,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
   // false, none of the other methods on this instance may be called.
   virtual bool IsAvailable() const = 0;
 
-  // Returns whether the API is available and supports the
-  // |GetPlatformCredentialList| and |FreePlatformCredentialList| methods.
+  // Returns whether the API is available and supports the following methods:
+  //   |GetPlatformCredentialList|
+  //   |FreePlatformCredentialList|
+  //   |DeletePlatformCredential|
+  //
   // This should be preferred to checking the API version.
   virtual bool SupportsSilentDiscovery() const = 0;
 
@@ -69,6 +73,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
   virtual HRESULT GetPlatformCredentialList(
       PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
       PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) = 0;
+
+  virtual HRESULT DeletePlatformCredential(
+      base::span<const uint8_t> credential_id) = 0;
 
   virtual PCWSTR GetErrorName(HRESULT hr) = 0;
 

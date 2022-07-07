@@ -629,8 +629,8 @@ void AuthenticatorRequestDialogModel::SelectAccount(
   ephemeral_state_.responses_ = std::move(responses);
   ephemeral_state_.creds_ = {};
   for (const auto& response : ephemeral_state_.responses_) {
-    ephemeral_state_.creds_.emplace_back(response.credential->id,
-                                         *response.user_entity);
+    ephemeral_state_.creds_.emplace_back(
+        relying_party_id_, response.credential->id, *response.user_entity);
   }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);

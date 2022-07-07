@@ -42,6 +42,7 @@ constexpr char kDisplayName1[] = "John Doe";
 constexpr char kDisplayName2[] = "Jane Doe";
 constexpr uint8_t kCredId1[] = {'a', 'b', 'c', 'd'};
 constexpr uint8_t kCredId2[] = {'e', 'f', 'g', 'h'};
+constexpr char kRpId[] = "example.com";
 
 std::vector<uint8_t> UserId1() {
   return std::vector<uint8_t>(std::begin(kUserId1), std::end(kUserId1));
@@ -153,11 +154,13 @@ class ChromeWebAuthnCredentialsDelegateTest
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   std::vector<device::DiscoverableCredentialMetadata> users;
   users.emplace_back(
-      CredId1(), device::PublicKeyCredentialUserEntity(
-                     UserId1(), UserName1(), DisplayName1(), absl::nullopt));
+      kRpId, CredId1(),
+      device::PublicKeyCredentialUserEntity(UserId1(), UserName1(),
+                                            DisplayName1(), absl::nullopt));
   users.emplace_back(
-      CredId2(), device::PublicKeyCredentialUserEntity(
-                     UserId2(), UserName2(), DisplayName2(), absl::nullopt));
+      kRpId, CredId2(),
+      device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
+                                            DisplayName2(), absl::nullopt));
 
   SetCredList(users);
 
@@ -188,7 +191,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        RetrieveCredentialsWithEmptyDisplayName) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(CredId1(),
+  users.emplace_back(kRpId, CredId1(),
                      device::PublicKeyCredentialUserEntity(
                          UserId1(), UserName1(), std::string(), absl::nullopt));
 
@@ -210,8 +213,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        RetrieveCredentialWithNoUserName) {
   std::vector<device::DiscoverableCredentialMetadata> users;
   users.emplace_back(
-      CredId1(), device::PublicKeyCredentialUserEntity(
-                     UserId1(), absl::nullopt, DisplayName1(), absl::nullopt));
+      kRpId, CredId1(),
+      device::PublicKeyCredentialUserEntity(UserId1(), absl::nullopt,
+                                            DisplayName1(), absl::nullopt));
 
   SetCredList(users);
 
@@ -228,11 +232,13 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   std::vector<device::DiscoverableCredentialMetadata> users;
   users.emplace_back(
-      CredId1(), device::PublicKeyCredentialUserEntity(
-                     UserId1(), UserName1(), DisplayName1(), absl::nullopt));
+      kRpId, CredId1(),
+      device::PublicKeyCredentialUserEntity(UserId1(), UserName1(),
+                                            DisplayName1(), absl::nullopt));
   users.emplace_back(
-      CredId2(), device::PublicKeyCredentialUserEntity(
-                     UserId2(), UserName2(), DisplayName2(), absl::nullopt));
+      kRpId, CredId2(),
+      device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
+                                            DisplayName2(), absl::nullopt));
   SetCredList(users);
 
 #if !BUILDFLAG(IS_ANDROID)

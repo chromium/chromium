@@ -27,7 +27,8 @@ void VirtualFidoDeviceAuthenticator::GetCredentialInformationForRequest(
          virtual_device->mutable_state()->registrations) {
       if (registration.second.is_resident &&
           registration.second.rp->id == request.rp_id) {
-        credentials.emplace_back(registration.first, *registration.second.user);
+        credentials.emplace_back(request.rp_id, registration.first,
+                                 *registration.second.user);
       }
     }
     bool has_credentials = credentials.size() > 0;

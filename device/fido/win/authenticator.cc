@@ -63,6 +63,63 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 }
 
+void WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
+    WinWebAuthnApi* api,
+    base::OnceCallback<
+        void(std::vector<device::DiscoverableCredentialMetadata>)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](WinWebAuthnApi* api)
+              -> std::vector<device::DiscoverableCredentialMetadata> {
+            if (!api || !api->IsAvailable() ||
+                !api->SupportsSilentDiscovery()) {
+              return {};
+            }
+
+            WEBAUTHN_GET_CREDENTIALS_OPTIONS options{
+                .dwVersion = WEBAUTHN_GET_CREDENTIALS_OPTIONS_VERSION_1,
+                .pwszRpId = nullptr,
+                .bBrowserInPrivateMode = false};
+
+            PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials = nullptr;
+            HRESULT hresult =
+                api->GetPlatformCredentialList(&options, &credentials);
+            std::unique_ptr<WEBAUTHN_CREDENTIAL_DETAILS_LIST,
+                            PlatformCredentialListDeleter>
+                credentials_deleter(credentials,
+                                    PlatformCredentialListDeleter(api));
+
+            if (hresult != S_OK) {
+              return {};
+            }
+            return WinCredentialDetailsListToCredentialMetadata(*credentials);
+          },
+          api),
+      std::move(callback));
+}
+
+void WinWebAuthnApiAuthenticator::DeletePlatformCredential(
+    WinWebAuthnApi* api,
+    base::span<const uint8_t> credential_id,
+    base::OnceCallback<void(bool)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](WinWebAuthnApi* api, std::vector<uint8_t> credential_id) -> bool {
+            return api && api->IsAvailable() &&
+                   api->SupportsSilentDiscovery() &&
+                   api->DeletePlatformCredential(credential_id) == S_OK;
+          },
+          api,
+          std::vector<uint8_t>(credential_id.begin(), credential_id.end())),
+      std::move(callback));
+}
+
 WinWebAuthnApiAuthenticator::WinWebAuthnApiAuthenticator(
     HWND current_window,
     WinWebAuthnApi* win_api)

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -88,6 +89,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   HRESULT GetPlatformCredentialList(
       PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
       PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) override;
+  HRESULT DeletePlatformCredential(
+      base::span<const uint8_t> credential_id) override;
   PCWSTR GetErrorName(HRESULT hr) override;
   void FreeCredentialAttestation(PWEBAUTHN_CREDENTIAL_ATTESTATION) override;
   void FreeAssertion(PWEBAUTHN_ASSERTION pWebAuthNAssertion) override;

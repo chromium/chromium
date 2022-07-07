@@ -87,6 +87,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     if (get_platform_credential_list_) {
       BIND_FN_OR_RETURN(free_platform_credential_list_, webauthn_dll_,
                         "WebAuthNFreePlatformCredentialList");
+      BIND_FN_OR_RETURN(delete_platform_credential_, webauthn_dll_,
+                        "WebAuthNDeletePlatformCredential");
     }
 
     is_bound_ = true;
@@ -165,6 +167,12 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     return get_platform_credential_list_(options, credentials);
   }
 
+  HRESULT DeletePlatformCredential(
+      base::span<const uint8_t> credential_id) override {
+    return delete_platform_credential_(credential_id.size(),
+                                       credential_id.data());
+  }
+
   PCWSTR GetErrorName(HRESULT hr) override {
     DCHECK(is_bound_);
     return get_error_name_(hr);
@@ -203,6 +211,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
       nullptr;
   decltype(&WebAuthNCancelCurrentOperation) cancel_current_operation_ = nullptr;
   decltype(&WebAuthNGetPlatformCredentialList) get_platform_credential_list_ =
+      nullptr;
+  decltype(&WebAuthNDeletePlatformCredential) delete_platform_credential_ =
       nullptr;
   decltype(&WebAuthNGetErrorName) get_error_name_ = nullptr;
   decltype(&WebAuthNFreeCredentialAttestation) free_credential_attestation_ =

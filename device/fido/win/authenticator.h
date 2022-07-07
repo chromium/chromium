@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -35,6 +36,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   static void IsUserVerifyingPlatformAuthenticatorAvailable(
       WinWebAuthnApi* api,
       base::OnceCallback<void(bool is_available)>);
+
+  // Get metadata for all credentials in the platform authenticator. If such
+  // metadata is not available then the callback will be invoked with an empty
+  // list.
+  static void EnumeratePlatformCredentials(
+      WinWebAuthnApi* api,
+      base::OnceCallback<
+          void(std::vector<device::DiscoverableCredentialMetadata>)> callback);
+
+  // Deletes a credential from the platform authenticator. The callback will be
+  // invoked with a boolean that indicates whether the deletion was successful.
+  static void DeletePlatformCredential(WinWebAuthnApi* api,
+                                       base::span<const uint8_t> credential_id,
+                                       base::OnceCallback<void(bool)> callback);
 
   // Instantiates an authenticator that uses the default WinWebAuthnApi.
   //

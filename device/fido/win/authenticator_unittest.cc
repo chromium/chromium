@@ -23,6 +23,9 @@ using GetCredentialCallbackReceiver =
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
                                bool>;
 
+using EnumeratePlatformCredentialsCallbackReceiver =
+    test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>;
+
 const std::vector<uint8_t> kCredentialId = {1, 2, 3, 4};
 constexpr char kRpId[] = "project-altdeus.example.com";
 const std::vector<uint8_t> kUserId = {5, 6, 7, 8};
@@ -60,7 +63,7 @@ TEST_F(WinAuthenticatorTest,
   callback.WaitForCallback();
 
   DiscoverableCredentialMetadata expected =
-      DiscoverableCredentialMetadata(kCredentialId, user);
+      DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{expected});
   EXPECT_TRUE(std::get<1>(*callback.result()));
@@ -111,7 +114,7 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
   callback.WaitForCallback();
 
   DiscoverableCredentialMetadata expected =
-      DiscoverableCredentialMetadata(kCredentialId, user);
+      DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_TRUE(std::get<1>(*callback.result()));
@@ -134,10 +137,55 @@ TEST_F(WinAuthenticatorTest,
   callback.WaitForCallback();
 
   DiscoverableCredentialMetadata expected =
-      DiscoverableCredentialMetadata(kCredentialId, user);
+      DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_TRUE(std::get<1>(*callback.result()));
+}
+
+TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
+                                     /*icon_url=*/absl::nullopt);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+  fake_webauthn_api_->set_supports_silent_discovery(false);
+
+  test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>
+      callback;
+  WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
+      fake_webauthn_api_.get(), callback.callback());
+
+  while (!callback.was_called()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+}
+
+TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName,
+                                     /*icon_url=*/absl::nullopt);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
+  fake_webauthn_api_->set_supports_silent_discovery(true);
+
+  test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>
+      callback;
+  WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
+      fake_webauthn_api_.get(), callback.callback());
+
+  while (!callback.was_called()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::vector<DiscoverableCredentialMetadata> creds =
+      std::move(std::get<0>(callback.TakeResult()));
+  ASSERT_EQ(creds.size(), 1u);
+  const DiscoverableCredentialMetadata& cred = creds[0];
+  EXPECT_EQ(cred.rp_id, kRpId);
+  EXPECT_EQ(cred.cred_id, kCredentialId);
+  EXPECT_EQ(cred.user.name, kUserName);
+  EXPECT_EQ(cred.user.display_name, kUserDisplayName);
 }
 
 }  // namespace

@@ -17,7 +17,8 @@ namespace device {
 // information.
 class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
  public:
-  DiscoverableCredentialMetadata(std::vector<uint8_t> cred_id,
+  DiscoverableCredentialMetadata(std::string rp_id,
+                                 std::vector<uint8_t> cred_id,
                                  PublicKeyCredentialUserEntity user);
 
   DiscoverableCredentialMetadata();
@@ -30,6 +31,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
   ~DiscoverableCredentialMetadata();
   bool operator==(const DiscoverableCredentialMetadata& other) const;
 
+  std::string rp_id;
   std::vector<uint8_t> cred_id;
   PublicKeyCredentialUserEntity user;
 };

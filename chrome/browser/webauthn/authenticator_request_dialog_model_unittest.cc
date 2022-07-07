@@ -770,9 +770,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   device::DiscoverableCredentialMetadata cred_1(
-      {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
+      "rp.com", {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
   device::DiscoverableCredentialMetadata cred_2(
-      {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
+      "rp.com", {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
   transports_info.recognized_platform_authenticator_credentials = {cred_1,
                                                                    cred_2};
   model.StartFlow(std::move(transports_info),

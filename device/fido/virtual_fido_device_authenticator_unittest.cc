@@ -111,9 +111,9 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
                                                        callback.callback());
     callback.WaitForCallback();
     DiscoverableCredentialMetadata expected1 =
-        DiscoverableCredentialMetadata(id1, user1);
+        DiscoverableCredentialMetadata(kRpId, id1, user1);
     DiscoverableCredentialMetadata expected2 =
-        DiscoverableCredentialMetadata(id2, user2);
+        DiscoverableCredentialMetadata(kRpId, id2, user2);
     EXPECT_THAT(std::get<0>(*callback.result()),
                 testing::UnorderedElementsAre(expected1, expected2));
     EXPECT_TRUE(std::get<1>(*callback.result()));

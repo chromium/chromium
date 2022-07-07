@@ -314,6 +314,13 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
                                                                : S_OK;
 }
 
+HRESULT FakeWinWebAuthnApi::DeletePlatformCredential(
+    base::span<const uint8_t> credential_id) {
+  // TODO: not yet implemented.
+  CHECK(false);
+  return S_OK;
+}
+
 PCWSTR FakeWinWebAuthnApi::GetErrorName(HRESULT hr) {
   DCHECK(is_available_);
   // See the comment for WebAuthNGetErrorName() in <webauthn.h>.
