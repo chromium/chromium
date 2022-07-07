@@ -49,6 +49,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
  private:
   // ReadAnythingToolbarView::Delegate:
   void OnFontChoiceChanged(int new_choice) override;
+  void OnFontSizeChanged(bool increase) override;
 
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;

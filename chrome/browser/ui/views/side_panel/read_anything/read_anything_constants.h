@@ -11,9 +11,12 @@ namespace {
 // Visual constants for Read Anything feature.
 // TODO(1226555): Replace these with final values provided by UI.
 const int kInternalInsets = 6;
-const int kFontSize = 16;
-const int kIconSize = 16;
-const int kIconCornerRadius = 2;
+
+const int kButtonPadding = 12;
+const int kSeparatorTopBottomPadding = 6;
+
+const int kSmallIconSize = 18;
+const int kLargeIconSize = 24;
 
 const char kReadAnythingDefaultFontName[] = "Standard font";
 

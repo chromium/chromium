@@ -65,6 +65,7 @@ class ReadAnythingModel {
     virtual void OnAXTreeDistilled(
         const ui::AXTreeUpdate& snapshot,
         const std::vector<ui::AXNodeID>& content_node_ids) = 0;
+    virtual void OnFontSizeChanged(const float new_font_size) = 0;
   };
 
   explicit ReadAnythingModel(std::string prefs_font_name);
@@ -77,16 +78,22 @@ class ReadAnythingModel {
 
   void SetDistilledAXTree(ui::AXTreeUpdate snapshot,
                           std::vector<ui::AXNodeID> content_node_ids);
+
   void SetSelectedFontByIndex(int new_index);
+  void DecreaseTextSize();
+  void IncreaseTextSize();
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
 
  private:
   void NotifyAXTreeDistilled();
   void NotifyFontNameUpdated();
+  void NotifyFontSizeChanged();
 
   // State:
   std::string font_name_;
+  float font_size_;
+
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.
   ui::AXTreeUpdate snapshot_;

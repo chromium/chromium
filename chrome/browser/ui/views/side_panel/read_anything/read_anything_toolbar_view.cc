@@ -9,14 +9,18 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "components/vector_icons/cc_macros.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/geometry_export.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 
@@ -48,8 +52,28 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   combobox->SetTooltipTextAndAccessibleName(u"Font Choice");
   combobox->SetModel(font_model);
 
+  // Create the decrease/increase text size buttons.
+  // TODO(1266555): These use placeholder text, update for final UI.
+  auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
+      base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
+                          weak_pointer_factory_.GetWeakPtr()),
+      gfx::CreateVectorIcon(vector_icons::kTextDecreaseIcon, kSmallIconSize,
+                            gfx::kGoogleGrey700),
+      u"Decrease font size");
+
+  auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
+      base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
+                          weak_pointer_factory_.GetWeakPtr()),
+      gfx::CreateVectorIcon(vector_icons::kTextIncreaseIcon, kLargeIconSize,
+                            gfx::kGoogleGrey700),
+      u"Increase font size");
+
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
+  AddChildView(Separator());
+  decrease_text_size_button_ = AddChildView(std::move(decrease_size_button));
+  increase_text_size_button_ = AddChildView(std::move(increase_size_button));
+  AddChildView(Separator());
 }
 
 void ReadAnythingToolbarView::FontNameChangedCallback() {
@@ -57,11 +81,42 @@ void ReadAnythingToolbarView::FontNameChangedCallback() {
     delegate_->OnFontChoiceChanged(font_combobox_->GetSelectedIndex());
 }
 
+void ReadAnythingToolbarView::DecreaseFontSizeCallback() {
+  if (delegate_)
+    delegate_->OnFontSizeChanged(/* increase = */ false);
+}
+
+void ReadAnythingToolbarView::IncreaseFontSizeCallback() {
+  if (delegate_)
+    delegate_->OnFontSizeChanged(/* increase = */ true);
+}
+
 void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
   // When the coordinator that created |this| is destroyed, clean up pointers.
   coordinator_ = nullptr;
   delegate_ = nullptr;
   font_combobox_->SetModel(nullptr);
+}
+
+std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
+  // Create a simple separator with padding to be inserted into views.
+  auto separator_container = std::make_unique<views::View>();
+
+  auto separator_layout_manager = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
+  separator_layout_manager->set_inside_border_insets(
+      gfx::Insets(kButtonPadding)
+          .set_top(kSeparatorTopBottomPadding)
+          .set_bottom(kSeparatorTopBottomPadding));
+
+  separator_container->SetLayoutManager(std::move(separator_layout_manager));
+
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColorId(ui::kColorMenuSeparator);
+
+  separator_container->AddChildView(std::move(separator));
+
+  return separator_container;
 }
 
 ReadAnythingToolbarView::~ReadAnythingToolbarView() {

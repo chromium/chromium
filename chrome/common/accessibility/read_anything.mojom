@@ -31,4 +31,7 @@ interface Page {
 
   // Send an updated font name to front end.
   OnFontNameChange(string new_font_name);
+
+  // Send an updated font size to front end.
+  OnFontSizeChanged(float new_font_size);
 };

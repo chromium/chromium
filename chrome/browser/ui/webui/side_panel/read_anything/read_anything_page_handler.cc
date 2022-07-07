@@ -63,3 +63,7 @@ void ReadAnythingPageHandler::OnFontNameUpdated(
     const std::string& new_font_name) {
   page_->OnFontNameChange(std::move(new_font_name));
 }
+
+void ReadAnythingPageHandler::OnFontSizeChanged(const float new_font_size) {
+  page_->OnFontSizeChanged(new_font_size);
+}

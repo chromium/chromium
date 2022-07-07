@@ -32,6 +32,12 @@ if (chrome.readAnything) {
     assert(readAnythingApp);
     readAnythingApp.updateContent();
   };
+
+  chrome.readAnything.updateFontSize = function() {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.updateFontSize();
+  };
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -52,6 +58,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private fontName_: string;
+  private fontSize_: number;
 
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
@@ -171,6 +178,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             f.name === chrome.readAnything.fontName);
     this.fontName_ =
         validFontName ? validFontName.cssClass : this.defaultFontName;
+  }
+
+  updateFontSize() {
+    this.fontSize_ = chrome.readAnything.fontSize;
   }
 }
 

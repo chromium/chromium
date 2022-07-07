@@ -32,12 +32,19 @@ void ReadAnythingController::Activate(bool active) {
 }
 
 void ReadAnythingController::OnFontChoiceChanged(int new_choice) {
-  std::string new_font_name;
   model_->SetSelectedFontByIndex(new_choice);
 
   browser_->profile()->GetPrefs()->SetString(
       prefs::kAccessibilityReadAnythingFontName,
       model_->GetFontModel()->GetFontNameAt(new_choice));
+}
+
+void ReadAnythingController::OnFontSizeChanged(bool increase) {
+  if (increase) {
+    model_->IncreaseTextSize();
+  } else {
+    model_->DecreaseTextSize();
+  }
 }
 
 void ReadAnythingController::OnUIReady() {

@@ -67,10 +67,12 @@ class ReadAnythingAppController
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
   void OnFontNameChange(const std::string& new_font_name) override;
+  void OnFontSizeChanged(const float new_font_size) override;
 
   // gin templates:
   std::vector<ui::AXNodeID> ContentNodeIds();
   std::string FontName();
+  float FontSize();
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id);
   uint32_t GetHeadingLevel(ui::AXNodeID ax_node_id);
   std::string GetTextContent(ui::AXNodeID ax_node_id);
@@ -113,6 +115,7 @@ class ReadAnythingAppController
   std::unique_ptr<ui::AXTree> tree_;
   std::vector<ui::AXNodeID> content_node_ids_;
   std::string font_name_;
+  float font_size_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_

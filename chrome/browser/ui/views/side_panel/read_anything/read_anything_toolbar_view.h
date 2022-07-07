@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -25,6 +26,7 @@ class ReadAnythingToolbarView : public views::View,
   class Delegate {
    public:
     virtual void OnFontChoiceChanged(int new_choice) = 0;
+    virtual void OnFontSizeChanged(bool increase) = 0;
   };
 
   explicit ReadAnythingToolbarView(ReadAnythingCoordinator* coordinator);
@@ -37,8 +39,14 @@ class ReadAnythingToolbarView : public views::View,
 
  private:
   void FontNameChangedCallback();
+  void DecreaseFontSizeCallback();
+  void IncreaseFontSizeCallback();
+
+  std::unique_ptr<views::View> Separator();
 
   raw_ptr<views::Combobox> font_combobox_;
+  raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
+  raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;
   raw_ptr<ReadAnythingCoordinator> coordinator_;
 

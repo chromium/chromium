@@ -38,6 +38,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
               (const ui::AXTreeUpdate& snapshot,
                const std::vector<ui::AXNodeID>& content_node_ids),
               (override));
+  MOCK_METHOD(void, OnFontSizeChanged, (float new_font_size), (override));
 };
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {

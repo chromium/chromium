@@ -52,6 +52,7 @@ class ReadAnythingPageHandler : public PageHandler,
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
+  void OnFontSizeChanged(const float new_font_size) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;

@@ -206,12 +206,21 @@ void ReadAnythingAppController::OnFontNameChange(
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
+void ReadAnythingAppController::OnFontSizeChanged(const float new_font_size) {
+  font_size_ = new_font_size;
+
+  // TODO: Use v*::Function rather than javascript.
+  std::string script = "chrome.readAnything.updateFontSize();";
+  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+}
+
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(
              isolate)
       .SetProperty("contentNodeIds", &ReadAnythingAppController::ContentNodeIds)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
+      .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getHeadingLevel", &ReadAnythingAppController::GetHeadingLevel)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
@@ -233,6 +242,10 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::ContentNodeIds() {
 
 std::string ReadAnythingAppController::FontName() {
   return font_name_;
+}
+
+float ReadAnythingAppController::FontSize() {
+  return font_size_;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(

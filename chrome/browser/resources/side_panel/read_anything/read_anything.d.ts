@@ -17,6 +17,8 @@ declare namespace chrome {
     // A font name, defined in ReadAnythingFontModel.
     let fontName: string;
 
+    let fontSize: number;
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID.
     function getChildren(nodeId: number): number[];
@@ -81,5 +83,9 @@ declare namespace chrome {
     // Ping that the font name has been changed in the ReadAnythingToolbar and
     // is available to consume.
     function updateFontName(): void;
+
+    // Ping that the font size has been changed for the distilled contents and
+    // is available to consume.
+    function updateFontSize(): void;
   }
 }

@@ -19,6 +19,9 @@ ReadAnythingModel::ReadAnythingModel(std::string prefs_font_name)
     font_model_->SetDefaultIndexFromPrefsFontName(prefs_font_name);
     font_name_ = prefs_font_name;
   }
+
+  // TODO(1266555): Add font size to users prefs and initialize here.
+  font_size_ = 18.0f;
 }
 
 ReadAnythingModel::~ReadAnythingModel() = default;
@@ -51,6 +54,17 @@ void ReadAnythingModel::SetDistilledAXTree(
   NotifyAXTreeDistilled();
 }
 
+// TODO(1266555): Update with text scaling approach based on UI/UX feedback.
+void ReadAnythingModel::DecreaseTextSize() {
+  font_size_ *= 0.83333f;
+  NotifyFontSizeChanged();
+}
+
+void ReadAnythingModel::IncreaseTextSize() {
+  font_size_ *= 1.2f;
+  NotifyFontSizeChanged();
+}
+
 void ReadAnythingModel::NotifyFontNameUpdated() {
   for (Observer& obs : observers_) {
     obs.OnFontNameUpdated(font_name_);
@@ -60,6 +74,12 @@ void ReadAnythingModel::NotifyFontNameUpdated() {
 void ReadAnythingModel::NotifyAXTreeDistilled() {
   for (Observer& obs : observers_) {
     obs.OnAXTreeDistilled(snapshot_, content_node_ids_);
+  }
+}
+
+void ReadAnythingModel::NotifyFontSizeChanged() {
+  for (Observer& obs : observers_) {
+    obs.OnFontSizeChanged(font_size_);
   }
 }
 
