@@ -60,7 +60,7 @@ class TaskManagerTester {
 
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.
-  void GetRowsGroupRange(int row, int* out_start, int* out_length);
+  void GetRowsGroupRange(size_t row, size_t* out_start, size_t* out_length);
 
   // Get all task titles associated with a WebContents and return them in a
   // vector.

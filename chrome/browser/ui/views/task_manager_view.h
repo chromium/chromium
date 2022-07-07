@@ -67,7 +67,7 @@ class TaskManagerView : public TableViewDelegate,
   void WindowClosing() override;
 
   // views::TableGrouper:
-  void GetGroupRange(int model_index, views::GroupRange* range) override;
+  void GetGroupRange(size_t model_index, views::GroupRange* range) override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;

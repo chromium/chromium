@@ -111,14 +111,17 @@ int TableColumnAlignmentToCanvasAlignment(
   return gfx::Canvas::TEXT_ALIGN_LEFT;
 }
 
-int GetClosestVisibleColumnIndex(const TableView* table, int x) {
+absl::optional<size_t> GetClosestVisibleColumnIndex(const TableView* table,
+                                                    int x) {
   const std::vector<TableView::VisibleColumn>& columns(
       table->visible_columns());
+  if (columns.empty())
+    return absl::nullopt;
   for (size_t i = 0; i < columns.size(); ++i) {
     if (x <= columns[i].x + columns[i].width)
-      return static_cast<int>(i);
+      return i;
   }
-  return static_cast<int>(columns.size()) - 1;
+  return columns.size() - 1;
 }
 
 ui::TableColumn::Alignment GetMirroredTableColumnAlignment(

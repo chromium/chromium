@@ -110,15 +110,15 @@ class TaskManagerViewTest : public InProcessBrowserTest {
 
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
-  int FindRowForTab(content::WebContents* tab) {
+  absl::optional<size_t> FindRowForTab(content::WebContents* tab) {
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
         TaskManagerTester::Create(base::RepeatingClosure());
-    for (int i = 0; i < tester->GetRowCount(); ++i) {
+    for (size_t i = 0; i < static_cast<size_t>(tester->GetRowCount()); ++i) {
       if (tester->GetTabId(i) == tab_id)
         return i;
     }
-    return -1;
+    return absl::nullopt;
   }
 
   void HideTaskManagerSync() {
@@ -181,8 +181,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, ColumnsSettingsAreRestored) {
     const ui::TableColumn& column = table->visible_columns()[i].column;
     if (column.sortable && column.initial_sort_is_ascending) {
       // Toggle the sort twice for a descending sort.
-      table->ToggleSortOrder(static_cast<int>(i));
-      table->ToggleSortOrder(static_cast<int>(i));
+      table->ToggleSortOrder(i);
+      table->ToggleSortOrder(i);
       is_sorted = true;
       sorted_col_id = column.id;
       break;
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, DISABLED_SelectionConsistency) {
   EXPECT_EQ(3U, tabs.size());
 
   // Select the middle row, and store its tab id.
-  GetTable()->Select(FindRowForTab(tabs[1]));
+  GetTable()->Select(FindRowForTab(tabs[1]).value());
   EXPECT_EQ(GetTable()->GetFirstSelectedRow(), FindRowForTab(tabs[1]));
   EXPECT_EQ(1UL, GetTable()->selection_model().size());
 
@@ -335,11 +335,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, DISABLED_SelectionConsistency) {
   // A later row should now be selected. The selection should be after the 4
   // rows sharing the tabs[0] process, and it should be at or before
   // the tabs[2] row.
-  ASSERT_LT(FindRowForTab(tabs[0]) + 3, GetTable()->GetFirstSelectedRow());
+  ASSERT_LT(FindRowForTab(tabs[0]).value() + 3,
+            GetTable()->GetFirstSelectedRow());
   ASSERT_LE(GetTable()->GetFirstSelectedRow(), FindRowForTab(tabs[2]));
 
   // Now select tabs[2].
-  GetTable()->Select(FindRowForTab(tabs[2]));
+  GetTable()->Select(FindRowForTab(tabs[2]).value());
 
   // Focus and reload one of the sad tabs. It should reappear in the TM. The
   // other sad tab should not reappear.

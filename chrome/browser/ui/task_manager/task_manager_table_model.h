@@ -77,7 +77,9 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.
-  void GetRowsGroupRange(int row_index, int* out_start, int* out_length);
+  void GetRowsGroupRange(size_t row_index,
+                         size_t* out_start,
+                         size_t* out_length);
 
   // Activates the browser tab associated with the process in the specified
   // |row_index|.

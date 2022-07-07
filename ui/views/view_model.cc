@@ -56,8 +56,9 @@ absl::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {
   const auto i =
       std::find_if(entries_.cbegin(), entries_.cend(),
                    [view](const auto& entry) { return entry.view == view; });
-  return (i == entries_.cend()) ? absl::nullopt
-                                : absl::make_optional(i - entries_.cbegin());
+  return (i == entries_.cend())
+             ? absl::nullopt
+             : absl::make_optional(static_cast<size_t>(i - entries_.cbegin()));
 }
 
 ViewModelBase::ViewModelBase() = default;

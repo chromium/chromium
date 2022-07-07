@@ -236,7 +236,8 @@ void TaskManagerView::WindowClosing() {
   table_model_->StoreColumnsSettings();
 }
 
-void TaskManagerView::GetGroupRange(int model_index, views::GroupRange* range) {
+void TaskManagerView::GetGroupRange(size_t model_index,
+                                    views::GroupRange* range) {
   table_model_->GetRowsGroupRange(model_index, &range->start, &range->length);
 }
 

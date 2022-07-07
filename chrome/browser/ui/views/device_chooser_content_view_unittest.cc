@@ -126,7 +126,7 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
   bool IsDeviceSelected() { return !table_view()->selection_model().empty(); }
 
   void ExpectNoDevices() {
-    EXPECT_EQ(0, table_view()->GetRowCount());
+    EXPECT_EQ(0u, table_view()->GetRowCount());
     // The table should be disabled since there are no (real) options.
     EXPECT_FALSE(table_parent()->GetVisible());
     EXPECT_FALSE(table_view()->GetEnabled());
@@ -166,14 +166,14 @@ TEST_F(DeviceChooserContentViewTest, AddOption) {
   EXPECT_CALL(table_observer(), OnSelectionChanged()).Times(0);
   AddPairedDevice();
 
-  EXPECT_EQ(1, table_view()->GetRowCount());
+  EXPECT_EQ(1u, table_view()->GetRowCount());
   EXPECT_EQ(GetPairedDeviceTextAtRow(0), table_model()->GetText(0, 0));
   // The table should be enabled now that there's an option.
   EXPECT_TRUE(table_view()->GetEnabled());
   EXPECT_FALSE(IsDeviceSelected());
 
   AddUnpairedDevice();
-  EXPECT_EQ(2, table_view()->GetRowCount());
+  EXPECT_EQ(2u, table_view()->GetRowCount());
   EXPECT_EQ(GetUnpairedDeviceTextAtRow(1), table_model()->GetText(1, 0));
   EXPECT_TRUE(table_view()->GetEnabled());
   EXPECT_FALSE(IsDeviceSelected());
@@ -188,7 +188,7 @@ TEST_F(DeviceChooserContentViewTest, RemoveOption) {
 
   // Remove the paired device.
   controller()->RemoveDevice(0);
-  EXPECT_EQ(2, table_view()->GetRowCount());
+  EXPECT_EQ(2u, table_view()->GetRowCount());
   EXPECT_EQ(GetUnpairedDeviceTextAtRow(0), table_model()->GetText(0, 0));
   EXPECT_EQ(GetUnpairedDeviceTextAtRow(1), table_model()->GetText(1, 0));
   EXPECT_TRUE(table_view()->GetEnabled());
@@ -212,7 +212,7 @@ TEST_F(DeviceChooserContentViewTest, UpdateOption) {
       1, {"Nice Device", FakeBluetoothChooserController::CONNECTED,
           FakeBluetoothChooserController::PAIRED,
           FakeBluetoothChooserController::kSignalStrengthUnknown});
-  EXPECT_EQ(3, table_view()->GetRowCount());
+  EXPECT_EQ(3u, table_view()->GetRowCount());
   EXPECT_EQ(GetPairedDeviceTextAtRow(1), table_model()->GetText(1, 0));
   EXPECT_FALSE(IsDeviceSelected());
 }
@@ -224,11 +224,11 @@ TEST_F(DeviceChooserContentViewTest, SelectAndDeselectAnOption) {
 
   table_view()->Select(0);
   EXPECT_TRUE(IsDeviceSelected());
-  EXPECT_EQ(0, table_view()->GetFirstSelectedRow());
+  EXPECT_EQ(0u, table_view()->GetFirstSelectedRow());
 
-  table_view()->Select(-1);
+  table_view()->Select(absl::nullopt);
   EXPECT_FALSE(IsDeviceSelected());
-  EXPECT_EQ(-1, table_view()->GetFirstSelectedRow());
+  EXPECT_FALSE(table_view()->GetFirstSelectedRow().has_value());
 }
 
 TEST_F(DeviceChooserContentViewTest, BluetoothIsOff) {
@@ -296,7 +296,7 @@ TEST_F(DeviceChooserContentViewTest, BluetoothPermissionDenied) {
 TEST_F(DeviceChooserContentViewTest, ScanForDevices) {
   controller()->SetBluetoothStatus(
       FakeBluetoothChooserController::BluetoothStatus::SCANNING);
-  EXPECT_EQ(0, table_view()->GetRowCount());
+  EXPECT_EQ(0u, table_view()->GetRowCount());
   EXPECT_FALSE(table_view()->GetEnabled());
   EXPECT_FALSE(adapter_off_view()->GetVisible());
   EXPECT_TRUE(throbber()->GetVisible());
@@ -304,7 +304,7 @@ TEST_F(DeviceChooserContentViewTest, ScanForDevices) {
   EXPECT_FALSE(re_scan_button()->GetVisible());
 
   AddUnpairedDevice();
-  EXPECT_EQ(1, table_view()->GetRowCount());
+  EXPECT_EQ(1u, table_view()->GetRowCount());
   EXPECT_TRUE(table_view()->GetEnabled());
   EXPECT_FALSE(adapter_off_view()->GetVisible());
   EXPECT_TRUE(throbber()->GetVisible());
@@ -346,7 +346,7 @@ TEST_F(DeviceChooserContentViewTest, SetTableViewAlwaysDisabled) {
   controller()->set_table_view_always_disabled(true);
   EXPECT_FALSE(table_view()->GetEnabled());
   AddUnpairedDevice();
-  EXPECT_EQ(1, table_view()->GetRowCount());
+  EXPECT_EQ(1u, table_view()->GetRowCount());
   // The table should still be disabled even though there's an option.
   EXPECT_FALSE(table_view()->GetEnabled());
 }

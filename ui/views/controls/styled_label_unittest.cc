@@ -371,7 +371,9 @@ TEST_F(StyledLabelInWidgetTest, Color) {
   styled()->Layout();
 
   // The code below is not prepared to deal with dark mode.
-  widget()->GetNativeTheme()->set_use_dark_colors(false);
+  auto* const native_theme = widget()->GetNativeTheme();
+  native_theme->set_use_dark_colors(false);
+  native_theme->NotifyOnNativeThemeUpdated();
 
   auto* container = widget()->GetContentsView();
   // Obtain the default text color for a label.

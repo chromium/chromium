@@ -48,7 +48,7 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // TableGrouper:
-  void GetGroupRange(int model_index, GroupRange* range) override;
+  void GetGroupRange(size_t model_index, GroupRange* range) override;
 
   // TableViewObserver:
   void OnSelectionChanged() override;

@@ -151,7 +151,7 @@ std::u16string TableExample::GetTooltip(int row) {
 
 void TableExample::SetObserver(ui::TableModelObserver* observer) {}
 
-void TableExample::GetGroupRange(int model_index, GroupRange* range) {
+void TableExample::GetGroupRange(size_t model_index, GroupRange* range) {
   if (model_index < 2) {
     range->start = 0;
     range->length = 2;

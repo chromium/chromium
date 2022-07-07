@@ -151,16 +151,16 @@ class VIEWS_EXPORT TableView : public views::View,
   void SetGrouper(TableGrouper* grouper);
 
   // Returns the number of rows in the TableView.
-  int GetRowCount() const;
+  size_t GetRowCount() const;
 
   // Selects the specified item, making sure it's visible.
-  void Select(int model_row);
+  void Select(absl::optional<size_t> model_row);
 
   // Selects all items.
   void SetSelectionAll(bool select);
 
   // Returns the first selected row in terms of the model.
-  int GetFirstSelectedRow() const;
+  absl::optional<size_t> GetFirstSelectedRow() const;
 
   const ui::ListSelectionModel& selection_model() const {
     return selection_model_;
@@ -187,18 +187,18 @@ class VIEWS_EXPORT TableView : public views::View,
   void SetObserver(TableViewObserver* observer);
   TableViewObserver* GetObserver() const;
 
-  int GetActiveVisibleColumnIndex() const;
+  absl::optional<size_t> GetActiveVisibleColumnIndex() const;
 
-  void SetActiveVisibleColumnIndex(int index);
+  void SetActiveVisibleColumnIndex(absl::optional<size_t> index);
 
   const std::vector<VisibleColumn>& visible_columns() const {
     return visible_columns_;
   }
 
-  const VisibleColumn& GetVisibleColumn(int index);
+  const VisibleColumn& GetVisibleColumn(size_t index);
 
   // Sets the width of the column. |index| is in terms of |visible_columns_|.
-  void SetVisibleColumnWidth(int index, int width);
+  void SetVisibleColumnWidth(size_t index, int width);
 
   // Modify the table sort order, depending on a clicked column and the previous
   // table sort order. Does nothing if this column is not sortable.
@@ -207,17 +207,17 @@ class VIEWS_EXPORT TableView : public views::View,
   // cycle through three states in order: sorted -> reverse-sorted -> unsorted.
   // When switching from one sort column to another, the previous sort column
   // will be remembered and used as a secondary sort key.
-  void ToggleSortOrder(int visible_column_index);
+  void ToggleSortOrder(size_t visible_column_index);
 
   const SortDescriptors& sort_descriptors() const { return sort_descriptors_; }
   void SetSortDescriptors(const SortDescriptors& descriptors);
   bool GetIsSorted() const { return !sort_descriptors_.empty(); }
 
   // Maps from the index in terms of the model to that of the view.
-  int ModelToView(int model_index) const;
+  size_t ModelToView(size_t model_index) const;
 
   // Maps from the index in terms of the view to that of the model.
-  int ViewToModel(int view_index) const;
+  size_t ViewToModel(size_t view_index) const;
 
   int GetRowHeight() const { return row_height_; }
 
@@ -247,7 +247,8 @@ class VIEWS_EXPORT TableView : public views::View,
   // Returns the virtual accessibility view corresponding to the specified cell.
   // |row| should be a view index, not a model index.
   // |visible_column_index| indexes into |visible_columns_|.
-  AXVirtualView* GetVirtualAccessibilityCell(int row, int visible_column_index);
+  AXVirtualView* GetVirtualAccessibilityCell(size_t row,
+                                             size_t visible_column_index);
 
   bool header_row_is_active() const { return header_row_is_active_; }
 
@@ -292,10 +293,10 @@ class VIEWS_EXPORT TableView : public views::View,
     PaintRegion();
     ~PaintRegion();
 
-    int min_row = 0;
-    int max_row = 0;
-    int min_column = 0;
-    int max_column = 0;
+    size_t min_row = 0;
+    size_t max_row = 0;
+    size_t min_column = 0;
+    size_t max_column = 0;
   };
 
   void OnPaintImpl(gfx::Canvas* canvas);
@@ -317,14 +318,14 @@ class VIEWS_EXPORT TableView : public views::View,
   // Used to sort the two rows. Returns a value < 0, == 0 or > 0 indicating
   // whether the row2 comes before row1, row2 is the same as row1 or row1 comes
   // after row2. This invokes CompareValues on the model with the sorted column.
-  int CompareRows(int model_row1, int model_row2);
+  int CompareRows(size_t model_row1, size_t model_row2);
 
   // Returns the bounds of the specified row.
-  gfx::Rect GetRowBounds(int row) const;
+  gfx::Rect GetRowBounds(size_t row) const;
 
   // Returns the bounds of the specified cell. |visible_column_index| indexes
   // into |visible_columns_|.
-  gfx::Rect GetCellBounds(int row, int visible_column_index) const;
+  gfx::Rect GetCellBounds(size_t row, size_t visible_column_index) const;
 
   // Returns the bounds of the active cell.
   gfx::Rect GetActiveCellBounds() const;
@@ -332,7 +333,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Adjusts |bounds| based on where the text should be painted. |bounds| comes
   // from GetCellBounds() and |visible_column_index| is the corresponding column
   // (in terms of |visible_columns_|).
-  void AdjustCellBoundsForText(int visible_column_index,
+  void AdjustCellBoundsForText(size_t visible_column_index,
                                gfx::Rect* bounds) const;
 
   // Creates |header_| if necessary.
@@ -360,7 +361,7 @@ class VIEWS_EXPORT TableView : public views::View,
   void AdvanceActiveVisibleColumn(AdvanceDirection direction);
 
   // Sets the selection to the specified index (in terms of the view).
-  void SelectByViewIndex(int view_index);
+  void SelectByViewIndex(absl::optional<size_t> view_index);
 
   // Sets the selection model to |new_selection|.
   void SetSelectionModel(ui::ListSelectionModel new_selection);
@@ -375,7 +376,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Set the selection state of row at |view_index| to |select|, additionally
   // any other rows in the GroupRange containing |view_index| are updated as
   // well. This does not change the anchor or active index of |model|.
-  void SelectRowsInRangeFrom(int view_index,
+  void SelectRowsInRangeFrom(size_t view_index,
                              bool select,
                              ui::ListSelectionModel* model) const;
 
@@ -431,7 +432,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Returns the virtual accessibility view corresponding to the specified row.
   // |row| should be a view index into the TableView's body elements, not a
   // model index.
-  AXVirtualView* GetVirtualAccessibilityBodyRow(int row);
+  AXVirtualView* GetVirtualAccessibilityBodyRow(size_t row);
 
   // Returns the virtual accessibility view corresponding to the header row, if
   // it exists.
@@ -442,17 +443,17 @@ class VIEWS_EXPORT TableView : public views::View,
   // `ax_row` should be the virtual view of either a header or body row.
   // `visible_column_index` indexes into `visible_columns_`.
   AXVirtualView* GetVirtualAccessibilityCellImpl(AXVirtualView* ax_row,
-                                                 int visible_column_index);
+                                                 size_t visible_column_index);
 
   // Creates a virtual accessibility view that is used to expose information
   // about the row at |view_index| to assistive software.
-  std::unique_ptr<AXVirtualView> CreateRowAccessibilityView(int view_index);
+  std::unique_ptr<AXVirtualView> CreateRowAccessibilityView(size_t view_index);
 
   // Creates a virtual accessibility view that is used to expose information
   // about the cell at the provided coordinates |row_index| and |column_index|
   // to assistive software.
   std::unique_ptr<AXVirtualView> CreateCellAccessibilityView(
-      int row_index,
+      size_t row_index,
       size_t column_index);
 
   // Creates a virtual accessibility view that is used to expose information
@@ -487,8 +488,8 @@ class VIEWS_EXPORT TableView : public views::View,
   std::vector<VisibleColumn> visible_columns_;
 
   // The active visible column. Used for keyboard access to functionality such
-  // as sorting and resizing. -1 if no visible column is active.
-  int active_visible_column_index_ = -1;
+  // as sorting and resizing. nullopt if no visible column is active.
+  absl::optional<size_t> active_visible_column_index_ = absl::nullopt;
 
   // The header. This is only created if more than one column is specified or
   // the first column has a non-empty title.
@@ -532,8 +533,8 @@ class VIEWS_EXPORT TableView : public views::View,
   SortDescriptors sort_descriptors_;
 
   // Mappings used when sorted.
-  std::vector<int> view_to_model_;
-  std::vector<int> model_to_view_;
+  std::vector<size_t> view_to_model_;
+  std::vector<size_t> model_to_view_;
 
   raw_ptr<TableGrouper> grouper_ = nullptr;
 
@@ -549,7 +550,7 @@ class VIEWS_EXPORT TableView : public views::View,
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TableView, View)
-VIEW_BUILDER_PROPERTY(int, ActiveVisibleColumnIndex)
+VIEW_BUILDER_PROPERTY(absl::optional<size_t>, ActiveVisibleColumnIndex)
 VIEW_BUILDER_PROPERTY(const std::vector<ui::TableColumn>&,
                       Columns,
                       std::vector<ui::TableColumn>)

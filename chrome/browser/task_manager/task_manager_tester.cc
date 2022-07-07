@@ -184,9 +184,9 @@ void TaskManagerTester::Activate(int row) {
   model_->ActivateTask(row);
 }
 
-void TaskManagerTester::GetRowsGroupRange(int row,
-                                          int* out_start,
-                                          int* out_length) {
+void TaskManagerTester::GetRowsGroupRange(size_t row,
+                                          size_t* out_start,
+                                          size_t* out_length) {
   return model_->GetRowsGroupRange(row, out_start, out_length);
 }
 

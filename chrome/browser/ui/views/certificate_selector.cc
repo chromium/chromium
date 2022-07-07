@@ -244,20 +244,20 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 }
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
-  const int selected = table_->GetFirstSelectedRow();
-  if (selected < 0)  // Nothing is selected in |table_|.
+  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  if (!selected.has_value())
     return nullptr;
-  DCHECK_LT(static_cast<size_t>(selected), identities_.size());
-  return identities_[selected].get();
+  DCHECK_LT(selected.value(), identities_.size());
+  return identities_[selected.value()].get();
 }
 
 bool CertificateSelector::Accept() {
-  const int selected = table_->GetFirstSelectedRow();
-  if (selected < 0)  // Nothing is selected in |table_|.
+  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  if (!selected.has_value())
     return false;
 
-  DCHECK_LT(static_cast<size_t>(selected), identities_.size());
-  AcceptCertificate(std::move(identities_[selected]));
+  DCHECK_LT(selected.value(), identities_.size());
+  AcceptCertificate(std::move(identities_[selected.value()]));
   return true;
 }
 

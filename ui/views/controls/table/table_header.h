@@ -34,7 +34,7 @@ class VIEWS_EXPORT TableHeader : public views::View {
 
   const gfx::FontList& font_list() const { return font_list_; }
 
-  void ResizeColumnViaKeyboard(int index,
+  void ResizeColumnViaKeyboard(size_t index,
                                TableView::AdvanceDirection direction);
 
   // Call to update TableHeader objects that rely on the focus state of its
@@ -92,9 +92,9 @@ class VIEWS_EXPORT TableHeader : public views::View {
   // Toggles the sort order of the column at the location in |event|.
   void ToggleSortOrder(const ui::LocatedEvent& event);
 
-  // Returns the column to resize given the specified x-coordinate, or -1 if |x|
-  // is not in the resize range of any columns.
-  int GetResizeColumn(int x) const;
+  // Returns the column to resize given the specified x-coordinate, or nullopt
+  // if |x| is not in the resize range of any columns.
+  absl::optional<size_t> GetResizeColumn(int x) const;
 
   bool is_resizing() const { return resize_details_.get() != nullptr; }
 

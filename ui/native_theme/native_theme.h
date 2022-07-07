@@ -346,14 +346,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                        float height) const;
 
   // Paint the part to the canvas.
-  virtual void Paint(cc::PaintCanvas* canvas,
-                     const ui::ColorProvider* color_provider,
-                     Part part,
-                     State state,
-                     const gfx::Rect& rect,
-                     const ExtraParams& extra,
-                     ColorScheme color_scheme = ColorScheme::kDefault,
-                     const absl::optional<SkColor>& accent_color = 0) const = 0;
+  virtual void Paint(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      Part part,
+      State state,
+      const gfx::Rect& rect,
+      const ExtraParams& extra,
+      ColorScheme color_scheme = ColorScheme::kDefault,
+      const absl::optional<SkColor>& accent_color = absl::nullopt) const = 0;
 
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which

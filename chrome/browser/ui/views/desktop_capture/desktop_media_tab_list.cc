@@ -305,10 +305,10 @@ void DesktopMediaTabList::OnThemeChanged() {
 
 absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  int row = list_->GetFirstSelectedRow();
-  if (row == -1)
+  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  if (!row.has_value())
     return absl::nullopt;
-  return controller_->GetSource(row).id;
+  return controller_->GetSource(row.value()).id;
 }
 
 DesktopMediaListController::SourceListListener*
@@ -328,13 +328,13 @@ void DesktopMediaTabList::ClearPreview() {
 void DesktopMediaTabList::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const int row = list_->GetFirstSelectedRow();
-  if (row == -1) {
+  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  if (!row.has_value()) {
     ClearPreview();
     controller_->SetPreviewedSource(absl::nullopt);
     return;
   }
-  const DesktopMediaList::Source& source = controller_->GetSource(row);
+  const DesktopMediaList::Source& source = controller_->GetSource(row.value());
 
   const std::u16string truncated_title =
       source.name.substr(0, kMaxPreviewTitleLength);
@@ -342,7 +342,7 @@ void DesktopMediaTabList::OnSelectionChanged() {
 
   // Trigger a preview update to either show a previous snapshot for this source
   // if we have one, or clear it if we don't.
-  OnPreviewUpdated(base::checked_cast<size_t>(row));
+  OnPreviewUpdated(row.value());
 
   // Update the source for which previews are generated.
   controller_->SetPreviewedSource(source.id);
@@ -364,7 +364,7 @@ void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
 
 void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (base::checked_cast<int>(index) != list_->GetFirstSelectedRow()) {
+  if (index != list_->GetFirstSelectedRow()) {
     return;
   }
 

@@ -819,7 +819,7 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
   if (found_view == views_in_group.end())
     return absl::nullopt;
 
-  return views_in_group.size();
+  return base::checked_cast<int>(views_in_group.size());
 }
 
 void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(

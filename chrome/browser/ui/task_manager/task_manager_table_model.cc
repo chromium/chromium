@@ -637,11 +637,11 @@ int TaskManagerTableModel::CompareValues(int row1,
   }
 }
 
-void TaskManagerTableModel::GetRowsGroupRange(int row_index,
-                                              int* out_start,
-                                              int* out_length) {
-  int i = row_index;
-  int limit = row_index + 1;
+void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
+                                              size_t* out_start,
+                                              size_t* out_length) {
+  size_t i = row_index;
+  size_t limit = row_index + 1;
   if (!observed_task_manager()->IsRunningInVM(tasks_[row_index])) {
     const base::ProcessId process_id =
         observed_task_manager()->GetProcessId(tasks_[row_index]);
@@ -650,7 +650,7 @@ void TaskManagerTableModel::GetRowsGroupRange(int row_index,
            !observed_task_manager()->IsRunningInVM(tasks_[i - 1])) {
       --i;
     }
-    while (limit < RowCount() &&
+    while (limit < static_cast<size_t>(RowCount()) &&
            observed_task_manager()->GetProcessId(tasks_[limit]) == process_id &&
            !observed_task_manager()->IsRunningInVM(tasks_[limit])) {
       ++limit;

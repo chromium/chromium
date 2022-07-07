@@ -10,8 +10,8 @@
 namespace views {
 
 struct VIEWS_EXPORT GroupRange {
-  int start;
-  int length;
+  size_t start;
+  size_t length;
 };
 
 // TableGrouper is used by TableView to group a set of rows and treat them
@@ -19,7 +19,7 @@ struct VIEWS_EXPORT GroupRange {
 // together.
 class VIEWS_EXPORT TableGrouper {
  public:
-  virtual void GetGroupRange(int model_index, GroupRange* range) = 0;
+  virtual void GetGroupRange(size_t model_index, GroupRange* range) = 0;
 
  protected:
   virtual ~TableGrouper() = default;

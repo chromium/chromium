@@ -331,15 +331,15 @@ void TabStrip::OnSelectedTabChanged(Tab* from_tab, Tab* to_tab, bool animate) {
     return;
 
   if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
-    animating_from_ = gfx::Range(from_tab->GetMirroredX(),
-                                 from_tab->GetMirroredX() + from_tab->width());
-    animating_to_ = gfx::Range(to_tab->GetMirroredX(),
-                               to_tab->GetMirroredX() + to_tab->width());
+    animating_from_ = {from_tab->GetMirroredX(),
+                       from_tab->GetMirroredX() + from_tab->width()};
+    animating_to_ = {to_tab->GetMirroredX(),
+                     to_tab->GetMirroredX() + to_tab->width()};
   } else {
-    animating_from_ = gfx::Range(from_tab->bounds().y(),
-                                 from_tab->bounds().y() + from_tab->height());
-    animating_to_ = gfx::Range(to_tab->bounds().y(),
-                               to_tab->bounds().y() + to_tab->height());
+    animating_from_ = {from_tab->bounds().y(),
+                       from_tab->bounds().y() + from_tab->height()};
+    animating_to_ = {to_tab->bounds().y(),
+                     to_tab->bounds().y() + to_tab->height()};
   }
 
   contract_animation_->Stop();
@@ -438,30 +438,30 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   int min_main_axis = 0;
   int max_main_axis = 0;
   if (expand_animation_->is_animating()) {
-    bool animating_leading = animating_to_.start() < animating_from_.start();
+    bool animating_leading = animating_to_.start < animating_from_.start;
     double anim_value = gfx::Tween::CalculateValue(
         gfx::Tween::FAST_OUT_LINEAR_IN, expand_animation_->GetCurrentValue());
     if (animating_leading) {
       min_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.start(), animating_to_.start());
-      max_main_axis = animating_from_.end();
+          anim_value, animating_from_.start, animating_to_.start);
+      max_main_axis = animating_from_.end;
     } else {
-      min_main_axis = animating_from_.start();
+      min_main_axis = animating_from_.start;
       max_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.end(), animating_to_.end());
+          anim_value, animating_from_.end, animating_to_.end);
     }
   } else if (contract_animation_->is_animating()) {
-    bool animating_leading = animating_to_.start() < animating_from_.start();
+    bool animating_leading = animating_to_.start < animating_from_.start;
     double anim_value = gfx::Tween::CalculateValue(
         gfx::Tween::LINEAR_OUT_SLOW_IN, contract_animation_->GetCurrentValue());
     if (animating_leading) {
-      min_main_axis = animating_to_.start();
+      min_main_axis = animating_to_.start;
       max_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.end(), animating_to_.end());
+          anim_value, animating_from_.end, animating_to_.end);
     } else {
       min_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.start(), animating_to_.start());
-      max_main_axis = animating_to_.end();
+          anim_value, animating_from_.start, animating_to_.start);
+      max_main_axis = animating_to_.end;
     }
   } else if (is_horizontal) {
     min_main_axis = tab->GetMirroredX();
@@ -483,7 +483,7 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
 }
 
 BEGIN_METADATA(TabStrip, View)
-ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)
+ADD_READONLY_PROPERTY_METADATA(size_t, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
 END_METADATA

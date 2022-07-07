@@ -164,10 +164,10 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
   void TaskManagerTableModelSanityCheck() {
     // Ensure the groups are self-consistent.
     for (int i = 0; i < model()->GetRowCount(); ++i) {
-      int start, length;
+      size_t start, length;
       model()->GetRowsGroupRange(i, &start, &length);
-      for (int j = 0; j < length; ++j) {
-        int start2, length2;
+      for (size_t j = 0; j < length; ++j) {
+        size_t start2, length2;
         model()->GetRowsGroupRange(start + j, &start2, &length2);
         EXPECT_EQ(start, start2);
         EXPECT_EQ(length, length2);

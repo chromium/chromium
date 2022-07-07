@@ -98,9 +98,9 @@ NSString* ColumnIdentifier(int id) {
         _currentSortDescriptor;
     std::stable_sort(_viewToModelMap.begin(), _viewToModelMap.end(),
                      [tableModel, currentSortDescriptor](int a, int b) {
-                       int aStart, aLength;
+                       size_t aStart, aLength;
                        tableModel->GetRowsGroupRange(a, &aStart, &aLength);
-                       int bStart, bLength;
+                       size_t bStart, bLength;
                        tableModel->GetRowsGroupRange(b, &bStart, &bLength);
                        if (aStart == bStart) {
                          // The two rows are in the same group, sort so that
@@ -485,9 +485,9 @@ NSString* ColumnIdentifier(int id) {
     if (!_tableModel->IsTaskKillable(modelIndex))
       allSelectionRowsAreKillableTasks = false;
 
-    int groupStart, groupLength;
+    size_t groupStart, groupLength;
     _tableModel->GetRowsGroupRange(modelIndex, &groupStart, &groupLength);
-    for (int j = 0; j < groupLength; ++j)
+    for (size_t j = 0; j < groupLength; ++j)
       [groupIndexes addIndex:_modelToViewMap[groupStart + j]];
   }
 

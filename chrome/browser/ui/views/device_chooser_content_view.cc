@@ -219,7 +219,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
   // No row is selected since the adapter status has changed.
   // This will also disable the OK button if it was enabled because
   // of a previously selected row.
-  table_view_->Select(-1);
+  table_view_->Select(absl::nullopt);
   adapter_enabled_ = enabled;
   UpdateTableView();
 
@@ -231,7 +231,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
 
 void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
   // No row is selected since we are not authorized to get device info anyway.
-  table_view_->Select(-1);
+  table_view_->Select(absl::nullopt);
   adapter_authorized_ = authorized;
   UpdateTableView();
 
@@ -243,7 +243,7 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     // No row is selected since the chooser is refreshing. This will also
     // disable the OK button if it was enabled because of a previously
     // selected row.
-    table_view_->Select(-1);
+    table_view_->Select(absl::nullopt);
     UpdateTableView();
   }
 
