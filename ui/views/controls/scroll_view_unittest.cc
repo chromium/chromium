@@ -113,7 +113,8 @@ class ObserveViewDeletion : public ViewObserver {
 
  private:
   base::ScopedObservation<View, ViewObserver> observer_{this};
-  // TODO(crbug.com/1298696): Breaks views_unittests.
+  // TODO(crbug.com/1298696): views_unittests breaks with MTECheckedPtr
+  // enabled. Triage.
   raw_ptr<View, DegradeToNoOpWhenMTE> deleted_view_ = nullptr;
 };
 

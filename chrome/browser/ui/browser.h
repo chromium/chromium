@@ -1155,7 +1155,10 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // This Browser's window.
-  raw_ptr<BrowserWindow> window_;
+  //
+  // TODO(crbug.com/1298696): pixel_browser_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<BrowserWindow, DegradeToNoOpWhenMTE> window_;
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;
