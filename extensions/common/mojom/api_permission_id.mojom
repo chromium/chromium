@@ -263,6 +263,7 @@ enum APIPermissionID {
   kChromeOSTelemetrySerialNumber = 237,
   kSharedStoragePrivate = 238,
   kEnterpriseRemoteApps = 239,
+  kOffscreen = 240,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

@@ -1741,6 +1741,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_GETARCAPPKILLS = 1678,
   FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS = 1679,
   PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE = 1680,
+  OFFSCREEN_CREATEDOCUMENT = 1681,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

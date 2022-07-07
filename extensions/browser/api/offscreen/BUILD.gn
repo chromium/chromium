@@ -9,6 +9,8 @@ assert(enable_extensions,
 
 source_set("offscreen") {
   sources = [
+    "offscreen_api.cc",
+    "offscreen_api.h",
     "offscreen_document_manager.cc",
     "offscreen_document_manager.h",
   ]
@@ -18,6 +20,7 @@ source_set("offscreen") {
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/common",
+    "//extensions/common/api",
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]

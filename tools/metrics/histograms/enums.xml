@@ -34983,6 +34983,7 @@ Called by update_extension_histograms.py.-->
   <int value="1678" label="AUTOTESTPRIVATE_GETARCAPPKILLS"/>
   <int value="1679" label="FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS"/>
   <int value="1680" label="PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE"/>
+  <int value="1681" label="OFFSCREEN_CREATEDOCUMENT"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -35612,6 +35613,7 @@ Called by update_extension_permission.py.-->
   <int value="237" label="kChromeOSTelemetrySerialNumber"/>
   <int value="238" label="kSharedStoragePrivate"/>
   <int value="239" label="kEnterpriseRemoteApps"/>
+  <int value="240" label="kOffscreen"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

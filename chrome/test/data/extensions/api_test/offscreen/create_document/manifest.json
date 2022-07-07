@@ -1,0 +1,9 @@
+{
+  "name": "offscreen.createDocument test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["offscreen"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

@@ -36,6 +36,7 @@ extensions_api_schema_files_ = [
   "mime_handler_view_guest_internal.json",
   "mojo_private.idl",
   "networking_private.idl",
+  "offscreen.idl",
   "power.idl",
   "printer_provider.idl",
   "printer_provider_internal.idl",

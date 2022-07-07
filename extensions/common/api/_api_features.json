@@ -431,6 +431,10 @@
       "chrome://os-settings/*"
     ]
   }],
+  "offscreen": {
+    "dependencies": ["permission:offscreen"],
+    "contexts": ["blessed_extension"]
+  },
   "power": {
     "dependencies": ["permission:power"],
     "contexts": ["blessed_extension"]
