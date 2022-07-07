@@ -522,6 +522,10 @@ void MediaInternals::SendGeneralAudioInformation() {
                  ", minimize_resampling = ",
                  media::kChromeWideEchoCancellationMinimizeResampling.Get()
                      ? "true"
+                     : "false",
+                 ", allow_all_sample_rates = ",
+                 media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
+                     ? "true"
                      : "false"})
           : "Disabled";
   audio_info_data.SetKey(
