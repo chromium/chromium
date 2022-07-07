@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
@@ -152,6 +153,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Replacements for testing.
   std::unique_ptr<IdpNetworkRequestManager> mock_network_manager_;
   std::unique_ptr<IdentityRequestDialogController> mock_dialog_controller_;
+
+  // Helper that records FedCM UMA and UKM metrics. Initialized in the
+  // RequestToken() method, so all metrics must be recorded after that.
+  std::unique_ptr<FedCmMetrics> fedcm_metrics_;
 
   // Parameters of auth request.
   GURL provider_;

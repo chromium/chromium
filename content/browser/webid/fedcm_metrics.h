@@ -7,6 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
 class TimeDelta;
@@ -52,36 +53,43 @@ enum class FedCmRequestIdTokenStatus {
   kMaxValue = kUserInterfaceTimedOut
 };
 
-// Records the time from when a call to the API was made to when the accounts
-// dialog is shown.
-void RecordShowAccountsDialogTime(base::TimeDelta duration,
-                                  ukm::SourceId source_id,
-                                  const GURL& provider);
+class FedCmMetrics {
+ public:
+  FedCmMetrics(const GURL& provider, const ukm::SourceId page_source_id);
 
-// Records the time from when the accounts dialog is shown to when the user
-// presses the Continue button.
-void RecordContinueOnDialogTime(base::TimeDelta duration,
-                                ukm::SourceId source_id,
-                                const GURL& provider);
+  ~FedCmMetrics() = default;
 
-// Records the time from when the accounts dialog is shown to when the user
-// closes the dialog without selecting any account.
-void RecordCancelOnDialogTime(base::TimeDelta duration,
-                              ukm::SourceId source_id,
-                              const GURL& provider);
+  // Records the time from when a call to the API was made to when the accounts
+  // dialog is shown.
+  void RecordShowAccountsDialogTime(base::TimeDelta duration);
 
-// Records the time from when the user presses the Continue button to when the
-// token response is received. Also records the overall time from when the API
-// is called to when the token response is received.
-void RecordTokenResponseAndTurnaroundTime(base::TimeDelta token_response_time,
-                                          base::TimeDelta turnaround_time,
-                                          ukm::SourceId source_id,
-                                          const GURL& provider);
+  // Records the time from when the accounts dialog is shown to when the user
+  // presses the Continue button.
+  void RecordContinueOnDialogTime(base::TimeDelta duration);
 
-// Records the status of the |RequestToken| call.
-void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
-                              ukm::SourceId source_id,
-                              const GURL& provider);
+  // Records the time from when the accounts dialog is shown to when the user
+  // closes the dialog without selecting any account.
+  void RecordCancelOnDialogTime(base::TimeDelta duration);
+
+  // Records the time from when the user presses the Continue button to when the
+  // token response is received. Also records the overall time from when the API
+  // is called to when the token response is received.
+  void RecordTokenResponseAndTurnaroundTime(base::TimeDelta token_response_time,
+                                            base::TimeDelta turnaround_time);
+
+  // Records the status of the |RequestToken| call.
+  void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status);
+
+  // The page's SourceId. Used to log the UKM event Blink.FedCm.
+  ukm::SourceId page_source_id_;
+
+  // The SourceId to be used to log the UKM event Blink.FedCmIdp. Uses
+  // |provider_| as the URL.
+  ukm::SourceId provider_source_id_;
+};
+
+// The following are UMA-only recordings, hence do not need to be in the
+// FedCmMetrics class.
 
 // Records whether the user selected account is for sign-in or not.
 void RecordIsSignInUser(bool is_sign_in);
@@ -95,6 +103,7 @@ void RecordApprovedClientsExistence(bool has_approved_clients);
 
 // Records the size of the approved clients list if applicable.
 void RecordApprovedClientsSize(int size);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
