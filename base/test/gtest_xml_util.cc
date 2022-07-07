@@ -278,9 +278,7 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
     }
   }
 
-  if (crashed) {
-    *crashed = (state != STATE_END);
-  }
+  *crashed = (state != STATE_END);
   return true;
 }
 
