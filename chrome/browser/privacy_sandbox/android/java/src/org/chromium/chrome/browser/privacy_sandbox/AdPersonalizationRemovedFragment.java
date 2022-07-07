@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,14 +19,16 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
 /**
  * Settings fragment for privacy sandbox settings.
  */
-public class AdPersonalizationRemovedFragment
-        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
+public class AdPersonalizationRemovedFragment extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceClickListener, FragmentSettingsLauncher {
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
     private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
     private static final String FLEDGE_CATEGORY_PREFERENCE = "fledge_interests";
@@ -37,9 +40,15 @@ public class AdPersonalizationRemovedFragment
     private Preference mEmptyFledgePreference;
     private SnackbarManager mSnackbarManager;
     private LargeIconBridge mLargeIconBridge;
+    private SettingsLauncher mSettingsLauncher;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
+    }
+
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 
     /**
@@ -140,5 +149,15 @@ public class AdPersonalizationRemovedFragment
     private void updateEmptyState() {
         mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
         mEmptyFledgePreference.setVisible(mFledgeCategory.getPreferenceCount() == 0);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_id_targeted_help) {
+            // Override action for the help button.
+            mSettingsLauncher.launchSettingsActivity(getContext(), LearnMoreFragment.class);
+            return true;
+        }
+        return false;
     }
 }

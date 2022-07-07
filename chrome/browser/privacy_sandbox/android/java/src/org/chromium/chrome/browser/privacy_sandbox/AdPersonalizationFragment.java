@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,6 +20,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
@@ -27,8 +30,8 @@ import java.util.List;
 /**
  * Settings fragment for privacy sandbox settings.
  */
-public class AdPersonalizationFragment
-        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
+public class AdPersonalizationFragment extends PrivacySandboxSettingsBaseFragment
+        implements Preference.OnPreferenceClickListener, FragmentSettingsLauncher {
     private static final String AD_PERSONALIZATION_DESCRIPTION = "ad_personalization_description";
 
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
@@ -51,9 +54,15 @@ public class AdPersonalizationFragment
 
     private Preference mDescriptionPreference;
     private LargeIconBridge mLargeIconBridge;
+    private SettingsLauncher mSettingsLauncher;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
+    }
+
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 
     /**
@@ -209,5 +218,15 @@ public class AdPersonalizationFragment
     private void updateEmptyState() {
         mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
         mEmptyFledgePreference.setVisible(mFledgeCategory.getPreferenceCount() == 0);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_id_targeted_help) {
+            // Override action for the question mark button.
+            mSettingsLauncher.launchSettingsActivity(getContext(), LearnMoreFragment.class);
+            return true;
+        }
+        return false;
     }
 }
