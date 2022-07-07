@@ -41,6 +41,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/linux/gbm_defines.h"
 
+#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+// GN doesn't understand conditional includes, so we need nogncheck here.
+// See crbug.com/1125897.
+#include "ui/ozone/public/ozone_platform.h"  // nogncheck
+#endif
+
 namespace media {
 namespace {
 
@@ -920,6 +926,18 @@ int main(int argc, char** argv) {
     // creates a ScopedFeatureList and multiple concurrent ScopedFeatureLists
     // are not allowed.
     auto scoped_feature_list = media::CreateScopedFeatureList();
+
+#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+    // Initialize Ozone so that the VADisplayState can decide if we're running
+    // on top of a platform that can deal with VA-API buffers.
+    // TODO(b/230370976): we may no longer need to initialize Ozone since we
+    // don't use it for buffer allocation.
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
+    ui::OzonePlatform::InitializeForGPU(params);
+#endif
+
     // PreSandboxInitialization() loads and opens the driver, queries its
     // capabilities and fills in the VASupportedProfiles.
     media::VaapiWrapper::PreSandboxInitialization();

@@ -355,6 +355,10 @@ test("vaapi_unittest") {
       ":webp_decoder_unit_test",
     ]
   }
+
+  if (use_ozone && is_linux) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 group("vaapi_fuzzers") {
