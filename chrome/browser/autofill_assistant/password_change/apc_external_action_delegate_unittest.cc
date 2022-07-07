@@ -108,7 +108,8 @@ autofill_assistant::external::Action CreateAction(
   autofill_assistant::external::Action action;
   autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
   *spec.mutable_base_prompt() = proto;
-  spec.SerializeToString(action.mutable_info()->mutable_action_payload());
+  *action.mutable_info()->mutable_generic_password_change_specification() =
+      spec;
 
   return action;
 }
@@ -121,7 +122,8 @@ autofill_assistant::external::Action CreateAction(
   autofill_assistant::external::Action action;
   autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
   *spec.mutable_use_generated_password_prompt() = proto;
-  spec.SerializeToString(action.mutable_info()->mutable_action_payload());
+  *action.mutable_info()->mutable_generic_password_change_specification() =
+      spec;
 
   return action;
 }
@@ -132,7 +134,8 @@ autofill_assistant::external::Action CreateAction(
   autofill_assistant::external::Action action;
   autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
   *spec.mutable_update_side_panel() = proto;
-  spec.SerializeToString(action.mutable_info()->mutable_action_payload());
+  *action.mutable_info()->mutable_generic_password_change_specification() =
+      spec;
 
   return action;
 }

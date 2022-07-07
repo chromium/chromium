@@ -42,24 +42,26 @@ void ApcExternalActionDelegate::OnActionRequested(
   end_action_callback_ = std::move(end_action_callback);
   start_dom_checks_callback_ = std::move(start_dom_checks_callback);
 
-  GenericPasswordChangeSpecification spec;
-  if (!spec.ParseFromString(action.info().action_payload())) {
-    DLOG(ERROR) << "unable to parse GenericPasswordChangeSpecification";
+  if (!action.info().has_generic_password_change_specification()) {
+    DLOG(ERROR) << "Action is not of type GenericPasswordChangeSpecification";
     EndAction(false);
     return;
   }
-
-  switch (spec.specification_case()) {
+  GenericPasswordChangeSpecification generic_password_change_specification =
+      action.info().generic_password_change_specification();
+  switch (generic_password_change_specification.specification_case()) {
     case GenericPasswordChangeSpecification::SpecificationCase::kBasePrompt:
-      HandleBasePrompt(spec.base_prompt());
+      HandleBasePrompt(generic_password_change_specification.base_prompt());
       break;
     case GenericPasswordChangeSpecification::SpecificationCase::
         kUseGeneratedPasswordPrompt:
-      HandleGeneratedPasswordPrompt(spec.use_generated_password_prompt());
+      HandleGeneratedPasswordPrompt(generic_password_change_specification
+                                        .use_generated_password_prompt());
       break;
     case GenericPasswordChangeSpecification::SpecificationCase::
         kUpdateSidePanel:
-      HandleUpdateSidePanel(spec.update_side_panel());
+      HandleUpdateSidePanel(
+          generic_password_change_specification.update_side_panel());
       break;
     case GenericPasswordChangeSpecification::SpecificationCase::
         SPECIFICATION_NOT_SET:

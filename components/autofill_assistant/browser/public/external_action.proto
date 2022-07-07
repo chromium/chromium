@@ -18,11 +18,11 @@ message Action {
   optional ActionInfo info = 1;
 }
 
-// Extended by the integrator.
 message ActionInfo {
   optional bytes action_payload = 1;
 
-  oneof Action {
+  // Action forwarded to the client delegate.
+  oneof action {
     password_change.GenericPasswordChangeSpecification
         generic_password_change_specification = 2;
   }
