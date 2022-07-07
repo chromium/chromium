@@ -53,10 +53,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableExactMatchForNonLatinLocale;
 // Enables launcher search results for OS settings.
 ASH_PUBLIC_EXPORT extern const base::Feature kLauncherSettingsSearch;
 
-// Enables using aggregated model in ranking non-app results for
-// non empty queries.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAggregatedMlSearchRanking;
-
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 

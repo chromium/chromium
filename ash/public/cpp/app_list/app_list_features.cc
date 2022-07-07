@@ -31,8 +31,6 @@ const base::Feature kEnableFuzzyAppSearch{"EnableFuzzyAppSearch",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableExactMatchForNonLatinLocale{
     "EnableExactMatchForNonLatinLocale", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableAggregatedMlSearchRanking{
-    "EnableAggregatedMlSearchRanking", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableLauncherSearchNormalization{
     "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCategoricalSearch{"CategoricalSearch",
@@ -85,10 +83,6 @@ bool IsFuzzyAppSearchEnabled() {
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
   return base::FeatureList::IsEnabled(kEnableExactMatchForNonLatinLocale);
-}
-
-bool IsAggregatedMlSearchRankingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAggregatedMlSearchRanking);
 }
 
 bool IsLauncherSearchNormalizationEnabled() {
