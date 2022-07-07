@@ -465,7 +465,7 @@ struct PopupView: View {
 
   func onNewSections(sections: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
     // Scroll to the very top of the list.
-    if !sections.isEmpty || !sections.first!.matches.isEmpty {
+    if sections.first?.matches.first != nil {
       scrollProxy.scrollTo(IndexPath(row: 0, section: 0), anchor: UnitPoint(x: 0, y: -.infinity))
     }
   }
