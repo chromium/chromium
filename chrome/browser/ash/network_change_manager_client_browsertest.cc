@@ -138,7 +138,7 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
 // Tests that network changes from shill are received by both the
 // NetworkChangeNotifier and NetworkConnectionTracker.
 IN_PROC_BROWSER_TEST_F(NetworkChangeManagerClientBrowserTest,
-                       ReceiveNotifications) {
+                       DISABLED_ReceiveNotifications) {
   // TODO(b/229673213): Remove log once flakiness is fixed.
   LOG(INFO) << "ReceiveNotifications test start";
   NetObserver net_observer;
