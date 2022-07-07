@@ -155,6 +155,9 @@ const base::Feature kLayoutNGBlockInInline{"LayoutNGBlockInInline",
 const base::Feature kPrivacySandboxAdsAPIs{"PrivacySandboxAdsAPIs",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPrivateNetworkAccessPermissionPrompt{
+    "PrivateNetworkAccessPermissionPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

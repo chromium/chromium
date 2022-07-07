@@ -15,6 +15,7 @@ enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache",
                     "only-if-cached" };
 enum FetchPriority {"low", "auto", "high"};
 enum RequestDuplex {"half"};
+enum IPAddressSpace {"local", "private", "public", "unknown"};
 
 // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
 
@@ -48,6 +49,7 @@ enum ReferrerPolicy {
     readonly attribute DOMString integrity;
     readonly attribute boolean keepalive;
     readonly attribute AbortSignal signal;
+    [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] readonly attribute IPAddressSpace targetAddressSpace;
 
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
     [RaisesException, CallWith=ScriptState, DoNotTestNewObject, NewObject] Request clone();

@@ -47,6 +47,8 @@ generated_callback_function_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ip_address_space.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ip_address_space.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_layout_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_layout_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_watch_callback.cc",

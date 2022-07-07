@@ -87,6 +87,13 @@ class CORE_EXPORT FetchRequestData final
   }
   void SetMode(network::mojom::RequestMode mode) { mode_ = mode; }
   network::mojom::RequestMode Mode() const { return mode_; }
+  void SetTargetAddressSpace(
+      network::mojom::IPAddressSpace target_address_space) {
+    target_address_space_ = target_address_space;
+  }
+  network::mojom::IPAddressSpace TargetAddressSpace() const {
+    return target_address_space_;
+  }
   void SetCredentials(network::mojom::CredentialsMode credentials) {
     credentials_ = credentials;
   }
@@ -176,6 +183,8 @@ class CORE_EXPORT FetchRequestData final
   // FIXME: Support m_authenticationFlag;
   // FIXME: Support m_synchronousFlag;
   network::mojom::RequestMode mode_ = network::mojom::RequestMode::kNoCors;
+  network::mojom::IPAddressSpace target_address_space_ =
+      network::mojom::IPAddressSpace::kUnknown;
   network::mojom::CredentialsMode credentials_ =
       network::mojom::CredentialsMode::kOmit;
   // TODO(yiyix): |cache_mode_| is exposed but does not yet affect fetch

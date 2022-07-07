@@ -1972,6 +1972,10 @@
       status: "experimental",
     },
     {
+      name: "PrivateNetworkAccessPermissionPrompt",
+      status: "test",
+    },
+    {
       name: "PushMessaging",
       status: "stable",
     },

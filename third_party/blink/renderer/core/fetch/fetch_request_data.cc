@@ -177,6 +177,7 @@ FetchRequestData* FetchRequestData::Create(
     request->SetReferrerPolicy(fetch_api_request->referrer->policy);
   }
   request->SetMode(fetch_api_request->mode);
+  request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
   request->SetCredentials(fetch_api_request->credentials_mode);
   request->SetCacheMode(fetch_api_request->cache_mode);
   request->SetRedirect(fetch_api_request->redirect_mode);
@@ -215,6 +216,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->referrer_string_ = referrer_string_;
   request->referrer_policy_ = referrer_policy_;
   request->mode_ = mode_;
+  request->target_address_space_ = target_address_space_;
   request->credentials_ = credentials_;
   request->cache_mode_ = cache_mode_;
   request->redirect_ = redirect_;

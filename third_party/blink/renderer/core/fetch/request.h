@@ -82,6 +82,7 @@ class CORE_EXPORT Request final : public ScriptWrappable,
   bool keepalive() const;
   bool isHistoryNavigation() const;
   AbortSignal* signal() const { return signal_; }
+  String targetAddressSpace() const;
 
   // From Request.idl:
   // This function must be called with entering an appropriate V8 context.
