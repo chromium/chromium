@@ -39,7 +39,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/resource_usage_reporter_type_converters.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view_visitor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/localized_strings.h"

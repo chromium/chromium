@@ -212,12 +212,8 @@ class RenderViewTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<RenderProcess> process_;
-  // We use a naked pointer because we don't want to expose RenderViewImpl in
-  // the embedder's namespace.
-  raw_ptr<RenderView> view_ = nullptr;
-  // The WebView is owned by `view_` but provided as a raw pointer here. This
-  // will provide a transition of eventually removing RenderView and owning
-  // it directly here. See https://crbug.com/1155202.
+  // `web_view` is owned by the associated `RenderView` (which we do not store).
+  // All allocated `RenderView`s will be destroyed in the `TearDown` method.
   raw_ptr<blink::WebView> web_view_ = nullptr;
   RendererBlinkPlatformImplTestOverride blink_platform_impl_;
   std::unique_ptr<ContentClient> content_client_;

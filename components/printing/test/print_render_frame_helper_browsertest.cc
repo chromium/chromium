@@ -22,7 +22,6 @@
 #include "components/printing/test/mock_printer.h"
 #include "components/printing/test/print_test_content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/mock_render_thread.h"
 #include "content/public/test/render_view_test.h"
 #include "ipc/ipc_listener.h"
@@ -838,13 +837,12 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
 
   // Find the frame and set it as the focused one.  This should mean that that
   // the printout should only contain the contents of that frame.
-  auto* web_view = view_->GetWebView();
   WebFrame* sub1_frame =
-      web_view->MainFrame()->ToWebLocalFrame()->FindFrameByName(
+      web_view_->MainFrame()->ToWebLocalFrame()->FindFrameByName(
           WebString::FromUTF8("sub1"));
   ASSERT_TRUE(sub1_frame);
-  web_view->SetFocusedFrame(sub1_frame);
-  ASSERT_NE(web_view->FocusedFrame(), web_view->MainFrame());
+  web_view_->SetFocusedFrame(sub1_frame);
+  ASSERT_NE(web_view_->FocusedFrame(), web_view_->MainFrame());
 
   // Initiate printing.
   OnPrintPages();

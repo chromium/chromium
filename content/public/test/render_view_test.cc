@@ -27,7 +27,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/render_view_visitor.h"
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
@@ -97,37 +96,6 @@ using blink::WebURLRequest;
 namespace content {
 
 namespace {
-
-// This class records, and then tears down all existing RenderViews. It's
-// important to do this in two steps, since tearing down a RenderView will
-// mutate the container that RenderView::ForEach() iterates over.
-class CloseMessageSendingRenderViewVisitor : public RenderViewVisitor {
- public:
-  CloseMessageSendingRenderViewVisitor() = default;
-
-  CloseMessageSendingRenderViewVisitor(
-      const CloseMessageSendingRenderViewVisitor&) = delete;
-  CloseMessageSendingRenderViewVisitor& operator=(
-      const CloseMessageSendingRenderViewVisitor&) = delete;
-
-  ~CloseMessageSendingRenderViewVisitor() override = default;
-
-  void CloseRenderViews() {
-    for (RenderView* render_view : live_render_views) {
-      RenderViewImpl* view_impl = static_cast<RenderViewImpl*>(render_view);
-      view_impl->Destroy();
-    }
-  }
-
- protected:
-  bool Visit(RenderView* render_view) override {
-    live_render_views.push_back(render_view);
-    return true;
-  }
-
- private:
-  std::vector<RenderView*> live_render_views;
-};
 
 class FakeWebURLLoader : public blink::WebURLLoader {
  public:
@@ -556,7 +524,6 @@ void RenderViewTest::SetUp() {
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   waiter.Wait();
 
-  view_ = view;
   web_view_ = view->GetWebView();
 }
 
@@ -569,15 +536,10 @@ void RenderViewTest::TearDown() {
       leak_detector.BindNewPipeAndPassReceiver());
   std::ignore = binders_.TryBind(&receiver);
 
-  // Close the main |view_| as well as any other windows that might have been
+  // Close the main view as well as any other windows that might have been
   // opened by the test.
-  CloseMessageSendingRenderViewVisitor closing_visitor;
-  RenderView::ForEach(&closing_visitor);
-  closing_visitor.CloseRenderViews();
+  RenderViewImpl::DestroyAllRenderViewImpls();
 
-  // |view_| is ref-counted and deletes itself during the RunUntilIdle() call
-  // below.
-  view_ = nullptr;
   web_view_ = nullptr;
   process_.reset();
 

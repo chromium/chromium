@@ -317,8 +317,6 @@ class RenderViewImplTest : public RenderViewTest {
 
   ~RenderViewImplTest() override {}
 
-  RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
-
   blink::WebFrameWidget* main_frame_widget() {
     return frame()->GetLocalRootWebFrameWidget();
   }
@@ -961,12 +959,13 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   popup_request.SetMode(network::mojom::RequestMode::kNavigate);
   popup_request.SetRedirectMode(network::mojom::RedirectMode::kManual);
   popup_request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
-  blink::WebView* new_web_view = view()->CreateView(
-      GetMainFrame(), popup_request, blink::WebWindowFeatures(), "foo",
-      blink::kWebNavigationPolicyNewForegroundTab,
-      network::mojom::WebSandboxFlags::kNone,
-      blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
-      absl::nullopt, absl::nullopt);
+  blink::WebView* new_web_view =
+      RenderViewImpl::FromWebView(web_view_)->CreateView(
+          GetMainFrame(), popup_request, blink::WebWindowFeatures(), "foo",
+          blink::kWebNavigationPolicyNewForegroundTab,
+          network::mojom::WebSandboxFlags::kNone,
+          blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
+          absl::nullopt, absl::nullopt);
   auto popup_navigation_info = std::make_unique<blink::WebNavigationInfo>();
   popup_navigation_info->url_request = std::move(popup_request);
   popup_navigation_info->frame_type =
@@ -2557,8 +2556,6 @@ class RendererErrorPageTest : public RenderViewImplTest {
   ContentRendererClient* CreateContentRendererClient() override {
     return new TestContentRendererClient;
   }
-
-  RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
 
   RenderFrameImpl* frame() {
     return static_cast<RenderFrameImpl*>(GetMainRenderFrame());

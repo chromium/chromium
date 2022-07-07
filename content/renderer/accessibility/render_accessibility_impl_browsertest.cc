@@ -306,10 +306,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
  protected:
-  RenderViewImpl* view() {
-    return static_cast<RenderViewImpl*>(view_);
-  }
-
   RenderFrameImpl* frame() {
     return static_cast<RenderFrameImpl*>(RenderViewTest::GetMainRenderFrame());
   }

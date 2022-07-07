@@ -24,7 +24,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/render_frame_impl.h"
@@ -209,12 +208,10 @@ RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
 }
 
 /*static*/
-void RenderView::ForEach(RenderViewVisitor* visitor) {
+void RenderViewImpl::DestroyAllRenderViewImpls() {
   DCHECK(RenderThread::IsMainThread());
-  ViewMap* views = g_view_map.Pointer();
-  for (auto it = views->begin(); it != views->end(); ++it) {
-    if (!visitor->Visit(it->second))
-      return;
+  while (!g_view_map.Get().empty()) {
+    g_view_map.Get().begin()->second->Destroy();
   }
 }
 
