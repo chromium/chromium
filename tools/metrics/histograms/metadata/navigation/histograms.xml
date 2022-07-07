@@ -1193,7 +1193,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.SendCommitNavigationTime.{FrameType}" units="ms"
-    expires_after="2022-08-15">
+    expires_after="2023-08-15">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
