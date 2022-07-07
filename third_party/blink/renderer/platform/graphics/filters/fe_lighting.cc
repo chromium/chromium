@@ -92,9 +92,11 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
       const SkPoint3 direction = SkPoint3::Make(
           cosf(azimuth_rad) * cosf(elevation_rad),
           sinf(azimuth_rad) * cosf(elevation_rad), sinf(elevation_rad));
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       return sk_make_sp<LightingDistantPaintFilter>(
-          GetLightingType(), direction, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), rect);
+          GetLightingType(), direction, SkColor4f::FromColor(light_color.Rgb()),
+          surface_scale_, GetFilterConstant(), specular_exponent_,
+          std::move(input), rect);
     }
     case kLsPoint: {
       PointLightSource* point_light_source =
@@ -102,8 +104,10 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
       const gfx::Point3F position = point_light_source->GetPosition();
       const SkPoint3 sk_position =
           SkPoint3::Make(position.x(), position.y(), position.z());
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       return sk_make_sp<LightingPointPaintFilter>(
-          GetLightingType(), sk_position, light_color.Rgb(), surface_scale_,
+          GetLightingType(), sk_position,
+          SkColor4f::FromColor(light_color.Rgb()), surface_scale_,
           GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
     case kLsSpot: {
@@ -121,10 +125,12 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
       if (!limiting_cone_angle || limiting_cone_angle > 90 ||
           limiting_cone_angle < -90)
         limiting_cone_angle = 90;
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       return sk_make_sp<LightingSpotPaintFilter>(
           GetLightingType(), location, target, specular_exponent,
-          limiting_cone_angle, light_color.Rgb(), surface_scale_,
-          GetFilterConstant(), specular_exponent_, std::move(input), rect);
+          limiting_cone_angle, SkColor4f::FromColor(light_color.Rgb()),
+          surface_scale_, GetFilterConstant(), specular_exponent_,
+          std::move(input), rect);
     }
     default:
       NOTREACHED();

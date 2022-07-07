@@ -73,9 +73,10 @@ sk_sp<PaintFilter> FEDropShadow::CreateImageFilter() {
   Color color = AdaptColorToOperatingInterpolationSpace(
       shadow_color_.CombineWithAlpha(shadow_opacity_));
   absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   return sk_make_sp<DropShadowPaintFilter>(
       SkFloatToScalar(dx), SkFloatToScalar(dy), SkFloatToScalar(std_x),
-      SkFloatToScalar(std_y), color.Rgb(),
+      SkFloatToScalar(std_y), SkColor4f::FromColor(color.Rgb()),
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
       std::move(input), base::OptionalOrNullptr(crop_rect));
 }

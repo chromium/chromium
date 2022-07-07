@@ -54,7 +54,7 @@ TEST(FilterOperationsTest, MapRectDropShadowReferenceFilter) {
   ops.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
-          SkIntToScalar(9), SK_ColorBLACK,
+          SkIntToScalar(9), SkColors::kBlack,
           DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
   EXPECT_EQ(gfx::Rect(-9, -19, 34, 64),
@@ -70,7 +70,7 @@ TEST(FilterOperationsTest, MapRectReverseDropShadowReferenceFilter) {
   ops.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
-          SkIntToScalar(9), SK_ColorBLACK,
+          SkIntToScalar(9), SkColors::kBlack,
           DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
   EXPECT_EQ(gfx::Rect(-15, -35, 34, 64),
