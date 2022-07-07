@@ -396,7 +396,8 @@ void AddAdditionalRequestHeaders(
     const std::string& user_agent_override,
     const absl::optional<url::Origin>& initiator_origin,
     blink::mojom::Referrer* referrer,
-    FrameTreeNode* frame_tree_node) {
+    FrameTreeNode* frame_tree_node,
+    bool has_attribution_src_token) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
@@ -451,6 +452,10 @@ void AddAdditionalRequestHeaders(
   if (frame_tree_node->frame_tree()->is_prerendering()) {
     headers->SetHeader("Sec-Purpose", "prefetch;prerender");
     headers->SetHeader("Purpose", "prefetch");
+  }
+
+  if (has_attribution_src_token) {
+    headers->SetHeader("Attribution-Reporting-Eligible", "navigation-source");
   }
 }
 
@@ -1695,7 +1700,8 @@ NavigationRequest::NavigationRequest(
         ui::PageTransitionFromInt(common_params_->transition),
         controller->GetBrowserContext(), common_params_->method,
         GetUserAgentOverride(), common_params_->initiator_origin,
-        common_params_->referrer.get(), frame_tree_node);
+        common_params_->referrer.get(), frame_tree_node,
+        begin_params_->impression.has_value());
 
     if (begin_params_->is_form_submission) {
       if (commit_params_->is_browser_initiated &&

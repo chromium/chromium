@@ -401,6 +401,87 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       AttributionEligibleNavigation_SetsEligibleHeader) {
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect");
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect2");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_source_url =
+      https_server()->GetURL("d.test", "/register_source_redirect");
+
+  // Don't use `CreateAndClickSource()` as we need to observe navigation
+  // redirects prior to the navigation finishing.
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: '',
+                        target: $2});)",
+                                               register_source_url, "_top")));
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  // Verify the navigation redirects contain the eligibility header.
+  register_response1->WaitForRequest();
+  EXPECT_EQ(register_response1->http_request()->headers.at(
+                "Attribution-Reporting-Eligible"),
+            "navigation-source");
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader("Location", "/register_source_redirect2");
+  register_response1->Send(http_response->ToResponseString());
+  register_response1->Done();
+
+  // Ensure that redirect requests also contain the header.
+  register_response2->WaitForRequest();
+  ASSERT_EQ(register_response2->http_request()->headers.at(
+                "Attribution-Reporting-Eligible"),
+            "navigation-source");
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       NonAttributionEligibleNavigation_NoEligibleHeader) {
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source_redirect");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_source_url =
+      https_server()->GetURL("d.test", "/register_source_redirect");
+
+  // Create a non-attribution eligible anchor and click.
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    const anchor = document.createElement('a');
+    anchor.href = $1;
+    anchor.target = '_top';
+    anchor.id = 'link';
+    document.body.appendChild(anchor);)",
+                                               register_source_url)));
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  // Verify the navigation request does not contain the eligibility header.
+  register_response1->WaitForRequest();
+  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
+                              "Attribution-Reporting-Eligible"));
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  register_response1->Send(http_response->ToResponseString());
+  register_response1->Done();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        WindowOpenDeprecatedAPI_NoException) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
