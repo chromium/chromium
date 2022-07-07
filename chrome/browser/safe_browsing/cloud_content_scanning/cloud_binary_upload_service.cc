@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -138,6 +139,22 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
         }
         )");
   }
+}
+
+bool CanUseAccessToken(const BinaryUploadService::Request& request,
+                       Profile* profile) {
+  DCHECK(profile);
+  // Consumer requests never need to use the access token.
+  if (IsConsumerScanRequest(request))
+    return false;
+
+    // Allow the access token to be used on unmanaged devices, but not on
+    // managed devices that aren't affiliated.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
+    return true;
+#endif
+  return chrome::enterprise_util::IsProfileAffiliated(profile);
 }
 
 }  // namespace
@@ -313,7 +330,7 @@ void CloudBinaryUploadService::OnGetInstanceID(Request* request,
   request->set_fcm_token(instance_id);
 
   if (base::FeatureList::IsEnabled(kConnectorsScanningAccessToken) &&
-      chrome::enterprise_util::IsProfileAffiliated(profile_)) {
+      CanUseAccessToken(*request, profile_)) {
     if (!token_fetcher_) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile_));
@@ -332,6 +349,9 @@ void CloudBinaryUploadService::OnGetInstanceID(Request* request,
 void CloudBinaryUploadService::OnGetAccessToken(
     Request* request,
     const std::string& access_token) {
+  if (!IsActive(request))
+    return;
+
   request->set_access_token(access_token);
   request->GetRequestData(
       base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
