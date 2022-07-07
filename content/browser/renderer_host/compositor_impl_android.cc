@@ -557,6 +557,8 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // before it can be reset.
   display_private_.reset();
   GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+  if (display_client_)
+    display_client_->SetPreferredRefreshRate(0);
   display_client_.reset();
   host_begin_frame_observer_.reset();
 }
