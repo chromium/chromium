@@ -5,12 +5,13 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
+import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization/search.mojom-webui.js';
+
 import {getPersonalizationSearchHandler} from './personalization_search_handler.js';
 import {getSettingsSearchHandler} from './settings_search_handler.js';
 
 /**
- * @typedef {chromeos.settings.mojom.SearchResult|
- *           ash.personalizationApp.mojom.SearchResult}
+ * @typedef {chromeos.settings.mojom.SearchResult|PersonalizationSearchResult}
  */
 export let SearchResult;
 

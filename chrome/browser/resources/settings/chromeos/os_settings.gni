@@ -21,6 +21,10 @@ mojom_webui_closure_flags = [
           "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants",
           root_build_dir),
   "browser_resolver_prefix_replacements=\"../mojom-webui/=../\"",
+  "js_module_root=" + rebase_path(
+          "$root_gen_dir/mojom-webui/ash/webui/personalization_app/search",
+          root_build_dir),
+  "browser_resolver_prefix_replacements=\"../mojom-webui/personalization/=../\"",
 ]
 
 # TODO(crbug.com/1315757) Remove once ChromeOS Settings is fully migrated to
