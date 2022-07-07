@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -48,10 +49,13 @@ class COMPONENT_EXPORT(MISSIVE) FakeMissiveClient
   // |MissiveClient::TestInterface| implementation:
   const std::vector<::reporting::Record>& GetEnqueuedRecords(
       ::reporting::Priority priority) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   base::flat_map<::reporting::Priority, std::vector<::reporting::Record>>
       enqueued_records_;
+  base::ObserverList<Observer> observer_list_;
 
   // Weak pointer factory - must be last member of the class.
   base::WeakPtrFactory<FakeMissiveClient> weak_ptr_factory_{this};

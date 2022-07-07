@@ -28,6 +28,9 @@ void FakeMissiveClient::EnqueueRecord(
     const reporting::Priority priority,
     reporting::Record record,
     base::OnceCallback<void(reporting::Status)> completion_callback) {
+  for (auto& observer : observer_list_) {
+    observer.OnRecordEnqueued(priority, record);
+  }
   enqueued_records_[priority].push_back(std::move(record));
   std::move(completion_callback).Run(reporting::Status::StatusOK());
 }
@@ -60,6 +63,14 @@ base::WeakPtr<MissiveClient> FakeMissiveClient::GetWeakPtr() {
 const std::vector<::reporting::Record>& FakeMissiveClient::GetEnqueuedRecords(
     ::reporting::Priority priority) {
   return enqueued_records_[priority];
+}
+
+void FakeMissiveClient::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakeMissiveClient::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace chromeos

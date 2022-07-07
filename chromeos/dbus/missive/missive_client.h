@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/proto/synced/interface.pb.h"
@@ -32,8 +33,17 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   // only implemented in the fake implementation.
   class TestInterface {
    public:
+    class Observer : public base::CheckedObserver {
+     public:
+      virtual void OnRecordEnqueued(reporting::Priority priority,
+                                    const reporting::Record& record) = 0;
+    };
+
     virtual const std::vector<::reporting::Record>& GetEnqueuedRecords(
         ::reporting::Priority) = 0;
+
+    virtual void AddObserver(Observer* observer) = 0;
+    virtual void RemoveObserver(Observer* observer) = 0;
 
    protected:
     virtual ~TestInterface() = default;
