@@ -1533,5 +1533,8 @@ const base::Feature kDisableArrayBufferSizeLimitsForTesting{
 const base::Feature kTimedHTMLParserBudget{"TimedHTMLParserBudget",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCSSOverflowForReplacedElements{
+    "CSSOverflowForReplacedElements", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

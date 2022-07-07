@@ -791,6 +791,10 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // rather than token count.
 BLINK_COMMON_EXPORT extern const base::Feature kTimedHTMLParserBudget;
 
+// This flag is meant to be a temporary kill switch to disable
+// CSSOverflowForReplacedElements, if necessary, due to compat issues.
+BLINK_COMMON_EXPORT extern const base::Feature kCSSOverflowForReplacedElements;
+
 }  // namespace features
 }  // namespace blink
 
