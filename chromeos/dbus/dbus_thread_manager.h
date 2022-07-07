@@ -15,7 +15,6 @@
 namespace chromeos {
 
 // Style Note: Clients are sorted by names.
-class ArcKeymasterClient;
 class ArcMidisClient;
 class ArcObbMounterClient;
 class CecServiceClient;
@@ -61,7 +60,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   // pointers after DBusThreadManager has been shut down.
   // TODO(jamescook): Replace this with calls to FooClient::Get().
   // http://crbug.com/647367
-  ArcKeymasterClient* GetArcKeymasterClient();
   ArcMidisClient* GetArcMidisClient();
   ArcObbMounterClient* GetArcObbMounterClient();
   CecServiceClient* GetCecServiceClient();

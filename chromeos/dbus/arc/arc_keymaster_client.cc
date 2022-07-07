@@ -1,6 +1,7 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
 
 #include <memory>
@@ -9,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "chromeos/dbus/arc/fake_arc_keymaster_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -17,6 +19,8 @@
 namespace chromeos {
 
 namespace {
+
+ArcKeymasterClient* g_instance = nullptr;
 
 void OnVoidDBusMethod(VoidDBusMethodCallback callback,
                       dbus::Response* response) {
@@ -44,7 +48,6 @@ class ArcKeymasterClientImpl : public ArcKeymasterClient {
                        base::BindOnce(&OnVoidDBusMethod, std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         arc::keymaster::kArcKeymasterServiceName,
@@ -61,12 +64,36 @@ class ArcKeymasterClientImpl : public ArcKeymasterClient {
 ////////////////////////////////////////////////////////////////////////////////
 // ArcKeymasterClient
 
-ArcKeymasterClient::ArcKeymasterClient() = default;
-ArcKeymasterClient::~ArcKeymasterClient() = default;
+// static
+ArcKeymasterClient* ArcKeymasterClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<ArcKeymasterClient> ArcKeymasterClient::Create() {
-  return std::make_unique<ArcKeymasterClientImpl>();
+void ArcKeymasterClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ArcKeymasterClientImpl())->Init(bus);
+}
+
+// static
+void ArcKeymasterClient::InitializeFake() {
+  (new FakeArcKeymasterClient())->Init(nullptr);
+}
+
+// static
+void ArcKeymasterClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ArcKeymasterClient::ArcKeymasterClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ArcKeymasterClient::~ArcKeymasterClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

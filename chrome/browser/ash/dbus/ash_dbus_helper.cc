@@ -59,6 +59,7 @@
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
+#include "chromeos/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
@@ -126,6 +127,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::ArcAppfuseProviderClient>(bus);
   InitializeDBusClient<chromeos::ArcCameraClient>(bus);
   InitializeDBusClient<chromeos::ArcDataSnapshotdClient>(bus);
+  InitializeDBusClient<chromeos::ArcKeymasterClient>(bus);
   InitializeDBusClient<ArcQuotaClient>(bus);
   InitializeDBusClient<chromeos::ArcSensorServiceClient>(bus);
   InitializeDBusClient<chromeos::AttestationClient>(bus);
@@ -293,6 +295,7 @@ void ShutdownDBus() {
   AuthPolicyClient::Shutdown();
   chromeos::AttestationClient::Shutdown();
   ArcQuotaClient::Shutdown();
+  chromeos::ArcKeymasterClient::Shutdown();
   chromeos::ArcDataSnapshotdClient::Shutdown();
   chromeos::ArcCameraClient::Shutdown();
   chromeos::ArcAppfuseProviderClient::Shutdown();

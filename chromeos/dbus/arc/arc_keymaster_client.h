@@ -5,10 +5,6 @@
 #ifndef CHROMEOS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
 #define CHROMEOS_DBUS_ARC_ARC_KEYMASTER_CLIENT_H_
 
-#include <memory>
-#include <string>
-
-#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -20,13 +16,20 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
     : public DBusClient {
  public:
+  // Returns the global instance if initialized. May return null.
+  static ArcKeymasterClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   ArcKeymasterClient(const ArcKeymasterClient&) = delete;
   ArcKeymasterClient& operator=(const ArcKeymasterClient&) = delete;
-
-  ~ArcKeymasterClient() override;
-
-  // Factory function.
-  static std::unique_ptr<ArcKeymasterClient> Create();
 
   // Bootstrap the Mojo connection between Chrome and the keymaster service.
   // Should pass in the child end of the Mojo pipe.
@@ -34,8 +37,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
                                        VoidDBusMethodCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   ArcKeymasterClient();
+  ~ArcKeymasterClient() override;
 };
 
 }  // namespace chromeos

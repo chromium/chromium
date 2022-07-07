@@ -14,7 +14,6 @@
 #include "base/process/process_handle.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -146,12 +145,10 @@ void ArcKeymasterBridge::BootstrapMojoConnection(
   keymaster_server_proxy_.set_disconnect_handler(
       base::BindOnce(&mojo::Remote<mojom::KeymasterServer>::reset,
                      base::Unretained(&keymaster_server_proxy_)));
-  chromeos::DBusThreadManager::Get()
-      ->GetArcKeymasterClient()
-      ->BootstrapMojoConnection(
-          channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
-          base::BindOnce(&ArcKeymasterBridge::OnBootstrapMojoConnection,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
+  chromeos::ArcKeymasterClient::Get()->BootstrapMojoConnection(
+      channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
+      base::BindOnce(&ArcKeymasterBridge::OnBootstrapMojoConnection,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 }  // namespace arc
