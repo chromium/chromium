@@ -6118,11 +6118,14 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     dest_rect.Transpose();
   }
 
-  // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
-  // and color space is inappropriate in many circumstances.
-  const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(dest_rect.size()), kN32_SkColorType,
-                        kPremul_SkAlphaType, nullptr);
+  // TODO(https://crbug.com/1341235): The choice of color type will clamp
+  // higher precision sources to 8 bit per color. The choice of color space
+  // should match the unpack color space.
+  const auto resource_provider_info = SkImageInfo::Make(
+      gfx::SizeToSkISize(dest_rect.size()), kN32_SkColorType,
+      media::IsOpaque(media_video_frame->format()) ? kOpaque_SkAlphaType
+                                                   : kPremul_SkAlphaType,
+      nullptr);
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
