@@ -3923,6 +3923,12 @@
   },
   'webview_cts_tests': {
     'modifications': {
+      'android-nougat-x86-rel': {
+        'args': [
+          # crbug.com/1343008
+          '--gtest_filter=-android.assist.cts.WebViewTest#testWebView',
+        ],
+      },
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
