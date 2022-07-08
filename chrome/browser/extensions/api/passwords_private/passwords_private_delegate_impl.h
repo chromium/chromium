@@ -66,8 +66,10 @@ class PasswordsPrivateDelegateImpl
   absl::optional<api::passwords_private::CredentialIds> ChangeSavedPassword(
       const std::vector<int>& ids,
       const api::passwords_private::ChangeSavedPasswordParams& params) override;
-  void RemoveSavedPasswords(const std::vector<int>& ids) override;
-  void RemovePasswordExceptions(const std::vector<int>& ids) override;
+  void RemoveSavedPassword(
+      int id,
+      api::passwords_private::PasswordStoreSet from_stores) override;
+  void RemovePasswordException(int id) override;
   void UndoRemoveSavedPasswordOrException() override;
   void RequestPlaintextPassword(int id,
                                 api::passwords_private::PlaintextReason reason,
@@ -137,14 +139,6 @@ class PasswordsPrivateDelegateImpl
 #endif  // defined(UNIT_TEST)
 
  private:
-  struct CredentialUIEntryLess {
-    bool operator()(const password_manager::CredentialUIEntry& lhs,
-                    const password_manager::CredentialUIEntry& rhs) const {
-      return std::tie(lhs.key(), lhs.stored_in) <
-             std::tie(rhs.key(), rhs.stored_in);
-    }
-  };
-
   // password_manager::SavedPasswordsPresenter::Observer implementation.
   void OnSavedPasswordsChanged(
       password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
@@ -162,7 +156,9 @@ class PasswordsPrivateDelegateImpl
   void SetCredentials(
       const std::vector<password_manager::CredentialUIEntry>& credentials);
 
-  void RemoveEntryInternal(const std::vector<int>& ids);
+  void RemoveEntryInternal(
+      int id,
+      api::passwords_private::PasswordStoreSet from_stores);
   void UndoRemoveSavedPasswordOrExceptionInternal();
 
   // Callback for when the password list has been written to the destination.
@@ -223,7 +219,9 @@ class PasswordsPrivateDelegateImpl
   ExceptionEntries current_exceptions_;
 
   // An id generator for saved passwords and blocked websites.
-  IdGenerator<password_manager::CredentialUIEntry, int, CredentialUIEntryLess>
+  IdGenerator<password_manager::CredentialUIEntry,
+              int,
+              password_manager::CredentialUIEntry::Less>
       credential_id_generator_;
 
   // Whether SetCredentials has been called, and whether this class has been

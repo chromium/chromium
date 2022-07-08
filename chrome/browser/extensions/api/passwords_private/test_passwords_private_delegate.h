@@ -45,8 +45,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   absl::optional<api::passwords_private::CredentialIds> ChangeSavedPassword(
       const std::vector<int>& ids,
       const api::passwords_private::ChangeSavedPasswordParams& params) override;
-  void RemoveSavedPasswords(const std::vector<int>& id) override;
-  void RemovePasswordExceptions(const std::vector<int>& ids) override;
+  void RemoveSavedPassword(
+      int id,
+      api::passwords_private::PasswordStoreSet from_store) override;
+  void RemovePasswordException(int id) override;
   // Simplified version of undo logic, only use for testing.
   void UndoRemoveSavedPasswordOrException() override;
   void RequestPlaintextPassword(int id,
@@ -149,12 +151,11 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   std::vector<api::passwords_private::ExceptionEntry> current_exceptions_;
 
   // Simplified version of an undo manager that only allows undoing and redoing
-  // the very last deletion. When the batches are *empty*, this means there is
+  // the very last deletion. When the entries are nullopt, this means there is
   // no previous deletion to undo.
-  std::vector<api::passwords_private::PasswordUiEntry>
-      last_deleted_entries_batch_;
-  std::vector<api::passwords_private::ExceptionEntry>
-      last_deleted_exceptions_batch_;
+  absl::optional<api::passwords_private::PasswordUiEntry> last_deleted_entry_;
+  absl::optional<api::passwords_private::ExceptionEntry>
+      last_deleted_exception_;
 
   absl::optional<std::u16string> plaintext_password_ = u"plaintext";
 

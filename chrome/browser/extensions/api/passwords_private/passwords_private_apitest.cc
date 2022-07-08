@@ -199,20 +199,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RemoveAndUndoRemoveSavedPasswordsBatch) {
-  EXPECT_TRUE(RunPasswordsSubtest("removeAndUndoRemoveSavedPasswordsBatch"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        RemoveAndUndoRemovePasswordException) {
   EXPECT_TRUE(RunPasswordsSubtest("removeAndUndoRemovePasswordException"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RemoveAndUndoRemovePasswordExceptionsBatch) {
-  EXPECT_TRUE(RunPasswordsSubtest("removeAndUndoRemovePasswordExceptionsBatch"))
       << message_;
 }
 

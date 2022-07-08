@@ -30,6 +30,12 @@ declare global {
         PHISHED_AND_LEAKED = 'PHISHED_AND_LEAKED',
       }
 
+      export enum PasswordStoreSet {
+        DEVICE = 'DEVICE',
+        ACCOUNT = 'ACCOUNT',
+        DEVICE_AND_ACCOUNT = 'DEVICE_AND_ACCOUNT',
+      }
+
       export enum PasswordCheckState {
         IDLE = 'IDLE',
         RUNNING = 'RUNNING',
@@ -117,12 +123,10 @@ declare global {
 
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
-          ids: Array<number>, params: ChangeSavedPasswordParams,
+          ids: number[], params: ChangeSavedPasswordParams,
           callback?: (newIds: CredentialIds) => void): void;
-      export function removeSavedPassword(id: number): void;
-      export function removeSavedPasswords(ids: Array<number>): void;
+      export function removeSavedPassword(id: number, fromStores: PasswordStoreSet): void;
       export function removePasswordException(id: number): void;
-      export function removePasswordExceptions(ids: Array<number>): void;
       export function undoRemoveSavedPasswordOrException(): void;
       export function requestPlaintextPassword(
           id: number, reason: PlaintextReason,

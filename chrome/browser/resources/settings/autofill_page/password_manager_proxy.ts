@@ -81,23 +81,17 @@ export interface PasswordManagerProxy {
    *     updated for all ids.
    */
   changeSavedPassword(
-      ids: Array<number>,
-      params: chrome.passwordsPrivate.ChangeSavedPasswordParams):
+      ids: number[], params: chrome.passwordsPrivate.ChangeSavedPasswordParams):
       Promise<chrome.passwordsPrivate.CredentialIds>;
 
   /**
    * Should remove the saved password and notify that the list has changed.
    * @param id The id for the password entry being removed. No-op if |id| is not
    *     in the list.
+   * @param fromStores The store from which credential should be removed.
    */
-  removeSavedPassword(id: number): void;
-
-  /**
-   * Should remove the saved passwords and notify that the list has changed.
-   * @param ids The ids for the password entries being removed. Any id not in
-   *    the list is ignored.
-   */
-  removeSavedPasswords(ids: number[]): void;
+  removeSavedPassword(
+      id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet): void;
 
   /**
    * Moves a list of passwords from the device to the account
@@ -130,13 +124,6 @@ export interface PasswordManagerProxy {
    *     is not in the list.
    */
   removeException(id: number): void;
-
-  /**
-   * Should remove the password exceptions and notify that the list has changed.
-   * @param ids The ids for the exception url entries being removed. Any |id|
-   *     not in the list is ignored.
-   */
-  removeExceptions(ids: number[]): void;
 
   /**
    * Should undo the last saved password or exception removal and notify that
@@ -434,12 +421,9 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     });
   }
 
-  removeSavedPassword(id: number) {
-    chrome.passwordsPrivate.removeSavedPassword(id);
-  }
-
-  removeSavedPasswords(ids: number[]) {
-    chrome.passwordsPrivate.removeSavedPasswords(ids);
+  removeSavedPassword(
+      id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
+    chrome.passwordsPrivate.removeSavedPassword(id, fromStores);
   }
 
   movePasswordsToAccount(ids: number[]) {
@@ -464,10 +448,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   removeException(id: number) {
     chrome.passwordsPrivate.removePasswordException(id);
-  }
-
-  removeExceptions(ids: number[]) {
-    chrome.passwordsPrivate.removePasswordExceptions(ids);
   }
 
   undoRemoveSavedPasswordOrException() {

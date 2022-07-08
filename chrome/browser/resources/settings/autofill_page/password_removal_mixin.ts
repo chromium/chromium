@@ -36,10 +36,11 @@ export const PasswordRemovalMixin = dedupingMixin(
             return false;
           }
 
-          const idToRemove = password.isPresentInAccount() ?
-              password.accountId :
-              password.deviceId;
-          PasswordManagerImpl.getInstance().removeSavedPassword(idToRemove!);
+          PasswordManagerImpl.getInstance().removeSavedPassword(
+              password.getAnyId(),
+              password.isPresentInAccount() ?
+                  chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT :
+                  chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
           return true;
         }
 

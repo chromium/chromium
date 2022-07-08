@@ -112,55 +112,43 @@ TestPasswordsPrivateDelegate::ChangeSavedPassword(
   return newIds;
 }
 
-void TestPasswordsPrivateDelegate::RemoveSavedPasswords(
-    const std::vector<int>& ids) {
+void TestPasswordsPrivateDelegate::RemoveSavedPassword(
+    int id,
+    api::passwords_private::PasswordStoreSet from_stores) {
   if (current_entries_.empty())
     return;
 
-  // Since this is just mock data, remove the first |ids.size()| elements
-  // regardless of the data contained.
-  auto first_remaining = (ids.size() <= current_entries_.size())
-                             ? current_entries_.begin() + ids.size()
-                             : current_entries_.end();
-  last_deleted_entries_batch_.assign(
-      std::make_move_iterator(current_entries_.begin()),
-      std::make_move_iterator(first_remaining));
-  current_entries_.erase(current_entries_.begin(), first_remaining);
+  // Since this is just mock data, remove the first element regardless of the
+  // data contained. One case where this logic is especially false is when the
+  // password is stored in both stores and |store| only specifies one of them
+  // (in that case the number of entries shouldn't change).
+  last_deleted_entry_ = std::move(current_entries_[0]);
+  current_entries_.erase(current_entries_.begin());
   SendSavedPasswordsList();
 }
 
-void TestPasswordsPrivateDelegate::RemovePasswordExceptions(
-    const std::vector<int>& ids) {
+void TestPasswordsPrivateDelegate::RemovePasswordException(int id) {
   if (current_exceptions_.empty())
     return;
 
-  // Since this is just mock data, remove the first |ids.size()| elements
-  // regardless of the data contained.
-  auto first_remaining = (ids.size() <= current_exceptions_.size())
-                             ? current_exceptions_.begin() + ids.size()
-                             : current_exceptions_.end();
-  last_deleted_exceptions_batch_.assign(
-      std::make_move_iterator(current_exceptions_.begin()),
-      std::make_move_iterator(first_remaining));
-  current_exceptions_.erase(current_exceptions_.begin(), first_remaining);
+  // Since this is just mock data, remove the first element regardless of the
+  // data contained.
+  last_deleted_exception_ = std::move(current_exceptions_[0]);
+  current_exceptions_.erase(current_exceptions_.begin());
   SendPasswordExceptionsList();
 }
 
 // Simplified version of undo logic, only use for testing.
 void TestPasswordsPrivateDelegate::UndoRemoveSavedPasswordOrException() {
-  if (!last_deleted_entries_batch_.empty()) {
-    current_entries_.insert(
-        current_entries_.begin(),
-        std::make_move_iterator(last_deleted_entries_batch_.begin()),
-        std::make_move_iterator(last_deleted_entries_batch_.end()));
-    last_deleted_entries_batch_.clear();
+  if (last_deleted_entry_.has_value()) {
+    current_entries_.insert(current_entries_.begin(),
+                            std::move(last_deleted_entry_.value()));
+    last_deleted_entry_ = absl::nullopt;
     SendSavedPasswordsList();
-  } else if (!last_deleted_exceptions_batch_.empty()) {
-    current_exceptions_.insert(
-        current_exceptions_.begin(),
-        std::make_move_iterator(last_deleted_exceptions_batch_.begin()),
-        std::make_move_iterator(last_deleted_exceptions_batch_.end()));
-    last_deleted_exceptions_batch_.clear();
+  } else if (last_deleted_exception_.has_value()) {
+    current_exceptions_.insert(current_exceptions_.begin(),
+                               std::move(last_deleted_exception_.value()));
+    last_deleted_exception_ = absl::nullopt;
     SendPasswordExceptionsList();
   }
 }

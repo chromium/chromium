@@ -129,6 +129,25 @@ ConvertPlaintextReason(
   }
 }
 
+base::flat_set<password_manager::PasswordForm::Store>
+ConvertToPasswordFormStores(
+    extensions::api::passwords_private::PasswordStoreSet store) {
+  switch (store) {
+    case extensions::api::passwords_private::
+        PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT:
+      return {password_manager::PasswordForm::Store::kProfileStore,
+              password_manager::PasswordForm::Store::kAccountStore};
+    case extensions::api::passwords_private::PASSWORD_STORE_SET_DEVICE:
+      return {password_manager::PasswordForm::Store::kProfileStore};
+    case extensions::api::passwords_private::PASSWORD_STORE_SET_ACCOUNT:
+      return {password_manager::PasswordForm::Store::kAccountStore};
+    default:
+      break;
+  }
+  NOTREACHED();
+  return {};
+}
+
 }  // namespace
 
 namespace extensions {
@@ -284,38 +303,41 @@ PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   return new_ids;
 }
 
-void PasswordsPrivateDelegateImpl::RemoveSavedPasswords(
-    const std::vector<int>& ids) {
+void PasswordsPrivateDelegateImpl::RemoveSavedPassword(
+    int id,
+    api::passwords_private::PasswordStoreSet from_stores) {
   ExecuteFunction(
       base::BindOnce(&PasswordsPrivateDelegateImpl::RemoveEntryInternal,
-                     base::Unretained(this), ids));
+                     base::Unretained(this), id, from_stores));
 }
 
 void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
-    const std::vector<int>& ids) {
-  DCHECK(!ids.empty());
-  for (int id : ids) {
-    const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
-    if (!entry) {
-      continue;
-    }
-    saved_passwords_presenter_.RemoveCredential(*entry);
+    int id,
+    api::passwords_private::PasswordStoreSet from_stores) {
+  const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
+  if (!entry) {
+    return;
+  }
 
-    if (entry->blocked_by_user) {
-      base::RecordAction(
-          base::UserMetricsAction("PasswordManager_RemovePasswordException"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
-    }
+  CredentialUIEntry copy = *entry;
+  copy.stored_in = ConvertToPasswordFormStores(from_stores);
+
+  saved_passwords_presenter_.RemoveCredential(copy);
+
+  if (entry->blocked_by_user) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
   }
 }
 
-void PasswordsPrivateDelegateImpl::RemovePasswordExceptions(
-    const std::vector<int>& ids) {
-  ExecuteFunction(
-      base::BindOnce(&PasswordsPrivateDelegateImpl::RemoveEntryInternal,
-                     base::Unretained(this), ids));
+void PasswordsPrivateDelegateImpl::RemovePasswordException(int id) {
+  ExecuteFunction(base::BindOnce(
+      &PasswordsPrivateDelegateImpl::RemoveEntryInternal,
+      base::Unretained(this), id,
+      api::passwords_private::PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT));
 }
 
 void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
@@ -382,24 +404,15 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
     // store where the credential is stored. This can be removed when the UI
     // will support the new model.
 
-    // Frontend id is used to group identical credentials no matter what
-    // storage they use. It should be generated from the original credential.
-    int frontend_id = credential_id_generator_.GenerateId(credential);
+    int id = credential_id_generator_.GenerateId(credential);
     for (const password_manager::PasswordForm::Store& store :
          credential.stored_in) {
-      // A copy of credential with a single storage should be created to obtain
-      // id. This is important because the credential can be removed only from
-      // one storage at a time. If credential is present only on one storage
-      // |frontend_id| and |id| are equal.
-      CredentialUIEntry copy_for_this_store = credential;
-      copy_for_this_store.stored_in = {store};
-      int id = credential_id_generator_.GenerateId(copy_for_this_store);
       if (credential.blocked_by_user) {
         api::passwords_private::ExceptionEntry current_exception_entry;
         current_exception_entry.urls =
             CreateUrlCollectionFromCredential(credential);
         current_exception_entry.id = id;
-        current_exception_entry.frontend_id = frontend_id;
+        current_exception_entry.frontend_id = id;
 
         current_exception_entry.from_account_store =
             store == password_manager::PasswordForm::Store::kAccountStore;
@@ -410,7 +423,7 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
         entry.username = base::UTF16ToUTF8(credential.username);
         entry.password_note = base::UTF16ToUTF8(credential.note.value);
         entry.id = id;
-        entry.frontend_id = frontend_id;
+        entry.frontend_id = id;
 
         if (!credential.federation_origin.opaque()) {
           std::u16string formatted_origin =

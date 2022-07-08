@@ -46,6 +46,15 @@ chrome.passwordsPrivate.CompromiseType = {
 /**
  * @enum {string}
  */
+chrome.passwordsPrivate.PasswordStoreSet = {
+  DEVICE: 'DEVICE',
+  ACCOUNT: 'ACCOUNT',
+  DEVICE_AND_ACCOUNT: 'DEVICE_AND_ACCOUNT',
+};
+
+/**
+ * @enum {string}
+ */
 chrome.passwordsPrivate.PasswordCheckState = {
   IDLE: 'IDLE',
   RUNNING: 'RUNNING',
@@ -181,36 +190,21 @@ chrome.passwordsPrivate.recordPasswordsPageAccessInSettings = function() {};
 chrome.passwordsPrivate.changeSavedPassword = function(ids, params, callback) {};
 
 /**
- * Removes the saved password corresponding to |id|. If no saved password for
- * this pair exists, this function is a no-op.
+ * Removes the saved password corresponding to |id| in |fromStores|. If no saved
+ * password for this pair exists, this function is a no-op.
  * @param {number} id The id for the password entry being removed.
+ * @param {!chrome.passwordsPrivate.PasswordStoreSet} fromStores The store(s)
+ *     from which the password entry is being removed.
  */
-chrome.passwordsPrivate.removeSavedPassword = function(id) {};
-
-/**
- * Removes the saved password corresponding to |ids|. If no saved password
- * exists for a certain id, that id is ignored. Undoing this operation via
- * undoRemoveSavedPasswordOrException will restore all the removed passwords in
- * the batch.
- * @param {!Array<number>} ids
- */
-chrome.passwordsPrivate.removeSavedPasswords = function(ids) {};
+chrome.passwordsPrivate.removeSavedPassword = function(id, fromStores) {};
 
 /**
  * Removes the saved password exception corresponding to |id|. If no exception
- * with this id exists, this function is a no-op.
- * @param {number} id The id for the exception url entry being removed.
+ * with this id exists, this function is a no-op. This will remove exception
+ * from both stores.
+ * @param {number} id The id for the exception url entry is being removed.
  */
 chrome.passwordsPrivate.removePasswordException = function(id) {};
-
-/**
- * Removes the saved password exceptions corresponding to |ids|. If no exception
- * exists for a certain id, that id is ignored. Undoing this operation via
- * undoRemoveSavedPasswordOrException will restore all the removed exceptions in
- * the batch.
- * @param {!Array<number>} ids
- */
-chrome.passwordsPrivate.removePasswordExceptions = function(ids) {};
 
 /**
  * Undoes the last removal of saved password(s) or exception(s).

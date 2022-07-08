@@ -111,14 +111,17 @@ export class PasswordRemoveDialogElement extends
   }
 
   private onRemoveButtonClick_() {
-    const idsToRemove: number[] = [];
-    if (this.removeFromAccountChecked_) {
-      idsToRemove.push(this.duplicatedPassword.accountId!);
+    let fromStores: chrome.passwordsPrivate.PasswordStoreSet =
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+    if (this.removeFromAccountChecked_ && this.removeFromDeviceChecked_) {
+      fromStores = chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT;
+    } else if (this.removeFromAccountChecked_) {
+      fromStores = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+    } else {
+      assert(this.removeFromDeviceChecked_);
     }
-    if (this.removeFromDeviceChecked_) {
-      idsToRemove.push(this.duplicatedPassword.deviceId!);
-    }
-    PasswordManagerImpl.getInstance().removeSavedPasswords(idsToRemove);
+    PasswordManagerImpl.getInstance().removeSavedPassword(
+        this.duplicatedPassword.getAnyId(), fromStores);
 
     this.$.dialog.close();
     this.dispatchEvent(

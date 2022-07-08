@@ -656,14 +656,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onRemoveExceptionButtonTap_(
       e: DomRepeatEvent<MultiStoreExceptionEntry>) {
     const exception = e.model.item;
-    const allExceptionIds: number[] = [];
-    if (exception.isPresentInAccount()) {
-      allExceptionIds.push(exception.accountId!);
-    }
-    if (exception.isPresentOnDevice()) {
-      allExceptionIds.push(exception.deviceId!);
-    }
-    this.passwordManager_.removeExceptions(allExceptionIds);
+    this.passwordManager_.removeException(exception.getAnyId());
   }
 
   /**

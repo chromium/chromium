@@ -95,13 +95,15 @@ class PasswordsPrivateDelegate : public KeyedService {
       const std::vector<int>& ids,
       const api::passwords_private::ChangeSavedPasswordParams& params) = 0;
 
-  // Removes the saved password entries corresponding to the |ids| generated for
-  // each entry of the password list. Any invalid id will be ignored.
-  virtual void RemoveSavedPasswords(const std::vector<int>& ids) = 0;
+  // Removes the saved password entry corresponding to the |id| in the
+  // specified |from_stores|. Any invalid id will be ignored.
+  virtual void RemoveSavedPassword(
+      int id,
+      api::passwords_private::PasswordStoreSet from_stores) = 0;
 
-  // Removes the password exceptions entries corresponding corresponding to
-  // |ids|. Any invalid id will be ignored.
-  virtual void RemovePasswordExceptions(const std::vector<int>& ids) = 0;
+  // Removes the password exception entry corresponding to |id|. Any invalid id
+  // will be ignored.
+  virtual void RemovePasswordException(int id) = 0;
 
   // Undoes the last removal of a saved password or exception.
   virtual void UndoRemoveSavedPasswordOrException() = 0;

@@ -71,16 +71,8 @@ ResponseAction PasswordsPrivateRemoveSavedPasswordFunction::Run() {
   auto parameters =
       api::passwords_private::RemoveSavedPassword::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
-  GetDelegate(browser_context())->RemoveSavedPasswords({parameters->id});
-  return RespondNow(NoArguments());
-}
-
-// PasswordsPrivateRemoveSavedPasswordsFunction
-ResponseAction PasswordsPrivateRemoveSavedPasswordsFunction::Run() {
-  auto parameters =
-      api::passwords_private::RemoveSavedPasswords::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-  GetDelegate(browser_context())->RemoveSavedPasswords(parameters->ids);
+  GetDelegate(browser_context())
+      ->RemoveSavedPassword(parameters->id, parameters->from_stores);
   return RespondNow(NoArguments());
 }
 
@@ -89,16 +81,7 @@ ResponseAction PasswordsPrivateRemovePasswordExceptionFunction::Run() {
   auto parameters =
       api::passwords_private::RemovePasswordException::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
-  GetDelegate(browser_context())->RemovePasswordExceptions({parameters->id});
-  return RespondNow(NoArguments());
-}
-
-// PasswordsPrivateRemovePasswordExceptionsFunction
-ResponseAction PasswordsPrivateRemovePasswordExceptionsFunction::Run() {
-  auto parameters =
-      api::passwords_private::RemovePasswordExceptions::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-  GetDelegate(browser_context())->RemovePasswordExceptions(parameters->ids);
+  GetDelegate(browser_context())->RemovePasswordException(parameters->id);
   return RespondNow(NoArguments());
 }
 

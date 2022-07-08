@@ -53,18 +53,6 @@ class PasswordsPrivateRemoveSavedPasswordFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateRemoveSavedPasswordsFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.removeSavedPasswords",
-                             PASSWORDSPRIVATE_REMOVESAVEDPASSWORDS)
-
- protected:
-  ~PasswordsPrivateRemoveSavedPasswordsFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateRemovePasswordExceptionFunction
     : public ExtensionFunction {
  public:
@@ -73,19 +61,6 @@ class PasswordsPrivateRemovePasswordExceptionFunction
 
  protected:
   ~PasswordsPrivateRemovePasswordExceptionFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class PasswordsPrivateRemovePasswordExceptionsFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.removePasswordExceptions",
-                             PASSWORDSPRIVATE_REMOVEPASSWORDEXCEPTIONS)
-
- protected:
-  ~PasswordsPrivateRemovePasswordExceptionsFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

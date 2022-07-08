@@ -110,10 +110,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordCheckReferrer',
       'refreshScriptsIfNecessary',
       'removeException',
-      'removeExceptions',
       'removeInsecureCredential',
       'removeSavedPassword',
-      'removeSavedPasswords',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'startAutomatedPasswordChange',
@@ -164,18 +162,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   recordPasswordsPageAccessInSettings() {}
 
-  removeSavedPassword(id: number) {
+  removeSavedPassword(
+      id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     this.actual_.removed.passwords++;
-    this.methodCalled('removeSavedPassword', id);
+    this.methodCalled('removeSavedPassword', {id, fromStores});
   }
 
   movePasswordsToAccount(ids: number[]) {
     this.methodCalled('movePasswordsToAccount', ids);
-  }
-
-  removeSavedPasswords(ids: number[]) {
-    this.actual_.removed.passwords += ids.length;
-    this.methodCalled('removeSavedPasswords', ids);
   }
 
   addExceptionListChangedListener(listener:
@@ -197,11 +191,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   removeException(id: number) {
     this.actual_.removed.exceptions++;
     this.methodCalled('removeException', id);
-  }
-
-  removeExceptions(ids: number[]) {
-    this.actual_.removed.exceptions += ids.length;
-    this.methodCalled('removeExceptions', ids);
   }
 
   requestPlaintextPassword(

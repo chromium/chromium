@@ -415,8 +415,11 @@ suite('PasswordViewTest', function() {
 
         page.shadowRoot!.querySelector<HTMLButtonElement>(
                             '#deleteButton')!.click();
-        const id = await passwordManager.whenCalled('removeSavedPassword');
+        const {id, fromStores} =
+            await passwordManager.whenCalled('removeSavedPassword');
         assertEquals(ID, id);
+        assertEquals(
+            chrome.passwordsPrivate.PasswordStoreSet.DEVICE, fromStores);
         await flushTasks();
 
         assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
@@ -434,14 +437,14 @@ suite('PasswordViewTest', function() {
           createPasswordEntry({
             url: SITE,
             username: USERNAME,
-            id: 0,
+            id: ID,
             frontendId: ID,
             fromAccountStore: false
           }),
           createPasswordEntry({
             url: SITE,
             username: USERNAME,
-            id: 1,
+            id: ID,
             frontendId: ID,
             fromAccountStore: true
           })
@@ -450,7 +453,7 @@ suite('PasswordViewTest', function() {
         document.body.appendChild(page);
         const params = new URLSearchParams({
           deviceId: '0',
-          accountId: '1',
+          accountId: '0',
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
         await flushTasks();
@@ -463,12 +466,17 @@ suite('PasswordViewTest', function() {
         assertTrue(!!dialog);
         assertDeepEquals(
             createMultiStorePasswordEntry(
-                {url: SITE, username: USERNAME, deviceId: 0, accountId: 1}),
+                {url: SITE, username: USERNAME, deviceId: ID, accountId: ID}),
             dialog.duplicatedPassword);
 
         // click delete on the dialog.
         dialog.$.removeButton.click();
-        await passwordManager.whenCalled('removeSavedPasswords');
+        const {id, fromStores} =
+            await passwordManager.whenCalled('removeSavedPassword');
+        assertEquals(ID, id);
+        assertEquals(
+            chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
+            fromStores);
         await flushTasks();
 
         assertEquals(

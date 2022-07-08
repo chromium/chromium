@@ -148,37 +148,10 @@ var availableTests = [
 
       if (numCalls == 1) {
         numSavedPasswords = savedPasswordsList.length;
-        chrome.passwordsPrivate.removeSavedPassword(savedPasswordsList[0].id);
+        chrome.passwordsPrivate.removeSavedPassword(savedPasswordsList[0].id,
+            chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
       } else if (numCalls == 2) {
         chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords - 1);
-        chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
-      } else if (numCalls == 3) {
-        chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords);
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
-    };
-
-    chrome.passwordsPrivate.onSavedPasswordsListChanged.addListener(callback);
-    chrome.passwordsPrivate.getSavedPasswordList(callback);
-  },
-
-  function removeAndUndoRemoveSavedPasswordsBatch() {
-    var numCalls = 0;
-    var numSavedPasswords;
-
-    var callback = function(savedPasswordsList) {
-      numCalls++;
-
-      if (numCalls == 1) {
-        numSavedPasswords = savedPasswordsList.length;
-        // There should be at least two passwords for this test to make sense.
-        chrome.test.assertTrue(numSavedPasswords >= 2);
-        chrome.passwordsPrivate.removeSavedPasswords(
-            Array(savedPasswordsList[0].id, savedPasswordsList[1].id));
-      } else if (numCalls == 2) {
-        chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords - 2);
         chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
       } else if (numCalls == 3) {
         chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords);
@@ -205,36 +178,6 @@ var availableTests = [
       } else if (numCalls == 2) {
         chrome.test.assertEq(
             passwordExceptionsList.length, numPasswordExceptions - 1);
-        chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
-      } else if (numCalls == 3) {
-        chrome.test.assertEq(
-            passwordExceptionsList.length, numPasswordExceptions);
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
-    };
-
-    chrome.passwordsPrivate.onPasswordExceptionsListChanged.addListener(
-        callback);
-    chrome.passwordsPrivate.getPasswordExceptionList(callback);
-  },
-
-  function removeAndUndoRemovePasswordExceptionsBatch() {
-    var numCalls = 0;
-    var numPasswordExceptions;
-    var callback = function(passwordExceptionsList) {
-      numCalls++;
-
-      if (numCalls == 1) {
-        numPasswordExceptions = passwordExceptionsList.length;
-        // There should be at least two exceptions for this test to make sense.
-        chrome.test.assertTrue(numPasswordExceptions >= 2);
-        chrome.passwordsPrivate.removePasswordExceptions(
-            Array(passwordExceptionsList[0].id, passwordExceptionsList[1].id));
-      } else if (numCalls == 2) {
-        chrome.test.assertEq(
-            passwordExceptionsList.length, numPasswordExceptions - 2);
         chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
       } else if (numCalls == 3) {
         chrome.test.assertEq(
