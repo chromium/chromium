@@ -613,8 +613,10 @@ void BindMediaFoundationRendererNotifierHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
         receiver) {
-  captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
-                                                      std::move(receiver));
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    captions::LiveCaptionUnavailabilityNotifier::Create(frame_host,
+                                                        std::move(receiver));
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
