@@ -56,8 +56,12 @@ constexpr int kStatusIndicatorActiveSize = 8;
 constexpr int kStatusIndicatorRunningSize = 4;
 constexpr int kStatusIndicatorThickness = 2;
 
-constexpr int kNotificationIndicatorRadiusDip = 6;
-constexpr int kNotificationIndicatorPadding = 1;
+// The size of the notification indicator circle over the size of the icon.
+constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
+
+// The size of the notification indicator circle padding over the size of the
+// icon.
+constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
 
 constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
 constexpr SkAlpha kInactiveIndicatorOpacity = 0x80;
@@ -737,12 +741,13 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
 gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
   gfx::Rect scaled_icon_view_bounds =
       GetIconViewBounds(GetContentsBounds(), icon_scale);
-  float diameter =
-      std::floor(kNotificationIndicatorRadiusDip * icon_scale * 2.0f);
-  return gfx::Rect(scaled_icon_view_bounds.right() - diameter -
-                       kNotificationIndicatorPadding,
-                   scaled_icon_view_bounds.y() + kNotificationIndicatorPadding,
-                   diameter, diameter);
+  float diameter = std::ceil(kNotificationIndicatorWidthRatio *
+                             scaled_icon_view_bounds.width());
+  float padding = std::ceil(kNotificationIndicatorPaddingRatio *
+                            scaled_icon_view_bounds.width());
+  return gfx::ToRoundedRect(
+      gfx::RectF(scaled_icon_view_bounds.right() - diameter - padding,
+                 scaled_icon_view_bounds.y() + padding, diameter, diameter));
 }
 
 void ShelfAppButton::Layout() {
