@@ -236,8 +236,7 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   // Use 'EnableCompanyName' to inform tests that the feature is enabled.
   const loadTimeDataOverride = {};
   loadTimeDataOverride['EnableCompanyName'] = true;
-  loadTimeDataOverride['EnableHonorificPrefix'] = true;
-  loadTimeDataOverride['EnableExtendedAddressFormat'] = true;
+  loadTimeDataOverride['showHonorific'] = true;
   loadTimeData.overrideValues(loadTimeDataOverride);
   mocha.run();
 });
