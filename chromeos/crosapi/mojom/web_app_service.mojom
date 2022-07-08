@@ -16,10 +16,21 @@ struct WebAppAndroidPackage {
   string sha256_fingerprint@1;
 };
 
+// Contains the web app information used to mint an Android WebApk.
+[Stable]
+struct WebApkCreationParams {
+  // The URL of the Web App Manifest.
+  string manifest_url@0;
+
+  // A serialized webapk::WebAppManifest proto containing the information
+  // required for an Android WebApk to be minted.
+  array<uint8> webapk_manifest_proto_bytes@1;
+};
+
 // Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
 // lacros-chrome.
-// Next version: 1
-// Next method id: 2
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
 interface WebAppProviderBridge {
   // Called when a web app described by |info| is installed in ARC (Android
@@ -35,6 +46,12 @@ interface WebAppProviderBridge {
   // See |web_app::WebAppInstallFinalizer::UninstallExternalWebApp|.
   WebAppUninstalledInArc@1(string app_id)
     => (WebAppUninstallResultCode uninstall_result);
+
+  // Called when a web app defining a share target has been installed in Lacros.
+  // Returns the information required for an Android WebApk to be minted.
+  [MinVersion=1]
+  GetWebApkCreationParams@2(string app_id)
+    => (WebApkCreationParams webapk_creation_params);
 };
 
 // An interface implemented in ash-chrome. Allows lacros-chrome:

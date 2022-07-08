@@ -2627,6 +2627,7 @@ if (!is_android) {
 
     if (is_chromeos_lacros) {
       sources += [
+        "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
@@ -2659,6 +2660,7 @@ if (!is_android) {
         "//chromeos/ui/frame:test_support",
         "//components/account_manager_core:test_support",
         "//components/services/app_service/public/cpp:intents",
+        "//components/webapk:proto",
       ]
     }
 

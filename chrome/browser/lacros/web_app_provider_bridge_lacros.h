@@ -8,6 +8,8 @@
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class Profile;
+
 namespace crosapi {
 
 // Created in lacros-chrome. Allows ash-chrome to modify web app state in
@@ -25,8 +27,24 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
                             WebAppInstalledInArcCallback callback) override;
   void WebAppUninstalledInArc(const std::string& app_id,
                               WebAppUninstalledInArcCallback callback) override;
+  void GetWebApkCreationParams(
+      const std::string& app_id,
+      GetWebApkCreationParamsCallback callback) override;
 
  private:
+  static void WebAppInstalledInArcImpl(
+      mojom::ArcWebAppInstallInfoPtr arc_install_info,
+      WebAppInstalledInArcCallback callback,
+      Profile* profile);
+  static void WebAppUninstalledInArcImpl(
+      const std::string& app_id,
+      WebAppUninstalledInArcCallback callback,
+      Profile* profile);
+  static void GetWebApkCreationParamsImpl(
+      const std::string& app_id,
+      GetWebApkCreationParamsCallback callback,
+      Profile* profile);
+
   mojo::Receiver<mojom::WebAppProviderBridge> receiver_{this};
 };
 

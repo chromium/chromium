@@ -5203,7 +5203,6 @@ static_library("browser") {
       "//components/webapk:proto",
       "//device/vr/public/mojom:isolated_xr_service",
       "//remoting/host/chromeos:features",
-      "//third_party/smhasher:murmurhash2",
       "//ui/chromeos",
       "//ui/events/ozone",
       "//ui/ozone",
@@ -5561,6 +5560,8 @@ static_library("browser") {
       "apps/app_service/media_requests.cc",
       "apps/app_service/media_requests.h",
       "apps/app_service/menu_item_constants.h",
+      "apps/app_service/webapk/webapk_utils.cc",
+      "apps/app_service/webapk/webapk_utils.h",
       "apps/intent_helper/chromeos_intent_picker_helpers.cc",
       "apps/intent_helper/chromeos_intent_picker_helpers.h",
       "apps/intent_helper/common_apps_navigation_throttle.cc",
@@ -5693,6 +5694,8 @@ static_library("browser") {
       "//components/arc/common:arc_intent_helper_constants",
       "//components/pref_registry:pref_registry",
       "//components/prefs:prefs",
+      "//components/webapk:proto",
+      "//third_party/smhasher:murmurhash2",
       "//ui/wm/public",
     ]
 

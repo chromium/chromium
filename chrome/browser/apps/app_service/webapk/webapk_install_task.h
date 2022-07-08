@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -68,12 +69,16 @@ class WebApkInstallTask {
   void OnInstallComplete(const std::string& package_name,
                          arc::mojom::WebApkInstallResult result);
 
+  void FetchWebApkInfoFromCrosapi();
+  void OnWebApkInfoFetchedFromCrosapi(
+      crosapi::mojom::WebApkCreationParamsPtr webapk_creation_params);
+
   // Delivers a result to the callback. The callback can delete this task, so no
   // further work should be done after calling this method.
   void DeliverResult(WebApkInstallStatus status);
 
   Profile* const profile_;
-  web_app::WebAppProvider* web_app_provider_;
+  web_app::WebAppProvider* const web_app_provider_;
 
   arc::mojom::WebApkInfoPtr web_apk_info_;
   const std::string app_id_;
@@ -92,6 +97,10 @@ class WebApkInstallTask {
 
   // Fails the installation if the request to the WebAPK minter takes too long.
   base::OneShotTimer timer_;
+
+  // TODO(crbug.com/1254199): Consider passing app short name to
+  // OnProtoSerialized() and OnUrlLoaderComplete().
+  std::string app_short_name_;
 
   base::WeakPtrFactory<WebApkInstallTask> weak_ptr_factory_{this};
 };
