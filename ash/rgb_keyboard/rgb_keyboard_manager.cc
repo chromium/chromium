@@ -94,7 +94,7 @@ void RgbKeyboardManager::SetAnimationMode(rgbkbd::RgbAnimationMode mode) {
 }
 
 void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {
-  if (IsRgbKeyboardSupported()) {
+  if (IsRgbKeyboardSupported() && IsPerKeyKeyboard()) {
     VLOG(1) << "Setting RGB keyboard caps lock state to " << enabled;
     RgbkbdClient::Get()->SetCapsLockState(enabled);
   }
@@ -140,4 +140,7 @@ void RgbKeyboardManager::InitializeRgbKeyboard() {
                                                 SkColorGetB(kDefaultColor));
 }
 
+bool RgbKeyboardManager::IsPerKeyKeyboard() const {
+  return capabilities_ == rgbkbd::RgbKeyboardCapabilities::kIndividualKey;
+}
 }  // namespace ash

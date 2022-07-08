@@ -166,4 +166,19 @@ TEST_F(RgbKeyboardManagerTest, SetAnimationMode) {
 
   EXPECT_EQ(1, client_->animation_mode_call_count());
 }
+
+TEST_F(RgbKeyboardManagerTest, SetCapsLockStateDisallowedForZonedKeyboards) {
+  InitializeManagerWithCapability(rgbkbd::RgbKeyboardCapabilities::kFiveZone);
+  EXPECT_FALSE(client_->get_caps_lock_state());
+  ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
+  // Caps lock state should still be false since RgbKeyboardManager should have
+  // prevented the call to SetCapsLockState.
+  EXPECT_FALSE(client_->get_caps_lock_state());
+}
+
+TEST_F(RgbKeyboardManagerTest, SetCapsLockStateAllowedForPerKeyKeboards) {
+  EXPECT_FALSE(client_->get_caps_lock_state());
+  ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
+  EXPECT_TRUE(client_->get_caps_lock_state());
+}
 }  // namespace ash
