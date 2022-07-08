@@ -501,7 +501,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_DoesNotCrashWithMousewheelEvent)
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_FocusRingMovesWithMouse DISABLED_FocusRingMovesWithMouse
+#else
+#define MAYBE_FocusRingMovesWithMouse FocusRingMovesWithMouse
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_FocusRingMovesWithMouse) {
   // Create a callback for the focus ring observer.
   base::RepeatingCallback<void()> callback =
       base::BindRepeating(&SelectToSpeakTest::OnFocusRingChanged, GetWeakPtr());
@@ -635,8 +641,16 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_WorksWithStickyKeys) {
   sm_.Replay();
 }
 
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SelectToSpeakDoesNotDismissTrayBubble \
+  DISABLED_SelectToSpeakDoesNotDismissTrayBubble
+#else
+#define MAYBE_SelectToSpeakDoesNotDismissTrayBubble \
+  SelectToSpeakDoesNotDismissTrayBubble
+#endif
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
-                       SelectToSpeakDoesNotDismissTrayBubble) {
+                       MAYBE_SelectToSpeakDoesNotDismissTrayBubble) {
   // Open tray bubble menu.
   tray_test_api_->ShowBubble();
 
