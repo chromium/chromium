@@ -1154,7 +1154,7 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
 
 void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
     cc::ElementId scroll_latched_element_id) {
-  if (!RuntimeEnabledFeatures::OverscrollCustomizationEnabled())
+  if (!RuntimeEnabledFeatures::ScrollEndEventsEnabled())
     return;
 
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(

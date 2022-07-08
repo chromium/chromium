@@ -800,7 +800,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
           }
 
           Node* scroll_end_target = scroll_manager->GetScrollEventTarget();
-          if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled() &&
+          if (RuntimeEnabledFeatures::ScrollEndEventsEnabled() &&
               scroll_end_target) {
             scroll_end_target->GetDocument().EnqueueScrollEndEventForNode(
                 scroll_end_target);
@@ -922,7 +922,7 @@ gfx::PointF ScrollManager::ScrollByForSnapFling(const gfx::Vector2dF& delta) {
 }
 
 void ScrollManager::ScrollEndForSnapFling(bool did_finish) {
-  if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled()) {
+  if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
     if (Node* scroll_end_target = GetScrollEventTarget()) {
       scroll_end_target->GetDocument().EnqueueScrollEndEventForNode(
           scroll_end_target);

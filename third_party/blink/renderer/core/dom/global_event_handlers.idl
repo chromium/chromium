@@ -86,7 +86,7 @@
     attribute EventHandler onreset;
     attribute EventHandler onresize;
     attribute EventHandler onscroll;
-    [RuntimeEnabled=OverscrollCustomization] attribute EventHandler onscrollend;
+    [RuntimeEnabled=ScrollEndEvents] attribute EventHandler onscrollend;
     attribute EventHandler onsecuritypolicyviolation;
     attribute EventHandler onseeked;
     attribute EventHandler onseeking;

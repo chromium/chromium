@@ -2125,6 +2125,11 @@
       name: "ScrollCustomization",
     },
     {
+      name: "ScrollEndEvents",
+      settable_from_internals: true,
+      status: "experimental",
+    },
+    {
       name: "ScrollSnapAfterLayout",
       status: "stable",
     },

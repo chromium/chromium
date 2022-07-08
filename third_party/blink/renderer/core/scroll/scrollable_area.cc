@@ -949,7 +949,7 @@ CompositorElementId ScrollableArea::GetScrollbarElementId(
 
 void ScrollableArea::OnScrollFinished() {
   if (GetLayoutBox()) {
-    if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled()) {
+    if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
       if (Node* node = EventTargetNode())
         node->GetDocument().EnqueueScrollEndEventForNode(node);
     }
