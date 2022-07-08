@@ -28,6 +28,8 @@ class SystemGlitchReporter {
 
   SystemGlitchReporter(StreamType stream_type);
 
+  ~SystemGlitchReporter();
+
   // Resets all state: both periodic and long-term stats.
   Stats GetLongTermStatsAndReset();
 
@@ -39,6 +41,7 @@ class SystemGlitchReporter {
   const std::string num_glitches_detected_metric_name_;
   const std::string total_glitch_duration_metric_name_;
   const std::string largest_glitch_duration_metric_name_;
+  const std::string early_glitch_detected_metric_name_;
 
   int callback_count_ = 0;
 
@@ -48,6 +51,10 @@ class SystemGlitchReporter {
 
   // Stats that only reset on GetLongTermStatsAndReset().
   Stats long_term_stats_;
+
+  // Long-term metric reported in ReportLongTermStatsAndReset().
+  // Records whether any glitch occurred during the first 1000 callbacks.
+  bool early_glitch_detected_ = false;
 };
 
 }  // namespace media
