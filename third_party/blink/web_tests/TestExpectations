@@ -5945,7 +5945,6 @@ crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Skip ]
 
 # Sheriff 2021-11-15
 crbug.com/1270362 http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Failure Pass Timeout ]
-crbug.com/1270362 http/tests/devtools/sources/debugger/debug-inlined-scripts-fragment-id.js [ Failure Pass Timeout ]
 
 # The wpt_flags=h2 variants of these tests fail, but the other variants pass. We
 # can't handle this difference with -expected.txt files, so we have to list them
