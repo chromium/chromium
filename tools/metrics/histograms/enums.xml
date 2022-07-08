@@ -41078,6 +41078,12 @@ Called by update_permissions_policy_enum.py.-->
              X button to close the notice."/>
 </enum>
 
+<enum name="FeedPositionSegmentationResult">
+  <int value="0" label="Uninitialized."/>
+  <int value="1" label="Is a Feed active user."/>
+  <int value="2" label="Is a non-Feed user."/>
+</enum>
+
 <enum name="FeedRequestReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ZERO_STATE"/>
