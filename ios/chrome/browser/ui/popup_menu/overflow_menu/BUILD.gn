@@ -125,6 +125,7 @@ swift_source_set("overflow_menu_swift") {
     "overflow_menu_hosting_controller.swift",
     "overflow_menu_item.swift",
     "overflow_menu_model.swift",
+    "overflow_menu_ui_configuration.swift",
     "overflow_menu_view.swift",
     "overflow_menu_view_provider.swift",
   ]

@@ -12,6 +12,17 @@ class OverflowMenuHostingController<Content>: UIHostingController<Content> where
   // This should be the width of the share sheet in compact height environments.
   let compactHeightSheetWidth: CGFloat = 568
 
+  let uiConfiguration: OverflowMenuUIConfiguration
+
+  init(rootView: Content, uiConfiguration: OverflowMenuUIConfiguration) {
+    self.uiConfiguration = uiConfiguration
+    super.init(rootView: rootView)
+  }
+
+  required init(coder aDecoder: NSCoder) {
+    fatalError("Not using storyboards")
+  }
+
   var compactHeightPreferredContentSize: CGSize {
     return CGSize(
       width: compactHeightSheetWidth, height: presentingViewController?.view.bounds.size.height ?? 0
@@ -25,6 +36,12 @@ class OverflowMenuHostingController<Content>: UIHostingController<Content> where
     // it overrides the default size of the menu on iPad.
     preferredContentSize =
       traitCollection.verticalSizeClass == .compact ? compactHeightPreferredContentSize : .zero
+
+    uiConfiguration.presentingViewControllerHorizontalSizeClass =
+      presentingViewController?.traitCollection.horizontalSizeClass == .regular
+      ? .regular : .compact
+    uiConfiguration.presentingViewControllerVerticalSizeClass =
+      presentingViewController?.traitCollection.verticalSizeClass == .regular ? .regular : .compact
   }
 
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -34,5 +51,11 @@ class OverflowMenuHostingController<Content>: UIHostingController<Content> where
     // it overrides the default size of the menu on iPad.
     preferredContentSize =
       traitCollection.verticalSizeClass == .compact ? compactHeightPreferredContentSize : .zero
+
+    uiConfiguration.presentingViewControllerHorizontalSizeClass =
+      presentingViewController?.traitCollection.horizontalSizeClass == .regular
+      ? .regular : .compact
+    uiConfiguration.presentingViewControllerVerticalSizeClass =
+      presentingViewController?.traitCollection.verticalSizeClass == .regular ? .regular : .compact
   }
 }

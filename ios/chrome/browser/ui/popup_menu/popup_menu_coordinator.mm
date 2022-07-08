@@ -404,9 +404,18 @@ enum class IOSOverflowMenuActionType {
 
         self.contentBlockerMediator.consumer = self.overflowMenuMediator;
 
+        OverflowMenuUIConfiguration* uiConfiguration =
+            [[OverflowMenuUIConfiguration alloc]
+                initWithPresentingViewControllerHorizontalSizeClass:
+                    self.baseViewController.traitCollection.horizontalSizeClass
+                          presentingViewControllerVerticalSizeClass:
+                              self.baseViewController.traitCollection
+                                  .verticalSizeClass];
+
         UIViewController* menu = [OverflowMenuViewProvider
             makeViewControllerWithModel:self.overflowMenuMediator
                                             .overflowMenuModel
+                        uiConfiguration:uiConfiguration
                          metricsHandler:self
                 carouselMetricsDelegate:self.overflowMenuMediator];
 

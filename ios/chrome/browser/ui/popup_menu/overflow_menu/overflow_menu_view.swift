@@ -12,6 +12,8 @@ struct OverflowMenuView: View {
 
   var model: OverflowMenuModel
 
+  var uiConfiguration: OverflowMenuUIConfiguration
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   weak var carouselMetricsDelegate: PopupMenuCarouselMetricsDelegate?
@@ -33,6 +35,12 @@ struct OverflowMenuView: View {
       }.frame(height: Dimensions.destinationListHeight)
       Divider()
       OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
+      // Add a spacer on iPad to make sure there's space below the list.
+      if uiConfiguration.presentingViewControllerHorizontalSizeClass == .regular
+        && uiConfiguration.presentingViewControllerVerticalSizeClass == .regular
+      {
+        Spacer()
+      }
     }.background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
   }
 }
