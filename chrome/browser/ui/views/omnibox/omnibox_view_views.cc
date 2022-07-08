@@ -111,6 +111,10 @@
 #include "chrome/browser/browser_process.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/base/tablet_state.h"
+#endif
+
 namespace {
 
 using ::metrics::OmniboxEventProto;
@@ -455,7 +459,15 @@ bool OmniboxViewViews::IsImeComposing() const {
 }
 
 gfx::Size OmniboxViewViews::GetMinimumSize() const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1338087): The minimum size of Lacros toolbar is set too wide
+  // to use split view in tablet mode. Temporally making the minimum size of
+  // omnibox smaller for Lacros to align the behavior with Ash.
+  const int kMinCharacters =
+      chromeos::TabletState::Get()->InTabletMode() ? 8 : 20;
+#else
   const int kMinCharacters = 20;
+#endif
   return gfx::Size(
       GetFontList().GetExpectedTextWidth(kMinCharacters) + GetInsets().width(),
       GetPreferredSize().height());
