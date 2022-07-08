@@ -219,7 +219,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-fieldtrial-fyi-rel",
+    name = "android-fieldtrial-rel",
     mirrors = ["ci/android-fieldtrial-rel"],
 )
 
