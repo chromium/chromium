@@ -26,3 +26,20 @@ component("missive") {
     "missive_client.h",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "missive_client_test_observer.cc",
+    "missive_client_test_observer.h",
+  ]
+
+  deps = [
+    ":missive",
+    "//base",
+    "//base/test:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+  ]
+}
