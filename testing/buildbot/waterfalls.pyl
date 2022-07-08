@@ -1555,6 +1555,18 @@
           'chromiumos_preflight',
         ],
       },
+      'chromeos-jacuzzi-rel': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-jacuzzi',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_device_only_gtests',
+        },
+        'os_type': 'chromeos',
+      },
       'chromeos-kevin-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -1565,6 +1577,18 @@
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
           'isolated_scripts': 'chromeos_remote_device_isolated_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      'chromeos-octopus-rel': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-octopus',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_device_only_gtests',
         },
         'os_type': 'chromeos',
       },

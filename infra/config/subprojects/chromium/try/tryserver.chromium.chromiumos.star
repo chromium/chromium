@@ -145,6 +145,15 @@ try_.builder(
 )
 
 try_.builder(
+    name = "chromeos-jacuzzi-rel",
+    branch_selector = branches.CROS_LTS_MILESTONE,
+    mirrors = [
+        "ci/chromeos-jacuzzi-rel",
+    ],
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "chromeos-kevin-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = [
@@ -158,6 +167,15 @@ try_.builder(
             ".+/[+]/chromeos/CHROMEOS_LKGM",
         ],
     ),
+)
+
+try_.builder(
+    name = "chromeos-octopus-rel",
+    branch_selector = branches.CROS_LTS_MILESTONE,
+    mirrors = [
+        "ci/chromeos-octopus-rel",
+    ],
+    main_list_view = "try",
 )
 
 try_.builder(
