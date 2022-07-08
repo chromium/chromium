@@ -33,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -322,6 +323,72 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                .BuildAggregatableAttribution(),
        .report_file = "report_1.json",
        .cleartext_payloads_file = "report_1_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
+               AttributionInfoBuilder(
+                   SourceBuilder(base::Time::FromJavaTime(1234483200000))
+                       .BuildStored())
+                   .Build())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+               .SetReportTime(base::Time::FromJavaTime(1234486400000))
+               .BuildAggregatableAttribution(),
+       .report_file = "report_2.json",
+       .cleartext_payloads_file = "report_2_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
+               AttributionInfoBuilder(
+                   SourceBuilder(base::Time::FromJavaTime(1234483300000))
+                       .SetDebugKey(123)
+                       .BuildStored())
+                   .SetDebugKey(456)
+                   .Build())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
+                    AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
+               .SetReportTime(base::Time::FromJavaTime(1234486500000))
+               .BuildAggregatableAttribution(),
+       .report_file = "report_3.json",
+       .cleartext_payloads_file = "report_3_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(
+               AttributionInfoBuilder(
+                   SourceBuilder(base::Time::FromJavaTime(1234483300000))
+                       .BuildStored())
+                   .Build())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
+                    AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
+               .SetReportTime(base::Time::FromJavaTime(1234486500000))
+               .BuildAggregatableAttribution(),
+       .report_file = "report_4.json",
+       .cleartext_payloads_file = "report_4_cleartext_payloads.json"},
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder(
+                         SourceBuilder(base::Time::FromJavaTime(1234483400000))
+                             .SetDebugKey(123)
+                             .BuildStored())
+                         .SetDebugKey(456)
+                         .Build())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableHistogramContribution(
+                             /*key=*/absl::Uint128Max(), /*value=*/1000)})
+                     .SetReportTime(base::Time::FromJavaTime(1234486600000))
+                     .BuildAggregatableAttribution(),
+       .report_file = "report_5.json",
+       .cleartext_payloads_file = "report_5_cleartext_payloads.json"},
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder(
+                         SourceBuilder(base::Time::FromJavaTime(1234483400000))
+                             .BuildStored())
+                         .Build())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableHistogramContribution(
+                             /*key=*/absl::Uint128Max(), /*value=*/1000)})
+                     .SetReportTime(base::Time::FromJavaTime(1234486600000))
+                     .BuildAggregatableAttribution(),
+       .report_file = "report_6.json",
+       .cleartext_payloads_file = "report_6_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {
