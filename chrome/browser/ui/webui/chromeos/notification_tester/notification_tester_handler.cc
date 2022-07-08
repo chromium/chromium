@@ -42,6 +42,16 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
   const base::Value::Dict* notifObj = args[0].GetIfDict();
   DCHECK(notifObj);
 
+  // Set notification ID to the system time (always unique) if specified.
+  const std::string* id = notifObj->FindString("id");
+  DCHECK(id);
+  std::string notification_id = *id;
+  if (*id == "random") {
+    auto current_time_in_ms =
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds();
+    notification_id = base::NumberToString(current_time_in_ms);
+  }
+
   const std::string* title = notifObj->FindString("title");
   DCHECK(title);
 
@@ -50,36 +60,53 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
 
   const std::string* icon = notifObj->FindString("icon");
   DCHECK(icon);
+  auto notification_icon = GetNotificationIconFromString(*icon);
 
   const std::string* image = notifObj->FindString("richDataImage");
   DCHECK(image);
 
-  // Generate Notification.
-  std::u16string display_source = u"Sample Display Source";
-  GURL origin_url("https://test-url.xyz");
-  message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, "test notifier id",
-      ash::NotificationCatalogName::kTestCatalogName);
+  const std::string* display_source = notifObj->FindString("displaySource");
+  DCHECK(display_source);
 
+  const std::string* origin_url_str = notifObj->FindString("originURL");
+  DCHECK(origin_url_str);
+  GURL origin_url(*origin_url_str);
+
+  absl::optional<int> notification_type_int =
+      notifObj->FindInt("notificationType");
+  DCHECK(notification_type_int);
+  auto notification_type = static_cast<message_center::NotificationType>(
+      notification_type_int.value());
+
+  // notifier_id should be constructed differently if the notifier type is
+  // message_center::NotifierType::WEB_PAGE.
+  absl::optional<int> notifier_type = notifObj->FindInt("notifierType");
+  DCHECK(notifier_type);
+  message_center::NotifierId notifier_id;
+  if (notifier_type.value() ==
+      static_cast<int>(message_center::NotifierType::WEB_PAGE)) {
+    notifier_id = message_center::NotifierId(origin_url);
+    // The profile_id must be non-empty to enable notification grouping.
+    notifier_id.profile_id = "test-profile-id@gmail.com";
+  } else {
+    notifier_id = message_center::NotifierId(
+        static_cast<message_center::NotifierType>(notifier_type.value()),
+        "test notifier id", ash::NotificationCatalogName::kTestCatalogName);
+  }
+
+  // Create RichNotificationData object.
   message_center::RichNotificationData optional_fields =
       DictToOptionalFields(notifObj);
-
-  auto notification_icon = GetNotificationIconFromString(*icon);
 
   // Delegate does nothing.
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](absl::optional<int> button_index) {}));
 
-  // Generate a unique notification id based on the system time in ms.
-  auto current_time_in_ms =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds();
-  std::string notification_id = base::NumberToString(current_time_in_ms);
-
   auto notification = std::make_unique<message_center::Notification>(
-      message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      notification_id, base::UTF8ToUTF16(*title), base::UTF8ToUTF16(*message),
-      notification_icon, display_source, origin_url, notifier_id,
+      notification_type, notification_id, base::UTF8ToUTF16(*title),
+      base::UTF8ToUTF16(*message), notification_icon,
+      base::UTF8ToUTF16(*display_source), origin_url, notifier_id,
       optional_fields, delegate);
 
   message_center::MessageCenter::Get()->AddNotification(
