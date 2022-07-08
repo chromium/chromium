@@ -255,9 +255,7 @@ public final class ReturnToChromeUtil {
             return false;
         }
 
-        long expirationTime = lastBackgroundedTimeMillis + tabSwitcherAfterMillis;
-
-        return System.currentTimeMillis() > expirationTime;
+        return System.currentTimeMillis() - lastBackgroundedTimeMillis > tabSwitcherAfterMillis;
     }
 
     /**

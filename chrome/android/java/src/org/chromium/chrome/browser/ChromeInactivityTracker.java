@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -19,6 +20,8 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 public class ChromeInactivityTracker
         implements StartStopWithNativeObserver, PauseResumeWithNativeObserver, DestroyObserver {
     private static final String TAG = "InactivityTracker";
+    private static final String UMA_DURATION_SINCE_LAST_BACKGROUND_TIME =
+            "Startup.Android.DurationSinceLastBackgroundTime";
 
     private static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
 
@@ -81,7 +84,14 @@ public class ChromeInactivityTracker
         // handlers the chance to respond to inactivity during any onStartWithNative handler
         // regardless of ordering. onResume is always called after onStart, and it should be fine to
         // consider Chrome active if it reaches onResume.
+        long lastBackgroundTime = SharedPreferencesManager.getInstance().readLong(
+                mPrefName, UNKNOWN_LAST_BACKGROUNDED_TIME);
         setLastBackgroundedTimeInPrefs(UNKNOWN_LAST_BACKGROUNDED_TIME);
+
+        if (lastBackgroundTime != UNKNOWN_LAST_BACKGROUNDED_TIME) {
+            RecordHistogram.recordLongTimesHistogram100(UMA_DURATION_SINCE_LAST_BACKGROUND_TIME,
+                    System.currentTimeMillis() - lastBackgroundTime);
+        }
     }
 
     @Override
