@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
+#include "chromeos/ash/components/dbus/runtime_probe/runtime_probe_client.h"
 
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/dbus/runtime_probe/fake_runtime_probe_client.h"
+#include "chromeos/ash/components/dbus/runtime_probe/fake_runtime_probe_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/runtime_probe/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 RuntimeProbeClient* g_instance = nullptr;
@@ -114,4 +114,4 @@ RuntimeProbeClient::~RuntimeProbeClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -35,8 +35,6 @@ component("dbus") {
     "//chromeos/dbus/gnubby",
     "//chromeos/dbus/image_burner",
     "//chromeos/dbus/image_loader",
-    "//chromeos/dbus/runtime_probe",
-    "//chromeos/dbus/runtime_probe:proto",
     "//chromeos/dbus/util",
     "//components/account_id",
     "//components/device_event_log",

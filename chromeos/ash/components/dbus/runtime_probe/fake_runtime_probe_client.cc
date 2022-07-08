@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/runtime_probe/fake_runtime_probe_client.h"
+#include "chromeos/ash/components/dbus/runtime_probe/fake_runtime_probe_client.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr int kLiveValuesLimit = 42;
@@ -68,4 +68,4 @@ void FakeRuntimeProbeClient::ProbeCategories(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-}  // namespace chromeos
+}  // namespace ash

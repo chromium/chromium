@@ -8,8 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("runtime_probe") {
-  output_name = "chromeos_runtime_probe"
-  defines = [ "IS_CHROMEOS_DBUS_RUNTIME_PROBE_IMPL" ]
+  output_name = "ash_runtime_probe"
+  defines = [ "IS_ASH_DBUS_RUNTIME_PROBE_IMPL" ]
   deps = [
     ":proto",
     "//base",
@@ -32,5 +32,5 @@ proto_library("proto") {
   # file, instead we specify lite runtime here.
   cc_generator_options = "lite=true:"
 
-  proto_out_dir = "chromeos/dbus/runtime_probe"
+  proto_out_dir = "chromeos/ash/components/dbus/runtime_probe"
 }
