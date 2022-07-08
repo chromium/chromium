@@ -408,17 +408,37 @@ crbug.com/730267 [ Mac12 ] virtual/gpu-rasterization/images/yuv-decode-eligible/
 crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure Pass Timeout ]
 crbug.com/730267 [ Mac12 ] virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure Pass Timeout ]
 
-# Flaky virtual/threaded/fast/scrolling tests
+# Flaky virtual/threaded-prefer-compositing tests
+crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
+crbug.com/1180479 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-smooth.html [ Failure Pass Timeout ]
+crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-animates.html [ Skip ]
+crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
+crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/horizontal-smooth-scroll-in-rtl.html [ Skip ]
+crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-added.html [ Skip ]
+crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-correctness.html [ Skip ]
+crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll-interrupted.html [ Skip ]
+crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Skip ]
+crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Skip ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass Timeout ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Failure Pass ]
+crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
+crbug.com/1205673 [ Win ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Failure Pass ]
+crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
+crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass Skip Timeout ]
+crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
+crbug.com/1335172 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
+crbug.com/1335172 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 crbug.com/841567 [ Debug Mac11 ] virtual/threaded-prefer-compositing/fast/scrolling/listbox-wheel-event.html [ Failure Pass Timeout ]
 crbug.com/841567 [ Debug Mac12 ] virtual/threaded-prefer-compositing/fast/scrolling/listbox-wheel-event.html [ Failure Pass Timeout ]
-crbug.com/841567 [ Mac10.14 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
-crbug.com/841567 [ Mac10.15 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
-crbug.com/841567 [ Mac11 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
-crbug.com/841567 [ Mac12 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
-crbug.com/841567 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
+crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
+crbug.com/1095540 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
 crbug.com/841567 [ Debug Mac11 ] virtual/threaded-prefer-compositing/fast/scrolling/same-page-navigate.html [ Failure Pass ]
-
-crbug.com/1335172 [ Mac11-arm64 ] virtual/threaded-prefer-compositing/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
+crbug.com/1279758 [ Win10.20h2 ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
+crbug.com/1279758 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
+crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
+crbug.com/1058244 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
 
 crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass ]
 
@@ -2226,7 +2246,6 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
-crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
 
 crbug.com/498539 http/tests/devtools/tracing/timeline-misc/timeline-bound-function.js [ Failure Pass ]
 
@@ -2445,8 +2464,6 @@ crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-to
 crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-token-redemption-supported-by-permissions-policy.tentative.html [ Failure ]
 
 # Sheriff 2020-02-06
-# Flaking on Linux Leak
-crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass Skip Timeout ]
 
 # These are added to W3CImportExpectations as Skip, remove when next import is done.
 crbug.com/666657 external/wpt/css/css-text/hanging-punctuation/* [ Skip ]
@@ -2537,8 +2554,6 @@ crbug.com/528062 [ Win ] http/tests/security/contentSecurityPolicy/cached-frame-
 crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
 crbug.com/574283 [ Mac ] fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Skip ]
-crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-correctness.html [ Skip ]
-crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll-interrupted.html [ Skip ]
 
 crbug.com/599670 [ Win ] http/tests/devtools/resource-parameters-ipv6.js [ Crash Failure Pass ]
 crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html [ Failure ]
@@ -4299,13 +4314,6 @@ crbug.com/688670 external/wpt/html/semantics/embedded-content/media-elements/tra
 
 crbug.com/849670 http/tests/devtools/service-workers/service-worker-v8-cache.js [ Failure Pass Timeout ]
 
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-animates.html [ Skip ]
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/horizontal-smooth-scroll-in-rtl.html [ Skip ]
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/main-thread-scrolling-reason-added.html [ Skip ]
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Skip ]
-crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Skip ]
-
 # ====== Random order flaky tests end here ======
 
 # ====== Tests from enabling .any.js/.worker.js tests begin here ======
@@ -5378,7 +5386,6 @@ crbug.com/1323989 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 # Sheriff 2020-03-06
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
 crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.html [ Failure Pass ]
-crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
 
 # Sheriff 2020-03-08
 crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure Pass ]
@@ -5718,7 +5725,6 @@ crbug.com/1179117 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane
 # Sheriff 2021-02-19
 crbug.com/1180227 [ Mac ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Crash Failure Pass ]
 crbug.com/1180227 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Failure Pass ]
-crbug.com/1180479 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-smooth.html [ Failure Pass Timeout ]
 
 crbug.com/1180274 crbug.com/1046784 [ Win ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
 crbug.com/1180274 crbug.com/1046784 [ Linux ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
@@ -5739,14 +5745,6 @@ crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.h
 crbug.com/1092462 [ Linux ] media/video-seek-past-end-paused.html [ Failure Pass ]
 
 crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Failure Pass ]
-
-# Updating virtual suite from virtual/threaded/fast/scroll-snap to
-# virtual/threaded-prefer-compositing/fast/scroll-snap exposes additional
-# tests that fail on the composited code path.
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Failure Pass ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Failure Pass ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass Timeout ]
 
 # Expect failure for unimplemented canvas color object input
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.html [ Failure ]
@@ -5896,7 +5894,6 @@ crbug.com/1207337 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-s
 
 # Sheriff 2021-05-04
 crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Timeout ]
-crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 
 # Blink_web_tests 2021-05-06
 crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/idlharness.any.worker.html [ Failure ]
@@ -6124,10 +6121,6 @@ crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failu
 # Sheriff 2021-06-29
 # Flaky on Mac11 Tests
 crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
-
-# Sheriff 2021-07-01
-# Now also flakily timing-out.
-crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-05
 crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
@@ -6691,7 +6684,6 @@ crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failur
 
 # Sheriff 2021-12-30
 crbug.com/1229096 [ Win ] fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
-crbug.com/1279758 [ Win10.20h2 ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict-browser-navigate.js [ Pass Timeout ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict-js-navigate.js [ Pass Timeout ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict-js-subresource.js [ Pass Timeout ]
@@ -6954,9 +6946,6 @@ crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox
 crbug.com/1314314 virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Skip ]
 crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Skip ]
 
-# Sheriff 2022-04-14
-crbug.com/1095540 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
-
 crbug.com/1313970 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/visual-viewport.https.html [ Failure ]
 
 # Sheriff 2022-04-08
@@ -7052,9 +7041,6 @@ crbug.com/1295890 [ Win11 ] fast/dom/HTMLScriptElement/script-sync-load-failure.
 crbug.com/1295890 [ Win11 ] http/tests/eventsource/eventsource-cors-no-server.html [ Skip Timeout ]
 crbug.com/1295890 [ Win11 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Skip Timeout ]
 crbug.com/1295890 [ Win11 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Skip Timeout ]
-
-# Sheriff 2022-05-04
-crbug.com/1309533 [ Win ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure ]
 
 crbug.com/1322405 external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Pass Timeout ]
 crbug.com/1322405 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/window-history.https.sub.html [ Pass Timeout ]
