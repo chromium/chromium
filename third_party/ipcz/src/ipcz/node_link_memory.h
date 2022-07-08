@@ -63,7 +63,7 @@ class NodeLinkMemory : public RefCounted {
   // Exposes the underlying BufferPool which owns all shared buffers for this
   // NodeLinkMemory and which facilitates dynamic allocation of the fragments
   // within.
-  BufferPool& buffer_pool();
+  BufferPool& buffer_pool() { return buffer_pool_; }
 
   // Returns a new BufferId which should still be unused by any buffer in this
   // NodeLinkMemory's BufferPool, or that of its peer NodeLinkMemory. When
