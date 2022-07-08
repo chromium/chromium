@@ -65,14 +65,6 @@ def build_preload_images_js(outdir):
         subprocess.check_call(cmd)
 
 
-def gen_files_are_hard_links(gen_dir):
-    cca_root = os.getcwd()
-
-    util_js = os.path.join(cca_root, 'js/util.ts')
-    util_js_in_gen = os.path.join(gen_dir, 'js/util.ts')
-    return os.stat(util_js).st_ino == os.stat(util_js_in_gen).st_ino
-
-
 CCA_OVERRIDE_PATH = '/etc/camera/cca'
 CCA_OVERRIDE_FEATURE = 'CCALocalOverride'
 CHROME_DEV_CONF_PATH = '/etc/chrome_dev.conf'
@@ -108,33 +100,59 @@ def ensure_local_override_enabled(device, force):
     run(['ssh', device, '--', 'restart', 'ui'])
 
 
+def get_tsc_paths(board):
+    root_dir = get_chromium_root()
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+
+    cca_root = os.getcwd()
+    src_relative_dir = os.path.relpath(cca_root, root_dir)
+
+    webui_dir = os.path.join(target_gen_dir, src_relative_dir,
+                             'js/mojom-webui/*')
+    resources_dir = os.path.join(target_gen_dir,
+                                 'ui/webui/resources/preprocessed/*')
+
+    return {
+        '/mojom-webui/*': [os.path.relpath(webui_dir)],
+        '//resources/*': [os.path.relpath(resources_dir)],
+        'chrome://resources/*': [os.path.relpath(resources_dir)],
+    }
+
+
+def generate_tsconfig(board):
+    cca_root = os.getcwd()
+
+    with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
+        tsconfig = json.load(f)
+
+    tsconfig['files'] = glob.glob('js/**/*.ts', recursive=True)
+    tsconfig['compilerOptions']['noEmit'] = True
+    tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
+
+    with open(os.path.join(cca_root, 'tsconfig.json'), 'w') as f:
+        json.dump(tsconfig, f)
+
+
+# Use a fixed temporary output folder for deploy, so incremental compilation
+# works and deploy is faster.
+DEPLOY_OUTPUT_TEMP_DIR = '/tmp/cca-deploy-out'
+
+
 def deploy(args):
     root_dir = get_chromium_root()
     cca_root = os.getcwd()
-    target_dir = os.path.join(get_chromium_root(), f'out_{args.board}/Release')
 
-    src_relative_dir = os.path.relpath(cca_root, root_dir)
-    gen_dir = os.path.join(target_dir, 'gen', src_relative_dir)
-    tsc_dir = os.path.join(gen_dir, 'js/tsc/js')
+    os.makedirs(DEPLOY_OUTPUT_TEMP_DIR, exist_ok=True)
+    js_out_dir = os.path.join(DEPLOY_OUTPUT_TEMP_DIR, 'js')
 
-    # Since CCA copy source to gen directory and place it together with other
-    # generated files for TypeScript compilation, and GN use hard links when
-    # possible to copy files from source to gen directory, we do a check here
-    # that the file in gen directory is indeed hard linked to the source file
-    # (which should be the case when the two directory are in the same file
-    # system), so we don't need to emulate what GN does here and skip copying
-    # the files, and just call tsc on the gen directory.
-    # TODO(pihsun): Support this case if there's some common scenario that
-    # would cause this.
-    assert gen_files_are_hard_links(gen_dir), (
-        'The generated files are not hard linked, compile Chrome first?')
-
-    build_preload_images_js(os.path.join(gen_dir, 'js'))
+    generate_tsconfig(args.board)
 
     run_node([
         'typescript/bin/tsc',
-        '--project',
-        os.path.join(gen_dir, 'js/tsconfig_build_ts.json'),
+        '--outDir',
+        js_out_dir,
+        # Makes compilation faster
+        '--incremental',
         # For better debugging experience on DUT.
         '--inlineSourceMap',
         '--inlineSources',
@@ -145,12 +163,15 @@ def deploy(args):
         'false',
     ])
 
+    build_preload_images_js(js_out_dir)
+
     deploy_new_tsc_files = [
         'rsync',
         '--recursive',
         '--inplace',
         '--delete',
         '--mkpath',
+        '--exclude=tsconfig.tsbuildinfo',
         # rsync by default use source file permission masked by target file
         # system umask while transferring new files, and since workstation
         # defaults to have file not readable by others, this makes deployed
@@ -161,7 +182,7 @@ def deploy(args):
         # will have their permission fixed.
         '--perms',
         '--chmod=a+rX',
-        f'{tsc_dir}/',
+        f'{js_out_dir}/',
         f'{args.device}:{CCA_OVERRIDE_PATH}/js/',
     ]
     run(deploy_new_tsc_files)
@@ -222,37 +243,8 @@ def lint(args):
         print('ESLint check failed, return code =', e.returncode)
 
 
-def get_tsc_paths(board):
-    root_dir = get_chromium_root()
-    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
-
-    cca_root = os.getcwd()
-    src_relative_dir = os.path.relpath(cca_root, root_dir)
-
-    webui_dir = os.path.join(target_gen_dir, src_relative_dir,
-                             'js/mojom-webui/*')
-    resources_dir = os.path.join(target_gen_dir,
-                                 'ui/webui/resources/preprocessed/*')
-
-    return {
-        '/mojom-webui/*': [os.path.relpath(webui_dir)],
-        '//resources/*': [os.path.relpath(resources_dir)],
-        'chrome://resources/*': [os.path.relpath(resources_dir)],
-    }
-
-
 def tsc(args):
-    cca_root = os.getcwd()
-
-    with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
-        tsconfig = json.load(f)
-
-    tsconfig['files'] = glob.glob('js/**/*.ts', recursive=True)
-    tsconfig['compilerOptions']['noEmit'] = True
-    tsconfig['compilerOptions']['paths'] = get_tsc_paths(args.board)
-
-    with open(os.path.join(cca_root, 'tsconfig.json'), 'w') as f:
-        json.dump(tsconfig, f)
+    generate_tsconfig(args.board)
 
     try:
         run_node(['typescript/bin/tsc'])
