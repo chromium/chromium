@@ -287,6 +287,8 @@ public class WebApkIntentDataProviderFactory {
 
         String manifestUrl = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.WEB_MANIFEST_URL);
         String manifestStartUrl = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.START_URL);
+        String manifestId = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.WEB_MANIFEST_ID);
+        String appKey = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.APP_KEY);
         Map<String, String> iconUrlToMurmur2HashMap = getIconUrlAndIconMurmur2HashMap(bundle);
 
         @WebApkDistributor
@@ -341,9 +343,9 @@ public class WebApkIntentDataProviderFactory {
                 new WebappIcon(webApkPackageName, splashIconId), name, shortName, displayMode,
                 orientation, source, themeColor, backgroundColor, defaultBackgroundColor,
                 isPrimaryIconMaskable, isSplashIconMaskable, webApkPackageName, shellApkVersion,
-                manifestUrl, manifestStartUrl, distributor, iconUrlToMurmur2HashMap, shareTarget,
-                forceNavigation, isSplashProvidedByWebApk, shareData,
-                parseShortcutItems(webApkPackageName, res), apkVersion);
+                manifestUrl, manifestStartUrl, manifestId, appKey, distributor,
+                iconUrlToMurmur2HashMap, shareTarget, forceNavigation, isSplashProvidedByWebApk,
+                shareData, parseShortcutItems(webApkPackageName, res), apkVersion);
     }
 
     /**
@@ -370,6 +372,10 @@ public class WebApkIntentDataProviderFactory {
      * @param manifestStartUrl         URL that the WebAPK should navigate to when launched from
      *                                 the homescreen. Different from the {@link url} parameter if
      *                                 the WebAPK is launched from a deep link.
+     * @param manifestId               Id of the WebAPK.
+     * @param appKey                   Key used to identified the WebAPK. This is either the
+     *                                 Manifest URL or the Manifest Unique ID depending on the
+     *                                 situation.
      * @param distributor              The source from where the WebAPK is installed.
      * @param iconUrlToMurmur2HashMap  Map of the WebAPK's icon URLs to Murmur2 hashes of the
      *                                 icon untransformed bytes.
@@ -388,10 +394,11 @@ public class WebApkIntentDataProviderFactory {
             @DisplayMode.EnumType int displayMode, int orientation, int source, long themeColor,
             long backgroundColor, int defaultBackgroundColor, boolean isPrimaryIconMaskable,
             boolean isSplashIconMaskable, String webApkPackageName, int shellApkVersion,
-            String manifestUrl, String manifestStartUrl, @WebApkDistributor int distributor,
-            Map<String, String> iconUrlToMurmur2HashMap, WebApkShareTarget shareTarget,
-            boolean forceNavigation, boolean isSplashProvidedByWebApk, ShareData shareData,
-            List<ShortcutItem> shortcutItems, int webApkVersionCode) {
+            String manifestUrl, String manifestStartUrl, String manifestId, String appKey,
+            @WebApkDistributor int distributor, Map<String, String> iconUrlToMurmur2HashMap,
+            WebApkShareTarget shareTarget, boolean forceNavigation,
+            boolean isSplashProvidedByWebApk, ShareData shareData, List<ShortcutItem> shortcutItems,
+            int webApkVersionCode) {
         if (manifestStartUrl == null || webApkPackageName == null) {
             Log.e(TAG, "Incomplete data provided: " + manifestStartUrl + ", " + webApkPackageName);
             return null;
@@ -408,6 +415,10 @@ public class WebApkIntentDataProviderFactory {
             scope = ShortcutHelper.getScopeFromUrl(manifestStartUrl);
         }
 
+        if (TextUtils.isEmpty(appKey)) {
+            appKey = manifestUrl;
+        }
+
         if (primaryIcon == null) {
             primaryIcon = new WebappIcon();
         }
@@ -422,9 +433,9 @@ public class WebApkIntentDataProviderFactory {
                 WebappIntentUtils.colorFromLongColor(backgroundColor), defaultBackgroundColor,
                 false /* isIconGenerated */, isPrimaryIconMaskable, forceNavigation);
         WebApkExtras webApkExtras = new WebApkExtras(webApkPackageName, splashIcon,
-                isSplashIconMaskable, shellApkVersion, manifestUrl, manifestStartUrl, distributor,
-                iconUrlToMurmur2HashMap, shareTarget, isSplashProvidedByWebApk, shortcutItems,
-                webApkVersionCode);
+                isSplashIconMaskable, shellApkVersion, manifestUrl, manifestStartUrl, manifestId,
+                appKey, distributor, iconUrlToMurmur2HashMap, shareTarget, isSplashProvidedByWebApk,
+                shortcutItems, webApkVersionCode);
         boolean hasCustomToolbarColor = WebappIntentUtils.isLongColorValid(themeColor);
         int toolbarColor = hasCustomToolbarColor
                 ? (int) themeColor

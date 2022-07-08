@@ -203,6 +203,14 @@ public class WebappInfo {
         return getWebApkExtras().manifestStartUrl;
     }
 
+    public String manifestId() {
+        return getWebApkExtras().manifestId;
+    }
+
+    public String appKey() {
+        return getWebApkExtras().appKey;
+    }
+
     public @WebApkDistributor int distributor() {
         return getWebApkExtras().distributor;
     }

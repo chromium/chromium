@@ -480,10 +480,11 @@ public class WebApkUpdateManagerUnitTest {
                 manifestData.themeColor, manifestData.backgroundColor,
                 manifestData.defaultBackgroundColor, false /* isPrimaryIconMaskable */,
                 false /* isSplashIconMaskable*/, kPackageName, -1, WEB_MANIFEST_URL,
-                manifestData.startUrl, WebApkDistributor.BROWSER,
-                manifestData.iconUrlToMurmur2HashMap, shareTarget, false /* forceNavigation */,
-                false /* isSplashProvidedByWebApk */, null /* shareData */,
-                manifestData.shortcuts /* shortcutItems */, 1 /* webApkVersionCode */);
+                manifestData.startUrl, null /* manifestId*/, null /* appId*/,
+                WebApkDistributor.BROWSER, manifestData.iconUrlToMurmur2HashMap, shareTarget,
+                false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
+                null /* shareData */, manifestData.shortcuts /* shortcutItems */,
+                1 /* webApkVersionCode */);
     }
 
     /**

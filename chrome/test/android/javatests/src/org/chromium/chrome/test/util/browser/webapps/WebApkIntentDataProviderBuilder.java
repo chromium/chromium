@@ -57,7 +57,7 @@ public class WebApkIntentDataProviderBuilder {
                 ColorUtils.INVALID_COLOR, ColorUtils.INVALID_COLOR, Color.WHITE,
                 false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable */,
                 mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl,
-                WebApkDistributor.BROWSER,
+                null /* manifestId*/, null /* appId*/, WebApkDistributor.BROWSER,
                 new HashMap<String, String>() /* iconUrlToMurmur2HashMap */, null,
                 false /* forceNavigation */, false /* isSplashProvidedByWebApk */, null,
                 new ArrayList<>() /* shortcutItems */, mWebApkVersionCode);

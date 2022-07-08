@@ -263,10 +263,11 @@ public class WebApkUpdateManagerTest {
                             creationData.themeColor, creationData.backgroundColor, 0,
                             creationData.isPrimaryIconMaskable, false /* isSplashIconMaskable */,
                             "", 1000 /* shellApkVersion */, creationData.manifestUrl,
-                            creationData.startUrl, WebApkDistributor.BROWSER,
-                            creationData.iconUrlToMurmur2HashMap, null, false /* forceNavigation */,
-                            false /* isSplashProvidedByWebApk */, null /* shareData */,
-                            creationData.shortcuts, 1 /* webApkVersionCode */);
+                            creationData.startUrl, null /* manifestId */, null /*appKey*/,
+                            WebApkDistributor.BROWSER, creationData.iconUrlToMurmur2HashMap, null,
+                            false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
+                            null /* shareData */, creationData.shortcuts,
+                            1 /* webApkVersionCode */);
             updateManager.updateIfNeeded(storage, intentDataProvider);
         });
         waiter.waitForCallback(0);

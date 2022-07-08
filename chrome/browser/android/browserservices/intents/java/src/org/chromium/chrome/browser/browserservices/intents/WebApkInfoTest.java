@@ -59,6 +59,8 @@ public class WebApkInfoTest {
     // Android Manifest meta data for {@link PACKAGE_NAME}.
     private static final String START_URL = "https://www.google.com/scope/a_is_for_apple";
     private static final String SCOPE = "https://www.google.com/scope";
+    private static final String MANIFEST_ID = "https://www.google.com/id";
+    private static final String APP_KEY = "https://www.google.com/key";
     private static final String NAME = "name";
     private static final String SHORT_NAME = "short_name";
     private static final String DISPLAY_MODE = "minimal-ui";
@@ -196,6 +198,8 @@ public class WebApkInfoTest {
         bundle.putInt(WebApkMetaDataKeys.SHELL_APK_VERSION, SHELL_APK_VERSION);
         bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, MANIFEST_URL);
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+        bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_ID, MANIFEST_ID);
+        bundle.putString(WebApkMetaDataKeys.APP_KEY, APP_KEY);
         bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 ICON_URL + " " + ICON_MURMUR2_HASH);
         bundle.putInt(WebApkMetaDataKeys.ICON_ID, PRIMARY_ICON_ID);
@@ -230,6 +234,8 @@ public class WebApkInfoTest {
         Assert.assertEquals(SCOPE, info.scopeUrl());
         Assert.assertEquals(NAME, info.name());
         Assert.assertEquals(SHORT_NAME, info.shortName());
+        Assert.assertEquals(MANIFEST_ID, info.manifestId());
+        Assert.assertEquals(APP_KEY, info.appKey());
         Assert.assertEquals(DisplayMode.MINIMAL_UI, info.displayMode());
         Assert.assertEquals(ScreenOrientationLockType.PORTRAIT, info.orientation());
         Assert.assertTrue(info.hasValidToolbarColor());
@@ -836,6 +842,22 @@ public class WebApkInfoTest {
         Assert.assertEquals(item.iconHash, "2345");
         Assert.assertNotNull(item.icon);
         Assert.assertEquals(item.icon.resourceIdForTesting(), 7);
+    }
+
+    /**
+     * Test appKey is set to the WEB_MANIFEST_URL if APP_KEY is not specified.
+     */
+    @Test
+    public void testAppKeyFallbackManifestUrl() {
+        Bundle bundle = new Bundle();
+        bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+        bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, MANIFEST_URL);
+        WebApkTestHelper.registerWebApkWithMetaData(
+                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+
+        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+        WebappInfo info = createWebApkInfo(intent);
+        Assert.assertEquals(MANIFEST_URL, info.appKey());
     }
 
     private WebappInfo createWebApkInfo(Intent intent) {
