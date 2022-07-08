@@ -165,9 +165,15 @@ void PolicyUIHandler::OnGotDevicePolicy(base::Value::Dict device_policy,
 
 void PolicyUIHandler::OnGotDevicePolicyDeprecated(base::Value device_policy,
                                                   base::Value legend_data) {
-  // TODO(dcheng): Do we need to robustly handle errors here?
-  OnGotDevicePolicy(std::move(device_policy.GetDict()),
-                    std::move(legend_data.GetDict()));
+  base::Value::Dict device_policy_dict;
+  base::Value::Dict legend_data_dict;
+  if (device_policy.is_dict()) {
+    device_policy_dict = std::move(device_policy.GetDict());
+  }
+  if (legend_data.is_dict()) {
+    legend_data_dict = std::move(legend_data.GetDict());
+  }
+  OnGotDevicePolicy(std::move(device_policy_dict), std::move(legend_data_dict));
 }
 #endif
 
