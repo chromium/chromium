@@ -16,7 +16,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 public class PriceDropNotificationManagerFactory {
     /** Builds a {@link PriceDropNotificationManager} instance. */
     public static PriceDropNotificationManager create() {
-        return new PriceDropNotificationManager(ContextUtils.getApplicationContext(),
+        return new PriceDropNotificationManagerImpl(ContextUtils.getApplicationContext(),
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
     }
 
@@ -29,6 +29,6 @@ public class PriceDropNotificationManagerFactory {
      */
     public static PriceDropNotificationManager create(
             Context context, NotificationManagerProxy notificationManagerProxy) {
-        return new PriceDropNotificationManager(context, notificationManagerProxy);
+        return new PriceDropNotificationManagerImpl(context, notificationManagerProxy);
     }
 }

@@ -33,6 +33,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
@@ -95,8 +97,11 @@ public class SubscriptionsManagerImplTest {
         FeatureList.setTestValues(mTestValues);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
+        PriceDropNotificationManager priceDropNotificationManager =
+                PriceDropNotificationManagerFactory.create();
         mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
-        mSubscriptionsManager = new SubscriptionsManagerImpl(mProfile, mStorage, mProxy);
+        mSubscriptionsManager = new SubscriptionsManagerImpl(
+                mProfile, mStorage, mProxy, priceDropNotificationManager);
 
         mSubscription1 =
                 new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,

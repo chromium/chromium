@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -39,8 +38,9 @@ public class CommerceSubscriptionsService {
     private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
 
     /** Creates a new instance. */
-    CommerceSubscriptionsService(
-            SubscriptionsManagerImpl subscriptionsManager, IdentityManager identityManager) {
+    CommerceSubscriptionsService(SubscriptionsManagerImpl subscriptionsManager,
+            IdentityManager identityManager,
+            PriceDropNotificationManager priceDropNotificationManager) {
         mSubscriptionManager = subscriptionsManager;
         mIdentityManager = identityManager;
         mIdentityManagerObserver = new IdentityManager.Observer() {
@@ -51,7 +51,7 @@ public class CommerceSubscriptionsService {
         };
         mIdentityManager.addObserver(mIdentityManagerObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
+        mPriceDropNotificationManager = priceDropNotificationManager;
         mMetrics = new CommerceSubscriptionsMetrics();
     }
 

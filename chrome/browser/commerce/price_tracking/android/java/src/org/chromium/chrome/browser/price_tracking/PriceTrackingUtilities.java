@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.price_tracking;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /** Utility class for price tracking. */
@@ -27,6 +28,11 @@ public class PriceTrackingUtilities {
     @VisibleForTesting
     public static final String PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT;
+
+    // TODO(zhiyuancai): Dedup from CommerceSubscriptionsServiceConfig.java.
+    @VisibleForTesting
+    public static final String IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM =
+            "implicit_subscriptions_enabled";
 
     @VisibleForTesting
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
@@ -102,7 +108,7 @@ public class PriceTrackingUtilities {
      */
     public static boolean isPriceAlertsMessageCardEnabled() {
         return PriceTrackingFeatures.isPriceDropNotificationEligible()
-                && CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()
+                && isImplicitSubscriptionsEnabled()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
                         PRICE_ALERTS_MESSAGE_CARD, PriceTrackingFeatures.isPriceTrackingEnabled());
     }
@@ -145,6 +151,15 @@ public class PriceTrackingUtilities {
      * @return whether we should show the PriceTrackingSettings menu item in grid tab switcher.
      */
     public static boolean shouldShowPriceTrackingMenu() {
+        return false;
+    }
+
+    private static boolean isImplicitSubscriptionsEnabled() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
+                    false);
+        }
         return false;
     }
 }

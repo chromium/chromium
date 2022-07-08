@@ -216,9 +216,9 @@ public class PriceTrackingNotificationBridge {
     private static @Nullable String getActionText(String actionId) {
         if (TextUtils.isEmpty(actionId)) return null;
         Context context = ContextUtils.getApplicationContext();
-        if (PriceDropNotificationManager.ACTION_ID_VISIT_SITE.equals(actionId)) {
+        if (PriceDropNotificationManagerImpl.ACTION_ID_VISIT_SITE.equals(actionId)) {
             return context.getString(R.string.price_drop_notification_action_visit_site);
-        } else if (PriceDropNotificationManager.ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
+        } else if (PriceDropNotificationManagerImpl.ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
             return context.getString(R.string.price_drop_notification_action_turn_off_alert);
         }
         return null;

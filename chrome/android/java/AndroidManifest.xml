@@ -1120,7 +1120,7 @@ by a child template that "extends" this file.
             android:noHistory="true"/>
 
         <activity
-            android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager$TrampolineActivity"
+            android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$TrampolineActivity"
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="false"
             android:autoRemoveFromRecents="true"
@@ -1129,7 +1129,7 @@ by a child template that "extends" this file.
             android:noHistory="true"/>
 
         <activity
-            android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager$DismissNotificationChromeActivity"
+            android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$DismissNotificationChromeActivity"
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="false"
             android:autoRemoveFromRecents="true"

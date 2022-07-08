@@ -339,6 +339,7 @@ android_library("chrome_java") {
     "$google_play_services_package:google_play_services_tasks_java",
     "$google_play_services_package:google_play_services_vision_common_java",
     "$google_play_services_package:google_play_services_vision_java",
+    "//base:jni_java",
     "//cc:cc_java",
     "//chrome/android/features/keyboard_accessory:public_java",
     "//chrome/android/features/start_surface:java_resources",
@@ -369,7 +370,7 @@ android_library("chrome_java") {
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/commerce/price_tracking/proto:proto_java",
     "//chrome/browser/commerce/shopping_list/android:java",
-    "//chrome/browser/commerce/subscriptions/android:java",
+    "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
     "//chrome/browser/consent_auditor/android:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/dependency_injection:java",
@@ -749,6 +750,7 @@ android_library("chrome_java") {
   # TODO(crbug/1186003): Instead of adding source files, add it as a separate
   # dependency when circular deps is resolved.
   sources += price_tracking_java_sources
+  deps += price_tracking_java_deps
 
   # TODO(crbug/1210158): Instead of adding source files, add it as a separate
   # dependency when circular deps is resolved.
@@ -999,7 +1001,7 @@ robolectric_binary("chrome_junit_tests") {
     "//chrome/browser/commerce/merchant_viewer/android:junit",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/commerce/price_tracking/proto:proto_java",
-    "//chrome/browser/commerce/subscriptions/android:java",
+    "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/dependency_injection:java",
     "//chrome/browser/device:java",
@@ -1383,6 +1385,7 @@ android_library("chrome_unit_test_java") {
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/download/android:download_java_tests",
     "//chrome/browser/download/android:file_provider_java",
@@ -1513,6 +1516,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:javatests",
     "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
     "//chrome/browser/content_creation/notes/internal/android:java",
     "//chrome/browser/content_creation/notes/internal/android:javatests",
     "//chrome/browser/contextmenu:java",
