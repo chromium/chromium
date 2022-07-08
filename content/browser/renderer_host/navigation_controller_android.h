@@ -101,7 +101,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& /* obj */,
       jboolean state,
-      jboolean reload_on_state_change);
+      jboolean reload_on_state_change,
+      jint source);
   base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
+import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -560,7 +561,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             return true;
         }
 
-        switchUserAgentIfNeeded();
+        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED);
         restoreIfNeeded();
         return true;
     }
@@ -583,14 +584,14 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
 
         if (getWebContents() == null) return;
-        switchUserAgentIfNeeded();
+        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.RELOAD);
         getWebContents().getNavigationController().reload(true);
     }
 
     @Override
     public void reloadIgnoringCache() {
         if (getWebContents() != null) {
-            switchUserAgentIfNeeded();
+            switchUserAgentIfNeeded(UseDesktopUserAgentCaller.RELOAD_IGNORING_CACHE);
             getWebContents().getNavigationController().reloadBypassingCache(true);
         }
     }
@@ -1727,7 +1728,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 "Android.RequestDesktopSite.UseDesktopUserAgent", value);
     }
 
-    private void switchUserAgentIfNeeded() {
+    private void switchUserAgentIfNeeded(@UseDesktopUserAgentCaller int caller) {
         if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT
                 || getWebContents() == null) {
             return;
@@ -1735,7 +1736,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         boolean usingDesktopUserAgent =
                 getWebContents().getNavigationController().getUseDesktopUserAgent();
         TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,
-                /* forcedByUser */ false);
+                /* forcedByUser */ false, caller);
     }
 
     @NativeMethods

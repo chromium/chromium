@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.util.Size;
 import android.view.Display;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
@@ -33,11 +34,29 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Collection of utility methods that operates on Tab.
  */
 public class TabUtils {
     private static final String REQUEST_DESKTOP_SCREEN_WIDTH_PARAM = "screen_width_dp";
+
+    /**
+     * Define the callers of NavigationControllerImpl#setUseDesktopUserAgent.
+     */
+    @IntDef({UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION,
+            UseDesktopUserAgentCaller.LOAD_IF_NEEDED, UseDesktopUserAgentCaller.RELOAD,
+            UseDesktopUserAgentCaller.RELOAD_IGNORING_CACHE, UseDesktopUserAgentCaller.OTHER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface UseDesktopUserAgentCaller {
+        int ON_MENU_OR_KEYBOARD_ACTION = 0;
+        int LOAD_IF_NEEDED = 1;
+        int RELOAD = 2;
+        int RELOAD_IGNORING_CACHE = 3;
+        int OTHER = 4;
+    }
 
     // Do not instantiate this class.
     private TabUtils() {}
@@ -93,11 +112,13 @@ public class TabUtils {
      * @param tab The tab to be switched the user agent.
      * @param switchToDesktop Whether switching the user agent to desktop.
      * @param forcedByUser Whether this was triggered by users action.
+     * @param caller The caller of this method.
      */
-    public static void switchUserAgent(Tab tab, boolean switchToDesktop, boolean forcedByUser) {
+    public static void switchUserAgent(Tab tab, boolean switchToDesktop, boolean forcedByUser,
+            @UseDesktopUserAgentCaller int caller) {
         final boolean reloadOnChange = !tab.isNativePage();
         tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                switchToDesktop, reloadOnChange);
+                switchToDesktop, reloadOnChange, caller);
         if (forcedByUser) {
             @TabUserAgent
             int tabUserAgent = switchToDesktop ? TabUserAgent.DESKTOP : TabUserAgent.MOBILE;

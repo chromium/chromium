@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -317,7 +318,8 @@ public class TabbedAppMenuTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                                true /* useDesktop */, true /* reloadOnChange */));
+                                true /* useDesktop */, true /* reloadOnChange */,
+                                UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, TEST_URL);
         isRequestDesktopSite =
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
@@ -371,7 +373,8 @@ public class TabbedAppMenuTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                                true /* useDesktop */, true /* reloadOnChange */));
+                                true /* useDesktop */, true /* reloadOnChange */,
+                                UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, TEST_URL);
         isRequestDesktopSite =
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();

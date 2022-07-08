@@ -162,6 +162,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -2549,8 +2550,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         profile, currentTab.getUrl(), usingDesktopUserAgent);
                 currentTab.reload();
             } else {
-                TabUtils.switchUserAgent(
-                        currentTab, usingDesktopUserAgent, /* forcedByUser */ true);
+                TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent, /* forcedByUser */ true,
+                        UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
             }
             RequestDesktopUtils.recordUserChangeUserAgent(usingDesktopUserAgent, getActivityTab());
             return true;
