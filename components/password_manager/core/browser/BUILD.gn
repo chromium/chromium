@@ -96,8 +96,6 @@ static_library("browser") {
     "http_auth_observer.h",
     "http_password_store_migrator.cc",
     "http_password_store_migrator.h",
-    "import/password_importer.cc",
-    "import/password_importer.h",
     "insecure_credentials_helper.cc",
     "insecure_credentials_helper.h",
     "insecure_credentials_table.cc",
@@ -355,13 +353,18 @@ static_library("browser") {
       "capabilities_service_impl.h",
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
+      "import/password_importer.cc",
+      "import/password_importer.h",
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
       "saved_passwords_capabilities_fetcher.cc",
       "saved_passwords_capabilities_fetcher.h",
     ]
-    deps += [ "//components/autofill_assistant/browser/public" ]
+    deps += [
+      "//components/autofill_assistant/browser/public",
+      "//components/password_manager/services/csv_password:service",
+    ]
   }
 
   if (!is_android && !is_ios) {
@@ -690,7 +693,6 @@ source_set("unit_tests") {
     "hsts_query_unittest.cc",
     "http_auth_manager_unittest.cc",
     "http_password_store_migrator_unittest.cc",
-    "import/password_importer_unittest.cc",
     "insecure_credentials_helper_unittest.cc",
     "insecure_credentials_table_unittest.cc",
     "leak_detection_delegate_helper_unittest.cc",
@@ -766,6 +768,7 @@ source_set("unit_tests") {
     sources += [
       "capabilities_service_impl_unittest.cc",
       "http_credentials_cleaner_unittest.cc",
+      "import/password_importer_unittest.cc",
       "password_scripts_fetcher_impl_unittest.cc",
       "saved_passwords_capabilities_fetcher_unittest.cc",
     ]

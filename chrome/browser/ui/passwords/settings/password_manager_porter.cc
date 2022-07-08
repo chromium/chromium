@@ -74,8 +74,7 @@ class PasswordImportConsumer {
   PasswordImportConsumer(const PasswordImportConsumer&) = delete;
   PasswordImportConsumer& operator=(const PasswordImportConsumer&) = delete;
 
-  void ConsumePassword(password_manager::PasswordImporter::Result result,
-                       password_manager::CSVPasswordSequence seq);
+  void ConsumePasswords(password_manager::mojom::CSVPasswordSequencePtr seq);
 
  private:
   raw_ptr<Profile> profile_;
@@ -85,16 +84,10 @@ class PasswordImportConsumer {
 PasswordImportConsumer::PasswordImportConsumer(Profile* profile)
     : profile_(profile) {}
 
-void PasswordImportConsumer::ConsumePassword(
-    password_manager::PasswordImporter::Result result,
-    password_manager::CSVPasswordSequence seq) {
+void PasswordImportConsumer::ConsumePasswords(
+    password_manager::mojom::CSVPasswordSequencePtr seq) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ImportPasswordFromCSVResult", result,
-      password_manager::PasswordImporter::NUM_IMPORT_RESULTS);
-
-  if (result != password_manager::PasswordImporter::SUCCESS)
+  if (!seq)
     return;
 
   scoped_refptr<password_manager::PasswordStoreInterface> store(
@@ -102,12 +95,12 @@ void PasswordImportConsumer::ConsumePassword(
                                           ServiceAccessType::EXPLICIT_ACCESS));
   if (!store)
     return;
-  for (const auto& pwd : seq) {
+
+  for (const auto& pwd : seq->csv_passwords)
     store->AddLogin(pwd.ToPasswordForm());
-  }
 
   UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
-                          std::distance(seq.begin(), seq.end()));
+                          seq->csv_passwords.size());
 }
 
 }  // namespace
@@ -160,8 +153,17 @@ void PasswordManagerPorter::SetExporterForTesting(
 
 void PasswordManagerPorter::Import(content::WebContents* web_contents) {
   DCHECK(web_contents);
+
+  if (!importer_)
+    importer_ = std::make_unique<password_manager::PasswordImporter>();
+
   PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
+}
+
+void PasswordManagerPorter::SetImporterForTesting(
+    std::unique_ptr<password_manager::PasswordImporter> importer) {
+  importer_ = std::move(importer);
 }
 
 void PasswordManagerPorter::PresentFileSelector(
@@ -239,9 +241,9 @@ void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
   // Set up a |PasswordImportConsumer| to process each password entry.
   auto form_consumer = std::make_unique<PasswordImportConsumer>(profile_);
-  password_manager::PasswordImporter::Import(
-      path, base::BindOnce(&PasswordImportConsumer::ConsumePassword,
-                           std::move(form_consumer)));
+  importer_->Import(path,
+                    base::BindOnce(&PasswordImportConsumer::ConsumePasswords,
+                                   std::move(form_consumer)));
 }
 
 void PasswordManagerPorter::ExportPasswordsToPath(const base::FilePath& path) {

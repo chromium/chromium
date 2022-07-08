@@ -9,13 +9,13 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "components/password_manager/services/csv_password/csv_password_parser_service.h"
+#include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 
 namespace password_manager {
 
-class CSVPasswordSequence;
-
-// Static-only class bundling together the API for importing passwords from a
-// file.
+// Exposes an API for importing passwords from a file. Parsing of CSV will be
+// performed using a utility SandBox process.
 class PasswordImporter {
  public:
   enum Result {
@@ -29,20 +29,37 @@ class PasswordImporter {
   // CompletionCallback is the type of the processing function for parsed
   // passwords.
   using CompletionCallback =
-      base::OnceCallback<void(Result, CSVPasswordSequence)>;
+      password_manager::mojom::CSVPasswordParser::ParseCSVCallback;
 
-  PasswordImporter() = delete;
+  PasswordImporter();
   PasswordImporter(const PasswordImporter&) = delete;
   PasswordImporter& operator=(const PasswordImporter&) = delete;
+  ~PasswordImporter();
 
   // Imports passwords from the file at |path|, and fires |completion| callback
   // on the calling thread with the passwords when ready. The only supported
   // file format is CSV.
-  static void Import(const base::FilePath& path, CompletionCallback completion);
+  void Import(const base::FilePath& path, CompletionCallback completion);
 
   // Returns the file extensions corresponding to supported formats.
   static std::vector<std::vector<base::FilePath::StringType>>
   GetSupportedFileExtensions();
+
+  // Overrides the csv password parser service for testing.
+  void SetServiceForTesting(
+      mojo::PendingRemote<mojom::CSVPasswordParser> parser);
+
+ private:
+  // Parses passwords from |input| using a mojo sandbox process and
+  // asynchronously calls |completion| with the results.
+  void ParseCSVPasswordsInSandbox(CompletionCallback completion,
+                                  absl::optional<std::string> input);
+
+  const mojo::Remote<mojom::CSVPasswordParser>& GetParser();
+
+  mojo::Remote<mojom::CSVPasswordParser> parser_;
+
+  base::WeakPtrFactory<PasswordImporter> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

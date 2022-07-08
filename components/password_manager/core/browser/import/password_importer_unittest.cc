@@ -12,7 +12,11 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#include "base/test/task_environment.h"
 
 namespace password_manager {
 
@@ -24,37 +28,56 @@ const char16_t kTestPassword[] = u"test1";
 const char kTestFileName[] = "test_only.csv";
 }  // namespace
 
+// A wrapper on CSVPasswordSequence that mimics the sandbox behaviour.
+class FakePasswordParserService : public mojom::CSVPasswordParser {
+ public:
+  void ParseCSV(const std::string& raw_json,
+                ParseCSVCallback callback) override {
+    mojom::CSVPasswordSequencePtr result = nullptr;
+    CSVPasswordSequence seq(raw_json);
+    if (seq.result() == CSVPassword::Status::kOK) {
+      result = mojom::CSVPasswordSequence::New();
+      if (result)
+        for (const auto& pwd : seq)
+          result->csv_passwords.push_back(pwd);
+    }
+    std::move(callback).Run(std::move(result));
+  }
+};
+
 class PasswordImporterTest : public testing::Test {
  public:
-  PasswordImporterTest() { CHECK(temp_directory_.CreateUniqueTempDir()); }
+  PasswordImporterTest() : receiver_{&service_} {
+    CHECK(temp_directory_.CreateUniqueTempDir());
+    mojo::PendingRemote<mojom::CSVPasswordParser> pending_remote{
+        receiver_.BindNewPipeAndPassRemote()};
+    importer_.SetServiceForTesting(std::move(pending_remote));
+  }
 
   PasswordImporterTest(const PasswordImporterTest&) = delete;
   PasswordImporterTest& operator=(const PasswordImporterTest&) = delete;
 
  protected:
   void StartImportAndWaitForCompletion(const base::FilePath& input_file) {
-    PasswordImporter::Import(
-        input_file, base::BindOnce(&PasswordImporterTest::OnImportFinished,
-                                   base::Unretained(this)));
+    importer_.Import(input_file,
+                     base::BindOnce(&PasswordImporterTest::OnImportFinished,
+                                    base::Unretained(this)));
 
     task_environment_.RunUntilIdle();
 
     ASSERT_TRUE(callback_called_);
   }
 
-  void OnImportFinished(PasswordImporter::Result result,
-                        CSVPasswordSequence seq) {
+  void OnImportFinished(mojom::CSVPasswordSequencePtr seq) {
     callback_called_ = true;
-    result_ = result;
     imported_passwords_.clear();
-    if (result != password_manager::PasswordImporter::SUCCESS)
+    if (!seq)
       return;
-    for (const auto& pwd : seq) {
+    for (const auto& pwd : seq->csv_passwords) {
       imported_passwords_.push_back(pwd.ToPasswordForm());
     }
   }
 
-  const PasswordImporter::Result& result() { return result_; }
   const std::vector<PasswordForm>& imported_passwords() {
     return imported_passwords_;
   }
@@ -64,10 +87,11 @@ class PasswordImporterTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
   bool callback_called_ = false;
-  PasswordImporter::Result result_ = PasswordImporter::NUM_IMPORT_RESULTS;
   std::vector<PasswordForm> imported_passwords_;
+  FakePasswordParserService service_;
+  mojo::Receiver<mojom::CSVPasswordParser> receiver_;
+  password_manager::PasswordImporter importer_;
 };
 
 TEST_F(PasswordImporterTest, CSVImport) {
@@ -81,7 +105,6 @@ TEST_F(PasswordImporterTest, CSVImport) {
             base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
-  EXPECT_EQ(PasswordImporter::SUCCESS, result());
   ASSERT_EQ(1u, imported_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);
   EXPECT_EQ(kTestSignonRealm, imported_passwords()[0].signon_realm);
@@ -94,7 +117,6 @@ TEST_F(PasswordImporterTest, ImportIOErrorDueToUnreadableFile) {
   ASSERT_NO_FATAL_FAILURE(
       StartImportAndWaitForCompletion(non_existent_input_file));
 
-  EXPECT_EQ(PasswordImporter::IO_ERROR, result());
   ASSERT_EQ(0u, imported_passwords().size());
 }
 

@@ -55,6 +55,10 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
   void SetExporterForTesting(
       std::unique_ptr<password_manager::PasswordManagerExporter> exporter);
 
+  // The next import will use |importer|, instead of creating a new instance.
+  void SetImporterForTesting(
+      std::unique_ptr<password_manager::PasswordImporter> importer);
+
   // Triggers passwords import flow for the given |web_contents|.
   void Import(content::WebContents* web_contents);
 
@@ -76,11 +80,12 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
 
-  virtual void ImportPasswordsFromPath(const base::FilePath& path);
+  void ImportPasswordsFromPath(const base::FilePath& path);
 
-  virtual void ExportPasswordsToPath(const base::FilePath& path);
+  void ExportPasswordsToPath(const base::FilePath& path);
 
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
+  std::unique_ptr<password_manager::PasswordImporter> importer_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<Profile> profile_;
 
