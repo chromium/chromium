@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
@@ -221,7 +222,8 @@ void NetworkSettingsServiceAsh::OnDisconnect(mojo::RemoteSetElementId mojo_id) {
 }
 
 void NetworkSettingsServiceAsh::OnProfileAdded(Profile* profile) {
-  if (!GetPrimaryLoggedInUserProfilePrefs()) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile) ||
+      !GetPrimaryLoggedInUserProfilePrefs()) {
     // Primary profile pref store not available.
     return;
   }

@@ -144,12 +144,11 @@ void LocalPrinterAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void LocalPrinterAsh::OnProfileAdded(Profile*) {
-  if (observers_registered_)
+void LocalPrinterAsh::OnProfileAdded(Profile* profile) {
+  if (observers_registered_ || !ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return;
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
+  }
+
   auto* printers_manager_factory =
       ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   // In unit tests, `printers_manager_factory` can be null.
