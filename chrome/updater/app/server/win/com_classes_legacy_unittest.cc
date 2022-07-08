@@ -18,10 +18,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_variant.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/win/test/test_executables.h"
@@ -70,18 +72,12 @@ class LegacyAppCommandWebImplTest : public testing::Test {
   }
 
   void WaitForUpdateCompletion(
-      Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web,
-      const base::TimeDelta& timeout) {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
-
-    while (base::TimeTicks::Now() - start_time < timeout) {
+      Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
+    EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
       UINT status = 0;
       EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
-      if (status == COMMAND_STATUS_COMPLETE)
-        return;
-
-      base::WaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
-    }
+      return status == COMMAND_STATUS_COMPLETE;
+    })));
   }
 
   base::CommandLine cmd_exe_command_line_;
@@ -129,7 +125,7 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
                                base::win::ScopedVariant::kEmptyVariant,
                                base::win::ScopedVariant::kEmptyVariant));
 
-  WaitForUpdateCompletion(app_command_web, TestTimeouts::action_max_timeout());
+  WaitForUpdateCompletion(app_command_web);
 
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
   EXPECT_EQ(status, COMMAND_STATUS_COMPLETE);
@@ -155,7 +151,7 @@ TEST_F(LegacyAppCommandWebImplTest, ExecuteParameterizedCommand) {
                                base::win::ScopedVariant::kEmptyVariant,
                                base::win::ScopedVariant::kEmptyVariant,
                                base::win::ScopedVariant::kEmptyVariant));
-  WaitForUpdateCompletion(app_command_web, TestTimeouts::action_max_timeout());
+  WaitForUpdateCompletion(app_command_web);
 
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
@@ -223,7 +219,7 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
 
   event.Signal();
 
-  WaitForUpdateCompletion(app_command_web, TestTimeouts::action_max_timeout());
+  WaitForUpdateCompletion(app_command_web);
 
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
