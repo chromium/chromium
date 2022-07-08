@@ -44,5 +44,9 @@ template("css_to_wrapper") {
              rebase_path(out_folder, root_build_dir),
              "--in_files",
            ] + invoker.in_files
+
+    if (defined(invoker.minify) && invoker.minify) {
+      args += [ "--minify" ]
+    }
   }
 }

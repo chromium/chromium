@@ -9,12 +9,19 @@
 # example foo_style.css will be held in a module with ID 'foo-style'.
 
 import argparse
-import sys
 import io
 import re
+import shutil
+import sys
+import tempfile
 from os import path, getcwd, makedirs
 
+_HERE_PATH = path.dirname(__file__)
+_SRC_PATH = path.normpath(path.join(_HERE_PATH, '..', '..'))
 _CWD = getcwd()
+
+sys.path.append(path.join(_SRC_PATH, 'third_party', 'node'))
+import node
 
 _METADATA_START_REGEX = '#css_wrapper_metadata_start'
 _METADATA_END_REGEX = '#css_wrapper_metadata_end'
@@ -49,28 +56,40 @@ $_documentContainer.innerHTML = `
 document.head.appendChild($_documentContainer.content);"""
 
 
-def _parse_style_line(line, parsed_data):
-  if not parsed_data['include']:
+def _parse_style_line(line, metadata):
+  if not metadata['include']:
     include_match = re.search(_INCLUDE_REGEX, line)
     if include_match:
-      parsed_data['include'] = line[include_match.end():]
+      metadata['include'] = line[include_match.end():]
 
   import_match = re.search(_IMPORT_REGEX, line)
   if import_match:
-    parsed_data['imports'].append(line[import_match.end():])
+    metadata['imports'].append(line[import_match.end():])
 
 
-def _parse_vars_line(line, parsed_data):
+def _parse_vars_line(line, metadata):
   import_match = re.search(_IMPORT_REGEX, line)
   if import_match:
-    parsed_data['imports'].append(line[import_match.end():])
+    metadata['imports'].append(line[import_match.end():])
 
 
-def _extract_data(css_file):
+def _extract_content(css_file, metadata, minified):
+  with io.open(css_file, encoding='utf-8', mode='r') as f:
+    # If minification is on, just grab the result from html-minifier's output.
+    if minified:
+      return f.read()
+
+    # If minification is off, strip the special metadata comments from the
+    # original file.
+    lines = f.read().splitlines()
+    return '\n'.join(lines[metadata['metadata_end_line'] + 1:])
+
+
+def _extract_metadata(css_file):
   metadata_start_line = -1
   metadata_end_line = -1
 
-  parsed_data = {'type': None}
+  metadata = {'type': None}
 
   with io.open(css_file, encoding='utf-8', mode='r') as f:
     lines = f.read().splitlines()
@@ -83,7 +102,7 @@ def _extract_data(css_file):
       else:
         assert metadata_end_line == -1
 
-        if not parsed_data['type']:
+        if not metadata['type']:
           type_match = re.search(_TYPE_REGEX, line)
           if type_match:
             type = line[type_match.end():]
@@ -91,36 +110,35 @@ def _extract_data(css_file):
 
             if type == 'style':
               id = path.splitext(path.basename(css_file))[0].replace('_', '-')
-              parsed_data = {
-                  'content': None,
+              metadata = {
                   'id': id,
                   'imports': [],
                   'include': None,
+                  'metadata_end_line': -1,
                   'type': type,
               }
             elif type == 'vars':
-              parsed_data = {
-                  'content': None,
+              metadata = {
                   'imports': [],
+                  'metadata_end_line': -1,
                   'type': type,
               }
 
-        elif parsed_data['type'] == 'style':
-          _parse_style_line(line, parsed_data)
-        elif parsed_data['type'] == 'vars':
-          _parse_vars_line(line, parsed_data)
+        elif metadata['type'] == 'style':
+          _parse_style_line(line, metadata)
+        elif metadata['type'] == 'vars':
+          _parse_vars_line(line, metadata)
 
         if _METADATA_END_REGEX in line:
           assert metadata_start_line > -1
           metadata_end_line = i
-          parsed_data['content'] = '\n'.join(lines[metadata_end_line + 1:])
+          metadata['metadata_end_line'] = metadata_end_line
           break
 
     assert metadata_start_line > -1
     assert metadata_end_line > -1
-    assert parsed_data['content']
 
-    return parsed_data
+    return metadata
 
 
 def main(argv):
@@ -128,35 +146,69 @@ def main(argv):
   parser.add_argument('--in_folder', required=True)
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--in_files', required=True, nargs="*")
+  parser.add_argument('--minify', action='store_true')
   args = parser.parse_args(argv)
 
   in_folder = path.normpath(path.join(_CWD, args.in_folder))
   out_folder = path.normpath(path.join(_CWD, args.out_folder))
   extension = '.ts'
 
+  # The folder to be used to read the CSS files to be wrapped.
+  wrapper_in_folder = in_folder
+
+  if args.minify:
+    # Minify the CSS files with html-minifier before generating the wrapper
+    # .ts files.
+    # Note: Passing all CSS files to html-minifier all at once because
+    # passing them individually takes a lot longer.
+    # Storing the output in a temporary folder, which is used further below when
+    # creating the final wrapper files.
+    tmp_out_dir = tempfile.mkdtemp(dir=out_folder)
+    try:
+      wrapper_in_folder = tmp_out_dir
+
+      # Using the programmatic Node API to invoke html-minifier, because the
+      # built-in command line API does not support explicitly specifying
+      # multiple files to be processed, and only supports specifying an input
+      # folder, which would lead to potentially processing unnecessary HTML
+      # files that are not part of the build (stale), or handled by other
+      # css_to_wrapper targets.
+      node.RunNode(
+          [path.join(_HERE_PATH, 'html_minifier.js'), in_folder, tmp_out_dir] +
+          args.in_files)
+    except RuntimeError as err:
+      shutil.rmtree(tmp_out_dir)
+      raise err
+
   def _urls_to_imports(urls):
     return '\n'.join(map(lambda i: f'import \'{i}\';', urls))
 
   for in_file in args.in_files:
-    parsed_data = _extract_data(path.join(in_folder, in_file))
+    # Extract metadata from the original file, as the special metadata comments
+    # only exist there.
+    metadata = _extract_metadata(path.join(in_folder, in_file))
+
+    # Extract the CSS content from either the original or the minified files.
+    content = _extract_content(path.join(wrapper_in_folder, in_file), metadata,
+                               args.minify)
 
     wrapper = None
-    if parsed_data['type'] == 'style':
+    if metadata['type'] == 'style':
       include = ''
-      if parsed_data['include']:
-        parsed_include = parsed_data['include']
+      if metadata['include']:
+        parsed_include = metadata['include']
         include = f' include="{parsed_include}"'
 
       wrapper = _STYLE_TEMPLATE % {
-          'imports': _urls_to_imports(parsed_data['imports']),
-          'content': parsed_data['content'],
+          'imports': _urls_to_imports(metadata['imports']),
+          'content': content,
           'include': include,
-          'id': parsed_data['id'],
+          'id': metadata['id'],
       }
-    elif parsed_data['type'] == 'vars':
+    elif metadata['type'] == 'vars':
       wrapper = _VARS_TEMPLATE % {
-          'imports': _urls_to_imports(parsed_data['imports']),
-          'content': parsed_data['content'],
+          'imports': _urls_to_imports(metadata['imports']),
+          'content': content,
       }
 
     assert wrapper

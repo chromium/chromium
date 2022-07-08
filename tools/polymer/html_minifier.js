@@ -16,15 +16,31 @@ const minify =
 const path = require('path');
 const fs = require('fs/promises');
 
+// Regex to extract the CSS contents out of the HTML string.
+const REGEX = /^<style>(?<content>.+)<\/style>$/;
+
 async function processFile(inputFile, outputFile) {
   // Read file.
-  const contents = await fs.readFile(inputFile, {encoding: 'utf8'});
+  let contents = await fs.readFile(inputFile, {encoding: 'utf8'});
+
+  if (inputFile.endsWith('.css')) {
+    // If this is a CSS file, wrap it with a <style> tag first, since
+    // html-minifier only accepts HTML as input.
+    contents = `<style>${contents}</style>`;
+  }
 
   // Pass through html-minifier.
-  const result = minify(contents, {
+  let result = minify(contents, {
     removeComments: true,
     minifyCSS: true,
   });
+
+  if (inputFile.endsWith('.css')) {
+    // If this is a CSS file, remove the <style>...</style> wrapper that was
+    // added above.
+    const match = result.match(REGEX);
+    result = match.groups['content'];
+  }
 
   // Save result.
   await fs.mkdir(path.dirname(outputFile), {recursive: true});

@@ -23,21 +23,30 @@ class CssToWrapperTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    with open(os.path.join(self._out_folder, file_name), 'rb') as f:
+    with open(os.path.join(self._out_folder, file_name), 'r') as f:
       return f.read()
 
-  def _run_test(self, css_file, wrapper_file, wrapper_file_expected):
+  def _run_test(self,
+                css_file,
+                wrapper_file,
+                wrapper_file_expected,
+                minify=False):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
-    css_to_wrapper.main([
+    args = [
         '--in_folder',
         os.path.join(_HERE_DIR, 'tests'), '--out_folder', self._out_folder,
         '--in_files', css_file
-    ])
+    ]
+
+    if minify:
+      args.append('--minify')
+
+    css_to_wrapper.main(args)
 
     actual_wrapper = self._read_out_file(wrapper_file)
     with open(os.path.join(_HERE_DIR, 'tests', wrapper_file_expected),
-              'rb') as f:
+              'r') as f:
       expected_wrapper = f.read()
 
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
@@ -56,6 +65,12 @@ class CssToWrapperTest(unittest.TestCase):
     self._run_test('css_to_wrapper/foo_vars.css',
                    'css_to_wrapper/foo_vars.css.ts',
                    'css_to_wrapper/foo_vars_expected.css.ts')
+
+  def testCssToWrapperMinify(self):
+    self._run_test('css_to_wrapper/foo_style.css',
+                   'css_to_wrapper/foo_style.css.ts',
+                   'css_to_wrapper/foo_style_expected.min.css.ts',
+                   minify=True)
 
 
 if __name__ == '__main__':
