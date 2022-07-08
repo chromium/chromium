@@ -77,7 +77,7 @@ class PublishPackageTest(unittest.TestCase):
                 publish_package.main()
 
     def test_main(self) -> None:
-        """Tests that not specifying directory raise a ValueError."""
+        """Tests |main| function."""
 
         with mock.patch('sys.argv', [
                 'publish_package.py', '--packages', _PACKAGES[0], '--repo',

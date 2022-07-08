@@ -7,6 +7,8 @@
 import os
 import sys
 
+from coveragetest import COVERED_FILES
+
 FUCHSIA_TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 
 sys.path.append(os.path.join(FUCHSIA_TEST_DIR, '..', '..', '..', 'testing'))
@@ -14,10 +16,7 @@ sys.path.append(os.path.join(FUCHSIA_TEST_DIR, '..', '..', '..', 'testing'))
 from pytype_common import pytype_runner  # pylint: disable=wrong-import-position
 
 FILES_AND_DIRECTORIES_TO_CHECK = [
-    'publish_package.py',
-]
-FILES_AND_DIRECTORIES_TO_CHECK = [
-    os.path.join(FUCHSIA_TEST_DIR, f) for f in FILES_AND_DIRECTORIES_TO_CHECK
+    os.path.join(FUCHSIA_TEST_DIR, f) for f in COVERED_FILES
 ]
 TEST_NAME = 'fuchsia_pytype'
 TEST_LOCATION = "//build/fuchsia/test/run_pytype.py"
