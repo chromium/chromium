@@ -197,7 +197,7 @@ class WebAppInstallFinalizer {
 
   void OnInstallHooksFinished(InstallFinalizedCallback callback,
                               AppId app_id,
-                              web_app::OsHooksErrors os_hooks_errors);
+                              OsHooksErrors os_hooks_errors);
   void NotifyWebAppInstalledWithOsHooks(AppId app_id);
 
   bool ShouldUpdateOsHooks(const AppId& app_id);
@@ -213,7 +213,7 @@ class WebAppInstallFinalizer {
   void OnUpdateHooksFinished(InstallFinalizedCallback callback,
                              AppId app_id,
                              std::string old_name,
-                             web_app::OsHooksErrors os_hooks_errors);
+                             OsHooksErrors os_hooks_errors);
 
   // Returns a value indicating whether the file handlers registered with the OS
   // should be updated. Used to avoid unnecessary updates. TODO(estade): why

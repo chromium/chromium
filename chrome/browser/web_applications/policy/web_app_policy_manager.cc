@@ -174,7 +174,7 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
 void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
   PopulateDisabledWebAppsIdsLists();
-  std::vector<web_app::AppId> app_ids = app_registrar_->GetAppIds();
+  std::vector<AppId> app_ids = app_registrar_->GetAppIds();
   for (const auto& id : app_ids) {
     const bool is_disabled = base::Contains(disabled_web_apps_, id);
     sync_bridge_->SetAppIsDisabled(id, is_disabled);
@@ -645,7 +645,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
         disabled_system_apps_.insert(ash::SystemWebAppType::HELP);
         break;
       case policy::SystemFeature::kCanvas:
-        disabled_web_apps_.insert(web_app::kCanvasAppId);
+        disabled_web_apps_.insert(kCanvasAppId);
         break;
       case policy::SystemFeature::kCrosh:
         disabled_system_apps_.insert(ash::SystemWebAppType::CROSH);

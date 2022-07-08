@@ -566,7 +566,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
       finalize_options.add_to_applications_menu;
 
   {
-    web_app::RunOnOsLoginMode current_mode =
+    RunOnOsLoginMode current_mode =
         registrar_->GetAppRunOnOsLoginMode(app_id).value;
     hooks_options.os_hooks[OsHookType::kRunOnOsLogin] =
         current_mode == RunOnOsLoginMode::kWindowed;
@@ -595,7 +595,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 void WebAppInstallFinalizer::OnInstallHooksFinished(
     InstallFinalizedCallback callback,
     AppId app_id,
-    web_app::OsHooksErrors os_hooks_errors) {
+    OsHooksErrors os_hooks_errors) {
   auto joined = std::move(callback).Then(
       base::BindOnce(&WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
                      weak_ptr_factory_.GetWeakPtr(), app_id));
@@ -650,7 +650,7 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
     InstallFinalizedCallback callback,
     AppId app_id,
     std::string old_name,
-    web_app::OsHooksErrors os_hooks_errors) {
+    OsHooksErrors os_hooks_errors) {
   install_manager_->NotifyWebAppManifestUpdated(app_id, old_name);
 
   std::move(callback).Run(

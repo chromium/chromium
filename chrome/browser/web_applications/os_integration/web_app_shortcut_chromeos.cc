@@ -29,7 +29,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info,
                              scoped_refptr<base::TaskRunner> result_runner,
-                             web_app::DeleteShortcutsCallback callback) {
+                             DeleteShortcutsCallback callback) {
   result_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
                                                     /*shortcut_deleted=*/true));
 }

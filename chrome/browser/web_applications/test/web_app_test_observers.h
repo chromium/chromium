@@ -132,7 +132,7 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) override;
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
-  void OnWebAppLastBadgingTimeChanged(const web_app::AppId& app_id,
+  void OnWebAppLastBadgingTimeChanged(const AppId& app_id,
                                       const base::Time& time) override;
   void OnWebAppProtocolSettingsChanged() override;
 

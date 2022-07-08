@@ -656,7 +656,7 @@ void AddInstallUrlData(PrefService* pref_service,
                        const GURL& url,
                        const ExternalInstallSource& source) {
   ScopedRegistryUpdate update(sync_bridge);
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  WebApp* app_to_update = update->UpdateApp(app_id);
   DCHECK(app_to_update);
 
   // Adding external app data (source and URL) to web_app DB.
@@ -677,7 +677,7 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
                                      bool is_placeholder) {
   ScopedRegistryUpdate update(sync_bridge);
   ExternallyInstalledWebAppPrefs prefs(pref_service);
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  WebApp* app_to_update = update->UpdateApp(app_id);
   DCHECK(app_to_update);
 
   // Adding install_url, source and placeholder information to the web_app DB.

@@ -84,7 +84,7 @@ WebAppProtocolHandlerManager::GetAllowedHandlersForProtocol(
   std::vector<ProtocolHandler> protocol_handlers;
 
   for (const WebApp& web_app : app_registrar_->GetApps()) {
-    web_app::AppId app_id = web_app.app_id();
+    AppId app_id = web_app.app_id();
 
     if (!app_registrar_->IsAllowedLaunchProtocol(app_id, protocol))
       continue;
@@ -108,7 +108,7 @@ WebAppProtocolHandlerManager::GetDisallowedHandlersForProtocol(
   std::vector<ProtocolHandler> protocol_handlers;
 
   for (const WebApp& web_app : app_registrar_->GetApps()) {
-    web_app::AppId app_id = web_app.app_id();
+    AppId app_id = web_app.app_id();
 
     if (!app_registrar_->IsDisallowedLaunchProtocol(app_id, protocol))
       continue;

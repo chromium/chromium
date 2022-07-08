@@ -477,7 +477,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
               expected_default.run_on_os_login_policy);
   }
 
-  void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
+  void RegisterApp(std::unique_ptr<WebApp> web_app) {
     controller().RegisterApp(std::move(web_app));
   }
 

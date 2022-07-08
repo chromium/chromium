@@ -199,9 +199,9 @@ enum class RunOnOsLoginPolicy {
 
 std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode);
 
-// Converts RunOnOsLoginMode from web_app::RunOnOsLoginMode to
+// Converts RunOnOsLoginMode from RunOnOsLoginMode to
 // apps::RunOnOsLoginMode.
-apps::RunOnOsLoginMode ConvertOsLoginMode(web_app::RunOnOsLoginMode login_mode);
+apps::RunOnOsLoginMode ConvertOsLoginMode(RunOnOsLoginMode login_mode);
 
 // Number of times IPH can be ignored for this app before it's muted.
 constexpr int kIphMuteAfterConsecutiveAppSpecificIgnores = 3;

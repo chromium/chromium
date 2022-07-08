@@ -106,7 +106,7 @@ class WebAppUiManager {
       const SkBitmap& old_icon,
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
-      web_app::AppIdentityDialogCallback callback) = 0;
+      AppIdentityDialogCallback callback) = 0;
 
  private:
   base::ObserverList<WebAppUiManagerObserver> observers_;

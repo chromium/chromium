@@ -232,8 +232,7 @@ class WebAppInstallManagerTest
         base::BindLambdaForTesting(
             [](content::WebContents* initiator_web_contents,
                std::unique_ptr<WebAppInstallInfo> web_app_info,
-               web_app::WebAppInstallationAcceptanceCallback
-                   acceptance_callback) {
+               WebAppInstallationAcceptanceCallback acceptance_callback) {
               std::move(acceptance_callback)
                   .Run(/*user_accepted=*/true, std::move(web_app_info));
             }),
@@ -254,16 +253,15 @@ class WebAppInstallManagerTest
       webapps::WebappInstallSource install_source) {
     InstallResult result;
     base::RunLoop run_loop;
-    command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallFromInfoCommand>(
-            std::move(install_info), &finalizer(),
-            overwrite_existing_manifest_fields, install_source,
-            base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                           webapps::InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            })));
+    command_manager().ScheduleCommand(std::make_unique<InstallFromInfoCommand>(
+        std::move(install_info), &finalizer(),
+        overwrite_existing_manifest_fields, install_source,
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        })));
 
     run_loop.Run();
     return result;

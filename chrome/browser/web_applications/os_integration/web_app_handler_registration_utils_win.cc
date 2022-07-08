@@ -138,7 +138,7 @@ bool AppNameHasProfileExtension(const std::wstring& app_name,
 // registries. Changes to how they are generated will be disruptive to
 // previously written values, and should therefore be avoided if possible.
 std::wstring GetProgId(const base::FilePath& profile_path,
-                       const web_app::AppId& app_id,
+                       const AppId& app_id,
                        const absl::optional<std::set<std::string>>&
                            file_extensions = absl::nullopt) {
   // On system-level Win7 installs of the browser we need a user-specific part

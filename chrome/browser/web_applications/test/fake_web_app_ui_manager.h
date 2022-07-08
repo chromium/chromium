@@ -56,7 +56,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const SkBitmap& old_icon,
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
-      web_app::AppIdentityDialogCallback callback) override {}
+      AppIdentityDialogCallback callback) override {}
 
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;

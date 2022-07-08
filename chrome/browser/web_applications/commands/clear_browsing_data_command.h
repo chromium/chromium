@@ -13,7 +13,7 @@ namespace web_app {
 // Clears the browsing data for web app, given the inclusive time range.
 void ClearWebAppBrowsingData(base::Time begin_time,
                              base::Time end_time,
-                             web_app::WebAppProvider* provider,
+                             WebAppProvider* provider,
                              base::OnceClosure done);
 
 }  // namespace web_app

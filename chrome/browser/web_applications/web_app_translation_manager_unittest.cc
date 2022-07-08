@@ -231,14 +231,14 @@ TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
   app_info->translations = translations;
 
   // Install app
-  AppId app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  AppId app_id = test::InstallWebApp(profile(), std::move(app_info));
 
   // Check translations are stored
   EXPECT_EQ(provider().translation_manager().GetTranslatedName(app_id),
             item1.name);
 
   // Uninstall app
-  web_app::test::UninstallWebApp(profile(), app_id);
+  test::UninstallWebApp(profile(), app_id);
 
   // Check translations were deleted
   EXPECT_EQ(provider().translation_manager().GetTranslatedName(app_id),

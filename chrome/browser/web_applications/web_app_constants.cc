@@ -164,14 +164,13 @@ std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
   }
 }
 
-apps::RunOnOsLoginMode ConvertOsLoginMode(
-    web_app::RunOnOsLoginMode login_mode) {
+apps::RunOnOsLoginMode ConvertOsLoginMode(RunOnOsLoginMode login_mode) {
   switch (login_mode) {
-    case web_app::RunOnOsLoginMode::kWindowed:
+    case RunOnOsLoginMode::kWindowed:
       return apps::RunOnOsLoginMode::kWindowed;
-    case web_app::RunOnOsLoginMode::kNotRun:
+    case RunOnOsLoginMode::kNotRun:
       return apps::RunOnOsLoginMode::kNotRun;
-    case web_app::RunOnOsLoginMode::kMinimized:
+    case RunOnOsLoginMode::kMinimized:
       return apps::RunOnOsLoginMode::kUnknown;
   }
 }

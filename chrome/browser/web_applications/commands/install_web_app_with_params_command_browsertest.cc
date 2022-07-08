@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
 
   base::RunLoop run_loop;
   ExternalInstallOptions install_options(
-      kWebAppUrl, web_app::UserDisplayMode::kStandalone,
+      kWebAppUrl, UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalDefault);
   auto install_params = ConvertExternalInstallOptionsToParams(install_options);
   auto install_source = ConvertExternalInstallSourceToInstallSource(
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
             EXPECT_EQ(
-                web_app::UserDisplayMode::kStandalone,
+                UserDisplayMode::kStandalone,
                 provider().registrar().GetAppUserDisplayMode(app_id).value());
             run_loop.Quit();
           }),
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
 
   base::RunLoop run_loop;
   ExternalInstallOptions install_options(
-      kWebAppUrl, web_app::UserDisplayMode::kBrowser,
+      kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kInternalDefault);
   auto install_params = ConvertExternalInstallOptionsToParams(install_options);
   auto install_source = ConvertExternalInstallSourceToInstallSource(
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
             EXPECT_EQ(
-                web_app::UserDisplayMode::kBrowser,
+                UserDisplayMode::kBrowser,
                 provider().registrar().GetAppUserDisplayMode(app_id).value());
             run_loop.Quit();
           }),
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
 
   base::RunLoop run_loop;
   ExternalInstallOptions install_options(
-      kWebAppUrl, web_app::UserDisplayMode::kBrowser,
+      kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kExternalPolicy);
   auto install_params = ConvertExternalInstallOptionsToParams(install_options);
   auto install_source = ConvertExternalInstallSourceToInstallSource(
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
 
   base::RunLoop run_loop;
   ExternalInstallOptions install_options(
-      kWebAppUrl, web_app::UserDisplayMode::kBrowser,
+      kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kExternalPolicy);
   auto install_params = ConvertExternalInstallOptionsToParams(install_options);
   auto install_source = ConvertExternalInstallSourceToInstallSource(
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
 
   base::RunLoop run_loop;
   ExternalInstallOptions install_options(
-      kWebAppUrl, web_app::UserDisplayMode::kBrowser,
+      kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kExternalPolicy);
   // This should force the install_params to have a valid manifest, otherwise
   // install will not happen.

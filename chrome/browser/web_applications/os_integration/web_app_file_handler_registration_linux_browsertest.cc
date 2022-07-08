@@ -61,8 +61,8 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
-    auto result = web_app::ExternallyManagedAppManagerInstall(
-        browser()->profile(), install_options);
+    auto result = ExternallyManagedAppManagerInstall(browser()->profile(),
+                                                     install_options);
     result_code_ = result.code;
   }
 

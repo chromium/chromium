@@ -55,13 +55,13 @@ void UpdateRunOnOsLoginOsIntegration(
   }
 
   if (effective_mode == RunOnOsLoginMode::kNotRun) {
-    web_app::OsHooksOptions os_hooks;
-    os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    OsHooksOptions os_hooks;
+    os_hooks[OsHookType::kRunOnOsLogin] = true;
     os_integration_manager->UninstallOsHooks(
         app_id, os_hooks, base::BindOnce(&MaybeCallTestingCallback));
   } else {
-    web_app::InstallOsHooksOptions install_options;
-    install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    InstallOsHooksOptions install_options;
+    install_options.os_hooks[OsHookType::kRunOnOsLogin] = true;
     os_integration_manager->InstallOsHooks(
         app_id, base::BindOnce(&MaybeCallTestingCallback), nullptr,
         std::move(install_options));

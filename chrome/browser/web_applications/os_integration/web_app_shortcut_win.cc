@@ -233,7 +233,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 }
 
 void DeleteShortcuts(std::vector<base::FilePath> all_shortcuts,
-                     web_app::DeleteShortcutsCallback result_callback) {
+                     DeleteShortcutsCallback result_callback) {
   bool result = true;
   for (const auto& shortcut : all_shortcuts) {
     if (!base::DeleteFile(shortcut))
@@ -408,7 +408,7 @@ void GetShortcutLocationsAndDeleteShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
     const std::u16string& title,
-    web_app::DeleteShortcutsCallback result_callback) {
+    DeleteShortcutsCallback result_callback) {
   const std::vector<base::FilePath> all_shortcuts =
       FindMatchingShortcuts(web_app_path, profile_path, title);
 
@@ -669,7 +669,7 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
 void FinishDeletingPlatformShortcuts(
     const base::FilePath& web_app_path,
     scoped_refptr<base::TaskRunner> result_runner,
-    web_app::DeleteShortcutsCallback result_callback,
+    DeleteShortcutsCallback result_callback,
     bool delete_result) {
   // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
   base::FilePath chrome_apps_dir;
@@ -722,7 +722,7 @@ std::vector<base::FilePath> GetShortcutPaths(
   std::vector<base::FilePath> shortcut_paths;
   // if there is no ShortcutOverrirdeForTesting, set it to empty.
   ScopedShortcutOverrideForTesting* testing_shortcuts =
-      web_app::GetShortcutOverrideForTesting();
+      GetShortcutOverrideForTesting();
   // Locations to add to shortcut_paths.
   struct {
     bool use_this_location;

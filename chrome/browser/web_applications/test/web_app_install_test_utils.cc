@@ -96,7 +96,7 @@ AppId InstallWebApp(Profile* profile,
   DCHECK(provider);
   WaitUntilReady(provider);
   provider->command_manager().ScheduleCommand(
-      std::make_unique<web_app::InstallFromInfoCommand>(
+      std::make_unique<InstallFromInfoCommand>(
           std::move(web_app_info), &provider->install_finalizer(),
           overwrite_existing_manifest_fields, install_source,
           base::BindLambdaForTesting([&](const AppId& installed_app_id,

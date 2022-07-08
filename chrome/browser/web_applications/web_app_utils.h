@@ -92,7 +92,7 @@ base::FilePath GetWebAppsTempDirectory(
 // tool/metrics/histograms/histograms.xml: "SystemWebAppProfileCategory".
 std::string GetProfileCategoryForLogging(Profile* profile);
 
-// Returns true if the WebApp should have `web_app::WebAppChromeOsData()`.
+// Returns true if the WebApp should have `WebAppChromeOsData()`.
 bool IsChromeOsDataMandatory();
 
 // Returns true if sync should install web apps locally by default.

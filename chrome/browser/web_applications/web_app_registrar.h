@@ -186,7 +186,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const std::string* GetAppLaunchQueryParams(const AppId& app_id) const;
   const apps::ShareTarget* GetAppShareTarget(const AppId& app_id) const;
   const apps::FileHandlers* GetAppFileHandlers(const AppId& app_id) const;
-  bool IsAppFileHandlerPermissionBlocked(const web_app::AppId& app_id) const;
+  bool IsAppFileHandlerPermissionBlocked(const AppId& app_id) const;
   bool IsIsolated(const AppId& app_id) const;
 
   // Returns the state of the File Handling API for the given app.

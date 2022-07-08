@@ -51,7 +51,7 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
     app_service_test_.SetUp(profile);
-    web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile));
+    web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile));
   }
 
   // InProcessBrowserTest:
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     provider->command_manager().ScheduleCommand(
-        std::make_unique<web_app::InstallFromInfoCommand>(
+        std::make_unique<InstallFromInfoCommand>(
             std::move(install_info), &provider->install_finalizer(),
             /*overwrite_existing_manifest_fields=*/false,
             webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,

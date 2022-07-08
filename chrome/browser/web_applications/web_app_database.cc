@@ -214,20 +214,20 @@ WebAppFileHandlerProto::LaunchType LaunchTypeToProto(
 
 WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
   switch (type) {
-    case web_app::WebAppManagementProto::WEBAPPMANAGEMENT_UNSPECIFIED:
+    case WebAppManagementProto::WEBAPPMANAGEMENT_UNSPECIFIED:
       NOTREACHED();
       [[fallthrough]];
-    case web_app::WebAppManagementProto::SYSTEM:
+    case WebAppManagementProto::SYSTEM:
       return WebAppManagement::Type::kSystem;
-    case web_app::WebAppManagementProto::POLICY:
+    case WebAppManagementProto::POLICY:
       return WebAppManagement::Type::kPolicy;
-    case web_app::WebAppManagementProto::SUBAPP:
+    case WebAppManagementProto::SUBAPP:
       return WebAppManagement::Type::kSubApp;
-    case web_app::WebAppManagementProto::WEBAPPSTORE:
+    case WebAppManagementProto::WEBAPPSTORE:
       return WebAppManagement::Type::kWebAppStore;
-    case web_app::WebAppManagementProto::SYNC:
+    case WebAppManagementProto::SYNC:
       return WebAppManagement::Type::kSync;
-    case web_app::WebAppManagementProto::DEFAULT:
+    case WebAppManagementProto::DEFAULT:
       return WebAppManagement::Type::kDefault;
   }
 }
@@ -235,17 +235,17 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
 WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
   switch (type) {
     case WebAppManagement::Type::kSystem:
-      return web_app::WebAppManagementProto::SYSTEM;
+      return WebAppManagementProto::SYSTEM;
     case WebAppManagement::Type::kPolicy:
-      return web_app::WebAppManagementProto::POLICY;
+      return WebAppManagementProto::POLICY;
     case WebAppManagement::Type::kSubApp:
-      return web_app::WebAppManagementProto::SUBAPP;
+      return WebAppManagementProto::SUBAPP;
     case WebAppManagement::Type::kWebAppStore:
-      return web_app::WebAppManagementProto::WEBAPPSTORE;
+      return WebAppManagementProto::WEBAPPSTORE;
     case WebAppManagement::Type::kSync:
-      return web_app::WebAppManagementProto::SYNC;
+      return WebAppManagementProto::SYNC;
     case WebAppManagement::Type::kDefault:
-      return web_app::WebAppManagementProto::DEFAULT;
+      return WebAppManagementProto::DEFAULT;
   }
 }
 

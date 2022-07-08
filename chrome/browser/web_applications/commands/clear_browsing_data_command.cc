@@ -17,13 +17,13 @@ namespace web_app {
 
 void ClearWebAppBrowsingData(base::Time begin_time,
                              base::Time end_time,
-                             web_app::WebAppProvider* provider,
+                             WebAppProvider* provider,
                              base::OnceClosure done) {
   DCHECK_LE(begin_time, end_time);
 
   if (!provider->is_registry_ready()) {
     provider->on_registry_ready().Post(
-        FROM_HERE, base::BindOnce(&web_app::ClearWebAppBrowsingData, begin_time,
+        FROM_HERE, base::BindOnce(&ClearWebAppBrowsingData, begin_time,
                                   end_time, provider, std::move(done)));
     return;
   }

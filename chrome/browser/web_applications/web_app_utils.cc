@@ -175,14 +175,13 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
+  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
   if (web_app_provider == nullptr) {
     return nullptr;
   }
 
-  web_app::WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
-  const absl::optional<web_app::AppId> app_id =
+  WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
+  const absl::optional<AppId> app_id =
       web_app_registrar.FindAppWithUrlInScope(url);
   if (!app_id.has_value()) {
     return nullptr;

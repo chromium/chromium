@@ -352,7 +352,7 @@ void WebAppSyncBridge::AddAllowedLaunchProtocol(
   // examine stale data.
   {
     ScopedRegistryUpdate update(this);
-    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    WebApp* app_to_update = update->UpdateApp(app_id);
     base::flat_set<std::string> protocol_handlers(
         app_to_update->allowed_launch_protocols());
 
@@ -372,7 +372,7 @@ void WebAppSyncBridge::RemoveAllowedLaunchProtocol(
   // examine stale data.
   {
     ScopedRegistryUpdate update(this);
-    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    WebApp* app_to_update = update->UpdateApp(app_id);
     base::flat_set<std::string> protocol_handlers(
         app_to_update->allowed_launch_protocols());
     protocol_handlers.erase(protocol_scheme);
@@ -390,7 +390,7 @@ void WebAppSyncBridge::AddDisallowedLaunchProtocol(
   // examine stale data.
   {
     ScopedRegistryUpdate update(this);
-    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    WebApp* app_to_update = update->UpdateApp(app_id);
     base::flat_set<std::string> protocol_handlers(
         app_to_update->disallowed_launch_protocols());
 
@@ -410,7 +410,7 @@ void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
   // examine stale data.
   {
     ScopedRegistryUpdate update(this);
-    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    WebApp* app_to_update = update->UpdateApp(app_id);
     base::flat_set<std::string> protocol_handlers(
         app_to_update->disallowed_launch_protocols());
     protocol_handlers.erase(protocol_scheme);

@@ -81,8 +81,7 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+    test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -174,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
                        InstallManagerErrorsPersist) {
-  web_app::test::WaitUntilReady(
-      web_app::WebAppProvider::GetForTest(browser()->profile()));
+  test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
 
   ASSERT_TRUE(GetProvider().install_manager().error_log());
   ASSERT_EQ(1u, GetProvider().install_manager().error_log()->size());

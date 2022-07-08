@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
 
   auto* provider = WebAppProvider::GetForTest(profile());
   provider->command_manager().ScheduleCommand(
-      std::make_unique<web_app::InstallFromInfoCommand>(
+      std::make_unique<InstallFromInfoCommand>(
           std::move(install_info), &provider->install_finalizer(),
           /*overwrite_existing_manifest_fields=*/true,
           webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing()));

@@ -323,8 +323,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     // Cannot construct RunLoop in constructor due to threading restrictions.
     shortcut_run_loop_.emplace();
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+    test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
   }
 
   void OnShortcutInfoRetrieved(std::unique_ptr<ShortcutInfo> shortcut_info) {
@@ -348,7 +347,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     // The Mac code in generating these icons doesn't write a size 48 icon. See
     // chrome/browser/web_applications/web_app_icon_generator.h's
     // `kInstallIconSize`. Skip it.
-    if (size == web_app::icon_size::k48)
+    if (size == icon_size::k48)
       return false;
     return os == kMac || os == kNotWin || os == kAll;
 #else

@@ -103,8 +103,7 @@ class PreinstalledWebAppMigrationBrowserTest
     SetUpExtensionTestExternalProvider();
 
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(profile()));
+    web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandlerOverride(

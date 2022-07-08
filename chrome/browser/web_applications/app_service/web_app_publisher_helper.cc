@@ -181,7 +181,7 @@ apps::mojom::PermissionType GetPermissionType(
 apps::mojom::InstallReason GetHighestPriorityInstallReason(
     const WebApp* web_app) {
   // TODO(crbug.com/1189949): Introduce kOem as a new WebAppManagement::Type
-  // value immediately below web_app::WebAppManagement::kSystem, so that this
+  // value immediately below WebAppManagement::kSystem, so that this
   // custom behavior isn't needed.
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
@@ -244,11 +244,11 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
   }
 }
 
-bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
+bool IsNoteTakingWebApp(const WebApp& web_app) {
   return web_app.note_taking_new_note_url().is_valid();
 }
 
-bool IsLockScreenCapable(const web_app::WebApp& web_app) {
+bool IsLockScreenCapable(const WebApp& web_app) {
   if (!base::FeatureList::IsEnabled(features::kWebLockScreenApi))
     return false;
   return web_app.lock_screen_start_url().is_valid();
@@ -986,9 +986,9 @@ void WebAppPublisherHelper::SetPermission(
 
   if (permission->permission_type ==
       apps::mojom::PermissionType::kFileHandling) {
-    web_app::PersistFileHandlersUserChoice(profile_, app_id,
-                                           permission->value->get_bool_value(),
-                                           base::DoNothing());
+    PersistFileHandlersUserChoice(profile_, app_id,
+                                  permission->value->get_bool_value(),
+                                  base::DoNothing());
     return;
   }
 
@@ -1067,17 +1067,17 @@ apps::WindowMode WebAppPublisherHelper::GetWindowMode(
 
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
-  auto user_display_mode = web_app::UserDisplayMode::kStandalone;
+  auto user_display_mode = UserDisplayMode::kStandalone;
   switch (window_mode) {
     case apps::mojom::WindowMode::kBrowser:
-      user_display_mode = web_app::UserDisplayMode::kBrowser;
+      user_display_mode = UserDisplayMode::kBrowser;
       break;
     case apps::mojom::WindowMode::kUnknown:
     case apps::mojom::WindowMode::kWindow:
-      user_display_mode = web_app::UserDisplayMode::kStandalone;
+      user_display_mode = UserDisplayMode::kStandalone;
       break;
     case apps::mojom::WindowMode::kTabbedWindow:
-      user_display_mode = web_app::UserDisplayMode::kTabbed;
+      user_display_mode = UserDisplayMode::kTabbed;
       break;
   }
   provider_->sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
@@ -1093,20 +1093,18 @@ void WebAppPublisherHelper::SetRunOnOsLoginMode(
       ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode));
 }
 
-web_app::RunOnOsLoginMode
-WebAppPublisherHelper::ConvertOsLoginModeToWebAppConstants(
+RunOnOsLoginMode WebAppPublisherHelper::ConvertOsLoginModeToWebAppConstants(
     apps::mojom::RunOnOsLoginMode login_mode) {
-  web_app::RunOnOsLoginMode web_app_constant_login_mode =
-      web_app::RunOnOsLoginMode::kMinValue;
+  RunOnOsLoginMode web_app_constant_login_mode = RunOnOsLoginMode::kMinValue;
   switch (login_mode) {
     case apps::mojom::RunOnOsLoginMode::kWindowed:
-      web_app_constant_login_mode = web_app::RunOnOsLoginMode::kWindowed;
+      web_app_constant_login_mode = RunOnOsLoginMode::kWindowed;
       break;
     case apps::mojom::RunOnOsLoginMode::kNotRun:
-      web_app_constant_login_mode = web_app::RunOnOsLoginMode::kNotRun;
+      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
       break;
     case apps::mojom::RunOnOsLoginMode::kUnknown:
-      web_app_constant_login_mode = web_app::RunOnOsLoginMode::kNotRun;
+      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
       break;
   }
   return web_app_constant_login_mode;

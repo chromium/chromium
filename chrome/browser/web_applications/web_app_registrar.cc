@@ -574,8 +574,8 @@ bool WebAppRegistrar::IsActivelyInstalled(const AppId& app_id) const {
 
   auto* web_app = GetAppById(app_id);
   DCHECK(web_app);
-  return !web_app->HasOnlySource(web_app::WebAppManagement::kDefault) ||
-         GetAppEffectiveDisplayMode(app_id) != web_app::DisplayMode::kBrowser;
+  return !web_app->HasOnlySource(WebAppManagement::kDefault) ||
+         GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
 }
 
 bool WebAppRegistrar::IsIsolated(const AppId& app_id) const {
@@ -752,7 +752,7 @@ const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
 }
 
 bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
-    const web_app::AppId& app_id) const {
+    const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   if (!web_app)
     return false;

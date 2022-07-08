@@ -75,7 +75,7 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
 
     provider_ = WebAppProvider::GetForTest(browser()->profile());
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::test::WaitUntilReady(provider_);
+    test::WaitUntilReady(provider_);
 
     ExternalInstallOptions options(install_url(), UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalDefault);

@@ -366,7 +366,7 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
       }
     }
     // 2. If the value corresponding to the app_id in
-    // web_app::kWasExternalAppUninstalledByUser is true, then it was previously
+    // kWasExternalAppUninstalledByUser is true, then it was previously
     // a preinstalled app that was user uninstalled. In this case, we migrate
     // ALL install URLs for that corresponding app_id, because a preinstalled
     // app could have been installed as an app with a different source now.

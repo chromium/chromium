@@ -39,8 +39,8 @@ namespace {
 constexpr int kMaxJumpListItems = 10;
 
 // Testing hook for shell_integration_linux
-web_app::UpdateJumpListForTesting& GetUpdateJumpListForTesting() {
-  static base::NoDestructor<web_app::UpdateJumpListForTesting> instance;
+UpdateJumpListForTesting& GetUpdateJumpListForTesting() {
+  static base::NoDestructor<UpdateJumpListForTesting> instance;
   return *instance;
 }
 

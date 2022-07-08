@@ -17,7 +17,7 @@ class ClearBrowsingDataCommandTest : public WebAppTest {
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
-    web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
+    web_app_provider_ = FakeWebAppProvider::Get(profile());
     web_app_provider_->StartWithSubsystems();
   }
 
@@ -52,7 +52,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
   auto app_id3 = web_app3->app_id();
 
   {
-    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -67,7 +67,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
             provider()->registrar().GetAppLastLaunchTime(app_id3));
 
   bool callback_invoked = false;
-  web_app::ClearWebAppBrowsingData(
+  ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), provider(),
       base::BindLambdaForTesting([&]() { callback_invoked = true; }));
 
@@ -98,7 +98,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
   auto app_id3 = web_app3->app_id();
 
   {
-    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -113,7 +113,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
             provider()->registrar().GetAppLastLaunchTime(app_id3));
 
   bool callback_invoked = false;
-  web_app::ClearWebAppBrowsingData(
+  ClearWebAppBrowsingData(
       base::Time() + base::Seconds(5), base::Time() + base::Seconds(15),
       provider(),
       base::BindLambdaForTesting([&]() { callback_invoked = true; }));
@@ -130,7 +130,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
 TEST_F(ClearBrowsingDataCommandTest,
        ClearLastLaunchTimeCalledBeforeWebAppProviderIsReady) {
   bool callback_invoked = false;
-  web_app::ClearWebAppBrowsingData(
+  ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), provider(),
       base::BindLambdaForTesting([&]() { callback_invoked = true; }));
 
@@ -159,7 +159,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
   auto app_id3 = web_app3->app_id();
 
   {
-    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -174,7 +174,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
             provider()->registrar().GetAppLastBadgingTime(app_id3));
 
   bool callback_invoked = false;
-  web_app::ClearWebAppBrowsingData(
+  ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), provider(),
       base::BindLambdaForTesting([&]() { callback_invoked = true; }));
 
@@ -205,7 +205,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
   auto app_id3 = web_app3->app_id();
 
   {
-    web_app::ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -220,7 +220,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
             provider()->registrar().GetAppLastBadgingTime(app_id3));
 
   bool callback_invoked = false;
-  web_app::ClearWebAppBrowsingData(
+  ClearWebAppBrowsingData(
       base::Time() + base::Seconds(5), base::Time() + base::Seconds(15),
       provider(),
       base::BindLambdaForTesting([&]() { callback_invoked = true; }));

@@ -23,8 +23,7 @@ class LinkCapturingPrefMigrationBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+    test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
   }
 
  protected:

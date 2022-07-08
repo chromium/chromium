@@ -150,7 +150,7 @@ class ExternallyManagedAppManagerTest
     return *fake_registry_controller_;
   }
 
-  web_app::WebAppRegistrar& app_registrar() { return controller().registrar(); }
+  WebAppRegistrar& app_registrar() { return controller().registrar(); }
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;

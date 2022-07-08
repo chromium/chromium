@@ -22,7 +22,7 @@ namespace web_app {
 WebAppAdjustments::WebAppAdjustments(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   link_capturing_pref_migration_ =
-      std::make_unique<web_app::LinkCapturingPrefMigration>(*profile);
+      std::make_unique<LinkCapturingPrefMigration>(*profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(

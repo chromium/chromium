@@ -47,8 +47,7 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(profile()));
+    test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
   }
 
   Profile* profile() { return browser()->profile(); }

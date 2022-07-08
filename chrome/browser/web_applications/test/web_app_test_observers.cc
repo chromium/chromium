@@ -166,7 +166,7 @@ void WebAppTestRegistryObserverAdapter::OnWebAppProfileWillBeDeleted(
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
-    const web_app::AppId& app_id,
+    const AppId& app_id,
     const base::Time& time) {
   if (app_last_badging_time_changed_delegate_)
     app_last_badging_time_changed_delegate_.Run(app_id, time);

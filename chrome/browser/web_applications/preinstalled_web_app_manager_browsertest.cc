@@ -140,7 +140,7 @@ class PreinstalledWebAppManagerBrowserTestBase
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+        WebAppProvider::GetForTest(browser()->profile()));
   }
 
   void TearDownOnMainThread() override {
@@ -459,7 +459,7 @@ class PreinstalledWebAppManagerExtensionBrowserTest
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+        WebAppProvider::GetForTest(browser()->profile()));
   }
   void TearDownOnMainThread() override {
     ResetInterceptor();
@@ -1171,7 +1171,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   auto install_info = std::make_unique<WebAppInstallInfo>();
   install_info->start_url = user_app_start_url;
   install_info->title = u"Test user app";
-  AppId user_app_id = test::InstallWebApp(profile(), std::move(install_info));
+  AppId user_app_id =
+      web_app::test::InstallWebApp(profile(), std::move(install_info));
 
   // Ensure the UI receives these apps.
   proxy->FlushMojoCallsForTesting();

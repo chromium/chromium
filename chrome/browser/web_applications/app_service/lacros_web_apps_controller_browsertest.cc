@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PolicyId) {
   // Writing to the external prefs to set policy to pin the app.
   web_app::test::AddInstallUrlData(
       browser()->profile()->GetPrefs(), &provider().sync_bridge(), app_id,
-      install_url, web_app::ExternalInstallSource::kExternalPolicy);
+      install_url, ExternalInstallSource::kExternalPolicy);
 
   provider().install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 
@@ -528,10 +528,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   launch_params->intent->files = std::move(files);
 
   // Skip past the permission dialog.
-  web_app::ScopedRegistryUpdate(
-      &web_app::WebAppProvider::GetForTest(profile())->sync_bridge())
+  ScopedRegistryUpdate(&WebAppProvider::GetForTest(profile())->sync_bridge())
       ->UpdateApp(app_id)
-      ->SetFileHandlerApprovalState(web_app::ApiApprovalState::kAllowed);
+      ->SetFileHandlerApprovalState(ApiApprovalState::kAllowed);
 
   lacros_web_apps_controller.Launch(std::move(launch_params),
                                     base::DoNothing());
@@ -600,8 +599,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
 
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
-  const web_app::AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), app_url);
+  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
   crosapi::mojom::AppController& lacros_web_apps_controller =
       *apps::AppServiceProxyFactory::GetForProfile(profile())
            ->LacrosWebAppsControllerForTesting();
@@ -633,8 +631,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                        ExecuteContextMenuCommand) {
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
-  const web_app::AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), app_url);
+  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
   LacrosWebAppsController& lacros_web_apps_controller =
       *apps::AppServiceProxyFactory::GetForProfile(profile())
            ->LacrosWebAppsControllerForTesting();
