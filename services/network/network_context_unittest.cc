@@ -1389,6 +1389,9 @@ TEST_F(NetworkContextTest, CertReporting) {
     network_context->url_request_context()
         ->transport_security_state()
         ->EnableStaticPinsForTesting();
+    network_context->url_request_context()
+        ->transport_security_state()
+        ->SetPinningListAlwaysTimelyForTesting(true);
 
     ResourceRequest request;
     request.url = pkp_test_server.GetURL(kPreloadedPKPHost, "/");
