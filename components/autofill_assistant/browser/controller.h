@@ -445,9 +445,6 @@ class Controller : public ScriptExecutorDelegate,
   // DOM nodes. May be nullptr.
   const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
 
-  // Holds the client's locale.
-  std::string locale_;
-
   // The accumulated network stats of an entire flow. Used for metrics upon
   // flow completion.
   RoundtripNetworkStats accumulated_network_stats_;
