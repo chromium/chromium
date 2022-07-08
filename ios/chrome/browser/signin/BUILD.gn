@@ -169,6 +169,23 @@ source_set("trusted_vault") {
   ]
 }
 
+source_set("trusted_vault_factory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "trusted_vault_client_backend_factory.h",
+    "trusted_vault_client_backend_factory.mm",
+  ]
+  deps = [
+    ":trusted_vault",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser:application_context",
+    "//ios/chrome/browser/browser_state",
+    "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

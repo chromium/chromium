@@ -32,6 +32,7 @@
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
 #include "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #include "ios/chrome/browser/sync/ios_chrome_sync_client.h"
@@ -120,6 +121,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
+  DependsOn(TrustedVaultClientBackendFactory::GetInstance());
 }
 
 SyncServiceFactory::~SyncServiceFactory() {}

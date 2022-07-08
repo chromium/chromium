@@ -44,6 +44,7 @@
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
 #include "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #include "ios/chrome/browser/sync/ios_trusted_vault_client.h"
@@ -86,7 +87,8 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_));
 
   trusted_vault_client_ = std::make_unique<IOSTrustedVaultClient>(
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state_));
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state_),
+      TrustedVaultClientBackendFactory::GetForBrowserState(browser_state_));
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}

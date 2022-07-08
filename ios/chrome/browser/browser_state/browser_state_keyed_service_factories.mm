@@ -61,6 +61,7 @@
 #include "ios/chrome/browser/signin/signin_browser_state_info_updater_factory.h"
 #include "ios/chrome/browser/signin/signin_client_factory.h"
 #include "ios/chrome/browser/signin/signin_error_controller_factory.h"
+#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
 #include "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
@@ -161,6 +162,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   UrlLanguageHistogramFactory::GetInstance();
   VerdictCacheManagerFactory::GetInstance();
   PolicyBlocklistServiceFactory::GetInstance();
+  TrustedVaultClientBackendFactory::GetInstance();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

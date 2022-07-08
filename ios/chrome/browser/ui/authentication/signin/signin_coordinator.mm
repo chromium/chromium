@@ -155,6 +155,7 @@ using signin_metrics::PromoAction;
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)
                                                                   trigger {
+  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   return [[TrustedVaultReauthenticationCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
