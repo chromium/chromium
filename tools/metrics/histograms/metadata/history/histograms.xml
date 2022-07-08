@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-12-18">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closes the chrome://history/journeys page (e.g. closed
     tab, navigated in the same tab, or closed browser). Logs whether the user
@@ -502,7 +502,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closes the chrome://history/journeys page (e.g. closed
     tab, navigated in the same tab, or closed browser). Logs the final state
@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
     units="count" expires_after="2022-09-18">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closes the chrome://history/journeys page (e.g. closed
     tab, navigated in the same tab, or closed browser). Logs the number of
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanSuccess" expires_after="2022-09-18">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closes the chrome://history/journeys page (e.g., closed
     tab, navigated in the same tab, or closed browser). Logs whether the users
@@ -556,7 +556,7 @@ chromium-metrics-reviews@google.com.
     enum="HistoryClustersInitialState" expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closes the chrome://history/journeys page (e.g. closed
     tab, navigated in the same tab, or closed browser). Logs the state that
@@ -569,7 +569,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-20">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closed the chrome://history/journeys page (e.g. closed
     tab, navigated in the same tab, or closed browser). Logs the # of links
@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
     units="number queries made" expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logged when the user closes the chrome://history/journeys page (e.g. closed
     tab, navigated in the same tab, or closed browser). Logs the number of
@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the latency of querying entities for all the visits being clustered by
     the on-device backend. Logged when clusters have been calculated based on
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the latency of querying entities for all the visits being clustered by
     the on-device backend. Logged when clusters have been calculated based on
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of entities to be queried for their metadata when preparing
     to start clustering. The number of entities is the size of the entire batch
@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
     units="number visits" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the {ClusterStatistic} of all clusters determined by the on-device
     backend. Logged when clusters have been calculated based on any request to
@@ -658,7 +658,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-20">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the time taken to cluster visits once the visits have been finalized
     with all the necessary information for clustering, which is performed on a
@@ -673,7 +673,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-20">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the time taken to gather all entity IDs that require fetching
     additional metadata for, which is performed on the UI thread. This does not
@@ -688,7 +688,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the latency of clustering visits performed by the on-device backend.
     Logged when clusters have been calculated based on any request to cluster
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of keyword phrases stored in the primary cache.
 
@@ -722,7 +722,7 @@ chromium-metrics-reviews@google.com.
     units="count" expires_after="2022-11-13">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of keywords stored in the primary cache. Each keyword may
     actually be multiple words.
@@ -741,7 +741,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of keywords stored in the short cache.
 
@@ -757,7 +757,7 @@ chromium-metrics-reviews@google.com.
     units="count" expires_after="2022-11-13">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of keyword stored in the short cache. Each keyword may
     actually be multiple words.
@@ -777,7 +777,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of batches used to process visits. Logged once per request
     for clusters to be calculated based on any request to cluster visits, which
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
     units="number clusters returned" expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the total number of clusters returned for requested visits. Logged when
     clusters have been calculated based on any request to cluster visits, which
@@ -804,7 +804,7 @@ chromium-metrics-reviews@google.com.
     units="number keywords" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the {KeywordStatistic} over all clusters determined by the on-device
     backend. Logged when clusters have been calculated based on any request to
@@ -821,7 +821,7 @@ chromium-metrics-reviews@google.com.
     units="number visits" expires_after="2022-11-20">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the total number of visits requested to be clustered by the backend.
     Logged when any request to cluster visits is made, which could be triggered
@@ -837,7 +837,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the number of visits that were processed on the UI thread in a batch.
     Can be logged multiple times when a request to cluster visits is made, which
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-20">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs the time taken to process a batch of visits (joining existing History
     visit metadata with any additional Search, engagement, content metadata) and
@@ -867,7 +867,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     This histogram records the time taken (excluding queuing delay) to retrieve
     visits from the History database, which occurs on the History DB thread.
@@ -881,7 +881,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     This histogram records the total time taken (including queuing delay) from
     which a request to retrieve vists from the History database took. Logged
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanFiltered" expires_after="2022-11-15">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Logs whether a cluster was filtered for having {ClusterFilterReason}. Logged
     when finalizing each individual cluster which occurs at the end of every
@@ -913,7 +913,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-07-24">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Records the total amount of time spent populating the keyword cache,
     measured via the wall clock. Most of this time is not on the main thread.
@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-27">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     This measures the amount of main thread time spent populating the keyword
     cache AFTER we get it from the backend.
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-27">
   <owner>olivierli@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     This histogram records the total time taken to convert and process visits in
     in all history cluster available. This is recorded once after the
@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-20">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Records the time taken between the History Clusters UI requests a batch of
     clusters, and when we get the post-processed clusters back.
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
     units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Recorded every time the user {ClusterAction} in chrome://history/journeys.
     The value represents the 0-indexed index of the cluster.
@@ -1015,7 +1015,7 @@ chromium-metrics-reviews@google.com.
     units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Recorded every time the user {RelatedSearchAction} a related search
     suggestion in a history cluster in chrome://history/journeys. The value
@@ -1031,7 +1031,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanVisible" expires_after="2022-10-30">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Recorded every time the user toggles the visibility of the history clusters
     Web UI shown at chrome://history/journeys from the history Web UI sidebar.
@@ -1043,7 +1043,7 @@ chromium-metrics-reviews@google.com.
     units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Recorded every time the user {VisitAction} a {VisitType} in a history
     cluster in chrome://history/journeys. The value represents the 0-indexed
@@ -1065,6 +1065,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-11-30">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     Records the amount of time the Journeys WebUI is open.
 
