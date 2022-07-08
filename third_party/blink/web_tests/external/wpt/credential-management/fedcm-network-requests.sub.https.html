@@ -11,7 +11,7 @@ import {set_fedcm_cookie} from './support/fedcm-helper.js';
 
 const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/';
 const test_options = {
-  federated: {
+  identity: {
     providers: [{
       configURL: url_prefix + 'fedcm.json',
       clientId: '1',
@@ -45,7 +45,16 @@ promise_test(async t => {
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
-  federated: {
+  identity: {
+    providers: []
+  }
+  });
+  return promise_rejects_js(t, TypeError, cred);
+}, "Reject when provider list is empty");
+
+promise_test(async t => {
+  const cred = navigator.credentials.get({
+  identity: {
     providers: [{
       clientId: '1',
       nonce: '2',
@@ -57,7 +66,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
-  federated: {
+  identity: {
     providers: [{
       configURL: 'test',
       clientId: '1',
@@ -69,7 +78,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
-  federated: {
+  identity: {
     providers: [{
       configURL: 'https://idp.test/fedcm.json',
       clientId: '',
@@ -81,7 +90,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const cred = await navigator.credentials.get({
-    federated: {
+    identity: {
       providers: [{
         configURL: url_prefix + 'fedcm.json',
         clientId: '1',
@@ -93,7 +102,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
-  federated: {
+  identity: {
     providers: [{
       configURL: 'https://idp.test/fedcm.json',
     }]
@@ -105,7 +114,7 @@ promise_test(async t => {
 promise_test(async t => {
   let controller = new AbortController();
   const cred = navigator.credentials.get({
-    federated: test_options.federated,
+    identity: test_options.identity,
     signal: controller.signal,
   });
   controller.abort();
@@ -115,7 +124,7 @@ promise_test(async t => {
 promise_test(async t => {
   let controller = new AbortController();
   const first_cred = navigator.credentials.get({
-    federated: test_options.federated,
+    identity: test_options.identity,
     signal: controller.signal,
   });
   controller.abort();
@@ -127,7 +136,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const cred = navigator.credentials.get({
-    federated: {
+    identity: {
       providers: [{
         configURL: 'https://other-idp.test/fedcm.json',
         clientId: '1',
@@ -146,7 +155,7 @@ promise_test(async t => {
 promise_test(async t => {
   await set_fedcm_cookie();
   const cred = navigator.credentials.get({
-    federated: {
+    identity: {
       providers: [{
         configURL: url_prefix + 'fedcm-manifest-not-in-list/fedcm.json',
         clientId: '1',

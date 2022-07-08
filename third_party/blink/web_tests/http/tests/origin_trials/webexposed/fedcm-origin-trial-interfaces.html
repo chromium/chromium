@@ -13,7 +13,7 @@ generate_token.py http://127.0.0.1:8000 FedCM --expire-timestamp=2000000000
     test(t => {
       OriginTrialsHelper.check_properties_exist(this,
         {
-          'FederatedCredential': ['token'],
+          'IdentityCredential': ['token'],
         });
   }, 'FedCM API interfaces and properties in Origin-Trial enabled document.');
 </script>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>FederatedCredential.logoutRps() promise resolution</title>
+<title>IdentityCredential.logoutRps() promise resolution</title>
 <link rel="author" title="Peter Kotwicz" href="mailto:pkotwicz@chromium.org">
 <link rel="help" href="https://wicg.github.io/FedCM/#browser-api-idp-sign-out">
 <script src="/resources/testharness.js"></script>
@@ -12,24 +12,24 @@
   fedcm_test(async (t, mock) => {
     mock.logoutRpsReturn("kError");
     return promise_rejects_dom(t, "NetworkError",
-      FederatedCredential.logoutRps([{
+      IdentityCredential.logoutRps([{
         accountId: "1234",
         url: "https://rp.example/logout.php"
       }])
     );
-  }, "FederatedCredential.logoutRps() error.");
+  }, "IdentityCredential.logoutRps() error.");
 
   fedcm_test(async (t, mock) => {
     mock.logoutRpsReturn("kSuccess");
-    await FederatedCredential.logoutRps([{
+    await IdentityCredential.logoutRps([{
       accountId: "1234",
       url: "https://rp.example/logout.php"
     }]);
-  }, "FederatedCredential.logoutRps() success.");
+  }, "IdentityCredential.logoutRps() success.");
 
   fedcm_test(async (t, mock) => {
     return promise_rejects_dom(t, "NetworkError",
-      FederatedCredential.logoutRps([{
+      IdentityCredential.logoutRps([{
         accountId: "1234",
         url: "https://other-rp.example/logout.php"
       }])

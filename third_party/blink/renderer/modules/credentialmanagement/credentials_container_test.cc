@@ -152,7 +152,8 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
     CredentialManagerTestingContext context(&mock_credential_manager);
     document_observer.Observe(context.DomWindow().document());
     CredentialsContainer::credentials(*context.DomWindow().navigator())
-        ->get(context.GetScriptState(), CredentialRequestOptions::Create());
+        ->get(context.GetScriptState(), CredentialRequestOptions::Create(),
+              IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
   }
 
@@ -173,7 +174,8 @@ TEST(CredentialsContainerTest,
 
   auto promise =
       CredentialsContainer::credentials(*context.DomWindow().navigator())
-          ->get(context.GetScriptState(), CredentialRequestOptions::Create());
+          ->get(context.GetScriptState(), CredentialRequestOptions::Create(),
+                IGNORE_EXCEPTION_FOR_TESTING);
   mock_credential_manager.WaitForCallToGet();
 
   context.DomWindow().FrameDestroyed();

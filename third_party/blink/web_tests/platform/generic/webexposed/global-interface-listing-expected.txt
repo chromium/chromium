@@ -2624,15 +2624,12 @@ interface FeaturePolicy
     method features
     method getAllowlistForFeature
 interface FederatedCredential : Credential
-    static method logoutRps
     attribute @@toStringTag
     getter iconURL
     getter name
     getter protocol
     getter provider
-    getter token
     method constructor
-    method login
 interface File : Blob
     attribute @@toStringTag
     getter lastModified
@@ -4758,6 +4755,11 @@ interface IIRFilterNode : AudioNode
     attribute @@toStringTag
     method constructor
     method getFrequencyResponse
+interface IdentityCredential : Credential
+    static method logoutRps
+    attribute @@toStringTag
+    getter token
+    method constructor
 interface IdleDeadline
     attribute @@toStringTag
     getter didTimeout

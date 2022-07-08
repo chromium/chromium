@@ -30,7 +30,9 @@ class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
   explicit CredentialsContainer(Navigator&);
 
   // CredentialsContainer.idl
-  ScriptPromise get(ScriptState*, const CredentialRequestOptions*);
+  ScriptPromise get(ScriptState*,
+                    const CredentialRequestOptions*,
+                    ExceptionState&);
   ScriptPromise store(ScriptState*, Credential* = nullptr);
   ScriptPromise create(ScriptState*,
                        const CredentialCreationOptions*,

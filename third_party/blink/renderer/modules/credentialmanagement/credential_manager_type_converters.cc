@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_rps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_rps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -320,8 +320,8 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
 
 // static
 LogoutRpsRequestPtr
-TypeConverter<LogoutRpsRequestPtr, blink::FederatedCredentialLogoutRpsRequest>::
-    Convert(const blink::FederatedCredentialLogoutRpsRequest& request) {
+TypeConverter<LogoutRpsRequestPtr, blink::IdentityCredentialLogoutRpsRequest>::
+    Convert(const blink::IdentityCredentialLogoutRpsRequest& request) {
   auto mojo_request = LogoutRpsRequest::New();
 
   mojo_request->url = blink::KURL(request.url());

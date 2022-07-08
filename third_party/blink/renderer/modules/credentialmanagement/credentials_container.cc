@@ -32,7 +32,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_identity_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_otp_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -41,7 +42,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_federatedidentityprovider_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlformelement_passwordcredentialdata.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/otp_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
@@ -555,7 +556,7 @@ void AbortOtpRequest(ScriptState* script_state) {
 }
 
 // Abort an ongoing FederatedCredential login() operation.
-void AbortFederatedCredentialRequest(ScriptState* script_state) {
+void AbortIdentityCredentialRequest(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
     return;
 
@@ -589,8 +590,7 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
       return;
     }
     case RequestTokenStatus::kSuccess: {
-      FederatedCredential* credential =
-          FederatedCredential::Create(provider_url, client_id, options, token);
+      IdentityCredential* credential = IdentityCredential::Create(token);
       resolver->Resolve(credential);
       return;
     }
@@ -964,9 +964,9 @@ CredentialsContainer* CredentialsContainer::credentials(Navigator& navigator) {
 CredentialsContainer::CredentialsContainer(Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
-ScriptPromise CredentialsContainer::get(
-    ScriptState* script_state,
-    const CredentialRequestOptions* options) {
+ScriptPromise CredentialsContainer::get(ScriptState* script_state,
+                                        const CredentialRequestOptions* options,
+                                        ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -980,11 +980,8 @@ ScriptPromise CredentialsContainer::get(
              RuntimeEnabledFeatures::WebOTPAssertionFeaturePolicyEnabled()) {
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy;
-  } else if (options->hasFederated() && options->federated()->hasProviders() &&
-             options->federated()->providers().size() == 1 &&
-             options->federated()
-                 ->providers()[0]
-                 ->IsFederatedIdentityProvider() &&
+  } else if (options->hasIdentity() && options->identity()->hasProviders() &&
+             options->identity()->providers().size() == 1 &&
              RuntimeEnabledFeatures::FedCmIframeSupportEnabled(context)) {
     required_origin_type =
         RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy;
@@ -993,11 +990,10 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
 
-  // |kCredentialManagerGetFederatedCredential| was introduced to measure the
-  // use of |FederatedCredential|. FedCM API reuses |FederatedCredential| with a
-  // non-string type |provider|. Therefore, we need to update the use counter to
-  // consistently measure the string type of |provider| usage.
-  if (options->hasFederated() && !options->federated()->hasProviders()) {
+  // TODO(cbiesinger): Consider removing the hasIdentity() check after FedCM
+  // ships. Before then, it is useful for RPs to pass both identity and
+  // federated while transitioning from the older to the new API.
+  if (options->hasFederated() && !options->hasIdentity()) {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetFederatedCredential);
   }
@@ -1189,75 +1185,83 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
 
-  Vector<KURL> providers;
-  if (options->hasFederated() && options->federated()->hasProviders()) {
+  if (options->hasIdentity() && options->identity()->hasProviders()) {
+    // TODO(yigu): Ideally the logic should be handled in CredentialManager
+    // via Get. However currently it's only for password management and we
+    // should refactor the logic to make it generic.
+    if (!RuntimeEnabledFeatures::FedCmEnabled(context)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, "FedCM is not supported"));
+      return promise;
+    }
+
     ContentSecurityPolicy* policy =
         resolver->GetExecutionContext()
             ->GetContentSecurityPolicyForCurrentWorld();
-    for (const auto& provider : options->federated()->providers()) {
-      if (provider->IsString()) {
-        UseCounter::Count(context,
-                          WebFeature::kCredentialManagerGetFederatedCredential);
-        KURL url = KURL(NullURL(), provider->GetAsString());
-        if (url.IsValid())
-          providers.push_back(std::move(url));
-      } else if (provider->IsFederatedIdentityProvider()) {
-        // TODO(yigu): Ideally the logic should be handled in CredentialManager
-        // via Get. However currently it's only for password management and we
-        // should refactor the logic to make it generic.
-        if (!RuntimeEnabledFeatures::FedCmEnabled(context)) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNotSupportedError, "FedCM is not supported"));
-          return promise;
-        }
-        // Log the UseCounter only when the WebID flag is enabled.
-        UseCounter::Count(context, WebFeature::kFederatedCredentialManagement);
-        // TODO(kenrb): Add some renderer-side validation here, such as
-        // validating |provider|, and making sure the calling context is legal.
-        // Some of this has not been spec'd yet.
-        FederatedIdentityProvider* federated_identity_provider =
-            provider->GetAsFederatedIdentityProvider();
-        KURL provider_url(federated_identity_provider->configURL());
-        String client_id = federated_identity_provider->clientId();
-        String nonce = federated_identity_provider->getNonceOr("");
+    if (options->identity()->providers().size() == 0) {
+      exception_state.ThrowTypeError("Need at least one identity provider.");
+      resolver->Detach();
+      return ScriptPromise();
+    }
+    if (options->identity()->providers().size() > 1) {
+      exception_state.ThrowTypeError(
+          "More than one provider is not supported.");
+      resolver->Detach();
+      return ScriptPromise();
+    }
+    IdentityProvider* provider = options->identity()->providers()[0];
+    // Log the UseCounter only when the WebID flag is enabled.
+    UseCounter::Count(context, WebFeature::kFederatedCredentialManagement);
+    // TODO(kenrb): Add some renderer-side validation here, such as
+    // validating |provider|, and making sure the calling context is legal.
+    // Some of this has not been spec'd yet.
+    KURL provider_url(provider->configURL());
+    String client_id = provider->clientId();
+    String nonce = provider->getNonceOr("");
 
-        if (!provider_url.IsValid() || client_id == "") {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kInvalidStateError,
-              "Provider information is incomplete."));
-          return promise;
-        }
-        // We disallow redirects (in idp_network_request_manager.cc), so it is
-        // enough to check the initial URL here.
-        if (FederatedCredential::IsRejectingPromiseDueToCSP(policy, resolver,
-                                                            provider_url)) {
-          return promise;
-        }
+    if (!provider_url.IsValid() || client_id == "") {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Provider information is incomplete."));
+      return promise;
+    }
+    // We disallow redirects (in idp_network_request_manager.cc), so it is
+    // enough to check the initial URL here.
+    if (IdentityCredential::IsRejectingPromiseDueToCSP(policy, resolver,
+                                                       provider_url)) {
+      return promise;
+    }
 
-        DCHECK(options->federated()->hasPreferAutoSignIn());
-        if (options->hasSignal()) {
-          if (options->signal()->aborted()) {
-            resolver->Reject(MakeGarbageCollected<DOMException>(
-                DOMExceptionCode::kAbortError, "Request has been aborted."));
-            return promise;
-          }
-          options->signal()->AddAlgorithm(WTF::Bind(
-              &AbortFederatedCredentialRequest, WrapPersistent(script_state)));
-        }
-        bool prefer_auto_sign_in = options->federated()->preferAutoSignIn();
-        auto* auth_request =
-            CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-
-        auth_request->RequestToken(
-            provider_url, client_id, nonce, prefer_auto_sign_in,
-            WTF::Bind(&OnRequestToken, WrapPersistent(resolver), provider_url,
-                      client_id, WrapPersistent(options)));
-
+    DCHECK(options->identity()->hasPreferAutoSignIn());
+    if (options->hasSignal()) {
+      if (options->signal()->aborted()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError, "Request has been aborted."));
         return promise;
       }
+      options->signal()->AddAlgorithm(WTF::Bind(&AbortIdentityCredentialRequest,
+                                                WrapPersistent(script_state)));
     }
+    bool prefer_auto_sign_in = options->identity()->preferAutoSignIn();
+    auto* auth_request =
+        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+
+    auth_request->RequestToken(
+        provider_url, client_id, nonce, prefer_auto_sign_in,
+        WTF::Bind(&OnRequestToken, WrapPersistent(resolver), provider_url,
+                  client_id, WrapPersistent(options)));
+
+    return promise;
   }
 
+  Vector<KURL> providers;
+  if (options->hasFederated() && options->federated()->hasProviders()) {
+    for (const auto& provider : options->federated()->providers()) {
+      KURL url = KURL(NullURL(), provider);
+      if (url.IsValid())
+        providers.push_back(std::move(url));
+    }
+  }
   CredentialMediationRequirement requirement;
   if (options->mediation() == "conditional") {
     resolver->Reject(MakeGarbageCollected<DOMException>(

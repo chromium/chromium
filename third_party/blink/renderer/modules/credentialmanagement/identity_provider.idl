@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/WebID
+// https://fedidcg.github.io/FedCM/#dictdef-identityprovider
 
-dictionary FederatedIdentityProvider {
+dictionary IdentityProvider {
   // URL for the Identity Provider.
   required USVString configURL;
   required USVString clientId;

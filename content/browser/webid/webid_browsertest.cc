@@ -189,7 +189,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     return R"(
         (async () => {
           var x = (await navigator.credentials.get({
-            federated: {
+            identity: {
               providers: [{
                 configURL: ')" +
            BaseIdpUrl() + R"(',
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
   std::string script = R"(
         (async () => {
           var x = (await navigator.credentials.get({
-            federated: {
+            identity: {
               providers: [{
                 configURL: 'http://idp.example:)" +
                        base::NumberToString(https_server().port()) +
