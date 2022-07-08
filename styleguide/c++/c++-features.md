@@ -424,6 +424,26 @@ Usage is governed by the
 [Google Style Guide](https://google.github.io/styleguide/cppguide.html#CTAD).
 ***
 
+### Fold expressions <sup>[allowed]</sup>
+
+```c++
+template <typename... Args>
+auto sum(Args... args) {
+  return (... + args);
+}
+```
+
+**Description:** A fold expression performs a fold of a template parameter pack
+over a binary operator.
+
+**Documentation:**
+[Fold expression](https://en.cppreference.com/w/cpp/language/fold)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/4DTm3idXz0w/m/g_JjOh0wAgAJ)
+***
+
 ### Selection statements with initializer <sup>[allowed]</sup>
 
 ```c++
@@ -967,26 +987,6 @@ deduced from the types of its arguments.
 
 **Documentation:**
 [Template parameters](https://en.cppreference.com/w/cpp/language/template_parameters)
-
-**Notes:**
-*** promo
-None
-***
-
-### Fold expressions <sup>[tbd]</sup>
-
-```c++
-template <typename... Args>
-auto sum(Args... args) {
-  return (... + args);
-}
-```
-
-**Description:** A fold expression performs a fold of a template parameter pack
-over a binary operator.
-
-**Documentation:**
-[Fold expression](https://en.cppreference.com/w/cpp/language/fold)
 
 **Notes:**
 *** promo
