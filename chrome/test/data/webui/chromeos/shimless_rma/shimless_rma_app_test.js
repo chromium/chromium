@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
+import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ButtonState, ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
@@ -489,5 +489,68 @@ export function shimlessRMAAppTest() {
     const updatePage =
         component.shadowRoot.querySelector('onboarding-update-page');
     assertTrue(!!updatePage);
+  });
+
+  test('StateResultCanExitCanGoBack', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    // Confirm starting on the landing page.
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    assertTrue(!!initialPage);
+
+    component.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: () => Promise.resolve({
+            stateResult: {
+              state: State.kUpdateOs,
+              error: RmadErrorCode.kOk,
+              canExit: false,
+              canGoBack: false
+            }
+          })
+        },
+        ));
+    await flushTasks();
+
+    // Confirm transition to the OS Update page.
+    const updatePage =
+        component.shadowRoot.querySelector('onboarding-update-page');
+    assertTrue(!!updatePage);
+    const backButton = component.shadowRoot.querySelector('#back');
+    const exitButton = component.shadowRoot.querySelector('#exit');
+
+    // Both buttons should be hidden due to the `stateResult` response.
+    assertTrue(backButton.hidden);
+    assertTrue(exitButton.hidden);
+
+    // Initialize the fake data.
+    service.setGetCalibrationComponentListResult(
+        fakeCalibrationComponentsWithFails);
+
+    // Attempt to transition to Calibration Failed page.
+    component.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: () => Promise.resolve({
+            stateResult: {
+              state: State.kCheckCalibration,
+              error: RmadErrorCode.kOk,
+              canExit: false,
+              canGoBack: false
+            }
+          })
+        },
+        ));
+    await flushTasks();
+
+    // The exit button should never be hidden for the Calibration failed page.
+    assertTrue(backButton.hidden);
+    assertFalse(exitButton.hidden);
   });
 }

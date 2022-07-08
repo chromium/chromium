@@ -551,7 +551,13 @@ export class ShimlessRma extends ShimlessRmaBase {
       // Set the next page as the current page.
       this.currentPage_ = nextStatePageInfo;
       if (!stateResult.canExit) {
-        this.currentPage_.buttonExit = ButtonState.HIDDEN;
+        // The calibration failed page is a special case because the Exit button
+        // is used as the Skip Calibration button. So we don't want to
+        // acknowledge `canExit` here.
+        if (this.currentPage_.componentIs !==
+            'reimaging-calibration-failed-page') {
+          this.currentPage_.buttonExit = ButtonState.HIDDEN;
+        }
       }
       if (!stateResult.canGoBack) {
         this.currentPage_.buttonBack = ButtonState.HIDDEN;
@@ -562,6 +568,9 @@ export class ShimlessRma extends ShimlessRmaBase {
           this.loadComponent_(this.currentPage_.componentIs);
       currentPageComponent.hidden = false;
       currentPageComponent.errorCode = stateResult.error;
+      this.notifyPath('currentPage_.buttonNext');
+      this.notifyPath('currentPage_.buttonExit');
+      this.notifyPath('currentPage_.buttonBack');
 
       // A special case for the landing page, which has its own navigation
       // buttons.
