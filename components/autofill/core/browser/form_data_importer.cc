@@ -1259,7 +1259,7 @@ bool FormDataImporter::MergeProfileWithMultiStepCandidates(
   AutofillProfile completed_profile = profile;
   ProfileImportMetadata completed_metadata = import_metadata;
   // Country completion has not happened yet, so this field can be ignored.
-  DCHECK(!completed_metadata.did_remove_invalid_phone_number);
+  DCHECK(!completed_metadata.did_complement_country);
   while (
       merge_candidate != multistep_candidates_.end() &&
       comparator.AreMergeable(completed_profile, merge_candidate->profile) &&
