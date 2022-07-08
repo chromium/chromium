@@ -77,6 +77,8 @@ preprocess_if_expr("preprocess") {
     "assistant_common_styles.html",
     "assistant_loading.html",
     "assistant_loading.js",
+    "assistant_optin.html",
+    "assistant_optin.js",
     "assistant_optin_flow.html",
     "assistant_optin_flow.js",
     "assistant_related_info.html",

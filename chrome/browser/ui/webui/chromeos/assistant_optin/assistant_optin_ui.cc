@@ -88,8 +88,7 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
   source->UseStringsJs();
   source->AddResourcePaths(
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
-  source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);
-  source->SetDefaultResource(IDR_ASSISTANT_OPTIN_HTML);
+  source->SetDefaultResource(IDR_ASSISTANT_OPTIN_ASSISTANT_OPTIN_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
   source->DisableTrustedTypesCSP();

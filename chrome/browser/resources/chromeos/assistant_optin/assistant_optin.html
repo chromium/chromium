@@ -7,42 +7,15 @@
 <head>
 <meta charset="utf-8">
 
-<script src="chrome://resources/polymer/v1_0/html-imports/html-imports.min.js"></script>
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+<link rel="stylesheet" href="./oobe_screen.css">
+<link rel="stylesheet" href="./oobe.css">
 
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-
-<link rel="import" href="/assistant_optin/assistant_optin_flow.html">
-
-<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-<link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
-<link rel="stylesheet" href="../login/oobe_screen.css">
-<link rel="stylesheet" href="../login/oobe.css">
-<style include="cr-icons cr-shared-style oobe-common-styles"></style>
-
-<script src="chrome://resources/js/cr.js"></script>
-<script src="chrome://resources/js/load_time_data.js"></script>
-<script src="chrome://resources/js/assert.js"></script>
-<script src="chrome://resources/js/util.js"></script>
-<script src="strings.js"></script>
-<script src="./assistant_optin.js"></script>
+<script type="module" src="./assistant_optin/assistant_optin.js"></script>
 </head>
+
 <body>
-
-<assistant-optin-flow-element id="assistant-optin-flow-card">
-</assistant-optin-flow-element>
-
+  <assistant-optin-flow-element id="assistant-optin-flow-card">
+  </assistant-optin-flow-element>
 </body>
 </html>

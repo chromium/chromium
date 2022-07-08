@@ -25,8 +25,6 @@
       <structure name="IDR_KEYBOARD_UTILS_FOR_INJECTION_JS" file="components/keyboard_utils_for_injection.js" flattenhtml="true" type="chrome_html" />
       <structure name="IDR_KEYBOARD_UTILS_FOR_INJECTION_M_JS" file="components/keyboard_utils_for_injection.m.js" flattenhtml="true" type="chrome_html" />
 
-      <structure name="IDR_ASSISTANT_OPTIN_HTML" file="..\assistant_optin\assistant_optin.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
-      <structure name="IDR_ASSISTANT_OPTIN_JS" file="..\assistant_optin\assistant_optin.js" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
     </structures>
     <includes>
       <!-- Resources that are served under fixed paths -->
