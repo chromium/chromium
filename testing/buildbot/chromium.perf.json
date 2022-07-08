@@ -1464,7 +1464,7 @@
           "dimension_sets": [
             {
               "device_status": "available",
-              "device_type": "grabbiter",
+              "device_type": "octopus",
               "gpu": null,
               "os": "ChromeOS",
               "pool": "chrome.tests.perf"

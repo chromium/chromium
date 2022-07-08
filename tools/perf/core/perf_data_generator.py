@@ -1369,7 +1369,7 @@ BUILDERS = {
             'gpu': None,
             'os': 'ChromeOS',
             'device_status': 'available',
-            'device_type': 'grabbiter',
+            'device_type': 'octopus',
         },
     },
 }
