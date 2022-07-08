@@ -3531,6 +3531,124 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderGetEnclosingElementRichButton) {
+  // Set up ax tree with the following structure:
+  //
+  // root
+  // ++button_1
+  // ++++static_text_1
+  // ++++++inline_text_1
+  // ++button_2
+  // ++++heading
+  // ++++++statix_text_2
+  // ++++++++inline_text_2
+
+  ui::AXNodeData root;
+  ui::AXNodeData button_1;
+  ui::AXNodeData static_text_1;
+  ui::AXNodeData inline_text_1;
+  ui::AXNodeData button_2;
+  ui::AXNodeData heading;
+  ui::AXNodeData static_text_2;
+  ui::AXNodeData inline_text_2;
+
+  root.id = 1;
+  button_1.id = 2;
+  static_text_1.id = 3;
+  inline_text_1.id = 4;
+  button_2.id = 5;
+  heading.id = 6;
+  static_text_2.id = 7;
+  inline_text_2.id = 8;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {button_1.id, button_2.id};
+
+  button_1.role = ax::mojom::Role::kButton;
+  button_1.child_ids.push_back(static_text_1.id);
+
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.child_ids.push_back(inline_text_1.id);
+
+  inline_text_1.role = ax::mojom::Role::kInlineTextBox;
+
+  button_2.role = ax::mojom::Role::kButton;
+  button_2.child_ids.push_back(heading.id);
+
+  heading.role = ax::mojom::Role::kHeading;
+  heading.child_ids.push_back(static_text_2.id);
+
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.child_ids.push_back(inline_text_2.id);
+
+  inline_text_2.role = ax::mojom::Role::kInlineTextBox;
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root.id;
+  update.nodes = {root,     button_1, static_text_1, inline_text_1,
+                  button_2, heading,  static_text_2, inline_text_2};
+  Init(update);
+
+  // Set up variables from the tree for testing.
+  AXNode* button_1_node = GetRootAsAXNode()->children()[0];
+  AXNode* static_text_1_node = button_1_node->children()[0];
+  AXNode* inline_text_1_node = static_text_1_node->children()[0];
+  AXNode* button_2_node = GetRootAsAXNode()->children()[1];
+  AXNode* heading_node = button_2_node->children()[0];
+  AXNode* static_text_2_node = heading_node->children()[0];
+  AXNode* inline_text_2_node = static_text_2_node->children()[0];
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(button_1_node));
+  ASSERT_NE(owner, nullptr);
+
+  ComPtr<IRawElementProviderSimple> button_1_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(button_1_node);
+  ComPtr<IRawElementProviderSimple> inline_text_1_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(inline_text_1_node);
+
+  ComPtr<IRawElementProviderSimple> static_text_2_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(static_text_2_node);
+  ComPtr<IRawElementProviderSimple> inline_text_2_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(inline_text_2_node);
+
+  // 1. The first button should hide its children since it contains a single
+  // text node. Thus, calling GetEnclosingElement on a descendant inline text
+  // box should return the button itself.
+  ComPtr<ITextProvider> text_provider;
+  EXPECT_HRESULT_SUCCEEDED(inline_text_1_node_raw->GetPatternProvider(
+      UIA_TextPatternId, &text_provider));
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->get_DocumentRange(&text_range_provider));
+  SetOwner(owner, text_range_provider.Get());
+
+  ComPtr<IRawElementProviderSimple> enclosing_element;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetEnclosingElement(&enclosing_element));
+  EXPECT_EQ(button_1_node_raw.Get(), enclosing_element.Get());
+
+  // 2. The second button shouldn't hide its children since it doesn't contain a
+  // single text node (it contains a heading node). Thus, calling
+  // GetEnclosingElement on a descendant inline text box should return the
+  // parent node.
+  EXPECT_HRESULT_SUCCEEDED(inline_text_2_node_raw->GetPatternProvider(
+      UIA_TextPatternId, &text_provider));
+
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->get_DocumentRange(&text_range_provider));
+  SetOwner(owner, text_range_provider.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetEnclosingElement(&enclosing_element));
+  EXPECT_EQ(static_text_2_node_raw.Get(), enclosing_element.Get());
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByRange) {
   Init(BuildTextDocument({"some text", "more text"}));
 

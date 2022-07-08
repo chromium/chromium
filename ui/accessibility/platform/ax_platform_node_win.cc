@@ -7380,20 +7380,15 @@ bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
     return true;
 
   auto role = GetRole();
-  if (HasPresentationalChildren(role))
-    return true;
-
   switch (role) {
-    // Other elements that are expected by UIA to hide their children without
-    // having "Children Presentational: True".
-    //
+    // Even though a node with  role kButton has presentational children, it
+    // should only hide its children from UIA when it has a single text node
+    // (to avoid having its name announced twice). This is because buttons can
+    // have complex structures and they shouldn't hide their subtree.
+    case ax::mojom::Role::kButton:
     // TODO(bebeaudr): We might be able to remove ax::mojom::Role::kLink once
     // http://crbug.com/1054514 is fixed. Links should not have to hide their
     // children.
-    // TODO(virens): |kPdfActionableHighlight| needs to follow a fix similar to
-    // links. At present Pdf highlghts have text nodes as children. But, we may
-    // enable pdf highlights to have complex children like links based on user
-    // feedback.
     case ax::mojom::Role::kLink:
       // Links with a single text-only child should hide their subtree.
       if (GetChildCount() == 1) {
@@ -7401,10 +7396,16 @@ bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
         return only_child && only_child->IsText();
       }
       return false;
+    // TODO(virens): |kPdfActionableHighlight| needs to follow a fix similar to
+    // links. At present Pdf highlights have text nodes as children. But, we may
+    // enable pdf highlights to have complex children like links based on user
+    // feedback.
     case ax::mojom::Role::kPdfActionableHighlight:
       return true;
     default:
-      return false;
+      // UIA expects nodes that have "Children Presentational: True" to hide
+      // their children.
+      return HasPresentationalChildren(role);
   }
 }
 
