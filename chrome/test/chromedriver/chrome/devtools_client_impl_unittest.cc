@@ -363,6 +363,30 @@ bool ReturnCommandBadId(const std::string& message,
   return true;
 }
 
+bool ReturnUnexpectedIdThenResponse(
+    bool* first,
+    const std::string& message,
+    int expected_id,
+    std::string* session_id,
+    internal::InspectorMessageType* type,
+    internal::InspectorEvent* event,
+    internal::InspectorCommandResponse* command_response) {
+  session_id->clear();
+  if (*first) {
+    *type = internal::kCommandResponseMessageType;
+    command_response->id = expected_id + 100;
+    command_response->error = "{\"code\":-32001,\"message\":\"ERR\"}";
+  } else {
+    *type = internal::kCommandResponseMessageType;
+    command_response->id = expected_id;
+    base::DictionaryValue params;
+    command_response->result = std::make_unique<base::DictionaryValue>();
+    command_response->result->GetDict().Set("key", 2);
+  }
+  *first = false;
+  return true;
+}
+
 bool ReturnCommandError(const std::string& message,
                         int expected_id,
                         std::string* session_id,
@@ -521,6 +545,19 @@ TEST_F(DevToolsClientImplTest, SendCommandBadId) {
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommandBadId));
   base::DictionaryValue params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
+}
+
+TEST_F(DevToolsClientImplTest, SendCommandUnexpectedId) {
+  SyncWebSocketFactory factory =
+      base::BindRepeating(&CreateMockSyncWebSocket<FakeSyncWebSocket>);
+  bool first = true;
+  DevToolsClientImpl client(factory, "http://url", "id",
+                            base::BindRepeating(&CloserFunc));
+  ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
+  client.SetParserFuncForTesting(
+      base::BindRepeating(&ReturnUnexpectedIdThenResponse, &first));
+  base::DictionaryValue params;
+  ASSERT_TRUE(client.SendCommand("method", params).IsOk());
 }
 
 TEST_F(DevToolsClientImplTest, SendCommandResponseError) {
@@ -705,6 +742,13 @@ TEST(ParseInspectorError, NoSuchFrameError) {
   ASSERT_EQ(kNoSuchFrame, status.code());
   ASSERT_EQ("no such frame: Frame with the given id was not found.",
             status.message());
+}
+
+TEST(ParseInspectorError, SessionNotFoundError) {
+  const std::string error("{\"code\":-32001,\"message\":\"SOME MESSAGE\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kNoSuchFrame, status.code());
+  ASSERT_EQ("no such frame: SOME MESSAGE", status.message());
 }
 
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {
