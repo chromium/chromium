@@ -21,6 +21,7 @@
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "components/offline_pages/core/archive_manager.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
+#include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 
 namespace offline_pages {
@@ -201,6 +202,11 @@ int OfflinePageArchivePublisherImpl::Delegate::Remove(
       base::android::ToJavaLongArray(env, android_download_manager_ids);
 
   return Java_OfflinePageArchivePublisherBridge_remove(env, j_ids);
+}
+
+base::WeakPtr<OfflinePageArchivePublisher>
+OfflinePageArchivePublisherImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace offline_pages

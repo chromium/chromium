@@ -10,18 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_pages/core/model/clear_storage_task.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_archiver.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_model_event_logger.h"
 #include "components/offline_pages/core/offline_page_types.h"
-#include "components/offline_pages/core/offline_store_types.h"
 #include "components/offline_pages/task/task_queue.h"
 
 class GURL;
@@ -185,7 +181,7 @@ class OfflinePageModelTaskified : public OfflinePageModel,
                                   PublishArchiveResult publish_results);
 
   // Method for unpublishing the page from downloads.
-  static void Unpublish(OfflinePageArchivePublisher* publisher,
+  static void Unpublish(base::WeakPtr<OfflinePageArchivePublisher> publisher,
                         const std::vector<PublishedArchiveId>& publish_ids);
 
   // Other utility methods.

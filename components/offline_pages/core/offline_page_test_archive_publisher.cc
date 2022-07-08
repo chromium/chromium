@@ -8,12 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/offline_pages/core/archive_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace offline_pages {
 
@@ -67,6 +65,11 @@ void OfflinePageTestArchivePublisher::UnpublishArchives(
     const std::vector<PublishedArchiveId>& archive_ids) const {
   if (!archive_ids.empty())
     last_removed_id_ = archive_ids.back();
+}
+
+base::WeakPtr<OfflinePageArchivePublisher>
+OfflinePageTestArchivePublisher::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace offline_pages
