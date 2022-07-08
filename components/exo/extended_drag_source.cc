@@ -223,9 +223,10 @@ void ExtendedDragSource::OnToplevelWindowDragStarted(
   if (drag_source_window_)
     drag_source_window_->AddObserver(this);
   MaybeLockCursor();
-
-  if (dragged_window_holder_ && dragged_window_holder_->toplevel_window())
+  if (dragged_window_holder_ && dragged_window_holder_->toplevel_window() &&
+      dragged_window_holder_->toplevel_window()->IsVisible()) {
     StartDrag(dragged_window_holder_->toplevel_window());
+  }
 }
 
 DragOperation ExtendedDragSource::OnToplevelWindowDragDropped() {
@@ -292,6 +293,7 @@ void ExtendedDragSource::UnlockCursor() {
 }
 
 void ExtendedDragSource::StartDrag(aura::Window* toplevel) {
+  DCHECK(!event_blocker_);
   // Ensure |toplevel| window does skip events while it's being dragged.
   event_blocker_ =
       std::make_unique<aura::ScopedWindowEventTargetingBlocker>(toplevel);
