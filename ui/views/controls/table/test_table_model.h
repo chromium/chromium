@@ -10,7 +10,7 @@
 
 class TestTableModel : public ui::TableModel {
  public:
-  explicit TestTableModel(int row_count);
+  explicit TestTableModel(size_t row_count);
 
   TestTableModel(const TestTableModel&) = delete;
   TestTableModel& operator=(const TestTableModel&) = delete;
@@ -18,13 +18,13 @@ class TestTableModel : public ui::TableModel {
   ~TestTableModel() override;
 
   // ui::TableModel overrides:
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
-  ui::ImageModel GetIcon(int row) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
+  ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
-  int row_count_;
+  size_t row_count_;
   raw_ptr<ui::TableModelObserver> observer_;
 };
 

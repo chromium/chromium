@@ -74,14 +74,14 @@ class DeprecatedAppsDialogView::DeprecatedAppsTableModel
   ~DeprecatedAppsTableModel() override = default;
 
   // ui::TableModel implementations:
-  int RowCount() override { return rows_.size(); }
+  size_t RowCount() override { return rows_.size(); }
 
-  std::u16string GetText(int index, int column_id) override {
-    DCHECK(index >= 0 && index < RowCount());
+  std::u16string GetText(size_t index, int column_id) override {
+    DCHECK(index < RowCount());
     return base::UTF8ToUTF16(rows_[index].app_name);
   }
 
-  ui::ImageModel GetIcon(int index) override {
+  ui::ImageModel GetIcon(size_t index) override {
     return ui::ImageModel::FromImageSkia(rows_[index].icon->image_skia());
   }
 
@@ -140,7 +140,7 @@ std::u16string DeprecatedAppsDialogView::GetWindowTitle() const {
   }
   return l10n_util::GetStringFUTF16Int(
       IDS_DEPRECATED_APPS_RENDERER_TITLE_PLURAL,
-      deprecated_apps_table_model_->RowCount());
+      base::checked_cast<int64_t>(deprecated_apps_table_model_->RowCount()));
 }
 
 DeprecatedAppsDialogView::DeprecatedAppsDialogView(

@@ -328,11 +328,11 @@ TaskManagerTableModel::~TaskManagerTableModel() {
   StopUpdating();
 }
 
-int TaskManagerTableModel::RowCount() {
-  return static_cast<int>(tasks_.size());
+size_t TaskManagerTableModel::RowCount() {
+  return tasks_.size();
 }
 
-std::u16string TaskManagerTableModel::GetText(int row, int column) {
+std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
   if (IsSharedByGroup(column) && !IsTaskFirstInGroup(row))
     return std::u16string();
 
@@ -473,7 +473,7 @@ std::u16string TaskManagerTableModel::GetText(int row, int column) {
   }
 }
 
-ui::ImageModel TaskManagerTableModel::GetIcon(int row) {
+ui::ImageModel TaskManagerTableModel::GetIcon(size_t row) {
   return ui::ImageModel::FromImageSkia(
       observed_task_manager()->GetIcon(tasks_[row]));
 }
@@ -483,8 +483,8 @@ void TaskManagerTableModel::SetObserver(
   table_model_observer_ = observer;
 }
 
-int TaskManagerTableModel::CompareValues(int row1,
-                                         int row2,
+int TaskManagerTableModel::CompareValues(size_t row1,
+                                         size_t row2,
                                          int column_id) {
   switch (column_id) {
     case IDS_TASK_MANAGER_TASK_COLUMN:
@@ -650,7 +650,7 @@ void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
            !observed_task_manager()->IsRunningInVM(tasks_[i - 1])) {
       --i;
     }
-    while (limit < static_cast<size_t>(RowCount()) &&
+    while (limit < RowCount() &&
            observed_task_manager()->GetProcessId(tasks_[limit]) == process_id &&
            !observed_task_manager()->IsRunningInVM(tasks_[limit])) {
       ++limit;
@@ -672,7 +672,7 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
   if (table_model_observer_) {
     std::vector<TaskId>::difference_type index =
         std::find(tasks_.begin(), tasks_.end(), id) - tasks_.begin();
-    table_model_observer_->OnItemsAdded(static_cast<int>(index), 1);
+    table_model_observer_->OnItemsAdded(index, 1);
   }
 }
 
@@ -680,7 +680,7 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
   auto index = std::find(tasks_.begin(), tasks_.end(), id);
   if (index == tasks_.end())
     return;
-  auto removed_index = index - tasks_.begin();
+  auto removed_index = static_cast<size_t>(index - tasks_.begin());
   tasks_.erase(index);
   if (table_model_observer_)
     table_model_observer_->OnItemsRemoved(removed_index, 1);
@@ -692,11 +692,11 @@ void TaskManagerTableModel::OnTasksRefreshed(
   OnRefresh();
 }
 
-void TaskManagerTableModel::ActivateTask(int row_index) {
+void TaskManagerTableModel::ActivateTask(size_t row_index) {
   observed_task_manager()->ActivateTask(tasks_[row_index]);
 }
 
-void TaskManagerTableModel::KillTask(int row_index) {
+void TaskManagerTableModel::KillTask(size_t row_index) {
   observed_task_manager()->KillTask(tasks_[row_index]);
 }
 
@@ -812,7 +812,7 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
     RemoveRefreshType(type);
 }
 
-bool TaskManagerTableModel::IsTaskKillable(int row_index) const {
+bool TaskManagerTableModel::IsTaskKillable(size_t row_index) const {
   return observed_task_manager()->IsTaskKillable(tasks_[row_index]);
 }
 
@@ -925,7 +925,7 @@ void TaskManagerTableModel::OnRefresh() {
     table_model_observer_->OnItemsChanged(0, RowCount());
 }
 
-bool TaskManagerTableModel::IsTaskFirstInGroup(int row_index) const {
+bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
   if (row_index == 0)
     return true;
 

@@ -34,9 +34,9 @@ class StartupPagesHandler : public SettingsPageUIHandler,
 
   // ui::TableModelObserver:
   void OnModelChanged() override;
-  void OnItemsChanged(int start, int length) override;
-  void OnItemsAdded(int start, int length) override;
-  void OnItemsRemoved(int start, int length) override;
+  void OnItemsChanged(size_t start, size_t length) override;
+  void OnItemsAdded(size_t start, size_t length) override;
+  void OnItemsRemoved(size_t start, size_t length) override;
 
  private:
   // Adds a startup page with the given URL after the given index.

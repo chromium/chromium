@@ -139,8 +139,8 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   void CreateView(const ui::Event& event);
 
   // ui::TableModel overrides
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // ui::ComboboxModel overrides

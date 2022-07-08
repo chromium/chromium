@@ -132,12 +132,12 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
         base::FilePath(kTitle1File));
   }
 
-  int FindResourceIndex(const std::u16string& title) {
-    for (int i = 0; i < model_->GetRowCount(); ++i) {
+  absl::optional<size_t> FindResourceIndex(const std::u16string& title) {
+    for (size_t i = 0; i < model_->GetRowCount(); ++i) {
       if (title == model_->GetRowTitle(i))
         return i;
     }
-    return -1;
+    return absl::nullopt;
   }
 
  protected:
@@ -163,7 +163,7 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
  private:
   void TaskManagerTableModelSanityCheck() {
     // Ensure the groups are self-consistent.
-    for (int i = 0; i < model()->GetRowCount(); ++i) {
+    for (size_t i = 0; i < model()->GetRowCount(); ++i) {
       size_t start, length;
       model()->GetRowsGroupRange(i, &start, &length);
       for (size_t j = 0; j < length; ++j) {
@@ -270,12 +270,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, KillTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
 
   // Killing the tab via task manager should remove the row.
-  int tab = FindResourceIndex(MatchTab("title1.html"));
-  ASSERT_NE(-1, tab);
-  ASSERT_TRUE(model()->GetTabId(tab).is_valid());
+  absl::optional<size_t> tab = FindResourceIndex(MatchTab("title1.html"));
+  ASSERT_TRUE(tab.has_value());
+  ASSERT_TRUE(model()->GetTabId(tab.value()).is_valid());
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    model()->Kill(tab);
+    model()->Kill(tab.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchTab("title1.html")));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
   }
@@ -370,13 +370,15 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTabChanges) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
-  int extension_tab = FindResourceIndex(MatchExtension("Foobar"));
-  ASSERT_NE(-1, extension_tab);
-  ASSERT_TRUE(model()->GetTabId(extension_tab).is_valid());
+  absl::optional<size_t> extension_tab =
+      FindResourceIndex(MatchExtension("Foobar"));
+  ASSERT_TRUE(extension_tab.has_value());
+  ASSERT_TRUE(model()->GetTabId(extension_tab.value()).is_valid());
 
-  int background_page = FindResourceIndex(MatchExtension("My extension 1"));
-  ASSERT_NE(-1, background_page);
-  ASSERT_FALSE(model()->GetTabId(background_page).is_valid());
+  absl::optional<size_t> background_page =
+      FindResourceIndex(MatchExtension("My extension 1"));
+  ASSERT_TRUE(background_page.has_value());
+  ASSERT_FALSE(model()->GetTabId(background_page.value()).is_valid());
 }
 
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTab) {
@@ -400,13 +402,15 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
-  int extension_tab = FindResourceIndex(MatchExtension("Foobar"));
-  ASSERT_NE(-1, extension_tab);
-  ASSERT_TRUE(model()->GetTabId(extension_tab).is_valid());
+  absl::optional<size_t> extension_tab =
+      FindResourceIndex(MatchExtension("Foobar"));
+  ASSERT_TRUE(extension_tab.has_value());
+  ASSERT_TRUE(model()->GetTabId(extension_tab.value()).is_valid());
 
-  int background_page = FindResourceIndex(MatchExtension("My extension 1"));
-  ASSERT_NE(-1, background_page);
-  ASSERT_FALSE(model()->GetTabId(background_page).is_valid());
+  absl::optional<size_t> background_page =
+      FindResourceIndex(MatchExtension("My extension 1"));
+  ASSERT_TRUE(background_page.has_value());
+  ASSERT_FALSE(model()->GetTabId(background_page.value()).is_valid());
 }
 
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
@@ -436,9 +440,10 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
 
   // Check that the third entry (main.html) is of type extension and has both
   // a tab contents and an extension.
-  int app_tab = FindResourceIndex(MatchApp("Packaged App Test"));
-  ASSERT_NE(-1, app_tab);
-  ASSERT_TRUE(model()->GetTabId(app_tab).is_valid());
+  absl::optional<size_t> app_tab =
+      FindResourceIndex(MatchApp("Packaged App Test"));
+  ASSERT_TRUE(app_tab.has_value());
+  ASSERT_TRUE(model()->GetTabId(app_tab.value()).is_valid());
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   // Unload extension to make sure the tab goes away.
@@ -472,9 +477,10 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTab) {
 
   // Check that the third entry (main.html) is of type extension and has both
   // a tab contents and an extension.
-  int app_tab = FindResourceIndex(MatchApp("Packaged App Test"));
-  ASSERT_NE(-1, app_tab);
-  ASSERT_TRUE(model()->GetTabId(app_tab).is_valid());
+  absl::optional<size_t> app_tab =
+      FindResourceIndex(MatchApp("Packaged App Test"));
+  ASSERT_TRUE(app_tab.has_value());
+  ASSERT_TRUE(model()->GetTabId(app_tab.value()).is_valid());
 }
 
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeHostedAppTabChanges) {
@@ -1051,10 +1057,11 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   ASSERT_TRUE(b_frame->GetSiteInstance()->RequiresDedicatedProcess());
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int subframe_b = FindResourceIndex(MatchSubframe("http://b.com/"));
-    ASSERT_NE(-1, subframe_b);
-    ASSERT_TRUE(model()->GetTabId(subframe_b).is_valid());
-    model()->Kill(subframe_b);
+    absl::optional<size_t> subframe_b =
+        FindResourceIndex(MatchSubframe("http://b.com/"));
+    ASSERT_TRUE(subframe_b.has_value());
+    ASSERT_TRUE(model()->GetTabId(subframe_b.value()).is_valid());
+    model()->Kill(subframe_b.value());
 
     // Verify the expected number of b.com and c.com subframes.
     ASSERT_NO_FATAL_FAILURE(check_num_subframes(0, expected_c_subframes));
@@ -1321,14 +1328,24 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Cross-site iframe factory")));
 
-  int index = FindResourceIndex(MatchTab("Cross-site iframe factory"));
-  std::vector<int> subframe_offsets;
+  absl::optional<size_t> index =
+      FindResourceIndex(MatchTab("Cross-site iframe factory"));
+  ASSERT_TRUE(index.has_value());
+  std::vector<size_t> subframe_offsets;
   if (ShouldExpectSubframes()) {
-    subframe_offsets = {
-        FindResourceIndex(MatchSubframe("http://b.com/")) - index,
-        FindResourceIndex(MatchSubframe("http://c.com/")) - index,
-        FindResourceIndex(MatchSubframe("http://d.com/")) - index};
-    EXPECT_THAT(subframe_offsets, testing::UnorderedElementsAre(1, 2, 3));
+    absl::optional<size_t> index_b =
+        FindResourceIndex(MatchSubframe("http://b.com/"));
+    ASSERT_TRUE(index_b.has_value());
+    absl::optional<size_t> index_c =
+        FindResourceIndex(MatchSubframe("http://c.com/"));
+    ASSERT_TRUE(index_c.has_value());
+    absl::optional<size_t> index_d =
+        FindResourceIndex(MatchSubframe("http://d.com/"));
+    ASSERT_TRUE(index_d.has_value());
+    subframe_offsets = {index_b.value() - index.value(),
+                        index_c.value() - index.value(),
+                        index_d.value() - index.value()};
+    EXPECT_THAT(subframe_offsets, testing::UnorderedElementsAre(1u, 2u, 3u));
   }
 
   // Opening a new tab should appear below the existing tab.
@@ -1359,32 +1376,41 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   // The first tab may have moved in absolute position in the list (due to
   // random e.g. zygote or gpu activity).
   index = FindResourceIndex(MatchTab("Cross-site iframe factory"));
+  ASSERT_TRUE(index.has_value());
 
   // All of Tab 2's subframes will reuse Tab 1's existing processes for
   // corresponding sites.  Tab 2's d.com main frame row should then appear
   // after all the subframe processes.
-  int tab2_subframe_count = ShouldExpectSubframes() ? 3 : 0;
-  int tab2_main_frame_index = index +
-                              static_cast<int>(subframe_offsets.size()) +
-                              tab2_subframe_count + 1;
+  size_t tab2_subframe_count = ShouldExpectSubframes() ? 3 : 0;
+  size_t tab2_main_frame_index =
+      index.value() + subframe_offsets.size() + tab2_subframe_count + 1;
   EXPECT_EQ("Tab: Cross-site iframe factory",
             base::UTF16ToUTF8(model()->GetRowTitle(tab2_main_frame_index)));
 
   if (ShouldExpectSubframes()) {
     // Tab 2's a.com subframe should share Tab 1's main frame process and go
     // directly below it.
-    EXPECT_EQ(index + 1, FindResourceIndex(MatchSubframe("http://a.com/")));
+    EXPECT_EQ(index.value() + 1,
+              FindResourceIndex(MatchSubframe("http://a.com/")));
 
     // The other tab 2 subframes (b.com and c.com) should join existing
     // subframe processes from tab 1.  Check that the b.com and c.com subframe
     // processes now have two rows each.
-    int subframe_b_index = FindResourceIndex(MatchSubframe("http://b.com/"));
-    int subframe_c_index = FindResourceIndex(MatchSubframe("http://c.com/"));
-    int subframe_d_index = FindResourceIndex(MatchSubframe("http://d.com/"));
-    EXPECT_EQ("Subframe: http://b.com/",
-              base::UTF16ToUTF8(model()->GetRowTitle(subframe_b_index + 1)));
-    EXPECT_EQ("Subframe: http://c.com/",
-              base::UTF16ToUTF8(model()->GetRowTitle(subframe_c_index + 1)));
+    absl::optional<size_t> subframe_b_index =
+        FindResourceIndex(MatchSubframe("http://b.com/"));
+    ASSERT_TRUE(subframe_b_index.has_value());
+    absl::optional<size_t> subframe_c_index =
+        FindResourceIndex(MatchSubframe("http://c.com/"));
+    ASSERT_TRUE(subframe_c_index.has_value());
+    absl::optional<size_t> subframe_d_index =
+        FindResourceIndex(MatchSubframe("http://d.com/"));
+    ASSERT_TRUE(subframe_d_index.has_value());
+    EXPECT_EQ(
+        "Subframe: http://b.com/",
+        base::UTF16ToUTF8(model()->GetRowTitle(subframe_b_index.value() + 1)));
+    EXPECT_EQ(
+        "Subframe: http://c.com/",
+        base::UTF16ToUTF8(model()->GetRowTitle(subframe_c_index.value() + 1)));
 
     // The subframe processes should preserve their relative ordering.
     EXPECT_EQ(subframe_offsets[0] < subframe_offsets[1],
@@ -1596,11 +1622,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   // remove the prerender task entry.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int prerender_row =
+    absl::optional<size_t> prerender_row =
         FindResourceIndex(MatchPrerender(prerender_gurl.spec()));
-    ASSERT_NE(-1, prerender_row);
-    ASSERT_TRUE(model()->GetTabId(prerender_row).is_valid());
-    model()->Kill(prerender_row);
+    ASSERT_TRUE(prerender_row.has_value());
+    ASSERT_TRUE(model()->GetTabId(prerender_row.value()).is_valid());
+    model()->Kill(prerender_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyPrerender()));
     ASSERT_NO_FATAL_FAILURE(
@@ -1632,10 +1658,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   // remove the prerender task entry.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int trigger_row = FindResourceIndex(MatchTab("Title Of Awesomeness"));
-    ASSERT_NE(-1, trigger_row);
-    ASSERT_TRUE(model()->GetTabId(trigger_row).is_valid());
-    model()->Kill(trigger_row);
+    absl::optional<size_t> trigger_row =
+        FindResourceIndex(MatchTab("Title Of Awesomeness"));
+    ASSERT_TRUE(trigger_row.has_value());
+    ASSERT_TRUE(model()->GetTabId(trigger_row.value()).is_valid());
+    model()->Kill(trigger_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyPrerender()));
   }
@@ -1667,11 +1694,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   // Main task stays after prerendered task is terminated.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int prerender_row =
+    absl::optional<size_t> prerender_row =
         FindResourceIndex(MatchPrerender(prerender_gurl.spec()));
-    ASSERT_NE(-1, prerender_row);
-    ASSERT_TRUE(model()->GetTabId(prerender_row).is_valid());
-    model()->Kill(prerender_row);
+    ASSERT_TRUE(prerender_row.has_value());
+    ASSERT_TRUE(model()->GetTabId(prerender_row.value()).is_valid());
+    model()->Kill(prerender_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(
         WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
@@ -1693,10 +1720,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
         WaitForTaskManagerRows(1, MatchPrerender(new_prerender_gurl.spec())));
 
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int trigger_row = FindResourceIndex(MatchTab("Title Of Awesomeness"));
-    ASSERT_NE(-1, trigger_row);
-    ASSERT_TRUE(model()->GetTabId(trigger_row).is_valid());
-    model()->Kill(trigger_row);
+    absl::optional<size_t> trigger_row =
+        FindResourceIndex(MatchTab("Title Of Awesomeness"));
+    ASSERT_TRUE(trigger_row.has_value());
+    ASSERT_TRUE(model()->GetTabId(trigger_row.value()).is_valid());
+    model()->Kill(trigger_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyPrerender()));
   }
@@ -1852,11 +1880,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ProperlyShowsTasks) {
   // Terminate the fenced frame. The embedder frame remains intact.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int fenced_frame_row =
+    absl::optional<size_t> fenced_frame_row =
         FindResourceIndex(MatchFencedFrame(GetFencedFrameTitle("b.test")));
-    ASSERT_NE(-1, fenced_frame_row);
-    ASSERT_TRUE(model()->GetTabId(fenced_frame_row).is_valid());
-    model()->Kill(fenced_frame_row);
+    ASSERT_TRUE(fenced_frame_row.has_value());
+    ASSERT_TRUE(model()->GetTabId(fenced_frame_row.value()).is_valid());
+    model()->Kill(fenced_frame_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyFencedFrame()));
     ASSERT_NO_FATAL_FAILURE(
@@ -1867,10 +1895,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, ProperlyShowsTasks) {
   {
     helper()->CreateFencedFrame(main_frame, initial_gurl);
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    int embedder_row = FindResourceIndex(MatchTab("Title Of Awesomeness"));
-    ASSERT_NE(-1, embedder_row);
-    ASSERT_TRUE(model()->GetTabId(embedder_row).is_valid());
-    model()->Kill(embedder_row);
+    absl::optional<size_t> embedder_row =
+        FindResourceIndex(MatchTab("Title Of Awesomeness"));
+    ASSERT_TRUE(embedder_row.has_value());
+    ASSERT_TRUE(model()->GetTabId(embedder_row.value()).is_valid());
+    model()->Kill(embedder_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyFencedFrame()));
   }
@@ -1979,9 +2008,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTaskBrowserTest, TaskActivationChangesFocus) {
   // The WebContents of "about:blank" is active.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
-  const int fenced_frame_task_row =
+  const absl::optional<size_t> fenced_frame_task_row =
       FindResourceIndex(MatchFencedFrame(GetFencedFrameTitle("b.test")));
-  model()->Activate(fenced_frame_task_row);
+  ASSERT_TRUE(fenced_frame_task_row.has_value());
+  model()->Activate(fenced_frame_task_row.value());
 
   // The WebContents of the embedder page is active.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);

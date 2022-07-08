@@ -206,6 +206,7 @@ std::u16string GetStringFUTF16(int message_id,
 // ASCII digits in non-UI strings.
 COMPONENT_EXPORT(UI_BASE)
 std::u16string GetStringFUTF16Int(int message_id, int a);
+COMPONENT_EXPORT(UI_BASE)
 std::u16string GetStringFUTF16Int(int message_id, int64_t a);
 
 // Convenience functions to format a string with a single number that requires

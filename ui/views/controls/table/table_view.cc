@@ -290,7 +290,7 @@ void TableView::SetGrouper(TableGrouper* grouper) {
 }
 
 size_t TableView::GetRowCount() const {
-  return model_ ? static_cast<size_t>(model_->RowCount()) : 0;
+  return model_ ? model_->RowCount() : 0;
 }
 
 void TableView::Select(absl::optional<size_t> model_row) {
@@ -836,16 +836,14 @@ void TableView::OnModelChanged() {
   PreferredSizeChanged();
 }
 
-void TableView::OnItemsChanged(int start, int length) {
+void TableView::OnItemsChanged(size_t start, size_t length) {
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
 }
 
-void TableView::OnItemsAdded(int start, int length) {
-  DCHECK_GE(start, 0);
-  DCHECK_GE(length, 0);
-  DCHECK_LE(static_cast<size_t>(start + length), GetRowCount());
+void TableView::OnItemsAdded(size_t start, size_t length) {
+  DCHECK_LE(start + length, GetRowCount());
 
-  for (int i = 0; i < length; ++i) {
+  for (size_t i = 0; i < length; ++i) {
     // Increment selection model counter at start.
     selection_model_.IncrementFrom(start);
 
@@ -863,15 +861,14 @@ void TableView::OnItemsAdded(int start, int length) {
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
 }
 
-void TableView::OnItemsMoved(int old_start, int length, int new_start) {
+void TableView::OnItemsMoved(size_t old_start,
+                             size_t length,
+                             size_t new_start) {
   selection_model_.Move(old_start, new_start, length);
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
 }
 
-void TableView::OnItemsRemoved(int start, int length) {
-  DCHECK_GE(start, 0);
-  DCHECK_GE(length, 0);
-
+void TableView::OnItemsRemoved(size_t start, size_t length) {
   // Determine the currently selected index in terms of the view. We inline the
   // implementation here since ViewToModel() has DCHECKs that fail since the
   // model has changed but |model_to_view_| has not been updated yet.
@@ -882,7 +879,7 @@ void TableView::OnItemsRemoved(int start, int length) {
   if (previously_selected_model_index.has_value() && GetIsSorted())
     previously_selected_view_index =
         model_to_view_[previously_selected_model_index.value()];
-  for (int i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i)
     selection_model_.DecrementFrom(start);
 
   // Update the `view_to_model_` and `model_to_view_` mappings prior to updating
@@ -912,7 +909,7 @@ void TableView::OnItemsRemoved(int start, int length) {
 
   // Remove the virtual views that are no longer needed.
   auto& virtual_children = GetViewAccessibility().virtual_children();
-  for (int i = start; !virtual_children.empty() && i < start + length; i++)
+  for (size_t i = start; !virtual_children.empty() && i < start + length; i++)
     virtual_children[virtual_children.size() - 1]->RemoveFromParentView();
 
   UpdateVirtualAccessibilityChildrenBounds();
@@ -1558,8 +1555,7 @@ void TableView::PopulateAccessibilityRowData(AXVirtualView* ax_row,
   DCHECK(ax_index.has_value());
 
   size_t row_index = ax_index.value() - (header_ ? 1 : 0);
-  int model_index = ViewToModel(static_cast<int>(row_index));
-  DCHECK_GE(model_index, 0);
+  size_t model_index = ViewToModel(row_index);
 
   // When navigating using up / down cursor keys on the Mac, we read the
   // contents of the first cell. If the user needs to explore additional cell's,
@@ -1588,8 +1584,7 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   auto column_index = ax_row->GetIndexOf(ax_cell);
   DCHECK(column_index.has_value());
 
-  int model_index = ViewToModel(static_cast<int>(row_index));
-  DCHECK_GE(model_index, 0);
+  size_t model_index = ViewToModel(row_index);
 
   gfx::Rect cell_bounds = GetCellBounds(row_index, column_index.value());
 

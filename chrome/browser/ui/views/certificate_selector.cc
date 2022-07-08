@@ -53,8 +53,8 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
   CertificateTableModel& operator=(const CertificateTableModel&) = delete;
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int index, int column_id) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t index, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
@@ -85,15 +85,14 @@ CertificateSelector::CertificateTableModel::CertificateTableModel(
   }
 }
 
-int CertificateSelector::CertificateTableModel::RowCount() {
+size_t CertificateSelector::CertificateTableModel::RowCount() {
   return rows_.size();
 }
 
 std::u16string CertificateSelector::CertificateTableModel::GetText(
-    int index,
+    size_t index,
     int column_id) {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), rows_.size());
+  DCHECK_LT(index, rows_.size());
 
   const Row& row = rows_[index];
   switch (column_id) {

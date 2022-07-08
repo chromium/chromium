@@ -68,14 +68,15 @@ void CustomHomePagesTableModel::SetURLs(const std::vector<GURL>& urls) {
  * elements, compact the remaining ones, and re-insert moved elements.
  * Expects |index_list| to be ordered ascending.
  */
-void CustomHomePagesTableModel::MoveURLs(int insert_before,
-                                         const std::vector<int>& index_list) {
+void CustomHomePagesTableModel::MoveURLs(
+    size_t insert_before,
+    const std::vector<size_t>& index_list) {
   if (index_list.empty()) return;
-  DCHECK(insert_before >= 0 && insert_before <= RowCount());
+  DCHECK(insert_before <= RowCount());
 
   // The range of elements that needs to be reshuffled is [ |first|, |last| ).
-  int first = std::min(insert_before, index_list.front());
-  int last = std::max(insert_before, index_list.back() + 1);
+  size_t first = std::min(insert_before, index_list.front());
+  size_t last = std::max(insert_before, index_list.back() + 1);
 
   // Save the dragged elements. Also, adjust insertion point if it is before a
   // dragged element.
@@ -88,7 +89,7 @@ void CustomHomePagesTableModel::MoveURLs(int insert_before,
 
   // Compact the range between beginning and insertion point, moving downwards.
   size_t skip_count = 0;
-  for (int i = first; i < insert_before; ++i) {
+  for (size_t i = first; i < insert_before; ++i) {
     if (skip_count < index_list.size() && index_list[skip_count] == i)
       skip_count++;
     else
@@ -101,12 +102,13 @@ void CustomHomePagesTableModel::MoveURLs(int insert_before,
 
   // Now compact up for elements after the insertion point.
   skip_count = 0;
-  for (int i = last - 1; i >= first; --i) {
+  for (size_t i = last; i > first; --i) {
+    const size_t index = i - 1;
     if (skip_count < index_list.size() &&
-        index_list[index_list.size() - skip_count - 1] == i) {
+        index_list[index_list.size() - skip_count - 1] == index) {
       skip_count++;
     } else {
-      entries_[i + skip_count] = entries_[i];
+      entries_[index + skip_count] = entries_[index];
     }
   }
 
@@ -119,22 +121,22 @@ void CustomHomePagesTableModel::MoveURLs(int insert_before,
     observer_->OnModelChanged();
 }
 
-void CustomHomePagesTableModel::AddWithoutNotification(
-    int index, const GURL& url) {
-  DCHECK(index >= 0 && index <= RowCount());
-  entries_.insert(entries_.begin() + static_cast<size_t>(index), Entry());
+void CustomHomePagesTableModel::AddWithoutNotification(size_t index,
+                                                       const GURL& url) {
+  DCHECK(index <= RowCount());
+  entries_.insert(entries_.begin() + index, Entry());
   entries_[index].url = url;
 }
 
-void CustomHomePagesTableModel::Add(int index, const GURL& url) {
+void CustomHomePagesTableModel::Add(size_t index, const GURL& url) {
   AddWithoutNotification(index, url);
   LoadTitle(&(entries_[index]));
   if (observer_)
     observer_->OnItemsAdded(index, 1);
 }
 
-void CustomHomePagesTableModel::RemoveWithoutNotification(int index) {
-  DCHECK(index >= 0 && index < RowCount());
+void CustomHomePagesTableModel::RemoveWithoutNotification(size_t index) {
+  DCHECK(index < RowCount());
   Entry* entry = &(entries_[index]);
   // Cancel any pending load requests now so we don't deref a bogus pointer when
   // we get the loaded notification.
@@ -142,10 +144,10 @@ void CustomHomePagesTableModel::RemoveWithoutNotification(int index) {
     task_tracker_.TryCancel(entry->task_id);
     entry->task_id = base::CancelableTaskTracker::kBadTaskId;
   }
-  entries_.erase(entries_.begin() + static_cast<size_t>(index));
+  entries_.erase(entries_.begin() + index);
 }
 
-void CustomHomePagesTableModel::Remove(int index) {
+void CustomHomePagesTableModel::Remove(size_t index) {
   RemoveWithoutNotification(index);
   if (observer_)
     observer_->OnItemsRemoved(index, 1);
@@ -158,7 +160,7 @@ void CustomHomePagesTableModel::SetToCurrentlyOpenPages(
     RemoveWithoutNotification(0);
 
   // Add tabs from appropriate browser windows.
-  int add_index = 0;
+  size_t add_index = 0;
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldIncludeBrowser(browser))
       continue;
@@ -185,17 +187,17 @@ std::vector<GURL> CustomHomePagesTableModel::GetURLs() {
   return urls;
 }
 
-int CustomHomePagesTableModel::RowCount() {
-  return static_cast<int>(entries_.size());
+size_t CustomHomePagesTableModel::RowCount() {
+  return entries_.size();
 }
 
-std::u16string CustomHomePagesTableModel::GetText(int row, int column_id) {
+std::u16string CustomHomePagesTableModel::GetText(size_t row, int column_id) {
   DCHECK(column_id == 0);
-  DCHECK(row >= 0 && row < RowCount());
+  DCHECK(row < RowCount());
   return entries_[row].title.empty() ? FormattedURL(row) : entries_[row].title;
 }
 
-std::u16string CustomHomePagesTableModel::GetTooltip(int row) {
+std::u16string CustomHomePagesTableModel::GetTooltip(size_t row) {
   return entries_[row].title.empty()
              ? std::u16string()
              : l10n_util::GetStringFUTF16(IDS_SETTINGS_ON_STARTUP_PAGE_TOOLTIP,
@@ -284,11 +286,11 @@ void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
   if (result.success && !result.row.title().empty()) {
     entry->title = result.row.title();
     if (observer_ && observable)
-      observer_->OnItemsChanged(static_cast<int>(entry_index), 1);
+      observer_->OnItemsChanged(entry_index, 1);
   }
 }
 
-std::u16string CustomHomePagesTableModel::FormattedURL(int row) const {
+std::u16string CustomHomePagesTableModel::FormattedURL(size_t row) const {
   std::u16string url = url_formatter::FormatUrl(entries_[row].url);
   url = base::i18n::GetDisplayStringInLTRDirectionality(url);
   return url;

@@ -11,21 +11,21 @@
 #include "ui/base/models/table_model_observer.h"
 #include "ui/gfx/image/image_skia.h"
 
-TestTableModel::TestTableModel(int row_count)
+TestTableModel::TestTableModel(size_t row_count)
     : row_count_(row_count), observer_(nullptr) {}
 
 TestTableModel::~TestTableModel() = default;
 
-int TestTableModel::RowCount() {
+size_t TestTableModel::RowCount() {
   return row_count_;
 }
 
-std::u16string TestTableModel::GetText(int row, int column_id) {
+std::u16string TestTableModel::GetText(size_t row, int column_id) {
   return base::ASCIIToUTF16(base::NumberToString(row) + "x" +
                             base::NumberToString(column_id));
 }
 
-ui::ImageModel TestTableModel::GetIcon(int row) {
+ui::ImageModel TestTableModel::GetIcon(size_t row) {
   SkBitmap bitmap;
   bitmap.setInfo(SkImageInfo::MakeN32Premul(16, 16));
   return ui::ImageModel::FromImageSkia(

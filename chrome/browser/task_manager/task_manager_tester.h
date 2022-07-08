@@ -36,27 +36,27 @@ class TaskManagerTester {
       const base::RepeatingClosure& on_resource_change);
 
   // Get the number of rows currently in the task manager.
-  int GetRowCount();
+  size_t GetRowCount();
 
   // Get the title text of a particular |row|.
-  std::u16string GetRowTitle(int row);
+  std::u16string GetRowTitle(size_t row);
 
   // Hide or show a column. If a column is not visible its stats are not
   // necessarily gathered.
   void ToggleColumnVisibility(ColumnSpecifier column);
 
   // Get the value of a column as an int64. Memory values are in bytes.
-  int64_t GetColumnValue(ColumnSpecifier column, int row);
+  int64_t GetColumnValue(ColumnSpecifier column, size_t row);
 
   // If |row| is associated with a WebContents, return its SessionID. Otherwise,
   // return SessionID::InvalidValue().
-  SessionID GetTabId(int row);
+  SessionID GetTabId(size_t row);
 
   // Kill the process of |row|.
-  void Kill(int row);
+  void Kill(size_t row);
 
   // Activate the task of |row|.
-  void Activate(int row);
+  void Activate(size_t row);
 
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.

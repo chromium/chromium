@@ -606,11 +606,11 @@ void DesignerExample::CreateView(const ui::Event& event) {
   designer_panel_->AddChildView(std::move(new_view));
 }
 
-int DesignerExample::RowCount() {
+size_t DesignerExample::RowCount() {
   return selected_ ? selected_members_.size() : 0;
 }
 
-std::u16string DesignerExample::GetText(int row, int column_id) {
+std::u16string DesignerExample::GetText(size_t row, int column_id) {
   if (selected_) {
     ui::metadata::MemberMetaDataBase* member = selected_members_[row];
     if (column_id == 0)

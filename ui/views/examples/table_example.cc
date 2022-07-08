@@ -111,14 +111,11 @@ void TableExample::CreateExampleView(View* container) {
       .BuildChildren();
 }
 
-int TableExample::RowCount() {
+size_t TableExample::RowCount() {
   return 10;
 }
 
-std::u16string TableExample::GetText(int row, int column_id) {
-  if (row == -1)
-    return std::u16string();
-
+std::u16string TableExample::GetText(size_t row, int column_id) {
   const char* const cells[5][4] = {
       {"Orange", "Orange", "South America", "$5"},
       {"Apple", "Green", "Canada", "$3"},
@@ -129,16 +126,13 @@ std::u16string TableExample::GetText(int row, int column_id) {
   return ASCIIToUTF16(cells[row % 5][column_id]);
 }
 
-ui::ImageModel TableExample::GetIcon(int row) {
+ui::ImageModel TableExample::GetIcon(size_t row) {
   SkBitmap row_icon = row % 2 ? icon1_ : icon2_;
   return ui::ImageModel::FromImageSkia(
       gfx::ImageSkia::CreateFrom1xBitmap(row_icon));
 }
 
-std::u16string TableExample::GetTooltip(int row) {
-  if (row == -1)
-    return std::u16string();
-
+std::u16string TableExample::GetTooltip(size_t row) {
   const char* const tooltips[5] = {
       "Orange - Orange you glad I didn't say banana?",
       "Apple - An apple a day keeps the doctor away",

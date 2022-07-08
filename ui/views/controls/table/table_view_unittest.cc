@@ -169,34 +169,34 @@ class TestTableModel2 : public ui::TableModel {
   TestTableModel2& operator=(const TestTableModel2&) = delete;
 
   // Adds a new row at index |row| with values |c1_value| and |c2_value|.
-  void AddRow(int row, int c1_value, int c2_value);
+  void AddRow(size_t row, int c1_value, int c2_value);
 
   // Adds new rows starting from |row| to |row| + |length| with the value
   // of |row| times the |value_multiplier|. The |value_multiplier| can be used
   // to distinguish these rows from the rest.
-  void AddRows(int row, int length, int value_multiplier);
+  void AddRows(size_t row, size_t length, int value_multiplier);
 
   // Removes the row at index |row|.
-  void RemoveRow(int row);
+  void RemoveRow(size_t row);
 
   // Removes all the rows starting from |row| to |row| + |length|.
-  void RemoveRows(int row, int length);
+  void RemoveRows(size_t row, size_t length);
 
   // Changes the values of the row at |row|.
-  void ChangeRow(int row, int c1_value, int c2_value);
+  void ChangeRow(size_t row, int c1_value, int c2_value);
 
   // Reorders rows in the model.
-  void MoveRows(int row_from, int length, int row_to);
+  void MoveRows(size_t row_from, size_t length, size_t row_to);
 
   // Allows overriding the tooltip for testing.
   void SetTooltip(const std::u16string& tooltip);
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
-  std::u16string GetTooltip(int row) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
+  std::u16string GetTooltip(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
-  int CompareValues(int row1, int row2, int column_id) override;
+  int CompareValues(size_t row1, size_t row2, int column_id) override;
 
  private:
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
@@ -214,8 +214,8 @@ TestTableModel2::TestTableModel2() {
   AddRow(3, 3, 0);
 }
 
-void TestTableModel2::AddRow(int row, int c1_value, int c2_value) {
-  DCHECK(row >= 0 && row <= static_cast<int>(rows_.size()));
+void TestTableModel2::AddRow(size_t row, int c1_value, int c2_value) {
+  DCHECK(row <= rows_.size());
   std::vector<int> new_row;
   new_row.push_back(c1_value);
   new_row.push_back(c2_value);
@@ -224,14 +224,13 @@ void TestTableModel2::AddRow(int row, int c1_value, int c2_value) {
     observer_->OnItemsAdded(row, 1);
 }
 
-void TestTableModel2::AddRows(int row, int length, int value_multiplier) {
-  DCHECK(row >= 0 && length >= 0);
+void TestTableModel2::AddRows(size_t row, size_t length, int value_multiplier) {
   // Do not DCHECK here since we are testing the OnItemsAdded callback.
-  if (row >= 0 && row <= static_cast<int>(rows_.size())) {
-    for (int i = row; i < row + length; i++) {
+  if (row <= rows_.size()) {
+    for (size_t i = row; i < row + length; i++) {
       std::vector<int> new_row;
-      new_row.push_back(i + value_multiplier);
-      new_row.push_back(i + value_multiplier);
+      new_row.push_back(static_cast<int>(i) + value_multiplier);
+      new_row.push_back(static_cast<int>(i) + value_multiplier);
       rows_.insert(rows_.begin() + i, new_row);
     }
   }
@@ -240,39 +239,36 @@ void TestTableModel2::AddRows(int row, int length, int value_multiplier) {
     observer_->OnItemsAdded(row, length);
 }
 
-void TestTableModel2::RemoveRow(int row) {
-  DCHECK(row >= 0 && row < static_cast<int>(rows_.size()));
+void TestTableModel2::RemoveRow(size_t row) {
+  DCHECK(row < rows_.size());
   rows_.erase(rows_.begin() + row);
   if (observer_)
     observer_->OnItemsRemoved(row, 1);
 }
 
-void TestTableModel2::RemoveRows(int row, int length) {
-  DCHECK(row >= 0 && length >= 0);
-  if (row >= 0 && row <= static_cast<int>(rows_.size())) {
-    rows_.erase(rows_.begin() + row,
-                rows_.begin() + base::clamp(row + length, 0,
-                                            static_cast<int>(rows_.size())));
+void TestTableModel2::RemoveRows(size_t row, size_t length) {
+  if (row <= rows_.size()) {
+    rows_.erase(
+        rows_.begin() + row,
+        rows_.begin() + base::clamp(row + length, size_t{0}, rows_.size()));
   }
 
   if (observer_ && length > 0)
     observer_->OnItemsRemoved(row, length);
 }
 
-void TestTableModel2::ChangeRow(int row, int c1_value, int c2_value) {
-  DCHECK(row >= 0 && row < static_cast<int>(rows_.size()));
+void TestTableModel2::ChangeRow(size_t row, int c1_value, int c2_value) {
+  DCHECK(row < rows_.size());
   rows_[row][0] = c1_value;
   rows_[row][1] = c2_value;
   if (observer_)
     observer_->OnItemsChanged(row, 1);
 }
 
-void TestTableModel2::MoveRows(int row_from, int length, int row_to) {
-  DCHECK_GT(length, 0);
-  DCHECK_GE(row_from, 0);
-  DCHECK_LE(row_from + length, static_cast<int>(rows_.size()));
-  DCHECK_GE(row_to, 0);
-  DCHECK_LE(row_to + length, static_cast<int>(rows_.size()));
+void TestTableModel2::MoveRows(size_t row_from, size_t length, size_t row_to) {
+  DCHECK_GT(length, 0u);
+  DCHECK_LE(row_from + length, rows_.size());
+  DCHECK_LE(row_to + length, rows_.size());
 
   auto old_start = rows_.begin() + row_from;
   std::vector<std::vector<int>> temp(old_start, old_start + length);
@@ -286,15 +282,15 @@ void TestTableModel2::SetTooltip(const std::u16string& tooltip) {
   tooltip_ = tooltip;
 }
 
-int TestTableModel2::RowCount() {
-  return static_cast<int>(rows_.size());
+size_t TestTableModel2::RowCount() {
+  return rows_.size();
 }
 
-std::u16string TestTableModel2::GetText(int row, int column_id) {
+std::u16string TestTableModel2::GetText(size_t row, int column_id) {
   return base::NumberToString16(rows_[row][column_id]);
 }
 
-std::u16string TestTableModel2::GetTooltip(int row) {
+std::u16string TestTableModel2::GetTooltip(size_t row) {
   return tooltip_ ? *tooltip_ : u"Tooltip" + base::NumberToString16(row);
 }
 
@@ -302,7 +298,7 @@ void TestTableModel2::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
 }
 
-int TestTableModel2::CompareValues(int row1, int row2, int column_id) {
+int TestTableModel2::CompareValues(size_t row1, size_t row2, int column_id) {
   return rows_[row1][column_id] - rows_[row2][column_id];
 }
 

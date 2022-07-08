@@ -55,9 +55,9 @@ class TabListModel : public ui::TableModel,
       base::RepeatingCallback<void(size_t)> preview_updated_callback);
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int row, int column) override;
-  ui::ImageModel GetIcon(int row) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column) override;
+  ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // DesktopMediaListController::SourceListListener:
@@ -85,17 +85,17 @@ TabListModel::TabListModel(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-int TabListModel::RowCount() {
+size_t TabListModel::RowCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return base::checked_cast<int>(controller_->GetSourceCount());
+  return controller_->GetSourceCount();
 }
 
-std::u16string TabListModel::GetText(int row, int column) {
+std::u16string TabListModel::GetText(size_t row, int column) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return controller_->GetSource(row).name;
 }
 
-ui::ImageModel TabListModel::GetIcon(int row) {
+ui::ImageModel TabListModel::GetIcon(size_t row) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ui::ImageModel::FromImageSkia(controller_->GetSource(row).thumbnail);
 }

@@ -70,8 +70,10 @@ class TaskManagerMacTest : public InProcessBrowserTest {
                                : nullptr;
   }
 
-  int TableFirstSelectedRow() const {
-    return [[GetTable() selectedRowIndexes] firstIndex];
+  absl::optional<size_t> TableFirstSelectedRow() const {
+    int index = [[GetTable() selectedRowIndexes] firstIndex];
+    return (index < 0) ? absl::nullopt
+                       : absl::make_optional(static_cast<size_t>(index));
   }
 
   void PressKillButton() {
@@ -107,15 +109,15 @@ class TaskManagerMacTest : public InProcessBrowserTest {
 
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
-  int FindRowForTab(content::WebContents* tab) {
+  absl::optional<size_t> FindRowForTab(content::WebContents* tab) {
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
         TaskManagerTester::Create(base::RepeatingClosure());
-    for (int i = 0; i < tester->GetRowCount(); ++i) {
+    for (size_t i = 0; i < tester->GetRowCount(); ++i) {
       if (tester->GetTabId(i) == tab_id)
         return i;
     }
-    return -1;
+    return absl::nullopt;
   }
 };
 
@@ -219,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   // Wait for their titles to appear in the TaskManager. There should be three
   // rows.
   auto pattern = browsertest_util::MatchTab("Title *");
-  int rows = 3;
+  size_t rows = 3;
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(rows, pattern));
 
   // Find the three tabs we set up, in TaskManager model order. Because we have
@@ -227,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   std::unique_ptr<TaskManagerTester> tester =
       TaskManagerTester::Create(base::RepeatingClosure());
   std::vector<content::WebContents*> tabs;
-  for (int i = 0; i < tester->GetRowCount(); ++i) {
+  for (size_t i = 0; i < tester->GetRowCount(); ++i) {
     // Filter based on our title.
     if (!base::MatchPattern(tester->GetRowTitle(i), pattern))
       continue;
@@ -239,7 +241,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
 
   // Select the middle row, and store its tab id.
   [GetTable()
-          selectRowIndexes:[NSIndexSet indexSetWithIndex:FindRowForTab(tabs[1])]
+          selectRowIndexes:[NSIndexSet
+                               indexSetWithIndex:FindRowForTab(tabs[1]).value()]
       byExtendingSelection:NO];
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[1]));
   EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
@@ -281,11 +284,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   }
 
   // No row should now be selected.
-  ASSERT_EQ(-1, TableFirstSelectedRow());
+  ASSERT_FALSE(TableFirstSelectedRow().has_value());
 
   // Now select tabs[2].
   [GetTable()
-          selectRowIndexes:[NSIndexSet indexSetWithIndex:FindRowForTab(tabs[2])]
+          selectRowIndexes:[NSIndexSet
+                               indexSetWithIndex:FindRowForTab(tabs[2]).value()]
       byExtendingSelection:NO];
 
   // Focus and reload one of the sad tabs. It should reappear in the TM. The

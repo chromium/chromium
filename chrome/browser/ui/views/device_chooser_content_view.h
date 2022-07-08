@@ -42,10 +42,10 @@ class DeviceChooserContentView : public views::View,
   gfx::Size GetMinimumSize() const override;
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
-  ui::ImageModel GetIcon(int row) override;
+  ui::ImageModel GetIcon(size_t row) override;
 
   // permissions::ChooserController::View:
   void OnOptionsInitialized() override;

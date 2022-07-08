@@ -27,21 +27,21 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   static constexpr int kIconSize = 16;
 
   // Number of rows in the model.
-  virtual int RowCount() = 0;
+  virtual size_t RowCount() = 0;
 
   // Returns the value at a particular location in text.
-  virtual std::u16string GetText(int row, int column_id) = 0;
+  virtual std::u16string GetText(size_t row, int column_id) = 0;
 
   // Returns the small icon (|kIconSize| x |kIconSize|) that should be displayed
   // in the first column before the text. This is only used when the TableView
   // was created with the ICON_AND_TEXT table type. An empty ImageModel if there
   // is no image.
-  virtual ui::ImageModel GetIcon(int row);
+  virtual ui::ImageModel GetIcon(size_t row);
 
   // Returns the tooltip, if any, to show for a particular row.  If there are
   // multiple columns in the row, this will only be shown when hovering over
   // column zero.
-  virtual std::u16string GetTooltip(int row);
+  virtual std::u16string GetTooltip(size_t row);
 
   // Sets the observer for the model. The TableView should NOT take ownership
   // of the observer.
@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   //
   // This implementation does a case insensitive locale specific string
   // comparison.
-  virtual int CompareValues(int row1, int row2, int column_id);
+  virtual int CompareValues(size_t row1, size_t row2, int column_id);
 
   // Reset the collator.
   void ClearCollator();

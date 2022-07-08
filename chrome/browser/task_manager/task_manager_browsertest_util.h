@@ -43,7 +43,7 @@ enum class ColumnSpecifier {
 // If the wait times out, this test will trigger a gtest failure. To get
 // meaningful errors, tests should wrap invocations of this function with
 // ASSERT_NO_FATAL_FAILURE().
-void WaitForTaskManagerRows(int resource_count,
+void WaitForTaskManagerRows(size_t resource_count,
                             const std::u16string& title_pattern);
 
 // Make the indicated TaskManager column be visible.

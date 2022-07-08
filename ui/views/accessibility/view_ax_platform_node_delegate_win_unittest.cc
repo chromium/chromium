@@ -557,12 +557,9 @@ class TestTableModel : public ui::TableModel {
   TestTableModel& operator=(const TestTableModel&) = delete;
 
   // ui::TableModel:
-  int RowCount() override { return 3; }
+  size_t RowCount() override { return 3; }
 
-  std::u16string GetText(int row, int column_id) override {
-    if (row == -1)
-      return std::u16string();
-
+  std::u16string GetText(size_t row, int column_id) override {
     const char* const cells[5][3] = {
         {"Australia", "24,584,620", "1,323,421,072,479"},
         {"Spain", "46,647,428", "1,314,314,164,402"},

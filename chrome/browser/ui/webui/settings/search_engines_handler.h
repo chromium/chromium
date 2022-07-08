@@ -37,9 +37,9 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   // ui::TableModelObserver implementation.
   void OnModelChanged() override;
-  void OnItemsChanged(int start, int length) override;
-  void OnItemsAdded(int start, int length) override;
-  void OnItemsRemoved(int start, int length) override;
+  void OnItemsChanged(size_t start, size_t length) override;
+  void OnItemsAdded(size_t start, size_t length) override;
+  void OnItemsRemoved(size_t start, size_t length) override;
 
   // EditSearchEngineControllerDelegate implementation.
   void OnEditedKeyword(TemplateURL* template_url,
@@ -91,7 +91,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   void HandleSearchEngineEditCompleted(const base::Value::List& args);
 
   // Returns a dictionary to pass to WebUI representing the given search engine.
-  base::Value::Dict CreateDictionaryForEngine(int index, bool is_default);
+  base::Value::Dict CreateDictionaryForEngine(size_t index, bool is_default);
 
   // Returns a dictionary to pass to WebUI representing the extension.
   base::DictionaryValue* CreateDictionaryForExtension(

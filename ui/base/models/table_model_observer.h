@@ -17,19 +17,20 @@ class COMPONENT_EXPORT(UI_BASE) TableModelObserver {
   virtual void OnModelChanged() = 0;
 
   // Invoked when a range of items has changed.
-  virtual void OnItemsChanged(int start, int length) = 0;
+  virtual void OnItemsChanged(size_t start, size_t length) = 0;
 
   // Invoked when new items have been added.
-  virtual void OnItemsAdded(int start, int length) = 0;
+  virtual void OnItemsAdded(size_t start, size_t length) = 0;
 
   // Invoked when a range of items has been removed.
-  virtual void OnItemsRemoved(int start, int length) = 0;
+  virtual void OnItemsRemoved(size_t start, size_t length) = 0;
 
   // Invoked when a range of items has been moved to a different position.
-  virtual void OnItemsMoved(int old_start, int length, int new_start) {}
+  virtual void OnItemsMoved(size_t old_start, size_t length, size_t new_start) {
+  }
 
  protected:
-  virtual ~TableModelObserver() {}
+  virtual ~TableModelObserver() = default;
 };
 
 }  // namespace ui

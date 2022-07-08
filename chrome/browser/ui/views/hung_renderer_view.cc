@@ -108,18 +108,18 @@ void HungPagesTableModel::RestartHangMonitorTimeout() {
 ///////////////////////////////////////////////////////////////////////////////
 // HungPagesTableModel, ui::TableModel implementation:
 
-int HungPagesTableModel::RowCount() {
-  return static_cast<int>(tab_observers_.size());
+size_t HungPagesTableModel::RowCount() {
+  return tab_observers_.size();
 }
 
-std::u16string HungPagesTableModel::GetText(int row, int column_id) {
-  DCHECK(row >= 0 && row < RowCount());
+std::u16string HungPagesTableModel::GetText(size_t row, int column_id) {
+  DCHECK(row < RowCount());
   return GetHungWebContentsTitle(tab_observers_[row]->web_contents(),
                                  render_widget_host_->GetProcess());
 }
 
-ui::ImageModel HungPagesTableModel::GetIcon(int row) {
-  DCHECK(row >= 0 && row < RowCount());
+ui::ImageModel HungPagesTableModel::GetIcon(size_t row) {
+  DCHECK(row < RowCount());
   return ui::ImageModel::FromImage(
       favicon::ContentFaviconDriver::FromWebContents(
           tab_observers_[row]->web_contents())
@@ -165,7 +165,7 @@ void HungPagesTableModel::TabDestroyed(WebContentsObserverImpl* tab) {
   DCHECK(index < tab_observers_.size());
   tab_observers_.erase(tab_observers_.begin() + index);
   if (observer_)
-    observer_->OnItemsRemoved(static_cast<int>(index), 1);
+    observer_->OnItemsRemoved(index, 1);
 
   // Notify the delegate.
   delegate_->TabDestroyed();

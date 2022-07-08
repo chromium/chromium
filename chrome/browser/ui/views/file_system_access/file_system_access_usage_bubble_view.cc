@@ -162,7 +162,8 @@ class CollapsibleListView : public views::View {
       label_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
-          model->RowCount(), first_item, second_item);
+          base::checked_cast<int64_t>(model->RowCount()), first_item,
+          second_item);
     }
     auto* label = label_container->AddChildView(std::make_unique<views::Label>(
         label_text, CONTEXT_DIALOG_BODY_TEXT_SMALL,
@@ -249,31 +250,30 @@ FileSystemAccessUsageBubbleView::FilePathListModel::FilePathListModel(
 FileSystemAccessUsageBubbleView::FilePathListModel::~FilePathListModel() =
     default;
 
-int FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
+size_t FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
   return files_.size() + directories_.size();
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
-    int row,
+    size_t row,
     int column_id) {
-  if (static_cast<size_t>(row) < files_.size())
+  if (row < files_.size())
     return file_system_access_ui_helper::GetPathForDisplay(files_[row]);
   return file_system_access_ui_helper::GetPathForDisplay(
       directories_[row - files_.size()]);
 }
 
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
-    int row) {
+    size_t row) {
   return ui::ImageModel::FromVectorIcon(
-      static_cast<size_t>(row) < files_.size()
-          ? vector_icons::kInsertDriveFileOutlineIcon
-          : vector_icons::kFolderOpenIcon,
+      row < files_.size() ? vector_icons::kInsertDriveFileOutlineIcon
+                          : vector_icons::kFolderOpenIcon,
       ui::kColorIcon, kIconSize);
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
-    int row) {
-  if (static_cast<size_t>(row) < files_.size())
+    size_t row) {
+  if (row < files_.size())
     return files_[row].LossyDisplayName();
   return directories_[row - files_.size()].LossyDisplayName();
 }

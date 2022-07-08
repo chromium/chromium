@@ -37,7 +37,7 @@ namespace {
 // output, to assist debugging.
 class ResourceChangeObserver {
  public:
-  ResourceChangeObserver(int required_count,
+  ResourceChangeObserver(size_t required_count,
                          const std::u16string& title_pattern,
                          ColumnSpecifier column_specifier,
                          size_t min_column_value)
@@ -85,9 +85,9 @@ class ResourceChangeObserver {
 
   bool IsSatisfied() { return CountMatches() == required_count_; }
 
-  int CountMatches() {
-    int match_count = 0;
-    for (int i = 0; i < task_manager_tester_->GetRowCount(); i++) {
+  size_t CountMatches() {
+    size_t match_count = 0;
+    for (size_t i = 0; i < task_manager_tester_->GetRowCount(); i++) {
       if (!base::MatchPattern(task_manager_tester_->GetRowTitle(i),
                               title_pattern_))
         continue;
@@ -146,7 +146,7 @@ class ResourceChangeObserver {
     task_manager_state_dump << "\nCurrently there are " << CountMatches()
                             << " matches.";
     task_manager_state_dump << "\nCurrent Task Manager Model is:";
-    for (int i = 0; i < task_manager_tester_->GetRowCount(); i++) {
+    for (size_t i = 0; i < task_manager_tester_->GetRowCount(); i++) {
       task_manager_state_dump
           << "\n  > " << std::setw(40) << std::left
           << base::UTF16ToASCII(task_manager_tester_->GetRowTitle(i));
@@ -159,7 +159,7 @@ class ResourceChangeObserver {
   }
 
   std::unique_ptr<TaskManagerTester> task_manager_tester_;
-  const int required_count_;
+  const size_t required_count_;
   const std::u16string title_pattern_;
   const ColumnSpecifier column_specifier_;
   const int64_t min_column_value_;
@@ -169,20 +169,20 @@ class ResourceChangeObserver {
 
 }  // namespace
 
-void WaitForTaskManagerRows(int required_count,
+void WaitForTaskManagerRows(size_t required_count,
                             const std::u16string& title_pattern) {
-  const int column_value_dont_care = 0;
+  constexpr size_t kColumnValueDontCare = 0;
   ResourceChangeObserver observer(required_count, title_pattern,
                                   ColumnSpecifier::COLUMN_NONE,
-                                  column_value_dont_care);
+                                  kColumnValueDontCare);
   observer.RunUntilSatisfied();
 }
 
 void WaitForTaskManagerStatToExceed(const std::u16string& title_pattern,
                                     ColumnSpecifier column_getter,
                                     size_t min_column_value) {
-  const int wait_for_one_match = 1;
-  ResourceChangeObserver observer(wait_for_one_match, title_pattern,
+  constexpr size_t kWaitForOneMatch = 1;
+  ResourceChangeObserver observer(kWaitForOneMatch, title_pattern,
                                   column_getter, min_column_value);
   observer.RunUntilSatisfied();
 }

@@ -266,10 +266,10 @@ class VIEWS_EXPORT TableView : public views::View,
 
   // ui::TableModelObserver overrides:
   void OnModelChanged() override;
-  void OnItemsChanged(int start, int length) override;
-  void OnItemsAdded(int start, int length) override;
-  void OnItemsRemoved(int start, int length) override;
-  void OnItemsMoved(int old_start, int length, int new_start) override;
+  void OnItemsChanged(size_t start, size_t length) override;
+  void OnItemsAdded(size_t start, size_t length) override;
+  void OnItemsRemoved(size_t start, size_t length) override;
+  void OnItemsMoved(size_t old_start, size_t length, size_t new_start) override;
 
  protected:
   // View overrides:

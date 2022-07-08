@@ -31,7 +31,7 @@ int WidthForContent(const gfx::FontList& header_font_list,
     width =
         gfx::GetStringWidth(column.title, header_font_list) + header_padding;
 
-  for (int i = 0, row_count = model->RowCount(); i < row_count; ++i) {
+  for (size_t i = 0, row_count = model->RowCount(); i < row_count; ++i) {
     const int cell_width =
         gfx::GetStringWidth(model->GetText(i, column.id), content_font_list);
     width = std::max(width, cell_width);

@@ -58,11 +58,11 @@ class KeywordEditorControllerTest : public testing::Test,
 
   void OnModelChanged() override { model_changed_count_++; }
 
-  void OnItemsChanged(int start, int length) override {}
+  void OnItemsChanged(size_t start, size_t length) override {}
 
-  void OnItemsAdded(int start, int length) override {}
+  void OnItemsAdded(size_t start, size_t length) override {}
 
-  void OnItemsRemoved(int start, int length) override {}
+  void OnItemsRemoved(size_t start, size_t length) override {}
 
   void VerifyChanged() {
     ASSERT_EQ(1, model_changed_count_);
@@ -105,7 +105,7 @@ class KeywordEditorControllerNoWebDataTest
 
 // Tests adding a TemplateURL.
 TEST_F(KeywordEditorControllerTest, Add) {
-  int original_row_count = table_model()->RowCount();
+  size_t original_row_count = table_model()->RowCount();
   controller()->AddTemplateURL(kA, kB, "http://c");
 
   // Verify the observer was notified.
@@ -274,7 +274,7 @@ TEST_F(KeywordEditorControllerNoWebDataTest, MakeDefaultNoWebData) {
 // Mutates the TemplateURLService and make sure table model is updating
 // appropriately.
 TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
-  int original_row_count = table_model()->RowCount();
+  size_t original_row_count = table_model()->RowCount();
 
   TemplateURLData data;
   data.SetShortName(u"b");
@@ -286,5 +286,5 @@ TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
 
   // And should contain the newly added TemplateURL.
   ASSERT_EQ(original_row_count + 1, table_model()->RowCount());
-  ASSERT_GE(table_model()->IndexOfTemplateURL(turl), 0);
+  ASSERT_TRUE(table_model()->IndexOfTemplateURL(turl).has_value());
 }

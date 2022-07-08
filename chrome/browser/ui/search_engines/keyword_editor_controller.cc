@@ -39,8 +39,9 @@ void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
                                                 const std::u16string& keyword,
                                                 const std::string& url) {
   DCHECK(!url.empty());
-  const int index = table_model_->IndexOfTemplateURL(template_url);
-  if (index == -1) {
+  const absl::optional<size_t> index =
+      table_model_->IndexOfTemplateURL(template_url);
+  if (!index.has_value()) {
     // Will happen if url was deleted out from under us while the user was
     // editing it.
     return;
@@ -51,7 +52,7 @@ void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
       (template_url->keyword() == keyword) && (template_url->url() == url))
     return;
 
-  table_model_->ModifyTemplateURL(index, title, keyword, url);
+  table_model_->ModifyTemplateURL(index.value(), title, keyword, url);
 
   base::RecordAction(UserMetricsAction("KeywordEditor_ModifiedKeyword"));
 }

@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/table_model.h"
 
 class TemplateURL;
@@ -42,54 +43,54 @@ class TemplateURLTableModel : public ui::TableModel,
   void Reload();
 
   // ui::TableModel overrides.
-  int RowCount() override;
-  std::u16string GetText(int row, int column) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // Removes the entry at the specified index.
-  void Remove(int index);
+  void Remove(size_t index);
 
   // Adds a new entry at the specified index.
-  void Add(int index,
+  void Add(size_t index,
            const std::u16string& short_name,
            const std::u16string& keyword,
            const std::string& url);
 
   // Update the entry at the specified index.
-  void ModifyTemplateURL(int index,
+  void ModifyTemplateURL(size_t index,
                          const std::u16string& title,
                          const std::u16string& keyword,
                          const std::string& url);
 
   // Reloads the icon at the specified index.
-  void ReloadIcon(int index);
+  void ReloadIcon(size_t index);
 
   // Returns the TemplateURL at the specified index.
-  TemplateURL* GetTemplateURL(int index);
+  TemplateURL* GetTemplateURL(size_t index);
 
-  // Returns the index of the TemplateURL, or -1 if it the TemplateURL is not
-  // found.
-  int IndexOfTemplateURL(const TemplateURL* template_url);
+  // Returns the index of the TemplateURL, or nullopt if it the TemplateURL is
+  // not found.
+  absl::optional<size_t> IndexOfTemplateURL(const TemplateURL* template_url);
 
   // Make the TemplateURL at |index| the default.  Returns the new index, or -1
   // if the index is invalid or it is already the default.
-  void MakeDefaultTemplateURL(int index);
+  void MakeDefaultTemplateURL(size_t index);
 
   // Activates the TemplateURL at the specified index if `is_active` is true and
   // deactivates if false. When the TemplateURL is active, it can be invoked by
   // keyword via the omnibox.
-  void SetIsActiveTemplateURL(int index, bool is_active);
+  void SetIsActiveTemplateURL(size_t index, bool is_active);
 
   // Returns the index of the last entry shown in the search engines group.
-  int last_search_engine_index() const { return last_search_engine_index_; }
+  size_t last_search_engine_index() const { return last_search_engine_index_; }
 
   // Returns the index of the last entry shown in the active search engines
   // group.
-  int last_active_engine_index() const { return last_active_engine_index_; }
+  size_t last_active_engine_index() const { return last_active_engine_index_; }
 
   // Returns the index of the last entry shown in the other search engines
   // group.
-  int last_other_engine_index() const { return last_other_engine_index_; }
+  size_t last_other_engine_index() const { return last_other_engine_index_; }
 
  private:
   // TemplateURLServiceObserver notification.
@@ -105,16 +106,16 @@ class TemplateURLTableModel : public ui::TableModel,
 
   // Index of the last search engine in entries_. This is used to determine the
   // group boundaries.
-  int last_search_engine_index_;
+  size_t last_search_engine_index_;
 
   // Index of the last active engine in entries_. Engines are active if they've
   // been used or manually added/modified by the user. This is used to determine
   // the group boundaries.
-  int last_active_engine_index_;
+  size_t last_active_engine_index_;
 
   // Index of the last other engine in entries_. This is used to determine the
   // group boundaries.
-  int last_other_engine_index_;
+  size_t last_other_engine_index_;
 };
 
 

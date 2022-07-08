@@ -149,15 +149,13 @@ gfx::Size DeviceChooserContentView::GetMinimumSize() const {
   return gfx::Size();
 }
 
-int DeviceChooserContentView::RowCount() {
-  return base::checked_cast<int>(chooser_controller_->NumOptions());
+size_t DeviceChooserContentView::RowCount() {
+  return chooser_controller_->NumOptions();
 }
 
-std::u16string DeviceChooserContentView::GetText(int row, int column_id) {
-  DCHECK_GE(row, 0);
+std::u16string DeviceChooserContentView::GetText(size_t row, int column_id) {
   DCHECK_LT(row, RowCount());
-  std::u16string text =
-      chooser_controller_->GetOption(static_cast<size_t>(row));
+  std::u16string text = chooser_controller_->GetOption(row);
   return chooser_controller_->IsPaired(row)
              ? l10n_util::GetStringFUTF16(
                    IDS_DEVICE_CHOOSER_DEVICE_NAME_AND_PAIRED_STATUS_TEXT, text)
@@ -166,9 +164,8 @@ std::u16string DeviceChooserContentView::GetText(int row, int column_id) {
 
 void DeviceChooserContentView::SetObserver(ui::TableModelObserver* observer) {}
 
-ui::ImageModel DeviceChooserContentView::GetIcon(int row) {
+ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   DCHECK(chooser_controller_->ShouldShowIconBeforeText());
-  DCHECK_GE(row, 0);
   DCHECK_LT(row, RowCount());
 
   if (chooser_controller_->IsConnected(row)) {
@@ -201,17 +198,17 @@ void DeviceChooserContentView::OnOptionsInitialized() {
 
 void DeviceChooserContentView::OnOptionAdded(size_t index) {
   is_initialized_ = true;
-  table_view_->OnItemsAdded(base::checked_cast<int>(index), 1);
+  table_view_->OnItemsAdded(index, 1);
   UpdateTableView();
 }
 
 void DeviceChooserContentView::OnOptionRemoved(size_t index) {
-  table_view_->OnItemsRemoved(base::checked_cast<int>(index), 1);
+  table_view_->OnItemsRemoved(index, 1);
   UpdateTableView();
 }
 
 void DeviceChooserContentView::OnOptionUpdated(size_t index) {
-  table_view_->OnItemsChanged(base::checked_cast<int>(index), 1);
+  table_view_->OnItemsChanged(index, 1);
   UpdateTableView();
 }
 

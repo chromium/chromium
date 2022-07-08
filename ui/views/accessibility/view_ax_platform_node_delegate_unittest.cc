@@ -82,12 +82,9 @@ class TestTableModel : public ui::TableModel {
   TestTableModel& operator=(const TestTableModel&) = delete;
 
   // ui::TableModel:
-  int RowCount() override { return 10; }
+  size_t RowCount() override { return 10; }
 
-  std::u16string GetText(int row, int column_id) override {
-    if (row == -1)
-      return std::u16string();
-
+  std::u16string GetText(size_t row, int column_id) override {
     const char* const cells[5][4] = {
         {"Orange", "Orange", "South america", "$5"},
         {"Apple", "Green", "Canada", "$3"},

@@ -44,13 +44,13 @@ class CustomHomePagesTableModel : public ui::TableModel {
   // Collect all entries indexed by |index_list|, and moves them to be right
   // before the element addressed by |insert_before|. Used by Drag&Drop.
   // Expects |index_list| to be ordered ascending.
-  void MoveURLs(int insert_before, const std::vector<int>& index_list);
+  void MoveURLs(size_t insert_before, const std::vector<size_t>& index_list);
 
   // Adds an entry at the specified index.
-  void Add(int index, const GURL& url);
+  void Add(size_t index, const GURL& url);
 
   // Removes the entry at the specified index.
-  void Remove(int index);
+  void Remove(size_t index);
 
   // Clears any entries and fills the list with pages currently opened in the
   // browser. |ignore_contents| is omitted from the open pages.
@@ -60,9 +60,9 @@ class CustomHomePagesTableModel : public ui::TableModel {
   std::vector<GURL> GetURLs();
 
   // TableModel overrides:
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
-  std::u16string GetTooltip(int row) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
+  std::u16string GetTooltip(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
@@ -94,13 +94,13 @@ class CustomHomePagesTableModel : public ui::TableModel {
 
   // Adds an entry at the specified index, but doesn't load the title or tell
   // the observer.
-  void AddWithoutNotification(int index, const GURL& url);
+  void AddWithoutNotification(size_t index, const GURL& url);
 
   // Removes the entry at the specified index, but doesn't tell the observer.
-  void RemoveWithoutNotification(int index);
+  void RemoveWithoutNotification(size_t index);
 
   // Returns the URL for a particular row, formatted for display to the user.
-  std::u16string FormattedURL(int row) const;
+  std::u16string FormattedURL(size_t row) const;
 
   // Set of entries we're showing.
   std::vector<Entry> entries_;
