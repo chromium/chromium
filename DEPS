@@ -774,11 +774,6 @@ deps = {
       'condition': 'checkout_ios',
   },
 
-  'src/ios/third_party/gcdwebserver/src': {
-      'url': Var('chromium_git') + '/external/github.com/swisspol/GCDWebServer.git' + '@' + '43555c66627f6ed44817855a0f6d465f559d30e0',
-      'condition': 'checkout_ios',
-  },
-
   'src/ios/third_party/material_components_ios/src': {
       'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '57836c735d1faf7c196b7e11119f93f321fe5a0c',
       'condition': 'checkout_ios',
