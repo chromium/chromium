@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
+#include "ui/base/cocoa/nswindow_test_util.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/hit_test.h"
@@ -1101,6 +1102,9 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
 
   // Ensure constraints are re-applied when completing a transition.
   native_widget_mac_->OnSizeConstraintsChanged();
+
+  ui::NSWindowFullscreenNotificationWaiter::NotifyFullscreenTransitionComplete(
+      native_widget_mac_->GetNativeWindow(), actual_fullscreen_state);
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
