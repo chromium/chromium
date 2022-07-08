@@ -1365,6 +1365,8 @@ component("ash") {
     "system/network/network_state_list_detailed_view.h",
     "system/network/network_tray_view.cc",
     "system/network/network_tray_view.h",
+    "system/network/network_utils.cc",
+    "system/network/network_utils.h",
     "system/network/sms_observer.cc",
     "system/network/sms_observer.h",
     "system/network/tray_network_state_model.cc",

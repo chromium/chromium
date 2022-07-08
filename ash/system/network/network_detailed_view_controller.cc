@@ -13,6 +13,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_view_controller.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/metrics/user_metrics.h"
@@ -169,6 +170,8 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
       if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
         return;
       }
+      RecordNetworkRowClickedAction(
+          NetworkRowClickedAction::kOpenSimUnlockDialog);
       Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
       return;
     }
@@ -177,6 +180,7 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
       base::RecordAction(
           UserMetricsAction("StatusArea_Network_ConnectConfigured"));
       LogUserNetworkEvent(*network.get());
+      RecordNetworkRowClickedAction(NetworkRowClickedAction::kConnectToNetwork);
       chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
       return;
     }
@@ -185,6 +189,8 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
   // If the network is no longer available or not connectable or configurable,
   // show the Settings UI.
   base::RecordAction(UserMetricsAction("StatusArea_Network_ConnectionDetails"));
+  RecordNetworkRowClickedAction(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage);
   Shell::Get()->system_tray_model()->client()->ShowNetworkSettings(
       network ? network->guid : std::string());
 }

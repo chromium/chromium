@@ -69340,6 +69340,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Had network 2-quiet for 2 seconds"/>
 </enum>
 
+<enum name="NetworkRowClickedAction">
+  <int value="0" label="Connect to Network"/>
+  <int value="1" label="Open Network settings page"/>
+  <int value="2" label="Open SIM unlock dialog"/>
+</enum>
+
 <enum name="NetworkSandboxState">
   <summary>
     The possible states for the network service sandbox. See
