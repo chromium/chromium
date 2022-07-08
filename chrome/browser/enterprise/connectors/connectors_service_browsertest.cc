@@ -49,11 +49,20 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kNormalAnalysisSettingsPref[] = R"([
+constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
   {
     "service_provider": "google",
     "enable": [
       {"url_list": ["*"], "tags": ["dlp", "malware"]}
+    ]
+  }
+])";
+
+constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "local_test",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp"]}
     ]
   }
 ])";
@@ -342,11 +351,12 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<AnalysisConnector, ManagementStatus>> {
+          std::tuple<AnalysisConnector, ManagementStatus, const char*>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
       : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {}
   AnalysisConnector connector() { return std::get<0>(GetParam()); }
+  const char* settings_value() { return std::get<2>(GetParam()); }
 
   // Returns the Value the "normal" reporting workflow uses to validate that it
   // is in sync with the information sent through analysis-reporting.
@@ -473,28 +483,38 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT),
         testing::Values(ManagementStatus::AFFILIATED,
                         ManagementStatus::UNAFFILIATED,
-                        ManagementStatus::UNMANAGED)));
+                        ManagementStatus::UNMANAGED),
+        testing::Values(kNormalCloudAnalysisSettingsPref,
+                        kNormalLocalAnalysisSettingsPref)));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
-           kNormalAnalysisSettingsPref, /*profile_scope*/ false);
+           settings_value(), /*profile_scope*/ false);
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
-           kNormalReportingSettingsPref, /*profile_scope*/ false);
+           settings_value(), /*profile_scope*/ false);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
   if (management_status() == ManagementStatus::UNMANAGED) {
-    ASSERT_FALSE(settings.has_value());
+    if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+      ASSERT_TRUE(settings.has_value());
+      ASSERT_TRUE(settings.value().cloud_or_local_settings.is_local_analysis());
+      ASSERT_EQ("test_path",
+                settings.value().cloud_or_local_settings.local_path());
+    } else {
+      ASSERT_FALSE(settings.has_value());
+    }
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-    ASSERT_EQ(kFakeBrowserDMToken,
-              settings.value().cloud_or_local_settings.dm_token());
+    if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+      ASSERT_EQ(kFakeBrowserDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
+      ValidateClientMetadata(*settings.value().client_metadata,
+                             /*profile_reporting*/ false);
+    }
     ASSERT_FALSE(settings.value().per_profile);
-    ValidateClientMetadata(*settings.value().client_metadata,
-                           /*profile_reporting*/ false);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -508,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
-           kNormalAnalysisSettingsPref);
+           settings_value());
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
            ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
            kNormalReportingSettingsPref);
@@ -518,15 +538,21 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
-    ASSERT_FALSE(settings.has_value());
+    if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+      ASSERT_TRUE(settings.has_value());
+      // TODO(b/238216275): Verify the metadata has the expected values.
+    } else {
+      ASSERT_FALSE(settings.has_value());
+    }
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-    ASSERT_EQ(kFakeBrowserDMToken,
-              settings.value().cloud_or_local_settings.dm_token());
+    if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+      ASSERT_EQ(kFakeBrowserDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
+      ValidateClientMetadata(*settings.value().client_metadata,
+                             /*profile_reporting*/ false);
+    }
     ASSERT_FALSE(settings.value().per_profile);
-    ValidateClientMetadata(*settings.value().client_metadata,
-                           /*profile_reporting*/ false);
   }
 #else
   std::string management_domain =
@@ -534,28 +560,40 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
           ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::UNAFFILIATED:
-      EXPECT_FALSE(settings.has_value());
+      if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+        ASSERT_TRUE(settings.has_value());
+        ASSERT_TRUE(
+            settings.value().cloud_or_local_settings.is_local_analysis());
+        ASSERT_EQ("test_path",
+                  settings.value().cloud_or_local_settings.local_path());
+      } else {
+        ASSERT_FALSE(settings.has_value());
+      }
       ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-      ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_or_local_settings.dm_token());
+      if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        ValidateClientMetadata(*settings.value().client_metadata,
+                               /*profile_reporting*/ true);
+      }
       ASSERT_TRUE(settings.value().per_profile);
-      ValidateClientMetadata(*settings.value().client_metadata,
-                             /*profile_reporting*/ true);
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-      ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_or_local_settings.dm_token());
-      ASSERT_TRUE(settings.value().per_profile);
       ASSERT_TRUE(settings.value().client_metadata);
-      ValidateClientMetadata(*settings.value().client_metadata,
-                             /*profile_reporting*/ true);
+      if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        ValidateClientMetadata(*settings.value().client_metadata,
+                               /*profile_reporting*/ true);
+      } else {
+        // TODO(b/238216275): Verify the metadata has the expected values.
+      }
+      ASSERT_TRUE(settings.value().per_profile);
       ASSERT_EQ(kDomain1, management_domain);
       break;
   }
@@ -565,21 +603,30 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
-           kNormalAnalysisSettingsPref);
+           settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
-    ASSERT_FALSE(settings.has_value());
+    if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+      ASSERT_TRUE(settings.has_value());
+      // TODO(b/238216275): Verify the metadata has the expected values.
+    } else {
+      ASSERT_FALSE(settings.has_value());
+    }
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-    ASSERT_EQ(kFakeBrowserDMToken,
-              settings.value().cloud_or_local_settings.dm_token());
+    if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+      ASSERT_EQ(kFakeBrowserDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
+      ASSERT_FALSE(settings.value().client_metadata);
+    } else {
+      ASSERT_TRUE(settings.value().client_metadata);
+      // TODO(b/238216275): Verify the metadata has the expected values.
+    }
     ASSERT_FALSE(settings.value().per_profile);
-    ASSERT_FALSE(settings.value().client_metadata);
   }
 #else
   std::string management_domain =
@@ -587,25 +634,41 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
           ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::UNAFFILIATED:
-      EXPECT_FALSE(settings.has_value());
+      if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+        ASSERT_TRUE(settings.has_value());
+        ASSERT_TRUE(
+            settings.value().cloud_or_local_settings.is_local_analysis());
+        ASSERT_EQ("test_path",
+                  settings.value().cloud_or_local_settings.local_path());
+      } else {
+        ASSERT_FALSE(settings.has_value());
+      }
       ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-      ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_or_local_settings.dm_token());
+      if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        ASSERT_FALSE(settings.value().client_metadata);
+      } else {
+        ASSERT_TRUE(settings.value().client_metadata);
+        // TODO(b/238216275): Verify the metadata has the expected values.
+      }
       ASSERT_TRUE(settings.value().per_profile);
-      ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
-      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
-      ASSERT_EQ(kFakeProfileDMToken,
-                settings.value().cloud_or_local_settings.dm_token());
+      if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        ASSERT_FALSE(settings.value().client_metadata);
+      } else {
+        ASSERT_TRUE(settings.value().client_metadata);
+        // TODO(b/238216275): Verify the metadata has the expected values.
+      }
       ASSERT_TRUE(settings.value().per_profile);
-      ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);
       break;
   }

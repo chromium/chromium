@@ -6,7 +6,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +32,7 @@ struct TestParam {
 };
 
 constexpr char kNormalSettings[] = R"({
-  "service_provider": "google",
+  "service_provider": "%s",
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -48,7 +50,7 @@ constexpr char kNormalSettings[] = R"({
 })";
 
 constexpr char kOnlyEnabledPatternsSettings[] = R"({
-  "service_provider": "google",
+  "service_provider": "%s",
   "enable": [
     {"url_list": ["scan1.com", "scan2.com"], "tags": ["dlp"]},
   ],
@@ -72,7 +74,7 @@ constexpr char kNoProviderSettings[] = R"({
 })";
 
 constexpr char kNoEnabledPatternsSettings[] = R"({
-  "service_provider": "google",
+  "service_provider": "%s",
   "disable": [
     {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
     {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
@@ -86,7 +88,7 @@ constexpr char kNoEnabledPatternsSettings[] = R"({
 })";
 
 constexpr char kNormalSettingsWithCustomMessage[] = R"({
-  "service_provider": "google",
+  "service_provider": "%s",
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -116,7 +118,7 @@ constexpr char kNormalSettingsWithCustomMessage[] = R"({
 })";
 
 constexpr char kNormalSettingsDlpRequiresBypassJustification[] = R"({
-  "service_provider": "google",
+  "service_provider": "%s",
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -238,10 +240,13 @@ AnalysisSettings* NoSettings() {
 class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
  public:
   GURL url() const { return GURL(GetParam().url); }
-  const char* settings_value() const { return GetParam().settings_value; }
+  std::string settings_value() const {
+    return base::StringPrintf(GetParam().settings_value,
+                              is_cloud_ ? "google" : "local_test");
+  }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
-    if (GetParam().expected_settings != NoSettings() &&
+    if (GetParam().expected_settings != NoSettings() && is_cloud_ &&
         !GetParam()
              .expected_settings->cloud_or_local_settings.analysis_url()
              .is_valid()) {
@@ -249,15 +254,35 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url =
           GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+      CloudAnalysisSettings cloud_settings;
+      cloud_settings.analysis_url =
+          GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+      GetParam().expected_settings->cloud_or_local_settings =
+          CloudOrLocalAnalysisSettings(std::move(cloud_settings));
     }
+    if (GetParam().expected_settings != NoSettings() && !is_cloud_) {
+      LocalAnalysisSettings local_settings;
+      local_settings.local_path = "test_path";
+      GetParam().expected_settings->cloud_or_local_settings =
+          CloudOrLocalAnalysisSettings(std::move(local_settings));
+
+      // The "local_test" analysis provider only supports the "dlp" tag, so
+      // it is expected that the malware tag is absent from final settings even
+      // when it is included in the policy.
+      GetParam().expected_settings->tags.erase("malware");
+      if (GetParam().expected_settings->tags.empty())
+        return NoSettings();
+    }
+
     return GetParam().expected_settings;
   }
 
- private:
+ protected:
+  bool is_cloud_ = true;
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_P(AnalysisServiceSettingsTest, Test) {
+TEST_P(AnalysisServiceSettingsTest, CloudTest) {
   auto settings = base::JSONReader::Read(settings_value(),
                                          base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
@@ -280,6 +305,53 @@ TEST_P(AnalysisServiceSettingsTest, Test) {
         analysis_settings.value().cloud_or_local_settings.is_cloud_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.analysis_url(),
               expected_settings()->cloud_or_local_settings.analysis_url());
+    ASSERT_EQ(analysis_settings.value().minimum_data_size,
+              expected_settings()->minimum_data_size);
+    for (const auto& entry : expected_settings()->tags) {
+      const std::string& tag = entry.first;
+      ASSERT_TRUE(analysis_settings.value().tags.count(entry.first));
+      ASSERT_EQ(analysis_settings.value().tags[tag].custom_message.message,
+                entry.second.custom_message.message);
+      if (!analysis_settings.value()
+               .tags[tag]
+               .custom_message.learn_more_url.is_empty()) {
+        ASSERT_EQ(kExpectedLearnMoreUrlSpecs.at(tag),
+                  analysis_settings.value()
+                      .tags[tag]
+                      .custom_message.learn_more_url.spec());
+        ASSERT_EQ(kExpectedLearnMoreUrlSpecs.at(tag),
+                  service_settings.GetLearnMoreUrl(tag).value().spec());
+      }
+      ASSERT_EQ(analysis_settings.value().tags[tag].requires_justification,
+                entry.second.requires_justification);
+    }
+  }
+}
+
+TEST_P(AnalysisServiceSettingsTest, LocalTest) {
+  is_cloud_ = false;
+  auto settings = base::JSONReader::Read(settings_value(),
+                                         base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(settings.has_value());
+
+  AnalysisServiceSettings service_settings(settings.value(),
+                                           *GetServiceProviderConfig());
+
+  auto analysis_settings = service_settings.GetAnalysisSettings(url());
+  ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
+  if (analysis_settings.has_value()) {
+    ASSERT_EQ(analysis_settings.value().block_until_verdict,
+              expected_settings()->block_until_verdict);
+    ASSERT_EQ(analysis_settings.value().block_password_protected_files,
+              expected_settings()->block_password_protected_files);
+    ASSERT_EQ(analysis_settings.value().block_large_files,
+              expected_settings()->block_large_files);
+    ASSERT_EQ(analysis_settings.value().block_unsupported_file_types,
+              expected_settings()->block_unsupported_file_types);
+    ASSERT_TRUE(
+        analysis_settings.value().cloud_or_local_settings.is_local_analysis());
+    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.local_path(),
+              expected_settings()->cloud_or_local_settings.local_path());
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
     for (const auto& entry : expected_settings()->tags) {

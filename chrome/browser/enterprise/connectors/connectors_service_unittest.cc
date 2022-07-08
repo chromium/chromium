@@ -30,9 +30,27 @@ namespace {
 
 constexpr char kEmptySettingsPref[] = "[]";
 
-constexpr char kNormalAnalysisSettingsPref[] = R"([
+constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
   {
     "service_provider": "google",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp", "malware"]}
+    ],
+    "disable": [
+      {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
+      {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
+           "tags": ["malware"]}
+    ],
+    "block_until_verdict": 1,
+    "block_password_protected": true,
+    "block_large_files": true,
+    "block_unsupported_file_types": true
+  }
+])";
+
+constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "local_test",
     "enable": [
       {"url_list": ["*"], "tags": ["dlp", "malware"]}
     ],
@@ -112,19 +130,20 @@ class ConnectorsServiceTest : public testing::Test {
 
 class ConnectorsServiceAnalysisNoFeatureTest
     : public ConnectorsServiceTest,
-      public testing::WithParamInterface<AnalysisConnector> {
+      public testing::WithParamInterface<
+          std::tuple<const char*, AnalysisConnector>> {
  public:
   ConnectorsServiceAnalysisNoFeatureTest() {
     scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
   }
 
-  AnalysisConnector connector() { return GetParam(); }
+  std::string pref_value() { return std::get<0>(GetParam()); }
+  AnalysisConnector connector() { return std::get<1>(GetParam()); }
 };
 
 TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
-  profile_->GetPrefs()->Set(
-      ConnectorPref(connector()),
-      *base::JSONReader::Read(kNormalAnalysisSettingsPref));
+  profile_->GetPrefs()->Set(ConnectorPref(connector()),
+                            *base::JSONReader::Read(pref_value()));
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
   for (const char* url :
        {kDlpAndMalwareUrl, kOnlyDlpUrl, kOnlyMalwareUrl, kNoTagsUrl}) {
@@ -143,7 +162,12 @@ TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceAnalysisNoFeatureTest,
-    testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT));
+    testing::Combine(testing::Values(kNormalCloudAnalysisSettingsPref,
+                                     kNormalLocalAnalysisSettingsPref),
+                     testing::Values(FILE_ATTACHED,
+                                     FILE_DOWNLOADED,
+                                     BULK_DATA_ENTRY,
+                                     PRINT)));
 
 // Tests to make sure getting reporting settings work with both the feature flag
 // and the OnSecurityEventEnterpriseConnector policy. The parameter for these

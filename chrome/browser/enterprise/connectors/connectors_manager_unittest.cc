@@ -42,7 +42,7 @@ constexpr FileSystemConnector kAllFileSystemConnectors[] = {
 
 constexpr char kEmptySettingsPref[] = "[]";
 
-constexpr char kNormalAnalysisSettingsPref[] = R"([
+constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
   {
     "service_provider": "google",
     "enable": [
@@ -52,6 +52,22 @@ constexpr char kNormalAnalysisSettingsPref[] = R"([
       {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
       {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
            "tags": ["malware"]},
+    ],
+    "block_until_verdict": 1,
+    "block_password_protected": true,
+    "block_large_files": true,
+    "block_unsupported_file_types": true,
+  },
+])";
+
+constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "local_test",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp"]},
+    ],
+    "disable": [
+      {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
     ],
     "block_until_verdict": 1,
     "block_password_protected": true,
@@ -179,13 +195,15 @@ class ConnectorsManagerTest : public testing::Test {
 class ConnectorsManagerConnectorPoliciesTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<
-          std::tuple<AnalysisConnector, const char*>> {
+          std::tuple<AnalysisConnector, const char*, const char*>> {
  public:
   ConnectorsManagerConnectorPoliciesTest() = default;
 
   AnalysisConnector connector() const { return std::get<0>(GetParam()); }
 
   const char* url() const { return std::get<1>(GetParam()); }
+
+  const char* pref_value() const { return std::get<2>(GetParam()); }
 
   const char* pref() const { return ConnectorPref(connector()); }
 
@@ -224,6 +242,13 @@ class ConnectorsManagerConnectorPoliciesTest
     else if (url == kOnlyMalwareUrl)
       settings.tags = {{"malware", TagSettings()}};
 
+    // The "local_test" service provider doesn't support the "malware" tag, so
+    // remove it from expectations.
+    if (pref == kNormalLocalAnalysisSettingsPref)
+      settings.tags.erase("malware");
+    if (settings.tags.empty())
+      return absl::nullopt;
+
     return settings;
   }
 
@@ -233,9 +258,8 @@ class ConnectorsManagerConnectorPoliciesTest
 TEST_P(ConnectorsManagerConnectorPoliciesTest, NormalPref) {
   ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
-  ScopedConnectorPref scoped_pref(pref_service(), pref(),
-                                  kNormalAnalysisSettingsPref);
-  SetUpExpectedAnalysisSettings(kNormalAnalysisSettingsPref);
+  ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
+  SetUpExpectedAnalysisSettings(pref_value());
 
   // Verify that the expected settings are returned normally.
   auto settings_from_manager =
@@ -278,11 +302,14 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(kDlpAndMalwareUrl,
                                      kOnlyDlpUrl,
                                      kOnlyMalwareUrl,
-                                     kNoTagsUrl)));
+                                     kNoTagsUrl),
+                     testing::Values(kNormalCloudAnalysisSettingsPref,
+                                     kNormalLocalAnalysisSettingsPref)));
 
 class ConnectorsManagerAnalysisConnectorsTest
     : public ConnectorsManagerTest,
-      public testing::WithParamInterface<AnalysisConnector> {
+      public testing::WithParamInterface<
+          std::tuple<AnalysisConnector, const char*>> {
  public:
   explicit ConnectorsManagerAnalysisConnectorsTest(bool enable = true) {
     if (enable) {
@@ -292,7 +319,9 @@ class ConnectorsManagerAnalysisConnectorsTest
     }
   }
 
-  AnalysisConnector connector() const { return GetParam(); }
+  AnalysisConnector connector() const { return std::get<0>(GetParam()); }
+
+  const char* pref_value() const { return std::get<1>(GetParam()); }
 
   const char* pref() const { return ConnectorPref(connector()); }
 };
@@ -305,8 +334,7 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
   // Once the pref is updated, the settings should be cached, and analysis
   // settings can be obtained.
   {
-    ScopedConnectorPref scoped_pref(pref_service(), pref(),
-                                    kNormalAnalysisSettingsPref);
+    ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
 
     const auto& cached_settings =
         manager.GetAnalysisConnectorsSettingsForTesting();
@@ -322,7 +350,14 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
     expected_block_password_protected_files_ = true;
     expected_block_large_files_ = true;
     expected_block_unsupported_file_types_ = true;
-    expected_tags_ = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
+
+    // The "local_test" service provider doesn't support the "malware" tag, so
+    // remove it from expectations.
+    if (pref_value() == kNormalCloudAnalysisSettingsPref)
+      expected_tags_ = {{"dlp", TagSettings()}, {"malware", TagSettings()}};
+    else
+      expected_tags_ = {{"dlp", TagSettings()}};
+
     ValidateSettings(settings.value());
   }
 
@@ -330,9 +365,12 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(ConnectorsManagerAnalysisConnectorsTest,
-                         ConnectorsManagerAnalysisConnectorsTest,
-                         testing::ValuesIn(kAllAnalysisConnectors));
+INSTANTIATE_TEST_SUITE_P(
+    ConnectorsManagerAnalysisConnectorsTest,
+    ConnectorsManagerAnalysisConnectorsTest,
+    testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
+                     testing::Values(kNormalCloudAnalysisSettingsPref,
+                                     kNormalLocalAnalysisSettingsPref)));
 
 class ConnectorsManagerReportingTest
     : public ConnectorsManagerTest,
