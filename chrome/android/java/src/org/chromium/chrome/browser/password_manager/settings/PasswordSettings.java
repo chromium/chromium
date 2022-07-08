@@ -521,6 +521,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
             getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, (boolean) newValue);
             RecordHistogram.recordBooleanHistogram(
                     "PasswordManager.Settings.ToggleOfferToSavePasswords", (boolean) newValue);
+            if ((boolean) newValue) PasswordManagerHelper.resetUpmUnenrollment();
             return true;
         });
         mSavePasswordsSwitch.setManagedPreferenceDelegate(

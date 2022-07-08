@@ -295,6 +295,19 @@ public class PasswordManagerHelper {
         return false;
     }
 
+    public static void resetUpmUnenrollment() {
+        // Exit early if Chrome doesn't need UPM UI. Assumes the unenroll pref isn't included in the
+        // usesUnifiedPasswordManagementUI check.
+        if (!PasswordManagerHelper.usesUnifiedPasswordManagerUI()) return;
+        PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+
+        // Exit early if the user is not unenrolled.
+        if (!prefs.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)) return;
+
+        // Re-enroll the user by resetting the enroll pref. Other state reset happens on unenroll.
+        prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
+    }
+
     @VisibleForTesting
     static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
             CredentialManagerLauncher credentialManagerLauncher, SyncService syncService,

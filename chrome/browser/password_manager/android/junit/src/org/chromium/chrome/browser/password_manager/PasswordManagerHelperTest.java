@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -294,6 +295,49 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.getAuthError()).thenReturn(State.INVALID_GAIA_CREDENTIALS);
 
         assertFalse(PasswordManagerHelper.canUseUpmCheckup());
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testResetsUnenrollment() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.getChosenDataTypes())
+                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+
+        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
+                .thenReturn(true);
+        PasswordManagerHelper.resetUpmUnenrollment();
+
+        verify(mPrefService)
+                .setBoolean(
+                        eq(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS), eq(false));
+
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testDoesntResetUnenrollmentIfUnnecessary() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.getChosenDataTypes())
+                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+
+        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
+                .thenReturn(false);
+        PasswordManagerHelper.resetUpmUnenrollment();
+
+        // If the pref isn't set, don't touch the pref!
+        verify(mPrefService, never())
+                .setBoolean(eq(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS),
+                        anyBoolean());
+
         SyncService.resetForTests();
     }
 
