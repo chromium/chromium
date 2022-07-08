@@ -22,7 +22,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HelpBubbleDismissedEventDetail, HelpBubbleElement} from './help_bubble.js';
+import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleClientCallbackRouter, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
 
@@ -162,7 +162,7 @@ export const HelpBubbleMixin = dedupingMixin(
           assert(anchor, 'Help bubble anchor element not found ' + anchorId);
           anchor.parentNode!.insertBefore(bubble, anchor);
           this.dismissedEventTracker_.add(
-              bubble, 'help-bubble-dismissed',
+              bubble, HELP_BUBBLE_DISMISSED_EVENT,
               this.onHelpBubbleDismissed_.bind(this));
 
           bubble.anchorId = anchorId;
@@ -183,7 +183,8 @@ export const HelpBubbleMixin = dedupingMixin(
           if (!bubble) {
             return false;
           }
-          this.dismissedEventTracker_.remove(bubble, 'help-bubble-dismissed');
+          this.dismissedEventTracker_.remove(
+              bubble, HELP_BUBBLE_DISMISSED_EVENT);
           bubble.hide();
           bubble.remove();
           return true;
@@ -274,8 +275,7 @@ export const HelpBubbleMixin = dedupingMixin(
               `help-bubble[anchor-id='${anchorId}']`);
         }
 
-        private onHelpBubbleDismissed_(
-            e: CustomEvent<HelpBubbleDismissedEventDetail>) {
+        private onHelpBubbleDismissed_(e: HelpBubbleDismissedEvent) {
           const hidden = this.hideHelpBubble(e.detail.anchorId);
           assert(hidden);
           const nativeId = this.getNativeIdForAnchor_(e.detail.anchorId);

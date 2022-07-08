@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
-import {HelpBubbleDismissedEventDetail, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -111,12 +111,12 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble click close button generates event', () => {
     let clicked: number = 0;
-    const callback = (e: CustomEvent<HelpBubbleDismissedEventDetail>) => {
+    const callback = (e: HelpBubbleDismissedEvent) => {
       assertEquals('title', e.detail.anchorId);
       assertFalse(e.detail.fromActionButton);
       ++clicked;
     };
-    helpBubble.addEventListener('help-bubble-dismissed', callback);
+    helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubblePosition.BELOW;
     helpBubble.bodyText = HELP_BUBBLE_BODY;

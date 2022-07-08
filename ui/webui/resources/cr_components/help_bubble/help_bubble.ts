@@ -20,11 +20,13 @@ import {HelpBubblePosition} from './help_bubble.mojom-webui.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 
-export type HelpBubbleDismissedEventDetail = {
+export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
+
+export type HelpBubbleDismissedEvent = CustomEvent<{
   anchorId: string,
   fromActionButton: boolean,
   buttonIndex?: number,
-};
+}>;
 
 export interface HelpBubbleElement {
   $: {
@@ -119,7 +121,7 @@ export class HelpBubbleElement extends PolymerElement {
 
   private dismiss_() {
     assert(this.anchorId);
-    this.dispatchEvent(new CustomEvent('help-bubble-dismissed', {
+    this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
       detail: {
         anchorId: this.anchorId,
         fromActionButton: false,
@@ -200,6 +202,6 @@ declare global {
     'help-bubble': HelpBubbleElement;
   }
   interface HTMLElementEventMap {
-    'help-bubble-dismissed': CustomEvent<HelpBubbleDismissedEventDetail>;
+    [HELP_BUBBLE_DISMISSED_EVENT]: HelpBubbleDismissedEvent;
   }
 }
