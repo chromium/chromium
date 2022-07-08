@@ -169,6 +169,7 @@ robolectric_binary("password_manager_junit_tests") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/tests/FakePasswordStoreAndroidBackendTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessorFactoryImplTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
@@ -289,6 +290,8 @@ android_library("backend_interface_java") {
 android_library("test_support_java") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/tests/utils/FakePasswordSettingsAccessor.java",
+    "java/src/org/chromium/chrome/browser/password_manager/tests/utils/FakePasswordSettingsAccessorFactoryImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/tests/utils/FakePasswordStoreAndroidBackend.java",
     "java/src/org/chromium/chrome/browser/password_manager/tests/utils/FakePasswordStoreAndroidBackendFactoryImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/tests/utils/FakePasswordSyncControllerDelegate.java",
@@ -297,6 +300,7 @@ android_library("test_support_java") {
 
   deps = [
     ":backend_interface_java",
+    ":settings_interface_java",
     "//base:base_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/password_manager/core/browser:unified_password_manager_proto_java",
