@@ -83,17 +83,8 @@ static_assert(
 // this namespace calls the correct functions from this namespace.
 namespace {
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-using CountingSuperClass =
-    base::internal::BackupRefPtrImpl</*AllowDangling=*/false>;
-#elif defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-using CountingSuperClass = base::internal::MTECheckedPtrImpl<
-    base::internal::MTECheckedPtrImplPartitionAllocSupport>;
-#else
-using CountingSuperClass = base::internal::RawPtrNoOpImpl;
-#endif
 using RawPtrCountingImpl =
-    base::internal::RawPtrCountingImplWrapperForTest<CountingSuperClass>;
+    base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrImpl>;
 
 template <typename T>
 using CountingRawPtr = raw_ptr<T, RawPtrCountingImpl>;
