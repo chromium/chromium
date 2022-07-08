@@ -10,6 +10,8 @@ import android.database.DataSetObserver;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -56,16 +58,16 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
         }
     }
 
-    private final WebContents mWebContents;
     private final Context mContext;
+    private final MessageDispatcher mMessageDispatcher;
+    private final WebContents mWebContents;
     private long mNativeTranslateMessage;
     private final int mDismissalDurationSeconds;
-    private final MessageDispatcher mMessageDispatcher;
 
     // Will be null before the message is shown.
     private PropertyModel mMessageProperties;
 
-    // Shows a Toast with the general translate error message.
+    /** Shows a Toast with the general translate error message. */
     @CalledByNative
     public static void showTranslateError(WebContents webContents) {
         Context context = getContextFromWebContents(webContents);
@@ -74,21 +76,33 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
         toast.show();
     }
 
+    /**
+     * Create a new TranslateMessage, or return null if creation failed.
+     *
+     * Creation could fail in cases where the MessageDispatcher cannot be retrieved, such as when
+     * the activity is being recreated or destroyed.
+     */
     @CalledByNative
     public static TranslateMessage create(
             WebContents webContents, long nativeTranslateMessage, int dismissalDurationSeconds) {
-        return new TranslateMessage(webContents, nativeTranslateMessage, dismissalDurationSeconds);
+        Context context = getContextFromWebContents(webContents);
+        if (context == null) return null;
+        MessageDispatcher messageDispatcher =
+                MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
+        if (messageDispatcher == null) return null;
+
+        return new TranslateMessage(context, messageDispatcher, webContents, nativeTranslateMessage,
+                dismissalDurationSeconds);
     }
 
-    private TranslateMessage(
-            WebContents webContents, long nativeTranslateMessage, int dismissalDurationSeconds) {
+    private TranslateMessage(@NonNull Context context, @NonNull MessageDispatcher messageDispatcher,
+            @NonNull WebContents webContents, long nativeTranslateMessage,
+            int dismissalDurationSeconds) {
+        mContext = context;
+        mMessageDispatcher = messageDispatcher;
         mWebContents = webContents;
-        mContext = getContextFromWebContents(webContents);
-        assert mContext != null;
         mNativeTranslateMessage = nativeTranslateMessage;
         mDismissalDurationSeconds = dismissalDurationSeconds;
-
-        mMessageDispatcher = MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
     }
 
     @CalledByNative
@@ -155,10 +169,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     @CalledByNative
     public void dismiss() {
-        if (mMessageDispatcher != null) {
-            mMessageDispatcher.dismissMessage(
-                    mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
-        }
+        mMessageDispatcher.dismissMessage(mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
     }
 
     private static Context getContextFromWebContents(WebContents webContents) {

@@ -85,7 +85,7 @@ class TranslateMessage {
     // A raw content::WebContents pointer is passed in instead of the Java
     // WebContents object in order to make testing easier, so that tests can
     // just use nullptr as the content::WebContents.
-    virtual void CreateTranslateMessage(
+    virtual bool CreateTranslateMessage(
         JNIEnv* env,
         content::WebContents* web_contents,
         TranslateMessage* native_translate_message,
