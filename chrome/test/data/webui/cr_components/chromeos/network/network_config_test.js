@@ -125,6 +125,32 @@ suite('network-config', function() {
         assertTrue(!!networkConfig.$$('#wifi-passphrase'));
       });
     });
+
+    // Syntactic sugar for running test twice with different values for the
+    // enableHiddenNetworkMigration feature flag.
+    [true, false].forEach(isHiddenNetworkMigrationEnabled => {
+      test('New networks are explicitly not hidden', async () => {
+        loadTimeData.overrideValues(
+            {'enableHiddenNetworkMigration': isHiddenNetworkMigrationEnabled});
+
+        await flushAsync();
+
+        networkConfig.save();
+
+        await flushAsync();
+
+        const props = mojoApi_.getPropertiesToSetForTest();
+        if (isHiddenNetworkMigrationEnabled) {
+          assertEquals(
+              props.typeConfig.wifi.hiddenSsid,
+              chromeos.networkConfig.mojom.HiddenSsidMode.kDisabled);
+        } else {
+          assertEquals(
+              props.typeConfig.wifi.hiddenSsid,
+              chromeos.networkConfig.mojom.HiddenSsidMode.kAutomatic);
+        }
+      });
+    });
   });
 
   suite('Existing WiFi Config', function() {
@@ -176,6 +202,26 @@ suite('network-config', function() {
         passwordInput.fire('keypress');
         flush();
         assertFalse(!!networkConfig.error);
+      });
+    });
+
+    // Syntactic sugar for running test twice with different values for the
+    // enableHiddenNetworkMigration feature flag.
+    [true, false].forEach(isHiddenNetworkMigrationEnabled => {
+      test('Networks\' hidden SSID mode is not overwritten', async () => {
+        loadTimeData.overrideValues(
+            {'enableHiddenNetworkMigration': isHiddenNetworkMigrationEnabled});
+
+        await flushAsync();
+
+        networkConfig.save();
+
+        await flushAsync();
+
+        const props = mojoApi_.getPropertiesToSetForTest();
+        assertEquals(
+            props.typeConfig.wifi.hiddenSsid,
+            chromeos.networkConfig.mojom.HiddenSsidMode.kAutomatic);
       });
     });
   });

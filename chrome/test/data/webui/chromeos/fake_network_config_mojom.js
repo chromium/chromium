@@ -36,6 +36,11 @@ export class FakeNetworkConfig {
      */
     this.managedProperties_ = new Map();
 
+    /**
+     * @private {!chromeos.networkConfig.mojom.ConfigProperties|undefined}
+     */
+    this.propertiesToSet_ = undefined;
+
     /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
     this.globalPolicy_ = undefined;
 
@@ -127,6 +132,7 @@ export class FakeNetworkConfig {
     this.networkStates_ = [eth0];
 
     this.managedProperties_ = new Map();
+    this.propertiesToSet_ = undefined;
 
     this.vpnProviders_ = [];
 
@@ -336,6 +342,9 @@ export class FakeNetworkConfig {
    */
   configureNetwork(properties, shared) {
     return new Promise(resolve => {
+      this.propertiesToSet_ =
+          /** @type(!chromeos.networkConfig.mojom.ConfigProperties)*/
+          (Object.assign({}, properties));
       this.methodCalled('configureNetwork');
       resolve({guid: 'test_guid', errorMessage: ''});
     });
@@ -348,6 +357,9 @@ export class FakeNetworkConfig {
    */
   setProperties(guid, properties) {
     return new Promise(resolve => {
+      this.propertiesToSet_ =
+          /** @type(!chromeos.networkConfig.mojom.ConfigProperties)*/ (
+              Object.assign({}, properties));
       this.methodCalled('setProperties');
       resolve({success: true, errorMessage: ''});
     });
@@ -369,6 +381,11 @@ export class FakeNetworkConfig {
    */
   getDeviceStateForTest(type) {
     return this.deviceStates_.get(type) || null;
+  }
+
+  /** @return {!chromeos.networkConfig.mojom.ConfigProperties|undefined} */
+  getPropertiesToSetForTest() {
+    return this.propertiesToSet_;
   }
 
   /** @param {!Array<!chromeos.networkConfig.mojom.VpnProvider>} providers */
