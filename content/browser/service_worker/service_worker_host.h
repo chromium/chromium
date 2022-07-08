@@ -83,7 +83,8 @@ class CONTENT_EXPORT ServiceWorkerHost {
 
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
-  // Used only when EagerCacheStorageSetupForServiceWorkers is disabled.
+  // Used when EagerCacheStorageSetupForServiceWorkers is disabled, or when
+  // setup for eager cache storage has failed.
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 

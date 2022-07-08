@@ -497,7 +497,8 @@ class RecordCacheStorageInstanceClient
 
   void StartWorker(
       blink::mojom::EmbeddedWorkerStartParamsPtr start_params) override {
-    had_cache_storage_ = !!start_params->provider_info->cache_storage;
+    had_cache_storage_ = start_params->provider_info->cache_storage &&
+                         start_params->provider_info->cache_storage.is_valid();
     FakeEmbeddedWorkerInstanceClient::StartWorker(std::move(start_params));
   }
 
@@ -517,6 +518,9 @@ TEST_F(EmbeddedWorkerInstanceTest, CacheStorageOptimization) {
   const GURL url("http://example.com/worker.js");
 
   RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
+  // We should set COEP, or cache storage pipe won't be made.
+  pair.second->set_cross_origin_embedder_policy(
+      network::CrossOriginEmbedderPolicy());
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
 
   // Start the worker.

@@ -89,8 +89,6 @@ void ServiceWorkerHost::CreateWebTransportConnector(
 void ServiceWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!base::FeatureList::IsEnabled(
-      blink::features::kEagerCacheStorageSetupForServiceWorkers));
   version_->embedded_worker()->BindCacheStorage(std::move(receiver));
 }
 

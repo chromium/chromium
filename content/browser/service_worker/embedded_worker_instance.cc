@@ -440,7 +440,12 @@ void EmbeddedWorkerInstance::Start(
   // Create cache storage now as an optimization, so the service worker can
   // use the Cache Storage API immediately on startup.
   if (base::FeatureList::IsEnabled(
-          blink::features::kEagerCacheStorageSetupForServiceWorkers)) {
+          blink::features::kEagerCacheStorageSetupForServiceWorkers) &&
+      // Without COEP, BindCacheStorage won't bind the cache storage,
+      // which make cache storage set up in the install handler get stuck.
+      // Since this is a performance improvement feature, fallback to the slow
+      // path should be better than making the execution get stuck.
+      owner_version_->cross_origin_embedder_policy()) {
     BindCacheStorage(
         params->provider_info->cache_storage.InitWithNewPipeAndPassReceiver());
   }
