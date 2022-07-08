@@ -220,18 +220,18 @@ void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
   const viz::SurfaceId& old_surface_id = surface_layer_->surface_id().is_valid()
                                              ? surface_layer_->surface_id()
                                              : surface_id;
+  if (window_android_ && window_android_->GetCompositor() &&
+      old_surface_id != surface_id) {
+    // On Android, the new frame sink needs to be added before
+    // removing the previous surface sink.
+    window_android_->GetCompositor()->AddChildFrameSink(
+        surface_id.frame_sink_id());
+    window_android_->GetCompositor()->RemoveChildFrameSink(
+        old_surface_id.frame_sink_id());
+  }
+  // Set the surface after frame sink hierarchy update.
   surface_layer_->SetSurfaceId(surface_id,
                                cc::DeadlinePolicy::UseDefaultDeadline());
-
-  if (!window_android_ || !window_android_->GetCompositor() ||
-      old_surface_id == surface_id) {
-    return;
-  }
-
-  window_android_->GetCompositor()->RemoveChildFrameSink(
-      old_surface_id.frame_sink_id());
-  window_android_->GetCompositor()->AddChildFrameSink(
-      surface_id.frame_sink_id());
 }
 
 cc::Layer* OverlayWindowAndroid::GetLayerForTesting() {
