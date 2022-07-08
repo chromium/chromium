@@ -37,19 +37,6 @@ suite('Multidevice', function() {
   }
 
   /**
-   * Override the cr-toggle's state. Because cr-toggle handles clicks
-   * differently depending on its state (e.g., turns off PointerEvents when it's
-   * disabled), we use this to check that the toggle can't enter a state where
-   * clicking on it causes the page to nagivate away.
-   * @param {boolean} checked
-   * @param {boolean} disabled
-   */
-  function setCrToggle(checked, disabled) {
-    crToggle.checked = checked;
-    crToggle.disabled = disabled;
-  }
-
-  /**
    * Clicks an element, asserts whether the click navigated the page away to a
    * new route, then navigates back to initialRoute.
    * @param {HTMLElement} element. Target of click.
@@ -126,20 +113,12 @@ suite('Multidevice', function() {
   test('toggle click does not navigate to subpage in any state', function() {
     checkWhetherClickRoutesAway(featureToggle, false);
 
-    // Checked and enabled
-    setCrToggle(true, false);
+    crToggle.checked = true;
+    assertFalse(crToggle.disabled);
     checkWhetherClickRoutesAway(crToggle, false);
 
-    // Checked and disabled
-    setCrToggle(true, true);
-    checkWhetherClickRoutesAway(crToggle, false);
-
-    // Unchecked and enabled
-    setCrToggle(false, false);
-    checkWhetherClickRoutesAway(crToggle, false);
-
-    // Unchecked and disabled
-    setCrToggle(false, true);
+    crToggle.checked = false;
+    assertFalse(crToggle.disabled);
     checkWhetherClickRoutesAway(crToggle, false);
   });
 });

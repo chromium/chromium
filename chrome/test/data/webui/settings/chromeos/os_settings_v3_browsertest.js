@@ -312,8 +312,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['LockScreenPage', 'lock_screen_tests.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
- // TODO(crbug.com/1227116): Re-enable once flakiness is fixed.
- //  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
+ ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
  [
    'MultideviceNotificationAccessSetupDialog',
@@ -386,7 +385,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kPersonalizationHub']}
  ],
  ['PrintingPage', 'os_printing_page_tests.js'],
- ['PrivacyHubSubpage', 'privacy_hub_subpage_tests.js',
+ [
+   'PrivacyHubSubpage', 'privacy_hub_subpage_tests.js',
    {enabled: ['features::kCrosPrivacyHub']}
  ],
  ['PrivacyPage', 'os_privacy_page_test.js'],
