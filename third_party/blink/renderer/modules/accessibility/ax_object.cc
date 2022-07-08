@@ -1299,8 +1299,11 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   // If this is an HTMLFrameOwnerElement (such as an iframe), we may need
   // to embed the ID of the child frame.
   if (!ui::IsChildTreeOwner(RoleValue())) {
-    DCHECK(!IsA<HTMLFrameOwnerElement>(GetElement()) || !IsFrame(GetNode()))
-        << "Element was expected to be a child tree owner: " << GetElement();
+    // TODO(crbug.com/1342603) Determine why these are firing in the wild and,
+    // once fixed, turn into a DCHECK.
+    SANITIZER_CHECK(!IsFrame(GetNode()))
+        << "If this is an iframe, it should also be a child tree owner: "
+        << ToString(true, true);
     return;
   }
 
@@ -1308,7 +1311,9 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
 
   Frame* child_frame = html_frame_owner_element->ContentFrame();
   if (!child_frame) {
-    DCHECK(IsDisabled());
+    // TODO(crbug.com/1342603) Determine why these are firing in the wild and,
+    // once fixed, turn into a DCHECK.
+    SANITIZER_CHECK(IsDisabled()) << ToString(true, true);
     return;
   }
 
