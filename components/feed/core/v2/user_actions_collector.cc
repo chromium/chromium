@@ -71,11 +71,11 @@ void UserActionsCollector::UpdateUserProfileOnLinkClick(
 }
 
 void UserActionsCollector::InitStoreFromPrefs() {
-  const base::Value* list_value_from_disk =
-      profile_prefs_->GetList(prefs::kFeedOnDeviceUserActionsCollector);
+  const base::Value::List& list_value_from_disk =
+      profile_prefs_->GetValueList(prefs::kFeedOnDeviceUserActionsCollector);
   size_t count_values_during_store_initialization = 0;
 
-  const size_t entries_in_pref = list_value_from_disk->GetList().size();
+  const size_t entries_in_pref = list_value_from_disk.size();
 
   // If the store size exceeds its capacity, then skip some of the earlier
   // entries to reduce store size to its capacity.
@@ -90,8 +90,8 @@ void UserActionsCollector::InitStoreFromPrefs() {
 
   // Skip first |entries_to_skip| number of entries to reduce the size of
   // store.
-  for (auto iter = list_value_from_disk->GetList().begin() + entries_to_skip;
-       iter != list_value_from_disk->GetList().end(); ++iter) {
+  for (auto iter = list_value_from_disk.begin() + entries_to_skip;
+       iter != list_value_from_disk.end(); ++iter) {
     if (!iter->is_string()) {
       rewrite_prefs = true;
       continue;

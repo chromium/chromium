@@ -584,10 +584,11 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
 }
 
 void AccountTrackerService::LoadFromPrefs() {
-  const base::Value* list = pref_service_->GetList(prefs::kAccountInfo);
+  const base::Value::List& list =
+      pref_service_->GetValueList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
-  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
-    const base::Value& dict_value = list->GetListDeprecated()[i];
+  for (size_t i = 0; i < list.size(); ++i) {
+    const base::Value& dict_value = list[i];
     if (dict_value.is_dict()) {
       const base::DictionaryValue& dict =
           base::Value::AsDictionaryValue(dict_value);

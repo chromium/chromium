@@ -314,9 +314,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowCompleted(
     EndEvent event_type) {
   // If there are no ongoing change flows, return immediately to avoid disk
   // writes.
-  const base::Value* read_flows =
-      pref_service_->GetList(prefs::kPasswordChangeSuccessTrackerFlows);
-  if (!read_flows || read_flows->GetList().empty())
+  const base::Value::List& read_flows =
+      pref_service_->GetValueList(prefs::kPasswordChangeSuccessTrackerFlows);
+  if (read_flows.empty())
     return;
 
   ListPrefUpdate update(pref_service_,

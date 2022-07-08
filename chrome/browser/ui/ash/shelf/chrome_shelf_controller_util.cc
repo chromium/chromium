@@ -122,13 +122,10 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     return AppListControllerDelegate::PIN_EDITABLE;
   }
 
-  const base::Value* policy_apps =
-      profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
-  if (!policy_apps)
-    return AppListControllerDelegate::PIN_EDITABLE;
+  const base::Value::List& policy_apps =
+      profile->GetPrefs()->GetValueList(prefs::kPolicyPinnedLauncherApps);
 
-  for (const base::Value& policy_dict_entry :
-       policy_apps->GetListDeprecated()) {
+  for (const base::Value& policy_dict_entry : policy_apps) {
     if (!policy_dict_entry.is_dict())
       return AppListControllerDelegate::PIN_EDITABLE;
 

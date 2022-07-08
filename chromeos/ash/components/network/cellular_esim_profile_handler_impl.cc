@@ -70,15 +70,11 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   if (!device_prefs_)
     return std::vector<CellularESimProfile>();
 
-  const base::Value* profiles_list =
-      device_prefs_->GetList(prefs::kESimProfiles);
-  if (!profiles_list) {
-    NET_LOG(ERROR) << "eSIM profiles pref is not a list";
-    return std::vector<CellularESimProfile>();
-  }
+  const base::Value::List& profiles_list =
+      device_prefs_->GetValueList(prefs::kESimProfiles);
 
   std::vector<CellularESimProfile> profiles;
-  for (const base::Value& value : profiles_list->GetListDeprecated()) {
+  for (const base::Value& value : profiles_list) {
     if (!value.is_dict()) {
       NET_LOG(ERROR) << "List item from eSIM profiles pref is not a dictionary";
       continue;
@@ -204,15 +200,11 @@ base::flat_set<std::string>
 CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   DCHECK(device_prefs_);
 
-  const base::Value* euicc_paths_from_prefs =
-      device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
-  if (!euicc_paths_from_prefs) {
-    NET_LOG(ERROR) << "Could not fetch refreshed EUICCs pref.";
-    return {};
-  }
+  const base::Value::List& euicc_paths_from_prefs =
+      device_prefs_->GetValueList(prefs::kESimRefreshedEuiccs);
 
   base::flat_set<std::string> euicc_paths;
-  for (const auto& euicc : euicc_paths_from_prefs->GetListDeprecated()) {
+  for (const auto& euicc : euicc_paths_from_prefs) {
     if (!euicc.is_string()) {
       NET_LOG(ERROR) << "Non-string EUICC path: " << euicc;
       continue;

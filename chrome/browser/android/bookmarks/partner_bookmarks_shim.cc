@@ -254,11 +254,10 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!prefs_)
     return;
 
-  const base::Value* list = prefs_->GetList(prefs::kPartnerBookmarkMappings);
-  if (!list)
-    return;
+  const base::Value::List& list =
+      prefs_->GetValueList(prefs::kPartnerBookmarkMappings);
 
-  for (const auto& entry : list->GetListDeprecated()) {
+  for (const auto& entry : list) {
     const base::DictionaryValue* dict = nullptr;
     if (!entry.GetAsDictionary(&dict)) {
       NOTREACHED();

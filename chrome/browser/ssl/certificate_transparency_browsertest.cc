@@ -102,10 +102,9 @@ class CertificateTransparencyBrowserTest : public CertVerifierBrowserTest {
 
     EXPECT_NO_FATAL_FAILURE(UpdateChromePolicy(policy_map));
 
-    const base::Value* pref_value = pref_service->GetList(pref_name);
-    ASSERT_TRUE(pref_value);
+    const base::Value::List& pref_value = pref_service->GetValueList(pref_name);
     std::vector<std::string> pref_values;
-    for (const auto& value : pref_value->GetListDeprecated()) {
+    for (const auto& value : pref_value) {
       ASSERT_TRUE(value.is_string());
       pref_values.push_back(value.GetString());
     }

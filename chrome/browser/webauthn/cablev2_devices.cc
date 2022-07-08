@@ -213,11 +213,11 @@ std::vector<std::unique_ptr<Pairing>> GetSyncedDevices(Profile* const profile) {
 
 std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
   PrefService* const prefs = profile->GetPrefs();
-  const base::Value* pref_pairings =
-      prefs->GetList(kWebAuthnCablePairingsPrefName);
+  const base::Value::List& pref_pairings =
+      prefs->GetValueList(kWebAuthnCablePairingsPrefName);
 
   std::vector<std::unique_ptr<Pairing>> ret;
-  for (const auto& pairing : pref_pairings->GetListDeprecated()) {
+  for (const auto& pairing : pref_pairings) {
     if (!pairing.is_dict()) {
       continue;
     }

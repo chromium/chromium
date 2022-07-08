@@ -259,13 +259,11 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
   if (!initiating_origin)
     return false;
 
-  const base::Value* exempted_protocols =
-      prefs->GetList(prefs::kAutoLaunchProtocolsFromOrigins);
-  if (!exempted_protocols)
-    return false;
+  const base::Value::List& exempted_protocols =
+      prefs->GetValueList(prefs::kAutoLaunchProtocolsFromOrigins);
 
   const base::Value* origin_patterns = nullptr;
-  for (const base::Value& entry : exempted_protocols->GetListDeprecated()) {
+  for (const base::Value& entry : exempted_protocols) {
     const base::DictionaryValue& protocol_origins_map =
         base::Value::AsDictionaryValue(entry);
     const std::string* protocol = protocol_origins_map.FindStringKey(

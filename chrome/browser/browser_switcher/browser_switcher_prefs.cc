@@ -328,9 +328,9 @@ void BrowserSwitcherPrefs::AlternativeBrowserParametersChanged() {
   alt_browser_params_.clear();
   if (!prefs_->IsManagedPreference(prefs::kAlternativeBrowserParameters))
     return;
-  const base::Value* params =
-      prefs_->GetList(prefs::kAlternativeBrowserParameters);
-  for (const auto& param : params->GetListDeprecated()) {
+  const base::Value::List& params =
+      prefs_->GetValueList(prefs::kAlternativeBrowserParameters);
+  for (const auto& param : params) {
     std::string param_string = param.GetString();
     alt_browser_params_.push_back(param_string);
   }
@@ -422,8 +422,9 @@ void BrowserSwitcherPrefs::ChromeParametersChanged() {
   chrome_params_.clear();
   if (!prefs_->IsManagedPreference(prefs::kChromeParameters))
     return;
-  const base::Value* params = prefs_->GetList(prefs::kChromeParameters);
-  for (const auto& param : params->GetListDeprecated()) {
+  const base::Value::List& params =
+      prefs_->GetValueList(prefs::kChromeParameters);
+  for (const auto& param : params) {
     std::string param_string = param.GetString();
     chrome_params_.push_back(param_string);
   }

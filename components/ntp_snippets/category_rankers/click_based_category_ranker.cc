@@ -347,13 +347,13 @@ base::Time ParseLastDismissedDate(const base::DictionaryValue& value) {
 bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
     std::vector<RankedCategory>* result_categories) const {
   result_categories->clear();
-  const base::Value* list =
-      pref_service_->GetList(prefs::kClickBasedCategoryRankerOrderWithClicks);
-  if (!list || list->GetListDeprecated().size() == 0) {
+  const base::Value::List& list = pref_service_->GetValueList(
+      prefs::kClickBasedCategoryRankerOrderWithClicks);
+  if (list.size() == 0) {
     return false;
   }
 
-  for (const base::Value& value : list->GetListDeprecated()) {
+  for (const base::Value& value : list) {
     const base::DictionaryValue* dictionary;
     if (!value.GetAsDictionary(&dictionary)) {
       LOG(DFATAL) << "Failed to parse category data from prefs param "

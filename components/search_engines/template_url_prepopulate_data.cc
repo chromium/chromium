@@ -1339,11 +1339,10 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
   if (!prefs)
     return t_urls;
 
-  const base::Value* list = prefs->GetList(prefs::kSearchProviderOverrides);
-  if (!list)
-    return t_urls;
+  const base::Value::List& list =
+      prefs->GetValueList(prefs::kSearchProviderOverrides);
 
-  for (const base::Value& engine : list->GetListDeprecated()) {
+  for (const base::Value& engine : list) {
     if (engine.is_dict()) {
       auto t_url = TemplateURLDataFromOverrideDictionary(engine);
       if (t_url)

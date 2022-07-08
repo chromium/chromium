@@ -578,20 +578,19 @@ void MediaGalleriesPreferences::InitFromPrefs() {
   device_map_.clear();
 
   PrefService* prefs = profile_->GetPrefs();
-  const base::Value* list =
-      prefs->GetList(prefs::kMediaGalleriesRememberedGalleries);
-  if (list) {
-    for (const auto& gallery_value : list->GetListDeprecated()) {
-      if (!gallery_value.is_dict())
-        continue;
+  const base::Value::List& list =
+      prefs->GetValueList(prefs::kMediaGalleriesRememberedGalleries);
 
-      MediaGalleryPrefInfo gallery_info;
-      if (!PopulateGalleryPrefInfoFromDictionary(gallery_value, &gallery_info))
-        continue;
+  for (const auto& gallery_value : list) {
+    if (!gallery_value.is_dict())
+      continue;
 
-      known_galleries_[gallery_info.pref_id] = gallery_info;
-      device_map_[gallery_info.device_id].insert(gallery_info.pref_id);
-    }
+    MediaGalleryPrefInfo gallery_info;
+    if (!PopulateGalleryPrefInfoFromDictionary(gallery_value, &gallery_info))
+      continue;
+
+    known_galleries_[gallery_info.pref_id] = gallery_info;
+    device_map_[gallery_info.device_id].insert(gallery_info.pref_id);
   }
 }
 

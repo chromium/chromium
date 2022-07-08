@@ -1557,8 +1557,8 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
 
   profile_manager->CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
-  const base::Value* final_last_active_profile_list =
-      local_state->GetList(prefs::kProfilesLastActive);
+  const base::Value::List& final_last_active_profile_list =
+      local_state->GetValueList(prefs::kProfilesLastActive);
 
   // The ephemeral profile should be deleted, and the last used profile set to
   // the other one. Also, the ephemeral profile should be removed from the
@@ -1567,10 +1567,9 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   EXPECT_TRUE(base::DirectoryExists(path2));
   EXPECT_EQ(profile_name2, local_state->GetString(prefs::kProfileLastUsed));
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  ASSERT_EQ(1u, final_last_active_profile_list->GetListDeprecated().size());
-  ASSERT_EQ(
-      path2.BaseName().MaybeAsASCII(),
-      (final_last_active_profile_list->GetListDeprecated())[0].GetString());
+  ASSERT_EQ(1u, final_last_active_profile_list.size());
+  ASSERT_EQ(path2.BaseName().MaybeAsASCII(),
+            (final_last_active_profile_list)[0].GetString());
 
   // Mark the remaining profile ephemeral and clean up.
   storage.GetAllProfilesAttributes()[0]->SetIsEphemeral(true);
@@ -1581,7 +1580,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   EXPECT_FALSE(base::DirectoryExists(path2));
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
   EXPECT_EQ("Profile 1", local_state->GetString(prefs::kProfileLastUsed));
-  ASSERT_EQ(0u, final_last_active_profile_list->GetListDeprecated().size());
+  ASSERT_EQ(0u, final_last_active_profile_list.size());
 }
 
 TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
@@ -1629,8 +1628,8 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
 
   profile_manager->CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
-  const base::Value* final_last_active_profile_list =
-      local_state->GetList(prefs::kProfilesLastActive);
+  const base::Value::List& final_last_active_profile_list =
+      local_state->GetValueList(prefs::kProfilesLastActive);
 
   // The guest and the non-ephemeral regular profile aren't impacted.
   EXPECT_TRUE(base::DirectoryExists(guest_path));
@@ -1638,10 +1637,9 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   EXPECT_EQ(guest_profile_name,
             local_state->GetString(prefs::kProfileLastUsed));
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  ASSERT_EQ(2u, final_last_active_profile_list->GetListDeprecated().size());
-  ASSERT_EQ(
-      guest_path.BaseName().MaybeAsASCII(),
-      (final_last_active_profile_list->GetListDeprecated())[0].GetString());
+  ASSERT_EQ(2u, final_last_active_profile_list.size());
+  ASSERT_EQ(guest_path.BaseName().MaybeAsASCII(),
+            (final_last_active_profile_list)[0].GetString());
 }
 
 TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {

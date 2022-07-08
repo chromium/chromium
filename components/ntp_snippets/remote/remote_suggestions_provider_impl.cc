@@ -1556,9 +1556,9 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
   // This must only be called at startup, before there are any categories.
   DCHECK(category_contents_.empty());
 
-  const base::Value* list =
-      pref_service_->GetList(prefs::kRemoteSuggestionCategories);
-  for (const base::Value& entry : list->GetListDeprecated()) {
+  const base::Value::List& list =
+      pref_service_->GetValueList(prefs::kRemoteSuggestionCategories);
+  for (const base::Value& entry : list) {
     const base::DictionaryValue* dict = nullptr;
     if (!entry.GetAsDictionary(&dict)) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;

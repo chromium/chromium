@@ -153,9 +153,9 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
 
 bool ArcVolumeMounterBridge::IsVisibleToAndroidApps(
     const std::string& uuid) const {
-  const base::Value* uuid_list =
-      pref_service_->GetList(prefs::kArcVisibleExternalStorages);
-  for (auto& value : uuid_list->GetListDeprecated()) {
+  const base::Value::List& uuid_list =
+      pref_service_->GetValueList(prefs::kArcVisibleExternalStorages);
+  for (auto& value : uuid_list) {
     if (value.is_string() && value.GetString() == uuid)
       return true;
   }

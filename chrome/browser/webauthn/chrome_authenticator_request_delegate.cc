@@ -86,10 +86,9 @@ bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
     const std::string& relying_party_id) {
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   const PrefService* prefs = profile->GetPrefs();
-  const base::Value* permit_attestation =
-      prefs->GetList(prefs::kSecurityKeyPermitAttestation);
-  return std::any_of(permit_attestation->GetListDeprecated().begin(),
-                     permit_attestation->GetListDeprecated().end(),
+  const base::Value::List& permit_attestation =
+      prefs->GetValueList(prefs::kSecurityKeyPermitAttestation);
+  return std::any_of(permit_attestation.begin(), permit_attestation.end(),
                      [&relying_party_id](const base::Value& v) {
                        return v.GetString() == relying_party_id;
                      });

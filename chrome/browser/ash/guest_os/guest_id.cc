@@ -168,12 +168,9 @@ void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
 const base::Value* GetContainerPrefValue(Profile* profile,
                                          const GuestId& container_id,
                                          const std::string& key) {
-  const base::Value* containers =
-      profile->GetPrefs()->GetList(prefs::kGuestOsContainers);
-  if (!containers) {
-    return nullptr;
-  }
-  for (const auto& dict : containers->GetListDeprecated()) {
+  const base::Value::List& containers =
+      profile->GetPrefs()->GetValueList(prefs::kGuestOsContainers);
+  for (const auto& dict : containers) {
     if (MatchContainerDict(dict, container_id))
       return dict.FindKey(key);
   }

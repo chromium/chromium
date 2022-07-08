@@ -2138,13 +2138,12 @@ PrefService* GetPrimaryUserPrefService() {
 // given list of |desks_names|.
 void VerifyDesksRestoreData(PrefService* user_prefs,
                             const std::vector<std::string>& desks_names) {
-  const base::Value* desks_restore_names =
-      user_prefs->GetList(prefs::kDesksNamesList);
-  ASSERT_EQ(desks_names.size(),
-            desks_restore_names->GetListDeprecated().size());
+  const base::Value::List& desks_restore_names =
+      user_prefs->GetValueList(prefs::kDesksNamesList);
+  ASSERT_EQ(desks_names.size(), desks_restore_names.size());
 
   size_t index = 0;
-  for (const auto& value : desks_restore_names->GetListDeprecated())
+  for (const auto& value : desks_restore_names)
     EXPECT_EQ(desks_names[index++], value.GetString());
 }
 

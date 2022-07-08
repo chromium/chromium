@@ -426,12 +426,12 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     return;
   }
 
-  const base::Value* rules_list =
-      g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
+  const base::Value::List& rules_list =
+      g_browser_process->local_state()->GetValueList(
+          policy_prefs::kDlpRulesList);
 
-  DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA,
-                      rules_list && !rules_list->GetListDeprecated().empty());
-  if (!rules_list || rules_list->GetListDeprecated().empty()) {
+  DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA, !rules_list.empty());
+  if (rules_list.empty()) {
     DataTransferDlpController::DeleteInstance();
     return;
   }
@@ -443,7 +443,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   // Constructing request to send the policy to DLP Files daemon.
   ::dlp::SetDlpFilesPolicyRequest request_to_daemon;
 
-  for (const base::Value& rule : rules_list->GetListDeprecated()) {
+  for (const base::Value& rule : rules_list) {
     DCHECK(rule.is_dict());
     const auto* sources = rule.FindDictKey("sources");
     DCHECK(sources);

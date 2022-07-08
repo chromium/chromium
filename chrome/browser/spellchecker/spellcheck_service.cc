@@ -423,28 +423,27 @@ void SpellcheckService::LoadDictionaries() {
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   DCHECK(prefs);
 
-  const base::Value* user_dictionaries =
-      prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  const base::Value* forced_dictionaries =
-      prefs->GetList(spellcheck::prefs::kSpellCheckForcedDictionaries);
+  const base::Value::List& user_dictionaries =
+      prefs->GetValueList(spellcheck::prefs::kSpellCheckDictionaries);
+  const base::Value::List& forced_dictionaries =
+      prefs->GetValueList(spellcheck::prefs::kSpellCheckForcedDictionaries);
 
   // Build a lookup of blocked dictionaries to skip loading them.
-  const base::Value* blocked_dictionaries =
-      prefs->GetList(spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
+  const base::Value::List& blocked_dictionaries = prefs->GetValueList(
+      spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
   std::unordered_set<std::string> blocked_dictionaries_lookup;
-  for (const auto& blocked_dict : blocked_dictionaries->GetListDeprecated()) {
+  for (const auto& blocked_dict : blocked_dictionaries) {
     blocked_dictionaries_lookup.insert(blocked_dict.GetString());
   }
 
   // Merge both lists of dictionaries. Use a set to avoid duplicates.
   std::set<std::string> dictionaries;
-  for (const auto& dictionary_value : user_dictionaries->GetListDeprecated()) {
+  for (const auto& dictionary_value : user_dictionaries) {
     if (blocked_dictionaries_lookup.find(dictionary_value.GetString()) ==
         blocked_dictionaries_lookup.end())
       dictionaries.insert(dictionary_value.GetString());
   }
-  for (const auto& dictionary_value :
-       forced_dictionaries->GetListDeprecated()) {
+  for (const auto& dictionary_value : forced_dictionaries) {
     dictionaries.insert(dictionary_value.GetString());
   }
 

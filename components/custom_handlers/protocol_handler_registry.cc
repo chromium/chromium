@@ -635,16 +635,16 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
     return result;
   }
 
-  const base::Value* handlers = prefs_->GetList(pref_name);
-  if (handlers) {
-    for (const auto& list_item : handlers->GetList()) {
-      if (const base::Value::Dict* encoded_handler = list_item.GetIfDict()) {
-        if (ProtocolHandler::IsValidDict(*encoded_handler)) {
-          result.push_back(encoded_handler);
-        }
+  const base::Value::List& handlers = prefs_->GetValueList(pref_name);
+
+  for (const auto& list_item : handlers) {
+    if (const base::Value::Dict* encoded_handler = list_item.GetIfDict()) {
+      if (ProtocolHandler::IsValidDict(*encoded_handler)) {
+        result.push_back(encoded_handler);
       }
     }
   }
+
   return result;
 }
 

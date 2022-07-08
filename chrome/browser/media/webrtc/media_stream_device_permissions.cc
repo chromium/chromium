@@ -28,8 +28,8 @@ MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
 
   const PrefService* prefs = profile->GetPrefs();
 
-  const base::Value* list = prefs->GetList(allowed_urls_pref_name);
-  for (const base::Value& i : list->GetListDeprecated()) {
+  const base::Value::List& list = prefs->GetValueList(allowed_urls_pref_name);
+  for (const base::Value& i : list) {
     const std::string* value = i.GetIfString();
     if (value) {
       ContentSettingsPattern pattern =

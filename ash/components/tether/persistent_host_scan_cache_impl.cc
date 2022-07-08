@@ -100,13 +100,12 @@ PersistentHostScanCacheImpl::~PersistentHostScanCacheImpl() = default;
 
 std::unordered_map<std::string, HostScanCacheEntry>
 PersistentHostScanCacheImpl::GetStoredCacheEntries() {
-  const base::Value* cache_entry_list =
-      pref_service_->GetList(prefs::kHostScanCache);
-  DCHECK(cache_entry_list);
+  const base::Value::List& cache_entry_list =
+      pref_service_->GetValueList(prefs::kHostScanCache);
 
   std::unordered_map<std::string, HostScanCacheEntry> entries;
   std::unordered_set<std::string> ids_processed_so_far;
-  for (auto& cache_entry_value : cache_entry_list->GetListDeprecated()) {
+  for (auto& cache_entry_value : cache_entry_list) {
     const base::DictionaryValue* cache_entry_dict;
 
     if (!cache_entry_value.GetAsDictionary(&cache_entry_dict)) {

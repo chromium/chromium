@@ -835,10 +835,10 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
 
   // Setting the pref in OffTheRecord shouldn't set it for the regular
   // profile.
-  const base::Value* non_off_the_record_origins =
-      profile()->GetPrefs()->GetList(prefs::kMediaRouterTabMirroringSources);
-  EXPECT_FALSE(base::Contains(non_off_the_record_origins->GetListDeprecated(),
-                              base::Value(origin)));
+  const base::Value::List& non_off_the_record_origins =
+      profile()->GetPrefs()->GetValueList(
+          prefs::kMediaRouterTabMirroringSources);
+  EXPECT_FALSE(base::Contains(non_off_the_record_origins, base::Value(origin)));
 
   // Auto-join requests should be rejected.
   EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionError(_));

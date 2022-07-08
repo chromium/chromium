@@ -1051,8 +1051,8 @@ void ClearGotoFilesClicked(PrefService* local_state,
 
 bool WasGotoFilesClicked(PrefService* local_state,
                          const std::string& user_id_hash) {
-  const base::Value* list = local_state->GetList(kGotoFilesPref);
-  return base::Contains(list->GetList(), base::Value(user_id_hash));
+  const base::Value::List& list = local_state->GetValueList(kGotoFilesPref);
+  return base::Contains(list, base::Value(user_id_hash));
 }
 
 bool ShouldEnforceAshExtensionKeepList() {

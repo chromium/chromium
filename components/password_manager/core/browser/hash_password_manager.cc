@@ -222,9 +222,10 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   if (!prefs_ || !prefs_->HasPrefPath(prefs::kPasswordHashDataList))
     return result;
 
-  const base::Value* hash_list = prefs_->GetList(prefs::kPasswordHashDataList);
+  const base::Value::List& hash_list =
+      prefs_->GetValueList(prefs::kPasswordHashDataList);
 
-  for (const base::Value& entry : hash_list->GetListDeprecated()) {
+  for (const base::Value& entry : hash_list) {
     absl::optional<PasswordHashData> password_hash_data =
         ConvertToPasswordHashData(entry);
     if (password_hash_data)

@@ -1269,11 +1269,10 @@ void ProfileManager::CleanUpEphemeralProfiles() {
 void ProfileManager::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::Value* deleted_profiles =
-      local_state->GetList(prefs::kProfilesDeleted);
-  DCHECK(deleted_profiles);
+  const base::Value::List& deleted_profiles =
+      local_state->GetValueList(prefs::kProfilesDeleted);
 
-  for (const base::Value& value : deleted_profiles->GetListDeprecated()) {
+  for (const base::Value& value : deleted_profiles) {
     absl::optional<base::FilePath> profile_path = base::ValueToFilePath(value);
     // Although it should never happen, make sure this is a valid path in the
     // user_data_dir, so we don't accidentally delete something else.

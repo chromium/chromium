@@ -188,12 +188,12 @@ const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
 }
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
-  const base::Value* managed_configurations =
-      profile_->GetPrefs()->GetList(prefs::kManagedConfigurationPerOrigin);
+  const base::Value::List& managed_configurations =
+      profile_->GetPrefs()->GetValueList(prefs::kManagedConfigurationPerOrigin);
 
   std::set<url::Origin> current_origins;
 
-  for (const auto& entry : managed_configurations->GetListDeprecated()) {
+  for (const auto& entry : managed_configurations) {
     const std::string* url = entry.FindStringKey(kOriginKey);
     if (!url)
       continue;

@@ -818,9 +818,10 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     return;
   }
 
-  const base::Value* accounts = local_state_->GetList(prefs::kKerberosAccounts);
-  if (!accounts || accounts->GetListDeprecated().empty()) {
-    VLOG(1) << "No or empty KerberosAccounts policy";
+  const base::Value::List& accounts =
+      local_state_->GetValueList(prefs::kKerberosAccounts);
+  if (accounts.empty()) {
+    VLOG(1) << "Empty KerberosAccounts policy";
     NotifyRequiresLoginPassword(false);
 
     // The active principal is empty if there are no accounts, so no need to
@@ -830,11 +831,10 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     return;
   }
 
-  VLOG(1) << accounts->GetListDeprecated().size()
-          << " accounts in KerberosAccounts";
+  VLOG(1) << accounts.size() << " accounts in KerberosAccounts";
   bool requires_login_password = false;
   std::vector<std::string> managed_accounts_added;
-  for (const auto& account : accounts->GetListDeprecated()) {
+  for (const auto& account : accounts) {
     // Get the principal. Should always be set.
     const base::Value* principal_value = account.FindPath(kPrincipal);
     DCHECK(principal_value);

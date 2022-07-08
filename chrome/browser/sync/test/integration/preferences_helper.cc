@@ -112,9 +112,10 @@ bool ClearedPrefMatches(const char* pref_name) {
 }
 
 bool ListPrefMatches(const char* pref_name) {
-  const base::Value* reference_value = GetPrefs(0)->GetList(pref_name);
+  const base::Value::List& reference_value =
+      GetPrefs(0)->GetValueList(pref_name);
   for (int i = 1; i < test()->num_clients(); ++i) {
-    if (*reference_value != *GetPrefs(i)->GetList(pref_name)) {
+    if (reference_value != *GetPrefs(i)->GetList(pref_name)) {
       DVLOG(1) << "List preference " << pref_name << " mismatched in"
                << " profile " << i << ".";
       return false;

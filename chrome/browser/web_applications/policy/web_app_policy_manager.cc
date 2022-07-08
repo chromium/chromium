@@ -114,9 +114,9 @@ void WebAppPolicyManager::Start() {
 }
 
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
-  const base::Value* web_apps =
-      pref_service_->GetList(prefs::kWebAppInstallForceList);
-  const auto& web_apps_list = web_apps->GetListDeprecated();
+  const base::Value::List& web_apps =
+      pref_service_->GetValueList(prefs::kWebAppInstallForceList);
+  const auto& web_apps_list = web_apps;
 
   const auto it =
       std::find_if(web_apps_list.begin(), web_apps_list.end(),
@@ -222,13 +222,13 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
 
   custom_manifest_values_by_url_.clear();
 
-  const base::Value* web_apps =
-      pref_service_->GetList(prefs::kWebAppInstallForceList);
+  const base::Value::List& web_apps =
+      pref_service_->GetValueList(prefs::kWebAppInstallForceList);
   std::vector<ExternalInstallOptions> install_options_list;
   // No need to validate the types or values of the policy members because we
   // are using a SimpleSchemaValidatingPolicyHandler which should validate them
   // for us.
-  for (const base::Value& entry : web_apps->GetListDeprecated()) {
+  for (const base::Value& entry : web_apps) {
     ExternalInstallOptions install_options = ParseInstallPolicyEntry(entry);
 
     if (!install_options.install_url.is_valid())
@@ -271,16 +271,11 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
 void WebAppPolicyManager::RefreshPolicySettings() {
   // No need to validate the types or values of the policy members because we
   // are using a WebAppSettingsPolicyHandler which should validate them for us.
-  const base::Value* web_app_settings =
-      pref_service_->GetList(prefs::kWebAppSettings);
+  const base::Value::List& web_apps_list =
+      pref_service_->GetValueList(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
   default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
-
-  if (!web_app_settings)
-    return;
-
-  const auto& web_apps_list = web_app_settings->GetList();
 
   // Read default policy, if provided.
   const auto it = std::find_if(
@@ -625,12 +620,11 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   if (!local_state)  // Sometimes it's not available in tests.
     return;
 
-  const base::Value* disabled_system_features_pref =
-      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  if (!disabled_system_features_pref)
-    return;
+  const base::Value::List& disabled_system_features_pref =
+      local_state->GetValueList(
+          policy::policy_prefs::kSystemFeaturesDisableList);
 
-  for (const auto& entry : disabled_system_features_pref->GetListDeprecated()) {
+  for (const auto& entry : disabled_system_features_pref) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
       case policy::SystemFeature::kCamera:
         disabled_system_apps_.insert(ash::SystemWebAppType::CAMERA);

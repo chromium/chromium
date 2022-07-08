@@ -749,10 +749,10 @@ void CryptAuthDeviceManagerImpl::OnResyncMessage(
 }
 
 void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
-  const base::Value* unlock_key_list =
-      pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
+  const base::Value::List& unlock_key_list =
+      pref_service_->GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   synced_devices_.clear();
-  for (const auto& it : unlock_key_list->GetListDeprecated()) {
+  for (const auto& it : unlock_key_list) {
     if (it.is_dict()) {
       cryptauth::ExternalDeviceInfo unlock_key;
       if (DictionaryToUnlockKey(it, &unlock_key)) {
@@ -762,7 +762,7 @@ void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
       }
     } else {
       PA_LOG(ERROR) << "Can not get dictionary in list of unlock keys:\n"
-                    << *unlock_key_list;
+                    << unlock_key_list;
     }
   }
 }

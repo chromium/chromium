@@ -145,13 +145,13 @@ void RestorePrimaryUserDesks() {
   if (primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently))
     UMA_HISTOGRAM_BOOLEAN("Ash.Desks.UserHasUsedDesksRecently", true);
 
-  const base::Value* desks_names =
-      primary_user_prefs->GetList(prefs::kDesksNamesList);
-  const base::Value* desks_metrics =
-      primary_user_prefs->GetList(prefs::kDesksMetricsList);
+  const base::Value::List& desks_names_list =
+      primary_user_prefs->GetValueList(prefs::kDesksNamesList);
+  const base::Value::List& desks_metrics_list =
+      primary_user_prefs->GetValueList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
-  const size_t restore_size = desks_names->GetListDeprecated().size();
+  const size_t restore_size = desks_names_list.size();
 
   // If we don't have any restore data, or the list is corrupt for some reason,
   // abort.
@@ -162,10 +162,7 @@ void RestorePrimaryUserDesks() {
   while (desks_controller->desks().size() < restore_size)
     desks_controller->NewDesk(DesksCreationRemovalSource::kDesksRestore);
 
-  const auto& desks_names_list = desks_names->GetListDeprecated();
-  const auto& desks_metrics_list = desks_metrics->GetListDeprecated();
-  const size_t desks_metrics_list_size =
-      desks_metrics->GetListDeprecated().size();
+  const size_t desks_metrics_list_size = desks_metrics_list.size();
   const auto now = base::Time::Now();
   for (size_t index = 0; index < restore_size; ++index) {
     const std::string& desk_name = desks_names_list[index].GetString();

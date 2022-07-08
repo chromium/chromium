@@ -264,9 +264,9 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     ShelfControllerHelper* helper) {
   const PrefService* prefs = GetPrefs();
   std::vector<std::string> result;
-  const base::Value* policy_apps =
-      prefs->GetList(prefs::kPolicyPinnedLauncherApps);
-  if (!policy_apps || policy_apps->GetListDeprecated().empty())
+  const base::Value::List& policy_apps =
+      prefs->GetValueList(prefs::kPolicyPinnedLauncherApps);
+  if (policy_apps.empty())
     return result;
 
   // Obtain here all ids of ARC apps because it takes linear time, and getting
@@ -276,7 +276,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
       arc_app_list_pref ? arc_app_list_pref->GetAppIds()
                         : std::vector<std::string>());
 
-  for (const auto& policy_dict_entry : policy_apps->GetListDeprecated()) {
+  for (const auto& policy_dict_entry : policy_apps) {
     const std::string* policy_entry =
         policy_dict_entry.is_dict()
             ? policy_dict_entry.GetDict().FindString(

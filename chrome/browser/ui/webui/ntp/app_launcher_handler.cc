@@ -667,14 +667,15 @@ void AppLauncherHandler::FillAppDictionary(base::Value::Dict* dictionary) {
         l10n_util::GetPluralStringFUTF16(IDS_DEPRECATED_APPS_DELETION_LINK,
                                          deprecated_app_ids_.size()));
 
-  const base::Value* app_page_names = prefs->GetList(prefs::kNtpAppPageNames);
-  if (!app_page_names || !app_page_names->GetListDeprecated().size()) {
+  const base::Value::List& app_page_names =
+      prefs->GetValueList(prefs::kNtpAppPageNames);
+  if (!app_page_names.size()) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::Value* list = update.Get();
     list->Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
     dictionary->Set("appPageNames", list->Clone());
   } else {
-    dictionary->Set("appPageNames", app_page_names->Clone());
+    dictionary->Set("appPageNames", app_page_names.Clone());
   }
 }
 
