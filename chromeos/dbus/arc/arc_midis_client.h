@@ -5,10 +5,6 @@
 #ifndef CHROMEOS_DBUS_ARC_ARC_MIDIS_CLIENT_H_
 #define CHROMEOS_DBUS_ARC_ARC_MIDIS_CLIENT_H_
 
-#include <memory>
-#include <string>
-
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/dbus/common/dbus_client.h"
@@ -21,13 +17,20 @@ namespace chromeos {
 // initialization.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcMidisClient : public DBusClient {
  public:
+  // Returns the global instance if initialized. May return null.
+  static ArcMidisClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   ArcMidisClient(const ArcMidisClient&) = delete;
   ArcMidisClient& operator=(const ArcMidisClient&) = delete;
-
-  ~ArcMidisClient() override = default;
-
-  // Factory function.
-  static std::unique_ptr<ArcMidisClient> Create();
 
   // Bootstrap the Mojo connection between Chrome and the MIDI service.
   // Should pass in the child end of the Mojo pipe.
@@ -35,8 +38,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcMidisClient : public DBusClient {
                                        VoidDBusMethodCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
-  ArcMidisClient() = default;
+  // Initialize() should be used instead.
+  ArcMidisClient();
+  ~ArcMidisClient() override;
 };
 
 }  // namespace chromeos

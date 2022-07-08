@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "chromeos/dbus/arc/fake_arc_midis_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -17,6 +18,8 @@
 namespace chromeos {
 
 namespace {
+
+ArcMidisClient* g_instance = nullptr;
 
 // ArcMidisClient is used to bootstrap a Mojo connection with midis.
 // The BootstrapMojoConnection callback should be called during browser
@@ -44,7 +47,6 @@ class ArcMidisClientImpl : public ArcMidisClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(midis::kMidisServiceName,
                                  dbus::ObjectPath(midis::kMidisServicePath));
@@ -69,8 +71,35 @@ class ArcMidisClientImpl : public ArcMidisClient {
 // ArcMidisClient
 
 // static
-std::unique_ptr<ArcMidisClient> ArcMidisClient::Create() {
-  return std::make_unique<ArcMidisClientImpl>();
+ArcMidisClient* ArcMidisClient::Get() {
+  return g_instance;
+}
+
+// static
+void ArcMidisClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ArcMidisClientImpl())->Init(bus);
+}
+
+// static
+void ArcMidisClient::InitializeFake() {
+  (new FakeArcMidisClient())->Init(nullptr);
+}
+
+// static
+void ArcMidisClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ArcMidisClient::ArcMidisClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ArcMidisClient::~ArcMidisClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos
