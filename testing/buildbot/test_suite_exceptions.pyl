@@ -1166,6 +1166,18 @@
       'chromeos-jacuzzi-chrome': {
         'experiment_percentage': 100,
       },
+      'chromeos-kevin-chrome': {
+        'swarming': {
+          # Reducing parallelism due to DUT shortage (b/238271231) 
+          'shards': 5,
+        }
+      },
+      'chromeos-kevin-rel': {
+        'swarming': {
+          # Reducing parallelism due to DUT shortage (b/238271231) 
+          'shards': 5,
+        }
+      },
       'chromeos-octopus-chrome': {
         'experiment_percentage': 100,
       },
