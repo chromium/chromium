@@ -580,12 +580,8 @@ void ExecuteTaskAfterMimeTypesCollected(
     FileTaskFinishedCallback done,
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
     std::unique_ptr<std::vector<std::string>> mime_types) {
-  bool is_arc_share = task.task_type == TASK_TYPE_ARC_APP &&
-                      (task.action_id == kActionIdSend ||
-                       task.action_id == kActionIdSendMultiple);
-  bool is_web_app = task.task_type == TASK_TYPE_WEB_APP;
-  bool is_chrome_app = task.task_type == TASK_TYPE_FILE_HANDLER;
-  if (is_arc_share || is_web_app || is_chrome_app) {
+  if (task.task_type == TASK_TYPE_WEB_APP ||
+      task.task_type == TASK_TYPE_FILE_HANDLER) {
     ExecuteAppServiceTask(profile, task, file_urls, *mime_types,
                           std::move(done));
     return;

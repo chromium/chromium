@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -34,7 +32,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "components/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
@@ -53,12 +50,8 @@ namespace file_tasks {
 using extensions::api::file_manager_private::Verb;
 
 namespace {
-// TODO(crbug/1092784): Only going to support ARC app and web app
-// for now.
 TaskType GetTaskType(apps::AppType app_type) {
   switch (app_type) {
-    case apps::AppType::kArc:
-      return TASK_TYPE_ARC_APP;
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
@@ -71,6 +64,7 @@ TaskType GetTaskType(apps::AppType app_type) {
       // because both are executed through App Service, which can tell the
       // difference itself.
       return TASK_TYPE_FILE_HANDLER;
+    case apps::AppType::kArc:
     case apps::AppType::kUnknown:
     case apps::AppType::kCrostini:
     case apps::AppType::kBuiltIn:
@@ -160,7 +154,7 @@ void FindAppServiceTasks(Profile* profile,
 
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
-    if (!(app_type == apps::AppType::kArc || app_type == apps::AppType::kWeb ||
+    if (!(app_type == apps::AppType::kWeb ||
           app_type == apps::AppType::kSystemWeb ||
           app_type == apps::AppType::kChromeApp ||
           app_type == apps::AppType::kExtension ||
@@ -261,13 +255,10 @@ void ExecuteAppServiceTask(
     intent_files.push_back(std::move(file));
   }
 
-  DCHECK(task.task_type == TASK_TYPE_ARC_APP ||
-         task.task_type == TASK_TYPE_WEB_APP ||
+  DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
          task.task_type == TASK_TYPE_FILE_HANDLER);
   apps::mojom::IntentPtr intent =
-      task.task_type == TASK_TYPE_ARC_APP
-          ? apps_util::CreateShareIntentFromFiles(file_urls, mime_types)
-          : apps_util::CreateViewIntentFromFiles(std::move(intent_files));
+      apps_util::CreateViewIntentFromFiles(std::move(intent_files));
   intent->activity_name = task.action_id;
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
