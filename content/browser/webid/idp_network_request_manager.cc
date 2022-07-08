@@ -333,6 +333,65 @@ FetchStatus GetParsingError(
   return FetchStatus::kSuccess;
 }
 
+void OnManifestListParsed(
+    IdpNetworkRequestManager::FetchManifestListCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (callback.IsCancelled())
+    return;
+
+  std::set<GURL> urls;
+
+  if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
+    std::move(callback).Run(FetchStatus::kInvalidResponseError, urls);
+    return;
+  }
+
+  const base::Value::Dict* dict = result.value->GetIfDict();
+  if (!dict) {
+    std::move(callback).Run(FetchStatus::kInvalidResponseError, urls);
+    return;
+  }
+
+  const base::Value::List* list = dict->FindList(kProviderUrlListKey);
+  if (!list) {
+    std::move(callback).Run(FetchStatus::kInvalidResponseError, urls);
+    return;
+  }
+
+  for (const auto& value : *list) {
+    const std::string* url = value.GetIfString();
+    if (!url) {
+      std::move(callback).Run(FetchStatus::kInvalidResponseError,
+                              std::set<GURL>());
+      return;
+    }
+    urls.insert(GURL(*url));
+  }
+
+  std::move(callback).Run(FetchStatus::kSuccess, urls);
+}
+
+void OnManifestListLoaded(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    IdpNetworkRequestManager::FetchManifestListCallback callback,
+    std::unique_ptr<std::string> response_body) {
+  if (callback.IsCancelled())
+    return;
+
+  FetchStatus response_error =
+      GetResponseError(url_loader.get(), response_body.get());
+  url_loader.reset();
+
+  if (response_error != FetchStatus::kSuccess) {
+    std::move(callback).Run(response_error, std::set<GURL>());
+    return;
+  }
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response_body,
+      base::BindOnce(&OnManifestListParsed, std::move(callback)));
+}
+
 }  // namespace
 
 IdpNetworkRequestManager::Endpoints::Endpoints() = default;
@@ -407,26 +466,23 @@ absl::optional<GURL> IdpNetworkRequestManager::ComputeManifestListUrl(
 
 void IdpNetworkRequestManager::FetchManifestList(
     FetchManifestListCallback callback) {
-  DCHECK(!manifest_list_url_loader_);
-  DCHECK(!manifest_list_callback_);
-
-  manifest_list_callback_ = std::move(callback);
-
   absl::optional<GURL> manifest_list_url =
       IdpNetworkRequestManager::ComputeManifestListUrl(provider_);
 
   if (!manifest_list_url) {
-    OnManifestListLoaded(nullptr);
+    OnManifestListLoaded(nullptr, std::move(callback), nullptr);
     return;
   }
 
-  manifest_list_url_loader_ = CreateUncredentialedUrlLoader(
-      *manifest_list_url, /* send_referrer= */ false,
-      /* follow_redirects= */ true);
-  manifest_list_url_loader_->DownloadToString(
+  std::unique_ptr<network::SimpleURLLoader> url_loader =
+      CreateUncredentialedUrlLoader(*manifest_list_url,
+                                    /* send_referrer= */ false,
+                                    /* follow_redirects= */ true);
+  network::SimpleURLLoader* url_loader_ptr = url_loader.get();
+  url_loader_ptr->DownloadToString(
       loader_factory_.get(),
-      base::BindOnce(&IdpNetworkRequestManager::OnManifestListLoaded,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&OnManifestListLoaded, std::move(url_loader),
+                     std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 
@@ -576,23 +632,6 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
       maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::OnManifestListLoaded(
-    std::unique_ptr<std::string> response_body) {
-  FetchStatus response_error =
-      GetResponseError(manifest_list_url_loader_.get(), response_body.get());
-  manifest_list_url_loader_.reset();
-
-  if (response_error != FetchStatus::kSuccess) {
-    std::move(manifest_list_callback_).Run(response_error, std::set<GURL>());
-    return;
-  }
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&IdpNetworkRequestManager::OnManifestListParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void IdpNetworkRequestManager::OnManifestLoaded(
     absl::optional<int> idp_brand_icon_ideal_size,
     absl::optional<int> idp_brand_icon_minimum_size,
@@ -612,43 +651,6 @@ void IdpNetworkRequestManager::OnManifestLoaded(
       base::BindOnce(&IdpNetworkRequestManager::OnManifestParsed,
                      weak_ptr_factory_.GetWeakPtr(), idp_brand_icon_ideal_size,
                      idp_brand_icon_minimum_size));
-}
-
-void IdpNetworkRequestManager::OnManifestListParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  std::set<GURL> urls;
-
-  if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
-    std::move(manifest_list_callback_)
-        .Run(FetchStatus::kInvalidResponseError, urls);
-    return;
-  }
-
-  const base::Value::Dict* dict = result.value->GetIfDict();
-  if (!dict) {
-    std::move(manifest_list_callback_)
-        .Run(FetchStatus::kInvalidResponseError, urls);
-    return;
-  }
-
-  const base::Value::List* list = dict->FindList(kProviderUrlListKey);
-  if (!list) {
-    std::move(manifest_list_callback_)
-        .Run(FetchStatus::kInvalidResponseError, urls);
-    return;
-  }
-
-  for (const auto& value : *list) {
-    const std::string* url = value.GetIfString();
-    if (!url) {
-      std::move(manifest_list_callback_)
-          .Run(FetchStatus::kInvalidResponseError, std::set<GURL>());
-      return;
-    }
-    urls.insert(GURL(*url));
-  }
-
-  std::move(manifest_list_callback_).Run(FetchStatus::kSuccess, urls);
 }
 
 void IdpNetworkRequestManager::OnManifestParsed(

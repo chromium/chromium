@@ -165,8 +165,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
  private:
-  void OnManifestListLoaded(std::unique_ptr<std::string> response_body);
-  void OnManifestListParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnManifestLoaded(absl::optional<int> idp_brand_icon_ideal_size,
                         absl::optional<int> idp_brand_icon_minimum_size,
                         std::unique_ptr<std::string> response_body);
@@ -202,7 +200,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
-  FetchManifestListCallback manifest_list_callback_;
   FetchManifestCallback idp_manifest_callback_;
   FetchClientMetadataCallback client_metadata_callback_;
   TokenRequestCallback token_request_callback_;
@@ -210,12 +207,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   LogoutCallback logout_callback_;
 
   // url_loader_ is used for all loads except for the manifest list, which uses
-  // manifest_list_url_loader_. This is so we can fetch the manifest list in
+  // a different SimpleURLLoader. This is so we can fetch the manifest list in
   // parallel with the other requests.
   // TODO(cbiesinger): Also allow fetching the client metadata file in
   // parallel with the account list.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  std::unique_ptr<network::SimpleURLLoader> manifest_list_url_loader_;
   network::mojom::ClientSecurityStatePtr client_security_state_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
