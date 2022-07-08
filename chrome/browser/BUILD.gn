@@ -1374,6 +1374,8 @@ static_library("browser") {
     "prefs/session_startup_pref.h",
     "preloading/chrome_preloading.cc",
     "preloading/chrome_preloading.h",
+    "preloading/navigation_ablation_throttle.cc",
+    "preloading/navigation_ablation_throttle.h",
     "prerender/prerender_manager.cc",
     "prerender/prerender_manager.h",
     "prerender/prerender_utils.cc",
