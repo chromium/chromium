@@ -150,19 +150,13 @@ suite('LocalImagesTest', function() {
       'sets aria-selected attribute if image name matches currently selected',
       async () => {
         personalizationStore.data.wallpaper.local = {
-          images: [
-            {path: '/test/LocalImage0.png'}, {path: '/test/LocalImage1.png'}
-          ],
-          data: {
-            '/test/LocalImage0.png': 'data://localimage0data',
-            '/test/LocalImage1.png': 'data://localimage1data',
-          },
+          images: wallpaperProvider.localImages,
+          data: wallpaperProvider.localImageData,
         };
         // Done loading.
         personalizationStore.data.wallpaper.loading.local = {
           images: false,
-          data:
-              {'/test/LocalImage0.png': false, '/test/LocalImage1.png': false},
+          data: {'LocalImage0.png': false, 'LocalImage1.png': false},
         };
 
         localImagesElement = initElement(LocalImages, {hidden: false});
@@ -179,7 +173,7 @@ suite('LocalImagesTest', function() {
             image => image.getAttribute('aria-selected') === 'false'));
 
         personalizationStore.data.wallpaper.currentSelected = {
-          key: '/test/LocalImage1.png'
+          key: 'LocalImage1.png'
         };
         personalizationStore.notifyObservers();
 

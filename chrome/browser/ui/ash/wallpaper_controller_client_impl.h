@@ -108,8 +108,7 @@ class WallpaperControllerClientImpl
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
-                          bool preview_mode,
-                          const std::string& file_path = "");
+                          bool preview_mode);
   void SetOnlineWallpaper(
       const ash::OnlineWallpaperParams& params,
       ash::WallpaperController::SetWallpaperCallback callback);

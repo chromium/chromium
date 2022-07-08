@@ -307,9 +307,6 @@ base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
       base::NumberToString(info.date.ToInternalValue()));
   wallpaper_info_dict.SetStringKey(
       WallpaperPrefManager::kNewWallpaperLocationNodeName, info.location);
-  wallpaper_info_dict.SetStringKey(
-      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
-      info.user_file_path);
   wallpaper_info_dict.SetIntKey(
       WallpaperPrefManager::kNewWallpaperLayoutNodeName, info.layout);
   wallpaper_info_dict.SetIntKey(WallpaperPrefManager::kNewWallpaperTypeNodeName,
@@ -3422,9 +3419,6 @@ TEST_F(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
   wallpaper_info_dict.SetStringPath(
       WallpaperPrefManager::kNewWallpaperLocationNodeName, "location");
-  wallpaper_info_dict.SetStringPath(
-      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
-      "user_file_path");
   wallpaper_info_dict.SetIntPath(
       WallpaperPrefManager::kNewWallpaperLayoutNodeName,
       WallpaperLayout::WALLPAPER_LAYOUT_CENTER);

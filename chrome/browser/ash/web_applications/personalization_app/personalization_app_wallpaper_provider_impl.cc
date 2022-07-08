@@ -381,13 +381,11 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
     case ash::WallpaperType::kCustomized: {
       base::FilePath file_name = base::FilePath(info.location).BaseName();
 
+      // Match selected wallpaper based on full filename including extension.
+      const std::string& key = file_name.value();
       // Do not show file extension in user-visible selected details text.
       std::vector<std::string> attribution = {
           file_name.RemoveExtension().value()};
-
-      // Match selected wallpaper based on full filename including extension.
-      const std::string& key =
-          info.user_file_path.empty() ? file_name.value() : info.user_file_path;
 
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(

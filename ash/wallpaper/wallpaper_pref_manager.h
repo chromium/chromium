@@ -63,7 +63,6 @@ class ASH_EXPORT WallpaperPrefManager
   static const char kNewWallpaperDedupKeyNodeName[];
   static const char kNewWallpaperLayoutNodeName[];
   static const char kNewWallpaperLocationNodeName[];
-  static const char kNewWallpaperUserFilePathNodeName[];
   static const char kNewWallpaperTypeNodeName[];
   static const char kNewWallpaperUnitIdNodeName[];
   static const char kNewWallpaperVariantListNodeName[];

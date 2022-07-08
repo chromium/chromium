@@ -175,7 +175,7 @@ export class LocalImages extends WithPersonalizationStore {
     }
     return (isFilePath(pendingSelected) &&
                 image.path === pendingSelected.path ||
-            !!currentSelected && image.path === currentSelected.key &&
+            !!currentSelected && image.path.endsWith(currentSelected.key) &&
                 !pendingSelected)
                .toString() as 'true' |
         'false';

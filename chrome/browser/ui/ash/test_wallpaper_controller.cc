@@ -59,8 +59,7 @@ void TestWallpaperController::SetCustomWallpaper(const AccountId& account_id,
                                                  const std::string& file_name,
                                                  ash::WallpaperLayout layout,
                                                  const gfx::ImageSkia& image,
-                                                 bool preview_mode,
-                                                 const std::string& file_path) {
+                                                 bool preview_mode) {
   ++set_custom_wallpaper_count_;
 }
 

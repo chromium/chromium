@@ -80,8 +80,7 @@ class TestWallpaperController : public ash::WallpaperController {
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
-                          bool preview_mode,
-                          const std::string& file_path = "") override;
+                          bool preview_mode) override;
   void SetOnlineWallpaper(const ash::OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const ash::OnlineWallpaperParams& params,
