@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_result_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_layout_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
