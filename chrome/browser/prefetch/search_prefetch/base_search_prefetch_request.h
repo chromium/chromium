@@ -44,7 +44,7 @@ enum class SearchPrefetchStatus {
   // The request was cancelled before completion. This is a terminal state.
   kRequestCancelled = 6,
   // The request was served to the navigation stack. This is a terminal state.
-  kServed = 7,
+  kPrefetchServedForRealNavigation = 7,
   // The request was served to the prerender navigation stack. It may move to
   // |kPrerenderedAndClicked| when the user navigates to the result in omnibox
   // or |kRequestCancelled| if the user closes omnibox.

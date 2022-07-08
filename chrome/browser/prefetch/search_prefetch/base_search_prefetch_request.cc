@@ -338,7 +338,7 @@ void BaseSearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       // Case 4: Prerender has started and taken the response away. No action is
       // needed.
       return;
-    case SearchPrefetchStatus::kServed:
+    case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
     case SearchPrefetchStatus::kPrerenderActivated:
       NOTREACHED();
   }
@@ -424,7 +424,7 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
 void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
          current_status_ == SearchPrefetchStatus::kComplete);
-  current_status_ = SearchPrefetchStatus::kServed;
+  current_status_ = SearchPrefetchStatus::kPrefetchServedForRealNavigation;
   UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.ClickToNavigationIntercepted",
                       base::TimeTicks::Now() - time_clicked_);
 }
