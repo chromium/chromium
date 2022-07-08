@@ -73,7 +73,15 @@ def _EnsurePowerProfile():
 
 def _RunTraceProcessor(*args):
   """Run trace processor shell with given command line arguments."""
-  p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  # Unset environment variables that are not needed for current trace processor
+  # use cases, but, if set, can interfere with its execution.
+  custom_environment = os.environ.copy()
+  custom_environment.pop('PERFETTO_BINARY_PATH', None)
+  custom_environment.pop('PERFETTO_SYMBOLIZER_MODE', None)
+  p = subprocess.Popen(args,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       env=custom_environment)
   stdout, stderr = p.communicate()
   stdout = stdout.decode('utf-8')
   stderr = stderr.decode('utf-8')

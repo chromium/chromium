@@ -323,3 +323,16 @@ class TraceProcessorTestCase(unittest.TestCase):
 
     expected_output = [{'int_value': '0', 'str_value': None}]
     self.assertEqual(query_output, expected_output)
+
+  def testWithInterferingEnvironmentVariables(self):
+    os.environ['PERFETTO_SYMBOLIZER_MODE'] = 'placeholder'
+    os.environ['PERFETTO_BINARY_PATH'] = 'placeholder'
+
+    sql_query = 'SELECT int_value, str_value FROM metadata LIMIT 1'
+    try:
+      trace_processor.RunQuery(None, self.trace_path, sql_query)
+    except Exception as error:
+      self.fail('Unexpected trace_processor error: {}'.format(error))
+    finally:
+      os.environ.pop('PERFETTO_BINARY_PATH', None)
+      os.environ.pop('PERFETTO_SYMBOLIZER_MODE', None)
