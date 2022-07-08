@@ -29,28 +29,34 @@ void FastCheckoutExternalActionDelegate::OnActionRequested(
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const autofill_assistant::external::Result&)>
         end_action_callback) {
-  if (!action.info().has_fast_checkout_action()) {
-    DLOG(ERROR) << "Action is not of type FastCheckoutAction";
+  FastCheckoutAction fast_checkout_action;
+  if (!fast_checkout_action.ParseFromString(action.info().action_payload())) {
+    DLOG(ERROR) << "unable to parse FastCheckoutAction";
     CancelInvalidActionRequest(std::move(end_action_callback));
     return;
   }
 
-  autofill_assistant::fast_checkout::FastCheckoutAction fast_checkout_action =
-      action.info().fast_checkout_action();
-
   switch (fast_checkout_action.action_case()) {
-    case autofill_assistant::fast_checkout::FastCheckoutAction::ActionCase::
-        kShowBottomSheet:
+    case FastCheckoutAction::ActionCase::kShowBottomSheet:
       // Show bottomsheet UI.
       end_show_bottomsheet_action_callback_ = std::move(end_action_callback);
       fast_checkout_controller_->Show();
       break;
-    case autofill_assistant::fast_checkout::FastCheckoutAction::ActionCase::
-        ACTION_NOT_SET:
+    case FastCheckoutAction::ActionCase::ACTION_NOT_SET:
       DLOG(ERROR) << "unknown fast checkout action";
       CancelInvalidActionRequest(std::move(end_action_callback));
       break;
   }
+}
+
+void FastCheckoutExternalActionDelegate::OnInterruptStarted() {
+  // Currently interrupts are not required for this.
+  // TODO(crrev.com/c/3734869): Remove once linked CL is merged.
+}
+
+void FastCheckoutExternalActionDelegate::OnInterruptFinished() {
+  // Currently interrupts are not required for this.
+  // TODO(crrev.com/c/3734869): Remove once linked CL is merged.
 }
 
 void FastCheckoutExternalActionDelegate::OnOptionsSelected(

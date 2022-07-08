@@ -10,7 +10,6 @@ option java_multiple_files = true;
 
 package autofill_assistant.external;
 
-import "components/autofill_assistant/browser/public/fast_checkout/proto/actions.proto";
 import "components/autofill_assistant/browser/public/password_change/proto/actions.proto";
 
 // Defines an action to be executed by the ExternalActionDelegate.
@@ -20,11 +19,12 @@ message Action {
 }
 
 message ActionInfo {
+  optional bytes action_payload = 1;
+
   // Action forwarded to the client delegate.
   oneof action {
     password_change.GenericPasswordChangeSpecification
-        generic_password_change_specification = 1;
-    fast_checkout.FastCheckoutAction fast_checkout_action = 2;
+        generic_password_change_specification = 2;
   }
 
   extensions 100 to max;

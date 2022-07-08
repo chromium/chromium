@@ -33,6 +33,8 @@ class FastCheckoutExternalActionDelegate
       base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
       base::OnceCallback<void(const autofill_assistant::external::Result&)>
           end_action_callback) override;
+  void OnInterruptStarted() override;
+  void OnInterruptFinished() override;
 
   // FastCheckoutControllerImpl::Delegate:
   void OnOptionsSelected(

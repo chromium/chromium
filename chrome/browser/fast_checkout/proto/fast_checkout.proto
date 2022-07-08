@@ -8,8 +8,6 @@ option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.chrome.browser.fast_checkout.proto";
 option java_multiple_files = true;
 
-package autofill_assistant.fast_checkout;
-
 // Shows the bottom sheet rendered during FastCheckout flows.
 message ShowFastCheckoutBottomSheet {}
 
