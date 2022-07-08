@@ -4,14 +4,53 @@
 
 #include "extensions/browser/api/offscreen/offscreen_api.h"
 
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/common/api/offscreen.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace extensions {
+
+namespace {
+
+// Returns the BrowserContext with which offscreen documents should be
+// associated for the given `extension` and `calling_context`. This may be
+// different from the `calling_context`, as in the case of spanning mode
+// extensions.
+content::BrowserContext& GetBrowserContextToUse(
+    content::BrowserContext& calling_context,
+    const Extension& extension) {
+  // The on-the-record profile always uses itself.
+  if (!calling_context.IsOffTheRecord())
+    return calling_context;
+
+  DCHECK(util::IsIncognitoEnabled(extension.id(), &calling_context))
+      << "Only incognito-enabled extensions should have an incognito context";
+
+  // Split-mode extensions use the incognito (calling) context; spanning mode
+  // extensions fall back to the original profile.
+  bool is_split_mode = IncognitoInfo::IsSplitMode(&extension);
+  return is_split_mode ? calling_context
+                       : *ExtensionsBrowserClient::Get()->GetOriginalContext(
+                             &calling_context);
+}
+
+// Similar to the above, returns the OffscreenDocumentManager to use for the
+// given `extension` and `calling_context`.
+OffscreenDocumentManager* GetManagerToUse(
+    content::BrowserContext& calling_context,
+    const Extension& extension) {
+  return OffscreenDocumentManager::Get(
+      &GetBrowserContextToUse(calling_context, extension));
+}
+
+}  // namespace
 
 OffscreenCreateDocumentFunction::OffscreenCreateDocumentFunction() = default;
 OffscreenCreateDocumentFunction::~OffscreenCreateDocumentFunction() = default;
@@ -30,7 +69,7 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
   CHECK_EQ(extension()->origin(), url::Origin::Create(url));
 
   OffscreenDocumentManager* manager =
-      OffscreenDocumentManager::Get(browser_context());
+      GetManagerToUse(*browser_context(), *extension());
   OffscreenDocumentHost* offscreen_document =
       manager->CreateOffscreenDocument(*extension(), url);
   DCHECK(offscreen_document);
@@ -94,7 +133,7 @@ ExtensionFunction::ResponseAction OffscreenCloseDocumentFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
 
   OffscreenDocumentManager* manager =
-      OffscreenDocumentManager::Get(browser_context());
+      GetManagerToUse(*browser_context(), *extension());
   OffscreenDocumentHost* offscreen_document =
       manager->GetOffscreenDocumentForExtension(*extension());
   if (!offscreen_document)
@@ -149,7 +188,7 @@ ExtensionFunction::ResponseAction OffscreenHasDocumentFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
 
   bool has_document =
-      OffscreenDocumentManager::Get(browser_context())
+      GetManagerToUse(*browser_context(), *extension())
           ->GetOffscreenDocumentForExtension(*extension()) != nullptr;
   return RespondNow(OneArgument(base::Value(has_document)));
 }
