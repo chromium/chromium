@@ -29,14 +29,15 @@ class SystemExtensionsProviderFactory
 
   static SystemExtensionsProviderFactory& GetInstance();
 
- private:
-  friend base::NoDestructor<SystemExtensionsProviderFactory>;
-
-  SystemExtensionsProviderFactory();
   SystemExtensionsProviderFactory(const SystemExtensionsProviderFactory&) =
       delete;
   SystemExtensionsProviderFactory& operator=(
       const SystemExtensionsProviderFactory&) = delete;
+
+ private:
+  friend base::NoDestructor<SystemExtensionsProviderFactory>;
+
+  SystemExtensionsProviderFactory();
   ~SystemExtensionsProviderFactory() override;
 
   // BrowserContextKeyedServiceFactory:

@@ -8,6 +8,10 @@ assert(is_chromeos_ash)
 
 source_set("window_management") {
   sources = [
+    "cros_window_management_context.cc",
+    "cros_window_management_context.h",
+    "cros_window_management_context_factory.cc",
+    "cros_window_management_context_factory.h",
     "window_management_impl.cc",
     "window_management_impl.h",
   ]
@@ -20,7 +24,9 @@ source_set("window_management") {
 
   deps = [
     "//ash",
+    "//chrome/browser/ash/system_extensions",
     "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/mojom",
     "//content/public/browser",
