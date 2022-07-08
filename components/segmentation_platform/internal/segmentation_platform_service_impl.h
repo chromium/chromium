@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
@@ -182,6 +183,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // For metrics only:
   const base::Time creation_time_;
   base::Time init_time_;
+
+  // For caching any method calls that were received before initialization.
+  base::circular_deque<base::OnceClosure> pending_actions_;
 
   base::WeakPtrFactory<SegmentationPlatformServiceImpl> weak_ptr_factory_{this};
 };

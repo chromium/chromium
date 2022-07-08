@@ -165,6 +165,15 @@ void SegmentationPlatformServiceImpl::
 
 void SegmentationPlatformServiceImpl::OnTrigger(
     std::unique_ptr<TriggerContext> trigger_context) {
+  if (!storage_initialized_) {
+    // If the platform isn't fully initialized, cache the input arguments to run
+    // later.
+    pending_actions_.push_back(base::BindOnce(
+        &SegmentationPlatformServiceImpl::OnTrigger,
+        weak_ptr_factory_.GetWeakPtr(), std::move(trigger_context)));
+    return;
+  }
+
   const TriggerType trigger = trigger_context->trigger_type();
   if (clients_for_trigger_.find(trigger) == clients_for_trigger_.end())
     return;
@@ -242,6 +251,15 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
     selector.second->OnPlatformInitialized(&execution_service_);
   }
 
+  // Run any method calls that were received during initialization.
+  while (!pending_actions_.empty()) {
+    auto callback = std::move(pending_actions_.front());
+    pending_actions_.pop_front();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback));
+  }
+
+  // Run any daily maintenance tasks.
   RunDailyTasks(/*is_startup=*/true);
 
   init_time_ = clock_->Now();
