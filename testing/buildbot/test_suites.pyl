@@ -534,13 +534,16 @@
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
-          'shards': 20,
+          'shards': 19,
         },
         'mixins': [
           'skia_gold_test',
         ],
       },
       'chrome_public_unit_test_apk': {
+        'swarming': {
+          'shards': 2,
+        },
         'mixins': [
           'skia_gold_test',
         ],
