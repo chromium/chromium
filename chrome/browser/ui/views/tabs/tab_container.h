@@ -101,11 +101,10 @@ class TabContainer : public views::View,
   // |drag_context_|.
   bool IsAnimating() const;
 
-  // Stops any ongoing animations. If |layout| is true and an animation is
-  // ongoing this does a layout.
-  void StopAnimating(bool layout);
+  // Stops any ongoing animations, leaving tabs where they are.
+  void CancelAnimation();
 
-  // Invoked from Layout if the size changes or layout is really needed.
+  // Stops any ongoing animations and forces a layout.
   void CompleteAnimationAndLayout();
 
   // Returns the total width available for the TabContainer's use.

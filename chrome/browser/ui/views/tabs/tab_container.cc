@@ -197,7 +197,7 @@ TabContainer::TabContainer(TabStripController* controller,
 TabContainer::~TabContainer() {
   // The animations may reference the tabs or group views. Shut down the
   // animation before we destroy any animated views.
-  StopAnimating(false);
+  CancelAnimation();
 
   // Since TabGroupViews expects be able to remove the views it creates, clear
   // |group_views_| before removing the remaining children below.
@@ -493,22 +493,16 @@ bool TabContainer::IsAnimating() const {
          (drag_context_ && drag_context_->IsEndingDrag());
 }
 
-void TabContainer::StopAnimating(bool layout) {
+void TabContainer::CancelAnimation() {
   drag_context_->FinishEndingDrag();
-  if (!bounds_animator_.IsAnimating())
-    return;
-
   bounds_animator_.Cancel();
-
-  if (layout)
-    CompleteAnimationAndLayout();
 }
 
 void TabContainer::CompleteAnimationAndLayout() {
   last_available_width_ = GetAvailableWidthForTabContainer();
   last_layout_size_ = size();
 
-  bounds_animator().Cancel();
+  CancelAnimation();
 
   UpdateIdealBounds();
   SnapToIdealBounds();
@@ -672,7 +666,7 @@ views::View* TabContainer::GetTooltipHandlerForPoint(const gfx::Point& point) {
 BrowserRootView::DropIndex TabContainer::GetDropIndex(
     const ui::DropTargetEvent& event) {
   // Force animations to stop, otherwise it makes the index calculation tricky.
-  StopAnimating(true);
+  CompleteAnimationAndLayout();
 
   // If the UI layout is right-to-left, we need to mirror the mouse
   // coordinates since we calculate the drop index based on the

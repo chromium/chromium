@@ -365,7 +365,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   bool IsEndingDrag() const override {
-    return drag_controller_ == nullptr && bounds_animator_.IsAnimating();
+    // The drag is ending if we're animating tabs back to the TabContainer, or
+    // if the TabDragController is in the kStopped state.
+    return (drag_controller_ == nullptr && bounds_animator_.IsAnimating()) ||
+           (drag_controller_ && !drag_controller_->active());
   }
 
   void FinishEndingDrag() override {
@@ -484,7 +487,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   void SetBoundsForDrag(const std::vector<TabSlotView*>& views,
                         const std::vector<gfx::Rect>& bounds) override {
-    tab_strip_->tab_container_->StopAnimating(false);
+    tab_strip_->tab_container_->CancelAnimation();
     DCHECK_EQ(views.size(), bounds.size());
     for (size_t i = 0; i < views.size(); ++i)
       views[i]->SetBoundsRect(bounds[i]);
@@ -1244,18 +1247,18 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     // When tabs are wide enough, selecting a new tab cannot change the
     // ideal bounds, so only a repaint is necessary.
     SchedulePaint();
-  } else if (IsAnimating()) {
+  } else if (IsAnimating() || drag_context_->IsDragSessionActive()) {
     // The selection change will have modified the ideal bounds of the tabs
-    // in |selected_tabs_| and |new_selection|.  We need to recompute.
-    // Note: This is safe even if we're in the midst of mouse-based tab
-    // closure--we won't expand the tabstrip back to the full window
-    // width--because PrepareForCloseAt() will have set
-    // |override_available_width_for_tabs_| already.
+    // in |selected_tabs_| and |new_selection|.  We need to recompute and
+    // retarget the animation to these new bounds. Note: This is safe even if
+    // we're in the midst of mouse-based tab closure--we won't expand the
+    // tabstrip back to the full window width--because PrepareForCloseAt() will
+    // have set |override_available_width_for_tabs_| already.
     tab_container_->StartBasicAnimation();
   } else {
     // As in the animating case above, the selection change will have
-    // affected the desired bounds of the tabs, but since we're not animating
-    // we can just snap to the new bounds.
+    // affected the desired bounds of the tabs, but since we're in a steady
+    // state we can just snap to the new bounds.
     tab_container_->CompleteAnimationAndLayout();
   }
 
@@ -1329,7 +1332,11 @@ bool TabStrip::IsAnimating() const {
 }
 
 void TabStrip::StopAnimating(bool layout) {
-  tab_container_->StopAnimating(layout);
+  if (layout) {
+    tab_container_->CompleteAnimationAndLayout();
+  } else {
+    tab_container_->CancelAnimation();
+  }
 }
 
 absl::optional<int> TabStrip::GetFocusedTabIndex() const {
@@ -1953,7 +1960,7 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
   if (!tab_container_->in_tab_close() && IsAnimating()) {
     // Cancel any current animations. We do this as remove uses the current
     // ideal bounds and we need to know ideal bounds is in a good state.
-    tab_container_->StopAnimating(true);
+    tab_container_->CompleteAnimationAndLayout();
   }
 
   if (GetWidget()) {
@@ -2195,7 +2202,7 @@ void TabStrip::OnViewBlurred(views::View* observed_view) {
 }
 
 void TabStrip::OnTouchUiChanged() {
-  tab_container_->StopAnimating(true);
+  tab_container_->CompleteAnimationAndLayout();
   PreferredSizeChanged();
 }
 
