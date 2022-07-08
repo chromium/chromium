@@ -93,15 +93,14 @@ std::string GetString(const base::Value::Dict& dict, const std::string& key) {
   return *value;
 }
 
-std::unique_ptr<base::ListValue> GetList(const base::Value::Dict& dict,
-                                         const std::string& key) {
+base::Value::List GetList(const base::Value::Dict& dict,
+                          const std::string& key) {
   const base::Value::List* value = dict.FindList(key);
   if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a list.";
-    return std::make_unique<base::ListValue>();
+    return base::Value::List();
   }
-  return base::ListValue::From(
-      base::Value::ToUniquePtrValue(base::Value(value->Clone())));
+  return value->Clone();
 }
 
 base::Value::Dict GetDict(const base::Value::Dict& dict,

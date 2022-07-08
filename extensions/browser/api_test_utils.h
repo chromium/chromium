@@ -72,8 +72,7 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(const std::string& data);
 bool GetBoolean(const base::Value::Dict& val, const std::string& key);
 int GetInteger(const base::Value::Dict& val, const std::string& key);
 std::string GetString(const base::Value::Dict& val, const std::string& key);
-std::unique_ptr<base::ListValue> GetList(const base::Value::Dict& val,
-                                         const std::string& key);
+base::Value::List GetList(const base::Value::Dict& val, const std::string& key);
 base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
 
 // Run |function| with |args| and return the result. Adds an error to the
