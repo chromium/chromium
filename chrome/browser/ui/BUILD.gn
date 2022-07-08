@@ -5274,6 +5274,10 @@ static_library("ui") {
         "views/lens/lens_side_panel_helper.cc",
         "views/lens/lens_side_panel_view.cc",
         "views/lens/lens_side_panel_view.h",
+        "views/side_panel/lens/lens_side_panel_coordinator.cc",
+        "views/side_panel/lens/lens_side_panel_coordinator.h",
+        "views/side_panel/lens/lens_unified_side_panel_view.cc",
+        "views/side_panel/lens/lens_unified_side_panel_view.h",
       ]
       deps += [ "//chrome/browser/ui/media_router/internal/vector_icons" ]
     }

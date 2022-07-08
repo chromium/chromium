@@ -2325,6 +2325,10 @@ if (!is_android) {
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
+    if (is_chrome_branded) {
+      sources += [ "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_browsertest.cc" ]
+    }
+
     if (enable_reporting) {
       sources += [ "../browser/net/reporting_browsertest.cc" ]
     }
@@ -8635,6 +8639,7 @@ test("unit_tests") {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
       "../browser/ui/views/lens/lens_side_panel_controller_unittest.cc",
+      "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_unittest.cc",
     ]
     deps += [ "//chrome/browser/lens/region_search" ]
   }

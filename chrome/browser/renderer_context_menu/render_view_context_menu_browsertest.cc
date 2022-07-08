@@ -40,6 +40,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1964,6 +1965,78 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithSidePanelBrowserTest,
   AttemptLensRegionSearchWithSidePanel();
   loop.Run();
 }
+
+class SearchByRegionWithUnifiedSidePanelBrowserTest
+    : public SearchByRegionBrowserTest {
+ protected:
+  void SetUp() override {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{lens::features::kLensStandalone,
+          {{lens::features::kEnableSidePanelForLens.name, "true"}}},
+         {features::kUnifiedSidePanel, {{}}}},
+        {});
+
+    // This does not use SearchByRegionBrowserTest::SetUp because that function
+    // does its own conflicting initialization of a FeatureList.
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SimulateDragAndVerifyLensUrl() {
+    SearchByRegionBrowserTest::SimulateDrag();
+
+    // We need to verify the contents after the drag is finished.
+    content::WebContents* contents =
+        lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+    EXPECT_TRUE(contents);
+
+    // Wait for the drag to commence a navigation upon the side panel web
+    // contents.
+    content::TestNavigationObserver nav_observer(contents);
+    nav_observer.Wait();
+
+    std::string expected_content = GetLensRegionSearchURL().GetContent();
+    std::string side_panel_content =
+        contents->GetLastCommittedURL().GetContent();
+
+    // Match strings up to the query.
+    std::size_t query_start_pos = side_panel_content.find("?");
+    // Match the query parameters, without the value of start_time.
+    EXPECT_THAT(
+        side_panel_content,
+        testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
+                              ".*ep=crs&s=csp&st=\\d+"));
+    quit_closure_.Run();
+  }
+
+  void AttemptLensRegionSearchWithSidePanel() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked. Sets a callback to simulate dragging a region on the screen once
+    // the region search UI has been set up.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
+        base::BindOnce(&SearchByRegionWithUnifiedSidePanelBrowserTest::
+                           SimulateDragAndVerifyLensUrl,
+                       base::Unretained(this)));
+    RightClickToOpenContextMenu();
+  }
+
+  base::RepeatingClosure quit_closure_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
+                       LensRegionSearchWithValidRegionUnifiedSidePanel) {
+  lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
+  SetupAndLoadPage("/empty.html");
+  // We need a base::RunLoop to ensure that our test does not finish until the
+  // side panel has opened and we have verified the URL.
+  base::RunLoop loop;
+  quit_closure_ = base::BindRepeating(loop.QuitClosure());
+  // The browser should open a draggable UI for a region search.
+  AttemptLensRegionSearchWithSidePanel();
+  loop.Run();
+}
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Maintains image search test state. In particular, note that |menu_observer_|
@@ -1976,6 +2049,16 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
         std::map<std::string, std::string>{
             {lens::features::kEnableSidePanelForLens.name, "false"}});
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetupAndLoadValidImagePage() {
+    constexpr char kValidImage[] = "/image_search/valid.png";
+    SetupAndLoadImagePage(kValidImage);
+  }
+
+  void SetupAndLoadCorruptImagePage() {
+    constexpr char kCorruptImage[] = "/image_search/corrupt.png";
+    SetupAndLoadImagePage(kCorruptImage);
   }
 
   void SetupAndLoadImagePage(const std::string& image_path) {
@@ -2058,8 +2141,7 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithValidImage) {
-  static const char kValidImage[] = "/image_search/valid.png";
-  SetupAndLoadImagePage(kValidImage);
+  SetupAndLoadValidImagePage();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   AttemptImageSearch();
@@ -2071,8 +2153,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithValidImage) {
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
-  static const char kCorruptImage[] = "/image_search/corrupt.png";
-  SetupAndLoadImagePage(kCorruptImage);
+  SetupAndLoadCorruptImagePage();
 
   // Open and close a context menu.
   ContextMenuWaiter waiter;
@@ -2116,8 +2197,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
 #endif
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
                        MAYBE_LensImageSearchWithValidImage) {
-  static const char kValidImage[] = "/image_search/valid.png";
-  SetupAndLoadImagePage(kValidImage);
+  SetupAndLoadValidImagePage();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   AttemptLensImageSearch();
@@ -2128,6 +2208,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
 
   std::string expected_content = GetLensImageSearchURL().GetContent();
   std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+
   // Match strings up to the query.
   std::size_t query_start_pos = new_tab_content.find("?");
   EXPECT_EQ(expected_content.substr(0, query_start_pos),
