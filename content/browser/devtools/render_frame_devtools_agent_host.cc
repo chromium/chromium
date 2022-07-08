@@ -351,7 +351,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       emulation_handler, browser_handler,
       session->GetClient()->AllowUnsafeOperations(),
       session->GetClient()->IsTrusted(),
-      session->GetClient()->GetNavigationInitiatorOrigin());
+      session->GetClient()->GetNavigationInitiatorOrigin(),
+      session->GetClient()->MayReadLocalFiles());
   session->CreateAndAddHandler<protocol::SecurityHandler>();
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
     session->CreateAndAddHandler<protocol::TracingHandler>(GetIOContext());

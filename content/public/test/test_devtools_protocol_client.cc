@@ -179,6 +179,10 @@ bool TestDevToolsProtocolClient::IsTrusted() {
   return is_trusted_;
 }
 
+bool TestDevToolsProtocolClient::MayReadLocalFiles() {
+  return may_read_local_files_;
+}
+
 absl::optional<url::Origin>
 TestDevToolsProtocolClient::GetNavigationInitiatorOrigin() {
   return navigation_initiator_origin_;
