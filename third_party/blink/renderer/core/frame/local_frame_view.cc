@@ -857,11 +857,7 @@ void LocalFrameView::PerformLayout() {
       default_allow_deferred_shaping_ =
           default_allow_deferred_shaping_ &&
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
-          !frame_->PagePopupOwner() &&
-          // Avoid a DCEHCK failure in |NavigatingExtensionPopupInteractiveTest.
-          // PageInOtherExtension_Get| on linux-lacros-rel.
-          // TODO(tkent): Investigate the failure.
-          !document->Url().Protocol().StartsWith("chrome-error") &&
+          !frame_->PagePopupOwner() && !auto_size_info_ &&
           !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
                .SeenFirstMeaningfulPaint();
       base::AutoReset<bool> deferred_shaping(

@@ -797,4 +797,20 @@ TEST_F(DeferredShapingTest, NoDeferDuringPrint) {
   EXPECT_FALSE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, NoDeferForAutoSizing) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    @media (max-height: 200px) {
+      #target { display: inline; }
+    }
+    </style>
+    <div style="height:1800px"></div>
+    <div id="target">IFC</div>)HTML",
+                                     ASSERT_NO_EXCEPTION);
+
+  GetFrame().View()->EnableAutoSizeMode({100, 100}, {1920, 4000});
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no DCHECK failures.
+}
+
 }  // namespace blink
