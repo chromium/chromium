@@ -1,1 +1,1 @@
-mixins: "//content/browser/prerender/COMMON_METADATA"
+mixins: "//content/browser/preloading/prerender/COMMON_METADATA"

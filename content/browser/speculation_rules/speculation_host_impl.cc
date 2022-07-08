@@ -7,8 +7,8 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
-#include "content/browser/prerender/prerender_attributes.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_document_manager.h"

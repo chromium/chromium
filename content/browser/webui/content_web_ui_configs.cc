@@ -10,7 +10,7 @@
 #include "content/browser/media/media_internals_ui.h"
 #include "content/browser/metrics/histograms_internals_ui.h"
 #include "content/browser/net/network_errors_listing_ui.h"
-#include "content/browser/prerender/prerender_internals_ui.h"
+#include "content/browser/preloading/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/quota/quota_internals_ui.h"
 #include "content/browser/service_worker/service_worker_internals_ui.h"

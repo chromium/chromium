@@ -8,7 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/trace_event/typed_macros.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"

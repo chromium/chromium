@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_METRICS_H_
-#define CONTENT_BROWSER_PRERENDER_PRERENDER_METRICS_H_
+#ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_
+#define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_
 
 #include <string>
 
 #include "base/time/time.h"
-#include "content/browser/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -50,4 +50,4 @@ void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_PRERENDER_PRERENDER_METRICS_H_
+#endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_

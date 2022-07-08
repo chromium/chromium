@@ -40,8 +40,8 @@ void RegisterNonAssociatedPoliciesForSameOriginPrerendering(
   // audio, showing notification) and are non-deferrable.
   // Please update `PrerenderCancelledInterface` and
   // `GetCancelledInterfaceType()` in
-  // content/browser/prerender/prerender_metrics.h once you add a new kCancel
-  // interface.
+  // content/browser/preloading/prerender/prerender_metrics.h once you add a new
+  // kCancel interface.
 
   map.SetNonAssociatedPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderNonAssociatedPolicy::kCancel);

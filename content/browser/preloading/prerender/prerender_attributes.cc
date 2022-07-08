@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_attributes.h"
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 

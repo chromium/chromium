@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/prerender/prerender_attributes.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"

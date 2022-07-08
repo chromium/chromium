@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
-#define CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
+#ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_REGISTRY_H_
+#define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 
 #include <string>
 #include <vector>
@@ -13,8 +13,8 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
-#include "content/browser/prerender/prerender_attributes.h"
-#include "content/browser/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -203,4 +203,4 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
+#endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_REGISTRY_H_

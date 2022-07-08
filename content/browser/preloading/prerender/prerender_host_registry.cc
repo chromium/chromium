@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -15,7 +15,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
-#include "content/browser/prerender/prerender_metrics.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

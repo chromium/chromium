@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_internals_ui.h"
+#include "content/browser/preloading/prerender/prerender_internals_ui.h"
 
-#include "content/browser/prerender/prerender_internals.mojom.h"
-#include "content/browser/prerender/prerender_internals_handler_impl.h"
+#include "content/browser/preloading/prerender/prerender_internals.mojom.h"
+#include "content/browser/preloading/prerender/prerender_internals_handler_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

@@ -849,7 +849,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.InteractiveTiming.FirstInputDelay4, but for page loads that were
     prerendered and were later activated. Note that prerendered page loads are
@@ -867,7 +867,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame, but for page
     loads that were prerendered and were later activated. Note that prerendered
@@ -886,7 +886,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.LayoutInstability.CumulativeShiftScore, but for page loads that
     were prerendered and were later activated. Note that prerendered page loads
@@ -903,7 +903,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2{PrerenderTriggerType}"
     units="ms" expires_after="2022-11-27">
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2,
     but for page loads that were prerendered and were later activated. Note that
@@ -922,7 +922,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     Measures the time from the start of initial prerendering navigation to the
     start of activation navigation. This corresponds to the activationStart
@@ -941,7 +941,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but for page loads
     that were prerendered and were later activated. This measures the time
@@ -961,7 +961,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToFirstPaint, but for page loads that were
     prerendered and were later activated. This measures the time relative to the
@@ -980,7 +980,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2022-11-27">
   <owner>ksakamoto@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but for page loads
     that were prerendered and were later activated. This measures the time
@@ -2273,7 +2273,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Internal.Prerender2.Event"
     enum="PageLoadPrerenderEvent" expires_after="2022-12-18">
   <owner>asamidoi@chromium.org</owner>
-  <owner>src/content/browser/prerender/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     Counts page load events related to Prerender2, like navigation in
     prerendered main frame and prerendering activation navigation. Recorded when

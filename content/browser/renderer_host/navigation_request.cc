@@ -51,7 +51,7 @@
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/debug_urls.h"

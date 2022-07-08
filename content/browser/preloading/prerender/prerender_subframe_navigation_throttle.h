@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_
-#define CONTENT_BROWSER_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_
+#ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_
+#define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_
 
 #include "base/scoped_observation.h"
-#include "content/browser/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -58,4 +58,4 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_
+#endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_internals_handler_impl.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_internals_handler_impl.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {

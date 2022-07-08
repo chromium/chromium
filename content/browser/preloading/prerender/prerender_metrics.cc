@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_metrics.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"

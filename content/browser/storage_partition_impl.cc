@@ -78,7 +78,7 @@
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

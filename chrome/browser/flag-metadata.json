@@ -2653,7 +2653,7 @@
   },
   {
     "name": "enable-prerender2",
-    "owners": [ "//content/browser/prerender/OWNERS" ],
+    "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 106
   },
   {

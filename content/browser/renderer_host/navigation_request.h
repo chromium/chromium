@@ -23,7 +23,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
-#include "content/browser/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"

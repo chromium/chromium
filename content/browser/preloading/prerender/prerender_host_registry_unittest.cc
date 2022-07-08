@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/speculation_rules/speculation_host_impl.h"

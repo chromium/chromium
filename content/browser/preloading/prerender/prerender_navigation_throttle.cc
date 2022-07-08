@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/prerender/prerender_navigation_throttle.h"
+#include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
-#include "content/browser/prerender/prerender_host.h"
-#include "content/browser/prerender/prerender_host_registry.h"
-#include "content/browser/prerender/prerender_navigation_utils.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
