@@ -965,7 +965,9 @@ void WallpaperControllerImpl::StartDecodeFromPath(
     const base::FilePath& wallpaper_path) {
   if (wallpaper_path.empty()) {
     // Fallback to default if the path is empty.
-    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
+                            base::DoNothing());
     return;
   }
 
@@ -1230,7 +1232,8 @@ void WallpaperControllerImpl::SetDefaultWallpaper(
                   "happen except in tests.";
   }
   if (show_wallpaper) {
-    SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true,
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(GetUserType(account_id), /*show_wallpaper=*/true,
                             std::move(callback));
   } else {
     std::move(callback).Run(/*success=*/true);
@@ -1238,11 +1241,10 @@ void WallpaperControllerImpl::SetDefaultWallpaper(
 }
 
 base::FilePath WallpaperControllerImpl::GetDefaultWallpaperPath(
-    const AccountId& account_id) {
+    user_manager::UserType user_type) {
   const bool use_small =
       (GetAppropriateResolution() == WALLPAPER_RESOLUTION_SMALL);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const user_manager::UserType user_type = GetUserType(account_id);
   // The wallpaper is determined in the following order:
   // Guest wallpaper, child wallpaper, customized default wallpaper, and regular
   // default wallpaper.
@@ -1281,7 +1283,11 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
 
   // Customized default wallpapers are subject to the same restrictions as other
   // default wallpapers, e.g. they should not be set during guest sessions.
-  SetDefaultWallpaperImpl(EmptyAccountId(), show_wallpaper, base::DoNothing());
+  // This should ONLY be called from OOBE where there should not be an active
+  // session.
+  DCHECK(!GetActiveUserSession());
+  SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR, show_wallpaper,
+                          base::DoNothing());
 }
 
 void WallpaperControllerImpl::SetPolicyWallpaper(const AccountId& account_id,
@@ -1391,8 +1397,13 @@ void WallpaperControllerImpl::UpdateCurrentWallpaperLayout(
 }
 
 void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
+  ShowUserWallpaper(account_id, GetUserType(account_id));
+}
+
+void WallpaperControllerImpl::ShowUserWallpaper(
+    const AccountId& account_id,
+    user_manager::UserType user_type) {
   current_user_ = account_id;
-  const user_manager::UserType user_type = GetUserType(account_id);
   if (user_type == user_manager::USER_TYPE_KIOSK_APP ||
       user_type == user_manager::USER_TYPE_ARC_KIOSK_APP) {
     return;
@@ -1425,7 +1436,8 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
   }
 
   if (info.type == WallpaperType::kDefault) {
-    SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true,
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(user_type, /*show_wallpaper=*/true,
                             base::DoNothing());
     return;
   }
@@ -1473,11 +1485,14 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
 
 void WallpaperControllerImpl::ShowSigninWallpaper() {
   current_user_ = EmptyAccountId();
-  if (ShouldSetDevicePolicyWallpaper())
+  if (ShouldSetDevicePolicyWallpaper()) {
     SetDevicePolicyWallpaper();
-  else
-    SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true,
-                            base::DoNothing());
+    return;
+  }
+
+  // If we don't have a user, use the regular default.
+  SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
+                          /*show_wallpaper=*/true, base::DoNothing());
 }
 
 void WallpaperControllerImpl::ShowOneShotWallpaper(
@@ -1833,8 +1848,8 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
 }
 
 void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
-  SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true,
-                          base::DoNothing());
+  SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
+                          /*show_wallpaper=*/true, base::DoNothing());
 }
 
 void WallpaperControllerImpl::CreateEmptyWallpaperForTesting() {
@@ -1962,7 +1977,7 @@ void WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId(
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaperImpl(
-    const AccountId& account_id,
+    user_manager::UserType user_type,
     bool show_wallpaper,
     SetWallpaperCallback callback) {
   // There is no visible wallpaper in kiosk mode.
@@ -1971,13 +1986,11 @@ void WallpaperControllerImpl::SetDefaultWallpaperImpl(
     return;
   }
 
-  wallpaper_cache_map_.erase(account_id);
-
   const bool use_small =
       (GetAppropriateResolution() == WALLPAPER_RESOLUTION_SMALL);
   WallpaperLayout layout =
       use_small ? WALLPAPER_LAYOUT_CENTER : WALLPAPER_LAYOUT_CENTER_CROPPED;
-  base::FilePath file_path = GetDefaultWallpaperPath(account_id);
+  base::FilePath file_path = GetDefaultWallpaperPath(user_type);
 
   // We need to decode the image if there's no cache, or if the file path
   // doesn't match the cached value (i.e. the cache is outdated). Otherwise,
@@ -2176,8 +2189,9 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&DeleteGooglePhotosCache, params.account_id));
-      SetDefaultWallpaperImpl(params.account_id, /*show_wallpaper=*/true,
-                              base::DoNothing());
+      wallpaper_cache_map_.erase(params.account_id);
+      SetDefaultWallpaperImpl(GetUserType(params.account_id),
+                              /*show_wallpaper=*/true, base::DoNothing());
       return;
     }
     std::move(callback).Run(false);
@@ -2390,7 +2404,9 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     // `WallpaperType::kDefault` types. In unexpected cases, revert to default
     // wallpaper to fail safely. See crosbug.com/38429.
     LOG(ERROR) << "Wallpaper reverts to default unexpected.";
-    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
+                            base::DoNothing());
     return;
   }
 
@@ -2400,7 +2416,9 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     // were created directly in local state (for testing). Ignore such
     // errors i.e. allow such type of debug configurations on the desktop.
     LOG(WARNING) << "User wallpaper info is empty: " << account_id.Serialize();
-    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
+                            base::DoNothing());
     return;
   }
 
@@ -2594,7 +2612,9 @@ void WallpaperControllerImpl::OnWallpaperDecoded(const AccountId& account_id,
   if (image.isNull()) {
     LOG(ERROR) << "Failed to decode user wallpaper at " << path.value()
                << " Falls back to default wallpaper. ";
-    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
+    wallpaper_cache_map_.erase(account_id);
+    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
+                            base::DoNothing());
     return;
   }
 
@@ -2749,8 +2769,10 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
   if (image.isNull()) {
     // If device policy wallpaper failed decoding, fall back to the default
     // wallpaper.
-    SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true,
-                            base::DoNothing());
+    // TODO(crbug.com/1329567): Decide if the regular default is correct.  But
+    // this is the current behavior for EmptyAccountId.
+    SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
+                            /*show_wallpaper=*/true, base::DoNothing());
   } else {
     WallpaperInfo info = {device_policy_wallpaper_path_.value(),
                           WALLPAPER_LAYOUT_CENTER_CROPPED,

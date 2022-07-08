@@ -18,6 +18,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "components/user_manager/user_type.h"
 
 class AccountId;
 
@@ -152,10 +153,10 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                    bool show_wallpaper,
                                    SetWallpaperCallback callback) = 0;
 
-  // Get the path to the default wallpaper file for this account. Will be empty
-  // if this user/device has no recommended default wallpaper.
+  // Get the path to the default wallpaper file for the |user_type|. Will be
+  // empty if this user/device has no recommended default wallpaper.
   virtual base::FilePath GetDefaultWallpaperPath(
-      const AccountId& account_id) = 0;
+      user_manager::UserType user_type) = 0;
 
   // Sets the paths of the customized default wallpaper to be used wherever a
   // default wallpaper is needed. If a default wallpaper is being shown, updates
@@ -223,6 +224,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   //    |SetCustomWallpaper|), if any.
   // 4) Use the default wallpaper of this user.
   virtual void ShowUserWallpaper(const AccountId& account_id) = 0;
+
+  // Shows the user's wallpaper but uses |user_type| to determine default
+  // wallpaper if necessary. This is intendend for use where users are not
+  // yet logged in (i.e. login screen).
+  virtual void ShowUserWallpaper(const AccountId& account_id,
+                                 user_manager::UserType user_type) = 0;
 
   // Used by the gaia-signin UI. Signin wallpaper is considered either as the
   // device policy wallpaper or the default wallpaper.

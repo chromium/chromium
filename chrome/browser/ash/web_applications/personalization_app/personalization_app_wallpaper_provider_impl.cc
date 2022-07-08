@@ -288,8 +288,9 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
 void PersonalizationAppWallpaperProviderImpl::GetDefaultImageThumbnail(
     GetDefaultImageThumbnailCallback callback) {
   auto* wallpaper_controller = WallpaperController::Get();
+  const user_manager::User* user = GetUser(profile_);
   base::FilePath default_wallpaper_path =
-      wallpaper_controller->GetDefaultWallpaperPath(GetAccountId(profile_));
+      wallpaper_controller->GetDefaultWallpaperPath(user->GetType());
   if (default_wallpaper_path.empty()) {
     std::move(callback).Run(std::string());
     return;

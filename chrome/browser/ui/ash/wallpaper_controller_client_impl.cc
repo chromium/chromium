@@ -92,6 +92,18 @@ bool IsKnownUser(const AccountId& account_id) {
   return user_manager::UserManager::Get()->IsKnownUser(account_id);
 }
 
+// Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
+user_manager::UserType GetUserType(const AccountId& id) {
+  if (user_manager::UserManager::IsInitialized()) {
+    if (auto* user = user_manager::UserManager::Get()->FindUser(id))
+      return user->GetType();
+  }
+  // TODO(crbug.com/1329256): Convert this to a DCHECK when tests are fixed.
+  LOG(WARNING) << "No matching user. This should only happen in tests.";
+  // Unit tests may not have a UserManager.
+  return user_manager::USER_TYPE_REGULAR;
+}
+
 // This has once been copied from
 // brillo::cryptohome::home::SanitizeUserName(username) to be used for
 // wallpaper identification purpose only.
@@ -400,8 +412,10 @@ void WallpaperControllerClientImpl::UpdateCurrentWallpaperLayout(
 
 void WallpaperControllerClientImpl::ShowUserWallpaper(
     const AccountId& account_id) {
-  if (IsKnownUser(account_id))
-    wallpaper_controller_->ShowUserWallpaper(account_id);
+  if (IsKnownUser(account_id)) {
+    user_manager::UserType user_type = GetUserType(account_id);
+    wallpaper_controller_->ShowUserWallpaper(account_id, user_type);
+  }
 }
 
 void WallpaperControllerClientImpl::ShowSigninWallpaper() {

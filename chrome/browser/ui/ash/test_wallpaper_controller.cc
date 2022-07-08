@@ -131,7 +131,7 @@ void TestWallpaperController::SetDefaultWallpaper(
 }
 
 base::FilePath TestWallpaperController::GetDefaultWallpaperPath(
-    const AccountId& account_id) {
+    user_manager::UserType) {
   return base::FilePath();
 }
 
@@ -176,6 +176,12 @@ void TestWallpaperController::UpdateCurrentWallpaperLayout(
 }
 
 void TestWallpaperController::ShowUserWallpaper(const AccountId& account_id) {
+  NOTIMPLEMENTED();
+}
+
+void TestWallpaperController::ShowUserWallpaper(
+    const AccountId& account_id,
+    user_manager::UserType user_type) {
   NOTIMPLEMENTED();
 }
 

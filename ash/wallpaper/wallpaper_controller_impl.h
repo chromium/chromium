@@ -41,6 +41,7 @@
 #include "base/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/user_manager/user_type.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
@@ -260,7 +261,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
-  base::FilePath GetDefaultWallpaperPath(const AccountId& account_id) override;
+  base::FilePath GetDefaultWallpaperPath(
+      user_manager::UserType user_type) override;
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;
@@ -277,6 +279,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,
                                     WallpaperLayout layout) override;
   void ShowUserWallpaper(const AccountId& account_id) override;
+  void ShowUserWallpaper(const AccountId& account_id,
+                         user_manager::UserType user_type) override;
   void ShowSigninWallpaper() override;
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
@@ -411,7 +415,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // Implementation of |SetDefaultWallpaper|. Sets wallpaper to default if
   // |show_wallpaper| is true. Otherwise just save the defaut wallpaper to
   // cache.
-  void SetDefaultWallpaperImpl(const AccountId& account_id,
+  void SetDefaultWallpaperImpl(user_manager::UserType user_type,
                                bool show_wallpaper,
                                SetWallpaperCallback callback);
 

@@ -101,7 +101,8 @@ class TestWallpaperController : public ash::WallpaperController {
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
-  base::FilePath GetDefaultWallpaperPath(const AccountId& account_id) override;
+  base::FilePath GetDefaultWallpaperPath(
+      user_manager::UserType user_type) override;
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;
@@ -118,6 +119,8 @@ class TestWallpaperController : public ash::WallpaperController {
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,
                                     ash::WallpaperLayout layout) override;
   void ShowUserWallpaper(const AccountId& account_id) override;
+  void ShowUserWallpaper(const AccountId& account_id,
+                         user_manager::UserType user_type) override;
   void ShowSigninWallpaper() override;
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
