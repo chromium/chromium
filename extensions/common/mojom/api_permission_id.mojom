@@ -177,7 +177,7 @@ enum APIPermissionID {
   kVirtualKeyboardPrivate = 151,
   kVpnProvider = 152,
   kWallpaper = 153,
-  kWallpaperPrivate = 154,
+  kDeleted_WallpaperPrivate = 154,
   kWebcamPrivate = 155,
   kDeleted_kWebConnectable = 156,
   kWebNavigation = 157,

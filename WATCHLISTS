@@ -2034,7 +2034,6 @@
     'wallpapers': {
       'filepath': 'components/arc/common/wallpaper.mojom'\
                   '|ash/wallpaper/'\
-                  '|chrome/browser/resources/chromeos/wallpaper_manager/',
     },
     'web_applications': {
       'filepath': 'chrome/browser/web_applications'\

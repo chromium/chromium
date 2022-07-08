@@ -170,8 +170,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kVirtualKeyboardPrivate, "virtualKeyboardPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kWallpaperPrivate, "wallpaperPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebstorePrivate, "webstorePrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kEnterprisePlatformKeysPrivate,

@@ -227,8 +227,6 @@ extern const char kGoogleSpeechSynthesisExtensionId[];
 extern const char kEspeakSpeechSynthesisExtensionPath[];
 // The extension id of the eSpeak-NG speech synthesis extension.
 extern const char kEspeakSpeechSynthesisExtensionId[];
-// The extension id of the wallpaper manager application.
-extern const char kWallpaperManagerId[];
 // The extension id of official HelpApp extension.
 extern const char kHelpAppExtensionId[];
 #endif

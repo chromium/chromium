@@ -33310,7 +33310,7 @@ Called by update_extension_histograms.py.-->
   <int value="23" label="SOCKET_WRITE"/>
   <int value="24" label="OMNIBOX_SETDEFAULTSUGGESTION"/>
   <int value="25" label="TTS_SPEAK"/>
-  <int value="26" label="WALLPAPERPRIVATE_RESTOREMINIMIZEDWINDOWS"/>
+  <int value="26" label="DELETED_WALLPAPERPRIVATE_RESTOREMINIMIZEDWINDOWS"/>
   <int value="27" label="BROWSINGDATA_REMOVEHISTORY"/>
   <int value="28" label="DELETED_FILEMANAGERPRIVATE_ISFULLSCREEN"/>
   <int value="29" label="AUTOTESTPRIVATE_LOGOUT"/>
@@ -33493,7 +33493,7 @@ Called by update_extension_histograms.py.-->
   <int value="205" label="APP_RUNTIME_POSTINTENTRESPONSE"/>
   <int value="206" label="DELETED_MANAGEDMODEPRIVATE_SETPOLICY"/>
   <int value="207" label="WEBSTOREPRIVATE_BEGININSTALLWITHMANIFEST3"/>
-  <int value="208" label="WALLPAPERPRIVATE_SETWALLPAPER"/>
+  <int value="208" label="DELETED_WALLPAPERPRIVATE_SETWALLPAPER"/>
   <int value="209" label="USB_CONTROLTRANSFER"/>
   <int value="210" label="DELETED_EXPERIMENTAL_SPEECHINPUT_STOP"/>
   <int value="211" label="USB_BULKTRANSFER"/>
@@ -33507,7 +33507,7 @@ Called by update_extension_histograms.py.-->
   <int value="219" label="TYPES_CHROMESETTING_CLEAR"/>
   <int value="220" label="INPUT_IME_COMMITTEXT"/>
   <int value="221" label="IDLTEST_SENDARRAYBUFFER"/>
-  <int value="222" label="WALLPAPERPRIVATE_SETWALLPAPERIFEXISTS"/>
+  <int value="222" label="DELETED_WALLPAPERPRIVATE_SETWALLPAPERIFEXISTS"/>
   <int value="223" label="SOCKET_ACCEPT"/>
   <int value="224" label="WEBNAVIGATION_GETFRAME"/>
   <int value="225" label="EXPERIMENTAL_POWER_RELEASEKEEPAWAKE"/>
@@ -33531,7 +33531,7 @@ Called by update_extension_histograms.py.-->
   <int value="243" label="SERIAL_FLUSH"/>
   <int value="244" label="BROWSERACTION_SETTITLE"/>
   <int value="245" label="BOOKMARKMANAGERPRIVATE_CANEDIT"/>
-  <int value="246" label="WALLPAPERPRIVATE_SETCUSTOMWALLPAPER"/>
+  <int value="246" label="DELETED_WALLPAPERPRIVATE_SETCUSTOMWALLPAPER"/>
   <int value="247" label="BOOKMARKS_REMOVE"/>
   <int value="248" label="INPUT_IME_SETCANDIDATES"/>
   <int value="249" label="TERMINALPRIVATE_CLOSETERMINALPROCESS"/>
@@ -33543,7 +33543,7 @@ Called by update_extension_histograms.py.-->
   <int value="255" label="FILEMANAGERPRIVATE_SELECTFILE"/>
   <int value="256" label="WINDOWS_GETCURRENT"/>
   <int value="257" label="DEBUGGER_ATTACH"/>
-  <int value="258" label="WALLPAPERPRIVATE_SAVETHUMBNAIL"/>
+  <int value="258" label="DELETED_WALLPAPERPRIVATE_SAVETHUMBNAIL"/>
   <int value="259" label="INPUT_IME_KEYEVENTHANDLED"/>
   <int value="260" label="FONTSETTINGS_SETDEFAULTFONTSIZE"/>
   <int value="261" label="RUNTIME_REQUESTUPDATECHECK"/>
@@ -33555,7 +33555,7 @@ Called by update_extension_histograms.py.-->
   <int value="267" label="DELETED_EXPERIMENTAL_RLZ_SENDFINANCIALPING"/>
   <int value="268" label="TABCAPTURE_GETCAPTUREDTABS"/>
   <int value="269" label="WINDOWS_REMOVE"/>
-  <int value="270" label="WALLPAPERPRIVATE_GETOFFLINEWALLPAPERLIST"/>
+  <int value="270" label="DELETED_WALLPAPERPRIVATE_GETOFFLINEWALLPAPERLIST"/>
   <int value="271" label="BROWSERACTION_GETBADGEBACKGROUNDCOLOR"/>
   <int value="272" label="DELETED_PAGEACTIONS_DISABLEFORTAB"/>
   <int value="273" label="DELETED_DEVELOPERPRIVATE_ALLOWFILEACCESS"/>
@@ -33566,7 +33566,7 @@ Called by update_extension_histograms.py.-->
   <int value="278" label="TABS_DUPLICATE"/>
   <int value="279" label="DELETED_BLUETOOTH_WRITE"/>
   <int value="280" label="PAGEACTION_SHOW"/>
-  <int value="281" label="WALLPAPERPRIVATE_GETTHUMBNAIL"/>
+  <int value="281" label="DELETED_WALLPAPERPRIVATE_GETTHUMBNAIL"/>
   <int value="282" label="DOWNLOADS_PAUSE"/>
   <int value="283" label="PERMISSIONS_REQUEST"/>
   <int value="284" label="TOPSITES_GET"/>
@@ -33645,7 +33645,7 @@ Called by update_extension_histograms.py.-->
   <int value="357" label="FONTSETTINGS_SETFONT"/>
   <int value="358" label="SOCKET_GETNETWORKLIST"/>
   <int value="359" label="BOOKMARKS_MOVE"/>
-  <int value="360" label="WALLPAPERPRIVATE_MINIMIZEINACTIVEWINDOWS"/>
+  <int value="360" label="DELETED_WALLPAPERPRIVATE_MINIMIZEINACTIVEWINDOWS"/>
   <int value="361" label="STORAGE_REMOVE"/>
   <int value="362" label="AUTOTESTPRIVATE_LOGINSTATUS"/>
   <int value="363" label="TABS_CREATE"/>
@@ -33656,7 +33656,7 @@ Called by update_extension_histograms.py.-->
   <int value="368" label="WEBSTOREPRIVATE_GETWEBGLSTATUS"/>
   <int value="369" label="SOCKET_SENDTO"/>
   <int value="370" label="BROWSINGDATA_REMOVEFILESYSTEMS"/>
-  <int value="371" label="WALLPAPERPRIVATE_GETSTRINGS"/>
+  <int value="371" label="DELETED_WALLPAPERPRIVATE_GETSTRINGS"/>
   <int value="372" label="BROWSINGDATA_REMOVECACHE"/>
   <int value="373" label="BOOKMARKMANAGERPRIVATE_RECORDLAUNCH"/>
   <int value="374" label="BROWSERACTION_DISABLE"/>
@@ -33719,11 +33719,11 @@ Called by update_extension_histograms.py.-->
   <int value="431" label="NETWORKINGPRIVATE_GETSTATE"/>
   <int value="432" label="POWER_REQUESTKEEPAWAKE"/>
   <int value="433" label="POWER_RELEASEKEEPAWAKE"/>
-  <int value="434" label="WALLPAPERPRIVATE_SETCUSTOMWALLPAPERLAYOUT"/>
+  <int value="434" label="DELETED_WALLPAPERPRIVATE_SETCUSTOMWALLPAPERLAYOUT"/>
   <int value="435" label="DOWNLOADSINTERNAL_DETERMINEFILENAME"/>
   <int value="436" label="SYNCFILESYSTEM_GETFILESYNCSTATUSES"/>
   <int value="437" label="DELETED_MEDIAGALLERIESPRIVATE_GETHANDLERS"/>
-  <int value="438" label="WALLPAPERPRIVATE_RESETWALLPAPER"/>
+  <int value="438" label="DELETED_WALLPAPERPRIVATE_RESETWALLPAPER"/>
   <int value="439" label="DEVELOPERPRIVATE_PERMISSIONS"/>
   <int value="440" label="WEBSTOREPRIVATE_ENABLEAPPLAUNCHER"/>
   <int value="441" label="APP_CURRENTWINDOWINTERNAL_FULLSCREEN"/>
@@ -34216,7 +34216,7 @@ Called by update_extension_histograms.py.-->
   <int value="906" label="FILESYSTEMPROVIDER_NOTIFY"/>
   <int value="907" label="USB_GETUSERSELECTEDDEVICES"/>
   <int value="908" label="INPUTMETHODPRIVATE_GETINPUTMETHODCONFIG"/>
-  <int value="909" label="WALLPAPERPRIVATE_GETSYNCSETTING"/>
+  <int value="909" label="DELETED_WALLPAPERPRIVATE_GETSYNCSETTING"/>
   <int value="910" label="DELETED_COPRESENCE_SETAUTHTOKEN"/>
   <int value="911" label="CAST_CHANNEL_SETAUTHORITYKEYS"/>
   <int value="912" label="HOTWORDPRIVATE_STARTTRAINING"/>
@@ -34431,7 +34431,7 @@ Called by update_extension_histograms.py.-->
   <int value="1111" label="INPUT_IME_SHOWWINDOW"/>
   <int value="1112" label="INPUT_IME_HIDEWINDOW"/>
   <int value="1113" label="INPUTMETHODPRIVATE_SHOWINPUTVIEW"/>
-  <int value="1114" label="WALLPAPERPRIVATE_RECORDWALLPAPERUMA"/>
+  <int value="1114" label="DELETED_WALLPAPERPRIVATE_RECORDWALLPAPERUMA"/>
   <int value="1115" label="AUTOTESTPRIVATE_GETVISIBLENOTIFICATIONS"/>
   <int value="1116" label="DELETED_WEBRTCLOGGINGPRIVATE_STARTRTCEVENTLOGGING"/>
   <int value="1117" label="DELETED_WEBRTCLOGGINGPRIVATE_STOPRTCEVENTLOGGING"/>
@@ -34535,19 +34535,19 @@ Called by update_extension_histograms.py.-->
   <int value="1211" label="SYSTEM_DISPLAY_SETMIRRORMODE"/>
   <int value="1212" label="TTSENGINE_UPDATEVOICES"/>
   <int value="1213" label="PASSWORDSPRIVATE_REQUESTEXPORTPROGRESSSTATUS"/>
-  <int value="1214" label="WALLPAPERPRIVATE_GETCOLLECTIONSINFO"/>
-  <int value="1215" label="WALLPAPERPRIVATE_GETIMAGESINFO"/>
+  <int value="1214" label="DELETED_WALLPAPERPRIVATE_GETCOLLECTIONSINFO"/>
+  <int value="1215" label="DELETED_WALLPAPERPRIVATE_GETIMAGESINFO"/>
   <int value="1216" label="ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT"/>
-  <int value="1217" label="WALLPAPERPRIVATE_GETLOCALIMAGEPATHS"/>
-  <int value="1218" label="WALLPAPERPRIVATE_GETLOCALIMAGEDATA"/>
+  <int value="1217" label="DELETED_WALLPAPERPRIVATE_GETLOCALIMAGEPATHS"/>
+  <int value="1218" label="DELETED_WALLPAPERPRIVATE_GETLOCALIMAGEDATA"/>
   <int value="1219" label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICESERIALNUMBER"/>
   <int value="1220" label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEASSETID"/>
   <int value="1221"
       label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEANNOTATEDLOCATION"/>
   <int value="1222" label="PASSWORDSPRIVATE_CANCELEXPORTPASSWORDS"/>
   <int value="1223" label="FILEMANAGERPRIVATE_MARKCACHEASMOUNTED"/>
-  <int value="1224" label="WALLPAPERPRIVATE_CONFIRMPREVIEWWALLPAPER"/>
-  <int value="1225" label="WALLPAPERPRIVATE_CANCELPREVIEWWALLPAPER"/>
+  <int value="1224" label="DELETED_WALLPAPERPRIVATE_CONFIRMPREVIEWWALLPAPER"/>
+  <int value="1225" label="DELETED_WALLPAPERPRIVATE_CANCELPREVIEWWALLPAPER"/>
   <int value="1226" label="WEBRTCLOGGINGPRIVATE_STARTEVENTLOGGING"/>
   <int value="1227" label="VIRTUALKEYBOARDPRIVATE_SETCONTAINERBEHAVIOR"/>
   <int value="1228" label="QUICKUNLOCKPRIVATE_GETAUTHTOKEN"/>
@@ -34570,7 +34570,8 @@ Called by update_extension_histograms.py.-->
   <int value="1244" label="WEBSTOREPRIVATE_GETREFERRERCHAIN"/>
   <int value="1245" label="AUTOTESTPRIVATE_UPDATEPRINTER"/>
   <int value="1246" label="AUTOTESTPRIVATE_REMOVEPRINTER"/>
-  <int value="1247" label="WALLPAPERPRIVATE_GETCURRENTWALLPAPERTHUMBNAIL"/>
+  <int value="1247"
+      label="DELETED_WALLPAPERPRIVATE_GETCURRENTWALLPAPERTHUMBNAIL"/>
   <int value="1248" label="ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKSTATE"/>
   <int value="1249" label="INPUTMETHODPRIVATE_GETCOMPOSITIONBOUNDS"/>
   <int value="1250" label="DELETED_FILEMANAGERPRIVATE_ISCROSTINIENABLED"/>
@@ -34580,7 +34581,7 @@ Called by update_extension_histograms.py.-->
   <int value="1254" label="DEVELOPERPRIVATE_REMOVEHOSTPERMISSION"/>
   <int value="1255" label="MEDIAPERCEPTIONPRIVATE_SETCOMPONENTPROCESSSTATE"/>
   <int value="1256" label="USERSPRIVATE_GETCURRENTUSER"/>
-  <int value="1257" label="WALLPAPERPRIVATE_GETSURPRISEMEIMAGE"/>
+  <int value="1257" label="DELETED_WALLPAPERPRIVATE_GETSURPRISEMEIMAGE"/>
   <int value="1258" label="VIRTUALKEYBOARDPRIVATE_SETOCCLUDEDBOUNDS"/>
   <int value="1259" label="DELETED_SYSTEM_POWER_SOURCE_GETPOWERSOURCEINFO"/>
   <int value="1260" label="DELETED_SYSTEM_POWER_SOURCE_REQUESTSTATUSUPDATE"/>
@@ -34931,7 +34932,7 @@ Called by update_extension_histograms.py.-->
   <int value="1590" label="SPEECHRECOGNITIONPRIVATE_START"/>
   <int value="1591" label="SPEECHRECOGNITIONPRIVATE_STOP"/>
   <int value="1592" label="FILEMANAGERPRIVATEINTERNAL_STARTIOTASK"/>
-  <int value="1593" label="WALLPAPERPRIVATE_ISSWAENABLED"/>
+  <int value="1593" label="DELETED_WALLPAPERPRIVATE_ISSWAENABLED"/>
   <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
   <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
   <int value="1596" label="PASSWORDSPRIVATE_ADDPASSWORD"/>
@@ -35566,7 +35567,7 @@ Called by update_extension_permission.py.-->
   <int value="151" label="kVirtualKeyboardPrivate"/>
   <int value="152" label="kVpnProvider"/>
   <int value="153" label="kWallpaper"/>
-  <int value="154" label="kWallpaperPrivate"/>
+  <int value="154" label="kDeleted_WallpaperPrivate"/>
   <int value="155" label="kWebcamPrivate"/>
   <int value="156" label="kDeleted_kWebConnectable"/>
   <int value="157" label="kWebNavigation"/>

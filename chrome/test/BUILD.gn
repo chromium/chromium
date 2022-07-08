@@ -3130,8 +3130,6 @@ if (!is_android) {
           "../browser/chromeos/extensions/speech/speech_recognition_private_recognizer_browsertest.cc",
           "../browser/chromeos/extensions/users_private/users_private_apitest.cc",
           "../browser/chromeos/extensions/wallpaper_apitest.cc",
-          "../browser/chromeos/extensions/wallpaper_manager_browsertest.cc",
-          "../browser/chromeos/extensions/wallpaper_private_apitest.cc",
           "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
@@ -3971,7 +3969,6 @@ if (!is_android) {
         # TODO(GYP): figure out which of these things are
         # actually needed and also which should be pulled in via
         # data or data_deps and through which dependencies.
-        "//chrome/browser/resources/chromeos/wallpaper_manager/",
         "//chromeos/test/data/",
         "//ui/file_manager/integration_tests/",
         "//third_party/polymer/v1_0/components-chromium/",

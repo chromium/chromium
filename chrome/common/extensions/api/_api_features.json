@@ -906,10 +906,6 @@
       "chrome://file-manager/*"
     ]
   }],
-  "wallpaperPrivate": {
-    "dependencies": ["permission:wallpaperPrivate"],
-    "contexts": ["blessed_extension"]
-  },
   "webAuthenticationProxy": {
     "dependencies": ["permission:webAuthenticationProxy"],
     "contexts": ["blessed_extension"]

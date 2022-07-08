@@ -2310,10 +2310,6 @@ source_set("chromeos") {
     "extensions/users_private/users_private_delegate_factory.h",
     "extensions/wallpaper_api.cc",
     "extensions/wallpaper_api.h",
-    "extensions/wallpaper_function_base.cc",
-    "extensions/wallpaper_function_base.h",
-    "extensions/wallpaper_private_api.cc",
-    "extensions/wallpaper_private_api.h",
     "extensions/wm/wm_desks_private_api.cc",
     "extensions/wm/wm_desks_private_api.h",
   ]
@@ -3499,7 +3495,6 @@ source_set("unit_tests") {
     "extensions/permissions_updater_delegate_chromeos_unittest.cc",
     "extensions/public_session_permission_helper_unittest.cc",
     "extensions/signin_screen_policy_provider_unittest.cc",
-    "extensions/wallpaper_private_api_unittest.cc",
     "fileapi/external_file_url_loader_factory_unittest.cc",
     "fileapi/external_file_url_util_unittest.cc",
     "fileapi/file_access_permissions_unittest.cc",

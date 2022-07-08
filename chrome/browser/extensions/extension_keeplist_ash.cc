@@ -44,8 +44,7 @@ bool ExtensionAppRunsInAsh(const std::string& app_id) {
       {file_manager::kAudioPlayerAppId, extension_misc::kFilesManagerAppId,
        extension_misc::kGoogleKeepAppId, extension_misc::kCalculatorAppId,
        extension_misc::kTextEditorAppId,
-       extension_misc::kInAppPaymentsSupportAppId,
-       extension_misc::kWallpaperManagerId, arc::kPlayStoreAppId,
+       extension_misc::kInAppPaymentsSupportAppId, arc::kPlayStoreAppId,
        extension_misc::kIdentityApiUiAppId, extension_misc::kGnubbyAppId});
   return base::Contains(*keep_list, app_id);
 }

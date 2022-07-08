@@ -185,11 +185,6 @@ void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
     NotifyWallpaperChanged(android_id);
   else
     NotifyWallpaperChangedAndReset(android_id);
-
-  // TODO(crbug.com/618922): Register the wallpaper to Chrome OS wallpaper
-  // picker. Currently the new wallpaper does not appear there. The best way
-  // to make this happen seems to do the same things as wallpaper_api.cc and
-  // wallpaper_private_api.cc.
 }
 
 void ArcWallpaperService::NotifyWallpaperChanged(int android_id) {

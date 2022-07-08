@@ -548,11 +548,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
       ExtensionsBrowserClient::Get()->GetOffTheRecordContext(profile_);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-    if (!command_line->HasSwitch(ash::switches::kGuestSession)) {
-      Add(IDR_WALLPAPERMANAGER_MANIFEST,
-          base::FilePath(FILE_PATH_LITERAL("chromeos/wallpaper_manager")));
-    }
-
     Add(IDR_ARC_SUPPORT_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("chromeos/arc_support")));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

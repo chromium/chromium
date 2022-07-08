@@ -116,7 +116,6 @@ if (is_chromeos_ash) {
     "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",
-    "wallpaper_private.json",
     "wm_desks_private.idl",
   ]
 } else if (is_linux || is_chromeos || is_win) {

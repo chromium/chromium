@@ -911,12 +911,6 @@
     "extension_types": ["platform_app", "extension"],
     "platforms": ["chromeos", "lacros"]
   },
-  "wallpaperPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "location": "component",
-    "platforms": ["chromeos"]
-  },
   "webAuthenticationProxy": [{
     "channel": "trunk",
     "extension_types": ["extension"],

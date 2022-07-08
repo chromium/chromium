@@ -745,17 +745,6 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
 void ExtensionAppsChromeOs::SetShowInFields(
     const extensions::Extension* extension,
     App& app) {
-  // TODO(b:193788853) delete wallpaper manager and remove special case.
-  if (extension->id() == extension_misc::kWallpaperManagerId) {
-    // Explicitly show the Wallpaper Picker app in search only.
-    app.show_in_launcher = false;
-
-    app.show_in_shelf = false;
-    app.show_in_search = false;
-    app.show_in_management = false;
-    app.handles_intents = true;
-    return;
-  }
   ExtensionAppsBase::SetShowInFields(extension, app);
 
   // Explicitly mark AudioPlayer and QuickOffice as being able to handle
@@ -772,19 +761,6 @@ void ExtensionAppsChromeOs::SetShowInFields(
 void ExtensionAppsChromeOs::SetShowInFields(
     apps::mojom::AppPtr& app,
     const extensions::Extension* extension) {
-  // TODO(b:193788853) delete wallpaper manager and remove special case.
-  if (extension->id() == extension_misc::kWallpaperManagerId) {
-    // Explicitly show the Wallpaper Picker app in search only. But permit it to
-    // handle intents.
-    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-    app->handles_intents = apps::mojom::OptionalBool::kTrue;
-
-    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
-    app->show_in_search = apps::mojom::OptionalBool::kFalse;
-
-    app->show_in_management = apps::mojom::OptionalBool::kFalse;
-    return;
-  }
   ExtensionAppsBase::SetShowInFields(app, extension);
 
   // Explicitly mark these apps as being able to handle intents even though they
