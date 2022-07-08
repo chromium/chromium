@@ -17,7 +17,6 @@
 #include "chromeos/dbus/dbus_clients_browser.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
-#include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
 namespace chromeos {
@@ -61,10 +60,6 @@ DebugDaemonClient* DBusThreadManager::GetDebugDaemonClient() {
 EasyUnlockClient* DBusThreadManager::GetEasyUnlockClient() {
   return clients_browser_ ? clients_browser_->easy_unlock_client_.get()
                           : nullptr;
-}
-
-GnubbyClient* DBusThreadManager::GetGnubbyClient() {
-  RETURN_DBUS_CLIENT(gnubby_client_);
 }
 
 #undef RETURN_DBUS_CLIENT
@@ -142,11 +137,6 @@ void DBusThreadManagerSetter::SetCrosDisksClient(
 void DBusThreadManagerSetter::SetDebugDaemonClient(
     std::unique_ptr<DebugDaemonClient> client) {
   debug_daemon_client_ = std::move(client);
-}
-
-void DBusThreadManagerSetter::SetGnubbyClient(
-    std::unique_ptr<GnubbyClient> client) {
-  gnubby_client_ = std::move(client);
 }
 
 }  // namespace chromeos

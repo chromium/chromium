@@ -70,6 +70,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
@@ -149,6 +150,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<FuseBoxReverseClient>(bus);
+  InitializeDBusClient<chromeos::GnubbyClient>(bus);
   chromeos::hermes_clients::Initialize(bus);
 #if BUILDFLAG(ENABLE_HIBERNATE)
   InitializeDBusClient<HibermanClient>(bus);
@@ -280,6 +282,7 @@ void ShutdownDBus() {
   HibermanClient::Shutdown();
 #endif
   chromeos::hermes_clients::Shutdown();
+  chromeos::GnubbyClient::Shutdown();
   FuseBoxReverseClient::Shutdown();
   FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();

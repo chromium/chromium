@@ -21,7 +21,6 @@ class CrosDisksClient;
 class DebugDaemonClient;
 class EasyUnlockClient;
 class FwupdClient;
-class GnubbyClient;
 
 // Owns D-Bus clients.
 // TODO(jamescook): Rename this class. "Browser" refers to the browser process
@@ -50,7 +49,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<EasyUnlockClient> easy_unlock_client_;
   std::unique_ptr<FwupdClient> fwupd_client_;
-  std::unique_ptr<GnubbyClient> gnubby_client_;
 };
 
 }  // namespace chromeos

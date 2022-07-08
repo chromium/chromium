@@ -22,7 +22,6 @@ class DBusClientsBrowser;
 class DBusThreadManagerSetter;
 class DebugDaemonClient;
 class EasyUnlockClient;
-class GnubbyClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
@@ -64,7 +63,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   CrosDisksClient* GetCrosDisksClient();
   DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();
-  GnubbyClient* GetGnubbyClient();
 
  private:
   DBusThreadManager();
@@ -85,7 +83,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
  public:
   void SetCrosDisksClient(std::unique_ptr<CrosDisksClient> client);
   void SetDebugDaemonClient(std::unique_ptr<DebugDaemonClient> client);
-  void SetGnubbyClient(std::unique_ptr<GnubbyClient> client);
 
  private:
   friend class DBusThreadManager;
@@ -98,7 +95,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
 
   std::unique_ptr<CrosDisksClient> cros_disks_client_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
-  std::unique_ptr<GnubbyClient> gnubby_client_;
 };
 
 }  // namespace chromeos

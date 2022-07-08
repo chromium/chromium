@@ -20,8 +20,6 @@
 #include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
 #include "chromeos/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
-#include "chromeos/dbus/gnubby/fake_gnubby_client.h"
-#include "chromeos/dbus/gnubby/gnubby_client.h"
 
 namespace chromeos {
 
@@ -46,7 +44,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       CREATE_DBUS_CLIENT(DebugDaemonClient, use_real_clients);
   easy_unlock_client_ = CREATE_DBUS_CLIENT(EasyUnlockClient, use_real_clients);
   fwupd_client_ = CREATE_DBUS_CLIENT(FwupdClient, use_real_clients);
-  gnubby_client_ = CREATE_DBUS_CLIENT(GnubbyClient, use_real_clients);
 }
 
 DBusClientsBrowser::~DBusClientsBrowser() = default;
@@ -60,7 +57,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   debug_daemon_client_->Init(system_bus);
   easy_unlock_client_->Init(system_bus);
   fwupd_client_->Init(system_bus);
-  gnubby_client_->Init(system_bus);
 }
 
 }  // namespace chromeos

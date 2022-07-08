@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/gnubby/fake_gnubby_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -17,6 +18,8 @@
 namespace chromeos {
 
 namespace {
+
+GnubbyClient* g_instance = nullptr;
 
 class GnubbyClientImpl : public GnubbyClient {
  public:
@@ -40,7 +43,6 @@ class GnubbyClientImpl : public GnubbyClient {
       observer.PromptUserAuth();
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     dbus::ObjectProxy* proxy_ = bus->GetObjectProxy(
         u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
@@ -69,12 +71,36 @@ class GnubbyClientImpl : public GnubbyClient {
 
 }  // namespace
 
-GnubbyClient::GnubbyClient() = default;
-
-GnubbyClient::~GnubbyClient() = default;
+// static
+GnubbyClient* GnubbyClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<GnubbyClient> GnubbyClient::Create() {
-  return std::make_unique<GnubbyClientImpl>();
+void GnubbyClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new GnubbyClientImpl())->Init(bus);
 }
+
+// static
+void GnubbyClient::InitializeFake() {
+  (new FakeGnubbyClient())->Init(nullptr);
+}
+
+// static
+void GnubbyClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+GnubbyClient::GnubbyClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+GnubbyClient::~GnubbyClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
 }  // namespace chromeos
