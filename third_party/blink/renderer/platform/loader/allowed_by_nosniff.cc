@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -80,6 +81,13 @@ bool AllowMimeTypeAsScript(const String& mime_type,
                            AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
                            WebFeature& counter) {
   using MimeTypeCheck = AllowedByNosniff::MimeTypeCheck;
+
+  // If strict mime type checking for workers is enabled, we'll treat all
+  // "lax" for worker cases as strict.
+  if (mime_type_check_mode == MimeTypeCheck::kLaxForWorker &&
+      RuntimeEnabledFeatures::StrictMimeTypesForWorkersEnabled()) {
+    mime_type_check_mode = MimeTypeCheck::kStrict;
+  }
 
   // The common case: A proper JavaScript MIME type
   if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(mime_type))

@@ -50,9 +50,6 @@ HttpsState FetchClientSettingsObjectImpl::GetHttpsState() const {
 
 AllowedByNosniff::MimeTypeCheck
 FetchClientSettingsObjectImpl::MimeTypeCheckForClassicWorkerScript() const {
-  if (RuntimeEnabledFeatures::StrictMimeTypesForWorkersEnabled())
-    return AllowedByNosniff::MimeTypeCheck::kStrict;
-
   if (execution_context_->IsWindow()) {
     // For worker creation on a document, don't impose strict MIME-type checks
     // on the top-level worker script for backward compatibility. Note that

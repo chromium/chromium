@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -46,11 +48,16 @@ class MockConsoleLogger : public GarbageCollected<MockConsoleLogger>,
 
 }  // namespace
 
-class AllowedByNosniffTest : public testing::Test {
+class AllowedByNosniffTest : public testing::TestWithParam<bool> {
  public:
 };
 
-TEST_F(AllowedByNosniffTest, AllowedOrNot) {
+INSTANTIATE_TEST_SUITE_P(All, AllowedByNosniffTest, ::testing::Bool());
+
+TEST_P(AllowedByNosniffTest, AllowedOrNot) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedStrictMimeTypesForWorkers feature(
+      GetParam());
+
   struct {
     const char* mimetype;
     bool allowed;
@@ -117,9 +124,13 @@ TEST_F(AllowedByNosniffTest, AllowedOrNot) {
     ::testing::Mock::VerifyAndClear(use_counter);
 
     EXPECT_CALL(*use_counter, CountUse(_)).Times(::testing::AnyNumber());
-    if (!testcase.allowed)
+    bool expect_allowed =
+        RuntimeEnabledFeatures::StrictMimeTypesForWorkersEnabled()
+            ? testcase.strict_allowed
+            : testcase.allowed;
+    if (!expect_allowed)
       EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _));
-    EXPECT_EQ(testcase.allowed,
+    EXPECT_EQ(expect_allowed,
               AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
                                                  MimeTypeCheck::kLaxForWorker));
     ::testing::Mock::VerifyAndClear(use_counter);
@@ -134,7 +145,10 @@ TEST_F(AllowedByNosniffTest, AllowedOrNot) {
   }
 }
 
-TEST_F(AllowedByNosniffTest, Counters) {
+TEST_P(AllowedByNosniffTest, Counters) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedStrictMimeTypesForWorkers feature(
+      GetParam());
+
   constexpr auto kBasic = network::mojom::FetchResponseType::kBasic;
   constexpr auto kOpaque = network::mojom::FetchResponseType::kOpaque;
   constexpr auto kCors = network::mojom::FetchResponseType::kCors;
@@ -206,15 +220,27 @@ TEST_F(AllowedByNosniffTest, Counters) {
                                        MimeTypeCheck::kLaxForElement);
     ::testing::Mock::VerifyAndClear(use_counter);
 
-    EXPECT_CALL(*use_counter, CountUse(testcase.expected));
+    // kLaxForWorker should (by default) behave the same as kLaxForElement,
+    // but should behave like kStrict if StrictMimeTypesForWorkersEnabled().
+    // So in the strict case we'll expect the counter calls only if it's a
+    // legitimate script.
+    bool expect_worker_lax =
+        (testcase.expected == WebFeature::kCrossOriginTextScript ||
+         testcase.expected == WebFeature::kSameOriginTextScript) ||
+        !RuntimeEnabledFeatures::StrictMimeTypesForWorkersEnabled();
+    EXPECT_CALL(*use_counter, CountUse(testcase.expected))
+        .Times(expect_worker_lax);
     EXPECT_CALL(*use_counter, CountUse(::testing::Ne(testcase.expected)))
         .Times(::testing::AnyNumber());
     AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
                                        MimeTypeCheck::kLaxForWorker);
     ::testing::Mock::VerifyAndClear(use_counter);
 
+    // The kStrictMimeTypeChecksWouldBlockWorker counter should only be active
+    // is "lax" checking for workers is enabled.
     EXPECT_CALL(*use_counter,
-                CountUse(WebFeature::kStrictMimeTypeChecksWouldBlockWorker));
+                CountUse(WebFeature::kStrictMimeTypeChecksWouldBlockWorker))
+        .Times(!RuntimeEnabledFeatures::StrictMimeTypesForWorkersEnabled());
     EXPECT_CALL(*use_counter,
                 CountUse(::testing::Ne(
                     WebFeature::kStrictMimeTypeChecksWouldBlockWorker)))
@@ -225,7 +251,10 @@ TEST_F(AllowedByNosniffTest, Counters) {
   }
 }
 
-TEST_F(AllowedByNosniffTest, AllTheSchemes) {
+TEST_P(AllowedByNosniffTest, AllTheSchemes) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedStrictMimeTypesForWorkers feature(
+      GetParam());
+
   // We test various URL schemes.
   // To force a decision based on the scheme, we give all responses an
   // invalid Content-Type plus a "nosniff" header. That way, all Content-Type
