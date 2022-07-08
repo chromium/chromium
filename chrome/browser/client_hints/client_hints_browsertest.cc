@@ -275,6 +275,33 @@ void CheckUserAgentMinorVersion(
   }
 }
 
+// A helper function that returns true when the legacy GREASE implementation is
+// seen. It relies on the old algorithm having only 3 possible permutations due
+// to a very limited set of allowed special characters. This may be removed once
+// the legacy algorithm is no longer supported for emergency situations.
+bool SawOldGrease(const std::string& ua_ch_result) {
+  bool seen_legacy = false;
+  // The legacy GREASE algorithm had only semicolon and space, and thus had one
+  // of these three permutations.
+  const std::string old_grease_permutations[]{";Not A Brand", " Not;A Brand",
+                                              " Not A;Brand"};
+  for (auto i : old_grease_permutations) {
+    seen_legacy = seen_legacy || (ua_ch_result.find(i) != std::string::npos);
+  }
+  return seen_legacy;
+}
+
+// A helper function to determine whether the GREASE algorithm per the spec:
+// https://wicg.github.io/ua-client-hints/#create-arbitrary-brands-section
+// was observed in the client hint user agent header.
+bool SawUpdatedGrease(const std::string& ua_ch_result) {
+  // The updated GREASE algorithm would contain at least two of these
+  // characters.
+  static constexpr char kUpdatedGreaseRegex[] =
+      "Not[ ()\\-.\\/:;=?_]A[ ()\\-.\\/:;=?_]Brand";
+  return re2::RE2::PartialMatch(ua_ch_result, kUpdatedGreaseRegex);
+}
+
 enum class UserAgentOriginTrialTestType {
   UAReduction,
   UADeprecation,
@@ -5270,16 +5297,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UpdatedGREASEByDefault) {
   const GURL gurl = accept_ch_url();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   std::string ua_ch_result = main_frame_ua_observed();
-  // The updated GREASE algorithm would contain at least one of these
-  // characters. The equal sign, space, and semicolon are not present as they
-  // exist in the old algorithm.
-  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
-                                            '/', ')', '?', '_'};
-  bool seen_updated = false;
-  for (auto c : updated_grease_chars) {
-    seen_updated = seen_updated || (ua_ch_result.find(c) != std::string::npos);
-  }
-  ASSERT_TRUE(seen_updated);
+
+  ASSERT_TRUE(SawUpdatedGrease(ua_ch_result) && !SawOldGrease(ua_ch_result));
 }
 
 class GreaseFeatureParamOptOutTest : public ClientHintsBrowserTest {
@@ -5301,14 +5320,8 @@ IN_PROC_BROWSER_TEST_F(GreaseFeatureParamOptOutTest,
   const GURL gurl = accept_ch_url();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   std::string ua_ch_result = main_frame_ua_observed();
-  // The updated GREASE algorithm would contain at least one of these
-  // characters. The equal sign, space, and semicolon are not present as they
-  // exist in the old algorithm.
-  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
-                                            '/', ')', '?', '_'};
-  for (auto i : updated_grease_chars) {
-    ASSERT_TRUE(ua_ch_result.find(i) == std::string::npos);
-  }
+
+  ASSERT_TRUE(SawOldGrease(ua_ch_result));
 }
 
 class GreaseEnterprisePolicyTest : public ClientHintsBrowserTest {
@@ -5326,14 +5339,8 @@ IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest, GreaseEnterprisePolicyTest) {
   const GURL gurl = accept_ch_url();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   std::string ua_ch_result = main_frame_ua_observed();
-  // The updated GREASE algorithm would contain at least one of these
-  // characters. The equal sign, space, and semicolon are not present as they
-  // exist in the old algorithm.
-  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
-                                            '/', ')', '?', '_'};
-  for (auto i : updated_grease_chars) {
-    ASSERT_TRUE(ua_ch_result.find(i) == std::string::npos);
-  }
+
+  ASSERT_TRUE(SawOldGrease(ua_ch_result));
 }
 IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest,
                        GreaseEnterprisePolicyDynamicRefreshTest) {
@@ -5347,13 +5354,8 @@ IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest,
   provider_.UpdateChromePolicy(policies);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   std::string ua_ch_result = main_frame_ua_observed();
-  bool seen_updated = false;
-  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
-                                            '/', ')', '?', '_'};
-  for (auto c : updated_grease_chars) {
-    seen_updated = seen_updated || (ua_ch_result.find(c) != std::string::npos);
-  }
-  ASSERT_TRUE(seen_updated);
+
+  ASSERT_TRUE(SawUpdatedGrease(ua_ch_result) && !SawOldGrease(ua_ch_result));
 }
 
 // Tests that the Sec-CH-UA-Reduced client hint gets cleared on a redirect if

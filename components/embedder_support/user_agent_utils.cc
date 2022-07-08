@@ -512,13 +512,11 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     const std::vector<std::string> greasey_chars = {
         " ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"};
     const std::vector<std::string> greased_versions = {"8", "99", "24"};
-    // The spec disallows a leading or trailing space, so ensuring the first
-    // char isn't index 0. See the spec:
+    // See the spec:
     // https://wicg.github.io/ua-client-hints/#create-arbitrary-brands-section
     greasey_brand = base::StrCat(
-        {greasey_chars[(seed % (greasey_chars.size() - 1)) + 1], "Not",
-         greasey_chars[(seed + 1) % greasey_chars.size()], "A",
-         greasey_chars[(seed + 2) % greasey_chars.size()], "Brand"});
+        {"Not", greasey_chars[(seed) % greasey_chars.size()], "A",
+         greasey_chars[(seed + 1) % greasey_chars.size()], "Brand"});
     greasey_version = greased_versions[seed % greased_versions.size()];
 
     return GetProcessedGreasedBrandVersion(
