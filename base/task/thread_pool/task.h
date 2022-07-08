@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/location.h"
 #include "base/pending_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -48,6 +49,17 @@ struct BASE_EXPORT Task : public PendingTask {
   ~Task() = default;
 
   Task& operator=(Task&& other);
+
+  void SetScheduled();
+
+  // Required by IntrusiveHeap.
+  void SetHeapHandle(const HeapHandle& handle) {}
+
+  // Required by IntrusiveHeap.
+  void ClearHeapHandle() {}
+
+  // Required by IntrusiveHeap.
+  HeapHandle GetHeapHandle() const { return HeapHandle::Invalid(); }
 };
 
 }  // namespace internal
