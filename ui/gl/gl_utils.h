@@ -79,6 +79,9 @@ GL_EXPORT void SetGpuPreferenceEGL(GpuPreference preference,
 
 // Query the default GLDisplayEGL.
 GL_EXPORT GLDisplayEGL* GetDefaultDisplayEGL();
+
+// Query the GLDisplayEGL by |system_device_id|.
+GL_EXPORT GLDisplayEGL* GetDisplayEGL(uint64_t system_device_id);
 #endif  // USE_EGL
 
 #if defined(USE_GLX)

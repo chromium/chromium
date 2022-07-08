@@ -11,8 +11,9 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display_manager.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
@@ -81,9 +82,7 @@ void glWaitSyncEmulateEGL(GLsync sync, GLbitfield flags, GLuint64 timeout) {
   DCHECK(timeout == GL_TIMEOUT_IGNORED);
   DCHECK(flags == 0);
 
-  if (!GLDisplayManagerEGL::GetInstance()
-           ->GetDisplay(GpuPreference::kDefault)
-           ->ext->b_EGL_KHR_wait_sync) {
+  if (!GetDefaultDisplayEGL()->ext->b_EGL_KHR_wait_sync) {
     eglClientWaitSyncKHR(data->display, data->sync, 0, EGL_FOREVER_KHR);
     return;
   }
@@ -299,8 +298,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       gl->gl##chrome_name##Fn, progress_reporter, version_info.is_angle)
 #define BIND(fname, ...) BIND_EXTENSION(fname, fname, __VA_ARGS__)
 
-  GrGLInterface* interface = new GrGLInterface();
-  GrGLInterface::Functions* functions = &interface->fFunctions;
+  GrGLInterface* gl_interface = new GrGLInterface();
+  GrGLInterface::Functions* functions = &gl_interface->fFunctions;
   BIND(ActiveTexture);
   BIND(AttachShader);
   BIND(BindAttribLocation);
@@ -729,9 +728,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       BIND_EXTENSION(DeleteSync, DeleteSyncAPPLE);
     }
 #else
-    if (GLDisplayManagerEGL::GetInstance()
-            ->GetDisplay(GpuPreference::kDefault)
-            ->ext->b_EGL_KHR_fence_sync) {
+    if (GetDefaultDisplayEGL()->ext->b_EGL_KHR_fence_sync) {
       // Emulate APPLE_sync via egl
       extensions.add("GL_APPLE_sync");
 
@@ -761,9 +758,9 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
 #undef BIND
 #undef BIND_EXTENSION
 
-  interface->fStandard = standard;
-  interface->fExtensions.swap(&extensions);
-  sk_sp<GrGLInterface> returned(interface);
+  gl_interface->fStandard = standard;
+  gl_interface->fExtensions.swap(&extensions);
+  sk_sp<GrGLInterface> returned(gl_interface);
   return returned;
 }
 

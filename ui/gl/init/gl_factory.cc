@@ -15,7 +15,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
@@ -154,8 +153,7 @@ GLDisplay* InitializeGLOneOff(uint64_t system_device_id) {
   if (!InitializeStaticGLBindingsOneOff())
     return nullptr;
   if (GetGLImplementation() == kGLImplementationDisabled) {
-    return GLDisplayManagerEGL::GetInstance()->GetDisplay(
-        GpuPreference::kDefault);
+    return GetDefaultDisplayEGL();
   }
 
   return InitializeGLOneOffPlatformHelper(true, system_device_id);
@@ -169,8 +167,7 @@ GLDisplay* InitializeGLNoExtensionsOneOff(bool init_bindings,
     if (!InitializeStaticGLBindingsOneOff())
       return nullptr;
     if (GetGLImplementation() == kGLImplementationDisabled) {
-      return GLDisplayManagerEGL::GetInstance()->GetDisplay(
-          GpuPreference::kDefault);
+      return GetDefaultDisplayEGL();
     }
   }
 

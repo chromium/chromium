@@ -13,7 +13,6 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_implementation.h"
@@ -266,7 +265,7 @@ void ClientExtensionsEGL::InitializeClientExtensionSettings() {
       gfx::HasExtension(extensions, "EGL_MESA_platform_surfaceless");
 }
 
-void DisplayExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
+void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));

@@ -16,7 +16,6 @@
 namespace gl {
 
 class GLContext;
-class GLDisplayEGL;
 
 typedef EGLBoolean(GL_BINDING_CALL* eglBindAPIProc)(EGLenum api);
 typedef EGLBoolean(GL_BINDING_CALL* eglBindTexImageProc)(EGLDisplay dpy,
@@ -395,10 +394,10 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_GL_CHROMIUM_egl_android_native_fence_sync_hack;
   bool b_GL_CHROMIUM_egl_khr_fence_sync_hack;
 
-  void InitializeExtensionSettings(GLDisplayEGL* display);
-  void UpdateConditionalExtensionSettings(GLDisplayEGL* display);
+  void InitializeExtensionSettings(EGLDisplay display);
+  void UpdateConditionalExtensionSettings(EGLDisplay display);
 
-  static std::string GetPlatformExtensions(GLDisplayEGL* display);
+  static std::string GetPlatformExtensions(EGLDisplay display);
 };
 
 struct ProcsEGL {

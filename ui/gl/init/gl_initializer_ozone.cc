@@ -7,9 +7,9 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 
 #if defined(USE_OZONE)
 #include "ui/gl/init/gl_display_egl_util_ozone.h"
@@ -29,7 +29,7 @@ GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+      return GetDisplayEGL(system_device_id);
     default:
       NOTREACHED();
   }

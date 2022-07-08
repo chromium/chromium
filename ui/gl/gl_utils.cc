@@ -216,6 +216,10 @@ GLDisplayEGL* GetDefaultDisplayEGL() {
   return GLDisplayManagerEGL::GetInstance()->GetDisplay(
       GpuPreference::kDefault);
 }
+
+GLDisplayEGL* GetDisplayEGL(uint64_t system_device_id) {
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+}
 #endif  // USE_EGL
 
 #if defined(USE_GLX)

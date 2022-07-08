@@ -666,6 +666,17 @@ GLDisplay::GLDisplay(uint64_t system_device_id)
 GLDisplay::~GLDisplay() = default;
 
 #if defined(USE_EGL)
+GLDisplayEGL::EGLGpuSwitchingObserver::EGLGpuSwitchingObserver(
+    EGLDisplay display)
+    : display_(display) {
+  DCHECK(display != EGL_NO_DISPLAY);
+}
+
+void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched(
+    GpuPreference active_gpu_heuristic) {
+  eglHandleGPUSwitchANGLE(display_);
+}
+
 GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id)
     : GLDisplay(system_device_id) {
   ext = std::make_unique<DisplayExtensionsEGL>();
@@ -676,6 +687,26 @@ GLDisplayEGL::~GLDisplayEGL() = default;
 
 EGLDisplay GLDisplayEGL::GetDisplay() {
   return display_;
+}
+
+void GLDisplayEGL::Shutdown() {
+  if (display_ == EGL_NO_DISPLAY)
+    return;
+
+  if (gpu_switching_observer_.get()) {
+    ui::GpuSwitchingManager::GetInstance()->RemoveObserver(
+        gpu_switching_observer_.get());
+    gpu_switching_observer_.reset();
+  }
+
+  angle::ResetPlatform(display_);
+  DCHECK(g_driver_egl.fn.eglTerminateFn);
+  eglTerminate(display_);
+
+  display_ = EGL_NO_DISPLAY;
+  egl_surfaceless_context_supported_ = false;
+  egl_context_priority_supported_ = false;
+  egl_android_native_fence_sync_supported_ = false;
 }
 
 void GLDisplayEGL::SetDisplay(EGLDisplay display) {
@@ -710,6 +741,36 @@ bool GLDisplayEGL::IsAndroidNativeFenceSyncSupported() {
 
 bool GLDisplayEGL::IsANGLEExternalContextAndSurfaceSupported() {
   return this->ext->b_EGL_ANGLE_external_context_and_surface;
+}
+
+bool GLDisplayEGL::Initialize(EGLDisplayPlatform native_display) {
+  if (display_ != EGL_NO_DISPLAY)
+    return true;
+
+  if (!InitializeDisplay(native_display))
+    return false;
+  InitializeCommon();
+
+  if (ext->b_EGL_ANGLE_power_preference) {
+    gpu_switching_observer_ =
+        std::make_unique<EGLGpuSwitchingObserver>(display_);
+    ui::GpuSwitchingManager::GetInstance()->AddObserver(
+        gpu_switching_observer_.get());
+  }
+  return true;
+}
+
+void GLDisplayEGL::InitializeForTesting() {
+  display_ = eglGetCurrentDisplay();
+  ext->InitializeExtensionSettings(display_);
+  InitializeCommon();
+}
+
+bool GLDisplayEGL::InitializeExtensionSettings() {
+  if (display_ == EGL_NO_DISPLAY)
+    return false;
+  ext->UpdateConditionalExtensionSettings(display_);
+  return true;
 }
 
 // InitializeDisplay is necessary because the static binding code
@@ -837,7 +898,7 @@ bool GLDisplayEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
                               DISPLAY_TYPE_MAX);
     display_ = display;
     display_type_ = display_type;
-    ext->InitializeExtensionSettings(this);
+    ext->InitializeExtensionSettings(display);
     return true;
   }
 
@@ -917,27 +978,6 @@ void GLDisplayEGL::InitializeCommon() {
   }
 #endif
 }
-
-bool GLDisplayEGL::InitializeExtensionSettings() {
-  if (display_ == EGL_NO_DISPLAY)
-    return false;
-  ext->UpdateConditionalExtensionSettings(this);
-  return true;
-}
-
-void GLDisplayEGL::Shutdown() {
-  if (display_ == EGL_NO_DISPLAY)
-    return;
-
-  angle::ResetPlatform(display_);
-  DCHECK(g_driver_egl.fn.eglTerminateFn);
-  eglTerminate(display_);
-
-  display_ = EGL_NO_DISPLAY;
-  egl_surfaceless_context_supported_ = false;
-  egl_context_priority_supported_ = false;
-  egl_android_native_fence_sync_supported_ = false;
-}
 #endif  // defined(USE_EGL)
 
 #if defined(USE_GLX)
@@ -949,6 +989,8 @@ GLDisplayX11::~GLDisplayX11() = default;
 void* GLDisplayX11::GetDisplay() {
   return x11::Connection::Get()->GetXlibDisplay();
 }
+
+void GLDisplayX11::Shutdown() {}
 #endif  // defined(USE_GLX)
 
 }  // namespace gl
