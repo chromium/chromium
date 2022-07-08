@@ -73,9 +73,12 @@ class ApcExternalActionDelegate
       override;
 
   // Ends the current action by notifying the `ExternalActionController` about
-  // the `success` of the action. If non-empty, `serialized_result` is passed
+  // the `success` of the action. If non-empty, `action_result` is passed
   // as the result payload. Otherwise, no payload is set.
-  void EndAction(bool success, std::string serialized_result = std::string());
+  void EndAction(bool success,
+                 absl::optional<autofill_assistant::password_change::
+                                    GenericPasswordChangeSpecificationResult>
+                     action_result = absl::nullopt);
 
   // Handler methods for the different actions that `ApcExternalActionDelegate`
   // supports.

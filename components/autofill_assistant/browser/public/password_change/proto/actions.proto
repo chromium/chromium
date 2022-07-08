@@ -109,12 +109,20 @@ message UpdateSidePanelSpecification {
   optional ProgressStep progress_step = 4;
 }
 
-// A wrapper around all available `password_change` specifications that allows
-// deserializing the appropriate specification.
+// A wrapper around all available `password_change` specifications.
 message GenericPasswordChangeSpecification {
   oneof specification {
     BasePromptSpecification base_prompt = 1;
     UseGeneratedPasswordPromptSpecification use_generated_password_prompt = 2;
     UpdateSidePanelSpecification update_side_panel = 3;
+  }
+}
+
+// A wrapper around all available `password_change` specifications result.
+message GenericPasswordChangeSpecificationResult {
+  oneof result {
+    BasePromptSpecification.Result base_prompt_result = 1;
+    UseGeneratedPasswordPromptSpecification.Result
+        use_generated_password_prompt_result = 2;
   }
 }

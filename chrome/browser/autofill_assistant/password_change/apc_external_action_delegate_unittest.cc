@@ -281,12 +281,18 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveBasePromptAction_FromViewClick) {
   // ... there is now a result.
   EXPECT_TRUE(result.has_success());
   EXPECT_TRUE(result.success());
-  EXPECT_TRUE(result.has_result_info() &&
-              result.result_info().has_result_payload());
+  EXPECT_TRUE(result.has_result_info());
+  EXPECT_TRUE(
+      result.result_info().has_generic_password_change_specification_result());
+  EXPECT_TRUE(result.result_info()
+                  .generic_password_change_specification_result()
+                  .has_base_prompt_result());
+
   autofill_assistant::password_change::BasePromptSpecification::Result
       prompt_result;
-  ASSERT_TRUE(
-      prompt_result.ParseFromString(result.result_info().result_payload()));
+  prompt_result = result.result_info()
+                      .generic_password_change_specification_result()
+                      .base_prompt_result();
 
   EXPECT_TRUE(prompt_result.has_selected_tag());
   EXPECT_EQ(prompt_result.selected_tag(), kPromptTag1);
@@ -327,12 +333,18 @@ TEST_F(ApcExternalActionDelegateTest,
   // ... there is now a result.
   EXPECT_TRUE(result.has_success());
   EXPECT_TRUE(result.success());
-  EXPECT_TRUE(result.has_result_info() &&
-              result.result_info().has_result_payload());
+  EXPECT_TRUE(result.has_result_info());
+  EXPECT_TRUE(
+      result.result_info().has_generic_password_change_specification_result());
+  EXPECT_TRUE(result.result_info()
+                  .generic_password_change_specification_result()
+                  .has_base_prompt_result());
+
   autofill_assistant::password_change::BasePromptSpecification::Result
       prompt_result;
-  ASSERT_TRUE(
-      prompt_result.ParseFromString(result.result_info().result_payload()));
+  prompt_result = result.result_info()
+                      .generic_password_change_specification_result()
+                      .base_prompt_result();
 
   EXPECT_TRUE(prompt_result.has_selected_tag());
   // The result with index 0 is selected even though the arguments of the
@@ -465,12 +477,14 @@ TEST_F(ApcExternalActionDelegateTest,
   EXPECT_TRUE(result.has_success());
   EXPECT_TRUE(result.success());
   EXPECT_TRUE(result.has_result_info());
-  autofill_assistant::password_change::UseGeneratedPasswordPromptSpecification::
-      Result use_generated_password_prompt_specification_result;
   EXPECT_TRUE(
-      use_generated_password_prompt_specification_result.ParseFromString(
-          result.result_info().result_payload()));
-  EXPECT_TRUE(use_generated_password_prompt_specification_result
+      result.result_info().has_generic_password_change_specification_result());
+  EXPECT_TRUE(result.result_info()
+                  .generic_password_change_specification_result()
+                  .has_use_generated_password_prompt_result());
+  EXPECT_TRUE(result.result_info()
+                  .generic_password_change_specification_result()
+                  .use_generated_password_prompt_result()
                   .generated_password_accepted());
 }
 
@@ -522,9 +536,10 @@ TEST_F(ApcExternalActionDelegateTest,
   EXPECT_TRUE(result.has_result_info());
   autofill_assistant::password_change::UseGeneratedPasswordPromptSpecification::
       Result use_generated_password_prompt_specification_result;
-  EXPECT_TRUE(
-      use_generated_password_prompt_specification_result.ParseFromString(
-          result.result_info().result_payload()));
+  use_generated_password_prompt_specification_result =
+      result.result_info()
+          .generic_password_change_specification_result()
+          .use_generated_password_prompt_result();
   EXPECT_FALSE(use_generated_password_prompt_specification_result
                    .generated_password_accepted());
 }

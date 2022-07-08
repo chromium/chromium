@@ -163,16 +163,14 @@ void ApcExternalActionDelegate::OnBasePromptChoiceSelected(
   }
 
   CHECK(choice_index < base_prompt_return_values_.size());
-  autofill_assistant::password_change::BasePromptSpecification::Result result;
-  result.set_selected_tag(base_prompt_return_values_[choice_index]);
+  autofill_assistant::password_change::BasePromptSpecification::Result
+      base_prompt_result;
+  base_prompt_result.set_selected_tag(base_prompt_return_values_[choice_index]);
 
-  std::string serialized_result;
-  if (!result.SerializeToString(&serialized_result)) {
-    DLOG(ERROR) << "unable to base prompt result";
-    EndAction(false);
-    return;
-  }
-  EndAction(true, std::move(serialized_result));
+  autofill_assistant::password_change::GenericPasswordChangeSpecificationResult
+      action_result;
+  *action_result.mutable_base_prompt_result() = base_prompt_result;
+  EndAction(true, std::move(action_result));
 }
 
 void ApcExternalActionDelegate::ShowUseGeneratedPasswordPrompt(
@@ -205,16 +203,16 @@ void ApcExternalActionDelegate::OnGeneratedPasswordSelected(
   SetTitle(std::u16string());
 
   autofill_assistant::password_change::UseGeneratedPasswordPromptSpecification::
-      Result result;
-  result.set_generated_password_accepted(generated_password_accepted);
+      Result generated_password_prompt_result;
+  generated_password_prompt_result.set_generated_password_accepted(
+      generated_password_accepted);
 
-  std::string serialized_result;
-  if (!result.SerializeToString(&serialized_result)) {
-    DLOG(ERROR) << "unable to base prompt result";
-    EndAction(false);
-    return;
-  }
-  EndAction(true, std::move(serialized_result));
+  autofill_assistant::password_change::GenericPasswordChangeSpecificationResult
+      action_result;
+  *action_result.mutable_use_generated_password_prompt_result() =
+      generated_password_prompt_result;
+
+  EndAction(true, std::move(action_result));
 }
 
 void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
@@ -234,16 +232,19 @@ void ApcExternalActionDelegate::Show(
   password_change_run_display_->Show();
 }
 
-void ApcExternalActionDelegate::EndAction(bool success,
-                                          std::string serialized_result) {
+void ApcExternalActionDelegate::EndAction(
+    bool success,
+    absl::optional<autofill_assistant::password_change::
+                       GenericPasswordChangeSpecificationResult>
+        action_result) {
   autofill_assistant::external::Result result;
   result.set_success(success);
-  // Only set a payload for a non-empty serialized result to avoid triggering
-  // payload processing.
-  if (!serialized_result.empty()) {
-    result.mutable_result_info()->set_result_payload(serialized_result);
-  }
 
+  if (action_result.has_value()) {
+    *result.mutable_result_info()
+         ->mutable_generic_password_change_specification_result() =
+        action_result.value();
+  }
   std::move(end_action_callback_).Run(std::move(result));
 }
 

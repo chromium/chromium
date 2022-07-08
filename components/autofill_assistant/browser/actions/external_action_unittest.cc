@@ -17,7 +17,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/actions/wait_for_dom_test_base.h"
-#include "components/autofill_assistant/browser/external_action_extension_test.pb.h"
 #include "components/autofill_assistant/browser/mock_user_model.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -99,11 +98,10 @@ class ExternalActionTest : public WaitForDomTestBase {
 external::Result MakeResult(bool success) {
   external::Result result;
   result.set_success(success);
-  testing::TestResultExtension test_extension_proto;
-  test_extension_proto.set_text("test text");
 
-  test_extension_proto.SerializeToString(
-      result.mutable_result_info()->mutable_result_payload());
+  external::ResultInfo dummy_result_info;
+  *result.mutable_result_info() = dummy_result_info;
+
   return result;
 }
 
@@ -123,16 +121,7 @@ TEST_F(ExternalActionTest, Success) {
   Run();
   EXPECT_THAT(returned_processed_action_proto->status(), Eq(ACTION_APPLIED));
   ASSERT_TRUE(returned_processed_action_proto->external_action_result()
-                  .result_info()
-                  .has_result_payload());
-  testing::TestResultExtension test_extension_proto;
-  bool parse_success = test_extension_proto.ParseFromString(
-      returned_processed_action_proto->external_action_result()
-          .result_info()
-          .result_payload());
-  EXPECT_TRUE(parse_success);
-
-  EXPECT_THAT(test_extension_proto.text(), Eq("test text"));
+                  .has_result_info());
 }
 
 TEST_F(ExternalActionTest, ExternalFailure) {
@@ -152,16 +141,7 @@ TEST_F(ExternalActionTest, ExternalFailure) {
               Eq(UNKNOWN_ACTION_STATUS));
   EXPECT_TRUE(returned_processed_action_proto->has_external_action_result());
   ASSERT_TRUE(returned_processed_action_proto->external_action_result()
-                  .result_info()
-                  .has_result_payload());
-  testing::TestResultExtension test_extension_proto;
-  bool parse_success = test_extension_proto.ParseFromString(
-      returned_processed_action_proto->external_action_result()
-          .result_info()
-          .result_payload());
-  EXPECT_TRUE(parse_success);
-
-  EXPECT_THAT(test_extension_proto.text(), Eq("test text"));
+                  .has_result_info());
 }
 
 TEST_F(ExternalActionTest, FailsIfProtoExtensionInfoNotSet) {
