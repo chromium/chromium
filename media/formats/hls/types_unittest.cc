@@ -765,4 +765,48 @@ TEST(HlsTypesTest, ValidateByteRange) {
   ok_test(9223372036854775807u, 9223372036854775808u);
 }
 
+TEST(HlsTypesTest, ParseStableId) {
+  constexpr auto ok_test = [](base::StringPiece x,
+                              const base::Location& from =
+                                  base::Location::Current()) {
+    auto result =
+        types::StableId::Parse(ResolvedSourceString::CreateForTesting(x));
+    ASSERT_TRUE(result.has_value()) << from.ToString();
+    auto value = std::move(result).value();
+    EXPECT_EQ(value.Str(), x);
+  };
+  constexpr auto error_test = [](base::StringPiece x,
+                                 const base::Location& from =
+                                     base::Location::Current()) {
+    auto result =
+        types::StableId::Parse(ResolvedSourceString::CreateForTesting(x));
+    ASSERT_TRUE(result.has_error()) << from.ToString();
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kFailedToParseStableId)
+        << from.ToString();
+  };
+
+  // StableId may not be empty
+  error_test("");
+
+  // StableId may not contain whitespace
+  error_test("hello world");
+  error_test(" world");
+  error_test("world ");
+  error_test("hello\tworld");
+
+  // StableId may not contain certain characters
+  error_test("hello&world");
+  error_test("hello*world");
+  error_test("hello,world");
+
+  ok_test("hello_world");
+  ok_test("HELLO_WORLD");
+  ok_test("HELLO_WORLD123");
+  ok_test("123HELLO/WORLD");
+  ok_test("HELLO=WORLD");
+  ok_test("H3Llo.World");
+  ok_test("-/HELLO+World");
+}
+
 }  // namespace media::hls

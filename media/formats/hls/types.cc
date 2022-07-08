@@ -8,8 +8,11 @@
 #include <cmath>
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -25,6 +28,10 @@ re2::StringPiece to_re2(SourceString str) {
   return to_re2(str.Str());
 }
 
+bool IsOneOf(char c, base::StringPiece set) {
+  return base::Contains(set, c);
+}
+
 // Returns the substring matching a valid AttributeName, advancing `source_str`
 // to the following character. If no such substring exists, returns
 // `absl::nullopt` and leaves `source_str` untouched. This is like matching the
@@ -34,17 +41,7 @@ absl::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
 
   // Returns whether the given char is permitted in an AttributeName
   const auto is_char_valid = [](char c) -> bool {
-    if (c >= 'A' && c <= 'Z') {
-      return true;
-    }
-    if (c >= '0' && c <= '9') {
-      return true;
-    }
-    if (c == '-') {
-      return true;
-    }
-
-    return false;
+    return base::IsAsciiUpper(c) || base::IsAsciiDigit(c) || c == '-';
   };
 
   // Extract the substring where `is_char_valid` succeeds
@@ -98,20 +95,7 @@ absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
   // This returns whether a given char is permitted in an unquoted attribute
   // value.
   const auto is_char_valid = [](char c) -> bool {
-    if (c >= 'a' && c <= 'z') {
-      return true;
-    }
-    if (c >= 'A' && c <= 'Z') {
-      return true;
-    }
-    if (c >= '0' && c <= '9') {
-      return true;
-    }
-    if (c == '-' || c == '_' || c == '.') {
-      return true;
-    }
-
-    return false;
+    return base::IsAsciiAlphaNumeric(c) || IsOneOf(c, "-_.");
   };
 
   const char* end =
@@ -425,7 +409,19 @@ ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
     return ParseStatusCode::kMalformedVariableName;
   }
 
-  return VariableName{source_str.Str()};
+  return VariableName(source_str.Str());
+}
+
+ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
+  const auto is_char_valid = [](char c) -> bool {
+    return base::IsAsciiAlphaNumeric(c) || IsOneOf(c, "+/=.-_");
+  };
+
+  if (str.Empty() || !base::ranges::all_of(str.Str(), is_char_valid)) {
+    return ParseStatusCode::kFailedToParseStableId;
+  }
+
+  return StableId(std::string{str.Str()});
 }
 
 }  // namespace media::hls::types

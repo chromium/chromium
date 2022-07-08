@@ -182,6 +182,22 @@ class MEDIA_EXPORT VariableName {
   base::StringPiece name_;
 };
 
+// Represents a string that is guaranteed to be non-empty, and consisting only
+// of characters in the set {[a-z], [A-Z], [0-9], +, /, =, ., -, _}.
+// This is used in the 'STABLE-VARIANT-ID' and 'STABLE-RENDITION-ID' attributes
+// of the EXT-X-STREAM-INF and EXT-X-MEDIA tags, respectively.
+class MEDIA_EXPORT StableId {
+ public:
+  static ParseStatus::Or<StableId> Parse(ResolvedSourceString str);
+
+  const std::string& Str() const { return id_; }
+
+ private:
+  explicit StableId(std::string id) : id_(std::move(id)) {}
+
+  std::string id_;
+};
+
 }  // namespace media::hls::types
 
 #endif  // MEDIA_FORMATS_HLS_TYPES_H_
