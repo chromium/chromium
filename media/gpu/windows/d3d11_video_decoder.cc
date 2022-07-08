@@ -735,15 +735,20 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
   ComD3D11Texture2D in_texture;
 
+  // In addition to what the decoder needs, add one picture buffer
+  // for overlay weirdness, just to be safe. We may need to track
+  // actual used buffers for all use cases and decide an optimal
+  // number of picture buffers.
+  size_t pic_buffers_required =
+      accelerated_video_decoder_->GetRequiredNumOfPictures() + 1;
+
   // Create each picture buffer.
-  for (size_t i = 0; i < D3D11DecoderConfigurator::BUFFER_COUNT; i++) {
+  for (size_t i = 0; i < pic_buffers_required; i++) {
     // Create an input texture / texture array if we haven't already.
     if (!in_texture) {
       auto result = decoder_configurator_->CreateOutputTexture(
           device_, size,
-          use_single_video_decoder_texture_
-              ? 1
-              : D3D11DecoderConfigurator::BUFFER_COUNT,
+          use_single_video_decoder_texture_ ? 1 : pic_buffers_required,
           texture_selector_->DoesDecoderOutputUseSharedHandle());
       if (result.has_value()) {
         in_texture = std::move(result).value();

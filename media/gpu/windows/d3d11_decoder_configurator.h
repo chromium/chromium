@@ -55,8 +55,6 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
   const GUID DecoderGuid() const { return decoder_guid_; }
   DXGI_FORMAT TextureFormat() const { return dxgi_format_; }
 
-  static constexpr size_t BUFFER_COUNT = 20;
-
  private:
   // Set up instances of the parameter structs for D3D11 Functions
   void SetUpDecoderDescriptor(const gfx::Size& coded_size);
