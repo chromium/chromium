@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -73,6 +74,16 @@ class AppPublisher {
                         int32_t size_hint_in_dip,
                         bool allow_placeholder_icon,
                         LoadIconCallback callback) = 0;
+
+  // Launches an app identified by `app_id`. `event_flags` contains launch
+  // options (e.g. window disposition). `launch_source` contains the source
+  // of the launch. When provided, `window_info` contains the expected window
+  // bounds, etc. that are requested for the placement of the launched app
+  // window.
+  virtual void Launch(const std::string& app_id,
+                      int32_t event_flags,
+                      LaunchSource launch_source,
+                      WindowInfoPtr window_info) = 0;
 
   // Launches an app with |params|.
   //

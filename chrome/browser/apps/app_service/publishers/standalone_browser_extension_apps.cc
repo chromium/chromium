@@ -125,6 +125,13 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
                      std::move(callback)));
 }
 
+void StandaloneBrowserExtensionApps::Launch(const std::string& app_id,
+                                            int32_t event_flags,
+                                            LaunchSource launch_source,
+                                            WindowInfoPtr window_info) {
+  // TODO(crbug.com/1253250): Add the implementation.
+}
+
 void StandaloneBrowserExtensionApps::LaunchAppWithParams(
     AppLaunchParams&& params,
     LaunchCallback callback) {

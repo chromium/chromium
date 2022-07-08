@@ -158,6 +158,15 @@ void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
                        std::move(callback));
 }
 
+void StandaloneBrowserApps::Launch(const std::string& app_id,
+                                   int32_t event_flags,
+                                   LaunchSource launch_source,
+                                   WindowInfoPtr window_info) {
+  DCHECK_EQ(app_constants::kLacrosAppId, app_id);
+  crosapi::BrowserManager::Get()->NewTab(
+      /*should_trigger_session_restore=*/true);
+}
+
 void StandaloneBrowserApps::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,

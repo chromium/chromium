@@ -145,6 +145,15 @@ void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
   std::move(callback).Run(std::make_unique<IconValue>());
 }
 
+void BuiltInChromeOsApps::Launch(const std::string& app_id,
+                                 int32_t event_flags,
+                                 LaunchSource launch_source,
+                                 WindowInfoPtr window_info) {
+  if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
+    ash::ToggleKeyboardShortcutViewer();
+  }
+}
+
 void BuiltInChromeOsApps::LaunchAppWithParams(AppLaunchParams&& params,
                                               LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,

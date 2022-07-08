@@ -149,6 +149,13 @@ void WebApps::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
+void WebApps::Launch(const std::string& app_id,
+                     int32_t event_flags,
+                     apps::LaunchSource launch_source,
+                     apps::WindowInfoPtr window_info) {
+  // TODO(crbug.com/1253250): Add the implementation.
+}
+
 void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
                                   apps::LaunchCallback callback) {
   publisher_helper().LaunchAppWithParams(std::move(params));

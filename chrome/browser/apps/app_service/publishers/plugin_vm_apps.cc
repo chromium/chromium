@@ -259,6 +259,19 @@ void PluginVmApps::LoadIcon(const std::string& app_id,
                       std::move(callback));
 }
 
+void PluginVmApps::Launch(const std::string& app_id,
+                          int32_t event_flags,
+                          LaunchSource launch_source,
+                          WindowInfoPtr window_info) {
+  DCHECK_EQ(plugin_vm::kPluginVmShelfAppId, app_id);
+  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)) {
+    plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)->LaunchPluginVm(
+        base::DoNothing());
+  } else {
+    plugin_vm::ShowPluginVmInstallerView(profile_);
+  }
+}
+
 void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,

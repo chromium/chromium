@@ -109,6 +109,15 @@ void CrostiniApps::LoadIcon(const std::string& app_id,
                       std::move(callback));
 }
 
+void CrostiniApps::Launch(const std::string& app_id,
+                          int32_t event_flags,
+                          LaunchSource launch_source,
+                          WindowInfoPtr window_info) {
+  crostini::LaunchCrostiniApp(
+      profile_, app_id,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
+}
+
 void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
   auto event_flags = apps::GetEventFlags(params.disposition,

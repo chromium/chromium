@@ -90,6 +90,13 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
                      std::move(callback)));
 }
 
+void WebAppsCrosapi::Launch(const std::string& app_id,
+                            int32_t event_flags,
+                            LaunchSource launch_source,
+                            WindowInfoPtr window_info) {
+  // TODO(crbug.com/1253250): Add the implementation.
+}
+
 void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
                                          LaunchCallback callback) {
   if (!LogIfNotConnected(FROM_HERE)) {

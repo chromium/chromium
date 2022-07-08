@@ -108,7 +108,7 @@ class ArcApps : public KeyedService,
   void Launch(const std::string& app_id,
               int32_t event_flags,
               LaunchSource launch_source,
-              WindowInfoPtr window_info);
+              WindowInfoPtr window_info) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
   void LaunchShortcut(const std::string& app_id,

@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -52,6 +53,11 @@ class FakePublisherForProxyTest : public AppPublisher {
     RegisterPublisher(app_type_);
     CallOnApps(known_app_ids_, /*uninstall=*/false);
   }
+
+  void Launch(const std::string& app_id,
+              int32_t event_flags,
+              LaunchSource launch_source,
+              WindowInfoPtr window_info) override {}
 
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override {}
