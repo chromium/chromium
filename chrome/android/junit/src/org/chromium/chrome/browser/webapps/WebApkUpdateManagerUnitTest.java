@@ -60,6 +60,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebApkInstallResult;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
@@ -118,8 +119,9 @@ public class WebApkUpdateManagerUnitTest {
             new String[][] {new String[] {"file_1_accept_1", "file_1_accept_2"},
                     new String[] {"file_2_accept_2", "file_2_accept_2"}};
 
-    /** Different name than the one used in {@link defaultManifestData()}. */
+    /** Different values than the ones used in {@link defaultManifestData()}. */
     private static final String DIFFERENT_NAME = "Different Name";
+    private static final int DIFFERENT_BACKGROUND_COLOR = 42;
 
     /** The histograms involved in showing the App Identity update dialog. */
     private static final String HISTOGRAM_NOT_SHOWING = "Webapp.AppIdentityDialog.NotShowing";
@@ -181,8 +183,21 @@ public class WebApkUpdateManagerUnitTest {
         private String mUpdateName;
         private boolean mDestroyedFetcher;
 
+        /**
+         * Whether App Identity updates should be enabled. If either of those is true when the tests
+         * run, all App Identity update dialogs will be pre-approved (without showing).
+         */
+        private boolean mNameUpdatesEnabled;
+        private boolean mIconUpdatesEnabled;
+
         public TestWebApkUpdateManager() {
+            this(/* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ false);
+        }
+
+        public TestWebApkUpdateManager(boolean nameUpdatesEnabled, boolean iconUpdatesEnabled) {
             this(buildMockTabProvider(), Mockito.mock(ActivityLifecycleDispatcher.class));
+            mNameUpdatesEnabled = nameUpdatesEnabled;
+            mIconUpdatesEnabled = iconUpdatesEnabled;
         }
 
         private static ActivityTabProvider buildMockTabProvider() {
@@ -228,12 +243,26 @@ public class WebApkUpdateManagerUnitTest {
 
         @Override
         protected boolean iconUpdateDialogEnabled() {
-            return false;
+            return mIconUpdatesEnabled;
         }
 
         @Override
         protected boolean nameUpdateDialogEnabled() {
-            return false;
+            return mNameUpdatesEnabled;
+        }
+
+        @Override
+        protected void showIconOrNameUpdateDialog(
+                boolean iconChanging, boolean shortNameChanging, boolean nameChanging) {
+            // This function is overridden because the parent class can't show the dialog (since
+            // WindowAndroid is null in this test) so there not much to do besides auto-approving
+            // the update (if the change is expected).
+            boolean expectNameChange = mNameUpdatesEnabled && (shortNameChanging || nameChanging);
+            boolean expectIconChange = mIconUpdatesEnabled && iconChanging;
+
+            super.onUserApprovedUpdate(expectNameChange || expectIconChange
+                            ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                            : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
 
         @Override
@@ -491,7 +520,9 @@ public class WebApkUpdateManagerUnitTest {
 
     private static void onGotDifferentData(WebApkUpdateManager updateManager) {
         ManifestData manifestData = defaultManifestData();
-        manifestData.name = DIFFERENT_NAME;
+        // Note: Avoid using name/icon changes just to trigger updates, as there are special
+        // considerations involved in updating them (App Identity changes).
+        manifestData.backgroundColor = DIFFERENT_BACKGROUND_COLOR;
         onGotManifestData(updateManager, manifestData);
     }
 
@@ -542,17 +573,25 @@ public class WebApkUpdateManagerUnitTest {
         return fetchedManifestData.iconUrlToMurmur2HashMap.keySet().iterator().next();
     }
 
+    private boolean checkUpdateNeededForFetchedManifest(
+            ManifestData androidManifestData, ManifestData fetchedManifestData) {
+        return checkUpdateNeededForFetchedManifest(androidManifestData, fetchedManifestData,
+                /* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ false);
+    }
+
     /**
      * Checks whether the WebAPK is updated given data from the WebAPK's Android Manifest and data
      * from the fetched Web Manifest.
      */
-    private boolean checkUpdateNeededForFetchedManifest(
-            ManifestData androidManifestData, ManifestData fetchedManifestData) {
+    private boolean checkUpdateNeededForFetchedManifest(ManifestData androidManifestData,
+            ManifestData fetchedManifestData, boolean nameUpdatesEnabled,
+            boolean iconUpdatesEnabled) {
         registerWebApk(
                 WEBAPK_PACKAGE_NAME, androidManifestData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager =
+                new TestWebApkUpdateManager(nameUpdatesEnabled, iconUpdatesEnabled);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager, androidManifestData.shortcuts);
         assertTrue(updateManager.updateCheckStarted());
         updateManager.onGotManifestData(intentDataProviderFromManifestData(fetchedManifestData),
@@ -818,7 +857,8 @@ public class WebApkUpdateManagerUnitTest {
     public void testStartUrlRedirectsToPageWithUpdatedWebManifest() {
         mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
 
-        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(
+                /* nameUpdatesEnabled= */ true, /* iconUpdatesEnabled= */ false);
         updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
         assertTrue(updateManager.updateCheckStarted());
 
@@ -1017,7 +1057,8 @@ public class WebApkUpdateManagerUnitTest {
         fetchedData.iconUrlToMurmur2HashMap.put(
                 fetchedData.primaryIconUrl, PRIMARY_ICON_MURMUR2_HASH + "1");
         fetchedData.primaryIcon = createBitmap(Color.BLUE);
-        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData));
+        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData,
+                /* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ true));
     }
 
     /**
@@ -1031,7 +1072,8 @@ public class WebApkUpdateManagerUnitTest {
         ManifestData fetchedData = defaultManifestData();
         fetchedData.iconUrlToMurmur2HashMap.put("/icon2.png", "22");
         fetchedData.primaryIconUrl = "/icon2.png";
-        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData));
+        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData,
+                /* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ true));
     }
 
     /**
@@ -1093,7 +1135,8 @@ public class WebApkUpdateManagerUnitTest {
     public void testManifestShortNameChangedShouldUpgrade() {
         ManifestData fetchedData = defaultManifestData();
         fetchedData.shortName = SHORT_NAME + "2";
-        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData));
+        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData,
+                /* nameUpdatesEnabled= */ true, /* iconUpdatesEnabled= */ false));
     }
 
     /** Test that an upgrade is requested when the Web Manifest 'name' changes. */
@@ -1101,7 +1144,8 @@ public class WebApkUpdateManagerUnitTest {
     public void testManifestNameChangedShouldUpgrade() {
         ManifestData fetchedData = defaultManifestData();
         fetchedData.name = NAME + "2";
-        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData));
+        assertTrue(checkUpdateNeededForFetchedManifest(defaultManifestData(), fetchedData,
+                /* nameUpdatesEnabled= */ true, /* iconUpdatesEnabled= */ false));
     }
 
     /** Test that an upgrade is requested when the Web Manifest 'display' changes. */
@@ -1388,46 +1432,86 @@ public class WebApkUpdateManagerUnitTest {
         ManifestData androidData = defaultManifestData();
         ManifestData fetchedData = defaultManifestData();
 
+        boolean iconUpdatesEnabled = false;
+        boolean nameUpdatesEnabled = false;
+
         // Try with unchanged manifest data.
-        assertFalse(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        assertFalse(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
         verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
         verifyHistograms(HISTOGRAM_SHOWING, 0);
         verifyHistograms(HISTOGRAM_PRE_APPROVED, 0);
 
-        // Change the app name (and pre-approve the update).
+        // Change the app name (and pre-approve the update), but don't enable
+        // naming updates (then the old name will be used and no update detected).
         fetchedData.name = "foo";
         String hash = "foo|Short Name|3|NotAdaptive";
         storage.updateLastWebApkUpdateHashAccepted(hash);
-        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        assertFalse(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 0);
+
+        nameUpdatesEnabled = true;
+
+        // Now try again, but with naming updates allowed.
+        hash = "foo|Short Name|3|NotAdaptive";
+        storage.updateLastWebApkUpdateHashAccepted(hash);
+        assertTrue(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
         verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
         verifyHistograms(HISTOGRAM_SHOWING, 0);
         verifyHistograms(HISTOGRAM_PRE_APPROVED, 1);
 
-        // Also change the short name (and pre-approve the update).
+        // Revert the name change.
+        fetchedData.name = NAME;
+
+        // Now change the short name (and pre-approve the update).
         fetchedData.shortName = "bar";
-        hash = "foo|bar|3|NotAdaptive";
+        hash = "Long Name|bar|3|NotAdaptive";
         storage.updateLastWebApkUpdateHashAccepted(hash);
-        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        assertTrue(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
         verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
         verifyHistograms(HISTOGRAM_SHOWING, 0);
         verifyHistograms(HISTOGRAM_PRE_APPROVED, 2);
 
-        // Also change the icon hash name (and pre-approve the update).
+        // Revert the shortName change.
+        fetchedData.shortName = SHORT_NAME;
+
+        // Also change the icon hash (and pre-approve the update), but don't allow updates of the
+        // icon (which will cause the old info to be used).
         fetchedData.iconUrlToMurmur2HashMap.put(PRIMARY_ICON_URL, "42");
-        hash = "foo|bar|42|NotAdaptive";
+        hash = "Long Name|Short Name|3|NotAdaptive";
         storage.updateLastWebApkUpdateHashAccepted(hash);
-        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        assertFalse(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 2);
+
+        iconUpdatesEnabled = true;
+
+        // Now try again, but with icon updates allowed.
+        hash = "Long Name|Short Name|42|NotAdaptive";
+        storage.updateLastWebApkUpdateHashAccepted(hash);
+        assertTrue(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
         verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
         verifyHistograms(HISTOGRAM_SHOWING, 0);
         verifyHistograms(HISTOGRAM_PRE_APPROVED, 3);
 
-        // When hash is not valid, don't pre-approve.
-        hash = "foo|bar|43|NotAdaptive";
+        // Now try with both name and icon updates.
+        fetchedData.name = "foo";
+        fetchedData.shortName = "bar";
+        hash = "foo|bar|42|NotAdaptive";
         storage.updateLastWebApkUpdateHashAccepted(hash);
-        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
-        verifyHistograms(HISTOGRAM_NOT_SHOWING, 1);
+        assertTrue(checkUpdateNeededForFetchedManifest(
+                androidData, fetchedData, nameUpdatesEnabled, iconUpdatesEnabled));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
         verifyHistograms(HISTOGRAM_SHOWING, 0);
-        verifyHistograms(HISTOGRAM_PRE_APPROVED, 3);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 4);
     }
 
     @Test

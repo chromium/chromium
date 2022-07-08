@@ -226,7 +226,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         if (nameChanging) histogramAction |= CHANGING_APP_NAME;
         if (shortNameChanging) histogramAction |= CHANGING_SHORTNAME;
 
-        String hash = getAppIdentityHash(mFetchedInfo, mFetchedPrimaryIconUrl);
+        // Use the original `primaryIconUrl` (as opposed to `mFetchedPrimaryIconUrl`) to construct
+        // the hash, which ensures that we don't regress on issue crbug.com/1287447.
+        String hash = getAppIdentityHash(mFetchedInfo, primaryIconUrl);
         boolean alreadyUserApproved = !hash.isEmpty()
                 && TextUtils.equals(hash, mStorage.getLastWebApkUpdateHashAccepted());
         boolean showDialogForName =
