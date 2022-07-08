@@ -359,7 +359,7 @@ class OfficeTaskSelectionHelper {
 
     // Remove Web Drive Office action if Web Drive Office is disabled.
     if (IsCandidateWebDriveOffice() &&
-        !base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice)) {
+        !ash::features::IsFilesWebDriveOfficeEnabled()) {
       UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
                                 WebDriveOfficeTaskResult::FLAG_DISABLED);
       InvalidateCandidate();
@@ -369,7 +369,7 @@ class OfficeTaskSelectionHelper {
 
     // Remove Upload to Drive action if its flag is disabled.
     if (IsCandidateUploadOfficeToDrive() &&
-        !base::FeatureList::IsEnabled(ash::features::kUploadOfficeToCloud)) {
+        !ash::features::IsUploadOfficeToCloudEnabled()) {
       InvalidateCandidate();
       EndAdjustTasks();
       return;

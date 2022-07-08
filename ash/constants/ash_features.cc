@@ -2345,6 +2345,10 @@ bool IsTrilinearFilteringEnabled() {
   return use_trilinear_filtering;
 }
 
+bool IsUploadOfficeToCloudEnabled() {
+  return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
+}
+
 bool IsUseStorkSmdsServerAddressEnabled() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
 }
