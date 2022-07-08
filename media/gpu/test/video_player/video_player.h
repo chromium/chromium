@@ -24,8 +24,8 @@ namespace test {
 
 class FrameRendererDummy;
 class Video;
-class VideoDecoderClient;
-struct VideoDecoderClientConfig;
+class DecoderWrapper;
+struct DecoderWrapperConfig;
 
 // Default timeout used when waiting for events.
 constexpr base::TimeDelta kDefaultEventWaitTimeout = base::Seconds(30);
@@ -64,7 +64,7 @@ class VideoPlayer {
   // |frame_processors| will not be owned by the video player. The caller should
   // guarantee they outlive the video player.
   static std::unique_ptr<VideoPlayer> Create(
-      const VideoDecoderClientConfig& config,
+      const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors = {});
 
@@ -117,7 +117,7 @@ class VideoPlayer {
   VideoPlayer();
 
   bool CreateDecoderClient(
-      const VideoDecoderClientConfig& config,
+      const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
 
@@ -126,7 +126,7 @@ class VideoPlayer {
   bool NotifyEvent(VideoPlayerEvent event);
 
   VideoPlayerState video_player_state_ = VideoPlayerState::kUninitialized;
-  std::unique_ptr<VideoDecoderClient> decoder_client_;
+  std::unique_ptr<DecoderWrapper> decoder_client_;
 
   // The timeout used when waiting for events.
   base::TimeDelta event_timeout_ = kDefaultEventWaitTimeout;
