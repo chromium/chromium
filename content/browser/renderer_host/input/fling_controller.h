@@ -162,8 +162,7 @@ class CONTENT_EXPORT FlingController {
     return !last_progress_time_.is_null();
   }
 
-  raw_ptr<FlingControllerEventSenderClient, DanglingUntriaged>
-      event_sender_client_;
+  raw_ptr<FlingControllerEventSenderClient> event_sender_client_;
 
   raw_ptr<FlingControllerSchedulerClient, DanglingUntriaged> scheduler_client_;
 

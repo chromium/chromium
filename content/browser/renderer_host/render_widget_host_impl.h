@@ -1323,7 +1323,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   std::unique_ptr<SyntheticGestureController> synthetic_gesture_controller_;
 
+  // Must be declared before `input_router_`. The latter is constructed by
+  // borrowing a reference to this object, so it must be deleted first.
+  std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
+
   // Receives and handles all input events.
+  // Depends on `fling_scheduler` above, so it must be declared last.
   std::unique_ptr<InputRouter> input_router_;
 
   base::OneShotTimer input_event_ack_timeout_;
@@ -1387,8 +1392,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool surface_id_allocation_suppressed_ = false;
 
   const viz::FrameSinkId frame_sink_id_;
-
-  std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
 
   bool sent_autoscroll_scroll_begin_ = false;
   gfx::PointF autoscroll_start_position_;
