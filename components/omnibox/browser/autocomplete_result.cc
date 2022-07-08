@@ -978,40 +978,6 @@ void AutocompleteResult::MergeHiddenGroupIds(
     const std::vector<int>& hidden_group_ids) {
   hidden_group_ids_.insert(hidden_group_ids.begin(), hidden_group_ids.end());
 }
-// static
-void AutocompleteResult::LogUpdateMetrics(
-    const std::vector<MatchDedupComparator>& old_result,
-    const AutocompleteResult& new_result,
-    bool in_start) {
-  bool any_match_changed = false;
-
-  for (size_t i = 0; i < old_result.size(); ++i) {
-    // Log a change for changed or removed matches. Don't log for
-    // matches appended to the bottom since that's less disruptive.
-    if (i >= new_result.size() ||
-        old_result[i] != GetMatchComparisonFields(new_result.match_at(i))) {
-      if (in_start) {
-        UMA_HISTOGRAM_EXACT_LINEAR(
-            "Omnibox.CrossInputMatchStability.MatchChange", i,
-            kMaxAutocompletePositionValue);
-      } else {
-        UMA_HISTOGRAM_EXACT_LINEAR("Omnibox.MatchStability.AsyncMatchChange2",
-                                   i, kMaxAutocompletePositionValue);
-      }
-      any_match_changed = true;
-    }
-  }
-
-  if (in_start) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition",
-        any_match_changed);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition",
-        any_match_changed);
-  }
-}
 
 // static
 bool AutocompleteResult::HasMatchByDestination(const AutocompleteMatch& match,

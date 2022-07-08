@@ -34,12 +34,18 @@ void AutocompleteControllerMetrics::OnUpdateResult(
   if (new_result.empty())
     return;
 
+  // Log suggestion changes.
+
   bool any_match_changed_or_removed = false;
   for (size_t i = 0; i < last_result.size(); ++i) {
+    // Log changed or removed matches. Don't log for matches appended to the
+    // bottom since that's less disruptive.
     if (i >= new_result.size() || last_result[i] != new_result[i]) {
+      LogSuggestionChangedMetrics(i);
       any_match_changed_or_removed = true;
     }
   }
+  LogAnySuggestionChangedMetrics(any_match_changed_or_removed);
 
   // Log suggestion finalization times.
 
@@ -136,4 +142,32 @@ void AutocompleteControllerMetrics::LogAsyncAutocompletionTimeMetrics(
     base::UmaHistogramTimes(name_prefix + ".Completed", elapsed_time);
   else
     base::UmaHistogramTimes(name_prefix + ".Interrupted", elapsed_time);
+}
+
+void AutocompleteControllerMetrics::LogSuggestionChangedMetrics(
+    size_t change_index) const {
+  // These metrics are logged up to about 50 times per omnibox keystroke, so use
+  // UMA macros for efficiency.
+  if (controller_.in_start()) {
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "Omnibox.CrossInputMatchStability.MatchChange", change_index,
+        AutocompleteResult::kMaxAutocompletePositionValue);
+  } else {
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "Omnibox.MatchStability.AsyncMatchChange2", change_index,
+        AutocompleteResult::kMaxAutocompletePositionValue);
+  }
+}
+
+void AutocompleteControllerMetrics::LogAnySuggestionChangedMetrics(
+    bool changed) const {
+  // These metrics are logged up to about 5 times per omnibox keystroke, so use
+  // UMA macros for efficiency.
+  if (controller_.in_start()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition", changed);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition", changed);
+  }
 }

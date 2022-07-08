@@ -243,15 +243,6 @@ class AutocompleteResult {
 
   void MergeHiddenGroupIds(const std::vector<int>& hidden_group_ids);
 
-  // Logs metrics for when `new_result` replaces `old_result`. `old_result` is a
-  // list of the comparators for the old matches. `in_start` specifies whether
-  // this is during the synchronous initial autocomplete pass of an input or the
-  // subsequent asynchronous passes.
-  static void LogUpdateMetrics(
-      const std::vector<MatchDedupComparator>& old_result,
-      const AutocompleteResult& new_result,
-      bool in_start);
-
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
   // earlier in the range, while non-search types and their submatches

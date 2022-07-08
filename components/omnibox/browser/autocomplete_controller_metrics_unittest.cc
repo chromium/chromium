@@ -428,3 +428,88 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_Interrupted) {
   ExpectNoProviderMetrics(provider_not_started->GetName());
   ExpectSingleCountSuggestionFinalizationMetrics(2, 0, 0, false);
 }
+
+TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
+  auto create_result = [&](std::vector<int> ids) {
+    std::vector<AutocompleteResult::MatchDedupComparator> result;
+    base::ranges::transform(ids, std::back_inserter(result), [](int id) {
+      return std::pair<GURL, bool>{"http://" + base::NumberToString(id), false};
+    });
+    return result;
+  };
+
+  const auto first_result = create_result({0, 1, 2, 3, 4});
+  // Same as `first_result`, but with these changes:
+  //  - Last two matches removed.
+  //  - Default match updated to a new URL.
+  //  - Third match updated to a new URL.
+  const auto second_result = create_result({10, 1, 11});
+  // Same as `second_result`, but with these changes:
+  //  - 2 new matches appended to the bottom.
+  const auto third_result = create_result({10, 1, 11, 10, 2});
+
+  // Verify logging to the Async* histograms.
+  controller_.in_start_ = false;
+  metrics_.OnUpdateResult(first_result, second_result);
+  // Expect the default match, third match, and last two matches to be logged
+  // as changed, and nothing else.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.MatchStability.AsyncMatchChange2"),
+              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
+                                   base::Bucket(3, 1), base::Bucket(4, 1)));
+  // Expect that we log that at least one of the matches has changed.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition"),
+              testing::ElementsAre(base::Bucket(1, 1)));
+  // Expect that we don't log async updates to the sync histograms.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.CrossInputMatchStability.MatchChange"),
+              testing::ElementsAre());
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition"),
+              testing::ElementsAre());
+  ResetHistogramTester();
+
+  // Verify logging to the CrossInput* histograms.
+  controller_.in_start_ = true;
+  metrics_.OnUpdateResult(first_result, second_result);
+  // Expect the default match, third match, and last two matches to be logged
+  // as changed, and nothing else.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.CrossInputMatchStability.MatchChange"),
+              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
+                                   base::Bucket(3, 1), base::Bucket(4, 1)));
+  // Expect that we log that at least one of the matches has changed.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition"),
+              testing::ElementsAre(base::Bucket(1, 1)));
+  // Expect that we don't log sync updates to the async histograms.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.MatchStability.AsyncMatchChange2"),
+              testing::ElementsAre());
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition"),
+              testing::ElementsAre());
+  ResetHistogramTester();
+
+  // Verify no logging when appending matches.
+  controller_.in_start_ = false;
+  metrics_.OnUpdateResult(second_result, third_result);
+  controller_.in_start_ = true;
+  metrics_.OnUpdateResult(second_result, third_result);
+  // Expect no changes logged; expect 1 false logged to
+  // *MatchChangedInAnyPosition.
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.MatchStability.AsyncMatchChange2"),
+              testing::ElementsAre());
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.MatchStability.AsyncMatchChangedInAnyPosition"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.CrossInputMatchStability.MatchChange"),
+              testing::ElementsAre());
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  "Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+  ResetHistogramTester();
+}

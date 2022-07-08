@@ -13,7 +13,7 @@
 class AutocompleteController;
 class AutocompleteProvider;
 
-// Used to track and log timing metrics for `AutocompleteController`. Logs 2
+// Used to track and log timing metrics for `AutocompleteController`. Logs 3
 // sets of metrics:
 // 1) How long until each async provider completes.
 //    - Does not track intermediate updates if an async provider updates results
@@ -29,6 +29,11 @@ class AutocompleteProvider;
 //      `AutocompleteInput::set_want_asynchronous_matches()` set to false).
 //    - Does track async requests that complete syncly.
 //    - Tracks suggestion additions, changes, and removals.
+// 3) How many suggestions change during updates.
+//    - Does not track sync request.
+//    - Tracks both sync and async updates.
+//    - Does not track suggestion removals.
+//    - Tracks suggestion additions and changes.
 class AutocompleteControllerMetrics {
  public:
   explicit AutocompleteControllerMetrics(
@@ -96,6 +101,16 @@ class AutocompleteControllerMetrics {
   void LogAsyncAutocompletionTimeMetrics(const std::string& name,
                                          bool completed,
                                          const base::TimeTicks end_time) const;
+
+  // Logs 'Omnibox.CrossInputMatchStability.MatchChange' or
+  // 'Omnibox.MatchStability.AsyncMatchChange2' depending on
+  // `controller_.in_start()`.
+  void LogSuggestionChangedMetrics(size_t change_index) const;
+
+  // Logs 'Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition' or
+  // 'Omnibox.MatchStability.AsyncMatchChangedInAnyPosition' depending on
+  // `controller_.in_start()`.
+  void LogAnySuggestionChangedMetrics(bool changed) const;
 
   const AutocompleteController& controller_;
 
