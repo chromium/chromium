@@ -684,8 +684,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
 }
 
 // Tests that desktop PWAs are reopened at the correct size.
+// TODO(crbug.com/1065748): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ReopenedPWASizeIsCorrectlyRestored \
+  DISABLED_ReopenedPWASizeIsCorrectlyRestored
+#else
+#define MAYBE_ReopenedPWASizeIsCorrectlyRestored \
+  ReopenedPWASizeIsCorrectlyRestored
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
-                       ReopenedPWASizeIsCorrectlyRestored) {
+                       MAYBE_ReopenedPWASizeIsCorrectlyRestored) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
