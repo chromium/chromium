@@ -85,8 +85,10 @@ const char kInterstitialText[] =
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
                 @"Shouldn't record event histogram");
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is unexpectedly running");
 }
 
 // Asserts that the metrics are properly recorded for a successful upgrade.
@@ -114,8 +116,10 @@ const char kInterstitialText[] =
                                        kEventHistogram)],
                 @"Failed to record upgrade attempt");
 
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is unexpectedly running");
 }
 
 // Asserts that the metrics are properly recorded for a failed upgrade.
@@ -143,8 +147,10 @@ const char kInterstitialText[] =
                     forHistogram:@(security_interstitials::https_only_mode::
                                        kEventHistogram)],
                 @"Failed to record fail event");
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is unexpectedly running");
 }
 
 // Asserts that the metrics are properly recorded for a timed-out upgrade.
@@ -172,8 +178,10 @@ const char kInterstitialText[] =
                     forHistogram:@(security_interstitials::https_only_mode::
                                        kEventHistogram)],
                 @"Failed to record fail event");
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is unexpectedly running");
 }
 
 #pragma mark - Tests
@@ -264,7 +272,7 @@ const char kInterstitialText[] =
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
   // Going back should go to chrome://version.
@@ -312,7 +320,7 @@ const char kInterstitialText[] =
   // Click through the interstitial.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
   GREYAssertEqual(3, _HTTPResponseCounter,
                   @"The server should have responded three times");
@@ -463,7 +471,7 @@ const char kInterstitialText[] =
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
   // Reload. Since the URL is now allowlisted, this should immediately load
@@ -475,7 +483,7 @@ const char kInterstitialText[] =
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
                 @"Unexpected histogram event recorded.");
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
   // Open a new tab and go to the same URL. Should load the page without an
@@ -483,7 +491,7 @@ const char kInterstitialText[] =
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
   [self assertFailedUpgrade:1];
 
@@ -499,7 +507,7 @@ const char kInterstitialText[] =
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
   // Reload. Since the URL is now allowlisted, this should immediately load
@@ -529,7 +537,7 @@ const char kInterstitialText[] =
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
   // Reload. Since the URL is now allowlisted, this should immediately load
@@ -541,7 +549,7 @@ const char kInterstitialText[] =
                         forHistogram:@(security_interstitials::https_only_mode::
                                            kEventHistogram)],
                 @"Unexpected histogram event recorded.");
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 }
 
@@ -656,7 +664,7 @@ const char kInterstitialText[] =
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
              @"Timer is still running");
 
   // Go to a new page.

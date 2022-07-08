@@ -79,6 +79,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
               forHistogram:@(security_interstitials::omnibox_https_upgrades::
                                  kEventHistogram)],
       @"Shouldn't record event histogram");
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
+             @"HTTPS Only Mode timer is unexpectedly running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is unexpectedly running");
 }
 
 // Asserts that the metrics are properly recorded for a successful upgrade.
@@ -108,6 +112,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
           forHistogram:@(security_interstitials::omnibox_https_upgrades::
                              kEventHistogram)],
       @"Failed to record upgrade attempt");
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
+             @"HTTPS Only Mode timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is still running");
 }
 
 // Asserts that the metrics are properly recorded for a failed upgrade.
@@ -138,6 +146,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
           forHistogram:@(security_interstitials::omnibox_https_upgrades::
                              kEventHistogram)],
       @"Failed to record fail event");
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
+             @"HTTPS Only Mode timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is still running");
 }
 
 // Asserts that the metrics are properly recorded for a timed-out upgrade.
@@ -168,8 +180,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
           forHistogram:@(security_interstitials::omnibox_https_upgrades::
                              kEventHistogram)],
       @"Failed to record fail event");
-  GREYAssert(![HttpsUpgradeAppInterface isTimerRunning],
-             @"Timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isHttpsOnlyModeTimerRunning],
+             @"HTTPS Only Mode timer is still running");
+  GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
+             @"Omnibox upgrade timer is still running");
 }
 
 // Focuses on the omnibox and types the given text.

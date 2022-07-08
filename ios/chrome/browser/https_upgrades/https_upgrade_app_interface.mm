@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/https_upgrades/https_upgrade_app_interface.h"
 
-#include "base/time/time.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
-#include "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
+#import "base/time/time.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -52,10 +53,18 @@
           base::Milliseconds(fallbackDelayInMilliseconds));
 }
 
-+ (BOOL)isTimerRunning {
++ (BOOL)isHttpsOnlyModeTimerRunning {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state)
-      ->IsTimerRunningForTesting();
+  HttpsOnlyModeUpgradeTabHelper* helper =
+      HttpsOnlyModeUpgradeTabHelper::FromWebState(web_state);
+  return helper && helper->IsTimerRunningForTesting();
+}
+
++ (BOOL)isOmniboxUpgradeTimerRunning {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  TypedNavigationUpgradeTabHelper* helper =
+      TypedNavigationUpgradeTabHelper::FromWebState(web_state);
+  return helper && helper->IsTimerRunningForTesting();
 }
 
 + (void)clearAllowlist {

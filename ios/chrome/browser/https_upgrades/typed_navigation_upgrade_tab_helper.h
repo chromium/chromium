@@ -35,6 +35,9 @@ class TypedNavigationUpgradeTabHelper
   TypedNavigationUpgradeTabHelper& operator=(
       const TypedNavigationUpgradeTabHelper&) = delete;
 
+  // Returns true if the upgrade timer is running.
+  bool IsTimerRunningForTesting() const;
+
   // web::WebStateObserver implementation:
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;

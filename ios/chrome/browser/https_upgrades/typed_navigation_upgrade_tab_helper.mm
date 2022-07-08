@@ -63,6 +63,10 @@ void TypedNavigationUpgradeTabHelper::CreateForWebState(
   }
 }
 
+bool TypedNavigationUpgradeTabHelper::IsTimerRunningForTesting() const {
+  return timer_.IsRunning();
+}
+
 void TypedNavigationUpgradeTabHelper::OnHttpsLoadTimeout(
     base::WeakPtr<web::WebState> weak_web_state) {
   DCHECK(state_ == State::kUpgraded);
@@ -143,6 +147,7 @@ void TypedNavigationUpgradeTabHelper::DidFinishNavigation(
       prerender_service_->IsWebStatePrerendered(web_state)) {
     return;
   }
+  timer_.Stop();
 
   // Start a fallback navigation if the upgraded navigation failed.
   if (navigation_context->GetFailedHttpsUpgradeType() ==
