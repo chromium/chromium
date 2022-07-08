@@ -36,8 +36,9 @@ class OffscreenApiTest : public ExtensionApiTest {
 };
 
 // Tests the general flow of creating an offscreen document.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, CreateDocument) {
-  ASSERT_TRUE(RunExtensionTest("offscreen/create_document")) << message_;
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, BasicDocumentManagement) {
+  ASSERT_TRUE(RunExtensionTest("offscreen/basic_document_management"))
+      << message_;
 }
 
 class OffscreenApiTestWithoutFeature : public ExtensionApiTest {

@@ -53,6 +53,10 @@ class OffscreenDocumentManager : public KeyedService,
   OffscreenDocumentHost* GetOffscreenDocumentForExtension(
       const Extension& extension);
 
+  // Closes the current offscreen document. Note: This requires that there *is*
+  // an active offscreen document.
+  void CloseOffscreenDocumentForExtension(const Extension& extension);
+
  private:
   struct OffscreenDocumentData {
     // Appease Chromium clang plugin with out-of-line ctors/dtors.

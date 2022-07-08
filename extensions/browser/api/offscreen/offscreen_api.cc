@@ -63,6 +63,8 @@ void OffscreenCreateDocumentFunction::OnExtensionHostDestroyed(
     ExtensionHost* host) {
   SendResponseToExtension(
       Error("Offscreen document closed before fully loading."));
+  // The host is destroyed, so ensure we're no longer observing it.
+  DCHECK(!host_observer_.IsObserving());
 }
 
 void OffscreenCreateDocumentFunction::OnExtensionHostDidStopFirstLoad(
@@ -75,8 +77,81 @@ void OffscreenCreateDocumentFunction::SendResponseToExtension(
   DCHECK(browser_context())
       << "SendResponseToExtension() should never be called after context "
       << "shutdown";
+
+  // Even though the function is destroyed after responding to the extension,
+  // this process happens asynchronously. Stop observing the host now to avoid
+  // any chance of being notified of future events.
+  host_observer_.Reset();
+
   Respond(std::move(response_value));
   Release();  // Balanced in Run().
+}
+
+OffscreenCloseDocumentFunction::OffscreenCloseDocumentFunction() = default;
+OffscreenCloseDocumentFunction::~OffscreenCloseDocumentFunction() = default;
+
+ExtensionFunction::ResponseAction OffscreenCloseDocumentFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  OffscreenDocumentManager* manager =
+      OffscreenDocumentManager::Get(browser_context());
+  OffscreenDocumentHost* offscreen_document =
+      manager->GetOffscreenDocumentForExtension(*extension());
+  if (!offscreen_document)
+    return RespondNow(Error("No current offscreen document."));
+
+  host_observer_.Observe(offscreen_document);
+
+  // Add a reference so that we can respond to the extension once the
+  // offscreen document finishes closing.
+  // Balanced in either `OnBrowserContextShutdown()` or
+  // `SendResponseToExtension()`.
+  AddRef();
+  manager->CloseOffscreenDocumentForExtension(*extension());
+
+  return RespondLater();
+}
+
+void OffscreenCloseDocumentFunction::OnBrowserContextShutdown() {
+  // Release dangling lifetime pointers and bail. No point in responding now;
+  // the context is shutting down. Reset `host_observer_` first to allay any
+  // re-entrancy concerns about the host being destructed at this point.
+  host_observer_.Reset();
+  Release();  // Balanced in Run().
+}
+
+void OffscreenCloseDocumentFunction::OnExtensionHostDestroyed(
+    ExtensionHost* host) {
+  SendResponseToExtension(NoArguments());
+  // The host is destroyed, so ensure we're no longer observing it.
+  DCHECK(!host_observer_.IsObserving());
+}
+
+void OffscreenCloseDocumentFunction::SendResponseToExtension(
+    ResponseValue response_value) {
+  DCHECK(browser_context())
+      << "SendResponseToExtension() should never be called after context "
+      << "shutdown";
+
+  // Even though the function is destroyed after responding to the extension,
+  // this process happens asynchronously. Stop observing the host now to avoid
+  // any chance of being notified of future events.
+  host_observer_.Reset();
+
+  Respond(std::move(response_value));
+  Release();  // Balanced in Run().
+}
+
+OffscreenHasDocumentFunction::OffscreenHasDocumentFunction() = default;
+OffscreenHasDocumentFunction::~OffscreenHasDocumentFunction() = default;
+
+ExtensionFunction::ResponseAction OffscreenHasDocumentFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  bool has_document =
+      OffscreenDocumentManager::Get(browser_context())
+          ->GetOffscreenDocumentForExtension(*extension()) != nullptr;
+  return RespondNow(OneArgument(base::Value(has_document)));
 }
 
 }  // namespace extensions

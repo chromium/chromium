@@ -235,4 +235,41 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
                 *extension));
 }
 
+// Tests the flow of closing an existing offscreen document through the
+// manager.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
+                       ClosingDocumentThroughTheManager) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+
+  OffscreenDocumentHost* offscreen_document =
+      CreateDocumentAndWaitForLoad(*extension, offscreen_url);
+  ASSERT_TRUE(offscreen_document);
+
+  {
+    ExtensionHostTestHelper host_waiter(profile());
+    host_waiter.RestrictToHost(offscreen_document);
+    offscreen_document_manager()->CloseOffscreenDocumentForExtension(
+        *extension);
+    host_waiter.WaitForHostDestroyed();
+  }
+
+  EXPECT_EQ(nullptr,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+}
+
 }  // namespace extensions

@@ -3,13 +3,18 @@
 // found in the LICENSE file.
 
 chrome.test.runTests([
-  async function createDocumentAndEnsureItExists() {
+  async function createDocumentAndEnsureItExistsAndThenClose() {
+    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+
     await chrome.offscreen.createDocument(
         {
           url: 'offscreen.html',
           reasons: ['TESTING'],
           justification: 'ignored'
         });
+
+    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+
     // Sanity check that the document exists and can be reached by passing a
     // message and expecting a reply. Note that general offscreen document
     // behavior is tested more in the OffscreenDocumentHost tests, so this is
@@ -22,6 +27,11 @@ chrome.test.runTests([
           reply: 'offscreen reply',
         },
         reply);
+
+    // Close the document to tidy up for the next test.
+    await chrome.offscreen.closeDocument();
+    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+
     chrome.test.succeed();
   },
 ])

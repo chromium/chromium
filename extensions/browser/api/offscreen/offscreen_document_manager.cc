@@ -146,6 +146,12 @@ OffscreenDocumentManager::GetOffscreenDocumentForExtension(
   return iter->second.host.get();
 }
 
+void OffscreenDocumentManager::CloseOffscreenDocumentForExtension(
+    const Extension& extension) {
+  DCHECK_NE(nullptr, GetOffscreenDocumentForExtension(extension));
+  offscreen_documents_.erase(extension.id());
+}
+
 void OffscreenDocumentManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
