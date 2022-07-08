@@ -276,9 +276,8 @@ const char kSyncGoogleDashboardURL[] =
 const char kSyncLearnMoreURL[] =
     "https://support.google.com/chrome/?p=settings_sign_in";
 
-// TODO(https://crbug.com/1282157): convert this to a p-link.
 const char kSigninInterceptManagedDisclaimerLearnMoreURL[] =
-    "https://support.google.com/chrome/a/answer/11198768";
+    "https://support.google.com/chrome/a/?p=profile_separation";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kSyncTrustedVaultOptInURL[] =
