@@ -259,7 +259,6 @@
 <translation id="1583429793053364125">มีสิ่งผิดปกติเกิดขึ้นในขณะที่แสดงหน้าเว็บนี้</translation>
 <translation id="1586541204584340881">ส่วนขยายที่คุณติดตั้ง</translation>
 <translation id="1588438908519853928">ปกติ</translation>
-<translation id="1589050138437146318">ติดตั้ง ARCore ไหม</translation>
 <translation id="1592005682883173041">การเข้าถึงข้อมูลในเครื่อง</translation>
 <translation id="1594030484168838125">เลือก</translation>
 <translation id="1596296697375291157">ภาพยนตร์ลึกลับ สืบสวน และเขย่าขวัญ</translation>
@@ -2657,7 +2656,6 @@
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8307358339886459768">รูปภาพขนาดเล็ก</translation>
 <translation id="8307888238279532626">แอปที่ติดตั้งและความถี่ในการใช้</translation>
-<translation id="8317207217658302555">อัปเดต ARCore ไหม</translation>
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
 <translation id="8332188693563227489">การเข้าถึง <ph name="HOST_NAME" /> ถูกปฏิเสธ</translation>

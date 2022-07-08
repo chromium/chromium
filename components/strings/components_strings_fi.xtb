@@ -259,7 +259,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1583429793053364125">Jotain meni pieleen. tätä verkkosivua näytettäessä.</translation>
 <translation id="1586541204584340881">Asentamasi laajennukset</translation>
 <translation id="1588438908519853928">Normaali</translation>
-<translation id="1589050138437146318">Asennetaanko ARCore?</translation>
 <translation id="1592005682883173041">Tietojen paikallinen käyttö</translation>
 <translation id="1594030484168838125">Valitse</translation>
 <translation id="1596296697375291157">Trillerit, rikos- ja jännityselokuvat</translation>
@@ -2659,7 +2658,6 @@ Lisätietoja:
 <translation id="830498451218851433">Keskitaite</translation>
 <translation id="8307358339886459768">Pieni kuva</translation>
 <translation id="8307888238279532626">Asennetut sovellukset ja se, miten usein niitä käytetään</translation>
-<translation id="8317207217658302555">Päivitetäänkö ARCore?</translation>
 <translation id="831997045666694187">Ilta</translation>
 <translation id="8321476692217554900">ilmoitukset</translation>
 <translation id="8332188693563227489">Sivuston <ph name="HOST_NAME" /> käyttöoikeus evättiin</translation>

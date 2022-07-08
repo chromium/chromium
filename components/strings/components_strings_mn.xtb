@@ -259,7 +259,6 @@
 <translation id="1583429793053364125">Энэхүү веб хуудсыг харуулахад ямар нэгэн алдаа гарлаа.</translation>
 <translation id="1586541204584340881">Таны ямар өргөтгөл суулгасан болох</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
-<translation id="1589050138437146318">ARCore-г суулгах уу?</translation>
 <translation id="1592005682883173041">Суурин өгөгдлийн хандалт</translation>
 <translation id="1594030484168838125">Сонгох</translation>
 <translation id="1596296697375291157">Онц сонирхолтой, гэмт хэргийн болон нууцлаг кино</translation>
@@ -2658,7 +2657,6 @@
 <translation id="830498451218851433">Хагас нугалаа</translation>
 <translation id="8307358339886459768">Жижиг-Зураг</translation>
 <translation id="8307888238279532626">Суулгасан аппууд болон тэдгээрийг ашигладаг давтамж</translation>
-<translation id="8317207217658302555">ARCore-г шинэчлэх үү?</translation>
 <translation id="831997045666694187">Үдэш</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />-н хандах хүсэлтийг зөвшөөрсөнгүй</translation>
