@@ -6,11 +6,14 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/command_line.h"
-#include "base/strings/string_util.h"
+#include "base/run_loop.h"
 #include "base/syslog_logging.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "components/version_info/channel.h"
@@ -43,33 +46,52 @@ absl::optional<std::string> Decode(const std::string& encoded_value) {
 
 bool RotateDeviceTrustKey(
     std::unique_ptr<KeyRotationManager> key_rotation_manager,
-    const base::CommandLine* command_line,
+    const base::CommandLine& command_line,
     version_info::Channel channel) {
   auto dm_token =
-      Decode(command_line->GetSwitchValueASCII(switches::kRotateDTKey));
-
-  auto nonce = command_line->GetSwitchValueASCII(switches::kNonce);
-  // The nonce command line argument is optional. If none is specified use
-  // an empty string, however if one is specified we decoded it.
-  absl::optional<std::string> decoded_nonce;
-  nonce.empty() ? decoded_nonce = std::string() : decoded_nonce = Decode(nonce);
-  if (!dm_token || !decoded_nonce)
+      Decode(command_line.GetSwitchValueASCII(switches::kRotateDTKey));
+  if (!dm_token)
     return false;
 
-  GURL dm_server_url(command_line->GetSwitchValueASCII(switches::kDmServerUrl));
+  auto nonce = command_line.GetSwitchValueASCII(switches::kNonce);
+  // The nonce command line argument is optional. If none is specified use
+  // an empty string, however if one is specified we decode it.
+  absl::optional<std::string> decoded_nonce;
+  if (nonce.empty()) {
+    decoded_nonce.emplace();
+  } else {
+    decoded_nonce = Decode(nonce);
+    if (!decoded_nonce)
+      return false;
+  }
 
-  // an invalid command is when `channel` is stable and the `hostname` of
+  GURL dm_server_url(command_line.GetSwitchValueASCII(switches::kDmServerUrl));
+
+  // An invalid command is when `channel` is stable and the `hostname` of
   // the dm server url is not a prod hostname.
   auto valid_command = (channel != version_info::Channel::STABLE ||
                         dm_server_url.host() == kStableChannelHostName);
   if (!valid_command || !dm_server_url.SchemeIsHTTPOrHTTPS()) {
     SYSLOG(ERROR)
-        << "Device trust key rotation failed. Invalid command to rotate.";
+        << "Device trust key rotation failed. The server URL is invalid.";
     return false;
   }
 
-  return key_rotation_manager->RotateWithAdminRights(dm_server_url, *dm_token,
-                                                     *decoded_nonce);
+  base::RunLoop run_loop;
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  bool rotation_result = false;
+  key_rotation_manager->RotateWithAdminRights(
+      dm_server_url, *dm_token, *decoded_nonce,
+      base::BindOnce(
+          [](bool& rotation_result, base::OnceClosure quit_closure,
+             bool result) {
+            rotation_result = result;
+            std::move(quit_closure).Run();
+          },
+          std::ref(rotation_result), run_loop.QuitClosure()));
+  run_loop.Run();
+  return rotation_result;
 }
 
 }  // namespace enterprise_connectors

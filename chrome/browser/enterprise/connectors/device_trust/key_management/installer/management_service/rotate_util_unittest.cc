@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
@@ -30,6 +29,7 @@ using HttpResponseCode =
     enterprise_connectors::test::MockKeyNetworkDelegate::HttpResponseCode;
 
 using testing::_;
+using testing::Invoke;
 using testing::Return;
 
 namespace {
@@ -48,9 +48,8 @@ constexpr char kInvalidDmServerUrl[] =
     "management_service?retry=false&agent=Chrome+1.2.3(456)&apptype=Chrome&"
     "critical=true&deviceid=fake-client-id&devicetype=2&platform=Test%7CUnit%"
     "7C1.2.3&request=browser_public_key_upload";
-
 constexpr HttpResponseCode kSuccessCode = 200;
-constexpr HttpResponseCode kHardFailureCode = 400;
+constexpr HttpResponseCode kFailureCode = 400;
 
 }  // namespace
 
@@ -69,18 +68,18 @@ class RotateUtilTest : public testing::Test {
         std::move(mock_network_delegate), std::move(mock_persistence_delegate));
   }
 
-  base::CommandLine* GetCommandLine(std::string token,
-                                    std::string nonce,
-                                    std::string url) {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchNative(switches::kRotateDTKey, token);
-    command_line->AppendSwitchNative(switches::kNonce, nonce);
-    command_line->AppendSwitchNative(switches::kDmServerUrl, url);
+  base::CommandLine GetCommandLine(std::string token,
+                                   std::string nonce,
+                                   std::string url) {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kRotateDTKey, token);
+    command_line.AppendSwitchASCII(switches::kNonce, nonce);
+    command_line.AppendSwitchASCII(switches::kDmServerUrl, url);
     return command_line;
   }
 
-  raw_ptr<MockKeyNetworkDelegate> mock_network_delegate_;
-  raw_ptr<MockKeyPersistenceDelegate> mock_persistence_delegate_;
+  MockKeyNetworkDelegate* mock_network_delegate_;
+  MockKeyPersistenceDelegate* mock_persistence_delegate_;
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   base::test::TaskEnvironment task_environment_;
@@ -96,8 +95,12 @@ TEST_F(RotateUtilTest, RotateDTKeySuccess) {
 
   EXPECT_CALL(
       *mock_network_delegate_,
-      SendPublicKeyToDmServerSync(GURL(kFakeDmServerUrl), kFakeDMToken, _))
-      .WillOnce(testing::Return(kSuccessCode));
+      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kSuccessCode);
+      }));
 
   EXPECT_TRUE(RotateDeviceTrustKey(
       std::move(key_rotation_manager_),
@@ -180,8 +183,12 @@ TEST_F(RotateUtilTest, RotateDTKeyFailure_UploadKeyFailed) {
 
   EXPECT_CALL(
       *mock_network_delegate_,
-      SendPublicKeyToDmServerSync(GURL(kFakeDmServerUrl), kFakeDMToken, _))
-      .WillOnce(Return(kHardFailureCode));
+      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kFailureCode);
+      }));
 
   EXPECT_FALSE(RotateDeviceTrustKey(
       std::move(key_rotation_manager_),

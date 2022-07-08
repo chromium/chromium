@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/callback.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 
@@ -26,7 +27,7 @@ class ChromeManagementService {
 
   // Executes the command specified by `command_line` for the current
   // process. `pipe_name`is the name of the pipe to connect to. This
-  // function returns the result of the key rotation.
+  // function returns the success/failure status of the key rotation.
   int Run(const base::CommandLine* command_line, uint64_t pipe_name);
 
  private:
@@ -47,6 +48,18 @@ class ChromeManagementService {
   // `rotation_callback` is a callback to the StartRotation function.
   ChromeManagementService(PermissionsCallback permissions_callback,
                           RotationCallback rotation_callback);
+
+  // Starts the key rotation using the `remote_url_loader_factory` as the
+  // url loader from the browser process, and the `command_line` for the
+  // current process.
+  //
+  // This function will block until the boolean result of the key rotation
+  // call is returned. This function is not meant to be called from the chrome
+  // browser but from a background utility process that does not block the user
+  // in the browser.
+  int StartRotation(mojo::PendingRemote<network::mojom::URLLoaderFactory>
+                        remote_url_loader_factory,
+                    const base::CommandLine* command_line);
 
   PermissionsCallback permissions_callback_;
   RotationCallback rotation_callback_;

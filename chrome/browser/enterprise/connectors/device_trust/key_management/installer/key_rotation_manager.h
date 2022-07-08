@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
+
 class GURL;
 
 namespace enterprise_connectors {
@@ -28,18 +30,18 @@ class KeyRotationManager {
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
       std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
 
-  // Rotates the key pair.  If no key pair already exists, simply creates a
-  // new one.  `dm_token` the DM token to use when sending the new public key to
-  // the DM server.  This function will fail if not called with admin rights.
-  //
-  // This function makes network requests and will block until those requests
-  // complete successfully or fail (after some retrying). This function is
-  // not meant to be called from the chrome browser but from a background
-  // utility process that does not block the user in the browser.
-  [[nodiscard]] virtual bool RotateWithAdminRights(
+  // Rotates the key pair and returns the result of the key rotation to the
+  // callback. If no key pair already exists, simply creates a new one.
+  // `dm_token` is the DM token to use when sending the new public key to the
+  // DM server at `dm_server_url`. The `nonce` is an opaque binary blob and is
+  // used when building the upload request result of the rotation is
+  // returned via the `result_callback`. This function will fail if not
+  // called with admin rights and it makes asynchronous network requests.
+  virtual void RotateWithAdminRights(
       const GURL& dm_server_url,
       const std::string& dm_token,
-      const std::string& nonce) = 0;
+      const std::string& nonce,
+      base::OnceCallback<void(bool)> result_callback) = 0;
 };
 
 }  // namespace enterprise_connectors

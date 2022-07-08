@@ -7,9 +7,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 
+#include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,35 +34,21 @@ class LinuxKeyNetworkDelegate : public KeyNetworkDelegate {
   ~LinuxKeyNetworkDelegate() override;
 
   // KeyNetworkDelegate:
-  KeyNetworkDelegate::HttpResponseCode SendPublicKeyToDmServerSync(
+  void SendPublicKeyToDmServer(
       const GURL& url,
       const std::string& dm_token,
-      const std::string& body) override;
+      const std::string& body,
+      UploadKeyCompletedCallback upload_key_completed_callback) override;
 
  private:
-  // Starts the url upload key request using mojo's simple url loader.
-  // `url` is the dm server url that the request is being sent to.
-  // `dm_token` is the token given to the device during device enrollment.
-  // `body` is the public key that is being sent.The `callback` represents
-  // the callback that sets the HTTP status code.
-  void StartRequest(base::OnceCallback<void(int)> callback,
-                    const GURL& url,
-                    const std::string& dm_token,
-                    const std::string& body);
+  // Invoked when the network url loader has completed. `headers` is
+  // the HTTP response headers received from the server.
+  // `upload_key_completed_callback` is used to return the HTTP status
+  // code.
+  void OnURLLoaderComplete(
+      UploadKeyCompletedCallback upload_key_completed_callback,
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
-  // Invoked when the network url loader has completed.
-  // `headers` represent the HTTP response headers received
-  // from the server. The `callback` represents the callback
-  // that sets the HTTP status code.
-  void OnURLLoaderComplete(base::OnceCallback<void(int)> callback,
-                           scoped_refptr<net::HttpResponseHeaders> headers);
-
-  // Sets the HTTP status code for the response.
-  // `response_code` represents the HTTP status code.
-  void SetResponseCode(int response_code);
-
-  // Used to capture the `response_code` received via SetResponseCode.
-  int response_code_ = 0;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
   base::WeakPtrFactory<LinuxKeyNetworkDelegate> weak_factory_{this};

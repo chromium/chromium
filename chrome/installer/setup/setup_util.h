@@ -21,7 +21,6 @@
 #include "chrome/installer/util/util_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class GURL;
 class WorkItemList;
 
 namespace base {
@@ -29,10 +28,6 @@ class CommandLine;
 class FilePath;
 class Version;
 }  // namespace base
-
-namespace enterprise_connectors {
-class KeyRotationManager;
-}  // namespace enterprise_connectors
 
 namespace installer {
 
@@ -162,16 +157,6 @@ bool StoreDMToken(const std::string& token);
 
 // Deletes any existing DMToken from the global location on the machine.
 bool DeleteDMToken();
-
-// Rotates the device trust signing key and saves it to a global location on
-// the machine accessible to all install modes of the browser (i.e., stable and
-// all three side-by-side modes).
-bool RotateDeviceTrustKey(
-    std::unique_ptr<enterprise_connectors::KeyRotationManager>
-        key_rotation_manager,
-    const GURL& dm_server_url,
-    const std::string& dm_token,
-    const std::string& nonce);
 
 // Returns the file path to notification_helper.exe (in |version| directory).
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,

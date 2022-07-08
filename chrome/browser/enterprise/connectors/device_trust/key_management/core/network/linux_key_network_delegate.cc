@@ -4,14 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/linux_key_network_delegate.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
@@ -37,28 +36,13 @@ LinuxKeyNetworkDelegate::LinuxKeyNetworkDelegate(
 
 LinuxKeyNetworkDelegate::~LinuxKeyNetworkDelegate() = default;
 
-KeyNetworkDelegate::HttpResponseCode
-LinuxKeyNetworkDelegate::SendPublicKeyToDmServerSync(
+void LinuxKeyNetworkDelegate::SendPublicKeyToDmServer(
     const GURL& url,
     const std::string& dm_token,
-    const std::string& body) {
-  base::RunLoop run_loop;
-  auto callback = base::BindOnce(&LinuxKeyNetworkDelegate::SetResponseCode,
-                                 weak_factory_.GetWeakPtr())
-                      .Then(run_loop.QuitClosure());
-  StartRequest(std::move(callback), url, dm_token, body);
-  run_loop.Run();
-
+    const std::string& body,
+    UploadKeyCompletedCallback upload_key_completed_callback) {
   // Parallel requests are not supported.
-  url_loader_.reset();
-  return response_code_;
-}
-
-void LinuxKeyNetworkDelegate::StartRequest(
-    base::OnceCallback<void(int)> callback,
-    const GURL& url,
-    const std::string& dm_token,
-    const std::string& body) {
+  DCHECK(!url_loader_);
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("device_trust_key_rotation", R"(
         semantics {
@@ -107,18 +91,16 @@ void LinuxKeyNetworkDelegate::StartRequest(
   url_loader_->DownloadHeadersOnly(
       remote_url_loader_factory_.get(),
       base::BindOnce(&LinuxKeyNetworkDelegate::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(upload_key_completed_callback)));
 }
 
 void LinuxKeyNetworkDelegate::OnURLLoaderComplete(
-    base::OnceCallback<void(int)> callback,
+    UploadKeyCompletedCallback upload_key_completed_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  int response_code = headers ? headers->response_code() : 0;
-  std::move(callback).Run(response_code);
-}
-
-void LinuxKeyNetworkDelegate::SetResponseCode(int response_code) {
-  response_code_ = response_code;
+  HttpResponseCode response_code = headers ? headers->response_code() : 0;
+  url_loader_.reset();
+  std::move(upload_key_completed_callback).Run(response_code);
 }
 
 }  // namespace enterprise_connectors

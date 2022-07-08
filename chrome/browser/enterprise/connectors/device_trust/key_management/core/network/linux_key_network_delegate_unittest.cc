@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
-#include "base/bind.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -18,6 +18,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
+
+using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
 namespace {
 
@@ -28,6 +30,8 @@ constexpr char kFakeDMServerUrl[] =
     "critical=true&deviceid=fake-client-id&devicetype=2&platform=Test%7CUnit%"
     "7C1.2.3&request=browser_public_key_upload";
 constexpr char kFakeDMToken[] = "fake-browser-dm-token";
+constexpr HttpResponseCode kSuccessCode = 200;
+constexpr HttpResponseCode kHardFailureCode = 404;
 
 }  // namespace
 
@@ -43,9 +47,11 @@ class LinuxKeyNetworkDelegateTest : public testing::Test {
         std::move(remote_url_loader_factory));
   }
 
-  KeyNetworkDelegate::HttpResponseCode SendRequest() {
-    return network_delegate->SendPublicKeyToDmServerSync(
-        GURL(kFakeDMServerUrl), kFakeDMToken, kFakeBody);
+  HttpResponseCode SendRequest() {
+    base::test::TestFuture<HttpResponseCode> future;
+    network_delegate->SendPublicKeyToDmServer(
+        GURL(kFakeDMServerUrl), kFakeDMToken, kFakeBody, future.GetCallback());
+    return future.Get();
   }
 
   void AddResponse(net::HttpStatusCode http_status) {
@@ -62,16 +68,16 @@ class LinuxKeyNetworkDelegateTest : public testing::Test {
 // Tests a successful upload request.
 TEST_F(LinuxKeyNetworkDelegateTest, UploadRequest_Success) {
   AddResponse(net::HTTP_OK);
-  EXPECT_EQ(200, SendRequest());
+  EXPECT_EQ(kSuccessCode, SendRequest());
 }
 
 // Tests two separate sequential requests.
 TEST_F(LinuxKeyNetworkDelegateTest, UploadRequest_MultipleSequentialRequests) {
   AddResponse(net::HTTP_NOT_FOUND);
-  EXPECT_EQ(404, SendRequest());
+  EXPECT_EQ(kHardFailureCode, SendRequest());
 
   AddResponse(net::HTTP_OK);
-  EXPECT_EQ(200, SendRequest());
+  EXPECT_EQ(kSuccessCode, SendRequest());
 }
 
 // Tests an upload request when no response headers were returned from

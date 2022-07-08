@@ -51,6 +51,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -1179,37 +1180,17 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     *exit_code = installer::DeleteDMToken() ? installer::DELETE_DMTOKEN_SUCCESS
                                             : installer::DELETE_DMTOKEN_FAILED;
   } else if (cmd_line.HasSwitch(installer::switches::kRotateDeviceTrustKey)) {
-    // The value of the command line arguments is a DM token.  This is used
-    // to send the public part of the signing key to DM server.
-    std::wstring token_switch_value = cmd_line.GetSwitchValueNative(
-        installer::switches::kRotateDeviceTrustKey);
-    auto token = installer::DecodeDMTokenSwitchValue(token_switch_value);
-    GURL dm_server_url(
-        cmd_line.GetSwitchValueASCII(installer::switches::kDmServerUrl));
-    auto nonce = installer::DecodeNonceSwitchValue(
-        cmd_line.GetSwitchValueASCII(installer::switches::kNonce));
-
-    // In a stable build the rotate command should only permit a prod hostname.
-    const char* dm_server_host_name =
-        install_static::GetDeviceManagementServerHostName();
-    const bool is_valid_command =
-        !*dm_server_host_name ||
-        (dm_server_url.host_piece() == dm_server_host_name);
-
     // RotateDeviceTrustKey() expects a single
     // threaded task runner so creating one here.
     base::SingleThreadTaskExecutor executor;
 
-    *exit_code =
-        token && nonce && dm_server_url.is_valid() && is_valid_command &&
-                dm_server_url.SchemeIsHTTPOrHTTPS() &&
-                installer::RotateDeviceTrustKey(
-                    enterprise_connectors::KeyRotationManager::Create(
-                        std::make_unique<
-                            enterprise_connectors::WinKeyNetworkDelegate>()),
-                    dm_server_url, *token, *nonce)
-            ? installer::ROTATE_DTKEY_SUCCESS
-            : installer::ROTATE_DTKEY_FAILED;
+    *exit_code = enterprise_connectors::RotateDeviceTrustKey(
+                     enterprise_connectors::KeyRotationManager::Create(
+                         std::make_unique<
+                             enterprise_connectors::WinKeyNetworkDelegate>()),
+                     cmd_line, install_static::GetChromeChannel())
+                     ? installer::ROTATE_DTKEY_SUCCESS
+                     : installer::ROTATE_DTKEY_FAILED;
 #endif
   } else if (cmd_line.HasSwitch(installer::switches::kCreateShortcuts)) {
     std::string install_op_arg =

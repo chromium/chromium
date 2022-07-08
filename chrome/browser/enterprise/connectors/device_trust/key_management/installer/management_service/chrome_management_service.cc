@@ -62,24 +62,12 @@ bool CheckBinaryPermissions() {
   return true;
 }
 
-int StartRotation(mojo::PendingRemote<network::mojom::URLLoaderFactory>
-                      remote_url_loader_factory,
-                  const base::CommandLine* command_line) {
-  auto key_rotation_manager =
-      KeyRotationManager::Create(std::make_unique<LinuxKeyNetworkDelegate>(
-          std::move(remote_url_loader_factory)));
-
-  return RotateDeviceTrustKey(std::move(key_rotation_manager), command_line,
-                              chrome::GetChannel())
-             ? kSuccess
-             : kFailure;
-}
-
 }  // namespace
 
 ChromeManagementService::ChromeManagementService()
     : permissions_callback_(base::BindOnce(&CheckBinaryPermissions)),
-      rotation_callback_(base::BindOnce(&StartRotation)) {}
+      rotation_callback_(base::BindOnce(&ChromeManagementService::StartRotation,
+                                        base::Unretained(this))) {}
 
 ChromeManagementService::ChromeManagementService(
     PermissionsCallback permissions_callback,
@@ -97,7 +85,7 @@ int ChromeManagementService::Run(const base::CommandLine* command_line,
   if (!command_line || !command_line->HasSwitch(switches::kRotateDTKey)) {
     SYSLOG(ERROR)
         << "Device trust key rotation failed. Command missing rotate details.";
-    return false;
+    return kFailure;
   }
 
   if (!std::move(permissions_callback_).Run())
@@ -120,6 +108,19 @@ int ChromeManagementService::Run(const base::CommandLine* command_line,
 
   return std::move(rotation_callback_)
       .Run(std::move(remote_url_loader_factory), command_line);
+}
+
+int ChromeManagementService::StartRotation(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        remote_url_loader_factory,
+    const base::CommandLine* command_line) {
+  auto key_rotation_manager =
+      KeyRotationManager::Create(std::make_unique<LinuxKeyNetworkDelegate>(
+          std::move(remote_url_loader_factory)));
+  return RotateDeviceTrustKey(std::move(key_rotation_manager), *command_line,
+                              chrome::GetChannel())
+             ? kSuccess
+             : kFailure;
 }
 
 }  // namespace enterprise_connectors

@@ -3,17 +3,24 @@
 # found in the LICENSE file.
 
 source_set("network") {
-  public = [ "key_network_delegate.h" ]
+  public = [
+    "key_network_delegate.h",
+    "util.h",
+  ]
+
+  sources = [ "util.cc" ]
+
   deps = [ "//base" ]
 
   if (is_win) {
     public += [ "win_key_network_delegate.h" ]
 
-    sources = [ "win_key_network_delegate.cc" ]
+    sources += [ "win_key_network_delegate.cc" ]
 
     public_deps = [ "//components/winhttp" ]
 
     deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher",
       "//net",
       "//url",
     ]
@@ -22,7 +29,7 @@ source_set("network") {
   if (is_linux) {
     public += [ "linux_key_network_delegate.h" ]
 
-    sources = [ "linux_key_network_delegate.cc" ]
+    sources += [ "linux_key_network_delegate.cc" ]
 
     deps += [
       "//mojo/public/cpp/bindings",
@@ -58,6 +65,7 @@ source_set("unit_tests") {
       ":test_support",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher:test_support",
       "//net",
       "//services/network:test_support",
       "//testing/gtest",

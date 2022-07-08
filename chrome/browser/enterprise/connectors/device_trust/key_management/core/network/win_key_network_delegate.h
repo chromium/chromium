@@ -5,19 +5,18 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_NETWORK_WIN_KEY_NETWORK_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_NETWORK_WIN_KEY_NETWORK_DELEGATE_H_
 
+#include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
-#include "components/winhttp/network_fetcher.h"
-#include "components/winhttp/scoped_hinternet.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "net/base/backoff_entry.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
+
+class WinNetworkFetcher;
 
 // Windows implementation of the KeyNetworkDelegate interface.
 class WinKeyNetworkDelegate : public KeyNetworkDelegate {
@@ -26,51 +25,29 @@ class WinKeyNetworkDelegate : public KeyNetworkDelegate {
   ~WinKeyNetworkDelegate() override;
 
   // KeyNetworkDelegate:
-  HttpResponseCode SendPublicKeyToDmServerSync(
+  void SendPublicKeyToDmServer(
       const GURL& url,
       const std::string& dm_token,
-      const std::string& body) override;
+      const std::string& body,
+      UploadKeyCompletedCallback upload_key_completed_callback) override;
 
  private:
   friend class WinKeyNetworkDelegateTest;
 
-  // Callback to the upload key function. The `callback` sets the HTTP
-  // status code. `url` is the dm server url that the request is being
-  // sent to.  `dm_token` is the token given to the device during
-  // device enrollment, and `body` is the public key that is being sent.
-  using UploadKeyCallback = base::RepeatingCallback<void(
-      base::OnceCallback<void(int)> callback,
-      const base::flat_map<std::string, std::string>& headers,
-      const GURL& url,
-      const std::string& body)>;
+  // Makes an upload key request to the windows network fetcher. The
+  // `upload_key_completed_callback` will be invoked after the upload request,
+  // in the FetchCompleted method.
+  void UploadKey(UploadKeyCompletedCallback upload_key_completed_callback);
 
-  // Strictly used for testing and allows mocking the upload key process.
-  // The `upload_callback` is a callback to the UploadKey function.
-  // `sleep_during_backoff` is set to false for testing and is used to keep
-  // the test from timing out.
-  WinKeyNetworkDelegate(UploadKeyCallback upload_callback,
-                        bool sleep_during_backoff);
+  // Invokes `upload_key_completed_callback` with the HTTP `response_code`.
+  void FetchCompleted(UploadKeyCompletedCallback upload_key_completed_callback,
+                      HttpResponseCode response_code);
 
-  void UploadKey(base::OnceCallback<void(int)> callback,
-                 const base::flat_map<std::string, std::string>& headers,
-                 const GURL& url,
-                 const std::string& body);
+  // Used for issuing network requests via the winhttp network fetcher.
+  std::unique_ptr<WinNetworkFetcher> win_network_fetcher_;
 
-  // Invoked when the network fetch has completed. `response_code` represents
-  // the HTTP status code for the response.
-  void FetchCompleted(int response_code);
-
-  // Used to capture the `response_code` received via FetchCompleted.
-  absl::optional<int> response_code_;
-
-  UploadKeyCallback upload_callback_;
-
-  winhttp::ScopedHInternet winhttp_session_;
-  scoped_refptr<winhttp::NetworkFetcher> winhttp_network_fetcher_;
-
-  // Used to bound whether the exponential backoff should sleep.
-  // This is only set to false when testing.
-  const bool sleep_during_backoff_;
+  // Used for exponential back off for retryable network errors.
+  net::BackoffEntry backoff_entry_;
 
   base::WeakPtrFactory<WinKeyNetworkDelegate> weak_factory_{this};
 };

@@ -41,7 +41,6 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -792,24 +791,6 @@ bool DeleteDMToken() {
 
   VLOG(1) << "Successfully deleted DMToken from the registry.";
   return true;
-}
-
-bool RotateDeviceTrustKey(
-    std::unique_ptr<enterprise_connectors::KeyRotationManager>
-        key_rotation_manager,
-    const GURL& dm_server_url,
-    const std::string& dm_token,
-    const std::string& nonce) {
-  DCHECK(install_static::IsSystemInstall());
-  DCHECK(key_rotation_manager);
-
-  if (dm_token.size() > kMaxDMTokenLength) {
-    LOG(ERROR) << "DMToken length out of bounds";
-    return false;
-  }
-
-  return key_rotation_manager->RotateWithAdminRights(dm_server_url, dm_token,
-                                                     nonce);
 }
 
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,

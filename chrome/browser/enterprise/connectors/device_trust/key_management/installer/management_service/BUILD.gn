@@ -8,6 +8,7 @@ if (is_linux) {
 
     deps = [
       ":management_service",
+      ":rotate_util",
       "//base",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//mojo/core/embedder",
@@ -15,15 +16,9 @@ if (is_linux) {
   }
 
   source_set("management_service") {
-    public = [
-      "chrome_management_service.h",
-      "rotate_util.h",
-    ]
+    public = [ "chrome_management_service.h" ]
 
-    sources = [
-      "chrome_management_service.cc",
-      "rotate_util.cc",
-    ]
+    sources = [ "chrome_management_service.cc" ]
 
     public_deps = [
       "//base",
@@ -32,6 +27,7 @@ if (is_linux) {
     ]
 
     deps = [
+      ":rotate_util",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//chrome/common:channel_info",
@@ -41,27 +37,51 @@ if (is_linux) {
       "//url",
     ]
   }
+}
 
-  source_set("unit_tests") {
-    testonly = true
+if (is_linux || is_win) {
+  source_set("rotate_util") {
+    public = [ "rotate_util.h" ]
 
-    sources = [
-      "chrome_management_service_unittest.cc",
-      "rotate_util_unittest.cc",
+    sources = [ "rotate_util.cc" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//components/version_info",
     ]
 
     deps = [
-      ":management_service",
-      "//base",
-      "//base/test:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
-      "//components/policy/proto",
-      "//components/version_info",
+      "//chrome/common:channel_info",
+      "//third_party/abseil-cpp:absl",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "rotate_util_unittest.cc" ]
+
+  deps = [
+    ":rotate_util",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+    "//components/policy/proto",
+    "//testing/gtest",
+  ]
+
+  if (is_linux) {
+    sources += [ "chrome_management_service_unittest.cc" ]
+    deps += [
+      ":management_service",
       "//services/network:test_support",
-      "//testing/gtest",
     ]
   }
 }

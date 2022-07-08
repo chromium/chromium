@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/syslog_logging.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "crypto/unexportable_key.h"
@@ -23,13 +25,6 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace enterprise_connectors {
 
 namespace {
-
-// Status of the network delegates upload key request.
-enum class UploadKeyStatus {
-  SUCCEEDED,
-  FAILED,
-  FAILED_MAX_RETRIES,
-};
 
 constexpr int kMaxDMTokenLength = 4096;
 
@@ -60,18 +55,22 @@ KeyRotationManagerImpl::KeyRotationManagerImpl(
 
 KeyRotationManagerImpl::~KeyRotationManagerImpl() = default;
 
-bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
-                                                   const std::string& dm_token,
-                                                   const std::string& nonce) {
+void KeyRotationManagerImpl::RotateWithAdminRights(
+    const GURL& dm_server_url,
+    const std::string& dm_token,
+    const std::string& nonce,
+    base::OnceCallback<void(bool)> result_callback) {
   if (dm_token.size() > kMaxDMTokenLength) {
     SYSLOG(ERROR) << "DMToken length out of bounds";
-    return false;
+    std::move(result_callback).Run(false);
+    return;
   }
 
   if (!persistence_delegate_->CheckRotationPermissions()) {
     RecordRotationStatus(nonce,
                          RotationStatus::FAILURE_INCORRECT_FILE_PERMISSIONS);
-    return false;
+    std::move(result_callback).Run(false);
+    return;
   }
 
   // Create a new key pair.  First try creating a hardware-backed key. If that
@@ -100,7 +99,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
                          RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not generate a "
                      "new signing key.";
-    return false;
+    std::move(result_callback).Run(false);
+    return;
   }
 
   if (!persistence_delegate_->StoreKeyPair(new_trust_level,
@@ -108,7 +108,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_STORE_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not write to "
                      "signing key storage.";
-    return false;
+    std::move(result_callback).Run(false);
+    return;
   }
 
   enterprise_management::DeviceManagementRequest request;
@@ -118,62 +119,21 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
                      "upload key request.";
-    return false;
+    std::move(result_callback).Run(false);
+    return;
   }
 
   std::string request_str;
   request.SerializeToString(&request_str);
 
-  auto rc = UploadKeyStatus::FAILED;
-
   // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
   // being returned by the server.
-  KeyNetworkDelegate::HttpResponseCode response_code =
-      network_delegate_->SendPublicKeyToDmServerSync(dm_server_url, dm_token,
-                                                     request_str);
-
-  RecordUploadCode(nonce, response_code);
-
-  int status_leading_digit = response_code / 100;
-  if (status_leading_digit == 2) {
-    // 2xx response codes are treated as success.
-    rc = UploadKeyStatus::SUCCEEDED;
-  } else if (status_leading_digit == 5) {
-    // 5xx response codes are treated as retriable errors.
-    rc = UploadKeyStatus::FAILED_MAX_RETRIES;
-  }
-
-  if (rc != UploadKeyStatus::SUCCEEDED) {
-    // Unable to send to DM server, so restore the old key if there was one.
-    bool able_to_restore = true;
-    if (key_pair_ && key_pair_->key()) {
-      able_to_restore = persistence_delegate_->StoreKeyPair(
-          key_pair_->trust_level(), key_pair_->key()->GetWrappedKey());
-    } else {
-      // If there was no old key we clear the registry.
-      able_to_restore = persistence_delegate_->StoreKeyPair(
-          BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>());
-    }
-
-    RotationStatus status =
-        able_to_restore
-            ? ((rc == UploadKeyStatus::FAILED_MAX_RETRIES)
-                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED
-                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY)
-            : ((rc == UploadKeyStatus::FAILED_MAX_RETRIES)
-                   ? RotationStatus::
-                         FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED
-                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED);
-    RecordRotationStatus(nonce, status);
-    SYSLOG(ERROR) << "Device trust key rotation failed. Could not send public "
-                     "key to DM server.";
-    return false;
-  }
-
-  key_pair_ = std::make_unique<SigningKeyPair>(std::move(new_key_pair),
-                                               new_trust_level);
-  RecordRotationStatus(nonce, RotationStatus::SUCCESS);
-  return true;
+  auto upload_key_callback =
+      base::BindOnce(&KeyRotationManagerImpl::OnDmServerResponse,
+                     weak_factory_.GetWeakPtr(), nonce, new_trust_level,
+                     std::move(new_key_pair), std::move(result_callback));
+  network_delegate_->SendPublicKeyToDmServer(
+      dm_server_url, dm_token, request_str, std::move(upload_key_callback));
 }
 
 bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
@@ -208,6 +168,48 @@ bool KeyRotationManagerImpl::BuildUploadPublicKeyRequest(
   request->set_key_type(AlgorithmToType(new_key_pair->Algorithm()));
 
   return true;
+}
+
+void KeyRotationManagerImpl::OnDmServerResponse(
+    const std::string& nonce,
+    KeyTrustLevel trust_level,
+    std::unique_ptr<crypto::UnexportableSigningKey> new_key_pair,
+    base::OnceCallback<void(bool)> result_callback,
+    KeyNetworkDelegate::HttpResponseCode response_code) {
+  RecordUploadCode(nonce, response_code);
+  auto upload_key_status = ParseUploadKeyStatus(response_code);
+  if (upload_key_status != UploadKeyStatus::kSucceeded) {
+    // Unable to send to DM server, so restore the old key if there was one.
+    bool able_to_restore = true;
+    if (key_pair_ && key_pair_->key()) {
+      able_to_restore = persistence_delegate_->StoreKeyPair(
+          key_pair_->trust_level(), key_pair_->key()->GetWrappedKey());
+    } else {
+      // If there was no old key we clear the registry.
+      able_to_restore = persistence_delegate_->StoreKeyPair(
+          BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>());
+    }
+
+    RotationStatus status =
+        able_to_restore
+            ? ((upload_key_status == UploadKeyStatus::kFailedRetryable)
+                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED
+                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY)
+            : ((upload_key_status == UploadKeyStatus::kFailedRetryable)
+                   ? RotationStatus::
+                         FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED
+                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED);
+    RecordRotationStatus(nonce, status);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not send public "
+                     "key to DM server.";
+    std::move(result_callback).Run(false);
+    return;
+  }
+
+  key_pair_ =
+      std::make_unique<SigningKeyPair>(std::move(new_key_pair), trust_level);
+  RecordRotationStatus(nonce, RotationStatus::SUCCESS);
+  std::move(result_callback).Run(true);
 }
 
 }  // namespace enterprise_connectors

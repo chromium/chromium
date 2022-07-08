@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
@@ -82,6 +84,7 @@ class KeyRotationManagerTest : public testing::Test,
   }
 
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests a success key rotation flow when a hardware key and hardware key
@@ -110,18 +113,22 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_WithKey) {
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   std::string captured_body;
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
       .WillOnce(
           Invoke([&captured_body](const GURL& url, const std::string& dm_token,
-                                  const std::string& body) {
+                                  const std::string& body,
+                                  base::OnceCallback<void(int)> callback) {
             captured_body = body;
-            return kSuccessCode;
+            std::move(callback).Run(kSuccessCode);
           }));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   // Validate body.
   enterprise_management::DeviceManagementRequest request;
@@ -163,13 +170,21 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_NoKey) {
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(kSuccessCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kSuccessCode);
+      }));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(status_histogram_name(),
                                       RotationStatus::SUCCESS, 1);
@@ -195,13 +210,20 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_NoKey) {
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(kSuccessCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kSuccessCode);
+      }));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(status_histogram_name(),
@@ -238,8 +260,12 @@ TEST_P(KeyRotationManagerTest,
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(kHardFailureCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kHardFailureCode);
+      }));
 
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -249,8 +275,10 @@ TEST_P(KeyRotationManagerTest,
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_FALSE(
-      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   //   Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
@@ -290,8 +318,12 @@ TEST_P(
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillRepeatedly(Return(kTransientFailureCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillRepeatedly(Invoke([](const GURL& url, const std::string& dm_token,
+                                const std::string& body,
+                                base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kTransientFailureCode);
+      }));
 
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -301,8 +333,10 @@ TEST_P(
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_FALSE(
-      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key with max tries.
   histogram_tester.ExpectUniqueSample(
@@ -331,13 +365,20 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey) {
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(kSuccessCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kSuccessCode);
+      }));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(status_histogram_name(),
@@ -370,8 +411,11 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey_StoreFailed) {
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   GURL dm_server_url(kDmServerUrl);
-  EXPECT_FALSE(
-      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(
@@ -397,20 +441,27 @@ TEST_P(KeyRotationManagerTest,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
       .WillOnce(Return(true));  // Store of new key fails.
   EXPECT_CALL(*mock_persistence_delegate,
-              StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, original_key_wrapped))
+              StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY,
+                           original_key_wrapped))
       .WillOnce(Return(false));  // Restore of old key fails.
 
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(kHardFailureCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
+                          const std::string& body,
+                          base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kHardFailureCode);
+      }));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_FALSE(
-      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
@@ -443,8 +494,12 @@ TEST_P(KeyRotationManagerTest,
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillRepeatedly(Return(kTransientFailureCode));
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
+      .WillRepeatedly(Invoke([](const GURL& url, const std::string& dm_token,
+                                const std::string& body,
+                                base::OnceCallback<void(int)> callback) {
+        std::move(callback).Run(kTransientFailureCode);
+      }));
 
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, original_key_wrapped))
@@ -453,8 +508,10 @@ TEST_P(KeyRotationManagerTest,
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_FALSE(
-      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key with max tries.
   histogram_tester.ExpectUniqueSample(
@@ -483,14 +540,16 @@ TEST_P(KeyRotationManagerTest,
   GURL dm_server_url(kDmServerUrl);
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
-              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
+              SendPublicKeyToDmServer(dm_server_url, kDmToken, _, _))
       .Times(0);
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
-  EXPECT_FALSE(
-      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+  base::test::TestFuture<bool> future;
+  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
+                                 future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // Should expect one successful attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(

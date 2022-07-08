@@ -30,6 +30,8 @@ class WinNetworkFetcher {
       const std::string& body,
       base::flat_map<std::string, std::string>& headers);
 
+  static void SetInstanceForTesting(std::unique_ptr<WinNetworkFetcher> fetcher);
+
   // Sends a DeviceManagementRequest to the DM server and returns the HTTP
   // response to the `callback`.
   virtual void Fetch(FetchCompletedCallback callback) = 0;
