@@ -232,25 +232,26 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
     const std::u16string& note,
     bool use_account_store,
     content::WebContents* web_contents) {
-  password_manager::PasswordForm form;
-  form.url = password_manager_util::StripAuthAndParams(
+  password_manager::PasswordForm::Store store_to_use =
+      use_account_store ? password_manager::PasswordForm::Store::kAccountStore
+                        : password_manager::PasswordForm::Store::kProfileStore;
+  CredentialUIEntry credential;
+  credential.url = password_manager_util::StripAuthAndParams(
       password_manager_util::ConstructGURLWithScheme(url));
-  form.signon_realm = password_manager::GetSignonRealm(form.url);
-  form.username_value = username;
-  form.password_value = password;
-  form.notes.emplace_back(/*value=*/note, /*date_created=*/base::Time::Now());
-  form.in_store = use_account_store
-                      ? password_manager::PasswordForm::Store::kAccountStore
-                      : password_manager::PasswordForm::Store::kProfileStore;
-  form.type = password_manager::PasswordForm::Type::kManuallyAdded;
-  bool success = saved_passwords_presenter_.AddPassword(form);
+  credential.signon_realm = password_manager::GetSignonRealm(credential.url);
+  credential.username = username;
+  credential.password = password;
+  credential.note = password_manager::PasswordNote(
+      /*value=*/note, /*date_created=*/base::Time::Now());
+  credential.stored_in = {store_to_use};
+  bool success = saved_passwords_presenter_.AddCredential(credential);
 
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
   // Update the default store to the last used one.
   if (success &&
       client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
-    client->GetPasswordFeatureManager()->SetDefaultPasswordStore(form.in_store);
+    client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
   }
   return success;
 }

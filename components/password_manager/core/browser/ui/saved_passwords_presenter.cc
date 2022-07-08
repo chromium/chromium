@@ -158,10 +158,6 @@ void SavedPasswordsPresenter::UndoLastRemoval() {
   undo_helper_->Undo();
 }
 
-bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
-  return AddCredential(CredentialUIEntry(form));
-}
-
 bool SavedPasswordsPresenter::AddCredential(
     const CredentialUIEntry& credential) {
   if (!password_manager_util::IsValidPasswordURL(credential.url))

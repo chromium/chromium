@@ -142,13 +142,13 @@ TEST_F(SavedPasswordsPresenterTest, AddPasswordFailWhenInvalidUrl) {
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
-  EXPECT_FALSE(presenter().AddPassword(form));
+  EXPECT_FALSE(presenter().AddCredential(CredentialUIEntry(form)));
   RunUntilIdle();
   EXPECT_TRUE(store().IsEmpty());
 
   form.url = GURL("withoutscheme.com");
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
-  EXPECT_FALSE(presenter().AddPassword(form));
+  EXPECT_FALSE(presenter().AddCredential(CredentialUIEntry(form)));
   RunUntilIdle();
   EXPECT_TRUE(store().IsEmpty());
   histogram_tester.ExpectTotalCount(
@@ -167,7 +167,7 @@ TEST_F(SavedPasswordsPresenterTest, AddPasswordFailWhenEmptyPassword) {
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
-  EXPECT_FALSE(presenter().AddPassword(form));
+  EXPECT_FALSE(presenter().AddCredential(CredentialUIEntry(form)));
   RunUntilIdle();
   EXPECT_TRUE(store().IsEmpty());
   histogram_tester.ExpectTotalCount(
@@ -193,7 +193,7 @@ TEST_F(SavedPasswordsPresenterTest, AddPasswordUnblocklistsOrigin) {
   ASSERT_THAT(presenter().GetUniquePasswordForms(), ElementsAre(blocked_form));
 
   // Add a new entry with the same origin.
-  EXPECT_TRUE(presenter().AddPassword(form_to_add));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(form_to_add)));
   RunUntilIdle();
 
   // The entry should be added despite the origin was blocklisted.
@@ -868,7 +868,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 
   EXPECT_CALL(observer,
               OnSavedPasswordsChanged(ElementsAre(profile_store_form)));
-  EXPECT_TRUE(presenter().AddPassword(profile_store_form));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(profile_store_form)));
   RunUntilIdle();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,
@@ -885,7 +885,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 
   EXPECT_CALL(observer, OnSavedPasswordsChanged(UnorderedElementsAre(
                             profile_store_form, account_store_form)));
-  EXPECT_TRUE(presenter().AddPassword(account_store_form));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(account_store_form)));
   RunUntilIdle();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,
@@ -919,7 +919,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(form)));
-  EXPECT_TRUE(presenter().AddPassword(form));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(form)));
   RunUntilIdle();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
@@ -929,7 +929,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   // Add a password with note.
   EXPECT_CALL(observer,
               OnSavedPasswordsChanged(UnorderedElementsAre(form, form2)));
-  EXPECT_TRUE(presenter().AddPassword(form2));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(form2)));
   RunUntilIdle();
   EXPECT_THAT(
       profile_store().stored_passwords(),
@@ -954,7 +954,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   form.date_password_modified = base::Time::Now();
 
   EXPECT_CALL(observer, OnSavedPasswordsChanged(UnorderedElementsAre(form)));
-  EXPECT_TRUE(presenter().AddPassword(form));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(form)));
   RunUntilIdle();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
@@ -964,7 +964,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   PasswordForm similar_form = form;
   similar_form.password_value = u"new password";
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
-  EXPECT_FALSE(presenter().AddPassword(similar_form));
+  EXPECT_FALSE(presenter().AddCredential(CredentialUIEntry(similar_form)));
   RunUntilIdle();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
@@ -974,7 +974,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   // fail.
   similar_form.in_store = PasswordForm::Store::kAccountStore;
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
-  EXPECT_FALSE(presenter().AddPassword(similar_form));
+  EXPECT_FALSE(presenter().AddCredential(CredentialUIEntry(similar_form)));
   RunUntilIdle();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
@@ -1001,7 +1001,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   ASSERT_THAT(presenter().GetUniquePasswordForms(), ElementsAre(blocked_form));
 
   // Add a new entry with the same origin to the profile store.
-  EXPECT_TRUE(presenter().AddPassword(form_to_add));
+  EXPECT_TRUE(presenter().AddCredential(CredentialUIEntry(form_to_add)));
   RunUntilIdle();
 
   // The entry should be added despite the origin was blocklisted.

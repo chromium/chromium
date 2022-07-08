@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -172,7 +174,8 @@ bool IOSChromePasswordCheckManager::EditPasswordForm(
 
 bool IOSChromePasswordCheckManager::AddPasswordForm(
     const password_manager::PasswordForm& form) {
-  return saved_passwords_presenter_.AddPassword(form);
+  return saved_passwords_presenter_.AddCredential(
+      password_manager::CredentialUIEntry(form));
 }
 
 void IOSChromePasswordCheckManager::EditCompromisedPasswordForm(

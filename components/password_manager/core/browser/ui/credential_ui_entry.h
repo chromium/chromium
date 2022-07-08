@@ -27,6 +27,7 @@ struct CredentialUIEntry {
     }
   };
 
+  CredentialUIEntry();
   explicit CredentialUIEntry(const PasswordForm& form);
   CredentialUIEntry(const CredentialUIEntry& other);
   CredentialUIEntry(CredentialUIEntry&& other);

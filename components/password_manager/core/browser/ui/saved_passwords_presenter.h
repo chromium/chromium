@@ -89,12 +89,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Cancels the last removal operation.
   void UndoLastRemoval();
 
-  // Adds the credential to the store specified in the |form|. Returns true
-  // if the password was added, false if |form|'s data is not valid (invalid
-  // url/empty password), or an entry with such signon_realm and username
-  // already exists in any (profile or account) store.
-  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
-  bool AddPassword(const PasswordForm& form);
+  // Adds the |credential| to the specified store. Returns true if the password
+  // was added, false if |credential|'s data is not valid (invalid url/empty
+  // password), or an entry with such signon_realm and username already exists
+  // in any (profile or account) store.
   bool AddCredential(const CredentialUIEntry& credential);
 
   // Tries to edit |password|. After checking whether |form| is present in
