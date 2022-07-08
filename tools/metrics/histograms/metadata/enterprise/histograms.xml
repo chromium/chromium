@@ -161,8 +161,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2022-07-09">
-  <owner>amraboelkher@chromium.org</owner>
+    units="ms" expires_after="2023-07-09">
+  <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Duration of the hash dance to determine enrollment state of the device. Only
