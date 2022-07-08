@@ -443,8 +443,10 @@ void FullscreenMagnificationController::OnPaintLayer(
   for (int i = 0; i < 10; i++) {
     // Fade out alpha quadratically.
     flags.setAlpha(
-        (kHighlightShadowAlpha * std::pow(kHighlightShadowRadius - i, 2)) /
-        std::pow(kHighlightShadowRadius, 2));
+        static_cast<float>(
+            (kHighlightShadowAlpha * std::pow(kHighlightShadowRadius - i, 2)) /
+            std::pow(kHighlightShadowRadius, 2)) /
+        255.0f);
 
     gfx::Rect outsetRect = bounds;
     outsetRect.Inset(i);

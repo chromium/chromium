@@ -164,8 +164,9 @@ bool FrameCaptionButton::IsAnimatingImageSwap() const {
 }
 
 void FrameCaptionButton::SetAlpha(int alpha) {
-  if (alpha_ != alpha) {
-    alpha_ = alpha;
+  float new_alpha = alpha / 255.0f;
+  if (alpha_ != new_alpha) {
+    alpha_ = new_alpha;
     SchedulePaint();
   }
 }
@@ -269,11 +270,11 @@ gfx::Insets FrameCaptionButton::GetInkdropInsets(
 }
 
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
-  constexpr SkAlpha kHighlightVisibleOpacity = 0x14;
-  SkAlpha highlight_alpha = SK_AlphaTRANSPARENT;
+  constexpr float kHighlightVisibleOpacity = 20.0f / 255.0f;
+  float highlight_alpha = 0.0f;
   if (hover_animation().is_animating()) {
-    highlight_alpha = hover_animation().CurrentValueBetween(
-        SK_AlphaTRANSPARENT, kHighlightVisibleOpacity);
+    highlight_alpha =
+        hover_animation().CurrentValueBetween(0.0f, kHighlightVisibleOpacity);
   } else if (GetState() == STATE_HOVERED || GetState() == STATE_PRESSED) {
     // Painting a circular highlight in both "hovered" and "pressed" states
     // simulates and ink drop highlight mode of
@@ -281,7 +282,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     highlight_alpha = kHighlightVisibleOpacity;
   }
 
-  if (highlight_alpha != SK_AlphaTRANSPARENT) {
+  if (highlight_alpha != 0.0f) {
     // We paint the highlight manually here rather than relying on the ink drop
     // highlight as it doesn't work well when the button size is changing while
     // the window is moving as a result of the animation from normal to
@@ -292,16 +293,18 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     DrawHighlight(canvas, flags);
   }
 
-  int icon_alpha = swap_images_animation_->CurrentValueBetween(0, 255);
-  int crossfade_icon_alpha = 0;
-  if (icon_alpha < static_cast<int>(kFadeOutRatio * 255))
-    crossfade_icon_alpha = static_cast<int>(255 - icon_alpha / kFadeOutRatio);
+  float icon_alpha = swap_images_animation_->CurrentValueBetween(0.0f, 1.0f);
+  float crossfade_icon_alpha = 0.0f;
+  if (icon_alpha < kFadeOutRatio)
+    crossfade_icon_alpha = (1.0f - icon_alpha / kFadeOutRatio);
 
   int centered_origin_x = (width() - icon_image_.width()) / 2;
   int centered_origin_y = (height() - icon_image_.height()) / 2;
 
-  if (crossfade_icon_alpha > 0 && !crossfade_icon_image_.isNull()) {
-    canvas->SaveLayerAlpha(GetAlphaForIcon(alpha_));
+  if (crossfade_icon_alpha > 0.0f && !crossfade_icon_image_.isNull()) {
+    // TODO(crbug/1308932): SaveLayerAlpha should use a float alpha and not
+    // an int, remove the * 255 once this is fixed.
+    canvas->SaveLayerAlpha(GetAlphaForIcon(alpha_) * 255.0f);
     cc::PaintFlags flags;
     flags.setAlpha(icon_alpha);
     DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
@@ -322,7 +325,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
-int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
+float FrameCaptionButton::GetAlphaForIcon(float base_alpha) const {
   if (!GetEnabled())
     return base_alpha * kDisabledButtonAlphaRatio;
 
@@ -330,7 +333,7 @@ int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
     return base_alpha;
 
   // Paint icons as active when they are hovered over or pressed.
-  double inactive_alpha = GetInactiveButtonColorAlphaRatio();
+  float inactive_alpha = GetInactiveButtonColorAlphaRatio();
 
   if (hover_animation().is_animating()) {
     inactive_alpha =

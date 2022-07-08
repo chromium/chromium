@@ -172,8 +172,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
         std::min(text_->GetStringSize().width(), available_text_width),
         text_->GetStringSize().height());
     text_->SetDisplayRect(text_bounds);
-    text_->SetColor(
-        SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlpha()));
+    text_->SetColor(SkColorSetA(GetButtonColor(GetBackgroundColor()),
+                                flags.getAlpha() * 255.0f));
     text_->Draw(canvas);
     current_offset += text_bounds.width() + kMarginBetweenContents;
   }

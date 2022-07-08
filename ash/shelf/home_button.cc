@@ -40,8 +40,8 @@
 namespace ash {
 namespace {
 
-constexpr uint8_t kAssistantVisibleAlpha = 255;    // 100% alpha
-constexpr uint8_t kAssistantInvisibleAlpha = 138;  // 54% alpha
+constexpr float kAssistantVisibleAlpha = 1.0f;
+constexpr float kAssistantInvisibleAlpha = 0.54f;
 
 // Nudge animation constants
 
@@ -348,7 +348,7 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
     canvas->DrawCircle(circle_center, radius, fg_flags);
 
     if (controller_.IsAssistantAvailable()) {
-      fg_flags.setAlpha(255);
+      fg_flags.setAlpha(1.0f);
       const float kCircleRadiusDp = 5.f;
       fg_flags.setStyle(cc::PaintFlags::kFill_Style);
       canvas->DrawCircle(circle_center, std::ceil(kCircleRadiusDp * dsf),
