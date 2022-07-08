@@ -63,15 +63,8 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     virtual void AddColorMixers(ColorProvider* provider,
                                 const Key& key) const = 0;
 
-    base::WeakPtr<InitializerSupplier> get_weak_ref() {
-      return weak_factory_.GetWeakPtr();
-    }
-
    protected:
     virtual ~InitializerSupplier();
-
-   private:
-    base::WeakPtrFactory<InitializerSupplier> weak_factory_{this};
   };
 
   // Threadsafe not because ColorProviderManager requires it but because a
@@ -123,7 +116,9 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     FrameType frame_type;
     absl::optional<SkColor> user_color;
     scoped_refptr<ThemeInitializerSupplier> custom_theme;
-    base::WeakPtr<InitializerSupplier> app_controller;
+    // Only dereferenced when populating the ColorMixer. After that, used to
+    // compare addresses during lookup.
+    raw_ptr<InitializerSupplier> app_controller = nullptr;  // unowned
 
     bool operator<(const Key& other) const {
       auto* lhs_app_controller = app_controller.get();

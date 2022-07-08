@@ -367,8 +367,7 @@ ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
                        ? ui::ColorProviderManager::FrameType::kChromium
                        : ui::ColorProviderManager::FrameType::kNative;
   auto* app_controller = browser_view_->browser()->app_controller();
-  key.app_controller =
-      app_controller ? app_controller->get_weak_ref() : nullptr;
+  key.app_controller = app_controller;
   return key;
 }
 

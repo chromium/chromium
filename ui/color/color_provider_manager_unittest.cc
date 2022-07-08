@@ -4,6 +4,8 @@
 
 #include "ui/color/color_provider_manager.h"
 
+#include <vector>
+
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,6 +37,12 @@ ColorProvider* GetLightNormalColorProvider() {
        ColorProviderManager::SystemTheme::kDefault,
        ColorProviderManager::FrameType::kChromium, absl::nullopt, nullptr});
 }
+
+class TestInitializerSupplier
+    : public ColorProviderManager::InitializerSupplier {
+  void AddColorMixers(ColorProvider* provider,
+                      const ColorProviderManager::Key& key) const override {}
+};
 
 }  // namespace
 
@@ -73,6 +81,41 @@ TEST_F(ColorProviderManagerTest, Reset) {
   ColorProviderManager::ResetForTesting();
   EXPECT_EQ(gfx::kPlaceholderColor,
             GetLightNormalColorProvider()->GetColor(kColorTest0));
+}
+
+TEST_F(ColorProviderManagerTest, LookupWithDeletedMember) {
+  ColorProviderManager& manager = ColorProviderManager::GetForTesting();
+  ColorProviderManager::Key key;
+
+  {
+    TestInitializerSupplier supplier;
+    key.app_controller = &supplier;
+
+    EXPECT_TRUE(manager.GetColorProviderFor(key));
+    key.app_controller = &supplier;
+  }
+
+  // key.app_controller is now invalid but shouldn't be dereferenced so the key
+  // is still safe to use.
+  EXPECT_TRUE(manager.GetColorProviderFor(key));
+}
+
+TEST_F(ColorProviderManagerTest, KeyOrderIsStable) {
+  ColorProviderManager::Key keys[2];
+
+  // Allocate two suppliers.
+  std::vector<TestInitializerSupplier> supplier(2);
+  keys[0].app_controller = &supplier[0];
+  keys[1].app_controller = &supplier[1];
+
+  // Validate order.
+  ASSERT_LT(keys[0], keys[1]);
+
+  // Delete the higher of the two suppliers.
+  supplier.pop_back();
+
+  // Verify that the order hasn't changed.
+  EXPECT_LT(keys[0], keys[1]);
 }
 
 }  // namespace ui
