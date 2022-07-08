@@ -38,7 +38,7 @@ promise_test(async t => {
       timeout: 60000,
       instrument: {
         displayName,
-        icon: INVALID_ICON_URL,
+        icon: NONEXISTENT_ICON_URL,
       },
     }
   }], PAYMENT_DETAILS);
@@ -92,7 +92,7 @@ promise_test(async t => {
       timeout: 60000,
       instrument: {
         displayName,
-        icon: INVALID_ICON_URL,
+        icon: NONEXISTENT_ICON_URL,
         iconMustBeShown: false,
       },
     }
