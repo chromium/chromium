@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_LISTENER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_LISTENER_H_
 
+class AutocompleteProvider;
+
 class AutocompleteProviderListener {
  public:
   // Called by a provider as a notification that something has changed.
@@ -19,15 +21,17 @@ class AutocompleteProviderListener {
   // NOTE: If a provider has finished, it should set done() to true BEFORE
   // calling this method.
   //
-  // NOTE: There's no parameter to tell the listener _which_ provider is
-  // calling it.  Because the AutocompleteController (the typical listener)
-  // doesn't cache the providers' individual matches locally, it has to get
-  // them all again when this is called anyway, so such a parameter wouldn't
-  // actually be useful.
-  virtual void OnProviderUpdate(bool updated_matches) = 0;
+  // `provider` can be null when not called from a provider (e.g., on match
+  // deletion).
+  // TODO(manukh) Perhaps deleting matches shouldn't call `OnProviderUpdate()`.
+  //   Not only is it semantically wrong, but it may also be unnecessary as
+  //   `DeleteMatch()` already duplicates all the work `OnProviderUpdate()`
+  //   does. Though `DeleteMatchElement()` doesn't.
+  virtual void OnProviderUpdate(bool updated_matches,
+                                const AutocompleteProvider* provider) = 0;
 
  protected:
-  virtual ~AutocompleteProviderListener() {}
+  virtual ~AutocompleteProviderListener() = default;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_LISTENER_H_

@@ -19,6 +19,8 @@ class FakeAutocompleteProvider : public AutocompleteProvider {
   // specific type needed.
   void SetType(Type type) { type_ = type; }
 
+  using AutocompleteProvider::done_;
+
  private:
   ~FakeAutocompleteProvider() override = default;
 };

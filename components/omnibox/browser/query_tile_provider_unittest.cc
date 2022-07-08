@@ -40,7 +40,8 @@ class QueryTileProviderTest : public testing::Test,
 
  protected:
   // AutocompleteProviderListener overrides.
-  void OnProviderUpdate(bool updated_matches) override {}
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override {}
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 

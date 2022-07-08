@@ -123,7 +123,8 @@ class LocalHistoryZeroSuggestProviderTest
   }
 
   // AutocompleteProviderListener
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   // Fills the URLDatabase with search URLs using the provided information.
   void LoadURLs(const std::vector<TestURLData>& url_data_list);
@@ -210,7 +211,8 @@ void LocalHistoryZeroSuggestProviderTest::StartProviderAndWaitUntilDone(
 }
 
 void LocalHistoryZeroSuggestProviderTest::OnProviderUpdate(
-    bool updated_matches) {
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   if (provider_->done() && provider_run_loop_)
     provider_run_loop_->Quit();
 }

@@ -206,7 +206,8 @@ class HistoryURLProviderTest : public testing::Test,
   HistoryURLProviderTest& operator=(const HistoryURLProviderTest&) = delete;
 
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
  protected:
   // testing::Test
@@ -275,7 +276,9 @@ class HistoryURLProviderTestNoSearchProvider : public HistoryURLProviderTest {
   }
 };
 
-void HistoryURLProviderTest::OnProviderUpdate(bool updated_matches) {
+void HistoryURLProviderTest::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   if (autocomplete_->done())
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }

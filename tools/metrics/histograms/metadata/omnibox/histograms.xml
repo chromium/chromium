@@ -22,6 +22,31 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="OmniboxProviders">
+  <variant name="Bookmark"/>
+  <variant name="Builtin"/>
+  <variant name="Clipboard"/>
+  <variant name="Contact"/>
+  <variant name="Document"/>
+  <variant name="ExtensionApp"/>
+  <variant name="HistoryCluster"/>
+  <variant name="HistoryContents"/>
+  <variant name="HistoryFuzzy"/>
+  <variant name="HistoryQuick"/>
+  <variant name="HistoryURL"/>
+  <variant name="Keyword"/>
+  <variant name="LocalHistoryZeroSuggest"/>
+  <variant name="MostVisitedSites"/>
+  <variant name="OnDeviceHead"/>
+  <variant name="OpenTab"/>
+  <variant name="QueryTile"/>
+  <variant name="Search"/>
+  <variant name="Shortcuts"/>
+  <variant name="VerbatimMatch"/>
+  <variant name="VoiceSuggest"/>
+  <variant name="ZeroSuggest"/>
+</variants>
+
 <histogram name="Omnibox.AcceptedKeywordSuggestion"
     enum="OmniboxEnteredKeywordMode2" expires_after="2022-11-10">
   <owner>yoangela@chromium.org</owner>
@@ -72,6 +97,152 @@ chromium-metrics-reviews@google.com.
     order to load Search Result Page or when a proactive request is made to
     prefetch the Search Result Page.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.AsyncAutocompletionTime.Provider.{Provider}{Completed}"
+    units="ms" expires_after="2022-12-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    When the user focuses or types into the omnibox, the dropdown results can be
+    updated multiple times per input (i.e. when focused, per char typed,
+    backspace, etc).
+
+    Specifically, the set of events that trigger dropdown updates are:
+
+    - synchronous suggestions
+
+    - asynchronous suggestions. Can trigger multiple times per input. These are
+    often generated on different threads.
+
+    - expiring copied matches
+
+    - interruptions e.g. additional user input changes or closing the dropdown
+
+    A sample flow looks like:
+
+    1) User types a character.
+
+    2) 10ms later, update results with synchronous suggestions.
+
+    3) 50ms later, update results with some asynchronous suggestions.
+
+    4) 50ms later, update results with more asynchronous suggestions.
+
+    5) 400ms later, update results by removing copied matches from the previous
+    input.
+
+    6) 50 later, update results with the last batch of asynchronous suggestions.
+
+    The 'Provider.*' slices measure the time between the input change and the
+    last async update of that provider is done or interrupted. Includes async
+    updates that have no user visible change (i.e. that do not produce async
+    matches or produce only async matches that get deduped, culled, or are the
+    same as the existing match in its position). Only logged for asynchronous
+    providers. Emitted exactly once per input per asynchronous provider;
+    additionally emits to exactly one of the 'Completed' and 'Interrupted'
+    slices per input per asynchronous provider.
+
+    {Completed}
+  </summary>
+  <token key="Provider" variants="OmniboxProviders"/>
+  <token key="Completed">
+    <variant name=""/>
+    <variant name=".Completed"
+        summary="The 'Completed' slice only includes inputs that completed;
+                 i.e. the last async update completed without interruption
+                 by, e.g., closing the omnibox dropdown."/>
+    <variant name=".Interrupted"
+        summary="The 'Interrupted' slice only includes inputs that were
+                 interrupted; i.e. the last async update was interrupted by,
+                 e.g., closing the omnibox dropdown before completing. It can
+                 be misleading to interpret this slice, as neither an
+                 increase or decrease is necessarily good."/>
+  </token>
+</histogram>
+
+<histogram name="Omnibox.AsyncAutocompletionTime.{Change}{Completed}"
+    units="ms" expires_after="2022-12-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    When the user focuses or types into the omnibox, the dropdown results can be
+    updated multiple times per input (i.e. when focused, per char typed,
+    backspace, etc).
+
+    Specifically, the set of events that trigger dropdown updates are:
+
+    - synchronous suggestions
+
+    - asynchronous suggestions. Can trigger multiple times per input. These are
+    often generated on different threads.
+
+    - expiring copied matches
+
+    - interruptions e.g. additional user input changes or closing the dropdown
+
+    A sample flow looks like:
+
+    1) User types a character.
+
+    2) 10ms later, update results with synchronous suggestions.
+
+    3) 50ms later, update results with some asynchronous suggestions.
+
+    4) 50ms later, update results with more asynchronous suggestions.
+
+    5) 400ms later, update results by removing copied matches from the previous
+    input.
+
+    6) 50 later, update results with the last batch of asynchronous suggestions.
+
+    {Change}
+
+    {Completed}
+  </summary>
+  <token key="Change">
+    <variant name="Done"
+        summary="The 'Done' slice measures the time between input change and
+                 the last async update is done or interrupted. Includes async
+                 updates that have no user visible change (i.e. that do not
+                 produce async matches or produce only async matches that get
+                 deduped, culled, or are the same as the existing match in
+                 its position). Emitted exactly once per input; additionally
+                 emits to exactly one of the 'Completed' and 'Interrupted'
+                 slices per input."/>
+    <variant name="LastChange"
+        summary="The 'LastChange' slice measures the time between input
+                 change and the last async update that made at least 1 change
+                 to the results. Updates that produce only async matches that
+                 get deduped, culled, or are the same as the existing match
+                 in its position are not included. Emitted exactly once per
+                 input; additionally emits to exactly one of the 'Completed'
+                 and 'Interrupted' slices per input."/>
+    <variant name="LastDefaultChange"
+        summary="The 'LastDefaultChange' slice measures the time between
+                 input change and the last async update that changed the
+                 default suggestion. Updates that produce an async default
+                 match that is the same as the existing default match are not
+                 included. Emitted exactly once per input; additionally emits
+                 to exactly one of the 'Completed' and 'Interrupted' slices
+                 per input."/>
+  </token>
+  <token key="Completed">
+    <variant name=""/>
+    <variant name=".Completed"
+        summary="The 'Completed' slice only includes inputs that completed;
+                 i.e. the last async update completed without interruption
+                 by, e.g., closing the omnibox dropdown."/>
+    <variant name=".Interrupted"
+        summary="The 'Interrupted' slice only includes inputs that were
+                 interrupted; i.e. the last async update was interrupted by,
+                 e.g., closing the omnibox dropdown before completing. It can
+                 be misleading to interpret this slice, as neither an
+                 increase or decrease is necessarily good."/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.BitmapFetchLatency" units="ms"
@@ -872,30 +1043,7 @@ chromium-metrics-reviews@google.com.
     The length of time taken by the {OmniboxProvider}Provider's synchronous
     pass.
   </summary>
-  <token key="OmniboxProvider">
-    <variant name="Bookmark"/>
-    <variant name="Builtin"/>
-    <variant name="Clipboard"/>
-    <variant name="Contact"/>
-    <variant name="Document"/>
-    <variant name="ExtensionApp"/>
-    <variant name="HistoryCluster"/>
-    <variant name="HistoryContents"/>
-    <variant name="HistoryFuzzy"/>
-    <variant name="HistoryQuick"/>
-    <variant name="HistoryURL"/>
-    <variant name="Keyword"/>
-    <variant name="LocalHistoryZeroSuggest"/>
-    <variant name="MostVisitedSites"/>
-    <variant name="OnDeviceHead"/>
-    <variant name="OpenTab"/>
-    <variant name="QueryTile"/>
-    <variant name="Search"/>
-    <variant name="Shortcuts"/>
-    <variant name="VerbatimMatch"/>
-    <variant name="VoiceSuggest"/>
-    <variant name="ZeroSuggest"/>
-  </token>
+  <token key="OmniboxProvider" variants="OmniboxProviders"/>
 </histogram>
 
 <histogram name="Omnibox.QueryTime2" units="ms" expires_after="2022-11-13">

@@ -15,6 +15,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -91,7 +92,8 @@ class HistoryClustersProviderTest : public testing::Test,
   }
 
   // AutocompleteProviderListener
-  void OnProviderUpdate(bool updated_matches) override {
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override {
     on_provider_update_calls_.push_back(updated_matches);
   };
 
@@ -170,14 +172,14 @@ TEST_F(HistoryClustersProviderTest, AsyncSearchMatches) {
   // if the search provider is not done when called.
   search_provider_->matches_ = {CreateMatch(u"keyword")};
   provider_->Start(input, false);
-  provider_->OnProviderUpdate(true);
+  provider_->OnProviderUpdate(true, nullptr);
   search_provider_->done_ = true;
   EXPECT_FALSE(provider_->done());
   EXPECT_TRUE(provider_->matches().empty());
 
   // Calling `OnProviderUpdate()` should process search matches if the search
   // provider is done.
-  provider_->OnProviderUpdate(true);
+  provider_->OnProviderUpdate(true, nullptr);
   EXPECT_TRUE(provider_->done());
   ASSERT_EQ(provider_->matches().size(), 1u);
   EXPECT_EQ(provider_->matches()[0].description, u"keyword");
@@ -208,7 +210,7 @@ TEST_F(HistoryClustersProviderTest, EmptyAsyncSearchMatches) {
   provider_->Start(input, false);
   search_provider_->done_ = true;
   EXPECT_FALSE(provider_->done());
-  provider_->OnProviderUpdate(false);
+  provider_->OnProviderUpdate(false, nullptr);
   EXPECT_TRUE(provider_->done());
   EXPECT_TRUE(provider_->matches().empty());
 
@@ -232,12 +234,12 @@ TEST_F(HistoryClustersProviderTest, MultipassSearchMatches) {
   EXPECT_FALSE(provider_->done());
 
   // Simulate receiving async search matches.
-  provider_->OnProviderUpdate(true);
+  provider_->OnProviderUpdate(true, nullptr);
   EXPECT_FALSE(provider_->done());
 
   // Simulate receiving the last set of async search matches.
   search_provider_->done_ = true;
-  provider_->OnProviderUpdate(true);
+  provider_->OnProviderUpdate(true, nullptr);
   EXPECT_TRUE(provider_->done());
   ASSERT_EQ(provider_->matches().size(), 1u);
   EXPECT_EQ(provider_->matches()[0].description, u"keyword");
@@ -262,7 +264,7 @@ TEST_F(HistoryClustersProviderTest, MultipassSyncSearchMatches) {
 
   // Simulate receiving async search update with no matches.
   search_provider_->done_ = true;
-  provider_->OnProviderUpdate(false);
+  provider_->OnProviderUpdate(false, nullptr);
   EXPECT_TRUE(provider_->done());
   ASSERT_EQ(provider_->matches().size(), 1u);
 
@@ -280,7 +282,7 @@ TEST_F(HistoryClustersProviderTest, NoKeyworddMatches) {
   search_provider_->done_ = false;
   provider_->Start(input, false);
   search_provider_->done_ = true;
-  provider_->OnProviderUpdate(false);
+  provider_->OnProviderUpdate(false, nullptr);
   EXPECT_TRUE(provider_->done());
   EXPECT_TRUE(provider_->matches().empty());
 

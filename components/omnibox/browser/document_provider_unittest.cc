@@ -82,7 +82,8 @@ class DocumentProviderTest : public testing::Test,
 
  protected:
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   // Set's up |client_| call expectations to enable the doc suggestions; i.e. so
   // that |IsDocumentProviderAllowed()| returns true. This is not necessary when
@@ -144,7 +145,9 @@ void DocumentProviderTest::SetUp() {
   provider_ = DocumentProvider::Create(client_.get(), this, 4);
 }
 
-void DocumentProviderTest::OnProviderUpdate(bool updated_matches) {
+void DocumentProviderTest::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   // No action required.
 }
 

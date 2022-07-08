@@ -119,7 +119,8 @@ class ClipboardProviderTest : public testing::Test,
 
  protected:
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   TestSchemeClassifier classifier_;
   FakeClipboardRecentContent clipboard_content_;
@@ -130,7 +131,9 @@ class ClipboardProviderTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;
 };
 
-void ClipboardProviderTest::OnProviderUpdate(bool updated_matches) {
+void ClipboardProviderTest::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   // No action required.
 }
 

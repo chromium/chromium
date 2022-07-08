@@ -32,7 +32,8 @@ class HistoryClusterProvider : public AutocompleteProvider,
 
   // AutocompleteProviderListener:
   // `HistoryClusterProvider` listens to `SearchProvider` updates.
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
  private:
   ~HistoryClusterProvider() override = default;

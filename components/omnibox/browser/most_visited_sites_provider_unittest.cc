@@ -131,7 +131,8 @@ class MostVisitedSitesProviderTest : public testing::Test,
                                     size_t index);
 
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   base::HistogramTester histogram_;
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
@@ -237,7 +238,9 @@ void MostVisitedSitesProviderTest::SetUp() {
   top_sites_->urls().assign(test_data.begin(), test_data.end());
 }
 
-void MostVisitedSitesProviderTest::OnProviderUpdate(bool updated_matches) {}
+void MostVisitedSitesProviderTest::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {}
 
 class MostVisitedSitesProviderWithMatchesTest
     : public MostVisitedSitesProviderTest {

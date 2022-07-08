@@ -264,7 +264,8 @@ class BaseSearchProviderTest : public testing::TestWithParam<bool>,
 
   // AutocompleteProviderListener:
   // If we're waiting for the provider to finish, this exits the message loop.
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   // Runs a nested run loop until provider_ is done. The message loop is
   // exited by way of OnProviderUpdate.
@@ -462,7 +463,9 @@ void BaseSearchProviderTest::RunTest(TestData* cases,
   }
 }
 
-void BaseSearchProviderTest::OnProviderUpdate(bool updated_matches) {
+void BaseSearchProviderTest::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   if (run_loop_ && provider_->done()) {
     run_loop_->Quit();
     run_loop_ = nullptr;

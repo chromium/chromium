@@ -91,7 +91,7 @@ void AutocompleteProvider::AddListener(AutocompleteProviderListener* listener) {
 
 void AutocompleteProvider::NotifyListeners(bool updated_matches) const {
   for (auto* listener : listeners_)
-    listener->OnProviderUpdate(updated_matches);
+    listener->OnProviderUpdate(updated_matches, this);
 }
 
 void AutocompleteProvider::Stop(bool clear_cached_results,

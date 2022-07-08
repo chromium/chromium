@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_controller_metrics.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -61,7 +62,7 @@ class OnDeviceHeadProvider;
 class AutocompleteController : public AutocompleteProviderListener,
                                public base::trace_event::MemoryDumpProvider {
  public:
-  typedef std::vector<scoped_refptr<AutocompleteProvider> > Providers;
+  typedef std::vector<scoped_refptr<AutocompleteProvider>> Providers;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -153,7 +154,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   void ExpireCopiedEntries();
 
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   // Called when an omnibox event log entry is generated.
   // Populates |log.provider_info| with diagnostic information about the status
@@ -198,6 +200,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   const AutocompleteInput& input() const { return input_; }
   const AutocompleteResult& result() const { return result_; }
   bool done() const { return done_; }
+  bool in_start() const { return in_start_; }
+  // TODO(manukh): Once we have a smarter `expire_timer_` that early runs when
+  //  the controller is done, `expire_timer_done()` will be unnecessary. Until
+  //  then, neither, either, or both `done()` and `expire_timer_done()` can be
+  //  true.
+  bool expire_timer_done() const { return !expire_timer_.IsRunning(); }
   const Providers& providers() const { return providers_; }
 
   const base::TimeTicks& last_time_default_match_changed() const {
@@ -213,6 +221,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   }
 
  private:
+  friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
@@ -305,8 +314,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Helper function for Stop().  |due_to_user_inactivity| means this call was
   // triggered by a user's idleness, i.e., not an explicit user action.
-  void StopHelper(bool clear_result,
-                  bool due_to_user_inactivity);
+  void StopHelper(bool clear_result, bool due_to_user_inactivity);
 
   // Helper for UpdateKeywordDescriptions(). Returns whether curbing the keyword
   // descriptions is enabled, and whether there is enough input to guarantee
@@ -368,6 +376,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   // asynchronous provider that returned and changed the default
   // match.  See UpdateResult() for details on when we consider a
   // match to have changed.
+  // This is very similar to `metrics_.last_default_change_time_`, but whereas
+  // that is reset on `::Start()`, this is not.
   base::TimeTicks last_time_default_match_changed_;
 
   // Timer used to remove any matches copied from the last result. When run
@@ -390,6 +400,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   // notifications until Start() has been invoked on all providers. When this
   // boolean is true, we are definitely within the synchronous pass.
   bool in_start_;
+
+  // Logs stability and timing metrics for updates.
+  AutocompleteControllerMetrics metrics_{*this};
 
   // True if the signal predicting a likely search has already been sent to the
   // service worker context during the current input session. False on

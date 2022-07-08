@@ -229,8 +229,9 @@ class AutocompleteProviderListenerWithClosure
   }
 
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override {
-    controller_->OnProviderUpdate(updated_matches);
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override {
+    controller_->OnProviderUpdate(updated_matches, provider);
     if (closure_)
       closure_.Run();
   }

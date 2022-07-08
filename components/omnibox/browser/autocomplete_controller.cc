@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -54,7 +53,6 @@
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
@@ -447,10 +445,25 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 
   // When input.want_asynchronous_matches() is false, the AutocompleteController
   // is being used for text classification, which should not notify observers.
+  // TODO(manukh): This seems unnecessary; `AutocompleteClassifier` and
+  //   `OmniboxController` use separate instances of `AutocompleteController`,
+  //   the former doesn't add observers, the latter always uses
+  //   `want_asynchronous_matches()` set to true. Besides, if that weren't the
+  //   case, e.g. the classifier did add an observer, then
+  //   `AutocompleteController` should respect that, not assume it's a mistake
+  //   and silently ignore the observer. Audit all call paths of `::Start()` to
+  //   remove this check.
   if (input.want_asynchronous_matches()) {
     for (Observer& obs : observers_)
       obs.OnStart(this, input);
   }
+
+  // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
+  // modifying `AutocompleteProvider::done_` below. If the previous request has
+  // not completed, and therefore has not been logged yet, will log it now.
+  // Likewise, if the providers have not completed, and therefore have not been
+  // logged yet, will log them now.
+  metrics_.OnStart();
 
   const std::u16string old_input_text(input_.text());
   const bool old_allow_exact_keyword_match = input_.allow_exact_keyword_match();
@@ -479,6 +492,10 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // Start the new query. Starter Pack engines in keyword mode only run a subset
   // of the providers, so call `ShouldRunProvider()` to determine which.
   in_start_ = true;
+  // Use `start_time` rather than `metrics.start_time_` for
+  // 'Omnibox.QueryTime2.*'. They differ by 3 μs, which though too small to be
+  // distinguished in the ms-scale buckets, is large enough to move the
+  // arithmetic mean.
   base::TimeTicks start_time = base::TimeTicks::Now();
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
@@ -488,21 +505,27 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
     provider->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())
       DCHECK(provider->done());
+    // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 5s
+    // buckets.
+    // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. It
+    //   will "automatically" move to `metrics_` if we make all providers async.
+    //   Otherwise, if we decide not to make all providers async, move this
+    //   there.
     base::TimeTicks provider_end_time = base::TimeTicks::Now();
-    std::string name =
-        std::string("Omnibox.ProviderTime2.") + provider->GetName();
-    base::HistogramBase* counter = base::Histogram::FactoryGet(
-        name, 1, 5000, 20, base::Histogram::kUmaTargetedHistogramFlag);
-    counter->Add(static_cast<int>(
-        (provider_end_time - provider_start_time).InMilliseconds()));
+    base::UmaHistogramCustomTimes(
+        std::string("Omnibox.ProviderTime2.") + provider->GetName(),
+        provider_end_time - provider_start_time, base::Milliseconds(1),
+        base::Seconds(5), 20);
   }
   if (input.want_asynchronous_matches() && (input.text().length() < 6)) {
+    // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 1s
+    // buckets.
+    // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. Do
+    //   so after we decide whether to make all providers async.
     base::TimeTicks end_time = base::TimeTicks::Now();
-    std::string name =
-        "Omnibox.QueryTime2." + base::NumberToString(input.text().length());
-    base::HistogramBase* counter = base::Histogram::FactoryGet(
-        name, 1, 1000, 50, base::Histogram::kUmaTargetedHistogramFlag);
-    counter->Add(static_cast<int>((end_time - start_time).InMilliseconds()));
+    base::UmaHistogramCustomTimes(
+        "Omnibox.QueryTime2." + base::NumberToString(input.text().length()),
+        end_time - start_time, base::Milliseconds(1), base::Seconds(1), 50);
   }
   base::UmaHistogramBoolean("Omnibox.Start.WantAsyncMatches",
                             input.want_asynchronous_matches());
@@ -587,7 +610,7 @@ void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
     match.provider->DeleteMatch(match);
   }
 
-  OnProviderUpdate(true);
+  OnProviderUpdate(true, nullptr);
 
   // If we're not done, we might attempt to redisplay the deleted match. Make
   // sure we aren't displaying it by removing any old entries.
@@ -603,7 +626,7 @@ void AutocompleteController::DeleteMatchElement(const AutocompleteMatch& match,
     match.provider->DeleteMatchElement(match, element_index);
   }
 
-  OnProviderUpdate(true);
+  OnProviderUpdate(true, nullptr);
 }
 
 void AutocompleteController::ExpireCopiedEntries() {
@@ -613,7 +636,15 @@ void AutocompleteController::ExpireCopiedEntries() {
   UpdateResult(true, false);
 }
 
-void AutocompleteController::OnProviderUpdate(bool updated_matches) {
+void AutocompleteController::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
+  // Should be called even if `in_start_` is true in order to include early
+  // exited async providers. If the provider is done, will log how long the
+  // provider took.
+  if (provider)
+    metrics_.OnProviderUpdate(*provider);
+
   // Providers should only call this method during the asynchronous pass.
   // There's no reason to call this during the synchronous pass, since we
   // perform these operations anyways after all providers are started.
@@ -842,6 +873,13 @@ void AutocompleteController::UpdateResult(
     result_.TransferOldMatches(input_, &old_matches_to_reuse,
                                template_url_service_);
   }
+
+  // Will log metrics for how many matches changed. Will also log timing metrics
+  // for the current request if it's complete; otherwise, will just update
+  // timestamps of when the last update changing any or the default suggestion
+  // occurred.
+  metrics_.OnUpdateResult(last_result_for_logging,
+                          result_.GetMatchDedupComparators());
 
   // Log metrics for how many matches are asynchronously changed. If results are
   // empty then the omnibox is likely closed, and clearing old results won't
@@ -1149,6 +1187,13 @@ void AutocompleteController::StartStopTimer() {
 
 void AutocompleteController::StopHelper(bool clear_result,
                                         bool due_to_user_inactivity) {
+  // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
+  // modifying `AutocompleteProvider::done_` below. If the current request has
+  // not completed, and therefore has not been logged yet, will log it now.
+  // Likewise, if the providers have not completed, and therefore have not been
+  // logged yet, will log them now.
+  metrics_.OnStop();
+
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;

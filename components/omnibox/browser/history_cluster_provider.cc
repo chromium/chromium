@@ -56,7 +56,9 @@ void HistoryClusterProvider::Stop(bool clear_cached_results,
   done_ = true;
 }
 
-void HistoryClusterProvider::OnProviderUpdate(bool updated_matches) {
+void HistoryClusterProvider::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   if (done_ || !search_provider_->done())
     return;
   NotifyListeners(CreateMatches());

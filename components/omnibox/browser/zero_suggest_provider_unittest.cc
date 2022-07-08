@@ -100,7 +100,8 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
 
  protected:
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override;
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override;
 
   network::TestURLLoaderFactory* test_loader_factory() {
     return client_->test_url_loader_factory();
@@ -161,7 +162,9 @@ void ZeroSuggestProviderTest::SetUp() {
       {{OmniboxFieldTrial::kZeroSuggestCacheDurationSec.name, GetParam()}});
 }
 
-void ZeroSuggestProviderTest::OnProviderUpdate(bool updated_matches) {
+void ZeroSuggestProviderTest::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
   provider_did_notify_ = true;
 }
 

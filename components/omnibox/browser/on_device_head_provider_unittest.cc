@@ -45,7 +45,8 @@ class OnDeviceHeadProviderTest : public testing::Test,
   }
 
   // AutocompleteProviderListener:
-  void OnProviderUpdate(bool updated_matches) override {
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override {
     // No action required.
   }
 
