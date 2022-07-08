@@ -28,7 +28,7 @@ declare class LiveDirective extends Directive {
  * html`<input .value=${live(x)}>`
  * ```
  *
- * `live()` performs a strict equality check agains the live DOM value, and if
+ * `live()` performs a strict equality check against the live DOM value, and if
  * the new value is equal to the live value, does nothing. This means that
  * `live()` should not be used when the binding will cause a type conversion. If
  * you use `live()` with an attribute binding, make sure that only strings are
