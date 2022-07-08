@@ -4420,7 +4420,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   gfx::DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
       int index,
       float diameter,
-      SkColor color,
+      SkColor4f color,
       const gfx::RectF& presentation_area) {
     DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
     return MakeAndSendMetadataFromStoredInkPoint(
@@ -4431,14 +4431,15 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
       int32_t pointer_id,
       int index,
       float diameter,
-      SkColor color,
+      SkColor4f color,
       const gfx::RectF& presentation_area) {
     DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
     EXPECT_GE(index, 0);
     EXPECT_LT(index, ink_points_size(pointer_id));
 
+    // TODO(crbug.com/1308932): gfx::DelegatedInkMetadata to SkColor4f
     gfx::DelegatedInkMetadata metadata(
-        ink_points_[pointer_id][index].point(), diameter, color,
+        ink_points_[pointer_id][index].point(), diameter, color.toSkColor(),
         ink_points_[pointer_id][index].timestamp(), presentation_area,
         base::TimeTicks::Now(),
         /*hovering*/ false);
@@ -4563,7 +4564,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   const int kInkPointForMetadata = 1;
   const float kDiameter = 1.f;
   gfx::DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
-      kInkPointForMetadata, kDiameter, SK_ColorBLACK, gfx::RectF());
+      kInkPointForMetadata, kDiameter, SkColors::kBlack, gfx::RectF());
 
   // The histogram should count one in the bucket that is the difference between
   // the latest point stored and the metadata. No prediction should occur with
@@ -4658,7 +4659,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   const int kInkPointForMetadata = 1;
   const float kDiameter = 1.f;
   gfx::DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
-      kPointerIds[0], kInkPointForMetadata, kDiameter, SK_ColorBLACK,
+      kPointerIds[0], kInkPointForMetadata, kDiameter, SkColors::kBlack,
       gfx::RectF());
 
   // 3 points should be enough for prediction to work, so the histogram should
@@ -4741,8 +4742,8 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   // Provide a metadata so that points can be drawn, based on the first ink
   // point that was sent.
   const float kDiameter = 11.99f;
-  MakeAndSendMetadataFromStoredInkPoint(/*index*/ 0, kDiameter, SK_ColorBLACK,
-                                        gfx::RectF());
+  MakeAndSendMetadataFromStoredInkPoint(/*index*/ 0, kDiameter,
+                                        SkColors::kBlack, gfx::RectF());
 
   // *WithoutPrediction histogram should have one counted in the 24 ms bucket
   // because that's the difference between the latest point and the metadata.
@@ -4762,8 +4763,8 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   // everything earlier is filtered out. Then the *WithoutPrediction histogram
   // will count 1 in the 0 ms bucket and the *WithPrediction histogram will
   // still be able to predict points, so it should have counted one.
-  MakeAndSendMetadataFromStoredInkPoint(/*index*/ 3, kDiameter, SK_ColorBLACK,
-                                        gfx::RectF());
+  MakeAndSendMetadataFromStoredInkPoint(/*index*/ 3, kDiameter,
+                                        SkColors::kBlack, gfx::RectF());
   bucket_without_prediction = base::Milliseconds(0);
   FinalizePathAndCheckHistograms(
       bucket_without_prediction,

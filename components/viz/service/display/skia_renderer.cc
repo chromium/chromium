@@ -316,12 +316,12 @@ SkCanvas::SrcRectConstraint GetTextureConstraint(
 
 // Return a color filter that multiplies the incoming color by the fixed alpha
 sk_sp<SkColorFilter> MakeOpacityFilter(float alpha, sk_sp<SkColorFilter> in) {
-  SkColor alpha_as_color = SkColorSetA(SK_ColorWHITE, 255 * alpha);
+  SkColor4f alpha_as_color = {1.0, 1.0, 1.0, alpha};
   // MakeModeFilter treats fixed color as src, and input color as dst.
   // kDstIn is (srcAlpha * dstColor, srcAlpha * dstAlpha) so this makes the
   // output color equal to input color * alpha.
   sk_sp<SkColorFilter> opacity =
-      SkColorFilters::Blend(alpha_as_color, SkBlendMode::kDstIn);
+      SkColorFilters::Blend(alpha_as_color.toSkColor(), SkBlendMode::kDstIn);
   if (in) {
     return opacity->makeComposed(std::move(in));
   } else {
@@ -1002,7 +1002,7 @@ void SkiaRenderer::SetScissorTestRect(const gfx::Rect& scissor_rect) {
   scissor_rect_ = scissor_rect;
 }
 
-void SkiaRenderer::ClearCanvas(SkColor color) {
+void SkiaRenderer::ClearCanvas(SkColor4f color) {
   if (!current_canvas_)
     return;
 
@@ -1018,7 +1018,7 @@ void SkiaRenderer::ClearCanvas(SkColor color) {
 
 void SkiaRenderer::ClearFramebuffer() {
   if (current_frame()->current_render_pass->has_transparent_background) {
-    ClearCanvas(SkColorSetARGB(0, 0, 0, 0));
+    ClearCanvas(SkColors::kTransparent);
   } else {
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
     // On DEBUG builds, opaque render passes are cleared to blue
@@ -1027,7 +1027,7 @@ void SkiaRenderer::ClearFramebuffer() {
     // linux-blink-ref bots cannot share the same baseline for webtest.
     // So remove this ClearCanvas() call for dcheck on build for now.
     // TODO(crbug.com/1330278): add it back.
-    ClearCanvas(SkColorSetARGB(255, 0, 0, 255));
+    ClearCanvas(SkColors::kBlue);
 #endif
   }
 }
@@ -2270,10 +2270,11 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
       float a1 = quad->vertex_opacity[0] * quad_alpha;
       float a2 = quad->vertex_opacity[2] * quad_alpha;
-      SkColor gradient_colors[2] = {SkColor4f({a1, a1, a1, a1}).toSkColor(),
-                                    SkColor4f({a2, a2, a2, a2}).toSkColor()};
+      SkColor4f gradient_colors[2] = {SkColor4f({a1, a1, a1, a1}),
+                                      SkColor4f({a2, a2, a2, a2})};
       sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-          gradient_pts, gradient_colors, nullptr, 2, SkTileMode::kClamp);
+          gradient_pts, gradient_colors, nullptr /*sk_sp<SkColorSpace>*/,
+          nullptr, 2, SkTileMode::kClamp);
       paint.setMaskFilter(SkShaderMaskFilter::Make(std::move(gradient)));
       // shared quad opacity was folded into the gradient, so this will shorten
       // any color filter chain needed for background blending

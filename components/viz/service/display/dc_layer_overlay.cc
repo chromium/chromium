@@ -327,8 +327,8 @@ bool IsOccluded(
       overlap_rect = ClippedQuadRectangle(quad);
 
     if (quad->material == DrawQuad::Material::kSolidColor) {
-      SkColor color = SolidColorDrawQuad::MaterialCast(quad)->color.toSkColor();
-      float alpha = (SkColorGetA(color) * (1.0f / 255.0f)) * opacity;
+      SkColor4f color = SolidColorDrawQuad::MaterialCast(quad)->color;
+      float alpha = color.fA * opacity;
       if (quad->ShouldDrawWithBlending() &&
           alpha < std::numeric_limits<float>::epsilon())
         continue;

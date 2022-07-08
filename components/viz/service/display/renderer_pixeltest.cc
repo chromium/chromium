@@ -213,9 +213,9 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
 void CreateTestTwoColoredTextureDrawQuad(
     bool gpu_resource,
     const gfx::Rect& rect,
-    SkColor texel_color_one,
-    SkColor texel_color_two,
-    SkColor background_color,
+    SkColor4f texel_color_one,
+    SkColor4f texel_color_two,
+    SkColor4f background_color,
     bool premultiplied_alpha,
     bool flipped_texture_quad,
     bool half_and_half,
@@ -225,18 +225,20 @@ void CreateTestTwoColoredTextureDrawQuad(
     SharedBitmapManager* shared_bitmap_manager,
     scoped_refptr<ContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
+  // As this function renders to an RGBA_8888 texture, it makes sense to use
+  // integer colors
   SkPMColor pixel_color_one =
       premultiplied_alpha
-          ? SkPreMultiplyColor(texel_color_one)
+          ? SkPreMultiplyColor(texel_color_one.toSkColor())
           : SkPackARGB32NoCheck(
-                SkColorGetA(texel_color_one), SkColorGetR(texel_color_one),
-                SkColorGetG(texel_color_one), SkColorGetB(texel_color_one));
+                255 * texel_color_one.fR, 255 * texel_color_one.fG,
+                255 * texel_color_one.fB, 255 * texel_color_one.fA);
   SkPMColor pixel_color_two =
       premultiplied_alpha
-          ? SkPreMultiplyColor(texel_color_two)
+          ? SkPreMultiplyColor(texel_color_two.toSkColor())
           : SkPackARGB32NoCheck(
-                SkColorGetA(texel_color_two), SkColorGetR(texel_color_two),
-                SkColorGetG(texel_color_two), SkColorGetB(texel_color_two));
+                255 * texel_color_two.fR, 255 * texel_color_two.fG,
+                255 * texel_color_two.fB, 255 * texel_color_two.fA);
   // The default color is texel_color_one
   std::vector<uint32_t> pixels(rect.size().GetArea(), pixel_color_one);
   if (half_and_half) {
@@ -289,18 +291,17 @@ void CreateTestTwoColoredTextureDrawQuad(
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               SkColor4f::FromColor(background_color), vertex_opacity,
-               flipped_texture_quad, nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               background_color, vertex_opacity, flipped_texture_quad,
+               nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
-// TODO(1308932): Make this use SkColor4fs
 void CreateTestTextureDrawQuad(
     bool gpu_resource,
     const gfx::Rect& rect,
-    SkColor texel_color,
+    SkColor4f texel_color,
     float vertex_opacity[4],
-    SkColor background_color,
+    SkColor4f background_color,
     bool premultiplied_alpha,
     const SharedQuadState* shared_state,
     DisplayResourceProvider* resource_provider,
@@ -308,12 +309,13 @@ void CreateTestTextureDrawQuad(
     SharedBitmapManager* shared_bitmap_manager,
     scoped_refptr<ContextProvider> child_context_provider,
     AggregatedRenderPass* render_pass) {
-  SkPMColor pixel_color = premultiplied_alpha
-                              ? SkPreMultiplyColor(texel_color)
-                              : SkPackARGB32NoCheck(SkColorGetA(texel_color),
-                                                    SkColorGetR(texel_color),
-                                                    SkColorGetG(texel_color),
-                                                    SkColorGetB(texel_color));
+  // As this function renders to an RGBA_8888 texture, it makes sense to use
+  // integer colors
+  SkPMColor pixel_color =
+      premultiplied_alpha
+          ? SkPreMultiplyColor(texel_color.toSkColor())
+          : SkPackARGB32NoCheck(texel_color.fA * 255, texel_color.fR * 255,
+                                texel_color.fG * 255, texel_color.fB * 255);
   size_t num_pixels = static_cast<size_t>(rect.width()) * rect.height();
   std::vector<uint32_t> pixels(num_pixels, pixel_color);
 
@@ -351,17 +353,16 @@ void CreateTestTextureDrawQuad(
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               SkColor4f::FromColor(background_color), vertex_opacity, flipped,
-               nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               background_color, vertex_opacity, flipped, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
 // TODO(crbug.com/1308932): Make this function use SkColor4f
 void CreateTestTextureDrawQuad(
     bool gpu_resource,
     const gfx::Rect& rect,
-    SkColor texel_color,
-    SkColor background_color,
+    SkColor4f texel_color,
+    SkColor4f background_color,
     bool premultiplied_alpha,
     const SharedQuadState* shared_state,
     DisplayResourceProvider* resource_provider,
@@ -861,10 +862,9 @@ void CreateTestY16TextureDrawQuad_TwoColor(
 }
 
 // Create two quads of specified colors on half-pixel boundaries.
-// TODO(crbug.com/1308932): Make this function use SkColor4f
 void CreateTestAxisAlignedQuads(const gfx::Rect& rect,
-                                SkColor front_color,
-                                SkColor back_color,
+                                SkColor4f front_color,
+                                SkColor4f back_color,
                                 bool needs_blending,
                                 bool force_aa_off,
                                 AggregatedRenderPass* pass) {
@@ -877,8 +877,8 @@ void CreateTestAxisAlignedQuads(const gfx::Rect& rect,
                                 gfx::MaskFilterInfo());
 
   auto* front = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  front->SetAll(front_shared_state, rect, rect, needs_blending,
-                SkColor4f::FromColor(front_color), force_aa_off);
+  front->SetAll(front_shared_state, rect, rect, needs_blending, front_color,
+                force_aa_off);
 
   gfx::Transform back_quad_to_target_transform;
   back_quad_to_target_transform.Translate(25.5f, 25.5f);
@@ -888,8 +888,8 @@ void CreateTestAxisAlignedQuads(const gfx::Rect& rect,
                                 gfx::MaskFilterInfo());
 
   auto* back = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  back->SetAll(back_shared_state, rect, rect, needs_blending,
-               SkColor4f::FromColor(back_color), force_aa_off);
+  back->SetAll(back_shared_state, rect, rect, needs_blending, back_color,
+               force_aa_off);
 }
 
 using RendererPixelTest = VizPixelTestWithParam;
@@ -977,9 +977,9 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithoutBackground) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(128, 0, 255, 0),  // Texel color.
-      SK_ColorTRANSPARENT,             // Background color.
-      true,                            // Premultiplied alpha.
+      SkColor4f::FromColor(SkColorSetARGB(128, 0, 255, 0)),  // Texel color.
+      SkColors::kTransparent,  // Background color.
+      true,                    // Premultiplied alpha.
       shared_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1007,9 +1007,9 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithBackground) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(204, 120, 255, 120),  // Texel color.
-      SK_ColorGREEN,                       // Background color.
-      true,                                // Premultiplied alpha.
+      SkColor4f::FromColor(SkColorSetARGB(204, 120, 255, 120)),  // Texel color.
+      SkColors::kGreen,  // Background color.
+      true,              // Premultiplied alpha.
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1038,12 +1038,12 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetTopLeft) {
 
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(0, 120, 255, 255),  // Texel color 1.
-      SkColorSetARGB(204, 120, 0, 255),  // Texel color 2.
-      SK_ColorGREEN,                     // Background color.
-      true,                              // Premultiplied alpha.
-      false,                             // flipped_texture_quad.
-      false,                             // Half and half.
+      SkColor4f::FromColor(SkColorSetARGB(0, 120, 255, 255)),  // Texel color 1.
+      SkColor4f::FromColor(SkColorSetARGB(204, 120, 0, 255)),  // Texel color 2.
+      SkColors::kGreen,  // Background color.
+      true,              // Premultiplied alpha.
+      false,             // flipped_texture_quad.
+      false,             // Half and half.
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1075,12 +1075,12 @@ TEST_P(RendererPixelTest,
 
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(0, 120, 255, 255),  // Texel color 1.
-      SkColorSetARGB(204, 120, 0, 255),  // Texel color 2.
-      SK_ColorGREEN,                     // Background color.
-      true,                              // Premultiplied alpha.
-      false,                             // flipped_texture_quad.
-      false,                             // Half and half.
+      SkColor4f::FromColor(SkColorSetARGB(0, 120, 255, 255)),  // Texel color 1.
+      SkColor4f::FromColor(SkColorSetARGB(204, 120, 0, 255)),  // Texel color 2.
+      SkColors::kGreen,  // Background color.
+      true,              // Premultiplied alpha.
+      false,             // flipped_texture_quad.
+      false,             // Half and half.
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1123,12 +1123,12 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
 
   CreateTestTwoColoredTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(0, 120, 255, 255),  // Texel color 1.
-      SkColorSetARGB(204, 120, 0, 255),  // Texel color 2.
-      SK_ColorGREEN,                     // Background color.
-      true,                              // Premultiplied alpha.
-      false,                             // flipped_texture_quad.
-      false,                             // Half and half.
+      SkColor4f::FromColor(SkColorSetARGB(0, 120, 255, 255)),  // Texel color 1.
+      SkColor4f::FromColor(SkColorSetARGB(204, 120, 0, 255)),  // Texel color 2.
+      SkColors::kGreen,  // Background color.
+      true,              // Premultiplied alpha.
+      false,             // flipped_texture_quad.
+      false,             // Half and half.
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1262,10 +1262,10 @@ TEST_P(GPURendererPixelTest,
   float vertex_opacity[4] = {1.f, 1.f, 0.f, 0.f};
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(204, 120, 255, 120),  // SK_ColorT
+      SkColor4f::FromColor(SkColorSetARGB(204, 120, 255, 120)),  // SK_ColorT
       vertex_opacity,
-      SK_ColorGREEN,  // Background color.
-      true,           // Premultiplied alpha.
+      SkColors::kGreen,  // Background color.
+      true,              // Premultiplied alpha.
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1417,21 +1417,23 @@ TEST_P(IntersectingQuadPixelTest, SolidColorQuads) {
 TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
   this->SetupQuadStateAndRenderPass();
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 0, 0),
-      SkColorSetARGB(255, 0, 0, 255), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, false /* flipped_texture_quad */,
-      false /* half_and_half */, this->front_quad_state_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      this->render_pass_.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 255)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      false /* flipped_texture_quad */, false /* half_and_half */,
+      this->front_quad_state_, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 255, 0),
-      SkColorSetARGB(255, 0, 0, 0), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, false /* flipped_texture_quad */,
-      false /* half_and_half */, this->back_quad_state_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      this->render_pass_.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      false /* flipped_texture_quad */, false /* half_and_half */,
+      this->back_quad_state_, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
@@ -1441,21 +1443,23 @@ TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
 TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
   this->SetupQuadStateAndRenderPass();
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 0, 0),
-      SkColorSetARGB(255, 0, 0, 255), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, false /* flipped_texture_quad */,
-      true /* half_and_half */, this->front_quad_state_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      this->render_pass_.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 255)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      false /* flipped_texture_quad */, true /* half_and_half */,
+      this->front_quad_state_, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 255, 0),
-      SkColorSetARGB(255, 0, 0, 0), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, false /* flipped_texture_quad */,
-      true /* half_and_half */, this->back_quad_state_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      this->render_pass_.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      false /* flipped_texture_quad */, true /* half_and_half */,
+      this->back_quad_state_, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
@@ -1466,21 +1470,23 @@ TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
 TEST_P(IntersectingQuadPixelTest, FlippedTexturedQuads) {
   this->SetupQuadStateAndRenderPass();
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 0, 0),
-      SkColorSetARGB(255, 0, 0, 255), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, true /* flipped_texture_quad */,
-      true /* half_and_half */, this->front_quad_state_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      this->render_pass_.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 255)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      true /* flipped_texture_quad */, true /* half_and_half */,
+      this->front_quad_state_, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 255, 0),
-      SkColorSetARGB(255, 0, 0, 0), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, true /* flipped_texture_quad */,
-      true /* half_and_half */, this->back_quad_state_,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      this->render_pass_.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      true /* flipped_texture_quad */, true /* half_and_half */,
+      this->back_quad_state_, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
@@ -1555,21 +1561,23 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
   SharedQuadState* child2_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), this->quad_rect_, child_pass2.get(), gfx::MaskFilterInfo());
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 0, 0),
-      SkColorSetARGB(255, 0, 0, 255), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, false /* flipped_texture_quad */,
-      false /* half_and_half */, child1_quad_state,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      child_pass1.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 255)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      false /* flipped_texture_quad */, false /* half_and_half */,
+      child1_quad_state, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, child_pass1.get());
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_, SkColorSetARGB(255, 0, 255, 0),
-      SkColorSetARGB(255, 0, 0, 0), SK_ColorTRANSPARENT,
-      true /* premultiplied_alpha */, false /* flipped_texture_quad */,
-      false /* half_and_half */, child2_quad_state,
-      this->resource_provider_.get(), this->child_resource_provider_.get(),
-      this->shared_bitmap_manager_.get(), this->child_context_provider_,
-      child_pass2.get());
+      !is_software_renderer(), this->quad_rect_,
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
+      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
+      SkColors::kTransparent, true /* premultiplied_alpha */,
+      false /* flipped_texture_quad */, false /* half_and_half */,
+      child2_quad_state, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, child_pass2.get());
 
   CreateTestRenderPassDrawQuad(this->front_quad_state_, this->quad_rect_,
                                child_pass_id1, this->render_pass_.get());
@@ -1651,9 +1659,9 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithoutBackground) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(128, 0, 255, 0),  // Texel color.
-      SK_ColorTRANSPARENT,             // Background color.
-      false,                           // Premultiplied alpha.
+      SkColor4f::FromColor(SkColorSetARGB(128, 0, 255, 0)),  // Texel color.
+      SkColors::kTransparent,  // Background color.
+      false,                   // Premultiplied alpha.
       shared_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1682,9 +1690,9 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithBackground) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(204, 120, 255, 120),  // Texel color.
-      SK_ColorGREEN,                       // Background color.
-      false,                               // Premultiplied alpha.
+      SkColor4f::FromColor(SkColorSetARGB(204, 120, 255, 120)),  // Texel color.
+      SkColors::kGreen,  // Background color.
+      false,             // Premultiplied alpha.
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -2541,7 +2549,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(SkIntToScalar(4));
   flags.setColor(SkColors::kWhite);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   gfx::Rect rect = mask_rect;
   while (!rect.IsEmpty()) {
     rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
@@ -2638,7 +2646,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(SkIntToScalar(4));
   flags.setColor(SkColors::kWhite);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   gfx::Rect rect = mask_rect;
   while (!rect.IsEmpty()) {
     rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
@@ -2734,7 +2742,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(SkColors::kWhite);
   flags.setAntiAlias(true);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   gfx::Rect rounded_corner_rect = mask_rect;
   rounded_corner_rect.Inset(kInset);
   SkRRect rounded_corner = SkRRect::MakeRectXY(
@@ -2837,7 +2845,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(SkColors::kWhite);
   flags.setAntiAlias(true);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   gfx::Rect rounded_corner_rect = mask_rect;
   rounded_corner_rect.Inset(kInset);
   SkRRect rounded_corner =
@@ -2944,7 +2952,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
       flags.setStyle(cc::PaintFlags::kFill_Style);
       flags.setColor(SkColors::kWhite);
       flags.setAntiAlias(true);
-      canvas.clear(SK_ColorTRANSPARENT);
+      canvas.clear(SkColors::kTransparent);
       gfx::Rect rounded_corner_rect = mask_rect;
       rounded_corner_rect.Inset(kInset);
       SkRRect rounded_corner =
@@ -3178,8 +3186,8 @@ TEST_P(GPURendererPixelTest, AxisAligned) {
   gfx::Transform transform_to_root;
   auto pass = CreateTestRenderPass(id, rect, transform_to_root);
 
-  CreateTestAxisAlignedQuads(rect, SK_ColorRED, SK_ColorYELLOW, false, false,
-                             pass.get());
+  CreateTestAxisAlignedQuads(rect, SkColors::kRed, SkColors::kYellow, false,
+                             false, pass.get());
 
   gfx::Transform blue_quad_to_target_transform;
   SharedQuadState* blue_shared_state =
@@ -3304,7 +3312,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(32, 32);
   SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
 
   gfx::Size tile_size(32, 32);
   ResourceId resource;
@@ -3374,7 +3382,8 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
   auto pass = CreateTestRenderPass(id, rect, transform_to_root);
   pass->has_transparent_background = false;
 
-  CreateTestAxisAlignedQuads(rect, 0x800000FF, 0x8000FF00, true, true,
+  CreateTestAxisAlignedQuads(rect, SkColor4f{0.0f, 0.0f, 1.0f, 0.5},
+                             SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, true, true,
                              pass.get());
 
   SharedQuadState* background_quad_state = CreateTestSharedQuadState(
@@ -3656,10 +3665,12 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
                                  cc::FuzzyPixelOffByOneComparator(true)));
 }
 
-// TODO(crbug.com/1308932): Make this function use SkColor4f
-void draw_point_color(SkCanvas* canvas, SkScalar x, SkScalar y, SkColor color) {
+void draw_point_color(SkCanvas* canvas,
+                      SkScalar x,
+                      SkScalar y,
+                      SkColor4f color) {
   SkPaint paint;
-  paint.setColor(color);
+  paint.setColor(color, nullptr /* SkColorSpace* colorSpace */);
   canvas->drawPoint(x, y, paint);
 }
 
@@ -3678,10 +3689,10 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
   sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(2, 2);
   ASSERT_NE(surface, nullptr);
   SkCanvas* canvas = surface->getCanvas();
-  draw_point_color(canvas, 0, 0, SK_ColorGREEN);
-  draw_point_color(canvas, 0, 1, SK_ColorBLUE);
-  draw_point_color(canvas, 1, 0, SK_ColorBLUE);
-  draw_point_color(canvas, 1, 1, SK_ColorGREEN);
+  draw_point_color(canvas, 0, 0, SkColors::kGreen);
+  draw_point_color(canvas, 0, 1, SkColors::kBlue);
+  draw_point_color(canvas, 1, 0, SkColors::kBlue);
+  draw_point_color(canvas, 1, 1, SkColors::kGreen);
 
   std::unique_ptr<cc::FakeRecordingSource> recording =
       cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
@@ -3729,10 +3740,10 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
   sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(2, 2);
   ASSERT_NE(surface, nullptr);
   SkCanvas* canvas = surface->getCanvas();
-  draw_point_color(canvas, 0, 0, SK_ColorGREEN);
-  draw_point_color(canvas, 0, 1, SK_ColorBLUE);
-  draw_point_color(canvas, 1, 0, SK_ColorBLUE);
-  draw_point_color(canvas, 1, 1, SK_ColorGREEN);
+  draw_point_color(canvas, 0, 0, SkColors::kGreen);
+  draw_point_color(canvas, 0, 1, SkColors::kBlue);
+  draw_point_color(canvas, 1, 0, SkColors::kBlue);
+  draw_point_color(canvas, 1, 1, SkColors::kGreen);
 
   std::unique_ptr<cc::FakeRecordingSource> recording =
       cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
@@ -3779,10 +3790,10 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   SkBitmap bitmap;
   bitmap.allocPixels(info);
   SkCanvas canvas(bitmap, SkSurfaceProps{});
-  draw_point_color(&canvas, 0, 0, SK_ColorGREEN);
-  draw_point_color(&canvas, 0, 1, SK_ColorBLUE);
-  draw_point_color(&canvas, 1, 0, SK_ColorBLUE);
-  draw_point_color(&canvas, 1, 1, SK_ColorGREEN);
+  draw_point_color(&canvas, 0, 0, SkColors::kGreen);
+  draw_point_color(&canvas, 0, 1, SkColors::kBlue);
+  draw_point_color(&canvas, 1, 0, SkColors::kBlue);
+  draw_point_color(&canvas, 1, 1, SkColors::kGreen);
 
   gfx::Size tile_size(2, 2);
   ResourceId resource;
@@ -3835,10 +3846,10 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(2, 2);
   SkCanvas canvas(bitmap, SkSurfaceProps{});
-  draw_point_color(&canvas, 0, 0, SK_ColorGREEN);
-  draw_point_color(&canvas, 0, 1, SK_ColorBLUE);
-  draw_point_color(&canvas, 1, 0, SK_ColorBLUE);
-  draw_point_color(&canvas, 1, 1, SK_ColorGREEN);
+  draw_point_color(&canvas, 0, 0, SkColors::kGreen);
+  draw_point_color(&canvas, 0, 1, SkColors::kBlue);
+  draw_point_color(&canvas, 1, 0, SkColors::kBlue);
+  draw_point_color(&canvas, 1, 1, SkColors::kGreen);
 
   gfx::Size tile_size(2, 2);
   ResourceId resource =
@@ -3888,10 +3899,10 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
   bitmap.allocN32Pixels(2, 2);
   {
     SkCanvas canvas(bitmap, SkSurfaceProps{});
-    draw_point_color(&canvas, 0, 0, SK_ColorGREEN);
-    draw_point_color(&canvas, 0, 1, SK_ColorBLUE);
-    draw_point_color(&canvas, 1, 0, SK_ColorBLUE);
-    draw_point_color(&canvas, 1, 1, SK_ColorGREEN);
+    draw_point_color(&canvas, 0, 0, SkColors::kGreen);
+    draw_point_color(&canvas, 0, 1, SkColors::kBlue);
+    draw_point_color(&canvas, 1, 0, SkColors::kBlue);
+    draw_point_color(&canvas, 1, 1, SkColors::kGreen);
   }
 
   gfx::Size tile_size(2, 2);
@@ -4688,7 +4699,8 @@ TEST_P(RendererPixelTestWithOverdrawFeedback, TranslucentRectangles) {
   gfx::Transform transform_to_root;
   auto pass = CreateTestRenderPass(id, rect, transform_to_root);
 
-  CreateTestAxisAlignedQuads(rect, 0x10444444, 0x10CCCCCC, true, false,
+  CreateTestAxisAlignedQuads(rect, SkColor4f{0.267f, 0.267f, 0.267f, 0.063f},
+                             SkColor4f{0.8f, 0.8f, 0.8f, 0.063f}, true, false,
                              pass.get());
 
   gfx::Transform bg_quad_to_target_transform;
@@ -4842,8 +4854,7 @@ class ColorTransformPixelTest
       quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                    this->premultiplied_alpha_, uv_top_left, uv_bottom_right,
                    SkColors::kBlack, vertex_opacity, flipped, nearest_neighbor,
-                   /*secure_output_only=*/false,
-                   gfx::ProtectedVideoType::kClear);
+                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 
       auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
       color_quad->SetNew(shared_state, rect, rect, SkColors::kBlack, false);
@@ -5153,9 +5164,9 @@ TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColorSetARGB(128, 0, 255, 0),  // Texel color.
-      SK_ColorTRANSPARENT,             // Background color.
-      true,                            // Premultiplied alpha.
+      SkColor4f::FromColor(SkColorSetARGB(128, 0, 255, 0)),  // Texel color.
+      SkColors::kTransparent,  // Background color.
+      true,                    // Premultiplied alpha.
       shared_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());

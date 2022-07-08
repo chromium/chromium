@@ -112,7 +112,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   class ScopedSkImageBuilder;
   class ScopedYUVSkImageBuilder;
 
-  void ClearCanvas(SkColor color);
+  void ClearCanvas(SkColor4f color);
   void ClearFramebuffer();
 
   // Callers should init an SkAutoCanvasRestore before calling this function.

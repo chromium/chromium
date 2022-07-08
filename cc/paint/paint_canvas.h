@@ -139,6 +139,7 @@ class CC_PAINT_EXPORT PaintCanvas {
 
   // TODO(enne): This is a synonym for drawColor with kSrc.  Remove it.
   virtual void clear(SkColor color) = 0;
+  virtual void clear(SkColor4f color) = 0;
 
   virtual void drawLine(SkScalar x0,
                         SkScalar y0,

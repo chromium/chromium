@@ -355,8 +355,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromSolidColorQuad(
   auto rtn = FromDrawQuadResource(quad, kInvalidResourceId, false, candidate);
 
   if (rtn == CandidateStatus::kSuccess) {
-    // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
-    candidate.color = quad->color.toSkColor();
+    candidate.color = quad->color;
     // Mark this candidate a solid color as the |color| member can be either a
     // background of the overlay or a color of the solid color quad.
     candidate.is_solid_color = true;
@@ -426,8 +425,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     // that.
     if (!is_delegated_context_)
       return CandidateStatus::kFailBlending;
-    // TODO(crbug/1308932) remove toSkColor and make all SkColor4f
-    candidate.color = quad->background_color.toSkColor();
+    candidate.color = quad->background_color;
   }
 
   candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);

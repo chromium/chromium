@@ -220,12 +220,15 @@ TEST_F(SoftwareRendererTest, DebugBorderDrawQuad) {
       root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
   quad_3->SetNew(shared_quad_state, rect_3, rect_3, SkColors::kYellow, false);
 
-  // Test one non-opaque color
-  SkColor semi_transparent_white = SkColorSetARGB(127, 255, 255, 255);
+  // Test one non-opaque color.
+  // TODO(crbug.com/1308932): Colors clearly get transformed into ints at some
+  // point in the pipeline, so we need to use values n/255 for now.
+  SkColor4f semi_transparent_white =
+      SkColor4f{1.0f, 1.0f, 1.0f, 128.0 / 255.0f};
   auto* quad_4 =
       root_render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
-  quad_4->SetNew(shared_quad_state, rect_4, rect_4,
-                 SkColor4f::FromColor(semi_transparent_white), false);
+  quad_4->SetNew(shared_quad_state, rect_4, rect_4, semi_transparent_white,
+                 false);
 
   AggregatedRenderPassList list;
   list.push_back(std::move(root_render_pass));
@@ -236,28 +239,27 @@ TEST_F(SoftwareRendererTest, DebugBorderDrawQuad) {
   EXPECT_EQ(screen_rect.width(), output->info().width());
   EXPECT_EQ(screen_rect.height(), output->info().height());
 
-  // Top left corners
-  EXPECT_EQ(SK_ColorCYAN, output->getColor(0, 0));
-  EXPECT_EQ(SK_ColorMAGENTA, output->getColor(1, 1));
-  EXPECT_EQ(SK_ColorYELLOW, output->getColor(2, 2));
+  EXPECT_EQ(SkColors::kCyan, output->getColor4f(0, 0));
+  EXPECT_EQ(SkColors::kMagenta, output->getColor4f(1, 1));
+  EXPECT_EQ(SkColors::kYellow, output->getColor4f(2, 2));
   // The corners end up being more opaque due to the miter, go one to the right
-  EXPECT_EQ(semi_transparent_white, output->getColor(3, 4));
+  EXPECT_EQ(semi_transparent_white, output->getColor4f(3, 4));
 
   // Un-drawn pixels as the quads are just outlines
-  EXPECT_EQ(SK_ColorTRANSPARENT, output->getColor(4, 4));
-  EXPECT_EQ(SK_ColorTRANSPARENT,
-            output->getColor(rect_size.width() - 2, rect_size.height() - 2));
+  EXPECT_EQ(SkColors::kTransparent, output->getColor4f(4, 4));
+  EXPECT_EQ(SkColors::kTransparent,
+            output->getColor4f(rect_size.width() - 2, rect_size.height() - 2));
 
   // The bottom rightmost pixel of these quads are not filled because of the
   // SkPaint::kMiter_Join StrokeJoin, go one pixel to the left
-  EXPECT_EQ(SK_ColorCYAN,
-            output->getColor(rect_size.width() - 1, rect_size.height()));
-  EXPECT_EQ(SK_ColorMAGENTA,
-            output->getColor(rect_size.width(), rect_size.height() + 1));
-  EXPECT_EQ(SK_ColorYELLOW,
-            output->getColor(rect_size.width() + 1, rect_size.height() + 2));
+  EXPECT_EQ(SkColors::kCyan,
+            output->getColor4f(rect_size.width() - 1, rect_size.height()));
+  EXPECT_EQ(SkColors::kMagenta,
+            output->getColor4f(rect_size.width(), rect_size.height() + 1));
+  EXPECT_EQ(SkColors::kYellow,
+            output->getColor4f(rect_size.width() + 1, rect_size.height() + 2));
   EXPECT_EQ(semi_transparent_white,
-            output->getColor(rect_size.width() + 2, rect_size.height() + 3));
+            output->getColor4f(rect_size.width() + 2, rect_size.height() + 3));
 }
 
 TEST_F(SoftwareRendererTest, TileQuad) {

@@ -469,16 +469,14 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                         RGBA_8888);
 }
 
-// TODO(crbug.com/1308932): Make this function use SkColor4f
 SolidColorDrawQuad* CreateSolidColorQuadAt(
     const SharedQuadState* shared_quad_state,
-    SkColor color,
+    SkColor4f color,
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect) {
   SolidColorDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, rect, rect, SkColor4f::FromColor(color),
-               false);
+  quad->SetNew(shared_quad_state, rect, rect, color, false);
   return quad;
 }
 
@@ -622,16 +620,14 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
   color_quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlack, false);
 }
 
-// TODO(crbug.com/1308932): Make this function use SkColor4f
 void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         const SharedQuadState* shared_quad_state,
                         AggregatedRenderPass* render_pass,
                         const gfx::Rect& rect,
-                        SkColor color) {
-  DCHECK_EQ(255u, SkColorGetA(color));
+                        SkColor4f color) {
+  DCHECK(color.isOpaque());
   auto* color_quad = render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(shared_quad_state, rect, rect, SkColor4f::FromColor(color),
-                     false);
+  color_quad->SetNew(shared_quad_state, rect, rect, color, false);
 }
 
 void CreateFullscreenOpaqueQuad(DisplayResourceProvider* resource_provider,
@@ -2325,7 +2321,7 @@ TEST_F(SingleOverlayOnTopTest, AllowTransparentOnTop) {
   auto pass = CreateRenderPass();
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 0.f;
-  CreateSolidColorQuadAt(shared_state, SK_ColorBLACK, pass.get(),
+  CreateSolidColorQuadAt(shared_state, SkColors::kBlack, pass.get(),
                          kOverlayBottomRightRect);
   shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 1.f;
@@ -2353,7 +2349,7 @@ TEST_F(SingleOverlayOnTopTest, AllowTransparentColorOnTop) {
 
   auto pass = CreateRenderPass();
   CreateSolidColorQuadAt(pass->shared_quad_state_list.back(),
-                         SK_ColorTRANSPARENT, pass.get(),
+                         SkColors::kTransparent, pass.get(),
                          kOverlayBottomRightRect);
   CreateCandidateQuadAt(resource_provider_.get(),
                         child_resource_provider_.get(), child_provider_.get(),
@@ -2379,7 +2375,7 @@ TEST_F(SingleOverlayOnTopTest, RejectOpaqueColorOnTop) {
   auto pass = CreateRenderPass();
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 0.5f;
-  CreateSolidColorQuadAt(shared_state, SK_ColorBLACK, pass.get(),
+  CreateSolidColorQuadAt(shared_state, SkColors::kBlack, pass.get(),
                          kOverlayBottomRightRect);
   shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 1.f;
@@ -2405,7 +2401,7 @@ TEST_F(SingleOverlayOnTopTest, RejectOpaqueColorOnTop) {
 TEST_F(SingleOverlayOnTopTest, RejectTransparentColorOnTopWithoutBlending) {
   auto pass = CreateRenderPass();
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  CreateSolidColorQuadAt(shared_state, SK_ColorTRANSPARENT, pass.get(),
+  CreateSolidColorQuadAt(shared_state, SkColors::kTransparent, pass.get(),
                          kOverlayBottomRightRect)
       ->needs_blending = false;
   CreateCandidateQuadAt(resource_provider_.get(),
@@ -2649,7 +2645,7 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
     bool nearly_occluded =
         i >= kDamageFrameTestStart && i < kDamageFrameTestEnd;
     CreateSolidColorQuadAt(
-        pass->shared_quad_state_list.back(), SK_ColorBLACK, pass.get(),
+        pass->shared_quad_state_list.back(), SkColors::kBlack, pass.get(),
         nearly_occluded ? nearly_occluding_quad : kOverlayTopLeftRect);
 
     // Create a quad with the resource ID selected above.
@@ -2786,8 +2782,8 @@ TEST_F(TransitionOverlayTypeTest, DamageChangeOnTransistionOverlayType) {
     // A partially occluding quad is used to force an underlay rather than pure
     // overlay.
     if (i >= kOverlayFrameStart && i < kOverlayFrameEnd) {
-      CreateSolidColorQuadAt(pass->shared_quad_state_list.back(), SK_ColorBLACK,
-                             pass.get(), kOverlayTopLeftRect);
+      CreateSolidColorQuadAt(pass->shared_quad_state_list.back(),
+                             SkColors::kBlack, pass.get(), kOverlayTopLeftRect);
     }
 
     CreateFullscreenCandidateQuad(
@@ -3300,7 +3296,7 @@ TEST_F(UnderlayTest, PrimaryPlaneOverlayIsTransparentWithUnderlay) {
   gfx::Rect output_rect = pass->output_rect;
   CreateOpaqueQuadAt(resource_provider_.get(),
                      pass->shared_quad_state_list.back(), pass.get(),
-                     output_rect, SK_ColorWHITE);
+                     output_rect, SkColors::kWhite);
 
   CreateCandidateQuadAt(resource_provider_.get(),
                         child_resource_provider_.get(), child_provider_.get(),
@@ -3655,7 +3651,7 @@ TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
       sqs->overlay_damage_index = 1;
     }
 
-    CreateSolidColorQuadAt(default_damaged_shared_quad_state, SK_ColorBLACK,
+    CreateSolidColorQuadAt(default_damaged_shared_quad_state, SkColors::kBlack,
                            pass.get(), rect);
 
     CreateFullscreenCandidateQuad(
@@ -3776,10 +3772,10 @@ TEST_F(UnderlayCastTest, BlackOutsideOverlayContentBounds) {
                             kOverlayBottomRightRect);
   CreateOpaqueQuadAt(resource_provider_.get(),
                      pass->shared_quad_state_list.back(), pass.get(), kLeftSide,
-                     SK_ColorBLACK);
+                     SkColors::kBlack);
   CreateOpaqueQuadAt(resource_provider_.get(),
                      pass->shared_quad_state_list.back(), pass.get(), kTopRight,
-                     SK_ColorBLACK);
+                     SkColors::kBlack);
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -3865,7 +3861,7 @@ TEST_F(UnderlayCastTest, RoundOverlayContentBounds) {
                             overlay_rect);
   CreateOpaqueQuadAt(resource_provider_.get(),
                      pass->shared_quad_state_list.back(), pass.get(),
-                     gfx::Rect(0, 0, 10, 10), SK_ColorWHITE);
+                     gfx::Rect(0, 0, 10, 10), SkColors::kWhite);
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -3899,7 +3895,7 @@ TEST_F(UnderlayCastTest, RoundContentBounds) {
                             overlay_rect);
   CreateOpaqueQuadAt(resource_provider_.get(),
                      pass->shared_quad_state_list.back(), pass.get(),
-                     gfx::Rect(0, 0, 255, 255), SK_ColorWHITE);
+                     gfx::Rect(0, 0, 255, 255), SkColors::kWhite);
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -3989,7 +3985,7 @@ TEST_F(UnderlayCastTest, PrimaryPlaneOverlayIsAlwaysTransparent) {
   gfx::Rect output_rect = pass->output_rect;
   CreateOpaqueQuadAt(resource_provider_.get(),
                      pass->shared_quad_state_list.back(), pass.get(),
-                     output_rect, SK_ColorWHITE);
+                     output_rect, SkColors::kWhite);
 
   OverlayCandidateList candidate_list;
 
@@ -4857,7 +4853,7 @@ TEST_F(DelegatedTest, QuadTypes) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kSmallCandidateRect);
-  CreateSolidColorQuadAt(pass->shared_quad_state_list.back(), SK_ColorDKGRAY,
+  CreateSolidColorQuadAt(pass->shared_quad_state_list.back(), SkColors::kDkGray,
                          pass.get(), kOverlayBottomRightRect);
   // Check for potential candidates.
   OverlayCandidateList candidate_list;

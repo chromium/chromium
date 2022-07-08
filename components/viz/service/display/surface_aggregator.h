@@ -191,7 +191,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const SharedQuadState* primary_shared_quad_state,
       const gfx::Transform& target_transform,
       const absl::optional<gfx::Rect>& clip_rect,
-      SkColor background_color,
+      SkColor4f background_color,
       AggregatedRenderPass* dest_pass,
       const MaskFilterInfoExt& mask_filter_info_pair);
 

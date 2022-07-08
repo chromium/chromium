@@ -298,7 +298,7 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
 
 #if defined(USE_OZONE)
 const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
-    const SkColor& color) {
+    const SkColor4f& color) {
   // Currently the Wayland protocol does not have protocol to support solid
   // color quads natively as surfaces. Here we create tiny 4x4 image buffers
   // in the color space of the frame buffer and clear them to the quad's solid
@@ -306,7 +306,7 @@ const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
   // overlay via the mailbox interface.
   std::unique_ptr<OutputPresenter::Image> solid_color = nullptr;
   // First try for an existing same color image.
-  auto it = solid_color_cache_.find(color);
+  auto it = solid_color_cache_.find(color.toSkColor());
   if (it != solid_color_cache_.end()) {
     // This is a prefect color match so use this directly.
     solid_color = std::move(it->second);
@@ -332,7 +332,8 @@ const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
   DCHECK(solid_color);
   auto image_mailbox = solid_color->skia_representation()->mailbox();
   solid_color_images_.insert(std::make_pair(
-      image_mailbox, std::make_pair(color, std::move(solid_color))));
+      image_mailbox,
+      std::make_pair(color.toSkColor(), std::move(solid_color))));
   return image_mailbox;
 }
 #endif
@@ -743,7 +744,7 @@ void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
 #if defined(USE_OZONE)
   candidate.color_space = color_space_;
   candidate.display_rect = gfx::RectF(gfx::SizeF(viewport_size_));
-  candidate.color = SK_ColorTRANSPARENT;
+  candidate.color = SkColors::kTransparent;
   candidate.plane_z_order = INT32_MIN;
   candidate.is_solid_color = supports_non_backed_solid_color_images_;
   if (!supports_non_backed_solid_color_images_) {

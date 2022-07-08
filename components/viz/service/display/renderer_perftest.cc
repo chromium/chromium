@@ -153,18 +153,18 @@ void DeleteSharedImage(scoped_refptr<ContextProvider> context_provider,
 
 TransferableResource CreateTestTexture(
     const gfx::Size& size,
-    SkColor texel_color,
+    SkColor4f texel_color,
     bool premultiplied_alpha,
     ClientResourceProvider* child_resource_provider,
     scoped_refptr<ContextProvider> child_context_provider) {
-  SkPMColor pixel_color = premultiplied_alpha
-                              ? SkPreMultiplyColor(texel_color)
-                              : SkPackARGB32NoCheck(SkColorGetA(texel_color),
-                                                    SkColorGetR(texel_color),
-                                                    SkColorGetG(texel_color),
-                                                    SkColorGetB(texel_color));
+  using SkPMColor4f = SkRGBA4f<kPremul_SkAlphaType>;
+  const SkPMColor4f pixel_color =
+      premultiplied_alpha ? texel_color.premul()
+                          : SkPMColor4f{texel_color.fR, texel_color.fG,
+                                        texel_color.fB, texel_color.fA};
+
   size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
-  std::vector<uint32_t> pixels(num_pixels, pixel_color);
+  std::vector<SkPMColor4f> pixels(num_pixels, pixel_color);
 
   gpu::SharedImageInterface* sii =
       child_context_provider->SharedImageInterface();
@@ -189,7 +189,7 @@ TransferableResource CreateTestTexture(
 
 void CreateTestTextureDrawQuad(ResourceId resource_id,
                                const gfx::Rect& rect,
-                               SkColor background_color,
+                               SkColor4f background_color,
                                bool premultiplied_alpha,
                                const SharedQuadState* shared_state,
                                CompositorRenderPass* render_pass) {
@@ -201,12 +201,10 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   const float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
-  // TODO(crbug.com/1308932): Input SkColor4f to this function
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               SkColor4f::FromColor(background_color), vertex_opacity, flipped,
-               nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               background_color, vertex_opacity, flipped, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
 void CreateTestTileDrawQuad(ResourceId resource_id,
@@ -346,7 +344,7 @@ class RendererPerfTest : public VizPerfTest {
   ResourceId MapResourceId(base::flat_map<ResourceId, ResourceId>* resource_map,
                            ResourceId recorded_id,
                            const gfx::Size& texture_size,
-                           SkColor texel_color,
+                           SkColor4f texel_color,
                            bool premultiplied_alpha) {
     DCHECK(resource_map);
     ResourceId actual_id;
@@ -375,7 +373,7 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = tile_quad->resource_id();
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
-                SkColorSetARGB(128, 0, 255, 0), tile_quad->is_premultiplied);
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, tile_quad->is_premultiplied);
             tile_quad->resources.ids[TileDrawQuad::kResourceIdIndex] =
                 actual_id;
           } break;
@@ -385,7 +383,7 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = texture_quad->resource_id();
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, texture_quad->rect.size(),
-                SkColorSetARGB(128, 0, 255, 0),
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
                 texture_quad->premultiplied_alpha);
             texture_quad->resources.ids[TextureDrawQuad::kResourceIdIndex] =
                 actual_id;
@@ -409,7 +407,7 @@ class RendererPerfTest : public VizPerfTest {
               ResourceId recorded_id = yuv_quad->resources.ids[kIndex[ii]];
               ResourceId actual_id =
                   this->MapResourceId(&resource_map, recorded_id, kSize[ii],
-                                      SkColorSetARGB(128, 0, 255, 0), false);
+                                      SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, false);
               yuv_quad->resources.ids[kIndex[ii]] = actual_id;
             }
           } break;
@@ -423,7 +421,7 @@ class RendererPerfTest : public VizPerfTest {
   void RunSingleTextureQuad() {
     resource_list_.push_back(CreateTestTexture(
         kSurfaceSize,
-        /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+        /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
         /*premultiplied_alpha=*/false, child_resource_provider_.get(),
         child_context_provider_));
 
@@ -435,7 +433,7 @@ class RendererPerfTest : public VizPerfTest {
           gfx::Transform(), kSurfaceRect, pass.get(), gfx::MaskFilterInfo());
 
       CreateTestTextureDrawQuad(resource_list_.back().id, kSurfaceRect,
-                                /*background_color=*/SK_ColorTRANSPARENT,
+                                /*background_color=*/SkColors::kTransparent,
                                 /*premultiplied_alpha=*/false, shared_state,
                                 pass.get());
 
@@ -456,7 +454,7 @@ class RendererPerfTest : public VizPerfTest {
       for (int j = 0; j < 5; j++) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
-            /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+            /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
             /*premultiplied_alpha=*/false, child_resource_provider_.get(),
             child_context_provider_));
         resource_ids[i][j] = resource_list_.back().id;
@@ -475,7 +473,7 @@ class RendererPerfTest : public VizPerfTest {
               resource_ids[i][j],
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SK_ColorTRANSPARENT,
+              /*background_color=*/SkColors::kTransparent,
               /*premultiplied_alpha=*/false, shared_state, pass.get());
         }
       }
@@ -495,7 +493,7 @@ class RendererPerfTest : public VizPerfTest {
     ResourceId resource_id;
     resource_list_.push_back(CreateTestTexture(
         kTextureSize,
-        /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+        /*texel_color=*/SkColor4f{0.5f, 0.0f, 1.0f, 0.0f},
         /*premultiplied_alpha=*/false, child_resource_provider_.get(),
         child_context_provider_));
     resource_id = resource_list_.back().id;
@@ -512,7 +510,7 @@ class RendererPerfTest : public VizPerfTest {
               resource_id,
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SK_ColorTRANSPARENT,
+              /*background_color=*/SkColors::kTransparent,
               /*premultiplied_alpha=*/false, shared_state, pass.get());
         }
       }
@@ -540,7 +538,7 @@ class RendererPerfTest : public VizPerfTest {
       // A single tiled resource referenced by each TileDrawQuad
       resource_list_.push_back(CreateTestTexture(
           kTextureSize,
-          /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+          /*texel_color=*/SkColor4f{0.5f, 0.0f, 1.0f, 0.0f},
           /*premultiplied_alpha=*/false, child_resource_provider_.get(),
           child_context_provider_));
     } else {
@@ -548,7 +546,7 @@ class RendererPerfTest : public VizPerfTest {
       for (int i = 0; i < tile_count; ++i) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
-            /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+            /*texel_color=*/SkColor4f{0.5f, 0.0f, 1.0f, 0.0f},
             /*premultiplied_alpha=*/false, child_resource_provider_.get(),
             child_context_provider_));
       }

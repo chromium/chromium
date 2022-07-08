@@ -648,11 +648,12 @@ void SurfaceAggregator::HandleSurfaceQuad(
     fallback_rect =
         gfx::IntersectRects(fallback_rect, surface_quad->visible_rect);
 
-    EmitGutterQuadsIfNecessary(surface_quad->visible_rect, fallback_rect,
-                               surface_quad->shared_quad_state,
-                               target_transform, surface_clip_rect,
-                               fallback_frame.metadata.root_background_color,
-                               dest_pass, mask_filter_info);
+    // TODO(crbug.com/1308932): CompositorFrameMetadata to SkColor4f
+    EmitGutterQuadsIfNecessary(
+        surface_quad->visible_rect, fallback_rect,
+        surface_quad->shared_quad_state, target_transform, surface_clip_rect,
+        SkColor4f::FromColor(fallback_frame.metadata.root_background_color),
+        dest_pass, mask_filter_info);
   }
 
   EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, surface_quad,
@@ -943,17 +944,16 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
                            surface_quad->visible_rect, background_color, false);
 }
 
-// TODO(crbug.com/1308932): background_color to SkColor4f
 void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& primary_rect,
     const gfx::Rect& fallback_rect,
     const SharedQuadState* primary_shared_quad_state,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& clip_rect,
-    SkColor background_color,
+    SkColor4f background_color,
     AggregatedRenderPass* dest_pass,
     const MaskFilterInfoExt& mask_filter_info) {
-  bool has_transparent_background = background_color == SK_ColorTRANSPARENT;
+  bool has_transparent_background = background_color == SkColors::kTransparent;
 
   // If the fallback Surface's active CompositorFrame has a non-transparent
   // background then compute gutter.
@@ -975,8 +975,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     auto* right_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     right_gutter->SetNew(shared_quad_state, right_gutter_rect,
-                         right_gutter_rect,
-                         SkColor4f::FromColor(background_color), false);
+                         right_gutter_rect, background_color, false);
   }
 
   if (fallback_rect.height() < primary_rect.height()) {
@@ -993,8 +992,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     auto* bottom_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     bottom_gutter->SetNew(shared_quad_state, bottom_gutter_rect,
-                          bottom_gutter_rect,
-                          SkColor4f::FromColor(background_color), false);
+                          bottom_gutter_rect, background_color, false);
   }
 }
 

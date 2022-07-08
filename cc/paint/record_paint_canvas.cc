@@ -235,6 +235,10 @@ void RecordPaintCanvas::clear(SkColor color) {
   push<DrawColorOp>(SkColor4f::FromColor(color), SkBlendMode::kSrc);
 }
 
+void RecordPaintCanvas::clear(SkColor4f color) {
+  push<DrawColorOp>(color, SkBlendMode::kSrc);
+}
+
 void RecordPaintCanvas::drawLine(SkScalar x0,
                                  SkScalar y0,
                                  SkScalar x1,

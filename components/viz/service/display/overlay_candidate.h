@@ -148,7 +148,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Represents either a background of this overlay candidate or a color of a
   // solid color quad, which can be checked via the |is_solid_color|.
-  absl::optional<SkColor> color;
+  absl::optional<SkColor4f> color;
 
   // Helps to identify whether this is a solid color quad or not.
   bool is_solid_color = false;

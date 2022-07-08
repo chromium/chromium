@@ -214,9 +214,8 @@ class CopyOutputScalingPixelTest
     for (int i = 0; i < 4; ++i) {
       gfx::Rect rect = smaller_pass_rects[i] - copy_rect.OffsetFromOrigin();
       rect = copy_output::ComputeResultRect(rect, scale_from_, scale_to_);
-      // TODO(crbug.com/1308932): Make this function use SkColor4f
       expected_bitmap.erase(
-          smaller_pass_colors[i].toSkColor(),
+          smaller_pass_colors[i], nullptr /* SkColorSpace* colorSpace */,
           SkIRect{rect.x(), rect.y(), rect.right(), rect.bottom()});
     }
 
@@ -233,16 +232,12 @@ class CopyOutputScalingPixelTest
     gfx::Point first_failure_position;
     for (int y = 0; y < expected_bitmap.height(); ++y) {
       for (int x = 0; x < expected_bitmap.width(); ++x) {
-        const SkColor expected = expected_bitmap.getColor(x, y);
-        const SkColor actual = result_bitmap.getColor(x, y);
-        const bool red_bad =
-            (SkColorGetR(expected) < 0x80) != (SkColorGetR(actual) < 0x80);
-        const bool green_bad =
-            (SkColorGetG(expected) < 0x80) != (SkColorGetG(actual) < 0x80);
-        const bool blue_bad =
-            (SkColorGetB(expected) < 0x80) != (SkColorGetB(actual) < 0x80);
-        const bool alpha_bad =
-            (SkColorGetA(expected) < 0x80) != (SkColorGetA(actual) < 0x80);
+        const SkColor4f expected = expected_bitmap.getColor4f(x, y);
+        const SkColor4f actual = result_bitmap.getColor4f(x, y);
+        const bool red_bad = (expected.fR < 0.5f) != (actual.fR < 0.5f);
+        const bool green_bad = (expected.fG < 0.5f) != (actual.fG < 0.5f);
+        const bool blue_bad = (expected.fB < 0.5f) != (actual.fB < 0.5f);
+        const bool alpha_bad = (expected.fA < 0.5f) != (actual.fA < 0.5f);
         if (red_bad || green_bad || blue_bad || alpha_bad) {
           if (num_bad_pixels == 0)
             first_failure_position = gfx::Point(x, y);

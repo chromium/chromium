@@ -168,6 +168,10 @@ void SkiaPaintCanvas::clear(SkColor color) {
   canvas_->clear(color);
 }
 
+void SkiaPaintCanvas::clear(SkColor4f color) {
+  canvas_->clear(color);
+}
+
 void SkiaPaintCanvas::drawLine(SkScalar x0,
                                SkScalar y0,
                                SkScalar x1,
