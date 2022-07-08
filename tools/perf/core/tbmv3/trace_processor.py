@@ -17,11 +17,10 @@ from py_utils import tempfile_ext
 from tracing.value import histogram_set
 from tracing.value.histogram import Histogram
 
-
 TP_BINARY_NAME = 'trace_processor_shell'
 EXPORT_JSON_QUERY_TEMPLATE = 'select export_json(%s)\n'
-METRICS_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                                             'metrics'))
+METRICS_PATH = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), 'metrics'))
 POWER_PROFILE_SQL = 'power_profile.sql'
 
 MetricFiles = namedtuple('MetricFiles', ('sql', 'proto', 'internal_metric'))
@@ -29,6 +28,7 @@ MetricFiles = namedtuple('MetricFiles', ('sql', 'proto', 'internal_metric'))
 
 class InvalidTraceProcessorOutput(Exception):
   pass
+
 
 # These will be set to respective paths once the files have been fetched
 # to avoid downloading several times during one Results Processor run.
@@ -120,6 +120,7 @@ def _ScopedHistogramName(metric_name, histogram_name):
 
 
 class ProtoFieldInfo(object):
+
   def __init__(self, name, parent, repeated, field_options):
     self.name = name
     self.parent = parent
@@ -134,11 +135,12 @@ class ProtoFieldInfo(object):
       return self.parent.path_from_root + [self]
 
   def __repr__(self):
-    return 'ProtoFieldInfo("%s", repeated=%s)' %(self.name, self.repeated)
+    return 'ProtoFieldInfo("%s", repeated=%s)' % (self.name, self.repeated)
 
 
 def _LeafFieldAnnotations(annotations, parent=None):
   """Yields leaf fields in the annotations tree, yielding a proto field info
+
   each time. Given the following annotation:
   __annotations: {
     a: {
@@ -155,7 +157,7 @@ def _LeafFieldAnnotations(annotations, parent=None):
 
   """
   for (name, field_value) in annotations.items():
-    if name[:2] == "__":
+    if name[:2] == '__':
       continue  # internal fields.
     current_field = ProtoFieldInfo(
         name=name,
@@ -192,7 +194,7 @@ def _PluckField(json_dict, field_path):
     field_values = json_dict[path_head.name]
     if not isinstance(field_values, list):
       raise InvalidTraceProcessorOutput(
-          "Field marked as repeated but json value is not list")
+          'Field marked as repeated but json value is not list')
     output = []
     for field_value in field_values:
       output.extend(_PluckField(field_value, path_tail))
@@ -201,7 +203,7 @@ def _PluckField(json_dict, field_path):
     field_value = json_dict[path_head.name]
     if isinstance(field_value, list):
       raise InvalidTraceProcessorOutput(
-          "Field not marked as repeated but json value is list")
+          'Field not marked as repeated but json value is list')
     return _PluckField(field_value, path_tail)
 
 
@@ -253,7 +255,7 @@ def RunQuery(trace_processor_path, trace_file, sql_command):
   # Write query to temporary file because trace processor accepts
   # SQL query in a file.
   tp_output = None
-  with tempfile_ext.NamedTemporaryFile(mode="w+") as sql_file:
+  with tempfile_ext.NamedTemporaryFile(mode='w+') as sql_file:
     sql_file.write(sql_command)
     sql_file.close()
     # Run Trace Processor
@@ -271,7 +273,7 @@ def RunQuery(trace_processor_path, trace_file, sql_command):
   # object inconveniently requires open csv file to access data.
   csv_output = []
   # tempfile creates and opens the file
-  with tempfile.NamedTemporaryFile(mode="w+") as csv_file:
+  with tempfile.NamedTemporaryFile(mode='w+') as csv_file:
     csv_file.write(tp_output)
     csv_file.flush()
     csv_file.seek(0)
@@ -299,7 +301,7 @@ def RunMetrics(trace_processor_path,
     trace_processor_path: path to the trace_processor executable.
     trace_file: path to the trace file.
     metric_names: a list of metric names (the corresponding files must exist in
-        tbmv3/metrics directory).
+      tbmv3/metrics directory).
 
   Returns:
     A HistogramSet with metric results.
@@ -314,8 +316,10 @@ def RunMetrics(trace_processor_path,
       metric_name_args.append(metric_files.sql)
   command_args = [
       trace_processor_path,
-      '--run-metrics', ','.join(metric_name_args),
-      '--metrics-output', 'json',
+      '--run-metrics',
+      ','.join(metric_name_args),
+      '--metrics-output',
+      'json',
       trace_file,
   ]
   if fetch_power_profile:
@@ -331,10 +335,10 @@ def RunMetrics(trace_processor_path,
     annotations = root_annotations.get(full_metric_name, None)
     metric_proto = measurements.get(full_metric_name, None)
     if metric_proto is None:
-      logging.warning("Metric not found in the output: %s", metric_name)
+      logging.warning('Metric not found in the output: %s', metric_name)
       continue
     elif annotations is None:
-      logging.info("Skipping metric %s because it has no field with unit.",
+      logging.info('Skipping metric %s because it has no field with unit.',
                    metric_name)
       continue
 
@@ -342,7 +346,7 @@ def RunMetrics(trace_processor_path,
       unit = field.field_options.get('unit', None)
       if unit is None:
         logging.debug('Skipping field %s to histograms because it has no unit',
-            field.name)
+                      field.name)
         continue
       histogram_name = ':'.join([field.name for field in field.path_from_root])
       samples = _PluckField(metric_proto, field.path_from_root)
@@ -384,7 +388,8 @@ def ConvertProtoTraceToJson(trace_processor_path, proto_file, json_path):
     query_file.close()
     _RunTraceProcessor(
         trace_processor_path,
-        '-q', query_file.name,
+        '-q',
+        query_file.name,
         proto_file,
     )
 
