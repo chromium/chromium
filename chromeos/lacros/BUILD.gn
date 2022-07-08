@@ -27,6 +27,7 @@ component("lacros") {
     "//chromeos/process_proxy",
     "//chromeos/startup",
     "//components/crash/core/common",
+    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/cpp/bindings",
     "//ui/native_theme",
   ]

@@ -90,6 +90,7 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "components/crash/core/common/crash_key.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -566,6 +567,13 @@ bool LacrosService::IsSensorHalClientAvailable() const {
              Crosapi::MethodMinVersions::kBindSensorHalClientMinVersion;
 }
 
+bool LacrosService::IsStableVideoDecoderFactoryAvailable() const {
+  absl::optional<uint32_t> version = CrosapiVersion();
+  return version && version.value() >=
+                        Crosapi::MethodMinVersions::
+                            kBindStableVideoDecoderFactoryMinVersion;
+}
+
 void LacrosService::BindAccountManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver) {
   DCHECK(IsAccountManagerAvailable());
@@ -694,6 +702,16 @@ bool LacrosService::IsVideoCaptureDeviceFactoryAvailable() const {
   return version && version.value() >=
                         Crosapi::MethodMinVersions::
                             kBindVideoCaptureDeviceFactoryMinVersion;
+}
+
+void LacrosService::BindStableVideoDecoderFactory(
+    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
+        receiver) {
+  DCHECK(IsStableVideoDecoderFactoryAvailable());
+  BindPendingReceiverOrRemote<
+      mojo::GenericPendingReceiver,
+      &crosapi::mojom::Crosapi::BindStableVideoDecoderFactory>(
+      mojo::GenericPendingReceiver(std::move(receiver)));
 }
 
 int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {

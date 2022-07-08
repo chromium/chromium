@@ -35,6 +35,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace media {
+namespace stable::mojom {
+class StableVideoDecoderFactory;
+}  // namespace stable::mojom
+}  // namespace media
+
 namespace chromeos {
 
 class NativeThemeCache;
@@ -115,6 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   bool IsMetricsReportingAvailable() const;
   bool IsScreenManagerAvailable() const;
   bool IsSensorHalClientAvailable() const;
+  bool IsStableVideoDecoderFactoryAvailable() const;
 
   // Methods to add/remove observer. Safe to call from any thread.
   void AddObserver(Observer* obs);
@@ -166,7 +173,14 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
   // mojo::Remote bound to an arbitrary sequence, and pass the other endpoint of
-  // the Remote (mojo::PendingReceiver) to ash to set up the interface.
+  // the Remote (mojo::PendingReceiver) to ash to set up the interface. For
+  // other interfaces, such as media::stable::mojom::StableVideoDecoderFactory,
+  // the main reason to use a Bind*() method instead of GetRemote() is not the
+  // threading model, but the fact that the browser may want to maintain
+  // multiple independent mojo::Remotes, and ash-chrome can use this behavior as
+  // useful information (for example, to start one ash-chrome utility video
+  // decoder process per lacros-chrome renderer process in order to host the
+  // implementation of a media::stable::mojom::StableVideoDecoderFactory).
   // --------------------------------------------------------------------------
 
   // This may be called on any thread.
@@ -225,6 +239,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
           pending_receiver);
+
+  // This may be called on any thread.
+  void BindStableVideoDecoderFactory(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
+          receiver);
 
   // BindVideoCaptureDeviceFactory() can only be used if this method returns
   // true.

@@ -21,12 +21,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-namespace media {
-class StableVideoDecoderFactoryService;
-}  // namespace media
-#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-
 namespace apps {
 class DigitalGoodsFactoryAsh;
 }
@@ -471,10 +465,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;
   std::unique_ptr<SpeechRecognitionAsh> speech_recognition_ash_;
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-  std::unique_ptr<media::StableVideoDecoderFactoryService>
-      stable_video_decoder_factory_ash_;
-#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;

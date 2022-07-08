@@ -294,7 +294,6 @@ source_set("crosapi") {
     "//extensions/browser/api/networking_private",
     "//extensions/common",
     "//media/mojo/mojom/stable:stable_video_decoder",
-    "//media/mojo/services:services",
     "//printing",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
