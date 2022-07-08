@@ -23,7 +23,9 @@ namespace {
 
 void AddFrameToTrace(int64_t timestamp_ns, int64_t durations_ns) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-  auto t = perfetto::Track(checked_cast<uint64_t>(timestamp_ns));
+  if (timestamp_ns < 0)
+    return;
+  auto t = perfetto::Track(static_cast<uint64_t>(timestamp_ns));
   TRACE_EVENT_BEGIN(
       "ui", "AndroidFrameVsync", t, [&](perfetto::EventContext ctx) {
         ctx.event()->set_timestamp_absolute_us(timestamp_ns / 1000);
