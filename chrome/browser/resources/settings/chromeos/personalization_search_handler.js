@@ -10,26 +10,23 @@
  * personalization search.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import '../search/personalization_search.mojom-lite.js';
-
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-/** @type {?ash.personalizationApp.mojom.SearchHandlerInterface} */
+import {SearchHandler, SearchHandlerInterface} from '../mojom-webui/personalization/search.mojom-webui.js';
+
+/** @type {?SearchHandlerInterface} */
 let personalizationSearchHandler = null;
 
 /**
- * @param {!ash.personalizationApp.mojom.SearchHandlerInterface}
- *     testSearchHandler A test search handler.
+ * @param {!SearchHandlerInterface} testSearchHandler A test search handler.
  */
 export function setPersonalizationSearchHandlerForTesting(testSearchHandler) {
   personalizationSearchHandler = testSearchHandler;
 }
 
 /**
- * @return {!ash.personalizationApp.mojom.SearchHandlerInterface} Search
+ * @return {!SearchHandlerInterface} Search
  *     handler.
  */
 export function getPersonalizationSearchHandler() {
@@ -40,8 +37,7 @@ export function getPersonalizationSearchHandler() {
       !loadTimeData.getBoolean('isGuest'),
       'guest must not request personalization search handler');
   if (!personalizationSearchHandler) {
-    personalizationSearchHandler =
-        ash.personalizationApp.mojom.SearchHandler.getRemote();
+    personalizationSearchHandler = SearchHandler.getRemote();
   }
 
   return personalizationSearchHandler;

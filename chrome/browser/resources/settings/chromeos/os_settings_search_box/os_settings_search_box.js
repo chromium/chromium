@@ -18,6 +18,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface, SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../../mojom-webui/personalization/search.mojom-webui.js';
 import {Router} from '../../router.js';
 import {combinedSearch, SearchResult} from '../combined_search_handler.js';
 import {recordSearch} from '../metrics_recorder.js';
@@ -178,7 +179,7 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase {
     this.settingsSearchResultObserverReceiver_ = null;
 
     /**
-     * @private {?ash.personalizationApp.mojom.SearchResultsObserverReceiver}
+     * @private {?PersonalizationSearchResultsObserverReceiver}
      */
     this.personalizationSearchResultObserverReceiver_ = null;
   }
@@ -229,9 +230,9 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase {
     if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
       // Observe changes to personalization search results.
       this.personalizationSearchResultObserverReceiver_ =
-          new ash.personalizationApp.mojom.SearchResultsObserverReceiver(
+          new PersonalizationSearchResultsObserverReceiver(
               /**
-               * @type {!ash.personalizationApp.mojom.SearchResultsObserverInterface}
+               * @type {!PersonalizationSearchResultsObserverInterface}
                */
               (this));
       getPersonalizationSearchHandler().addObserver(
@@ -266,7 +267,7 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase {
 
   /**
    * Overrides chromeos.settings.mojom.SearchResultsObserverInterface
-   * Overrides ash.personalizationApp.mojom.SearchResultsObserverInterface
+   * Overrides PersonalizationSearchResultsObserverInterface
    */
   onSearchResultsChanged() {
     this.fetchSearchResults_();

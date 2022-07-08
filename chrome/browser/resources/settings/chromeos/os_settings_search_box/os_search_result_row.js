@@ -16,6 +16,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SearchResult as PersonalizationSearchResult} from '../../mojom-webui/personalization/search.mojom-webui.js';
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Router} from '../../router.js';
 import {SearchResult} from '../combined_search_handler.js';
@@ -58,8 +59,12 @@ function longestCommonSubstrings(string1, string2) {
   });
 }
 
+/**
+ * @param {SearchResult} result
+ * @return {boolean}
+ */
 function isPersonalizationSearchResult(result) {
-  return result && typeof result.relativeUrl === 'string';
+  return !!result && typeof result.relativeUrl === 'string';
 }
 
 /**
@@ -569,7 +574,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     if (isPersonalizationSearchResult(this.searchResult)) {
       chrome.metricsPrivate.recordSparseValue(
           'ChromeOS.Settings.SearchResultPersonalizationSelected',
-          /** @type {!ash.personalizationApp.mojom.SearchResult} */
+          /** @type {!PersonalizationSearchResult} */
           (this.searchResult).searchConceptId);
       // Record entry point metric to Personalization Hub through Settings
       // search.

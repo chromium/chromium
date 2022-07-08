@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OpenWindowProxyImpl, Router, routes, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OpenWindowProxyImpl, PersonalizationSearchMojom, Router, routes, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
@@ -153,12 +153,12 @@ suite('OSSettingsSearchBox', () => {
    * @param {string} text
    * @param {string} relativeUrl
    * @param {number} relevanceScore
-   * @return {!ash.personalizationApp.mojom.SearchResult}
+   * @return {!PersonalizationSearchMojom.SearchResult}
    */
   function fakePersonalizationResult(
       text, relativeUrl = '', relevanceScore = DEFAULT_RELEVANCE_SCORE) {
-    return /** @type {!ash.personalizationApp.mojom.SearchResult} */ ({
-      searchConceptId: ash.personalizationApp.mojom.SearchConceptId.MIN_VALUE,
+    return /** @type {!PersonalizationSearchMojom.SearchResult} */ ({
+      searchConceptId: PersonalizationSearchMojom.SearchConceptId.MIN_VALUE,
       text: {
         data: Array.from(text, c => c.charCodeAt()),
       },

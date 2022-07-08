@@ -26,6 +26,7 @@ mojom_webui_closure_flags = [
   "js_module_root=" + rebase_path(
           "$root_gen_dir/mojom-webui/ash/webui/personalization_app/search",
           root_build_dir),
+  "browser_resolver_prefix_replacements=\"../../mojom-webui/personalization/=../../\"",
   "browser_resolver_prefix_replacements=\"../mojom-webui/personalization/=../\"",
 ]
 

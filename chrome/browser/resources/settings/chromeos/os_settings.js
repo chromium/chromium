@@ -96,6 +96,8 @@ import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
+import * as PersonalizationSearchMojom from '../mojom-webui/personalization/search.mojom-webui.js';
+
 export {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 export {PageType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -161,3 +163,4 @@ export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from
 export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './settings_search_handler.js';
+export {PersonalizationSearchMojom};
