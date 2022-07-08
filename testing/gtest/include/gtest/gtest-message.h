@@ -10,6 +10,6 @@
 // and testing/gmock, instead of directly including files in
 // third_party/googletest.
 
-#include "third_party/googletest/src/googletest/include/gtest/gtest-message.h"
+#include "third_party/googletest/src/googletest/include/gtest/gtest-message.h"  // IWYU pragma: export
 
 #endif  // TESTING_GTEST_INCLUDE_GTEST_GTEST_MESSAGE_H_
