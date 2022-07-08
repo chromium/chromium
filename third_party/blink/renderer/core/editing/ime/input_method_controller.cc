@@ -276,13 +276,19 @@ int ComputeAutocapitalizeFlags(const Element* element) {
     flags |= kWebTextInputFlagAutocapitalizeCharacters;
   } else if (autocapitalize == words) {
     flags |= kWebTextInputFlagAutocapitalizeWords;
-  } else if (autocapitalize == sentences || autocapitalize == "") {
-    // Note: we tell the IME to enable autocapitalization for both the default
-    // state ("") and the sentences states. We could potentially treat these
-    // differently if we had a platform that supported autocapitalization but
-    // didn't want to enable it unless explicitly requested by a web page, but
-    // this so far has not been necessary.
+  } else if (autocapitalize == sentences) {
     flags |= kWebTextInputFlagAutocapitalizeSentences;
+  } else if (autocapitalize == g_empty_atom) {
+    // https://html.spec.whatwg.org/multipage/interaction.html#autocapitalization
+    // If autocapitalize is empty, the UA can decide on an appropriate behavior
+    // depending on context. We use the presence of the autocomplete attribute
+    // with an email/url/password type as a hint to disable autocapitalization.
+    if (auto* form_control = DynamicTo<HTMLFormControlElement>(html_element);
+        form_control && form_control->IsAutocompleteEmailUrlOrPassword()) {
+      flags |= kWebTextInputFlagAutocapitalizeNone;
+    } else {
+      flags |= kWebTextInputFlagAutocapitalizeSentences;
+    }
   } else {
     NOTREACHED();
   }

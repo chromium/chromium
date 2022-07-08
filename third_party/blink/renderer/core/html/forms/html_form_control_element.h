@@ -148,6 +148,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   WebString AutofillSection() const { return autofill_section_; }
   void SetAutofillSection(const WebString&);
 
+  bool IsAutocompleteEmailUrlOrPassword() const;
+
   const AtomicString& autocapitalize() const final;
 
   static const HTMLFormControlElement* EnclosingFormControlElement(const Node*);
