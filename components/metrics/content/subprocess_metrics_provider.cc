@@ -126,11 +126,12 @@ void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   // This call can only be made on the browser's IO thread.
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(data.id);
-  if (!host)
-    return;
+  CHECK(host);  // TODO(pmonette): Change to DCHECK after September 1st, after
+                //                 confirming that this never gets hit.
 
   std::unique_ptr<base::PersistentMemoryAllocator> allocator =
       host->TakeMetricsAllocator();
+  // The allocator can be null in tests.
   if (!allocator)
     return;
 
