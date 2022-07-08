@@ -42,7 +42,7 @@ namespace blink {
 class Document;
 class ExecutionContext;
 class V8UnionAutoKeywordOrDouble;
-class VTTCue;
+class VTTCueBox;
 class VTTRegion;
 class VTTScanner;
 
@@ -60,21 +60,6 @@ struct VTTDisplayParameters {
   CSSValueID text_align;
   CSSValueID writing_mode;
   double snap_to_lines_position;
-};
-
-class VTTCueBox final : public HTMLDivElement {
- public:
-  explicit VTTCueBox(Document&);
-
-  void ApplyCSSProperties(const VTTDisplayParameters&);
-
- private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-
-  // The computed line position for snap-to-lines layout, and NaN for
-  // non-snap-to-lines layout where no adjustment should take place.
-  // This is set in applyCSSProperties and propagated to LayoutVTTCue.
-  float snap_to_lines_position_;
 };
 
 class VTTCueBackgroundBox final : public HTMLDivElement {

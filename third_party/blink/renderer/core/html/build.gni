@@ -539,6 +539,8 @@ blink_core_sources_html = [
   "track/vtt/buffered_line_reader.h",
   "track/vtt/vtt_cue.cc",
   "track/vtt/vtt_cue.h",
+  "track/vtt/vtt_cue_box.cc",
+  "track/vtt/vtt_cue_box.h",
   "track/vtt/vtt_element.cc",
   "track/vtt/vtt_element.h",
   "track/vtt/vtt_parser.cc",
