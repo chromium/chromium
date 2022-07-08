@@ -18,7 +18,7 @@ package sync_pb;
 
 import "components/sync/protocol/user_consent_types.proto";
 
-// Next id: 14
+// Next id: 17
 message UserConsentSpecifics {
   // ===========================================================================
   // Fields common to all Chrome User Consents.
@@ -59,6 +59,8 @@ message UserConsentSpecifics {
         assistant_activity_control_consent = 14;
 
     UserConsentTypes.AccountPasswordsConsent account_passwords_consent = 15;
+
+    UserConsentTypes.AutofillAssistantConsent autofill_assistant_consent = 16;
   }
   reserved "arc_metrics_and_usage_consent";
   reserved 11;
