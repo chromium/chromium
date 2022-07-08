@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -767,6 +768,13 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_PopupLocationBar) {
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
                                               false, false, false, false));
+  if (sharing_hub::HasPageAction(browser()->profile(), true)) {
+    ui_test_utils::WaitForViewFocus(popup_browser, VIEW_ID_SHARING_HUB_BUTTON,
+                                    true);
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
+                                                false, false, false, false));
+  }
+
   ui_test_utils::WaitForViewFocus(popup_browser, VIEW_ID_TAB_CONTAINER, true);
 }
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -52,6 +53,7 @@ SharingHubIconView::SharingHubIconView(
                          IDC_SHARING_HUB,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate) {
+  SetID(VIEW_ID_SHARING_HUB_BUTTON);
   SetVisible(false);
   SetLabel(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));

@@ -16,6 +16,13 @@ class BrowserContext;
 
 namespace sharing_hub {
 
+// Returns true if the sharing hub page action icon should exist in the location
+// bar for some combination of |context|, |is_popup_mode|, and platform (from
+// build flag). Note: having the page action does not necessarily mean that the
+// sharing hub is enabled, e.g. ChromeOS uses the sharing hub page action icon
+// to open the native sharesheet.
+bool HasPageAction(content::BrowserContext* context, bool is_popup_mode);
+
 // Returns true if the omnibox sharing hub is enabled for |context|. Only for
 // Windows/Mac/Linux. ChromeOS opens the native sharesheet.
 bool SharingHubOmniboxEnabled(content::BrowserContext* context);

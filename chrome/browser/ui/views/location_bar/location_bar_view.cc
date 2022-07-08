@@ -346,12 +346,8 @@ void LocationBarView::Init() {
     }
   }
   if (browser_) {
-#if BUILDFLAG(IS_CHROMEOS)
-    params.types_enabled.push_back(PageActionIconType::kSharingHub);
-#else
-    if (sharing_hub::SharingHubOmniboxEnabled(profile_) && !is_popup_mode_)
+    if (sharing_hub::HasPageAction(profile_, is_popup_mode_))
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
-#endif
   }
   if (browser_ && !is_popup_mode_)
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);

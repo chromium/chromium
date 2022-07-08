@@ -56,6 +56,14 @@ bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
          !ScreenshotsDisabledByPolicy(context);
 }
 
+bool HasPageAction(content::BrowserContext* context, bool is_popup_mode) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return true;
+#else
+  return (SharingHubOmniboxEnabled(context) && !is_popup_mode);
+#endif
+}
+
 const base::Feature kDesktopScreenshots{"DesktopScreenshots",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 

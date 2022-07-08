@@ -35,6 +35,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -169,7 +170,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
 
   UpdateBorder();
 
@@ -474,7 +475,7 @@ int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
 
 void IconLabelBubbleView::SetUpForAnimation() {
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetVisible(false);
   slide_animation_.SetSlideDuration(base::Milliseconds(150));
