@@ -1052,9 +1052,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   single_field_form_fill_router_->CancelPendingQueries(this);
-  if (touch_to_fill_eligible &&
-      touch_to_fill_delegate_->TryToShowTouchToFill(query_id, form, field)) {
-    // Touch To Fill is shown.
+  if (touch_to_fill_delegate_->IsShowingTouchToFill() ||
+      (touch_to_fill_eligible &&
+       touch_to_fill_delegate_->TryToShowTouchToFill(query_id, form, field))) {
+    // Touch To Fill surface is shown, so abort showing regular Autofill UI.
+    // Now the flow is controlled by the |touch_to_fill_delegate_| instead
+    // of |external_delegate_|.
     return;
   }
   // Send Autofill suggestions (could be an empty list).
@@ -1750,6 +1753,7 @@ void BrowserAutofillManager::Reset() {
   credit_card_action_ = mojom::RendererFormDataAction::kPreview;
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
+  touch_to_fill_delegate_->Reset();
   filling_context_.clear();
   form_interactions_counter_ = std::make_unique<FormInteractionsCounter>();
 }

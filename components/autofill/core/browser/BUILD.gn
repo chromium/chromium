@@ -864,6 +864,7 @@ source_set("unit_tests") {
     "strike_database_unittest.cc",
     "test_utils/test_profiles.cc",
     "test_utils/test_profiles.h",
+    "touch_to_fill_delegate_impl_unittest.cc",
     "ui/address_combobox_model_unittest.cc",
     "ui/autofill_image_fetcher_unittest.cc",
     "ui/country_combobox_model_unittest.cc",

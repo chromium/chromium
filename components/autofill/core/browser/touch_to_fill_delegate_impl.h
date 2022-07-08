@@ -15,10 +15,16 @@ namespace autofill {
 class BrowserAutofillManager;
 
 // Delegate for in-browser Touch To Fill (TTF) surface display and selection.
-// Currently TTF surface is eligible only for credit card forms.
+// Currently TTF surface is eligible only for credit card forms on click on
+// an empty focusable field.
+//
+// If the surface was shown once, it won't be triggered again on the same page.
+// But calling |Reset()| on navigation restores such showing eligibility.
 //
 // It is supposed to be owned by the given |BrowserAutofillManager|, and
-// interact with it and its |AutofillClient|.
+// interact with it and its |AutofillClient| and |AutofillDriver|.
+//
+// Public methods are marked virtual for testing.
 // TODO(crbug.com/1324900): Consider using more descriptive name.
 class TouchToFillDelegateImpl : public TouchToFillDelegate {
  public:
@@ -33,11 +39,25 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
                                     const FormData& form,
                                     const FormFieldData& field);
 
+  // Returns whether the TTF surface is currently being shown.
+  virtual bool IsShowingTouchToFill();
+
   // Hides the TTF surface if one is shown.
   virtual void HideTouchToFill();
 
+  // Resets the delegate to its starting state (e.g. on navigation).
+  virtual void Reset();
+
  private:
   base::WeakPtr<TouchToFillDelegateImpl> GetWeakPtr();
+
+  enum class TouchToFillState {
+    kShouldShow,
+    kIsShowing,
+    kWasShown,
+  };
+
+  TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
 

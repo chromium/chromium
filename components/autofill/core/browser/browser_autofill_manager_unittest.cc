@@ -177,6 +177,7 @@ class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
               TryToShowTouchToFill,
               (int query_id, const FormData& form, const FormFieldData& field),
               (override));
+  MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
 };
 
@@ -434,6 +435,8 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     auto touch_to_fill_delegate = std::make_unique<MockTouchToFillDelegateImpl>(
         browser_autofill_manager_.get());
+    ON_CALL(*touch_to_fill_delegate, IsShowingTouchToFill())
+        .WillByDefault(Return(false));
     touch_to_fill_delegate_ = touch_to_fill_delegate.get();
     browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
         std::move(touch_to_fill_delegate));
@@ -9438,6 +9441,24 @@ TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
   EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
       .WillOnce(Return(true));
   TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(true));
+  EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
+}
+
+// Tests that neither Autofill suggestions nor TTF is triggered if TTF is
+// already shown.
+TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
+  FormData form;
+  CreateTestCreditCardFormData(&form, /*is_https=*/true,
+                               /*use_month_type=*/false);
+  FormsSeen({form});
+  const FormFieldData& field = form.fields[1];
+
+  EXPECT_CALL(*touch_to_fill_delegate_, IsShowingTouchToFill)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*touch_to_fill_delegate_,
+              TryToShowTouchToFill(kDefaultPageID, _, _))
+      .Times(0);
+  TryToShowTouchToFill(kDefaultPageID, form, field, TouchToFillEligible(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
