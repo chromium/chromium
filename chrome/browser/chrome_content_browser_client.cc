@@ -367,6 +367,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
@@ -2673,14 +2674,12 @@ void ChromeContentBrowserClient::WillStartServiceWorker(
   DCHECK(context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::SystemExtensionsProvider::IsEnabled())
+  auto* profile = Profile::FromBrowserContext(context);
+  if (!ash::IsSystemExtensionsEnabled(profile))
     return;
 
-  auto* system_extensions_provider =
-      ash::SystemExtensionsProvider::Get(Profile::FromBrowserContext(context));
-  if (system_extensions_provider)
-    system_extensions_provider->WillStartServiceWorker(script_url,
-                                                       render_process_host);
+  ash::SystemExtensionsProvider::Get(profile).WillStartServiceWorker(
+      script_url, render_process_host);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

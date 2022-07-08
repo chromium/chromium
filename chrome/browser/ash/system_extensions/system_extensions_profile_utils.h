@@ -15,6 +15,14 @@ class Profile;
 
 namespace ash {
 
+// Returns true if System Extensions is enabled for the profile, including
+// if the System Extensions feature flag is enabled.
+bool IsSystemExtensionsEnabled(Profile* profile);
+
+// Finds which Profile, if any, to use for System Extensions. Returns nullptr if
+// System Extensions should not be enabled for the profile.
+Profile* GetProfileForSystemExtensions(Profile* profile);
+
 base::FilePath GetDirectoryForSystemExtension(Profile& profile,
                                               const SystemExtensionId& id);
 

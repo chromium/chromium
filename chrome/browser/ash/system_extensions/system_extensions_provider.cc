@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
@@ -21,13 +22,9 @@ namespace ash {
 const char* kSystemExtensionScheme = content::kChromeUIUntrustedScheme;
 
 // static
-SystemExtensionsProvider* SystemExtensionsProvider::Get(Profile* profile) {
-  return SystemExtensionsProviderFactory::GetForProfileIfExists(profile);
-}
-
-// static
-bool SystemExtensionsProvider::IsEnabled() {
-  return base::FeatureList::IsEnabled(ash::features::kSystemExtensions);
+SystemExtensionsProvider& SystemExtensionsProvider::Get(Profile* profile) {
+  DCHECK(ash::IsSystemExtensionsEnabled(profile));
+  return *SystemExtensionsProviderFactory::GetForProfileIfExists(profile);
 }
 
 // static

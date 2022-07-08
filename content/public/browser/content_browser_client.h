@@ -1184,6 +1184,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows to register browser interfaces which are exposed to a service worker
   // execution context.
   virtual void RegisterBrowserInterfaceBindersForServiceWorker(
+      BrowserContext* browser_context,
       mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map) {}
 
   // Allows the embedder to register per-WebUI interface brokers that are used

@@ -1504,10 +1504,16 @@ void PopulateBinderMapWithContext(
       BindServiceWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));
 
+  // This is called when `host` is constructed. ServiceWorkerVersion, which
+  // constructs `host`, checks that context() is not null and also uses
+  // BrowserContext right after constructing `host`, so this is safe.
+  BrowserContext* browser_context =
+      host->version()->context()->wrapper()->browser_context();
+
   // Give the embedder a chance to register binders.
   GetContentClient()
       ->browser()
-      ->RegisterBrowserInterfaceBindersForServiceWorker(map);
+      ->RegisterBrowserInterfaceBindersForServiceWorker(browser_context, map);
 }
 
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {

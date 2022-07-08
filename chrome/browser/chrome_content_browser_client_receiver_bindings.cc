@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/system_extensions/api/hid/hid_impl.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -340,6 +341,7 @@ void ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(
 
 void ChromeContentBrowserClient::
     RegisterBrowserInterfaceBindersForServiceWorker(
+        content::BrowserContext* browser_context,
         mojo::BinderMapWithContext<
             const content::ServiceWorkerVersionBaseInfo&>* map) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -350,7 +352,8 @@ void ChromeContentBrowserClient::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1253318): Only add this mapping if the System Extension type
   // is Window Manager.
-  if (ash::SystemExtensionsProvider::IsEnabled()) {
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  if (ash::IsSystemExtensionsEnabled(profile)) {
     map->Add<blink::mojom::CrosWindowManagement>(base::BindRepeating(
         [](const content::ServiceWorkerVersionBaseInfo& info,
            mojo::PendingReceiver<blink::mojom::CrosWindowManagement> receiver) {
@@ -376,12 +379,10 @@ void ChromeContentBrowserClient::
               std::move(receiver));
         }));
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(b/210738172): Only add this mapping if the System Extension type
   // is HID.
-  if (ash::SystemExtensionsProvider::IsEnabled()) {
+  if (ash::IsSystemExtensionsEnabled(profile)) {
     map->Add<blink::mojom::CrosHID>(base::BindRepeating(
         [](const content::ServiceWorkerVersionBaseInfo& info,
            mojo::PendingReceiver<blink::mojom::CrosHID> receiver) {
@@ -406,7 +407,7 @@ void ChromeContentBrowserClient::
                                       std::move(receiver));
         }));
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeContentBrowserClient::

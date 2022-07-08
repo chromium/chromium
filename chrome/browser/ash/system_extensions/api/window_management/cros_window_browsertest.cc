@@ -826,8 +826,8 @@ async function cros_test() {
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
-  auto* provider = SystemExtensionsProvider::Get(browser()->profile());
-  auto& install_manager = provider->install_manager();
+  auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider.install_manager();
 
   // TODO(b/230811571): Rather than using the console to wait for the
   // observer to get called, we should add support for running async functions

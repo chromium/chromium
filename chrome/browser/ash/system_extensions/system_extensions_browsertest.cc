@@ -99,8 +99,8 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
   ~SystemExtensionsBrowserTest() override = default;
 
   void TestInstalledTestExtensionWorks() {
-    auto* provider = SystemExtensionsProvider::Get(browser()->profile());
-    auto& install_manager = provider->install_manager();
+    auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+    auto& install_manager = provider.install_manager();
 
     auto extension_ids = install_manager.GetSystemExtensionIds();
     EXPECT_EQ(std::vector<SystemExtensionId>({kTestSystemExtensionId}),
@@ -152,10 +152,10 @@ class SystemExtensionsSwitchBrowserTest : public SystemExtensionsBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, InstallFromDir_Success) {
-  auto* provider = SystemExtensionsProvider::Get(browser()->profile());
-  auto& install_manager = provider->install_manager();
+  auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider.install_manager();
 
-  ServiceWorkerRegistrationObserver sw_registration_observer(*provider);
+  ServiceWorkerRegistrationObserver sw_registration_observer(provider);
   base::RunLoop run_loop;
   install_manager.InstallUnpackedExtensionFromDir(
       GetBasicSystemExtensionDir(),
@@ -174,8 +174,8 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, InstallFromDir_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(SystemExtensionsSwitchBrowserTest, ExtensionInstalled) {
-  auto* provider = SystemExtensionsProvider::Get(browser()->profile());
-  auto& install_manager = provider->install_manager();
+  auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider.install_manager();
 
   base::RunLoop run_loop;
   install_manager.on_command_line_install_finished().Post(

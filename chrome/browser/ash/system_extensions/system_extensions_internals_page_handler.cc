@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_internals_page_handler.h"
 
 #include "base/debug/stack_trace.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 
 namespace ash {
 
@@ -21,6 +22,11 @@ void SystemExtensionsInternalsPageHandler::
     InstallSystemExtensionFromDownloadsDir(
         const base::SafeBaseName& system_extension_dir_name,
         InstallSystemExtensionFromDownloadsDirCallback callback) {
+  if (!IsSystemExtensionsEnabled(profile_)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   base::FilePath downloads_path;
   if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
                               &downloads_path)) {
@@ -29,7 +35,7 @@ void SystemExtensionsInternalsPageHandler::
   }
 
   auto& install_manager =
-      SystemExtensionsProvider::Get(profile_)->install_manager();
+      SystemExtensionsProvider::Get(profile_).install_manager();
   base::FilePath system_extension_dir =
       downloads_path.Append(system_extension_dir_name);
 
