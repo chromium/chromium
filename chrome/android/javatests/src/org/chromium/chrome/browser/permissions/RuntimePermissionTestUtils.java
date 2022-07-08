@@ -139,9 +139,8 @@ public class RuntimePermissionTestUtils {
      * @param testUrl The URL of the test page to load in order to run the text.
      * @param expectPermissionAllowed Whether to expect that the permissions is granted by the end
      *         of the test.
-     * @param permissionPromptAllow Whether to respond with "allow" on the Chrome permission prompt
+     * @param permissionPromptAllow Whether to "allow" or "reject" on the Chrome permission prompt
      *         (`null` means skip waiting for a permission prompt at all).
-     * @param runtimePromptResponse How to respond to the runtime prompt.
      * @param waitForMissingPermissionPrompt Whether to wait for a Chrome dialog informing the user
      *         that the Android permission is missing.
      * @param waitForUpdater Whether to wait for the test page to update the window title to confirm
@@ -150,7 +149,6 @@ public class RuntimePermissionTestUtils {
      *         skip).
      * @param missingPermissionPromptTextId The resource string id that matches the text of the
      *         missing permission prompt dialog (0 if not applicable).
-     * @param requestablePermission The Android permission(s) that will be requested by this test.
      * @throws Exception
      */
     public static void runTest(final PermissionTestRule permissionTestRule,
@@ -170,22 +168,36 @@ public class RuntimePermissionTestUtils {
         permissionTestRule.setUpUrl(testUrl);
 
         if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
-            permissionTestRule.runJavaScriptCodeInCurrentTab(javascriptToExecute);
+            permissionTestRule.runJavaScriptCodeInCurrentTabWithGesture(javascriptToExecute);
         }
 
         if (permissionPromptAllow != null) {
-            // Wait for chrome permission dialog and accept it.
+            // A permission prompt dialog is expected. Wait for chrome to display and accept or
+            // deny.
             PermissionTestRule.waitForDialog(activity);
             PermissionTestRule.replyToDialog(permissionPromptAllow, activity);
+
+            if (waitForMissingPermissionPrompt) {
+                // Wait for Chrome to inform user that a permission is missing --> different dialog
+                final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
+                        activity::getModalDialogManager);
+                waitUntilDifferentDialogIsShowing(
+                        permissionTestRule, manager.getCurrentDialogForTest());
+            }
         }
 
         if (waitForMissingPermissionPrompt) {
-            // Wait for missing permission dialog and dismiss it.
             final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
                     activity::getModalDialogManager);
-            waitUntilDifferentDialogIsShowing(
-                    permissionTestRule, manager.getCurrentDialogForTest());
 
+            // Wait for the dialog that informs the user permissions are missing, when the initial 
+            // prompt is rejected or expected to not be shown.
+            if (!Boolean.TRUE.equals(permissionPromptAllow)) {
+                waitUntilDifferentDialogIsShowing(
+                        permissionTestRule, manager.getCurrentDialogForTest());
+            }
+
+            // Verify the correct missing permission string resource is displayed.
             final View dialogText = manager.getCurrentDialogForTest()
                                             .get(ModalDialogProperties.CUSTOM_VIEW)
                                             .findViewById(R.id.text);

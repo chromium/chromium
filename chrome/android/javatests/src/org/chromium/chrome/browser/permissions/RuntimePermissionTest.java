@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.permissions;
 
 import android.Manifest;
 
-import android.os.Build.VERSION_CODES;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -16,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -149,12 +147,9 @@ public class RuntimePermissionTest {
     }
 
     @Test
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q,
-            message = "Test has been very flaky crbug.com/1179099")
     @MediumTest
     @Feature({"RuntimePermissions", "Downloads"})
-    public void
-    testDenyRuntimeDownload() throws Exception {
+    public void testDenyRuntimeDownload() throws Exception {
         DownloadObserver observer = new DownloadObserver() {
             @Override
             public void onAllDownloadsRetrieved(
@@ -206,11 +201,8 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    public void
-    testDenyAndNeverAskMicrophone() throws Exception {
+    public void testDenyAndNeverAskMicrophone() throws Exception {
         // First ask for mic and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
         mTestAndroidPermissionDelegate = new TestAndroidPermissionDelegate(
@@ -235,11 +227,8 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    public void
-    testDenyAndNeverAskCamera() throws Exception {
+    public void testDenyAndNeverAskCamera() throws Exception {
         // First ask for camera and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
         mTestAndroidPermissionDelegate = new TestAndroidPermissionDelegate(
