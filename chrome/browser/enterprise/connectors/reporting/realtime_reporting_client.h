@@ -15,9 +15,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-// #include
-// "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-// #include "components/download/public/common/download_danger_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"

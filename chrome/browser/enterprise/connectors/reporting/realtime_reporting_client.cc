@@ -65,9 +65,7 @@
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kActiveDirectoryPolicyClientDescription[] = "an Active Directory";
 const char kPolicyClientDescription[] = "any";
-const char kUserPolicyClientDescription[] = "a user";
 #else
 const char kChromeBrowserCloudManagementClientDescription[] =
     "a machine-level user";
@@ -211,38 +209,31 @@ RealtimeReportingClient::InitBrowserReportingClient(
   }
 
   policy::CloudPolicyClient* client = nullptr;
+  std::string client_id;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = nullptr;
   const user_manager::User* user = GetChromeOSUser();
   if (user) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+    profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     // If primary user profile is not finalized, use the current profile.
     if (!profile)
       profile = Profile::FromBrowserContext(context_);
-    DCHECK(profile);
-    if (user->IsActiveDirectoryUser()) {
-      // TODO(crbug.com/1012048): Handle AD, likely through crbug.com/1012170.
-      policy_client_desc = kActiveDirectoryPolicyClientDescription;
-    } else {
-      policy_client_desc = kUserPolicyClientDescription;
-      policy::UserCloudPolicyManagerAsh* policy_manager =
-          profile->GetUserCloudPolicyManagerAsh();
-      if (policy_manager)
-        client = policy_manager->core()->client();
-    }
   } else {
     LOG(ERROR) << "Could not determine who the user is.";
+    profile = Profile::FromBrowserContext(context_);
   }
-#else
-  std::string client_id =
-      policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(profile);
+  client_id = reporting::GetUserClientId(profile).value_or("");
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   Profile* main_profile = enterprise_connectors::GetMainProfileLacros();
   if (main_profile) {
     // Prefer the user client id if available.
     client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#else
+  client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#endif
 
   // Make sure DeviceManagementService has been initialized.
   device_management_service->ScheduleInitialization(0);
@@ -261,7 +252,6 @@ RealtimeReportingClient::InitBrowserReportingClient(
         dm_token, client_id,
         /*user_affiliation_ids=*/std::vector<std::string>());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return {policy_client_desc, client};
 }
@@ -299,15 +289,30 @@ RealtimeReportingClient::InitProfileReportingClient(
 void RealtimeReportingClient::OnCloudPolicyClientAvailable(
     const std::string& policy_client_desc,
     policy::CloudPolicyClient* client) {
-  if (policy_client_desc == kProfilePolicyClientDescription)
-    profile_client_ = client;
-  else
-    browser_client_ = client;
-
   if (client == nullptr) {
     LOG(ERROR) << "Could not obtain " << policy_client_desc
                << " for safe browsing real-time event reporting.";
     return;
+  }
+
+  if (policy_client_desc == kProfilePolicyClientDescription) {
+    DCHECK_NE(profile_client_, client);
+    if (profile_client_ == client)
+      return;
+
+    if (profile_client_ == client)
+      profile_client_->RemoveObserver(this);
+
+    profile_client_ = client;
+  } else {
+    DCHECK_NE(browser_client_, client);
+    if (browser_client_ == client)
+      return;
+
+    if (browser_client_)
+      browser_client_->RemoveObserver(this);
+
+    browser_client_ = client;
   }
 
   client->AddObserver(this);
