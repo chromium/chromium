@@ -27,7 +27,7 @@ class PsmRlweDmserverClient;
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
 // OOBE.
-class AutoEnrollmentClientImpl
+class AutoEnrollmentClientImpl final
     : public AutoEnrollmentClient,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
@@ -70,6 +70,7 @@ class AutoEnrollmentClientImpl
   // Registers preferences in local state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // policy::AutoEnrollmentClient:
   void Start() override;
   void Retry() override;
 
@@ -94,81 +95,95 @@ class AutoEnrollmentClientImpl
   class ServerStateRetriever;
   enum class ServerStateRetrievalResult;
 
+  enum class State {
+    // Initial state until `Start` or `Retry` are called. Resolves into
+    // `kRequestingServerStateAvailability`.
+    kIdle,
+    // Indicates server state availability request is in progress.
+    // Reached from:
+    // * `kIdle` after `Start`.
+    // * `kRequestServerStateAvailabilityConnectionError` on `Retry`.
+    // * `kRequestServerStateAvailabilityServerError` on `Retry`.
+    // Resolves into:
+    // * `kRequestServerStateAvailabilitySuccess` if valid response.
+    // * `kRequestServerStateAvailabilityConnectionError` if request fails due
+    //    to connection error.
+    // * `kRequestServerStateAvailabilityServerError` if response is invalid.
+    // * `kFinished` if response is valid and server state is not available.
+    kRequestingServerStateAvailability,
+    // Indicate connection or server errors during server state availability
+    // request.
+    // Reached from:
+    // * `kRequestingServerStateAvailability` if request fails.
+    // Resolves into:
+    // * `kRequestingServerStateAvailability` on `Retry`.
+    kRequestServerStateAvailabilityConnectionError,
+    kRequestServerStateAvailabilityServerError,
+    // Indicates success of state availability request.
+    // Reached from:
+    // * `kRequestingServerStateAvailability` if request is successful and
+    //   server state is available.
+    // Resolves into:
+    // * `kRequestingStateRetrieval` unconditionally.
+    kRequestServerStateAvailabilitySuccess,
+    // Indicates server state retrieval request is in progress.
+    // Reached from:
+    // * `kRequestServerStateAvailabilitySuccess` after server state
+    // availability request succeeded the state is available.
+    // * `kRequestStateRetrievalConnectionError` on `Retry`.
+    // * `kRequestStateRetrievalServerError` on `Retry`.
+    // Resolves into:
+    // * `kRequestStateRetrievalConnectionError` if request fails due to
+    // connection error.
+    // * `kRequestStateRetrievalServerError` if response is invalid.
+    // * `kFinished` if response is valid and state is retrieved.
+    kRequestingStateRetrieval,
+    // Indicate connection or server errors during state retrieval request.
+    // Reached from:
+    // * `kRequestingStateRetrieval` if request fails.
+    // Resolves into:
+    // * `kRequestingStateRetrieval` on `Retry`.
+    kRequestStateRetrievalConnectionError,
+    kRequestStateRetrievalServerError,
+    // Indicates the client has finished its requests and has the answer for
+    // final `AutoEnrollmentState` status.
+    // Reached from:
+    // * `kRequestingServerStateAvailability`
+    // * `kRequestingStateRetrieval`
+    // Resolves into nothing. It's the final state.
+    kFinished,
+  };
+
   AutoEnrollmentClientImpl(
-      const ProgressCallback& progress_callback,
-      PrefService* local_state,
+      ProgressCallback progress_callback,
       std::unique_ptr<ServerStateAvailabilityRequester>
           server_state_avalability_requester,
       std::unique_ptr<ServerStateRetriever> server_state_retriever);
 
-  // Tries to load the result of a previous execution of the protocol from
-  // local state. Returns true if that decision has been made and is valid.
-  bool GetCachedDecision();
-
-  // Returns true if PSM has a cached decision, then store its value locally
-  // (i.e. store it in |has_server_state_|). Otherwise, false.
-  bool RetrievePsmCachedDecision();
-
-  // Returns true if the current client got created for initial enrollment use
-  // case. Otherwise, false.
-  bool IsClientForInitialEnrollment() const;
-
-  // Returns true if the device has a server-backed state and its state hasn't
-  // been retrieved yet. Otherwise, false.
-  bool ShouldSendDeviceStateRequest() const;
-
-  // For detailed design, see go/psm-source-of-truth-initial-enrollment.
-  // Kicks protocol processing, restarting the current step if applicable.
-  // Returns true if progress has been made, false if the protocol is done.
-  bool RetryStep();
-
-  // Retries running PSM protocol, if it is possible to start it.
-  // Returns true if the protocol is in progress, false if the protocol is done
-  // or had an error.
-  // Note that the PSM protocol is only performed once per OOBE flow.
-  bool PsmRetryStep();
-
-  // Calls `NextStep` in case of successful execution of PSM protocol.
-  // Otherwise, reports the failure reason of PSM protocol execution.
-  void HandlePsmCompletion(ServerStateAvailabilityResult result);
-
-  // Cleans up and invokes |progress_callback_|.
-  void ReportProgress(AutoEnrollmentState state);
-
-  // Calls RetryStep() to make progress or determine that all is done. In the
-  // latter case, calls ReportProgress().
-  void NextStep();
-
-  // Sends an auto-enrollment check request to the device management service.
-  void SendBucketDownloadRequest();
+  // Sends an auto-enrollment check or psm membership check request to the
+  // device management service.
+  void RequestServerStateAvailability();
 
   // Sends a device state download request to the device management service.
-  void SendDeviceStateRequest();
+  void RequestStateRetrieval();
 
   // Handles result of server state availability request. Proceeds to the next
   // step on success. Reports failure otherwise.
-  void OnBucketDownloadRequestCompleted(ServerStateAvailabilityResult result);
+  void OnServerStateAvailabilityCompleted(ServerStateAvailabilityResult result);
 
   // Handles result of server state retrieval request. Proceeds to the next
   // step on success. Reports failure otherwise.
   void OnStateRetrievalCompleted(ServerStateRetrievalResult result);
 
+  void ReportProgress(AutoEnrollmentState auto_enrollment_state) const;
+
+  void ReportFinished() const;
+
+  State state_ = State::kIdle;
+
   // Callback to invoke when the protocol generates a relevant event. This can
   // be either successful completion or an error that requires external action.
   ProgressCallback progress_callback_;
-
-  // Current state.
-  AutoEnrollmentState state_;
-
-  // Indicates whether the device has a server-backed state or not, regardless
-  // of which protocol (i.e. PSM or Hash dance) collected that information.
-  // Note that if it doesn't have an associated value after starting the auto
-  // enrollment client, then the used protocol failed to collect that
-  // information.
-  absl::optional<bool> has_server_state_;
-
-  // PrefService where the protocol's results are cached.
-  PrefService* local_state_;
 
   // Sends server state availability request and parses response. Reports
   // results.
