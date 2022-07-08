@@ -301,7 +301,7 @@ void Canvas::DrawImageInt(const ImageSkia& image, int x, int y) {
 
 void Canvas::DrawImageInt(const ImageSkia& image, int x, int y, uint8_t a) {
   cc::PaintFlags flags;
-  flags.setAlpha(a / 255.0f);
+  flags.setAlpha(a);
   DrawImageInt(image, x, y, flags);
 }
 

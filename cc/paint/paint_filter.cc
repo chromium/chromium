@@ -1317,7 +1317,7 @@ sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   PaintFlags orig_flags;
   orig_flags.setShader(shader_);
-  orig_flags.setAlpha(alpha_ / 255.0f);
+  orig_flags.setAlpha(alpha_);
   orig_flags.setFilterQuality(filter_quality_);
   orig_flags.setDither(dither_ == SkImageFilters::Dither::kYes);
 
@@ -1327,8 +1327,7 @@ sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
   if (snapshot) {
     // Ref the updated paint shader so that it can outlive ScopedRasterFlags
     return sk_make_sp<ShaderPaintFilter>(
-        sk_ref_sp(snapshot->getShader()),
-        static_cast<int>(snapshot->getAlpha() * 255.0f),
+        sk_ref_sp(snapshot->getShader()), snapshot->getAlpha(),
         snapshot->getFilterQuality(),
         snapshot->isDither() ? Dither::kYes : Dither::kNo, GetCropRect());
   } else {

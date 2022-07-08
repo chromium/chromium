@@ -116,15 +116,13 @@ TEST(ScopedRasterFlagsTest, KeepsDecodesAlive) {
 
 TEST(ScopedRasterFlagsTest, NoImageProvider) {
   PaintFlags flags;
-  flags.setAlpha(1.0f);
+  flags.setAlpha(255);
   flags.setShader(PaintShader::MakeImage(
       CreateDiscardablePaintImage(gfx::Size(10, 10)), SkTileMode::kClamp,
       SkTileMode::kClamp, &SkMatrix::I()));
   ScopedRasterFlags scoped_flags(&flags, nullptr, SkMatrix::I(), 0, 10);
   EXPECT_NE(scoped_flags.flags(), &flags);
-  EXPECT_EQ(
-      static_cast<unsigned int>(scoped_flags.flags()->getAlpha() * 255.0f),
-      SkMulDiv255Round(255, 10));
+  EXPECT_EQ(scoped_flags.flags()->getAlpha(), SkMulDiv255Round(255, 10));
 }
 
 TEST(ScopedRasterFlagsTest, ThinAliasedStroke) {
@@ -135,21 +133,21 @@ TEST(ScopedRasterFlagsTest, ThinAliasedStroke) {
 
   struct {
     SkMatrix ctm;
-    int alpha;
+    uint8_t alpha;
 
     bool expect_same_flags;
     bool expect_aa;
     float expect_stroke_width;
-    float expect_alpha;
+    uint8_t expect_alpha;
   } tests[] = {
       // No downscaling                    => no stroke change.
-      {SkMatrix::Scale(1.0f, 1.0f), 255, true, false, 1.0f, 1.0f},
+      {SkMatrix::Scale(1.0f, 1.0f), 255, true, false, 1.0f, 0xFF},
       // Symmetric downscaling             => modulated hairline stroke.
-      {SkMatrix::Scale(0.5f, 0.5f), 255, false, false, 0.0f, 0.5f},
+      {SkMatrix::Scale(0.5f, 0.5f), 255, false, false, 0.0f, 0x80},
       // Symmetric downscaling w/ alpha    => modulated hairline stroke.
-      {SkMatrix::Scale(0.5f, 0.5f), 127, false, false, 0.0f, 64.0f / 255.0f},
+      {SkMatrix::Scale(0.5f, 0.5f), 127, false, false, 0.0f, 0x40},
       // Anisotropic scaling              => AA stroke.
-      {SkMatrix::Scale(0.5f, 1.5f), 255, false, true, 1.0f, 1.0f},
+      {SkMatrix::Scale(0.5f, 1.5f), 255, false, true, 1.0f, 0xFF},
   };
 
   for (const auto& test : tests) {
@@ -159,7 +157,7 @@ TEST(ScopedRasterFlagsTest, ThinAliasedStroke) {
     EXPECT_EQ(scoped_flags.flags() == &flags, test.expect_same_flags);
     EXPECT_EQ(scoped_flags.flags()->isAntiAlias(), test.expect_aa);
     EXPECT_EQ(scoped_flags.flags()->getStrokeWidth(), test.expect_stroke_width);
-    EXPECT_NEAR(scoped_flags.flags()->getAlpha(), test.expect_alpha, 0.01f);
+    EXPECT_EQ(scoped_flags.flags()->getAlpha(), test.expect_alpha);
   }
 }
 

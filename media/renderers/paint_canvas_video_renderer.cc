@@ -1035,7 +1035,8 @@ void PaintCanvasVideoRenderer::Paint(
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas
   if (!need_transform && video_frame->IsMappable() &&
-      flags.getAlpha() == 1.0f && flags.getBlendMode() == SkBlendMode::kSrc &&
+      flags.getAlpha() == SK_AlphaOPAQUE &&
+      flags.getBlendMode() == SkBlendMode::kSrc &&
       flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
       (pixels = canvas->accessTopLayerPixels(&info, &row_bytes, &origin)) &&
       info.colorType() == kBGRA_8888_SkColorType) {

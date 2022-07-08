@@ -38,9 +38,9 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilled(
   // An alternative would have been to create a pattern, but this would not work
   // for tests that require |size| to be 1x1.
   PaintFlags salmon_pink_flags;
-  salmon_pink_flags.setColor(SkColors::kRed);
+  salmon_pink_flags.setColor(SK_ColorRED);
   salmon_pink_flags.setBlendMode(SkBlendMode::kMultiply);
-  salmon_pink_flags.setAlpha(0.5f);
+  salmon_pink_flags.setAlpha(128);
   recording_source->add_draw_rect_with_flags(gfx::Rect(size),
                                              salmon_pink_flags);
 

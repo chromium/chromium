@@ -26,7 +26,7 @@ namespace chromecast {
 namespace {
 
 const int kShadowRadius = 10;
-const float kShadowAlpha = 90.0f / 255.0f;
+const int kShadowAlpha = 90;
 const SkColor kShadowColor = SkColorSetRGB(77, 144, 254);
 
 }  // namespace
@@ -72,8 +72,7 @@ void FocusRingLayer::OnPaintLayer(const ui::PaintContext& context) {
   int r = kShadowRadius;
   for (int i = 0; i < r; i++) {
     // Fade out alpha quadratically.
-    flags.setAlpha(static_cast<float>(kShadowAlpha * (r - i) * (r - i)) /
-                   (r * r));
+    flags.setAlpha((kShadowAlpha * (r - i) * (r - i)) / (r * r));
     gfx::Rect outsetRect = bounds;
     outsetRect.Inset(-i);
     recorder.canvas()->DrawRect(outsetRect, flags);

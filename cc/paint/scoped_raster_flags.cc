@@ -4,7 +4,6 @@
 
 #include "cc/paint/scoped_raster_flags.h"
 
-#include <utility>
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_filter.h"
@@ -34,9 +33,7 @@ ScopedRasterFlags::ScopedRasterFlags(const PaintFlags* flags,
 
   if (alpha != 255) {
     DCHECK(flags->SupportsFoldingAlpha());
-    // TODO(crbug/1308932): ScopedRasterFlags should use a float alpha and not
-    // an int, simplify this operation below when that's fixed.
-    MutableFlags()->setAlpha(flags->getAlpha() * alpha / 255.0f);
+    MutableFlags()->setAlpha(SkMulDiv255Round(flags->getAlpha(), alpha));
   }
 
   AdjustStrokeIfNeeded(ctm);
@@ -149,8 +146,8 @@ void ScopedRasterFlags::AdjustStrokeIfNeeded(const SkMatrix& ctm) {
     // Use modulated hairline when possible, as it is faster and produces
     // results closer to the original intent.
     MutableFlags()->setStrokeWidth(0);
-    MutableFlags()->setAlpha(flags()->getAlpha() *
-                             std::sqrt(stroke_vec.x() * stroke_vec.y()));
+    MutableFlags()->setAlpha(std::round(
+        flags()->getAlpha() * std::sqrt(stroke_vec.x() * stroke_vec.y())));
     return;
   }
 
