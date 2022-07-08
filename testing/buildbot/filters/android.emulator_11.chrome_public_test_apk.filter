@@ -23,10 +23,6 @@
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
-# crbug.com/1036552
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
-
 # crbug.com/1036459
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testFocusFakebox
 

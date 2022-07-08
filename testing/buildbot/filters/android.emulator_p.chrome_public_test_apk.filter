@@ -8,10 +8,6 @@
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testBarcodeDetection
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
-# crbug.com/1036552
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
-
 # vr tests do not apply to emulator
 -org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
 

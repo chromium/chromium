@@ -241,6 +241,7 @@ android_library("unit_device_javatests") {
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/PriceCardViewTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogViewTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListViewHolderTest.java",
