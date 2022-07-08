@@ -2480,14 +2480,18 @@ TEST_F(NGBlockLayoutAlgorithmTest, LayoutRubyTextCrash) {
 }
 
 TEST_F(NGBlockLayoutAlgorithmTest, HandleTextControlPlaceholderCrash) {
-  // crbug.com/1209025. This test passes if no crash.
+  // crbug.com/1209025 and crbug.com/1342608. This test passes if no crash.
   SetBodyInnerHTML(R"HTML(
 <style>
 input::first-line {
  color: red;
 }
+#num::-webkit-textfield-decoration-container {
+ position: absolute;
+}
 </style>
-<input id="i1" readonly>)HTML");
+<input id="i1" readonly>
+<input id="num" type="number" placeholder="foo">)HTML");
   UpdateAllLifecyclePhasesForTest();
   auto* input = GetDocument().getElementById("i1");
   input->setAttribute(html_names::kPlaceholderAttr, "z");

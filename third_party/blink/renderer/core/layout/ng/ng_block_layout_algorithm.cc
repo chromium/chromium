@@ -3124,8 +3124,12 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
     container_builder_.AddResult(*result, offset);
     return;
   }
-  // Another child should provide the baseline.
-  DCHECK(container_builder_.Baseline());
+  // Usually another child provides the baseline. However it doesn't if
+  // another child is out-of-flow.
+  if (!container_builder_.Baseline()) {
+    container_builder_.AddResult(*result, offset);
+    return;
+  }
   NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
   // We should apply FirstBaseline() of the placeholder fragment because the
