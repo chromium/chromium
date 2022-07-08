@@ -248,13 +248,14 @@ void NetworkServiceMemoryCache::CreateLoaderAndStart(
     uint32_t options,
     const std::string& cache_key,
     const ResourceRequest& resource_request,
+    const net::NetLogWithSource net_log,
     mojo::PendingRemote<mojom::URLLoaderClient> client) {
   auto it = entries_.Get(cache_key);
   CHECK(it != entries_.end());
 
   auto loader = std::make_unique<NetworkServiceMemoryCacheURLLoader>(
-      this, GetNextTraceId(), resource_request.url, std::move(receiver),
-      std::move(client), it->second->content);
+      this, GetNextTraceId(), resource_request.url, net_log,
+      std::move(receiver), std::move(client), it->second->content);
   NetworkServiceMemoryCacheURLLoader* raw_loader = loader.get();
   url_loaders_.insert(std::move(loader));
 

@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,6 +37,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
       NetworkServiceMemoryCache* memory_cache,
       uint64_t trace_id,
       const GURL& url,
+      const net::NetLogWithSource& net_log,
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       scoped_refptr<base::RefCountedBytes> content);
@@ -81,6 +83,8 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
 
   // For tracing.
   const uint64_t trace_id_;
+
+  const net::NetLogWithSource net_log_;
 
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;

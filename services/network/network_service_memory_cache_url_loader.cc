@@ -4,8 +4,10 @@
 
 #include "services/network/network_service_memory_cache_url_loader.h"
 
+#include "base/bit_cast.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "net/http/http_log_util.h"
 #include "services/network/network_service_memory_cache.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -15,11 +17,13 @@ NetworkServiceMemoryCacheURLLoader::NetworkServiceMemoryCacheURLLoader(
     NetworkServiceMemoryCache* memory_cache,
     uint64_t trace_id,
     const GURL& url,
+    const net::NetLogWithSource& net_log,
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     scoped_refptr<base::RefCountedBytes> content)
     : memory_cache_(memory_cache),
       trace_id_(trace_id),
+      net_log_(net_log),
       receiver_(this, std::move(receiver)),
       client_(std::move(client)),
       content_(std::move(content)) {
@@ -58,6 +62,10 @@ void NetworkServiceMemoryCacheURLLoader::Start(
     Finish(net::ERR_FAILED);
     return;
   }
+
+  net::NetLogResponseHeaders(
+      net_log_, net::NetLogEventType::IN_MEMORY_CACHE_READ_RESPONSE_HEADERS,
+      response_head->headers.get());
 
   // Start sending the response.
   client_->OnReceiveResponse(std::move(response_head),
@@ -104,6 +112,7 @@ void NetworkServiceMemoryCacheURLLoader::UpdateResponseHead(
 }
 
 void NetworkServiceMemoryCacheURLLoader::WriteMore() {
+  size_t original_write_position = write_position_;
   size_t total_write_size = 0;
   bool write_completed = false;
   while (true) {
@@ -138,6 +147,13 @@ void NetworkServiceMemoryCacheURLLoader::WriteMore() {
       "loading", "NetworkServiceMemoryCacheURLLoader::WriteMore",
       TRACE_ID_LOCAL(trace_id_), "write_position", write_position_,
       "total_write_bytes", total_write_size);
+
+  if (net_log_.IsCapturing()) {
+    net_log_.AddByteTransferEvent(
+        net::NetLogEventType::IN_MEMORY_CACHE_BYTES_READ, total_write_size,
+        base::bit_cast<const char*>(content_->data().data() +
+                                    original_write_position));
+  }
 
   if (write_completed) {
     Finish(net::OK);

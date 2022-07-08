@@ -23,6 +23,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+class NetLogWithSource;
 class NetworkIsolationKey;
 class URLRequest;
 }  // namespace net
@@ -81,6 +82,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
                             uint32_t options,
                             const std::string& cache_key,
                             const ResourceRequest& resource_request,
+                            const net::NetLogWithSource net_log,
                             mojo::PendingRemote<mojom::URLLoaderClient> client);
 
   // Returns a suitable capacity for a data pipe that is used to serve a

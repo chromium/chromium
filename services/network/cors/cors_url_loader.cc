@@ -866,7 +866,7 @@ void CorsURLLoader::StartNetworkRequest() {
   if (cache_key.has_value()) {
     memory_cache_->CreateLoaderAndStart(
         network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
-        *cache_key, request_,
+        *cache_key, request_, net_log_,
         network_client_receiver_.BindNewPipeAndPassRemote());
     memory_cache_was_used_ = true;
   } else if (sync_network_loader_factory_ &&
