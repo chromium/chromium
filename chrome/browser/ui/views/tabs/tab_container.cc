@@ -1051,13 +1051,14 @@ void TabContainer::UpdateClosingModeOnRemovedTab(int model_index,
     Tab* tab_being_removed = GetTabAtModelIndex(model_index);
 
     int size_delta = tab_being_removed->width();
-    if (!tab_being_removed->data().pinned && was_active &&
+    // When removing an active, non-pinned tab, the next active tab will be
+    // given the active width (unless it is pinned). Thus the width being
+    // removed from the container is really the current width of whichever
+    // inactive tab will be made active.
+    if (was_active && !tab_being_removed->data().pinned &&
+        !next_active_tab->data().pinned &&
         layout_helper_->active_tab_width() >
             layout_helper_->inactive_tab_width()) {
-      // When removing an active, non-pinned tab, an inactive tab will be made
-      // active and thus given the active width. Thus the width being removed
-      // from the container is really the current width of whichever inactive
-      // tab will be made active.
       size_delta = next_active_tab->width();
     }
 
