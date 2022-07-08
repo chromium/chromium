@@ -358,10 +358,10 @@ void AppRegistryCache::OnAppTypeInitialized() {
     auto mojom_app_type = ConvertAppTypeToMojomAppType(app_type);
     in_progress_initialized_app_types_.erase(app_type);
     in_progress_initialized_mojom_app_types_.erase(mojom_app_type);
+    initialized_app_types_.insert(app_type);
     for (auto& obs : observers_) {
       obs.OnAppTypeInitialized(app_type);
     }
-    initialized_app_types_.insert(app_type);
   }
 }
 
