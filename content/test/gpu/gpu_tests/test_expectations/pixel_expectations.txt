@@ -416,7 +416,7 @@ crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUI
 # Flakes on Android
 crbug.com/1203317 [ android android-shield-android-tv no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 crbug.com/1203317 [ android android-pixel-2 no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
-crbug.com/1203317 [ android android-pixel-6 no-passthrough android-chromium ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
+crbug.com/1203317 [ android android-pixel-6 android-chromium ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 
 crbug.com/1287249 [ android android-pixel-6 passthrough skia-renderer-vulkan android-chromium ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
 
