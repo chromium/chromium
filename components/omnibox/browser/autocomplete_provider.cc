@@ -97,6 +97,9 @@ void AutocompleteProvider::NotifyListeners(bool updated_matches) const {
 void AutocompleteProvider::Stop(bool clear_cached_results,
                                 bool due_to_user_inactivity) {
   done_ = true;
+  if (clear_cached_results) {
+    matches_.clear();
+  }
 }
 
 const char* AutocompleteProvider::GetName() const {

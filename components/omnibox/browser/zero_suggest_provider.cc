@@ -159,7 +159,6 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
                                 bool minimal_changes,
                                 bool is_prefetch) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::Start");
-  matches_.clear();
   Stop(true, false);
 
   if (!AllowZeroSuggestSuggestions(input)) {
@@ -218,18 +217,15 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
 
 void ZeroSuggestProvider::Stop(bool clear_cached_results,
                                bool due_to_user_inactivity) {
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+
   if (loader_) {
     LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_REQUEST_INVALIDATED,
                                  /*is_prefetch=*/!prefetch_done_);
   }
   loader_.reset();
   prefetch_done_ = true;
-  done_ = true;
   result_type_running_ = NONE;
-
-  if (clear_cached_results) {
-    results_.Clear();
-  }
 }
 
 void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {

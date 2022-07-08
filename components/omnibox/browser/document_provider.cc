@@ -517,6 +517,8 @@ void DocumentProvider::Run() {
 void DocumentProvider::Stop(bool clear_cached_results,
                             bool due_to_user_inactivity) {
   TRACE_EVENT0("omnibox", "DocumentProvider::Stop");
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+
   debouncer_->CancelRequest();
 
   // If the request was sent, then log its duration and that it was invalidated.
@@ -542,12 +544,6 @@ void DocumentProvider::Stop(bool clear_cached_results,
       client_->GetDocumentSuggestionsService(/*create_if_necessary=*/false);
   if (document_suggestions_service != nullptr) {
     document_suggestions_service->StopCreatingDocumentSuggestionsRequest();
-  }
-
-  done_ = true;
-
-  if (clear_cached_results) {
-    matches_.clear();
   }
 }
 

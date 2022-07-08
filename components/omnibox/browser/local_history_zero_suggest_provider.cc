@@ -114,7 +114,6 @@ LocalHistoryZeroSuggestProvider* LocalHistoryZeroSuggestProvider::Create(
 void LocalHistoryZeroSuggestProvider::Start(const AutocompleteInput& input,
                                             bool minimal_changes) {
   TRACE_EVENT0("omnibox", "LocalHistoryZeroSuggestProvider::Start");
-  matches_.clear();
   Stop(true, false);
 
   if (!AllowLocalHistoryZeroSuggestSuggestions(client_, input)) {

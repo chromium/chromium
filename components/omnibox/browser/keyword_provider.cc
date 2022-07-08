@@ -430,7 +430,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
 
 void KeywordProvider::Stop(bool clear_cached_results,
                            bool due_to_user_inactivity) {
-  done_ = true;
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+
   // Only end an extension's request if the user did something to explicitly
   // cancel it; mere inactivity shouldn't terminate long-running extension
   // operations since the user likely explicitly requested them.

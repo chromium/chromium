@@ -30,8 +30,7 @@ HistoryClusterProvider::HistoryClusterProvider(
 
 void HistoryClusterProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
-  done_ = true;
-  matches_.clear();
+  Stop(true, false);
 
   if (!input.want_asynchronous_matches())
     return;
@@ -49,11 +48,6 @@ void HistoryClusterProvider::Start(const AutocompleteInput& input,
 
   if (search_provider_->done())
     CreateMatches();
-}
-
-void HistoryClusterProvider::Stop(bool clear_cached_results,
-                                  bool due_to_user_inactivity) {
-  done_ = true;
 }
 
 void HistoryClusterProvider::OnProviderUpdate(

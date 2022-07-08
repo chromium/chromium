@@ -170,16 +170,13 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
 
 void OnDeviceHeadProvider::Stop(bool clear_cached_results,
                                 bool due_to_user_inactivity) {
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+
   // Increase the request_id so that any in-progress requests will become
   // obsolete.
   on_device_search_request_id_ =
       (on_device_search_request_id_ + 1) % kMaxRequestId;
   weak_ptr_factory_.InvalidateWeakPtrs();
-
-  if (clear_cached_results)
-    matches_.clear();
-
-  done_ = true;
 }
 
 // TODO(crbug.com/925072): post OnDeviceHeadModel::GetSuggestionsForPrefix

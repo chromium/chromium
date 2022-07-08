@@ -218,17 +218,22 @@ class AutocompleteProvider
 
   // Advises the provider to stop processing.  This may be called even if the
   // provider is already done.  If the provider caches any results, it should
-  // clear the cache based on the value of |clear_cached_results|.  Normally,
+  // clear the cache based on the value of `clear_cached_results`.  Normally,
   // once this is called, the provider should not send more notifications to
   // the controller.
   //
-  // If |user_inactivity_timer| is true, Stop() is being called because it's
+  // If `user_inactivity_timer` is true, Stop() is being called because it's
   // been a long time since the user started the current query, and returning
   // further asynchronous results would normally just be disruptive.  Most
   // providers should still stop processing in this case, but continuing is
   // legal if there's a good reason the user is likely to want even long-
   // delayed asynchronous results, e.g. the user has explicitly invoked a
   // keyword extension and the extension is still processing the request.
+  //
+  // The default implementation sets `done_` to true and clears `matches_` if
+  // `clear_cached_results` is true. Overridden functions must call
+  // `AutocompleteProvider::Stop()` with the same arguments passed to the
+  // function unless there is a good and well-documented reason not to do so.
   virtual void Stop(bool clear_cached_results, bool due_to_user_inactivity);
 
   // Returns the enum equivalent to the name of this provider.

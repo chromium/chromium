@@ -82,7 +82,7 @@ void QueryTileProvider::Start(const AutocompleteInput& input,
 
 void QueryTileProvider::Stop(bool clear_cached_results,
                              bool due_to_user_inactivity) {
-  done_ = true;
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
 
   // The request was stopped. Cancel any in-flight requests for fetching query
   // tiles from TileService.

@@ -96,9 +96,3 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   match.provider = this;
   matches_.push_back(match);
 }
-
-void ZeroSuggestVerbatimMatchProvider::Stop(bool clear_cached_results,
-                                            bool due_to_user_inactivity) {
-  if (clear_cached_results)
-    matches_.clear();
-}

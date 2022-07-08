@@ -427,9 +427,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // re-run the query from scratch and ignore |minimal_changes|.
 
   // Cancel any in-progress query.
-  Stop(false, false);
-
-  matches_.clear();
+  Stop(true, false);
 
   if (input.focus_type() != OmniboxFocusType::DEFAULT ||
       (input.type() == metrics::OmniboxInputType::EMPTY))
@@ -535,7 +533,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
 void HistoryURLProvider::Stop(bool clear_cached_results,
                               bool due_to_user_inactivity) {
-  done_ = true;
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
 
   if (params_)
     params_->cancel_flag.Set();

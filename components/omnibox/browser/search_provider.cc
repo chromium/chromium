@@ -346,9 +346,9 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
 void SearchProvider::Stop(bool clear_cached_results,
                           bool due_to_user_inactivity) {
-  StopSuggest();
-  done_ = true;
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
 
+  StopSuggest();
   if (clear_cached_results)
     ClearAllResults();
 }

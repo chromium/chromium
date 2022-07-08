@@ -184,8 +184,9 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
 
 void ClipboardProvider::Stop(bool clear_cached_results,
                              bool due_to_user_inactivity) {
-  callback_weak_ptr_factory_.InvalidateWeakPtrs();
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+
+  callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ClipboardProvider::DeleteMatch(const AutocompleteMatch& match) {
