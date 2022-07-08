@@ -4,6 +4,8 @@
 
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
+#include <limits>
+
 #include "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
@@ -1378,6 +1380,10 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // See https://crbug.com/888782.
   if (range.location == NSNotFound)
     range.length = 0;
+  // Clamp lengths to avoid overflow, which will cause a checkfailure.
+  range.length = std::min(
+      range.length, std::numeric_limits<uint32_t>::max() - range.location);
+
   std::u16string substring;
   gfx::Range actual_range = gfx::Range::InvalidRange();
   if (_bridge) {
@@ -1390,6 +1396,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     *actualRange =
         actual_range.IsValid() ? actual_range.ToNSRange() : NSMakeRange(0, 0);
   }
+
   return substring.empty()
              ? nil
              : [[[NSAttributedString alloc]
