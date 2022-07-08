@@ -10,6 +10,7 @@ import logging
 import os
 import re
 import shutil
+import shlex
 import sys
 import tempfile
 import zipfile
@@ -202,6 +203,7 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
   with tempfile.NamedTemporaryFile(mode='w', delete=not is_debug) as flag_file:
     # Chosen arbitrarily. Needed to avoid command-line length limits.
     MAX_ARGS = 50
+    orig_dex_cmd = dex_cmd
     if len(dex_cmd) > MAX_ARGS:
       # Add all flags to D8 (anything after the first --) as well as all
       # positional args at the end to the flag file.
@@ -215,9 +217,14 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
 
     # stdout sometimes spams with things like:
     # Stripped invalid locals information from 1 method.
-    build_utils.CheckOutput(dex_cmd,
-                            stderr_filter=stderr_filter,
-                            fail_on_output=warnings_as_errors)
+    try:
+      build_utils.CheckOutput(dex_cmd,
+                              stderr_filter=stderr_filter,
+                              fail_on_output=warnings_as_errors)
+    except Exception:
+      if orig_dex_cmd is not dex_cmd:
+        sys.stderr.write('Full command: ' + shlex.join(orig_dex_cmd) + '\n')
+      raise
 
 
 def _ZipAligned(dex_files, output_path):
