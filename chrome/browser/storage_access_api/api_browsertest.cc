@@ -125,6 +125,11 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
     storage::test::ExpectFrameContent(GetNestedFrame(), expected);
   }
 
+  std::string ReadCookiesViaJS(content::RenderFrameHost* render_frame_host) {
+    return content::EvalJs(render_frame_host, "document.cookie")
+        .ExtractString();
+  }
+
   content::RenderFrameHost* GetPrimaryMainFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -148,7 +153,7 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
 
 // Validate that if an iframe requests access that cookies become unblocked for
 // just that top-level/third-party combination.
-// TODO(crbug.com/1090625): Flaky-failing on Linux, Mac, and Windows.
+// TODO(http://crbug.com/1090625): Flaky-failing on Linux, Mac, and Windows.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        DISABLED_ThirdPartyCookiesIFrameRequestsAccess) {
   SetBlockThirdPartyCookies(true);
@@ -190,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // the cookie is sent:
   NavigateFrameTo("b.com", "/echoheader?cookie");
   ExpectFrameContent("thirdparty=1");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "thirdparty=1");
   storage::test::CheckStorageAccessForFrame(GetFrame(), true);
 
   // Since the frame has navigated we should see the use counter telem appear.
@@ -204,6 +210,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Navigate iframe to othersite.com and verify that the cookie is not sent.
   NavigateFrameTo("othersite.com", "/echoheader?cookie");
   ExpectFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetFrame(), false);
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -212,11 +219,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateFrameTo("b.com", "/iframe.html");
   NavigateNestedFrameTo("b.com", "/echoheader?cookie");
   ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "thirdparty=1");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
   // Navigate nested iframe to othersite.com and verify that the cookie is not
   // sent.
   NavigateNestedFrameTo("othersite.com", "/echoheader?cookie");
   ExpectNestedFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -225,11 +234,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateFrameTo("c.com", "/iframe.html");
   NavigateNestedFrameTo("b.com", "/echoheader?cookie");
   ExpectNestedFrameContent("thirdparty=1");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "thirdparty=1");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
   // Navigate nested iframe to othersite.com and verify that the cookie is not
   // sent.
   NavigateNestedFrameTo("othersite.com", "/echoheader?cookie");
   ExpectNestedFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 
   // Navigate our top level to d.com and verify that all requests for b.com are
@@ -240,6 +251,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // the cookie is blocked:
   NavigateFrameTo("b.com", "/echoheader?cookie");
   ExpectFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetFrame(), false);
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -248,6 +260,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateFrameTo("b.com", "/iframe.html");
   NavigateNestedFrameTo("b.com", "/echoheader?cookie");
   ExpectNestedFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -256,6 +269,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateFrameTo("c.com", "/iframe.html");
   NavigateNestedFrameTo("b.com", "/echoheader?cookie");
   ExpectNestedFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 }
 
@@ -289,6 +303,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // the cookie is blocked:
   NavigateFrameTo("b.com", "/echoheader?cookie");
   ExpectFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetFrame(), false);
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -297,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateFrameTo("b.com", "/iframe.html");
   NavigateNestedFrameTo("b.com", "/echoheader?cookie");
   ExpectNestedFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 
   // Navigate iframe to a cross-site frame with a frame, and navigate _that_
@@ -305,6 +321,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateFrameTo("c.com", "/iframe.html");
   NavigateNestedFrameTo("b.com", "/echoheader?cookie");
   ExpectNestedFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
 }
 
@@ -374,6 +391,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   NavigateFrameTo("b.com", "/echoheader?cookie");
   ExpectFrameContent("None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   storage::test::CheckStorageAccessForFrame(GetFrame(), false);
 }
 
@@ -428,13 +446,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   // Set a cookie on `b.com` and `c.com`.
   content::SetCookie(browser()->profile(), https_server().GetURL("b.com", "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+                     "thirdparty=b;SameSite=None;Secure");
   storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL("b.com"),
-                                     "thirdparty=1");
+                                     "thirdparty=b");
   content::SetCookie(browser()->profile(), https_server().GetURL("c.com", "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+                     "thirdparty=c;SameSite=None;Secure");
   storage::test::ExpectCookiesOnHost(browser()->profile(), GetURL("c.com"),
-                                     "thirdparty=1");
+                                     "thirdparty=c");
 
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/iframe.html");
@@ -483,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   NavigateNestedFrameTo("c.com", "/echoheader?cookie");
   storage::test::CheckStorageAccessForFrame(GetFrame(), false);
   storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
-  ExpectNestedFrameContent("thirdparty=1");
+  ExpectNestedFrameContent("thirdparty=c");
+  EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "thirdparty=c");
 }
 
 class StorageAccessAPIStorageBrowserTest
