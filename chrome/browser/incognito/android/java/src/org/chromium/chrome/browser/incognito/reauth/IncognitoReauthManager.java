@@ -67,7 +67,7 @@ public class IncognitoReauthManager {
             } else {
                 incognitoReauthCallback.onIncognitoReauthFailure();
             }
-        });
+        }, /*useLastValidAuth=*/false);
     }
     /**
      * @return A boolean indicating whether the platform version supports reauth and the

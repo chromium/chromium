@@ -337,7 +337,7 @@ class PasswordCheckMediator
             if (reauthSucceeded) {
                 startAutomatedPasswordChange(credential);
             }
-        });
+        }, true);
     }
 
     private void startAutomatedPasswordChange(CompromisedCredential credential) {

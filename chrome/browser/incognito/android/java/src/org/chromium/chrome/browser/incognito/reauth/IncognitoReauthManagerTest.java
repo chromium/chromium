@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -79,7 +80,7 @@ public class IncognitoReauthManagerTest {
             return true;
         })
                 .when(mReauthenticatorBridgeMock)
-                .reauthenticate(notNull());
+                .reauthenticate(notNull(), /*useLastValidAuth=*/eq(false));
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthSuccess();
@@ -97,7 +98,7 @@ public class IncognitoReauthManagerTest {
             return false;
         })
                 .when(mReauthenticatorBridgeMock)
-                .reauthenticate(notNull());
+                .reauthenticate(notNull(), /*useLastValidAuth=*/eq(false));
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthFailure();

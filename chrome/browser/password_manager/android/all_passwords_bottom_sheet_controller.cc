@@ -110,7 +110,8 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
       authenticator_->Authenticate(
           device_reauth::BiometricAuthRequester::kAllPasswordsList,
           base::BindOnce(&AllPasswordsBottomSheetController::OnReauthCompleted,
-                         base::Unretained(this), password));
+                         base::Unretained(this), password),
+          /*use_last_valid_auth=*/true);
       return;
     }
 

@@ -19,7 +19,7 @@ class MockBiometricAuthenticator : public BiometricAuthenticator {
   MOCK_METHOD(bool, CanAuthenticate, (BiometricAuthRequester), (override));
   MOCK_METHOD(void,
               Authenticate,
-              (BiometricAuthRequester, AuthenticateCallback),
+              (BiometricAuthRequester, AuthenticateCallback, bool),
               (override));
   MOCK_METHOD(void,
               AuthenticateWithMessage,

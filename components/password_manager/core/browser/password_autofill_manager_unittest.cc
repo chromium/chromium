@@ -1626,7 +1626,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _))
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                             /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
     // Accept the suggestion to start the filing process which tries to
@@ -1682,7 +1683,8 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _))
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                             /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
     // Accept the suggestion to start the filing process which tries to
@@ -1725,7 +1727,8 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
+              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                           /*use_last_valid_auth= */ true));
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1769,7 +1772,8 @@ TEST_F(PasswordAutofillManagerTest,
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
+              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                           /*use_last_valid_auth= */ true));
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1814,7 +1818,8 @@ TEST_F(PasswordAutofillManagerTest,
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
+              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                           /*use_last_valid_auth= */ true));
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.

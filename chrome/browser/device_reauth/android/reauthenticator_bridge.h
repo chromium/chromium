@@ -26,7 +26,7 @@ class ReauthenticatorBridge {
   bool CanUseAuthentication(JNIEnv* env);
 
   // Called by Java to start authentication.
-  void Reauthenticate(JNIEnv* env);
+  void Reauthenticate(JNIEnv* env, bool use_last_valid_auth);
 
   // Called when reauthentication is completed.
   void OnReauthenticationCompleted(bool auth_succeeded);

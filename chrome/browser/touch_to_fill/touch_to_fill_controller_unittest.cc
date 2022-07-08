@@ -420,7 +420,8 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
-              Authenticate(BiometricAuthRequester::kTouchToFill, _))
+              Authenticate(BiometricAuthRequester::kTouchToFill, _,
+                           /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(true));
   // Without |kTouchToFillPasswordSubmission|, don't trigger a submission, but
   // inform the client that a form can be submitted.
@@ -451,7 +452,8 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
-              Authenticate(BiometricAuthRequester::kTouchToFill, _))
+              Authenticate(BiometricAuthRequester::kTouchToFill, _,
+                           /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
@@ -656,7 +658,8 @@ TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
-              Authenticate(BiometricAuthRequester::kTouchToFill, _));
+              Authenticate(BiometricAuthRequester::kTouchToFill, _,
+                           /*use_last_valid_auth=*/true));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
   EXPECT_CALL(*authenticator(), Cancel(BiometricAuthRequester::kTouchToFill));

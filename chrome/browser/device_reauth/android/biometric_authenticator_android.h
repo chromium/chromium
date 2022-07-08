@@ -56,8 +56,12 @@ class BiometricAuthenticatorAndroid
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication
   // request at a time.
+  // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
+  // period between the last valid authentication and the current
+  // authentication, and re-invokes system authentication.
   void Authenticate(device_reauth::BiometricAuthRequester requester,
-                    AuthenticateCallback callback) override;
+                    AuthenticateCallback callback,
+                    bool use_last_valid_auth) override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Displays `message` in the authentication UI.

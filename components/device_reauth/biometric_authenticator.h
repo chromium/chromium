@@ -62,8 +62,12 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.
   // |requester| is the filling surface that is asking for authentication.
+  // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
+  // period between the last valid authentication and the current
+  // authentication, and re-invokes system authentication.
   virtual void Authenticate(BiometricAuthRequester requester,
-                            AuthenticateCallback callback) = 0;
+                            AuthenticateCallback callback,
+                            bool use_last_valid_auth) = 0;
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.

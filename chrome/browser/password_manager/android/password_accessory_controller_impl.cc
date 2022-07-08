@@ -219,7 +219,8 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
   authenticator_->Authenticate(
       device_reauth::BiometricAuthRequester::kFallbackSheet,
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
-                     base::Unretained(this), selection));
+                     base::Unretained(this), selection),
+      /*use_last_valid_auth=*/true);
 }
 
 // static

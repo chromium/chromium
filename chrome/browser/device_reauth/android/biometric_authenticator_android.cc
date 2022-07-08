@@ -117,7 +117,8 @@ bool BiometricAuthenticatorAndroid::CanAuthenticate(
 
 void BiometricAuthenticatorAndroid::Authenticate(
     device_reauth::BiometricAuthRequester requester,
-    AuthenticateCallback callback) {
+    AuthenticateCallback callback,
+    bool use_last_valid_auth) {
   // Previous authentication is not yet completed, so return.
   if (callback_ || requester_.has_value())
     return;
@@ -127,7 +128,7 @@ void BiometricAuthenticatorAndroid::Authenticate(
 
   LogAuthRequester(requester);
 
-  if (last_good_auth_timestamp_.has_value() &&
+  if (use_last_valid_auth && last_good_auth_timestamp_.has_value() &&
       base::TimeTicks::Now() - last_good_auth_timestamp_.value() <
           base::Seconds(kAuthValidSeconds)) {
     LogAuthResult(requester, BiometricAuthFinalResult::kAuthStillValid);

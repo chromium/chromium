@@ -185,7 +185,8 @@ void TouchToFillController::OnCredentialSelected(
   authenticator_->Authenticate(
       device_reauth::BiometricAuthRequester::kTouchToFill,
       base::BindOnce(&TouchToFillController::OnReauthCompleted,
-                     base::Unretained(this), credential));
+                     base::Unretained(this), credential),
+      /*use_last_valid_auth=*/true);
 }
 
 void TouchToFillController::OnWebAuthnCredentialSelected(

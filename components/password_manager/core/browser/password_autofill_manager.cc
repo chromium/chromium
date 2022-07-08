@@ -513,7 +513,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       authenticator_->Authenticate(
           device_reauth::BiometricAuthRequester::kAutofillSuggestion,
           base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                         base::Unretained(this), value, frontend_id));
+                         base::Unretained(this), value, frontend_id),
+          /*use_last_valid_auth=*/true);
     }
   }
   autofill_client_->HideAutofillPopup(

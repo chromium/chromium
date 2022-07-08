@@ -251,7 +251,8 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
     authenticator_->Authenticate(
         device_reauth::BiometricAuthRequester::kAccountChooserDialog,
         base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
-                       base::Unretained(this), index));
+                       base::Unretained(this), index),
+        /*use_last_valid_auth=*/true);
     // The credential handling will only happen after the authentication
     // finishes.
     return false;

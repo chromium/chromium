@@ -34,11 +34,14 @@ public class ReauthenticatorBridge {
      * Starts reauthentication.
      *
      * @param callback Callback that will be executed once request is done.
+     * @param useLastValidAuth A boolean value indicating whether to consider the last but "recent"
+     *         validated auth for passing the current authentication request.
      */
-    public void reauthenticate(Callback<Boolean> callback) {
+    public void reauthenticate(Callback<Boolean> callback, boolean useLastValidAuth) {
         assert mAuthResultCallback == null;
         mAuthResultCallback = callback;
-        ReauthenticatorBridgeJni.get().reauthenticate(mNativeReauthenticatorBridge);
+        ReauthenticatorBridgeJni.get().reauthenticate(
+                mNativeReauthenticatorBridge, useLastValidAuth);
     }
 
     @CalledByNative
@@ -52,6 +55,6 @@ public class ReauthenticatorBridge {
     interface Natives {
         long create(ReauthenticatorBridge reauthenticatorBridge, int requester);
         boolean canUseAuthentication(long nativeReauthenticatorBridge);
-        void reauthenticate(long nativeReauthenticatorBridge);
+        void reauthenticate(long nativeReauthenticatorBridge, boolean useLastValidAuth);
     }
 }
