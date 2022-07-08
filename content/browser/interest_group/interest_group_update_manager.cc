@@ -97,10 +97,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Copies the execution_mode JSON field into `interest_group_update`, returns
 // true iff the JSON is valid and the copy completed.
-[[nodiscard]] bool TryToCopyExecutionmode(
-    blink::InterestGroup& interest_group_update,
-    const base::Value::Dict& dict) {
-  const std::string* maybe_execution_mode = dict.FindString("execution_mode");
+[[nodiscard]] bool TryToCopyExecutionMode(
+    const base::Value::Dict& dict,
+    blink::InterestGroup& interest_group_update) {
+  const std::string* maybe_execution_mode = dict.FindString("executionMode");
   if (!maybe_execution_mode)
     return true;
   if (*maybe_execution_mode == "compatibility") {
@@ -116,8 +116,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // `interest_group_update`, returns true iff the JSON is valid and the copy
 // completed.
 [[nodiscard]] bool TryToCopyTrustedBiddingSignalsKeys(
-    blink::InterestGroup& interest_group_update,
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    blink::InterestGroup& interest_group_update) {
   const base::Value::List* maybe_update_trusted_bidding_signals_keys =
       dict.FindList("trustedBiddingSignalsKeys");
   if (!maybe_update_trusted_bidding_signals_keys)
@@ -166,8 +166,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Copies the `ads` list JSON field into `interest_group_update`, returns true
 // iff the JSON is valid and the copy completed.
-[[nodiscard]] bool TryToCopyAds(blink::InterestGroup& interest_group_update,
-                                const base::Value::Dict& dict) {
+[[nodiscard]] bool TryToCopyAds(const base::Value::Dict& dict,
+                                blink::InterestGroup& interest_group_update) {
   const base::Value::List* maybe_ads = dict.FindList("ads");
   if (!maybe_ads)
     return true;
@@ -182,8 +182,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the `adComponents` list JSON field into `interest_group_update`,
 // returns true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyAdComponents(
-    blink::InterestGroup& interest_group_update,
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    blink::InterestGroup& interest_group_update) {
   const base::Value::List* maybe_ads = dict.FindList("adComponents");
   if (!maybe_ads)
     return true;
@@ -220,7 +220,7 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
       return absl::nullopt;
     interest_group_update.priority = maybe_priority_value->GetDouble();
   }
-  if (!TryToCopyExecutionmode(interest_group_update, *dict)) {
+  if (!TryToCopyExecutionMode(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   const std::string* maybe_bidding_url = dict->FindString("biddingLogicUrl");
@@ -238,13 +238,13 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
     interest_group_update.trusted_bidding_signals_url =
         GURL(*maybe_update_trusted_bidding_signals_url);
   }
-  if (!TryToCopyTrustedBiddingSignalsKeys(interest_group_update, *dict)) {
+  if (!TryToCopyTrustedBiddingSignalsKeys(*dict, interest_group_update)) {
     return absl::nullopt;
   }
-  if (!TryToCopyAds(interest_group_update, *dict)) {
+  if (!TryToCopyAds(*dict, interest_group_update)) {
     return absl::nullopt;
   }
-  if (!TryToCopyAdComponents(interest_group_update, *dict)) {
+  if (!TryToCopyAdComponents(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   if (!interest_group_update.IsValid()) {

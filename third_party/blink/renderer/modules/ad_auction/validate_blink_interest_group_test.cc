@@ -570,7 +570,7 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
         CreateMinimalInterestGroup();
     blink_interest_group->execution_mode = test_case.execution_mode;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, "execution_mode" /* expected_error_field_name */,
+        blink_interest_group, "executionMode" /* expected_error_field_name */,
         test_case.execution_mode_text, /*expected_error_field_value */
         "execution mode is not valid." /* expected_error */);
   }
