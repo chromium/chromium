@@ -8,7 +8,7 @@ import {assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai
 suite('ColorChangeListenerTest', () => {
   setup(() => {
     document.body.innerHTML =
-        '<link rel="stylesheet" href="chrome://theme/colors.css"/>';
+        '<link rel="stylesheet" href="chrome://theme/colors.css?sets=ui"/>';
   });
 
   test('CorrectlyUpdatesColorsStylesheetURL', async () => {
@@ -48,7 +48,7 @@ suite('ColorChangeListenerTest', () => {
     // Handles the case where the link element exists but the attribute is
     // malformed.
     document.body.innerHTML =
-        '<link rel="stylesheet" bad_href="chrome://theme/colors.css"/>';
+        '<link rel="stylesheet" bad_href="chrome://theme/colors.css?sets=ui"/>';
     assertFalse(refreshColorCss());
 
     // Handles the case where the link element does not exist.

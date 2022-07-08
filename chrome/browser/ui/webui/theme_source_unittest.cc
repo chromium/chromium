@@ -119,7 +119,7 @@ TEST_F(WebUISourcesTest, ThemeSourceColorsCSS) {
   // functions.
   size_t empty_size = 0;
 
-  StartDataRequest("colors.css");
+  StartDataRequest("colors.css?sets=ui");
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(result_data_size_, empty_size);
 }

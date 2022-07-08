@@ -3307,6 +3307,7 @@ static_library("ui") {
       "//chromeos/strings",
       "//components/account_manager_core:account_manager_core",
       "//ui/chromeos/styles:cros_styles_views",
+      "//ui/chromeos/styles:cros_tokens_color_mappings",
     ]
   }
 

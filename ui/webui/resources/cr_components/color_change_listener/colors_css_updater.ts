@@ -30,8 +30,8 @@ export function refreshColorCss(): boolean {
     return false;
   }
   const hrefURL = new URL(href);
-  const params =
-      new URLSearchParams([['version', new Date().getTime().toString()]]);
+  const params = new URLSearchParams(window.location.search);
+  params.set('version', new Date().getTime().toString());
   const newHref = `${hrefURL.origin}${hrefURL.pathname}?${params.toString()}`;
   colorCssNode.setAttribute('href', newHref);
   return true;
