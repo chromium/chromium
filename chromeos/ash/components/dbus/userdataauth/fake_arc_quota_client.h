@@ -40,8 +40,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeArcQuotaClient
   void GetCurrentSpaceForArcProjectId(
       const ::user_data_auth::GetCurrentSpaceForArcProjectIdRequest& request,
       GetCurrentSpaceForArcProjectIdCallback callback) override;
-  void SetProjectId(const ::user_data_auth::SetProjectIdRequest& request,
-                    SetProjectIdCallback callback) override;
 
   // WaitForServiceToBeAvailable() related:
 

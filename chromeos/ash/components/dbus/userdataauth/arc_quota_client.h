@@ -32,8 +32,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) ArcQuotaClient {
       DBusMethodCallback<::user_data_auth::GetCurrentSpaceForArcGidReply>;
   using GetCurrentSpaceForArcProjectIdCallback =
       DBusMethodCallback<::user_data_auth::GetCurrentSpaceForArcProjectIdReply>;
-  using SetProjectIdCallback =
-      DBusMethodCallback<::user_data_auth::SetProjectIdReply>;
 
   // Not copyable or movable.
   ArcQuotaClient(const ArcQuotaClient&) = delete;
@@ -76,11 +74,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) ArcQuotaClient {
   virtual void GetCurrentSpaceForArcProjectId(
       const ::user_data_auth::GetCurrentSpaceForArcProjectIdRequest& request,
       GetCurrentSpaceForArcProjectIdCallback callback) = 0;
-
-  // Set the ARC Project ID.
-  virtual void SetProjectId(
-      const ::user_data_auth::SetProjectIdRequest& request,
-      SetProjectIdCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

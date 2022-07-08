@@ -106,13 +106,6 @@ class ArcQuotaClientImpl : public ArcQuotaClient {
                     std::move(callback));
   }
 
-  void SetProjectId(const ::user_data_auth::SetProjectIdRequest& request,
-                    SetProjectIdCallback callback) override {
-    CallProtoMethod(::user_data_auth::kSetProjectId,
-                    ::user_data_auth::kArcQuotaInterface, request,
-                    std::move(callback));
-  }
-
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)

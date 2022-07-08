@@ -51,11 +51,6 @@ void FakeArcQuotaClient::GetCurrentSpaceForArcProjectId(
     GetCurrentSpaceForArcProjectIdCallback callback) {
   // Does nothing by default.
 }
-void FakeArcQuotaClient::SetProjectId(
-    const ::user_data_auth::SetProjectIdRequest& request,
-    SetProjectIdCallback callback) {
-  // Does nothing by default.
-}
 
 void FakeArcQuotaClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {

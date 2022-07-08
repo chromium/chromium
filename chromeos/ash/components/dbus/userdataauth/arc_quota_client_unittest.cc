@@ -106,7 +106,6 @@ class ArcQuotaClientTest : public testing::Test {
       expected_get_current_space_for_arc_gid_reply_;
   ::user_data_auth::GetCurrentSpaceForArcProjectIdReply
       expected_get_current_space_for_arc_project_id_reply_;
-  ::user_data_auth::SetProjectIdReply expected_set_project_id_reply_;
 
   // When it is set `true`, an invalid array of bytes that cannot be parsed will
   // be the response.
@@ -141,8 +140,6 @@ class ArcQuotaClientTest : public testing::Test {
                ::user_data_auth::kGetCurrentSpaceForArcProjectId) {
       writer.AppendProtoAsArrayOfBytes(
           expected_get_current_space_for_arc_project_id_reply_);
-    } else if (method_call->GetMember() == ::user_data_auth::kSetProjectId) {
-      writer.AppendProtoAsArrayOfBytes(expected_set_project_id_reply_);
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -218,18 +215,6 @@ TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcProjectId) {
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(),
                      expected_get_current_space_for_arc_project_id_reply_));
-}
-
-TEST_F(ArcQuotaClientTest, SetProjectId) {
-  expected_set_project_id_reply_.set_success(true);
-  absl::optional<::user_data_auth::SetProjectIdReply> result_reply;
-
-  client_->SetProjectId(::user_data_auth::SetProjectIdRequest(),
-                        CreateCopyCallback(&result_reply));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(), expected_set_project_id_reply_));
 }
 
 }  // namespace ash
