@@ -7177,6 +7177,13 @@ crbug.com/1340763 external/wpt/pointerevents/pointerevent_capture_mouse.html [ F
 crbug.com/1341090 external/wpt/webmessaging/with-ports/021.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/without-ports/021.html [ Failure Pass ]
 
+# Temporarily disable to unblock: https://crrev.com/c/3575416
+crbug.com/1342428 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Skip ]
+crbug.com/1342428 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Skip ]
+crbug.com/1342428 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Skip ]
+crbug.com/1342428 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Skip ]
+crbug.com/1342428 http/tests/devtools/application-panel/resources-panel-websql.js [ Skip ]
+
 # Disable test to land a DevTools change
 crbug.com/1299832 http/tests/devtools/extensions/extensions-api.js [ Skip ]
 
