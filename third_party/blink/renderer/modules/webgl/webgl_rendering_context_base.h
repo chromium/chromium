@@ -810,10 +810,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Restore the client unpack parameters.
   virtual void RestoreUnpackParameters();
 
-  scoped_refptr<Image> DrawImageIntoBuffer(scoped_refptr<Image>,
-                                           int width,
-                                           int height,
-                                           const char* function_name);
+  // Draw the specified image into a new image. Used for a workaround when
+  // uploading SVG images (see the caller).
+  scoped_refptr<Image> DrawImageIntoBufferForTexImage(
+      scoped_refptr<Image>,
+      int width,
+      int height,
+      const char* function_name);
 
   // Structure for rendering to a DrawingBuffer, instead of directly
   // to the back-buffer of m_context.
@@ -890,7 +893,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     enum class CacheType { kImage, kVideo };
     LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
-    CanvasResourceProvider* GetCanvasResourceProvider(const gfx::Size&);
+    CanvasResourceProvider* GetCanvasResourceProvider(const SkImageInfo&);
 
    private:
     void BubbleToFront(wtf_size_t idx);

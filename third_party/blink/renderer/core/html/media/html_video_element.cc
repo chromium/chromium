@@ -499,10 +499,14 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (!media_video_frame || !video_renderer)
     return nullptr;
 
-  const gfx::Size intrinsic_size = media_video_frame->natural_size();
+  // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
+  // and color space is inappropriate in many circumstances.
+  const auto resource_provider_info =
+      SkImageInfo::Make(gfx::SizeToSkISize(media_video_frame->natural_size()),
+                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   if (!resource_provider_ ||
       allow_accelerated_images != resource_provider_->IsAccelerated() ||
-      intrinsic_size != resource_provider_->Size()) {
+      resource_provider_info != resource_provider_->GetSkImageInfo()) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -512,7 +516,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     }
     // Providing a null |raster_context_provider| creates a software provider.
     resource_provider_ = CreateResourceProviderForVideoFrame(
-        intrinsic_size, raster_context_provider);
+        resource_provider_info, raster_context_provider);
     if (!resource_provider_)
       return nullptr;
   }

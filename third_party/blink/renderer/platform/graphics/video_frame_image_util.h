@@ -16,6 +16,7 @@
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
+struct SkImageInfo;
 
 namespace media {
 class PaintCanvasVideoRenderer;
@@ -114,7 +115,7 @@ GetRasterContextProvider();
 // resource provider will be returned.
 PLATFORM_EXPORT std::unique_ptr<CanvasResourceProvider>
 CreateResourceProviderForVideoFrame(
-    gfx::Size size,
+    const SkImageInfo& info,
     viz::RasterContextProvider* raster_context_provider);
 
 }  // namespace blink

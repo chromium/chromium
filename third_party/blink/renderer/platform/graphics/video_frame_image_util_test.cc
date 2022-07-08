@@ -25,6 +25,7 @@ namespace blink {
 namespace {
 
 constexpr auto kTestSize = gfx::Size(64, 64);
+const auto kTestInfo = SkImageInfo::MakeN32Premul(64, 64);
 
 class ScopedFakeGpuContext {
  public:
@@ -230,7 +231,7 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   ASSERT_TRUE(raster_context_provider);
 
   auto provider =
-      CreateResourceProviderForVideoFrame(kTestSize, raster_context_provider);
+      CreateResourceProviderForVideoFrame(kTestInfo, raster_context_provider);
   ASSERT_TRUE(provider);
   EXPECT_TRUE(provider->IsAccelerated());
 
@@ -250,7 +251,7 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
 TEST(VideoFrameImageUtilTest, SoftwareCreateResourceProviderForVideoFrame) {
   // Creating a provider with a null viz::RasterContextProvider should result in
   // a non-accelerated provider being created.
-  auto provider = CreateResourceProviderForVideoFrame(kTestSize, nullptr);
+  auto provider = CreateResourceProviderForVideoFrame(kTestInfo, nullptr);
   ASSERT_TRUE(provider);
   EXPECT_FALSE(provider->IsAccelerated());
 }
@@ -265,7 +266,7 @@ TEST(VideoFrameImageUtilTest, AcceleratedCreateResourceProviderForVideoFrame) {
   // Creating a provider with a null viz::RasterContextProvider should result in
   // a non-accelerated provider being created.
   {
-    auto provider = CreateResourceProviderForVideoFrame(kTestSize, nullptr);
+    auto provider = CreateResourceProviderForVideoFrame(kTestInfo, nullptr);
     ASSERT_TRUE(provider);
     EXPECT_FALSE(provider->IsAccelerated());
   }
@@ -274,7 +275,7 @@ TEST(VideoFrameImageUtilTest, AcceleratedCreateResourceProviderForVideoFrame) {
   // an accelerated provider being created.
   {
     auto provider =
-        CreateResourceProviderForVideoFrame(kTestSize, raster_context_provider);
+        CreateResourceProviderForVideoFrame(kTestInfo, raster_context_provider);
     ASSERT_TRUE(provider);
     EXPECT_TRUE(provider->IsAccelerated());
   }
@@ -291,7 +292,7 @@ TEST(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
   // an unaccelerated provider being created due to the workaround.
   {
     auto provider =
-        CreateResourceProviderForVideoFrame(kTestSize, raster_context_provider);
+        CreateResourceProviderForVideoFrame(kTestInfo, raster_context_provider);
     ASSERT_TRUE(provider);
     EXPECT_FALSE(provider->IsAccelerated());
   }
@@ -316,8 +317,8 @@ TEST(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    media::PIXEL_FORMAT_XRGB);
 
-  auto provider =
-      CreateResourceProviderForVideoFrame(gfx::Size(16, 16), nullptr);
+  auto provider = CreateResourceProviderForVideoFrame(
+      SkImageInfo::MakeN32Premul(16, 16), nullptr);
   ASSERT_TRUE(provider);
   EXPECT_FALSE(provider->IsAccelerated());
 
@@ -333,8 +334,8 @@ TEST(VideoFrameImageUtilTest, CanvasResourceProviderDestRect) {
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    media::PIXEL_FORMAT_XRGB);
 
-  auto provider =
-      CreateResourceProviderForVideoFrame(gfx::Size(128, 128), nullptr);
+  auto provider = CreateResourceProviderForVideoFrame(
+      SkImageInfo::MakeN32Premul(128, 128), nullptr);
   ASSERT_TRUE(provider);
   EXPECT_FALSE(provider->IsAccelerated());
 

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -207,27 +209,26 @@ class CanvasResourceProviderCache
       delete;
   CanvasResourceProviderCache(const CanvasResourceProviderCache&) = delete;
 
-  CanvasResourceProvider* CreateProvider(gfx::Size size) {
-    if (size_to_provider_.IsEmpty())
+  CanvasResourceProvider* CreateProvider(const SkImageInfo& info) {
+    if (info_to_provider_.IsEmpty())
       PostMonitoringTask();
 
     last_access_time_ = base::TimeTicks::Now();
 
-    gfx::SizeF key(size);
-    auto iter = size_to_provider_.find(key);
-    if (iter != size_to_provider_.end()) {
+    auto iter = info_to_provider_.find(info);
+    if (iter != info_to_provider_.end()) {
       auto* result = iter->value.get();
       if (result && result->IsValid())
         return result;
     }
 
-    if (size_to_provider_.size() >= kMaxSize)
-      size_to_provider_.clear();
+    if (info_to_provider_.size() >= kMaxSize)
+      info_to_provider_.clear();
 
     auto provider = CreateResourceProviderForVideoFrame(
-        size, GetRasterContextProvider().get());
+        info, GetRasterContextProvider().get());
     auto* result = provider.get();
-    size_to_provider_.Set(key, std::move(provider));
+    info_to_provider_.Set(info, std::move(provider));
     return result;
   }
 
@@ -250,15 +251,15 @@ class CanvasResourceProviderCache
 
   void PurgeIdleFramePool() {
     if (base::TimeTicks::Now() - last_access_time_ > kIdleTimeout) {
-      size_to_provider_.clear();
+      info_to_provider_.clear();
       return;
     }
     PostMonitoringTask();
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HashMap<gfx::SizeF, std::unique_ptr<CanvasResourceProvider>>
-      size_to_provider_;
+  HashMap<SkImageInfo, std::unique_ptr<CanvasResourceProvider>>
+      info_to_provider_;
   base::TimeTicks last_access_time_;
   TaskHandle task_handle_;
 };
@@ -1085,10 +1086,17 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
   auto* execution_context =
       ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
   auto& provider_cache = CanvasResourceProviderCache::From(*execution_context);
-  auto* resource_provider =
-      provider_cache.CreateProvider(local_handle->frame()->natural_size());
 
-  const auto dest_rect = gfx::Rect(local_handle->frame()->natural_size());
+  // TODO(https://crbug.com/1341235): The choice of color type, alpha type, and
+  // color space is inappropriate in many circumstances.
+  const auto& resource_provider_size = local_handle->frame()->natural_size();
+  const auto resource_provider_info =
+      SkImageInfo::Make(gfx::SizeToSkISize(resource_provider_size),
+                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
+  auto* resource_provider =
+      provider_cache.CreateProvider(resource_provider_info);
+
+  const auto dest_rect = gfx::Rect(resource_provider_size);
   auto image = CreateImageFromVideoFrame(local_handle->frame(),
                                          /*allow_zero_copy_images=*/true,
                                          resource_provider,
@@ -1194,14 +1202,21 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
   auto* execution_context =
       ExecutionContext::From(v8::Isolate::GetCurrent()->GetCurrentContext());
   auto& provider_cache = CanvasResourceProviderCache::From(*execution_context);
+
+  // TODO(https://crbug.com/1341235): The choice of color type, alpha type, and
+  // color space is inappropriate in many circumstances.
+  const auto& resource_provider_size = local_handle->frame()->natural_size();
+  const auto resource_provider_info =
+      SkImageInfo::Make(gfx::SizeToSkISize(resource_provider_size),
+                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
   auto* resource_provider =
-      provider_cache.CreateProvider(local_handle->frame()->natural_size());
+      provider_cache.CreateProvider(resource_provider_info);
 
   // We disable zero copy images since the ImageBitmap spec says created bitmaps
   // are copies. Many other paths can avoid doing this w/o issue, but hardware
   // decoders may have a limited number of outputs, so not making a copy becomes
   // an observable issues to clients.
-  const auto dest_rect = gfx::Rect(local_handle->frame()->natural_size());
+  const auto dest_rect = gfx::Rect(resource_provider_size);
   auto image = CreateImageFromVideoFrame(local_handle->frame(),
                                          /*allow_zero_copy_images=*/false,
                                          resource_provider,
