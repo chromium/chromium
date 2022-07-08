@@ -112,14 +112,6 @@ config("runtime_library") {
     ]
   }
 
-  if (enable_ios_bitcode) {
-    if (is_debug) {
-      common_flags += [ "-fembed-bitcode-marker" ]
-    } else {
-      common_flags += [ "-fembed-bitcode" ]
-    }
-  }
-
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
