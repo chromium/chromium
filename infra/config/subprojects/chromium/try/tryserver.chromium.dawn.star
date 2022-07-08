@@ -145,6 +145,11 @@ try_.builder(
 
 try_.builder(
     name = "linux-dawn-rel",
+    mirrors = [
+        "ci/Dawn Linux x64 Builder",
+        "ci/Dawn Linux x64 Release (Intel HD 630)",
+        "ci/Dawn Linux x64 Release (NVIDIA)",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

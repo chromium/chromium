@@ -40,6 +40,26 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Dawn Linux x64 Builder",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "dawn_top_of_tree",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Builder",
         short_name = "x64",
@@ -133,6 +153,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Linux x64 Release (Intel HD 630)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Intel",
         short_name = "x64",
@@ -142,6 +179,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Linux x64 Release (NVIDIA)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Nvidia",
         short_name = "x64",
