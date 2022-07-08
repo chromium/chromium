@@ -3432,6 +3432,7 @@ source_set("unit_tests") {
     "../ash/system/user_removal_manager_unittest.cc",
     "../ash/system_logs/connected_input_devices_log_source_unittest.cc",
     "../ash/system_logs/crosapi_system_log_source_unittest.cc",
+    "../ash/system_logs/debug_daemon_log_source_unittest.cc",
     "../ash/system_logs/reven_log_source_unittest.cc",
     "../ash/system_logs/shill_log_source_unittest.cc",
     "../ash/system_logs/single_debug_daemon_log_source_unittest.cc",

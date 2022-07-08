@@ -26,6 +26,12 @@ bool ReadEndOfFile(const base::FilePath& path,
                    std::string* contents,
                    size_t max_size);
 
+// Exposes the utility methods only for unittests.
+#if defined(UNIT_TEST)
+std::string ReadUserLogFile(const base::FilePath& log_file_path);
+std::string ReadUserLogFilePattern(const base::FilePath& log_file_path_pattern);
+#endif  // defined(UNIT_TEST)
+
 // Gathers log data from Debug Daemon.
 class DebugDaemonLogSource : public SystemLogsSource {
  public:
