@@ -2384,6 +2384,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAutofillableLoginsAsync"
         summary="for GetAutofillableLoginsAsync"/>
     <variant name=".GetLoginsAsync" summary="for GetLoginsAsync"/>
+    <variant name=".InitialListAsync" summary="for InitialListAsync"/>
     <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
     <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
   </token>
@@ -2407,6 +2408,7 @@ chromium-metrics-reviews@google.com.
         summary="retrieving autofillable logins from"/>
     <variant name=".GetLoginsAsync"
         summary="retrieving logins filtered by signon realm from"/>
+    <variant name=".InitialListAsync" summary="initially pinging"/>
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>
     <variant name=".UpdateLoginAsync" summary="updating a login in"/>
   </token>
@@ -2525,6 +2527,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAutofillableLoginsAsync"
         summary="GetAutofillableLoginsAsync()"/>
     <variant name=".GetLoginsAsync" summary="GetLoginsAsync()"/>
+    <variant name=".InitialListAsync" summary="InitialListAsync()"/>
     <variant name=".RemoveLoginAsync" summary="RemoveLoginAsync()"/>
     <variant name=".RemoveLoginsByURLAndTimeAsync"
         summary="RemoveLoginsByURLAndTimeAsync()"/>
@@ -2560,6 +2563,7 @@ chromium-metrics-reviews@google.com.
         summary="retrieve autofillable logins from"/>
     <variant name=".GetLoginsAsync"
         summary="retrieve logins filtered by signon realm from"/>
+    <variant name=".InitialListAsync" summary="ping interest in data to"/>
     <variant name=".RemoveLoginAsync" summary="remove a login from"/>
     <variant name=".RemoveLoginsByURLAndTimeAsync"
         summary="remove logins filtered by URL and creation time from"/>
@@ -2601,6 +2605,8 @@ chromium-metrics-reviews@google.com.
                  autofillable logins from"/>
     <variant name=".GetLoginsAsync"
         summary="succeeded in retrieving logins filtered by signon realm from"/>
+    <variant name=".InitialListAsync"
+        summary="InitialListAsync() completed without errors when pinging"/>
     <variant name=".RemoveLoginAsync"
         summary="RemoveLoginAsync() succeeded in removing a login from"/>
     <variant name=".RemoveLoginsByURLAndTimeAsync"

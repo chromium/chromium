@@ -42,6 +42,8 @@ import org.chromium.components.password_manager.core.browser.proto.PasswordWithL
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
+import java.util.Date;
+
 /**
  * Tests that bridge calls as invoked by the password store reach the backend and return correctly.
  */
@@ -156,6 +158,42 @@ public class PasswordStoreAndroidBackendBridgeTest {
         verify(mBridgeJniMock)
                 .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
                         CommonStatusCodes.ERROR);
+    }
+
+    @Test
+    public void testSubscribeCallsApiWithMinimalListCallAndForwardsErrorStateToBridge() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendBridge.subscribe(kTestTaskId, null);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAllLoginsBetween(eq(new Date(1)), eq(new Date(2)), eq(Optional.absent()), any(),
+                        failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new ApiException(new Status(CommonStatusCodes.ERROR, ""));
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBridgeJniMock)
+                .onSubscribeFailed(sDummyNativePointer, kTestTaskId,
+                        AndroidBackendErrorType.EXTERNAL_ERROR, CommonStatusCodes.ERROR);
+    }
+
+    @Test
+    public void testSubscribeCallsApiWithMinimalListCallAndForwardsSuccessToBridge() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid success callback.
+        mBackendBridge.subscribe(kTestTaskId, null);
+        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAllLoginsBetween(eq(new Date(1)), eq(new Date(2)), eq(Optional.absent()),
+                        successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        successCallback.getValue().onResult(sTestLogins.build().toByteArray());
+        verify(mBridgeJniMock).onSubscribed(sDummyNativePointer, kTestTaskId);
     }
 
     @Test
