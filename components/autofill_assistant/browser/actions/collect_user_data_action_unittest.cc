@@ -15,10 +15,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
@@ -50,15 +52,28 @@ const char kFakePassword[] = "example_password";
 
 const char kMemoryLocation[] = "address";
 
-class TimeTicksOverride {
+// AutofillClock override that guarantees increasing time.
+class ScopedAutofillClockOverride : public autofill::TestAutofillClock {
  public:
-  static base::TimeTicks Now() { return now_ticks_; }
+  ScopedAutofillClockOverride()
+      : autofill::TestAutofillClock(std::make_unique<IncreasingClock>()) {}
 
-  static base::TimeTicks now_ticks_;
+ private:
+  class IncreasingClock : public base::SimpleTestClock {
+   public:
+    IncreasingClock() { SetNow(base::Time::Now()); }
+
+    IncreasingClock(const IncreasingClock&) = delete;
+    IncreasingClock& operator=(const IncreasingClock&) = delete;
+
+    base::Time Now() const override {
+      return base::SimpleTestClock::Now() + base::Milliseconds(delta_++);
+    }
+
+   private:
+    mutable int delta_ = 0;
+  };
 };
-
-// static
-base::TimeTicks TimeTicksOverride::now_ticks_ = base::TimeTicks::Now();
 
 MATCHER_P(MatchingAutofillVariant, guid, "") {
   if (absl::holds_alternative<const autofill::AutofillProfile*>(arg)) {
@@ -155,6 +170,15 @@ class CollectUserDataActionTest : public testing::Test {
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents_.get());
     source_id_ = web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
+    if (!base::TimeTicks::IsHighResolution()) {
+      // AutofillClock is used to initialize |use_date| for user data created in
+      // tests. |use_date| is expected to be different in each case as clock
+      // time is running. On machines with low resolution clock, we need to
+      // provide a custom autofill clock that ensures always increasing time.
+      autofill_clock_override_ =
+          std::make_unique<ScopedAutofillClockOverride>();
+    }
+
     ON_CALL(mock_action_delegate_, GetPersonalDataManager)
         .WillByDefault(Return(&mock_personal_data_manager_));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
@@ -225,6 +249,7 @@ class CollectUserDataActionTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   content::TestBrowserContext browser_context_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<ScopedAutofillClockOverride> autofill_clock_override_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   NiceMock<MockPersonalDataManager> mock_personal_data_manager_;
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;

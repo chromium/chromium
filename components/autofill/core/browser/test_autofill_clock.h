@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_CLOCK_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_CLOCK_H_
 
-#include "base/test/simple_test_clock.h"
+#include <memory>
+
+#include "base/time/time.h"
 
 namespace base {
-class Time;
+class SimpleTestClock;
 }  // namespace base
 
 namespace autofill {
@@ -20,6 +22,7 @@ namespace autofill {
 class TestAutofillClock {
  public:
   explicit TestAutofillClock(base::Time now = {});
+  explicit TestAutofillClock(std::unique_ptr<base::SimpleTestClock> test_clock);
 
   TestAutofillClock(const TestAutofillClock&) = delete;
   TestAutofillClock& operator=(const TestAutofillClock&) = delete;
@@ -33,7 +36,7 @@ class TestAutofillClock {
   void Advance(base::TimeDelta delta);
 
  private:
-  base::SimpleTestClock test_clock_;
+  std::unique_ptr<base::SimpleTestClock> test_clock_;
 };
 
 }  // namespace autofill
