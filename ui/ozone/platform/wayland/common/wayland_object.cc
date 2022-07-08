@@ -52,6 +52,14 @@ void delete_data_device(wl_data_device* data_device) {
   }
 }
 
+void delete_output(wl_output* output) {
+  if (wl::get_version_of_object(output) >= WL_OUTPUT_RELEASE_SINCE_VERSION) {
+    wl_output_release(output);
+  } else {
+    wl_output_destroy(output);
+  }
+}
+
 void delete_keyboard(wl_keyboard* keyboard) {
   if (wl::get_version_of_object(keyboard) >= WL_KEYBOARD_RELEASE_SINCE_VERSION)
     wl_keyboard_release(keyboard);
@@ -149,7 +157,7 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_data_offer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_data_source)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_drm)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(wl_keyboard, delete_keyboard)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_output)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(wl_output, delete_output)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(wl_pointer, delete_pointer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_registry)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_region)
