@@ -113,16 +113,16 @@ public class CronetTestRule implements TestRule {
         }
     }
 
+    public static Context getContext() {
+        return InstrumentationRegistry.getTargetContext();
+    }
+
     int getMaximumAvailableApiLevel() {
         // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
         if (ApiVersion.getCronetVersion().compareTo("59") < 0) {
             return 3;
         }
         return ApiVersion.getMaximumAvailableApiLevel();
-    }
-
-    public static Context getContext() {
-        return InstrumentationRegistry.getTargetContext();
     }
 
     @Override

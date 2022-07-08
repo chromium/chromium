@@ -1,0 +1,41 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.net.impl;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+
+import org.chromium.net.impl.CronetLogger.CronetSource;
+
+/**
+ * Utility class for working with the AndroidManifest flags.
+ */
+final class CronetManifest {
+    private CronetManifest() {}
+    // Individual apps can use this meta-data tag in their manifest to opt in for metrics
+    // reporting.
+    // Todo (colibie): Add this to the android documentation
+    static final String METRICS_OPT_IN_META_DATA_STR = "org.chromium.net.CronetMetricsOptIn";
+
+    static boolean isAppOptedInForTelemetry(Context ctx, CronetSource source) {
+        try {
+            // Check if app is opted in
+            ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(
+                    ctx.getPackageName(), PackageManager.GET_META_DATA);
+
+            // TODO(b/226553652): Enable logging if loaded from CRONET_PLAY_SERVICES, after testing
+            //  with select users
+
+            // getBoolean returns false if the key is not found, which is what we want.
+            return info.metaData == null ? false
+                                         : info.metaData.getBoolean(METRICS_OPT_IN_META_DATA_STR);
+        } catch (PackageManager.NameNotFoundException e) {
+            // This should never happen.
+            // The conservative thing is to assume the app HAS opted out.
+            return false;
+        }
+    }
+}

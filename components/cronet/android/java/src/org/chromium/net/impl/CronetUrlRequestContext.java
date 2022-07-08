@@ -203,13 +203,15 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
         }
-        mLogger = CronetLoggerFactory.createLogger();
+
+        mLogger = CronetLoggerFactory.createLogger(builder.getContext(), getCronetSource());
+
         // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
         // about the "w.x.y.z" bit.
         String version = getVersionString();
         version = version.split("/")[1];
         version = version.split("@")[0];
-        // TODO(stefanoduo): Correctly generate the CronetSource parameter.
+
         mLogger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
                 new CronetVersion(version), getCronetSource());
 

@@ -4,22 +4,41 @@
 
 package org.chromium.net.impl;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
+
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 /**
  * Takes care of instantiating the correct CronetLogger.
  */
 public final class CronetLoggerFactory {
     private CronetLoggerFactory() {}
+
     private static final CronetLogger sDefaultLogger = new NoOpLogger();
     private static CronetLogger sTestingLogger;
+
+    // Class that is packaged for Cronet telemetry.
+    private static final String CRONET_LOGGER_IMPL_CLASS =
+            "com.google.net.cronet.telemetry.CronetLoggerImpl";
 
     /**
      * @return The correct CronetLogger to be used for logging.
      */
-    public static CronetLogger createLogger() {
+    public static CronetLogger createLogger(Context ctx, CronetSource source) {
         if (sTestingLogger != null) return sTestingLogger;
-        // TODO(stefanoduo): Add logic to choose different loggers.
+
+        if (!CronetManifest.isAppOptedInForTelemetry(ctx, source)) return sDefaultLogger;
+
+        Class<? extends CronetLogger> cronetLoggerImplClass = fetchLoggerImplClass();
+        if (cronetLoggerImplClass == null) return sDefaultLogger;
+
+        try {
+            return cronetLoggerImplClass.getConstructor().newInstance();
+        } catch (Exception e) {
+            // Pass - since we dont want any failure, catch any exception that might arise.
+        }
         return sDefaultLogger;
     }
 
@@ -46,6 +65,15 @@ public final class CronetLoggerFactory {
         @Override
         public void close() {
             CronetLoggerFactory.setLoggerForTesting(null);
+        }
+    }
+
+    private static Class<? extends CronetLogger> fetchLoggerImplClass() {
+        ClassLoader loader = CronetLoggerFactory.class.getClassLoader();
+        try {
+            return loader.loadClass(CRONET_LOGGER_IMPL_CLASS).asSubclass(CronetLogger.class);
+        } catch (ClassNotFoundException e) {
+            return null;
         }
     }
 }

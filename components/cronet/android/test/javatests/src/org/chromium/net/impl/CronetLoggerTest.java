@@ -217,7 +217,7 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     public void testSetLoggerForTesting() {
-        CronetLogger logger = CronetLoggerFactory.createLogger();
+        CronetLogger logger = CronetLoggerFactory.createLogger(mContext, null);
         assertEquals(0, mTestLogger.callsToLogCronetTrafficInfo());
         assertEquals(0, mTestLogger.callsToLogCronetEngineCreation());
 

@@ -73,7 +73,8 @@ public final class JavaCronetEngine extends CronetEngineBase {
                         });
                     }
                 });
-        mLogger = CronetLoggerFactory.createLogger();
+        mLogger = CronetLoggerFactory.createLogger(
+                builder.getContext(), CronetSource.CRONET_SOURCE_FALLBACK);
         // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
         // about the "w.x.y.z" bit.
         String version = getVersionString();
