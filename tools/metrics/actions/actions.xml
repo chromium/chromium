@@ -3715,6 +3715,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Ash_ClipboardHistory_PastedItem1">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <description>
+    Emitted when a user pastes the first item from their clipboard history.
+  </description>
+</action>
+
+<action name="Ash_ClipboardHistory_PastedItem2">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <description>
+    Emitted when a user pastes the second item from their clipboard history.
+  </description>
+</action>
+
+<action name="Ash_ClipboardHistory_PastedItem3">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <description>
+    Emitted when a user pastes the third item from their clipboard history.
+  </description>
+</action>
+
+<action name="Ash_ClipboardHistory_PastedItem4">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <description>
+    Emitted when a user pastes the fourth item from their clipboard history.
+  </description>
+</action>
+
+<action name="Ash_ClipboardHistory_PastedItem5">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <description>
+    Emitted when a user pastes the fifth item from their clipboard history.
+  </description>
+</action>
+
 <action name="Ash_Tablet_BackGesture">
   <owner>minch@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>

@@ -32,6 +32,8 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,6 +103,36 @@ void EncodeBitmapToPNG(
 
   encoded_pngs->emplace(id, std::move(png));
   std::move(barrier_callback).Run();
+}
+
+// Emits a user action indicating that the clipboard history item at menu index
+// `command_id` was pasted.
+void RecordMenuIndexPastedUserAction(int command_id) {
+  // Per guidance in user_metrics.h, use string literals for action names.
+  switch (command_id) {
+    case 1:
+      base::RecordAction(
+          base::UserMetricsAction("Ash_ClipboardHistory_PastedItem1"));
+      break;
+    case 2:
+      base::RecordAction(
+          base::UserMetricsAction("Ash_ClipboardHistory_PastedItem2"));
+      break;
+    case 3:
+      base::RecordAction(
+          base::UserMetricsAction("Ash_ClipboardHistory_PastedItem3"));
+      break;
+    case 4:
+      base::RecordAction(
+          base::UserMetricsAction("Ash_ClipboardHistory_PastedItem4"));
+      break;
+    case 5:
+      base::RecordAction(
+          base::UserMetricsAction("Ash_ClipboardHistory_PastedItem5"));
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 using ClipboardHistoryPasteType =
@@ -715,9 +747,15 @@ void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
 void ClipboardHistoryControllerImpl::PasteMenuItemData(
     int command_id,
     ClipboardHistoryPasteType paste_type) {
+  // Record the paste item's history list index in a histogram to get a
+  // distribution of where in the list users paste from.
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected", command_id,
       ClipboardHistoryUtil::kMaxCommandId);
+  // Record the paste item's history list index as a user action to analyze
+  // usage patterns, e.g., how frequently the same index is pasted multiple
+  // times in a row.
+  RecordMenuIndexPastedUserAction(command_id);
 
   // Deactivate ClipboardImageModelFactory prior to pasting to ensure that any
   // modifications to the clipboard for HTML rendering purposes are reversed.
