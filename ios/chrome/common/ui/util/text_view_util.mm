@@ -9,6 +9,9 @@
 #endif
 
 UITextView* CreateUITextViewWithTextKit1() {
+// TODO(crbug.com/1335912): On iOS 16, EG is unable to tap links in
+// TextKit2-based UITextViews. Fall back to TextKit1 until this issue
+// is resolved.
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16, *))
     return [UITextView textViewUsingTextLayoutManager:NO];

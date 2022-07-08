@@ -276,7 +276,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 
 - (TextViewSelectionDisabled*)TOSTextView {
   if (!_TOSTextView) {
-    _TOSTextView = [[TextViewSelectionDisabled alloc] initWithFrame:CGRectZero];
+    _TOSTextView = [TextViewSelectionDisabled textView];
   }
   return _TOSTextView;
 }
