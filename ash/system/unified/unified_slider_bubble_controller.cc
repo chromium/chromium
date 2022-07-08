@@ -210,7 +210,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   init_params.shelf_alignment = tray_->shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   init_params.parent_window = tray_->GetBubbleWindowContainer();
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;

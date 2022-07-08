@@ -139,7 +139,7 @@ void AutoclickMenuBubbleController::ShowBubble(AutoclickEventType type,
   DCHECK(!bubble_view_);
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   // Anchor within the overlay container.
   init_params.parent_window =
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),

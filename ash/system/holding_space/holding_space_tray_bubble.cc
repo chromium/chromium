@@ -306,7 +306,7 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     HoldingSpaceTray* holding_space_tray)
     : holding_space_tray_(holding_space_tray) {
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = holding_space_tray;
+  init_params.delegate = holding_space_tray->GetWeakPtr();
   init_params.parent_window = holding_space_tray->GetBubbleWindowContainer();
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;

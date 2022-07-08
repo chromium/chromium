@@ -55,7 +55,7 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   DCHECK(!bubble_view_);
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   // Our view uses SettingsBubbleContainer since it is activatable and is
   // included in the collision detection logic.
   init_params.parent_window = Shell::GetContainer(

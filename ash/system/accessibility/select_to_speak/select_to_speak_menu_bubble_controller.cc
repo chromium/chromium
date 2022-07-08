@@ -42,7 +42,7 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
   initial_speech_rate_ = initial_speech_rate;
   if (!bubble_widget_) {
     TrayBubbleView::InitParams init_params;
-    init_params.delegate = this;
+    init_params.delegate = GetWeakPtr();
     init_params.parent_window =
         Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                             kShellWindowId_AccessibilityBubbleContainer);

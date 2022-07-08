@@ -40,7 +40,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   TrayBubbleView::InitParams init_params;
   init_params.shelf_alignment = tray_->shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
-  init_params.delegate = tray;
+  init_params.delegate = tray->GetWeakPtr();
   init_params.parent_window = tray->GetBubbleWindowContainer();
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;

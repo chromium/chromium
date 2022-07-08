@@ -134,7 +134,9 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
 
 }  // namespace
 
-TrayBubbleView::Delegate::~Delegate() {}
+TrayBubbleView::Delegate::Delegate() = default;
+
+TrayBubbleView::Delegate::~Delegate() = default;
 
 void TrayBubbleView::Delegate::BubbleViewDestroyed() {}
 
@@ -152,6 +154,10 @@ bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
 
 void TrayBubbleView::Delegate::HideBubble(const TrayBubbleView* bubble_view) {}
 
+base::WeakPtr<TrayBubbleView::Delegate> TrayBubbleView::Delegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 absl::optional<AcceleratorAction>
 TrayBubbleView::Delegate::GetAcceleratorAction() const {
   // TODO(crbug/1234891) Make this a pure virtual function so all
@@ -160,6 +166,8 @@ TrayBubbleView::Delegate::GetAcceleratorAction() const {
 }
 
 TrayBubbleView::InitParams::InitParams() = default;
+
+TrayBubbleView::InitParams::~InitParams() = default;
 
 TrayBubbleView::InitParams::InitParams(const InitParams& other) = default;
 

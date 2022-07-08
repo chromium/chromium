@@ -189,7 +189,7 @@ void PhoneHubTray::ShowBubble() {
   ui_controller_->HandleBubbleOpened();
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();

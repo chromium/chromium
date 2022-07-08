@@ -430,7 +430,7 @@ void EcheTray::InitBubble() {
       eche_app::mojom::StreamStatus::kStreamStatusInitializing);
   init_stream_timestamp_ = base::TimeTicks::Now();
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   // Note: The container id must be smaller than `kShellWindowId_ShelfContainer`
   // in order to let the notifications be shown on top of the eche window.
   init_params.parent_window = Shell::GetContainer(

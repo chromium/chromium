@@ -12,6 +12,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,7 +45,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   class ASH_EXPORT Delegate {
    public:
-    Delegate() {}
+    Delegate();
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
@@ -77,6 +78,12 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // Returns the accelerator action associated with the delegate's bubble
     // view.
     virtual absl::optional<AcceleratorAction> GetAcceleratorAction() const;
+
+    // Return a WeakPtr to `this`.
+    base::WeakPtr<Delegate> GetWeakPtr();
+
+   private:
+    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
   // Anchor mode being set at creation.
@@ -89,8 +96,15 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   struct ASH_EXPORT InitParams {
     InitParams();
+    ~InitParams();
     InitParams(const InitParams& other);
-    Delegate* delegate = nullptr;
+    // Used by the `tray_bubble_view` to call into its
+    // respective tray. This needs to be a WeakPtr because it is possible for
+    // the tray to be destroyed while the bubble is still around. This can
+    // happen because the bubble's widget is destroyed asynchronously so
+    // `tray_bubble_view`'s destructor can be called well after it's
+    // corresponding tray has been cleaned up.
+    base::WeakPtr<Delegate> delegate = nullptr;
     gfx::NativeWindow parent_window = nullptr;
     View* anchor_view = nullptr;
     AnchorMode anchor_mode = AnchorMode::kView;
@@ -166,7 +180,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // rerouting events, then this function will be idempotent.
   void StopReroutingEvents();
 
-  Delegate* delegate() { return delegate_; }
+  Delegate* delegate() { return delegate_.get(); }
 
   void set_gesture_dragging(bool dragging) { is_gesture_dragging_ = dragging; }
   bool is_gesture_dragging() const { return is_gesture_dragging_; }
@@ -230,7 +244,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   InitParams params_;
   views::BoxLayout* layout_;
-  Delegate* delegate_;
+  base::WeakPtr<Delegate> delegate_;
   int preferred_width_;
   bool is_gesture_dragging_;
 

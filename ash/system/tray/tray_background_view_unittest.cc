@@ -358,7 +358,7 @@ TEST_F(TrayBackgroundViewTest, OnAnyBubbleVisibilityChanged) {
   test_view()->SetVisiblePreferred(true);
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = test_view();
+  init_params.delegate = test_view()->GetWeakPtr();
   init_params.parent_window =
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer);

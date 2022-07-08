@@ -44,7 +44,7 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
   DCHECK(anchor_view);
   if (!bubble_widget_) {
     TrayBubbleView::InitParams init_params;
-    init_params.delegate = this;
+    init_params.delegate = GetWeakPtr();
     init_params.parent_window =
         Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                             kShellWindowId_AccessibilityBubbleContainer);

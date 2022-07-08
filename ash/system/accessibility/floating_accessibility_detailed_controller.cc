@@ -69,7 +69,7 @@ void FloatingAccessibilityDetailedController::Show(
     return;
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   init_params.parent_window = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_SettingBubbleContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;

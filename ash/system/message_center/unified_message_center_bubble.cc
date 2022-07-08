@@ -73,7 +73,7 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
 UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)
     : tray_(tray), border_(std::make_unique<Border>()) {
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   // Anchor within the overlay container.
   init_params.parent_window = tray->GetBubbleWindowContainer();
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
