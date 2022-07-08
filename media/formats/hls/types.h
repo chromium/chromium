@@ -198,6 +198,27 @@ class MEDIA_EXPORT StableId {
   std::string id_;
 };
 
+// Represents the contents of the 'INSTREAM-ID' attribute on the 'EXT-X-MEDIA'
+// tag.
+class MEDIA_EXPORT InstreamId {
+ public:
+  enum class Type {
+    kCc,
+    kService,
+  };
+
+  static ParseStatus::Or<InstreamId> Parse(ResolvedSourceString);
+
+  Type GetType() const { return type_; }
+  uint8_t GetNumber() const { return number_; }
+
+ private:
+  InstreamId(Type type, uint8_t number) : type_(type), number_(number) {}
+
+  Type type_;
+  uint8_t number_;
+};
+
 }  // namespace media::hls::types
 
 #endif  // MEDIA_FORMATS_HLS_TYPES_H_

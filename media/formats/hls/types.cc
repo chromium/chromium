@@ -424,4 +424,36 @@ ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
   return StableId(std::string{str.Str()});
 }
 
+ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
+  constexpr base::StringPiece kCcStr = "CC";
+  constexpr base::StringPiece kServiceStr = "SERVICE";
+
+  // Parse the type (one of 'CC' or 'SERVICE')
+  Type type;
+  uint8_t max;
+  if (base::StartsWith(str.Str(), kCcStr)) {
+    type = Type::kCc;
+    max = 4;
+    str.Consume(kCcStr.size());
+  } else if (base::StartsWith(str.Str(), kServiceStr)) {
+    type = Type::kService;
+    max = 63;
+    str.Consume(kServiceStr.size());
+  } else {
+    return ParseStatusCode::kFailedToParseInstreamId;
+  }
+
+  // Parse the number, max allowed value depends on the type
+  auto number_result = ParseDecimalInteger(str);
+  if (number_result.has_error()) {
+    return ParseStatusCode::kFailedToParseInstreamId;
+  }
+  auto number = std::move(number_result).value();
+  if (number < 1 || number > max) {
+    return ParseStatusCode::kFailedToParseInstreamId;
+  }
+
+  return InstreamId(type, static_cast<uint8_t>(number));
+}
+
 }  // namespace media::hls::types

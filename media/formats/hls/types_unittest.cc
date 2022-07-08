@@ -809,4 +809,61 @@ TEST(HlsTypesTest, ParseStableId) {
   ok_test("-/HELLO+World");
 }
 
+TEST(HlsTypesTest, ParseInstreamId) {
+  constexpr auto ok_test =
+      [](base::StringPiece x, types::InstreamId::Type type, uint8_t number,
+         const base::Location& from = base::Location::Current()) {
+        auto result =
+            types::InstreamId::Parse(ResolvedSourceString::CreateForTesting(x));
+        ASSERT_TRUE(result.has_value()) << from.ToString();
+        auto value = std::move(result).value();
+        EXPECT_EQ(value.GetType(), type) << from.ToString();
+        EXPECT_EQ(value.GetNumber(), number) << from.ToString();
+      };
+  constexpr auto error_test = [](base::StringPiece x,
+                                 const base::Location& from =
+                                     base::Location::Current()) {
+    auto result =
+        types::InstreamId::Parse(ResolvedSourceString::CreateForTesting(x));
+    ASSERT_TRUE(result.has_error()) << from.ToString();
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kFailedToParseInstreamId)
+        << from.ToString();
+  };
+
+  // InstreamId may not be empty
+  error_test("");
+
+  // InstreamId is case-sensitive
+  error_test("cc1");
+  error_test("Cc1");
+  error_test("cC1");
+  error_test("service1");
+  error_test("Service1");
+
+  // InstreamId may not contain spaces
+  error_test(" CC1");
+  error_test("CC1 ");
+  error_test("CC 1");
+  error_test(" SERVICE1");
+  error_test("SERVICE1 ");
+  error_test("SERVICE 1");
+
+  // Min/Max allowed value depends on type
+  error_test("CC0");
+  error_test("CC-1");
+  error_test("CC1.5");
+  error_test("CC5");
+  error_test("SERVICE0");
+  error_test("SERVICE-1");
+  error_test("SERVICE1.5");
+  error_test("SERVICE64");
+
+  // Test some valid inputs
+  ok_test("CC1", types::InstreamId::Type::kCc, 1);
+  ok_test("CC4", types::InstreamId::Type::kCc, 4);
+  ok_test("SERVICE1", types::InstreamId::Type::kService, 1);
+  ok_test("SERVICE63", types::InstreamId::Type::kService, 63);
+}
+
 }  // namespace media::hls
