@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_decoder.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/media_buildflags.h"
 #include "media/video/video_decode_accelerator.h"
 

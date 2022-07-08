@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "media/gpu/test/video_frame_file_writer.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_test_environment.h"
 
 namespace media {

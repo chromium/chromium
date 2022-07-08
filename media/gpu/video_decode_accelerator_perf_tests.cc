@@ -16,8 +16,8 @@
 #include "media/base/test_data_util.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/test/video.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
 #include "sandbox/linux/services/resource_limits.h"
@@ -353,7 +353,7 @@ class VideoDecoderTest : public ::testing::Test {
     frame_processors.push_back(std::move(performance_evaluator));
 
     // Use the new VD-based video decoders if requested.
-    VideoDecoderClientConfig config;
+    DecoderWrapperConfig config;
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
 

@@ -8,8 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
 
 namespace media {
 namespace test {
@@ -49,7 +49,7 @@ VideoPlayer::~VideoPlayer() {
 
 // static
 std::unique_ptr<VideoPlayer> VideoPlayer::Create(
-    const VideoDecoderClientConfig& config,
+    const DecoderWrapperConfig& config,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   auto video_player = base::WrapUnique(new VideoPlayer());
@@ -61,7 +61,7 @@ std::unique_ptr<VideoPlayer> VideoPlayer::Create(
 }
 
 bool VideoPlayer::CreateDecoderClient(
-    const VideoDecoderClientConfig& config,
+    const DecoderWrapperConfig& config,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,8 +73,8 @@ bool VideoPlayer::CreateDecoderClient(
   EventCallback event_cb =
       base::BindRepeating(&VideoPlayer::NotifyEvent, base::Unretained(this));
 
-  decoder_client_ = VideoDecoderClient::Create(
-      event_cb, std::move(frame_renderer), std::move(frame_processors), config);
+  decoder_client_ = DecoderWrapper::Create(event_cb, std::move(frame_renderer),
+                                           std::move(frame_processors), config);
 
   LOG_IF(ERROR, !decoder_client_) << __func__ << "(): "
                                   << "Failed to create video decoder client";
