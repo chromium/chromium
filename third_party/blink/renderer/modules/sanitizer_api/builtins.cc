@@ -46,10 +46,12 @@ SanitizerConfigImpl BuildDefaultConfigImpl(const char* const* elements,
   config.allow_elements_ = ElementsFromAPI(elements);
   config.allow_attributes_ = AttributesFromAPI(attributes);
   config.allow_custom_elements_ = false;
+  config.allow_unknown_markup_ = false;
   config.allow_comments_ = false;
   config.had_allow_elements_ = true;
   config.had_allow_attributes_ = true;
   config.had_allow_custom_elements_ = true;
+  config.had_allow_unknown_markup_ = true;
   return config;
 }
 
@@ -80,6 +82,12 @@ const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   return attributes_;
 }
 
+const SanitizerConfigImpl::AttributeList& GetKnownAttributes() {
+  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
+                      (AttributesFromAPI(kKnownAttributes)));
+  return attributes_;
+}
+
 }  // namespace default_config_names
 
 namespace with_namespace_names {
@@ -100,6 +108,12 @@ const SanitizerConfigImpl::ElementList& GetBaselineAllowElements() {
 const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
                       (AttributesFromAPI(kBaselineAttributes)));
+  return attributes_;
+}
+
+const SanitizerConfigImpl::AttributeList& GetKnownAttributes() {
+  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
+                      (AttributesFromAPI(kKnownAttributes)));
   return attributes_;
 }
 
@@ -126,4 +140,10 @@ const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   return WithNamespaces() ? with_namespace_names::GetBaselineAllowAttributes()
                           : default_config_names::GetBaselineAllowAttributes();
 }
+
+const SanitizerConfigImpl::AttributeList& GetKnownAttributes() {
+  return WithNamespaces() ? with_namespace_names::GetKnownAttributes()
+                          : default_config_names::GetKnownAttributes();
+}
+
 }  // namespace blink

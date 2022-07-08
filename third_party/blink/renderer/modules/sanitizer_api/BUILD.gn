@@ -2,12 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("sanitizer_api") {
   sources = [
+    "$target_gen_dir/builtins/sanitizer_attribute_lists.cc",
+    "$target_gen_dir/builtins/sanitizer_attribute_lists_with_namespaces.cc",
     "$target_gen_dir/builtins/sanitizer_builtins.cc",
     "$target_gen_dir/builtins/sanitizer_builtins_with_namespaces.cc",
     "builtins.cc",
@@ -22,6 +25,8 @@ blink_modules_sources("sanitizer_api") {
     "sanitizer_config_impl.h",
   ]
   deps = [
+    ":generate_sanitizer_attribute_lists",
+    ":generate_sanitizer_attribute_lists_with_namespaces",
     ":generate_sanitizer_builtins",
     ":generate_sanitizer_builtins_with_namespaces",
   ]
@@ -79,6 +84,46 @@ action("generate_sanitizer_builtins_with_namespaces") {
     "--cxx-namespace",
     "with_namespace_names",
   ]
+}
+
+blink_python_runner("generate_sanitizer_attribute_lists") {
+  script = "builtins/generate_attribute_lists.py"
+  sources =
+      [ "//third_party/blink/renderer/core/html/html_attribute_names.json5" ]
+  inputs = sources + scripts_for_json5_files
+  outputs = [ "$target_gen_dir/builtins/sanitizer_attribute_lists.cc" ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  foreach(source, sources) {
+    args += [ rebase_path(source, root_build_dir) ]
+  }
+}
+
+blink_python_runner("generate_sanitizer_attribute_lists_with_namespaces") {
+  script = "builtins/generate_attribute_lists.py"
+  sources = [
+    "//third_party/blink/renderer/core/html/html_attribute_names.json5",
+    "//third_party/blink/renderer/core/mathml/mathml_attribute_names.json5",
+    "//third_party/blink/renderer/core/svg/svg_attribute_names.json5",
+    "//third_party/blink/renderer/core/svg/xlink_attribute_names.json5",
+    "//third_party/blink/renderer/core/xml/xml_attribute_names.json5",
+    "//third_party/blink/renderer/core/xml/xmlns_attribute_names.json5",
+  ]
+  inputs = sources + scripts_for_json5_files
+  outputs = [
+    "$target_gen_dir/builtins/sanitizer_attribute_lists_with_namespaces.cc",
+  ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--cxx-namespace",
+    "with_namespace_names",
+  ]
+  foreach(source, sources) {
+    args += [ rebase_path(source, root_build_dir) ]
+  }
 }
 
 if (use_libfuzzer) {

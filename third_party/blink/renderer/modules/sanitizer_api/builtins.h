@@ -18,6 +18,7 @@ namespace blink {
 const SanitizerConfigImpl& GetDefaultConfig();
 const SanitizerConfigImpl::ElementList& GetBaselineAllowElements();
 const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes();
+const SanitizerConfigImpl::AttributeList& GetKnownAttributes();
 
 }  // namespace blink
 

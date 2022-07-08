@@ -35,6 +35,7 @@
     assert_false("blockElements" in Sanitizer.getDefaultConfiguration());
     assert_false("dropAttributes" in Sanitizer.getDefaultConfiguration());
     assert_false(Sanitizer.getDefaultConfiguration().allowCustomElements);
+    assert_false(Sanitizer.getDefaultConfiguration().allowUnknownMarkup);
   }, "SanitizerAPI getDefaultConfiguration()");
 
   test(t => {
@@ -49,10 +50,13 @@
       allowAttributes: { "class": ["*"], "color": ["span", "div"],
                          "onclick": ["*"] },
       allowCustomElements: true,
+      allowUnknownMarkup: true,
     },{
       blockElements: ["table", "tbody", "th", "td"],
     }, {
       allowCustomElements: false,
+    }, {
+      allowUnknownMarkup: false,
     }];
     for (const config of configs)
       assert_deep_equals(config, new Sanitizer(config).getConfiguration());
@@ -64,6 +68,7 @@
       allowAttributes: { "class": ["*"], "color": ["sPAn", "div"],
                          "onclick": ["*"] },
       allowCustomElements: true,
+      allowUnknownMarkup: true,
     };
     assert_deep_equals(config_0_mixed,
                        new Sanitizer(config_0_mixed).getConfiguration());

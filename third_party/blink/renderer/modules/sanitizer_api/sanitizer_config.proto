@@ -16,6 +16,7 @@ message SanitizerConfigProto {
   map<string, Elements> drop_attributes = 6;
 
   optional bool allow_custom_elements = 7;
+  optional bool allow_unknown_markup = 10;
   optional bool allow_comments = 8;
 
   enum StringContext {

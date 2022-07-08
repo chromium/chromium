@@ -47,7 +47,7 @@ bool ConfigIsEmpty(const SanitizerConfig* config) {
          (!config->hasDropElements() && !config->hasBlockElements() &&
           !config->hasAllowElements() && !config->hasDropAttributes() &&
           !config->hasAllowAttributes() && !config->hasAllowCustomElements() &&
-          !config->hasAllowComments());
+          !config->hasAllowComments() && !config->hasAllowUnknownMarkup());
 }
 
 String FromAPI(Node* node) {
@@ -238,6 +238,11 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
           node = DropNode(element, fragment);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
+        } else if (is_unknown_element && !config_.allow_unknown_markup_) {
+          // TODO: No spec yet. https://github.com/WICG/sanitizer-api/pull/159
+          node = DropNode(element, fragment);
+          UseCounter::Count(window->GetExecutionContext(),
+                            WebFeature::kSanitizerAPIActionTaken);
         } else if (Match(name, config_.drop_elements_)) {
           // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
           node = DropNode(element, fragment);
@@ -325,20 +330,27 @@ Node* Sanitizer::KeepElement(Element* element,
                              ContainerNode* fragment,
                              LocalDOMWindow* window) {
   String node_name = FromAPI(element);
-  if (Match(Wildcard(), node_name, config_.allow_attributes_)) {
-  } else if (Match(Wildcard(), node_name, config_.drop_attributes_)) {
+
+  if (Match(Wildcard(), node_name, config_.drop_attributes_)) {
     for (const auto& name : element->getAttributeNames()) {
       element->removeAttribute(name);
       UseCounter::Count(window->GetExecutionContext(),
                         WebFeature::kSanitizerAPIActionTaken);
     }
   } else {
+    bool allow_attributes_wildcard =
+        Match(Wildcard(), node_name, config_.allow_attributes_);
     for (const auto& name : element->getAttributeNames()) {
       // Attributes in drop list or not in allow list while allow list
       // exists will be dropped.
-      bool drop = !Match(name, node_name, GetBaselineAllowAttributes()) ||
+      bool is_unknown = !Match(name, node_name, GetKnownAttributes());
+      bool drop = (is_unknown ? !config_.allow_unknown_markup_
+                              : !Match(name, node_name,
+                                       GetBaselineAllowAttributes())) ||
                   Match(name, node_name, config_.drop_attributes_) ||
-                  !Match(name, node_name, config_.allow_attributes_);
+                  (!allow_attributes_wildcard &&
+                   !Match(name, node_name, config_.allow_attributes_));
+
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.

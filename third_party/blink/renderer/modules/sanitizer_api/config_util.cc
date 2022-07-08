@@ -21,6 +21,8 @@ SanitizerConfigImpl FromAPI(const SanitizerConfig* config) {
 
   impl.allow_custom_elements_ =
       config->hasAllowCustomElements() && config->allowCustomElements();
+  impl.allow_unknown_markup_ =
+      config->hasAllowUnknownMarkup() && config->allowUnknownMarkup();
   impl.allow_comments_ = config->hasAllowComments() && config->allowComments();
 
   // Format dropElements to lower case.
@@ -55,6 +57,7 @@ SanitizerConfigImpl FromAPI(const SanitizerConfig* config) {
   impl.had_allow_elements_ = config->hasAllowElements();
   impl.had_allow_attributes_ = config->hasAllowAttributes();
   impl.had_allow_custom_elements_ = config->hasAllowCustomElements();
+  impl.had_allow_unknown_markup_ = config->hasAllowUnknownMarkup();
 
   return impl;
 }
@@ -167,6 +170,9 @@ SanitizerConfig* ToAPI(const SanitizerConfigImpl& impl) {
   if (!impl.drop_attributes_.IsEmpty()) {
     config->setDropAttributes(ToAPI(impl.drop_attributes_));
   }
+
+  if (impl.had_allow_unknown_markup_)
+    config->setAllowUnknownMarkup(impl.allow_unknown_markup_);
 
   if (impl.had_allow_custom_elements_)
     config->setAllowCustomElements(impl.allow_custom_elements_);
