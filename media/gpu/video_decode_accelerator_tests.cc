@@ -20,8 +20,8 @@
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
-#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
+#include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
 #include "media/gpu/test/video_test_helpers.h"
@@ -116,7 +116,7 @@ class VideoDecoderTest : public ::testing::Test {
  public:
   std::unique_ptr<VideoPlayer> CreateVideoPlayer(
       const Video* video,
-      DecoderWrapperConfig config = DecoderWrapperConfig(),
+      VideoDecoderClientConfig config = VideoDecoderClientConfig(),
       std::unique_ptr<FrameRendererDummy> frame_renderer =
           FrameRendererDummy::Create()) {
     LOG_ASSERT(video);
@@ -432,7 +432,7 @@ TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
 // Play video from start to end. Multiple buffer decodes will be queued in the
 // decoder, without waiting for the result of the previous decode requests.
 TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleOutstandingDecodes) {
-  DecoderWrapperConfig config;
+  VideoDecoderClientConfig config;
   config.max_outstanding_decode_requests = 4;
   auto tvp = CreateVideoPlayer(g_env->Video(), config);
 
@@ -506,7 +506,7 @@ TEST_F(VideoDecoderTest, Reinitialize) {
 // of scope at the end of the test. The test will pass if no asserts or crashes
 // are triggered upon destroying.
 TEST_F(VideoDecoderTest, DestroyBeforeInitialize) {
-  DecoderWrapperConfig config = DecoderWrapperConfig();
+  VideoDecoderClientConfig config = VideoDecoderClientConfig();
   config.implementation = g_env->GetDecoderImplementation();
   auto tvp = VideoPlayer::Create(config, FrameRendererDummy::Create());
   EXPECT_NE(tvp, nullptr);

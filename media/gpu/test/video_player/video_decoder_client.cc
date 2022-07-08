@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/test/video_player/decoder_wrapper.h"
+#include "media/gpu/test/video_player/video_decoder_client.h"
 
 #include <string>
 #include <utility>
@@ -35,39 +35,40 @@ namespace {
 // This helper thunk wraps a WeakPtr into an 'Optional' value, so the WeakPtr is
 // only dereferenced after rescheduling the task on the specified task runner.
 template <typename F, typename... Args>
-void CallbackThunk(absl::optional<base::WeakPtr<DecoderWrapper>> decoder_client,
-                   scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   F f,
-                   Args... args) {
+void CallbackThunk(
+    absl::optional<base::WeakPtr<VideoDecoderClient>> decoder_client,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    F f,
+    Args... args) {
   DCHECK(decoder_client);
   task_runner->PostTask(FROM_HERE, base::BindOnce(f, *decoder_client, args...));
 }
 }  // namespace
 
-DecoderWrapper::DecoderWrapper(
+VideoDecoderClient::VideoDecoderClient(
     const VideoPlayer::EventCallback& event_cb,
     std::unique_ptr<FrameRendererDummy> renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
-    const DecoderWrapperConfig& config)
+    const VideoDecoderClientConfig& config)
     : event_cb_(event_cb),
       frame_renderer_(std::move(renderer)),
       frame_processors_(std::move(frame_processors)),
-      decoder_wrapper_config_(config),
-      worker_thread_("VDAClientDecoderThread"),
-      state_(DecoderWrapperState::kUninitialized) {
-  DETACH_FROM_SEQUENCE(worker_sequence_checker_);
+      decoder_client_config_(config),
+      decoder_client_thread_("VDAClientDecoderThread"),
+      decoder_client_state_(VideoDecoderClientState::kUninitialized) {
+  DETACH_FROM_SEQUENCE(decoder_client_sequence_checker_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
-DecoderWrapper::~DecoderWrapper() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+VideoDecoderClient::~VideoDecoderClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
 
-  if (worker_thread_.IsRunning()) {
+  if (decoder_client_thread_.IsRunning()) {
     base::WaitableEvent done;
-    worker_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DecoderWrapper::DestroyDecoderTask, weak_this_, &done));
+    decoder_client_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&VideoDecoderClient::DestroyDecoderTask,
+                                  weak_this_, &done));
     done.Wait();
   }
 
@@ -79,94 +80,94 @@ DecoderWrapper::~DecoderWrapper() {
   frame_renderer_ = nullptr;
   frame_processors_.clear();
 
-  worker_thread_.Stop();
+  decoder_client_thread_.Stop();
 }
 
 // static
-std::unique_ptr<DecoderWrapper> DecoderWrapper::Create(
+std::unique_ptr<VideoDecoderClient> VideoDecoderClient::Create(
     const VideoPlayer::EventCallback& event_cb,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
-    const DecoderWrapperConfig& config) {
-  auto decoder_client =
-      base::WrapUnique(new DecoderWrapper(event_cb, std::move(frame_renderer),
-                                          std::move(frame_processors), config));
+    const VideoDecoderClientConfig& config) {
+  auto decoder_client = base::WrapUnique(
+      new VideoDecoderClient(event_cb, std::move(frame_renderer),
+                             std::move(frame_processors), config));
   if (!decoder_client->CreateDecoder()) {
     return nullptr;
   }
   return decoder_client;
 }
 
-bool DecoderWrapper::CreateDecoder() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
-  DCHECK(!worker_thread_.IsRunning());
+bool VideoDecoderClient::CreateDecoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
+  DCHECK(!decoder_client_thread_.IsRunning());
   DCHECK(event_cb_ && frame_renderer_);
 
-  if (!worker_thread_.Start()) {
+  if (!decoder_client_thread_.Start()) {
     VLOGF(1) << "Failed to start decoder thread";
     return false;
   }
 
   bool success = false;
   base::WaitableEvent done;
-  worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DecoderWrapper::CreateDecoderTask, weak_this_,
-                                &success, &done));
+  decoder_client_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&VideoDecoderClient::CreateDecoderTask,
+                                weak_this_, &success, &done));
   done.Wait();
   return success;
 }
 
-bool DecoderWrapper::WaitForFrameProcessors() {
+bool VideoDecoderClient::WaitForFrameProcessors() {
   bool success = true;
   for (auto& frame_processor : frame_processors_)
     success &= frame_processor->WaitUntilDone();
   return success;
 }
 
-void DecoderWrapper::WaitForRenderer() {
+void VideoDecoderClient::WaitForRenderer() {
   ASSERT_TRUE(frame_renderer_);
   frame_renderer_->WaitUntilRenderingDone();
 }
 
-void DecoderWrapper::Initialize(const Video* video) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+void VideoDecoderClient::Initialize(const Video* video) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
   DCHECK(video);
 
   base::WaitableEvent done;
-  worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DecoderWrapper::InitializeTask, weak_this_,
-                                video, &done));
+  decoder_client_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&VideoDecoderClient::InitializeDecoderTask,
+                                weak_this_, video, &done));
   done.Wait();
 }
 
-void DecoderWrapper::Play() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+void VideoDecoderClient::Play() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
 
-  worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DecoderWrapper::PlayTask, weak_this_));
+  decoder_client_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&VideoDecoderClient::PlayTask, weak_this_));
 }
 
-void DecoderWrapper::Flush() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+void VideoDecoderClient::Flush() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
 
-  worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DecoderWrapper::FlushTask, weak_this_));
+  decoder_client_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&VideoDecoderClient::FlushTask, weak_this_));
 }
 
-void DecoderWrapper::Reset() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+void VideoDecoderClient::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_player_sequence_checker_);
 
-  worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DecoderWrapper::ResetTask, weak_this_));
+  decoder_client_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&VideoDecoderClient::ResetTask, weak_this_));
 }
 
-void DecoderWrapper::CreateDecoderTask(bool* success,
-                                       base::WaitableEvent* done) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
-  DCHECK_EQ(state_, DecoderWrapperState::kUninitialized);
+void VideoDecoderClient::CreateDecoderTask(bool* success,
+                                           base::WaitableEvent* done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
+  DCHECK_EQ(decoder_client_state_, VideoDecoderClientState::kUninitialized);
   ASSERT_TRUE(!decoder_) << "Can't create decoder: already created";
 
-  switch (decoder_wrapper_config_.implementation) {
+  switch (decoder_client_config_.implementation) {
     case DecoderImplementation::kVD:
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decoder_ = VideoDecoderPipeline::Create(
@@ -183,14 +184,14 @@ void DecoderWrapper::CreateDecoderTask(bool* success,
       // can use the TestVDAVideoDecoder wrapper here to test VDA-based video
       // decoders.
       decoder_ = std::make_unique<TestVDAVideoDecoder>(
-          decoder_wrapper_config_.implementation ==
+          decoder_client_config_.implementation ==
               DecoderImplementation::kVDVDA,
           // base::Unretained(this) is safe because |decoder_| is owned by
           // |*this|. The lifetime of |decoder_| must be shorter than |*this|.
-          base::BindRepeating(&DecoderWrapper::OnResolutionChangedTask,
+          base::BindRepeating(&VideoDecoderClient::ResolutionChangeTask,
                               base::Unretained(this)),
           gfx::ColorSpace(), frame_renderer_.get(),
-          decoder_wrapper_config_.linear_output);
+          decoder_client_config_.linear_output);
       break;
   }
 
@@ -198,11 +199,11 @@ void DecoderWrapper::CreateDecoderTask(bool* success,
   done->Signal();
 }
 
-void DecoderWrapper::InitializeTask(const Video* video,
-                                    base::WaitableEvent* done) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
-  DCHECK(state_ == DecoderWrapperState::kUninitialized ||
-         state_ == DecoderWrapperState::kIdle);
+void VideoDecoderClient::InitializeDecoderTask(const Video* video,
+                                               base::WaitableEvent* done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
+  DCHECK(decoder_client_state_ == VideoDecoderClientState::kUninitialized ||
+         decoder_client_state_ == VideoDecoderClientState::kIdle);
   ASSERT_TRUE(decoder_) << "Can't initialize decoder: not created yet";
   ASSERT_TRUE(video);
 
@@ -219,27 +220,27 @@ void DecoderWrapper::InitializeTask(const Video* video,
   input_video_profile_ = video->Profile();
 
   VideoDecoder::InitCB init_cb = base::BindOnce(
-      CallbackThunk<decltype(&DecoderWrapper::OnDecoderInitializedTask),
+      CallbackThunk<decltype(&VideoDecoderClient::DecoderInitializedTask),
                     DecoderStatus>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnDecoderInitializedTask);
+      weak_this_, decoder_client_thread_.task_runner(),
+      &VideoDecoderClient::DecoderInitializedTask);
   VideoDecoder::OutputCB output_cb = base::BindRepeating(
-      CallbackThunk<decltype(&DecoderWrapper::OnFrameReadyTask),
+      CallbackThunk<decltype(&VideoDecoderClient::FrameReadyTask),
                     scoped_refptr<VideoFrame>>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnFrameReadyTask);
+      weak_this_, decoder_client_thread_.task_runner(),
+      &VideoDecoderClient::FrameReadyTask);
 
   decoder_->Initialize(config, false, nullptr, std::move(init_cb), output_cb,
                        WaitingCB());
 
-  DCHECK_LE(decoder_wrapper_config_.max_outstanding_decode_requests,
+  DCHECK_LE(decoder_client_config_.max_outstanding_decode_requests,
             static_cast<size_t>(decoder_->GetMaxDecodeRequests()));
 
   done->Signal();
 }
 
-void DecoderWrapper::DestroyDecoderTask(base::WaitableEvent* done) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::DestroyDecoderTask(base::WaitableEvent* done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK_EQ(0u, num_outstanding_decode_requests_);
   DVLOGF(4);
 
@@ -251,34 +252,34 @@ void DecoderWrapper::DestroyDecoderTask(base::WaitableEvent* done) {
     decoder_.reset();
   }
 
-  state_ = DecoderWrapperState::kUninitialized;
+  decoder_client_state_ = VideoDecoderClientState::kUninitialized;
   done->Signal();
 }
 
-void DecoderWrapper::PlayTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::PlayTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DVLOGF(4);
 
   // This method should only be called when the decoder client is idle. If
   // called e.g. while flushing, the behavior is undefined.
-  ASSERT_EQ(state_, DecoderWrapperState::kIdle);
+  ASSERT_EQ(decoder_client_state_, VideoDecoderClientState::kIdle);
 
   // Start decoding the first fragments. While in the decoding state new
   // fragments will automatically be fed to the decoder, when the decoder
   // notifies us it reached the end of a bitstream buffer.
-  state_ = DecoderWrapperState::kDecoding;
-  for (size_t i = 0;
-       i < decoder_wrapper_config_.max_outstanding_decode_requests; ++i) {
+  decoder_client_state_ = VideoDecoderClientState::kDecoding;
+  for (size_t i = 0; i < decoder_client_config_.max_outstanding_decode_requests;
+       ++i) {
     DecodeNextFragmentTask();
   }
 }
 
-void DecoderWrapper::DecodeNextFragmentTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::DecodeNextFragmentTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DVLOGF(4);
 
   // Stop decoding fragments if we're no longer in the decoding state.
-  if (state_ != DecoderWrapperState::kDecoding)
+  if (decoder_client_state_ != VideoDecoderClientState::kDecoding)
     return;
 
   // Flush immediately when we reached the end of the stream. This changes the
@@ -305,9 +306,10 @@ void DecoderWrapper::DecodeNextFragmentTask() {
   }
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-      CallbackThunk<decltype(&DecoderWrapper::OnDecodeDoneTask), DecoderStatus>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnDecodeDoneTask);
+      CallbackThunk<decltype(&VideoDecoderClient::DecodeDoneTask),
+                    DecoderStatus>,
+      weak_this_, decoder_client_thread_.task_runner(),
+      &VideoDecoderClient::DecodeDoneTask);
   decoder_->Decode(std::move(bitstream_buffer), std::move(decode_cb));
 
   num_outstanding_decode_requests_++;
@@ -317,52 +319,54 @@ void DecoderWrapper::DecodeNextFragmentTask() {
     FireEvent(VideoPlayerEvent::kConfigInfo);
 }
 
-void DecoderWrapper::FlushTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::FlushTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DVLOGF(4);
 
   // Changing the state to flushing will abort any pending decodes.
-  state_ = DecoderWrapperState::kFlushing;
+  decoder_client_state_ = VideoDecoderClientState::kFlushing;
 
-  VideoDecoder::DecodeCB flush_done_cb = base::BindOnce(
-      CallbackThunk<decltype(&DecoderWrapper::OnFlushDoneTask), DecoderStatus>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnFlushDoneTask);
+  VideoDecoder::DecodeCB flush_done_cb =
+      base::BindOnce(CallbackThunk<decltype(&VideoDecoderClient::FlushDoneTask),
+                                   DecoderStatus>,
+                     weak_this_, decoder_client_thread_.task_runner(),
+                     &VideoDecoderClient::FlushDoneTask);
   decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), std::move(flush_done_cb));
 
   FireEvent(VideoPlayerEvent::kFlushing);
 }
 
-void DecoderWrapper::ResetTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::ResetTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DVLOGF(4);
 
   // Changing the state to resetting will abort any pending decodes.
-  state_ = DecoderWrapperState::kResetting;
+  decoder_client_state_ = VideoDecoderClientState::kResetting;
   // TODO(dstaessens@) Allow resetting to any point in the stream.
   encoded_data_helper_->Rewind();
 
   decoder_->Reset(base::BindOnce(
-      CallbackThunk<decltype(&DecoderWrapper::OnResetDoneTask)>, weak_this_,
-      worker_thread_.task_runner(), &DecoderWrapper::OnResetDoneTask));
+      CallbackThunk<decltype(&VideoDecoderClient::ResetDoneTask)>, weak_this_,
+      decoder_client_thread_.task_runner(),
+      &VideoDecoderClient::ResetDoneTask));
   FireEvent(VideoPlayerEvent::kResetting);
 }
 
-void DecoderWrapper::OnDecoderInitializedTask(DecoderStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
-  DCHECK(state_ == DecoderWrapperState::kUninitialized ||
-         state_ == DecoderWrapperState::kIdle);
+void VideoDecoderClient::DecoderInitializedTask(DecoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
+  DCHECK(decoder_client_state_ == VideoDecoderClientState::kUninitialized ||
+         decoder_client_state_ == VideoDecoderClientState::kIdle);
   ASSERT_TRUE(status.is_ok()) << "Initializing decoder failed";
 
-  state_ = DecoderWrapperState::kIdle;
+  decoder_client_state_ = VideoDecoderClientState::kIdle;
   FireEvent(VideoPlayerEvent::kInitialized);
 }
 
-void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
-  DCHECK_NE(DecoderWrapperState::kIdle, state_);
+void VideoDecoderClient::DecodeDoneTask(DecoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
+  DCHECK_NE(VideoDecoderClientState::kIdle, decoder_client_state_);
   ASSERT_TRUE(status != DecoderStatus::Codes::kAborted ||
-              state_ == DecoderWrapperState::kResetting);
+              decoder_client_state_ == VideoDecoderClientState::kResetting);
   DVLOGF(4);
 
   num_outstanding_decode_requests_--;
@@ -371,12 +375,12 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
   // TODO(mcasas): Introduce a minor delay here to avoid overrunning the driver;
   // this is a provision for Mediatek devices and for the erroneous behaviour
   // of feeding more encoded chunk here (the driver has likely not seen any
-  // encoded chunk enqueued at this point) and not in OnFrameReadyTask as it
+  // encoded chunk enqueued at this point) and not in FrameReadyTask as it
   // should (naively moving this task there doesn't work because it prevents the
   // V4L2VideoDecoder backend from polling the device driver).
-  worker_thread_.task_runner()->PostDelayedTask(
+  decoder_client_thread_.task_runner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DecoderWrapper::DecodeNextFragmentTask, weak_this_),
+      base::BindOnce(&VideoDecoderClient::DecodeNextFragmentTask, weak_this_),
 #if BUILDFLAG(USE_V4L2_CODEC)
       base::Milliseconds(1)
 #else
@@ -385,9 +389,9 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
   );
 }
 
-void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
+void VideoDecoderClient::FrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   DVLOGF(4) << current_frame_index_;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK(video_frame->metadata().power_efficient);
 
   frame_renderer_->RenderFrame(video_frame);
@@ -403,19 +407,19 @@ void DecoderWrapper::OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   current_frame_index_++;
 }
 
-void DecoderWrapper::OnFlushDoneTask(DecoderStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::FlushDoneTask(DecoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK_EQ(0u, num_outstanding_decode_requests_);
 
   // Send an EOS frame to the renderer, so it can reset any internal state it
   // might keep in preparation of the next stream of video frames.
   frame_renderer_->RenderFrame(VideoFrame::CreateEOSFrame());
-  state_ = DecoderWrapperState::kIdle;
+  decoder_client_state_ = VideoDecoderClientState::kIdle;
   FireEvent(VideoPlayerEvent::kFlushDone);
 }
 
-void DecoderWrapper::OnResetDoneTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+void VideoDecoderClient::ResetDoneTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK_EQ(0u, num_outstanding_decode_requests_);
 
   // We finished resetting to a different point in the stream, so we should
@@ -424,23 +428,23 @@ void DecoderWrapper::OnResetDoneTask() {
   current_frame_index_ = 0;
 
   frame_renderer_->RenderFrame(VideoFrame::CreateEOSFrame());
-  state_ = DecoderWrapperState::kIdle;
+  decoder_client_state_ = VideoDecoderClientState::kIdle;
   FireEvent(VideoPlayerEvent::kResetDone);
 }
 
-bool DecoderWrapper::OnResolutionChangedTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+bool VideoDecoderClient::ResolutionChangeTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
 
   return FireEvent(VideoPlayerEvent::kNewBuffersRequested);
 }
 
-bool DecoderWrapper::FireEvent(VideoPlayerEvent event) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
+bool VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
 
   bool continue_decoding = event_cb_.Run(event);
   if (!continue_decoding) {
     // Changing the state to idle will abort any pending decodes.
-    state_ = DecoderWrapperState::kIdle;
+    decoder_client_state_ = VideoDecoderClientState::kIdle;
   }
   return continue_decoding;
 }
