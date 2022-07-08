@@ -333,7 +333,7 @@ void CheckInstallation(UpdaterScope scope,
 // Returns true is any updater process is found running in any session in the
 // system, regardless of its path.
 bool IsUpdaterRunning() {
-  return IsProcessRunning(kUpdaterProcessName);
+  return IsProcessRunning(GetExecutableRelativePath().value().c_str());
 }
 
 void SleepFor(int seconds) {
@@ -474,7 +474,7 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   if (!path)
     return absl::nullopt;
-  return path->AppendASCII("updater.exe");
+  return path->Append(GetExecutableRelativePath());
 }
 
 absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
@@ -583,12 +583,12 @@ void ExpectActiveUpdater(UpdaterScope scope) {
 }
 
 void Uninstall(UpdaterScope scope) {
-  // Note: updater_test.exe --uninstall is run from the build dir, not the
-  // install dir, because it is useful for tests to be able to run it to clean
-  // the system even if installation has failed or the installed binaries have
+  // Note: "updater.exe --uninstall" is run from the build dir, not the install
+  // dir, because it is useful for tests to be able to run it to clean the
+  // system even if installation has failed or the installed binaries have
   // already been removed.
   base::FilePath path =
-      GetSetupExecutablePath().DirName().AppendASCII("updater_test.exe");
+      GetSetupExecutablePath().DirName().Append(GetExecutableRelativePath());
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");

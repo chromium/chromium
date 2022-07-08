@@ -298,7 +298,7 @@ bool ComServerApp::SwapInNewVersion() {
     return false;
 
   const base::FilePath updater_path =
-      versioned_directory->Append(FILE_PATH_LITERAL("updater.exe"));
+      versioned_directory->Append(GetExecutableRelativePath());
 
   HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
                                                          : HKEY_CURRENT_USER;

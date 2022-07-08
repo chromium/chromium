@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,9 +60,8 @@ absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-// TODO(crbug.com/1241276) combine "updater.exe" literals.
 base::FilePath GetExecutableRelativePath() {
-  return base::FilePath(FILE_PATH_LITERAL("updater.exe"));
+  return base::FilePath::FromASCII(kExecutableName);
 }
 
 }  // namespace updater

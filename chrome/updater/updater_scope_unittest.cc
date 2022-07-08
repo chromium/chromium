@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -14,7 +15,7 @@ namespace updater {
 class GetUpdaterScopeForCommandLineTest : public testing::Test {
  protected:
   base::CommandLine command_line_ =
-      base::CommandLine(base::FilePath(FILE_PATH_LITERAL("updater.exe")));
+      base::CommandLine(GetExecutableRelativePath());
 };
 
 TEST_F(GetUpdaterScopeForCommandLineTest, NoParams) {

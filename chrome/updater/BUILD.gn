@@ -681,7 +681,6 @@ if (is_win || is_mac || is_linux) {
         "test/data/signed.exe.gz",
         "test/data/tagged_encode_utf8.exe",
         "test/data/tagged_magic_utf16.exe",
-        "test/data/updater.runtime_deps",
         "//chrome/test/data/updater/OfflineManifest.gup",
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",
       ]

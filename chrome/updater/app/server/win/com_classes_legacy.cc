@@ -34,6 +34,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util.h"
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -634,7 +635,7 @@ HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
     return E_UNEXPECTED;
 
   typelib_path =
-      typelib_path.Append(kUpdaterProcessName)
+      typelib_path.Append(GetExecutableRelativePath())
           .Append(GetComTypeLibResourceIndex(__uuidof(IAppCommandWeb)));
 
   Microsoft::WRL::ComPtr<ITypeLib> type_lib;

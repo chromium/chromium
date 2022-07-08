@@ -16,6 +16,9 @@ extern const char kUpdaterAppId[];
 // The app ID used to qualify the updater.
 extern const char kQualificationAppId[];
 
+// The name of the updater program image, typically, "updater.exe" or "updater".
+extern const char kExecutableName[];
+
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];
 

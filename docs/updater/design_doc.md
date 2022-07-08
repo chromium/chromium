@@ -607,6 +607,14 @@ TODO(crbug.com/1035895): Document testing strategies, framework.
 
 TODO(crbug.com/1035895): Document test build.
 
+Testing is possible by programmatically controlling certain parameters of the
+updater. These parameters are hardcoded in the production builds but they can
+be modified in test builds. For this reason, the updater build scripts define
+two separate set of targets. One target produces binaries suitable to
+releasing. The other target produces test binaries, which are suffixed by
+`_test`. The test binaries link the test hooks code, which slightly alters the
+behavior of the updater to facilitate testing it.
+
 TODO(crbug.com/1035895): Document external constants override.
 
 TODO(crbug.com/1035895): Document builders & test machines.

@@ -8,7 +8,6 @@ namespace updater {
 
 const wchar_t kLegacyGoogleUpdaterAppID[] =
     L"{430FD4D0-B729-4F61-AA34-91526481799D}";
-const wchar_t kUpdaterProcessName[] = L"updater.exe";
 
 const wchar_t kGlobalPrefix[] = L"Global\\G";
 

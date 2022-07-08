@@ -18,24 +18,18 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-#define EXECUTABLE_EXTENSION ".exe"
-#else
-#define EXECUTABLE_EXTENSION ""
-#endif  // BUILDFLAG(IS_WIN)
+#include "base/file_version_info_win.h"
+#endif
+
+namespace updater {
 
 // Tests the updater process returns 0 when run with --test argument.
 TEST(UpdaterTest, UpdaterExitCode) {
   base::FilePath this_executable_path;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &this_executable_path));
   const base::FilePath executableFolder = this_executable_path.DirName();
-  const base::FilePath updater =
-#if BUILDFLAG(IS_MAC)
-      this_executable_path.DirName().Append(
-          updater::GetExecutableRelativePath());
-#else
-      this_executable_path.DirName().Append(
-          FILE_PATH_LITERAL("updater_test" EXECUTABLE_EXTENSION));
-#endif  // BUILDFLAG(IS_MAC)
+  const base::FilePath updater = this_executable_path.DirName().Append(
+      updater::GetExecutableRelativePath());
 
   base::LaunchOptions options;
 #if BUILDFLAG(IS_WIN)
@@ -50,3 +44,23 @@ TEST(UpdaterTest, UpdaterExitCode) {
   EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(60), &exit_code));
   EXPECT_EQ(0, exit_code);
 }
+
+#if BUILDFLAG(IS_WIN)
+// Tests that the updater test target version resource contains specific
+// information to disambiguate the binary. For Windows builds and during tests,
+// the "updater_test.exe" file is being installed as "updater.exe", therefore
+// it is useful to tell them apart.
+TEST(UpdaterTest, UpdaterTestVersionResource) {
+  base::FilePath this_executable_path;
+  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &this_executable_path));
+
+  const base::FilePath executable_test(FILE_PATH_LITERAL("updater_test.exe"));
+  const std::unique_ptr<FileVersionInfoWin> version_info =
+      FileVersionInfoWin::CreateFileVersionInfoWin(
+          this_executable_path.DirName().Append(executable_test));
+
+  EXPECT_EQ(version_info->original_filename(), executable_test.AsUTF16Unsafe());
+}
+#endif
+
+}  // namespace updater

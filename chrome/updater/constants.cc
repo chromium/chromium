@@ -15,6 +15,12 @@ const char kQualificationAppId[] = "{6f0f9a34-a0ab-4a75-a0eb-6eab78d0dc4b}";
 
 const char kNullVersion[] = "0.0.0.0";
 
+#if BUILDFLAG(IS_WIN)
+const char kExecutableName[] = "updater.exe";
+#else
+const char kExecutableName[] = "updater";
+#endif
+
 // Command line arguments.
 // If a command line switch is marked as `needs backward-compatibility`, it
 // means the switch name cannot be changed, and the parser must be able to

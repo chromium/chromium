@@ -163,24 +163,23 @@ int Setup(UpdaterScope scope) {
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
-  static constexpr base::FilePath::StringPieceType kUpdaterExe =
-      FILE_PATH_LITERAL("updater.exe");
+  const base::FilePath updater_exe = GetExecutableRelativePath();
 
-  AddComInterfacesWorkItems(key, versioned_dir->Append(kUpdaterExe),
+  AddComInterfacesWorkItems(key, versioned_dir->Append(updater_exe),
                             install_list.get());
   switch (scope) {
     case UpdaterScope::kUser:
-      AddComServerWorkItems(versioned_dir->Append(kUpdaterExe),
+      AddComServerWorkItems(versioned_dir->Append(updater_exe),
                             install_list.get());
       break;
     case UpdaterScope::kSystem:
-      AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe), true,
+      AddComServiceWorkItems(versioned_dir->Append(updater_exe), true,
                              install_list.get());
       break;
   }
 
   base::CommandLine run_updater_wake_command(
-      versioned_dir->Append(kUpdaterExe));
+      versioned_dir->Append(updater_exe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
   if (scope == UpdaterScope::kSystem)
     run_updater_wake_command.AppendSwitch(kSystemSwitch);

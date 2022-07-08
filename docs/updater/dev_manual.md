@@ -50,6 +50,15 @@ Example:
 ### Accessing Bots
  TODO(crbug.com/1327486): Document how to remote into bots for debugging.
 
+## Building
+
+### Cleaning the build output
+Running `ninja` with `t clean` cleans the build out directory. For example:
+```
+ninja -C out\Default chrome/updater:all -t clean
+```
+
+
 ## Debugging
 ### Debug into Windows update service
 

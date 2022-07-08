@@ -26,44 +26,41 @@ config("wrl_strict") {
   defines = [ "__WRL_CLASSIC_COM_STRICT__" ]
 }
 
-executable("updater") {
+source_set("updater_executable") {
   sources = [
     "main.cc",
     "updater.rc",
   ]
 
-  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
-  configs += [ "//build/config/win:windowed" ]
-
   deps = [
-    ":version_resources",
     "//build/win:default_exe_manifest",
     "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
     "//chrome/updater/win/ui/resources",
   ]
 
   data_deps = [ ":uninstall.cmd" ]
 }
 
-executable("updater_test") {
-  sources = [
-    "main.cc",
-    "updater.rc",
-  ]
-
+executable("updater") {
   configs -= [ "//build/config/compiler:cet_shadow_stack" ]
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
+    ":updater_executable",
     ":version_resources",
-    "//build/win:default_exe_manifest",
-    "//chrome/updater:base",
-    "//chrome/updater:constants_test",
-    "//chrome/updater/win/ui/resources",
+    "//chrome/updater:constants_prod",
   ]
+}
 
-  data_deps = [ ":uninstall.cmd" ]
+executable("updater_test") {
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
+  configs += [ "//build/config/win:windowed" ]
+
+  deps = [
+    ":updater_executable",
+    ":version_resources_test",
+    "//chrome/updater:constants_test",
+  ]
 }
 
 copy("signing") {
@@ -111,6 +108,19 @@ process_version_rc_template("version_resources") {
   }
   sources = [ "updater.ver" ]
   output = "$target_gen_dir/updater_exe.rc"
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$_product_fullname\"",
+  ]
+}
+
+process_version_rc_template("version_resources_test") {
+  _product_fullname = "$updater_product_full_name (test) " + "($current_cpu)"
+  if (is_debug) {
+    _product_fullname += " (debug)"
+  }
+  sources = [ "updater_test.ver" ]
+  output = "$target_gen_dir/updater_test_exe.rc"
   extra_args = [
     "-e",
     "PRODUCT_FULLNAME=\"$_product_fullname\"",
