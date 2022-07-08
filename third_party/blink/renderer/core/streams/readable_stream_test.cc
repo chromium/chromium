@@ -4,9 +4,13 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -21,6 +25,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/core/streams/test_utils.h"
+#include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -32,6 +37,11 @@
 namespace blink {
 
 namespace {
+
+using ::testing::_;
+using ::testing::ByMove;
+using ::testing::Mock;
+using ::testing::Return;
 
 // Web platform tests test ReadableStream more thoroughly from scripts.
 class ReadableStreamTest : public testing::Test {
@@ -576,6 +586,231 @@ TEST_F(ReadableStreamTest, GarbageCollectCPlusPlusUnderlyingSource) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_FALSE(weak_underlying_source);
+}
+
+class ReadableByteStreamTest : public testing::Test {
+ public:
+  ReadableByteStreamTest() = default;
+
+  ReadableStream* Stream() const { return stream_; }
+
+  void Init(ScriptState* script_state,
+            UnderlyingByteSourceBase* underlying_byte_source,
+            ExceptionState& exception_state) {
+    stream_ = ReadableStream::CreateByteStream(
+        script_state, underlying_byte_source, exception_state);
+  }
+
+  // This takes the |stream| property of ReadableStream and copies it onto the
+  // global object so it can be accessed by Eval().
+  void CopyStreamToGlobal(const V8TestingScope& scope) {
+    auto* script_state = scope.GetScriptState();
+    ReadableStream* stream = Stream();
+    v8::Local<v8::Object> global = script_state->GetContext()->Global();
+    EXPECT_TRUE(global
+                    ->Set(scope.GetContext(),
+                          V8String(scope.GetIsolate(), "stream"),
+                          ToV8Traits<ReadableStream>::ToV8(script_state, stream)
+                              .ToLocalChecked())
+                    .IsJust());
+  }
+
+ private:
+  Persistent<ReadableStream> stream_;
+};
+
+// A convenient base class to make tests shorter. Subclasses need not implement
+// both Pull() and Cancel(), and can override the void versions to avoid
+// the need to create a promise to return. Not appropriate for use in
+// production.
+class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
+ public:
+  explicit TestUnderlyingByteSource(ScriptState* script_state)
+      : script_state_(script_state) {}
+
+  virtual void PullVoid(ReadableByteStreamController*, ExceptionState&) {}
+
+  ScriptPromise Pull(ReadableByteStreamController* controller,
+                     ExceptionState& exception_state) override {
+    PullVoid(controller, exception_state);
+    return ScriptPromise::CastUndefined(script_state_);
+  }
+
+  virtual void CancelVoid(v8::Local<v8::Value>, ExceptionState&) {}
+
+  ScriptPromise Cancel(ExceptionState& exception_state) override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  }
+
+  ScriptPromise Cancel(v8::Local<v8::Value> reason,
+                       ExceptionState& exception_state) override {
+    CancelVoid(reason, exception_state);
+    return ScriptPromise::CastUndefined(script_state_);
+  }
+
+  ScriptState* GetScriptState() override { return script_state_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
+    UnderlyingByteSourceBase::Trace(visitor);
+  }
+
+ private:
+  const Member<ScriptState> script_state_;
+};
+
+class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
+ public:
+  explicit MockUnderlyingByteSource(ScriptState* script_state)
+      : script_state_(script_state) {}
+
+  MOCK_METHOD2(Pull,
+               ScriptPromise(ReadableByteStreamController*, ExceptionState&));
+  MOCK_METHOD1(Cancel, ScriptPromise(ExceptionState&));
+  MOCK_METHOD2(Cancel,
+               ScriptPromise(v8::Local<v8::Value> reason, ExceptionState&));
+
+  ScriptState* GetScriptState() override { return script_state_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
+    UnderlyingByteSourceBase::Trace(visitor);
+  }
+
+ private:
+  const Member<ScriptState> script_state_;
+};
+
+TEST_F(ReadableByteStreamTest, Construct) {
+  V8TestingScope scope;
+  Init(scope.GetScriptState(),
+       MakeGarbageCollected<TestUnderlyingByteSource>(scope.GetScriptState()),
+       ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(Stream());
+}
+
+TEST_F(ReadableByteStreamTest, PullIsCalled) {
+  V8TestingScope scope;
+  auto* mock =
+      MakeGarbageCollected<MockUnderlyingByteSource>(scope.GetScriptState());
+  Init(scope.GetScriptState(), mock, ASSERT_NO_EXCEPTION);
+  // Need to run microtasks so the startAlgorithm promise resolves.
+  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  CopyStreamToGlobal(scope);
+
+  EXPECT_CALL(*mock, Pull(_, _))
+      .WillOnce(
+          Return(ByMove(ScriptPromise::CastUndefined(scope.GetScriptState()))));
+
+  EvalWithPrintingError(
+      &scope, "stream.getReader({ mode: 'byob' }).read(new Uint8Array(1));\n");
+
+  Mock::VerifyAndClear(mock);
+  Mock::AllowLeak(mock);
+}
+
+TEST_F(ReadableByteStreamTest, CancelIsCalled) {
+  V8TestingScope scope;
+  auto* mock =
+      MakeGarbageCollected<MockUnderlyingByteSource>(scope.GetScriptState());
+  Init(scope.GetScriptState(), mock, ASSERT_NO_EXCEPTION);
+  // Need to run microtasks so the startAlgorithm promise resolves.
+  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  CopyStreamToGlobal(scope);
+
+  EXPECT_CALL(*mock, Cancel(_, _))
+      .WillOnce(
+          Return(ByMove(ScriptPromise::CastUndefined(scope.GetScriptState()))));
+
+  EvalWithPrintingError(&scope,
+                        "const reader = stream.getReader({ mode: 'byob' });\n"
+                        "reader.cancel('a');\n");
+
+  Mock::VerifyAndClear(mock);
+  Mock::AllowLeak(mock);
+};
+
+bool IsTypeError(ScriptState* script_state,
+                 ScriptValue value,
+                 const String& message) {
+  v8::Local<v8::Object> object;
+  if (!value.V8Value()->ToObject(script_state->GetContext()).ToLocal(&object)) {
+    return false;
+  }
+  if (!object->IsNativeError())
+    return false;
+
+  const auto& Has = [script_state, object](const String& key,
+                                           const String& value) -> bool {
+    v8::Local<v8::Value> actual;
+    return object
+               ->Get(script_state->GetContext(),
+                     V8AtomicString(script_state->GetIsolate(), key))
+               .ToLocal(&actual) &&
+           ToCoreStringWithUndefinedOrNullCheck(actual) == value;
+  };
+
+  return Has("name", "TypeError") && Has("message", message);
+}
+
+TEST_F(ReadableByteStreamTest, ThrowFromPull) {
+  static constexpr char kMessage[] = "errorInPull";
+  class ThrowFromPullUnderlyingByteSource final
+      : public TestUnderlyingByteSource {
+   public:
+    explicit ThrowFromPullUnderlyingByteSource(ScriptState* script_state)
+        : TestUnderlyingByteSource(script_state) {}
+
+    void PullVoid(ReadableByteStreamController*,
+                  ExceptionState& exception_state) override {
+      exception_state.ThrowTypeError(kMessage);
+    }
+  };
+
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  Init(script_state,
+       MakeGarbageCollected<ThrowFromPullUnderlyingByteSource>(script_state),
+       ASSERT_NO_EXCEPTION);
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester read_tester(
+      script_state, reader->read(script_state, view, ASSERT_NO_EXCEPTION));
+  read_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_tester.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
+}
+
+TEST_F(ReadableByteStreamTest, ThrowFromCancel) {
+  static constexpr char kMessage[] = "errorInCancel";
+  class ThrowFromCancelUnderlyingByteSource final
+      : public TestUnderlyingByteSource {
+   public:
+    explicit ThrowFromCancelUnderlyingByteSource(ScriptState* script_state)
+        : TestUnderlyingByteSource(script_state) {}
+
+    void CancelVoid(v8::Local<v8::Value>,
+                    ExceptionState& exception_state) override {
+      exception_state.ThrowTypeError(kMessage);
+    }
+  };
+
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  Init(script_state,
+       MakeGarbageCollected<ThrowFromCancelUnderlyingByteSource>(script_state),
+       ASSERT_NO_EXCEPTION);
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester read_tester(
+      script_state, reader->cancel(script_state, ASSERT_NO_EXCEPTION));
+  read_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_tester.IsRejected());
+  EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
 }
 
 }  // namespace

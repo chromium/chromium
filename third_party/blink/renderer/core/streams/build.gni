@@ -43,6 +43,7 @@ blink_core_sources_streams = [
   "transform_stream_default_controller.cc",
   "transform_stream_default_controller.h",
   "transform_stream_transformer.h",
+  "underlying_byte_source_base.h",
   "underlying_sink_base.cc",
   "underlying_sink_base.h",
   "underlying_source_base.cc",
