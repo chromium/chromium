@@ -21,7 +21,6 @@ goog.require('OutputContextOrder');
 goog.require('OutputEarconAction');
 goog.require('OutputEventType');
 goog.require('OutputNodeSpan');
-goog.require('OutputRoleInfo');
 goog.require('OutputSelectionSpan');
 goog.require('OutputSpeechProperties');
 goog.require('PanelNodeMenuData');

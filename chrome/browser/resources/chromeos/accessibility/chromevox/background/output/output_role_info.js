@@ -6,8 +6,6 @@
  * @fileoverview Roel information for the Output module.
  */
 
-goog.provide('OutputRoleInfo');
-
 /**
  * Metadata about supported automation roles.
  * @const {Object<{msgId: string,
@@ -25,7 +23,7 @@ goog.provide('OutputRoleInfo');
  * verboseAncestry: causes ancestry output to not reject duplicated roles. May
  * be desirable when wanting start and end span-like output.
  */
-const OutputRoleInfo = {
+export const OutputRoleInfo = {
   abbr: {msgId: 'tag_abbr', inherits: 'abstractContainer'},
   alert: {msgId: 'role_alert'},
   alertDialog:

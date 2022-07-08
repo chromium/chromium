@@ -8,6 +8,7 @@
  */
 import {EditableLine} from '/chromevox/background/editing/editable_line.js';
 import {Output} from '/chromevox/background/output/output.js';
+import {OutputRoleInfo} from '/chromevox/background/output/output_role_info.js';
 import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;

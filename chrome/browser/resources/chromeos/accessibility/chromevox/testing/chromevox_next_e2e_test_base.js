@@ -28,10 +28,6 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     }
 
     this.originalOutputContextValues_ = {};
-    for (const role in OutputRoleInfo) {
-      this.originalOutputContextValues_[role] =
-          OutputRoleInfo[role]['contextOrder'];
-    }
   }
 
   /** @override */
@@ -125,9 +121,16 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
       await importModule(
           'GestureCommandHandler',
           '/chromevox/background/gesture_command_handler.js');
+      await importModule(
+          'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
 
       // For tests, enable announcement of events we trigger via automation.
       BaseAutomationHandler.announceActions = true;
+
+      for (const role in OutputRoleInfo) {
+        this.originalOutputContextValues_[role] =
+            OutputRoleInfo[role]['contextOrder'];
+      }
     }
   }
 

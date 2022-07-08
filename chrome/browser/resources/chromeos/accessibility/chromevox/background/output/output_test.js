@@ -98,17 +98,15 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
  */
 ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    super.setUp();
-    window.Dir = AutomationUtil.Dir;
-    this.forceContextualLastOutput();
-  }
-
-  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('Output', '/chromevox/background/output/output.js');
+    await importModule(
+        'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
     await importModule('CursorRange', '/common/cursors/range.js');
+
+    window.Dir = AutomationUtil.Dir;
+    this.forceContextualLastOutput();
   }
 };
 

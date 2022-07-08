@@ -14,4 +14,5 @@ goog.require('KeyCode');
 goog.require('LibLouis');
 goog.require('Msgs');
 goog.require('NavBraille');
+goog.require('OutputContextOrder');
 goog.require('Spannable');

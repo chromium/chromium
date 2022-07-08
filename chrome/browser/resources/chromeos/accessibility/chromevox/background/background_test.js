@@ -13,13 +13,13 @@ GEN_INCLUDE(['../testing/fake_objects.js']);
 ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
+
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;
     window.press = this.press;
     window.Mod = constants.ModifierFlag;
     window.ActionType = chrome.automation.ActionType;
-
-    this.forceContextualLastOutput();
 
     await importModule(
         'BackgroundKeyboardHandler',
@@ -54,7 +54,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/background/page_load_sound_handler.js');
     await importModule(
         'PointerHandler', '/chromevox/background/pointer_handler.js');
-    await super.setUpDeferred();
+
+    this.forceContextualLastOutput();
   }
 
   simulateHitTestResult(node) {

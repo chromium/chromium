@@ -10,14 +10,6 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  */
 ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    super.setUp();
-    window.EventType = chrome.automation.EventType;
-
-    this.forceContextualLastOutput();
-  }
-
-  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
@@ -25,6 +17,9 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule('CursorRange', '/common/cursors/range.js');
+
+    window.EventType = chrome.automation.EventType;
+    this.forceContextualLastOutput();
   }
 
   /** @return {chrome.automation.AutomationNode} */

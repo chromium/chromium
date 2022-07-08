@@ -11,6 +11,7 @@ import {OutputAncestryInfo} from '/chromevox/background/output/output_ancestry_i
 import {OutputFormatParser, OutputFormatParserObserver} from '/chromevox/background/output/output_format_parser.js';
 import {OutputFormatTree} from '/chromevox/background/output/output_format_tree.js';
 import {OutputRulesStr} from '/chromevox/background/output/output_logger.js';
+import {OutputRoleInfo} from '/chromevox/background/output/output_role_info.js';
 import {PhoneticData} from '/chromevox/background/phonetic_data.js';
 import {EventSourceType} from '/chromevox/common/event_source_type.js';
 import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
