@@ -31,8 +31,6 @@ const base::Feature kEnableFuzzyAppSearch{"EnableFuzzyAppSearch",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableExactMatchForNonLatinLocale{
     "EnableExactMatchForNonLatinLocale", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableLauncherSearchNormalization{
-    "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 // DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
@@ -83,10 +81,6 @@ bool IsFuzzyAppSearchEnabled() {
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
   return base::FeatureList::IsEnabled(kEnableExactMatchForNonLatinLocale);
-}
-
-bool IsLauncherSearchNormalizationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLauncherSearchNormalization);
 }
 
 std::string AppSearchResultRankerPredictorName() {

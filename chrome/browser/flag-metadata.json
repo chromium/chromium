@@ -4075,11 +4075,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "launcher-search-normalization",
-    "owners": ["wrong", "tby"],
-    "expiry_milestone": 101
-  },
-  {
     "name": "lazily-create-web-state-on-restoration",
     "owners": ["olivierrobin", "sdefresne"],
     "expiry_milestone": 105
