@@ -158,7 +158,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1836215606488044471">Asistente (cargando...)</translation>
 <translation id="1838895407229022812">Luz nocturna desactivada.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
-<translation id="1879018240766558464">Las ventanas de incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
+<translation id="1879018240766558464">Las ventanas de Incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Proyectando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear con huella digital</translation>
@@ -759,7 +759,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5400461572260843123">Ajustes rápidos. Pulsa la tecla de búsqueda y la flecha izquierda para acceder al centro de notificaciones.</translation>
 <translation id="5426063383988017631">Menú Ajustes cerrado</translation>
 <translation id="5428899915242071344">Empezar a seleccionar</translation>
-<translation id="5429993543155113935">Las ventanas de incógnito no se admiten actualmente</translation>
+<translation id="5429993543155113935">Las ventanas de Incógnito no se admiten actualmente</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433020815079095860">Entrada de audio</translation>
@@ -919,7 +919,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6431865393913628856">Grabar pantalla</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, eventos: <ph name="NUMBER" /></translation>
-<translation id="6449483711453944360">Las aplicaciones Linux y las ventanas de incógnito no se admiten actualmente</translation>
+<translation id="6449483711453944360">Las aplicaciones Linux y las ventanas de Incógnito no se admiten actualmente</translation>
 <translation id="6452181791372256707">Rechazar</translation>
 <translation id="6453179446719226835">Se ha cambiado el idioma</translation>
 <translation id="6459472438155181876">Extendiendo pantalla a <ph name="DISPLAY_NAME" /></translation>
@@ -1103,7 +1103,7 @@ Nueva instalación</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
-<translation id="7543399541175347147">Las aplicaciones Linux y las ventanas de incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
+<translation id="7543399541175347147">Las aplicaciones Linux y las ventanas de Incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
 <translation id="7544300628205093162">La retroiluminación del teclado está activada</translation>
 <translation id="7548434653388805669">Es hora de acostarse</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
