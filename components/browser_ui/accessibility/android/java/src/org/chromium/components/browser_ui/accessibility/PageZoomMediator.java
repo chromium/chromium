@@ -18,8 +18,6 @@ import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
-
 /**
  * Internal Mediator for the page zoom feature. Created by the |PageZoomCoordinator|, and should
  * not be accessed outside the component.
@@ -82,9 +80,7 @@ public class PageZoomMediator {
     void handleDecreaseClicked(Void unused) {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
         double currentZoomFactor = getZoomLevel(mWebContents);
-        if (currentZoomFactor <= AVAILABLE_ZOOM_FACTORS[0]) return;
-
-        int index = getNextIndex(true, currentZoomFactor);
+        int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
 
         if (index >= 0) {
             mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
@@ -98,9 +94,7 @@ public class PageZoomMediator {
     void handleIncreaseClicked(Void unused) {
         // When increasing zoom, "snap" to the smallest preset value that is more than the current.
         double currentZoomFactor = getZoomLevel(mWebContents);
-        if (currentZoomFactor >= AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]) return;
-
-        int index = getNextIndex(false, currentZoomFactor);
+        int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
 
         if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
             mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
@@ -128,36 +122,7 @@ public class PageZoomMediator {
         updateButtonStates(currentZoomFactor);
     }
 
-    private int getNextIndex(boolean decrease, double currentZoomFactor) {
-        // BinarySearch will return the index of the first value equal to or greater than the given.
-        // Otherwise it will return (-(index) - 1). If this is the case add one and negate.
-        int index = Arrays.binarySearch(AVAILABLE_ZOOM_FACTORS, currentZoomFactor);
-
-        // If the value is found, index will be >=0 and we will decrement/increment accordingly:
-        if (index >= 0) {
-            if (decrease) {
-                --index;
-            } else {
-                ++index;
-            }
-        }
-
-        // If the value is not found, index will be (-(index) - 1), so negate and add one:
-        if (index < 0) {
-            index = ++index * -1;
-
-            // Index will now be the first index above the current value, so in the case of
-            // decreasing zoom, we will decrement once.
-            if (decrease) --index;
-        }
-
-        return index;
-    }
-
     private void updateButtonStates(double newZoomFactor) {
-        // Round the new zoom factor to two decimal places (since our preset values are rounded).
-        newZoomFactor = (double) Math.round(newZoomFactor * 100) / 100;
-
         // If the new zoom factor is greater than the minimum zoom factor, enable decrease button.
         mModel.set(PageZoomProperties.DECREASE_ZOOM_ENABLED,
                 newZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
@@ -175,6 +140,6 @@ public class PageZoomMediator {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     double getZoomLevel(@NonNull WebContents webContents) {
-        return HostZoomMap.getZoomLevel(webContents);
+        return PageZoomUtils.roundTwoDecimalPlaces(HostZoomMap.getZoomLevel(webContents));
     }
 }

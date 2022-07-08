@@ -9,6 +9,8 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 
+import java.util.Arrays;
+
 /**
  * General purpose utils class for page zoom feature. This is for methods that are shared by both
  * the settings UI and the MVC component (e.g. shared prefs calls), and is accessed by each
@@ -83,7 +85,9 @@ public class PageZoomUtils {
         // 1.2^3.8 = 2.0. See: third_party/blink/common/page/page_zoom.cc
         // This means zoomFactor = log_base1.2(chosenZoomLevel). Java has natural log and base
         // 10, we can rewrite the above as: log10(chosenZoomLevel) / log10(1.2);
-        return Math.log10(chosenZoomLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
+        double result = Math.log10(chosenZoomLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
+
+        return roundTwoDecimalPlaces(result);
     }
 
     /**
@@ -102,7 +106,7 @@ public class PageZoomUtils {
         double zoomLevelPercent = (double) (zoomLevel - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
                 / (PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL);
 
-        return (int) (PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE * zoomLevelPercent);
+        return (int) Math.round(PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE * zoomLevelPercent);
     }
 
     /**
@@ -158,6 +162,64 @@ public class PageZoomUtils {
                 .edit()
                 .putBoolean(AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM, newValue)
                 .apply();
+    }
+
+    /**
+     * Get the index of the next closest zoom factor in the cached available values in the given
+     * direction from the current zoom factor.
+     * Current zoom factor must be within range of possible zoom factors.
+     * @param decrease boolean      True if the next index should be decreasing from the current,
+     *         false otherwise
+     * @param currentZoomFactor double      The current zoom factor for which to search
+     * @return int      The index of the next closest zoom factor
+     */
+    public static int getNextIndex(boolean decrease, double currentZoomFactor) {
+        // Assert valid current zoom factor
+        if (decrease) {
+            assert currentZoomFactor > PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0];
+        } else {
+            assert currentZoomFactor
+                    < PageZoomUtils
+                              .AVAILABLE_ZOOM_FACTORS[PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length
+                                      - 1];
+        }
+
+        // BinarySearch will return the index of the first value equal to the given value.
+        // Otherwise it will return (-(insertion point) - 1).
+        // If a negative value is returned, then add one and negate to get the insertion point.
+        int index = Arrays.binarySearch(AVAILABLE_ZOOM_FACTORS, currentZoomFactor);
+
+        // If the value is found, index will be >=0 and we will decrement/increment accordingly:
+        if (index >= 0) {
+            if (decrease) {
+                --index;
+            } else {
+                ++index;
+            }
+        }
+
+        // If the value is not found, index will be (-(index) - 1), so negate and add one:
+        if (index < 0) {
+            index = ++index * -1;
+
+            // Index will now be the first index above the current value, so in the case of
+            // decreasing zoom, we will decrement once.
+            if (decrease) --index;
+        }
+
+        return index;
+    }
+
+    /**
+     * Round the given value to two decimal places.
+     * The zoom factors are stored with two decimal places so this is used for consistent and
+     * accurate comparisons.
+     *
+     * @param value double      The value to round
+     * @return double       The value rounded to two decimal places
+     */
+    public static double roundTwoDecimalPlaces(double value) {
+        return (double) Math.round(value * 100) / 100;
     }
 
     // Methods that interact with Prefs.
