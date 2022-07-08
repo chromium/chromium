@@ -114,6 +114,17 @@ class SidePanelContentSwappingContainer : public views::View {
     }
   }
 
+  void ResetLoadingEntryIfNecessary() {
+    if (loading_entry_ && loading_entry_->CachedView()) {
+      // The available callback here is used for showing the entry once it has
+      // loaded. We need to reset this to make sure it is not triggered to be
+      // shown once available.
+      SidePanelUtil::GetSidePanelContentProxy(loading_entry_->CachedView())
+          ->ResetAvailableCallback();
+    }
+    loading_entry_ = nullptr;
+  }
+
   SidePanelEntry* loading_entry() const { return loading_entry_; }
 
  private:
@@ -122,14 +133,6 @@ class SidePanelContentSwappingContainer : public views::View {
     SidePanelEntry* entry = loading_entry_;
     loading_entry_ = nullptr;
     std::move(loaded_callback_).Run(entry, absl::nullopt);
-  }
-
-  void ResetLoadingEntryIfNecessary() {
-    if (loading_entry_ && loading_entry_->CachedView()) {
-      SidePanelUtil::GetSidePanelContentProxy(loading_entry_->CachedView())
-          ->ResetAvailableCallback();
-    }
-    loading_entry_ = nullptr;
   }
 
   // When true, don't delay switching panels.
@@ -194,11 +197,19 @@ void SidePanelCoordinator::Show(
           GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
 
-  auto* current_entry = content_wrapper->loading_entry()
-                            ? content_wrapper->loading_entry()
-                            : current_entry_.get();
-  // Do not load the same entry if it's already loading or loaded.
-  if (current_entry == entry) {
+  // If we are already loading this entry, do nothing.
+  if (content_wrapper->loading_entry() == entry)
+    return;
+
+  // If we are already showing this entry, make sure we prevent any loading
+  // entry from showing once the load has finished. Say if we are showing A then
+  // trigger B to show but switch back to A while B is still loading (and not
+  // yet shown) we want to make sure B will not then be shown when it has
+  // finished loading. Note, this does not cancel the triggered load of B, B
+  // remains cached.
+  if (current_entry_.get() == entry) {
+    if (content_wrapper->loading_entry())
+      content_wrapper->ResetLoadingEntryIfNecessary();
     return;
   }
 
@@ -287,6 +298,14 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
 SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
     const {
   return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
+}
+
+SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
+  SidePanelContentSwappingContainer* content_wrapper =
+      static_cast<SidePanelContentSwappingContainer*>(
+          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
+  DCHECK(content_wrapper);
+  return content_wrapper->loading_entry();
 }
 
 bool SidePanelCoordinator::IsSidePanelShowing() {

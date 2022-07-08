@@ -62,6 +62,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   SidePanelEntry::Id GetComboboxDisplayedEntryIdForTesting() const;
 
+  SidePanelEntry* GetLoadingEntryForTesting() const;
+
   bool IsSidePanelShowing();
 
   void AddSidePanelViewStateObserver(SidePanelViewStateObserver* observer);

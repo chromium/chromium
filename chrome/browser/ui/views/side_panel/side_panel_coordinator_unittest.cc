@@ -809,10 +809,24 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
         }));
     loading_content_entry2_ = entry2.get();
     global_registry_->Register(std::move(entry2));
+
+    // Add a kAssistant entry to the global registry with content available.
+    std::unique_ptr<SidePanelEntry> entry3 = std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kAssistant, u"testing3",
+        ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+        base::BindRepeating([]() {
+          auto view = std::make_unique<views::View>();
+          SidePanelUtil::GetSidePanelContentProxy(view.get())
+              ->SetAvailable(true);
+          return view;
+        }));
+    loaded_content_entry1_ = entry3.get();
+    global_registry_->Register(std::move(entry3));
   }
 
   raw_ptr<SidePanelEntry> loading_content_entry1_;
   raw_ptr<SidePanelEntry> loading_content_entry2_;
+  raw_ptr<SidePanelEntry> loaded_content_entry1_;
 };
 
 TEST_F(SidePanelCoordinatorLoadingContentTest,
@@ -843,6 +857,106 @@ TEST_F(SidePanelCoordinatorLoadingContentTest,
             loading_content_entry1_->id());
   // Set as available and make sure the combobox has updated.
   loading_content_proxy->SetAvailable(true);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry2_->id());
+}
+
+TEST_F(SidePanelCoordinatorLoadingContentTest,
+       TriggerSwitchToNewEntryDuringContentLoad) {
+  coordinator_->Show(loaded_content_entry1_->id());
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loaded_content_entry1_->id());
+
+  // Switch to loading_content_entry1_ that has loading content.
+  coordinator_->Show(loading_content_entry1_->id());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), loaded_content_entry1_->id());
+  views::View* loading_content1 = loading_content_entry1_->CachedView();
+  EXPECT_NE(loading_content1, nullptr);
+  SidePanelContentProxy* loading_content_proxy1 =
+      SidePanelUtil::GetSidePanelContentProxy(loading_content1);
+  EXPECT_FALSE(loading_content_proxy1->IsAvailable());
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loaded_content_entry1_->id());
+  // Verify the loading_content_entry1_ is the loading entry.
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), loading_content_entry1_);
+
+  // While that entry is loading, switch to a different entry with content that
+  // needs to load.
+  coordinator_->Show(loading_content_entry2_->id());
+  views::View* loading_content2 = loading_content_entry2_->CachedView();
+  EXPECT_NE(loading_content2, nullptr);
+  SidePanelContentProxy* loading_content_proxy2 =
+      SidePanelUtil::GetSidePanelContentProxy(loading_content2);
+  EXPECT_FALSE(loading_content_proxy2->IsAvailable());
+  // Verify the loading_content_entry2_ is no longer the loading entry.
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), loading_content_entry2_);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loaded_content_entry1_->id());
+
+  // Set loading_content_entry1_ as available and verify it is not made the
+  // active entry.
+  loading_content_proxy1->SetAvailable(true);
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), loading_content_entry2_);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loaded_content_entry1_->id());
+
+  // Set loading_content_entry2_ as available and verify it is made the active
+  // entry.
+  loading_content_proxy2->SetAvailable(true);
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), nullptr);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry2_->id());
+}
+
+TEST_F(SidePanelCoordinatorLoadingContentTest,
+       TriggerSwitchToCurrentVisibleEntryDuringContentLoad) {
+  coordinator_->Show(loading_content_entry1_->id());
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  // A loading entry's view should be stored as the cached view and be
+  // unavailable.
+  views::View* loading_content = loading_content_entry1_->CachedView();
+  EXPECT_NE(loading_content, nullptr);
+  SidePanelContentProxy* loading_content_proxy1 =
+      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+  EXPECT_FALSE(loading_content_proxy1->IsAvailable());
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), loading_content_entry1_);
+  // Set the content proxy to available.
+  loading_content_proxy1->SetAvailable(true);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  // Switch to loading_content_entry2_ that has loading content.
+  coordinator_->Show(loading_content_entry2_->id());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), loading_content_entry1_->id());
+  loading_content = loading_content_entry2_->CachedView();
+  EXPECT_NE(loading_content, nullptr);
+  SidePanelContentProxy* loading_content_proxy2 =
+      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+  EXPECT_FALSE(loading_content_proxy2->IsAvailable());
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry1_->id());
+  // Verify the loading_content_entry2_ is the loading entry.
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), loading_content_entry2_);
+
+  // While that entry is loading, switch back to the currently showing entry.
+  coordinator_->Show(loading_content_entry1_->id());
+  // Verify the loading_content_entry2_ is no longer the loading entry.
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), nullptr);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry1_->id());
+
+  // Set loading_content_entry2_ as available and verify it is not made the
+  // active entry.
+  loading_content_proxy2->SetAvailable(true);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry1_->id());
+
+  // Show loading_content_entry2_ and verify it shows without availability
+  // needing to be set again.
+  coordinator_->Show(loading_content_entry2_->id());
+  EXPECT_EQ(coordinator_->GetLoadingEntryForTesting(), nullptr);
   EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
             loading_content_entry2_->id());
 }
