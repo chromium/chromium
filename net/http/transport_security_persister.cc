@@ -102,7 +102,7 @@ bool IsDynamicExpectCTEnabled() {
 }
 
 // Serializes STS data from |state| to a Value.
-base::Value SerializeSTSData(const TransportSecurityState* state) {
+base::Value::List SerializeSTSData(const TransportSecurityState* state) {
   base::Value::List sts_list;
 
   TransportSecurityState::STSStateIterator sts_iterator(*state);
@@ -128,7 +128,7 @@ base::Value SerializeSTSData(const TransportSecurityState* state) {
 
     sts_list.Append(std::move(serialized));
   }
-  return base::Value(std::move(sts_list));
+  return sts_list;
 }
 
 // Deserializes STS data from a Value created by the above method.
@@ -182,11 +182,11 @@ void DeserializeSTSData(const base::Value& sts_list,
 }
 
 // Serializes Expect-CT data from |state| to a Value.
-base::Value SerializeExpectCTData(TransportSecurityState* state) {
+base::Value::List SerializeExpectCTData(TransportSecurityState* state) {
   base::Value::List ct_list;
 
   if (!IsDynamicExpectCTEnabled())
-    return base::Value(std::move(ct_list));
+    return ct_list;
 
   TransportSecurityState::ExpectCTStateIterator expect_ct_iterator(*state);
   for (; expect_ct_iterator.HasNext(); expect_ct_iterator.Advance()) {
@@ -213,7 +213,7 @@ base::Value SerializeExpectCTData(TransportSecurityState* state) {
     ct_list.Append(std::move(ct_entry));
   }
 
-  return base::Value(std::move(ct_list));
+  return ct_list;
 }
 
 // Deserializes Expect-CT data from a Value created by the above method.
