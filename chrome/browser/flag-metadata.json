@@ -1450,6 +1450,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "drop-input-events-before-first-paint",
+    "owners": [ "mehdika", "blink-interactions-team@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "durable-client-hints-cache",
     "owners": [ "abeyad", "aarontag"],
     "expiry_milestone": 110

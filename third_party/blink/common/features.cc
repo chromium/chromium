@@ -467,6 +467,10 @@ const base::Feature kTextFragmentAnchor{"TextFragmentAnchor",
 const base::Feature kCssSelectorFragmentAnchor{
     "CssSelectorFragmentAnchor", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Drop input events before user sees first paint https://crbug.com/1255485
+const base::Feature kDropInputEventsBeforeFirstPaint{
+    "DropInputEventsBeforeFirstPaint", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // File handling integration. https://crbug.com/829689
 const base::Feature kFileHandlingAPI {
   "FileHandlingAPI",

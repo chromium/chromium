@@ -5945,6 +5945,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCssSelectorFragmentAnchorDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCssSelectorFragmentAnchor)},
 
+    {"drop-input-events-before-first-paint",
+     flag_descriptions::kDropInputEventsBeforeFirstPaintName,
+     flag_descriptions::kDropInputEventsBeforeFirstPaintDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kDropInputEventsBeforeFirstPaint)},
+
     {"enable-resampling-input-events",
      flag_descriptions::kEnableResamplingInputEventsName,
      flag_descriptions::kEnableResamplingInputEventsDescription, kOsAll,

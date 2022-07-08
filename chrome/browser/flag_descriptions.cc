@@ -1298,6 +1298,13 @@ const char kReduceHorizontalFlingVelocityDescription[] =
     "Reduces the velocity of horizontal flings to 20% of their original"
     "velocity.";
 
+extern const char kDropInputEventsBeforeFirstPaintName[] =
+    "Drop Input Events Before First Paint";
+extern const char kDropInputEventsBeforeFirstPaintDescription[] =
+    "Before the user can see the first paint of a new page they cannot "
+    "intentionally interact with elements on that page. By dropping the events "
+    "we prevent accidental interaction with a page the user has not seen yet.";
+
 const char kEnableCssSelectorFragmentAnchorName[] =
     "Enables CSS selector fragment anchors";
 const char kEnableCssSelectorFragmentAnchorDescription[] =

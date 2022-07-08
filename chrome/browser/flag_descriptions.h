@@ -724,6 +724,9 @@ extern const char kReduceHorizontalFlingVelocityDescription[];
 extern const char kRetailCouponsName[];
 extern const char kRetailCouponsDescription[];
 
+extern const char kDropInputEventsBeforeFirstPaintName[];
+extern const char kDropInputEventsBeforeFirstPaintDescription[];
+
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 

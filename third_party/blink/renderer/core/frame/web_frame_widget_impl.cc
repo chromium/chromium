@@ -2810,6 +2810,9 @@ void WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout(
   // callback was requested and when it was resolved by the compositor.
   if (local_root_)
     local_root_->ViewImpl()->DidFirstVisuallyNonEmptyPaint();
+
+  if (widget_base_)
+    widget_base_->DidFirstVisuallyNonEmptyPaint();
 }
 
 void WebFrameWidgetImpl::RequestAnimationAfterDelay(

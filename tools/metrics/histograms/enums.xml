@@ -58608,6 +58608,7 @@ from previous Chrome versions.
   <int value="32242305" label="NtpRecipeTasksModule:enabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
+  <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
   <int value="33588676" label="TranslateAssistContent:enabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
@@ -61597,6 +61598,7 @@ from previous Chrome versions.
   <int value="1980648371" label="PointerEventV1SpecCapturing:enabled"/>
   <int value="1985584246" label="PageInfoHistory:enabled"/>
   <int value="1986031201" label="SwipingFromLeftEdgeToGoBack:disabled"/>
+  <int value="1988099368" label="DropInputEventsBeforeFirstPaint:disabled"/>
   <int value="1988506961" label="EnableManualSaving:enabled"/>
   <int value="1988679118" label="DesktopPWAsSubApps:disabled"/>
   <int value="1988810119" label="AutofillDropdownLayout:enabled"/>

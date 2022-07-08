@@ -246,6 +246,11 @@ void WidgetBase::InitializeNonCompositing() {
   initialized_ = true;
 }
 
+void WidgetBase::DidFirstVisuallyNonEmptyPaint() {
+  if (widget_input_handler_manager_)
+    widget_input_handler_manager_->DidFirstVisuallyNonEmptyPaint();
+}
+
 void WidgetBase::Shutdown() {
   // The |input_event_queue_| is refcounted and will live while an event is
   // being handled. This drops the connection back to this WidgetBase which

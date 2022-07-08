@@ -60,13 +60,18 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kMaxValue = kAfterCommit
   };
 
-  // For use in bitfields to keep track of what, if anything, the rendering
-  // pipeline is currently deferring. Input is suppressed if anything is
-  // being deferred, and we use the combination of states to correctly report
-  // UMA for input that is suppressed.
-  enum class RenderingDeferralBits {
-    kDeferMainFrameUpdates = 1,
-    kDeferCommits = 2
+  // For use in bitfields to keep track of why we should keep suppressing input
+  // events. Maybe the rendering pipeline is currently deferring something, or
+  // we are still waiting for the user to see some non empty paint. And we use
+  // the combination of states to correctly report UMA for input that is
+  // suppressed.
+  enum class SuppressingInputEventsBits {
+    // if set, suppress events because pipeline is deferring main frame updates
+    kDeferMainFrameUpdates = 1 << 0,
+    // if set, suppress events because pipeline is deferring commits
+    kDeferCommits = 1 << 1,
+    // if set, we have not painted a main frame from the current navigation yet
+    kHasNotPainted = 1 << 2,
   };
 
  public:
@@ -96,6 +101,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
                         HandledEventCallback handled_callback) override;
   void InputEventsDispatched(bool raf_aligned) override;
   void SetNeedsMainFrame() override;
+
+  void DidFirstVisuallyNonEmptyPaint();
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
@@ -147,7 +154,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void WaitForInputProcessed(base::OnceClosure callback);
 
   // Called when the WidgetBase is notified of a navigation. Resets
-  // the renderer pipeline deferral status, and resets the UMA recorder for
+  // the suppressing of input events state, and resets the UMA recorder for
   // time of first input.
   void DidNavigate();
 
@@ -314,18 +321,19 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // we definitely don't have a compositor thread.
   bool uses_input_handler_ = false;
 
-  // State tracking which parts of the rendering pipeline are currently
-  // deferred. We use this state to suppress all events until the user can see
-  // the content; that is, while rendering stages are being deferred and
-  // this value is zero.
+  // State tracking why we should keep suppressing input events, keeps track of
+  // which parts of the rendering pipeline are currently deferred, or whether
+  // we are waiting for the first non empty paint. We use this state to suppress
+  // all events while user has not seen first paint or rendering pipeline is
+  // deferring something.
   // Move events are still processed to allow tracking of mouse position.
   // Metrics also report the lifecycle state when the first non-move event is
   // seen.
-  // This is a bitfield, using the bit values from RenderingDeferralBits.
+  // This is a bitfield, using the bit values from SuppressingInputEventsBits.
   // The compositor thread accesses this value when processing input (to decide
   // whether to suppress input) and the renderer thread accesses it when the
   // status of deferrals changes, so it needs to be thread safe.
-  std::atomic<uint16_t> renderer_deferral_state_{0};
+  std::atomic<uint16_t> suppressing_input_events_state_;
 
   // Allow input suppression to be disabled for tests and non-browser uses
   // of chromium that do not wait for the first commit, or that may never
