@@ -264,6 +264,46 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     host_waiter.RestrictToHost(offscreen_document);
     offscreen_document_manager()->CloseOffscreenDocumentForExtension(
         *extension);
+  }
+
+  EXPECT_EQ(nullptr,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+}
+
+// Tests calling window.close() in an offscreen document closes it (through the
+// manager).
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
+                       CallingWindowCloseInAnOffscreenDocumentClosesIt) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  OffscreenDocumentHost* offscreen_document = CreateDocumentAndWaitForLoad(
+      *extension, extension->GetResourceURL("offscreen.html"));
+  ASSERT_TRUE(offscreen_document);
+  EXPECT_EQ(offscreen_document,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+
+  {
+    // Call window.close() from the offscreen document. This should cause the
+    // manager to close the document, destroying the host.
+    ExtensionHostTestHelper host_waiter(profile());
+    host_waiter.RestrictToHost(offscreen_document);
+    ASSERT_TRUE(content::ExecuteScript(offscreen_document->host_contents(),
+                                       "window.close();"));
     host_waiter.WaitForHostDestroyed();
   }
 

@@ -132,6 +132,13 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
   data.host = std::make_unique<OffscreenDocumentHost>(extension,
                                                       site_instance.get(), url);
   OffscreenDocumentHost* host = data.host.get();
+
+  // The following Unretained() is safe because this class owns the offscreen
+  // document host, so it can't possibly be called after the manager's
+  // destruction.
+  host->SetCloseHandler(
+      base::BindOnce(&OffscreenDocumentManager::CloseOffscreenDocument,
+                     base::Unretained(this)));
   host->CreateRendererSoon();
 
   return host;
@@ -166,6 +173,14 @@ void OffscreenDocumentManager::Shutdown() {
   // (OffscreenDocumentHosts) prior to the browser context being marked as
   // shut down.
   offscreen_documents_.clear();
+}
+
+void OffscreenDocumentManager::CloseOffscreenDocument(
+    ExtensionHost* offscreen_document) {
+  auto iter = offscreen_documents_.find(offscreen_document->extension_id());
+  DCHECK(iter != offscreen_documents_.end());
+  DCHECK_EQ(iter->second.host.get(), offscreen_document);
+  offscreen_documents_.erase(iter);
 }
 
 }  // namespace extensions

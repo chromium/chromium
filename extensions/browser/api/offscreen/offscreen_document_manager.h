@@ -20,6 +20,7 @@ class GURL;
 
 namespace extensions {
 class Extension;
+class ExtensionHost;
 class ProcessManager;
 class OffscreenDocumentHost;
 
@@ -78,6 +79,9 @@ class OffscreenDocumentManager : public KeyedService,
 
   // KeyedService:
   void Shutdown() override;
+
+  // Closes the specified `offscreen_document`.
+  void CloseOffscreenDocument(ExtensionHost* offscreen_document);
 
   // The collection of offscreen documents, mapped to extension ID.
   std::map<ExtensionId, OffscreenDocumentData> offscreen_documents_;
