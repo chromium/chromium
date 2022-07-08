@@ -173,8 +173,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledCommitted) {
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
   const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
-  GURL distilled_url = reading_list::OfflineURLForPath(
-      entry->DistilledPath(), entry->URL(), entry->DistilledURL());
+  GURL distilled_url = reading_list::OfflineURLForURL(entry->URL());
 
   FakeNavigationManager* fake_navigation_manager =
       static_cast<FakeNavigationManager*>(
@@ -207,8 +206,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledPending) {
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
   const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
-  GURL distilled_url = reading_list::OfflineURLForPath(
-      entry->DistilledPath(), entry->URL(), entry->DistilledURL());
+  GURL distilled_url = reading_list::OfflineURLForURL(entry->URL());
 
   FakeNavigationManager* fake_navigation_manager =
       static_cast<FakeNavigationManager*>(

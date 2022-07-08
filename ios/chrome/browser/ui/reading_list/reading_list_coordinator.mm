@@ -377,8 +377,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
   if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
     const GURL entryURL = entry->URL();
-    GURL offlineURL = reading_list::OfflineURLForPath(
-        entry->DistilledPath(), entryURL, entry->DistilledURL());
+    GURL offlineURL = reading_list::OfflineURLForURL(entryURL);
 
     if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
       [self loadEntryURL:entryURL

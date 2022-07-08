@@ -348,8 +348,7 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
     // If the current navigation was not committed, but it was a new navigation,
     // a new placeholder navigation with a chrome://offline URL can be created
     // which will be replaced by the offline version on load failure.
-    GURL offlineURL = reading_list::OfflineURLForPath(
-        entry->DistilledPath(), entry_url, entry->DistilledURL());
+    GURL offlineURL = reading_list::OfflineURLForURL(entry_url);
 
     web::NavigationManager::WebLoadParams params(offlineURL);
     params.transition_type = navigation_transition_type_;

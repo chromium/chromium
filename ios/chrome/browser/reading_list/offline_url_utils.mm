@@ -22,26 +22,17 @@
 namespace {
 const char kEntryURLQueryParam[] = "entryURL";
 const char kReloadURLQueryParam[] = "reload";
-const char kVirtualURLQueryParam[] = "virtualURL";
-}
+}  // namespace
 
 namespace reading_list {
 
-GURL OfflineURLForPath(const base::FilePath& distilled_path,
-                       const GURL& entry_url,
-                       const GURL& virtual_url) {
-  DCHECK(!distilled_path.empty());
+GURL OfflineURLForURL(const GURL& entry_url) {
   DCHECK(entry_url.is_valid());
-  DCHECK(virtual_url.is_valid());
   GURL page_url(kChromeUIOfflineURL);
   GURL::Replacements replacements;
-  replacements.SetPathStr(distilled_path.value());
   page_url = page_url.ReplaceComponents(replacements);
   page_url = net::AppendQueryParameter(page_url, kEntryURLQueryParam,
                                        entry_url.spec());
-
-  page_url = net::AppendQueryParameter(page_url, kVirtualURLQueryParam,
-                                       virtual_url.spec());
 
   return page_url;
 }
@@ -65,34 +56,6 @@ GURL EntryURLForOfflineURL(const GURL& offline_url) {
     }
   }
   return GURL::EmptyGURL();
-}
-
-GURL VirtualURLForOfflineURL(const GURL& offline_url) {
-  std::string virtual_url_string;
-  if (net::GetValueForKeyInQuery(offline_url, kVirtualURLQueryParam,
-                                 &virtual_url_string)) {
-    GURL virtual_url = GURL(virtual_url_string);
-    if (virtual_url.is_valid()) {
-      return virtual_url;
-    }
-  }
-  return GURL::EmptyGURL();
-}
-
-GURL FileURLForDistilledURL(const GURL& distilled_url,
-                            const base::FilePath& offline_path,
-                            GURL* resources_root_url) {
-  if (!distilled_url.is_valid()) {
-    return GURL();
-  }
-  DCHECK(distilled_url.SchemeIs(kChromeUIScheme));
-  GURL file_url(base::StringPrintf("%s%s", url::kFileScheme,
-                                   url::kStandardSchemeSeparator) +
-                offline_path.value() + distilled_url.path());
-  if (resources_root_url) {
-    *resources_root_url = file_url.Resolve(".");
-  }
-  return file_url;
 }
 
 GURL ReloadURLForOfflineURL(const GURL& offline_url) {

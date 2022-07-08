@@ -250,8 +250,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
       reading_list_model_->GetEntryByURL(pending_url_);
   last_load_was_offline_ = true;
   DCHECK(entry->DistilledState() == ReadingListEntry::PROCESSED);
-  GURL url = reading_list::OfflineURLForPath(
-      entry->DistilledPath(), entry->URL(), entry->DistilledURL());
+  GURL url = reading_list::OfflineURLForURL(entry->URL());
   web::NavigationManager* navigationManager =
       web_state_->GetNavigationManager();
   web::NavigationItem* item = navigationManager->GetPendingItem();

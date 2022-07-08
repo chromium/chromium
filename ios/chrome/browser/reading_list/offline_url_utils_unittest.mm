@@ -24,93 +24,40 @@
 using OfflineURLUtilsTest = PlatformTest;
 
 // Checks the distilled URL for the page with an onlineURL is
-// chrome://offline/MD5/page.html?entryURL=...&virtualURL=...
-TEST_F(OfflineURLUtilsTest, OfflineURLForPathWithEntryURLAndVirtualURLTest) {
-  base::FilePath page_path("MD5/page.html");
+// chrome://offline/?entryURL=...
+TEST_F(OfflineURLUtilsTest, OfflineURLForURL) {
   GURL entry_url = GURL("http://foo.bar");
-  GURL virtual_url = GURL("http://foo.bar/virtual");
-  GURL distilled_url =
-      reading_list::OfflineURLForPath(page_path, entry_url, virtual_url);
-  EXPECT_EQ("chrome://offline/MD5/page.html?"
-            "entryURL=http%3A%2F%2Ffoo.bar%2F&"
-            "virtualURL=http%3A%2F%2Ffoo.bar%2Fvirtual",
+  GURL distilled_url = reading_list::OfflineURLForURL(entry_url);
+  EXPECT_EQ("chrome://offline/?"
+            "entryURL=http%3A%2F%2Ffoo.bar%2F",
             distilled_url.spec());
 }
 
 // Checks the parsing of offline URL chrome://offline/MD5/page.html.
-// As entryURL and virtualURL are absent, they should be invalid.
+// As entryURL is absent, it should be invalid.
 TEST_F(OfflineURLUtilsTest, ParseOfflineURLTest) {
   GURL distilled_url("chrome://offline/MD5/page.html");
   GURL entry_url = reading_list::EntryURLForOfflineURL(distilled_url);
   EXPECT_TRUE(entry_url.is_empty());
-  GURL virtual_url = reading_list::VirtualURLForOfflineURL(distilled_url);
-  EXPECT_TRUE(virtual_url.is_empty());
 }
 
 // Checks the parsing of offline URL
 // chrome://offline/MD5/page.html?entryURL=encorded%20URL
 // As entryURL is present, it should be returned correctly.
-// As virtualURL is absent, it should return GURL::EmptyGURL().
 TEST_F(OfflineURLUtilsTest, ParseOfflineURLWithEntryURLTest) {
   GURL offline_url(
       "chrome://offline/MD5/page.html?entryURL=http%3A%2F%2Ffoo.bar%2F");
   GURL entry_url = reading_list::EntryURLForOfflineURL(offline_url);
   EXPECT_EQ("http://foo.bar/", entry_url.spec());
-  GURL virtual_url = reading_list::VirtualURLForOfflineURL(offline_url);
-  EXPECT_TRUE(virtual_url.is_empty());
 }
 
 // Checks the parsing of offline URL
-// chrome://offline/MD5/page.html?virtualURL=encorded%20URL
+// chrome://offline/MD5/page.html
 // As entryURL is absent, it should return the offline URL.
-// As virtualURL is present, it should be returned correctly.
 TEST_F(OfflineURLUtilsTest, ParseOfflineURLWithVirtualURLTest) {
-  GURL offline_url(
-      "chrome://offline/MD5/page.html?virtualURL=http%3A%2F%2Ffoo.bar%2F");
+  GURL offline_url("chrome://offline/MD5/page.html");
   GURL entry_url = reading_list::EntryURLForOfflineURL(offline_url);
   EXPECT_TRUE(entry_url.is_empty());
-  GURL virtual_url = reading_list::VirtualURLForOfflineURL(offline_url);
-  EXPECT_EQ("http://foo.bar/", virtual_url.spec());
-}
-
-// Checks the parsing of offline URL
-// chrome://offline/MD5/page.html?entryURL=...&virtualURL=...
-// As entryURL is present, it should be returned correctly.
-// As virtualURL is present, it should be returned correctly.
-TEST_F(OfflineURLUtilsTest, ParseOfflineURLWithVirtualAndEntryURLTest) {
-  GURL offline_url(
-      "chrome://offline/MD5/"
-      "page.html?virtualURL=http%3A%2F%2Ffoo.bar%2Fvirtual&entryURL=http%3A%2F%"
-      "2Ffoo.bar%2Fentry");
-  GURL entry_url = reading_list::EntryURLForOfflineURL(offline_url);
-  EXPECT_EQ("http://foo.bar/entry", entry_url.spec());
-  GURL virtual_url = reading_list::VirtualURLForOfflineURL(offline_url);
-  EXPECT_EQ("http://foo.bar/virtual", virtual_url.spec());
-}
-
-// Checks the file path for chrome://offline/MD5/page.html is
-// file://profile_path/Offline/MD5/page.html.
-// Checks the resource root for chrome://offline/MD5/page.html is
-// file://profile_path/Offline/MD5
-TEST_F(OfflineURLUtilsTest, FileURLForDistilledURLTest) {
-  base::FilePath offline_path("/profile_path/Offline");
-  GURL file_url =
-      reading_list::FileURLForDistilledURL(GURL(), offline_path, nullptr);
-  EXPECT_FALSE(file_url.is_valid());
-
-  GURL distilled_url("chrome://offline/MD5/page.html");
-  file_url = reading_list::FileURLForDistilledURL(distilled_url, offline_path,
-                                                  nullptr);
-  EXPECT_TRUE(file_url.is_valid());
-  EXPECT_TRUE(file_url.SchemeIsFile());
-  EXPECT_EQ("/profile_path/Offline/MD5/page.html", file_url.path());
-
-  GURL resource_url;
-  file_url = reading_list::FileURLForDistilledURL(distilled_url, offline_path,
-                                                  &resource_url);
-  EXPECT_TRUE(resource_url.is_valid());
-  EXPECT_TRUE(resource_url.SchemeIsFile());
-  EXPECT_EQ("/profile_path/Offline/MD5/", resource_url.path());
 }
 
 // Checks that the offline URLs are correctly detected by |IsOfflineURL|.
