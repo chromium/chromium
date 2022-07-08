@@ -28,9 +28,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/network_change_notifier.h"
-#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
+#include "net/proxy_resolution/proxy_config_with_annotation.h"
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
 
   // Use the network loop as the file loop also.
   std::unique_ptr<net::ProxyConfigService> proxy_config_service(
-      net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
+      net::ProxyConfigService::CreateSystemProxyConfigService(
           io_task_executor.task_runner()));
 
   // Uses |network_change_notifier|.

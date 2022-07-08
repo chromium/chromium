@@ -747,6 +747,7 @@ component("net") {
     "proxy_resolution/proxy_bypass_rules.h",
     "proxy_resolution/proxy_config.cc",
     "proxy_resolution/proxy_config.h",
+    "proxy_resolution/proxy_config_service.cc",
     "proxy_resolution/proxy_config_service.h",
     "proxy_resolution/proxy_config_service_fixed.cc",
     "proxy_resolution/proxy_config_service_fixed.h",

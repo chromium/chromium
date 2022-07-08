@@ -12,7 +12,6 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -55,9 +54,8 @@ ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker,
   // configuration in case nothing is configured through prefs (Note: prefs
   // include command line and configuration policy).
 
-  base_service =
-      net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
-          base::ThreadTaskRunnerHandle::Get());
+  base_service = net::ProxyConfigService::CreateSystemProxyConfigService(
+      base::ThreadTaskRunnerHandle::Get());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   return tracker->CreateTrackingProxyConfigService(std::move(base_service));

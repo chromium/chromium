@@ -5,7 +5,14 @@
 #ifndef NET_PROXY_RESOLUTION_PROXY_CONFIG_SERVICE_H_
 #define NET_PROXY_RESOLUTION_PROXY_CONFIG_SERVICE_H_
 
+#include <memory>
+
+#include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace net {
 
@@ -62,6 +69,12 @@ class NET_EXPORT ProxyConfigService {
   // X seconds at which point they check for changes. However that has
   // the disadvantage of doing continuous work even during idle periods.
   virtual void OnLazyPoll() {}
+
+  // Creates a config service appropriate for this platform that fetches the
+  // system proxy settings. |main_task_runner| is the sequence where the
+  // consumer of the ProxyConfigService will live.
+  static std::unique_ptr<ProxyConfigService> CreateSystemProxyConfigService(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 };
 
 }  // namespace net

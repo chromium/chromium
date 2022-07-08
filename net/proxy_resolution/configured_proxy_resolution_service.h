@@ -34,7 +34,6 @@
 #include "url/gurl.h"
 
 namespace base {
-class SequencedTaskRunner;
 class TimeDelta;
 }  // namespace base
 
@@ -227,16 +226,6 @@ class NET_EXPORT ConfiguredProxyResolutionService
   CreateFixedFromAutoDetectedPacResult(
       const std::string& pac_string,
       const NetworkTrafficAnnotationTag& traffic_annotation);
-
-  // Creates a config service appropriate for this platform that fetches the
-  // system proxy settings. |main_task_runner| is the thread where the consumer
-  // of the ProxyConfigService will live.
-  //
-  // TODO(mmenke): Should this be a member of ProxyConfigService?
-  // The ConfiguredProxyResolutionService may not even be in the same process as
-  // the system ProxyConfigService.
-  static std::unique_ptr<ProxyConfigService> CreateSystemProxyConfigService(
-      const scoped_refptr<base::SequencedTaskRunner>& main_task_runner);
 
   // This method should only be used by unit tests.
   void set_stall_proxy_auto_config_delay(base::TimeDelta delay) {

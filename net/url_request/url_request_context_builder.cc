@@ -505,11 +505,11 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   if (!proxy_resolution_service_) {
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     // TODO(willchan): Switch to using this code when
-    // ConfiguredProxyResolutionService::CreateSystemProxyConfigService()'s
+    // ProxyConfigService::CreateSystemProxyConfigService()'s
     // signature doesn't suck.
     if (!proxy_config_service_) {
       proxy_config_service_ =
-          ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
+          ProxyConfigService::CreateSystemProxyConfigService(
               base::ThreadTaskRunnerHandle::Get().get());
     }
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) &&

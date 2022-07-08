@@ -16,7 +16,7 @@
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_auth_preferences.h"
-#include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_config_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
@@ -98,8 +98,7 @@ class HeadlessProxyConfigMonitor
     // We must create the proxy config service on the UI loop on Linux because
     // it must synchronously run on the glib message loop.
     proxy_config_service_ =
-        net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
-            task_runner_);
+        net::ProxyConfigService::CreateSystemProxyConfigService(task_runner_);
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&net::ProxyConfigService::AddObserver,
                                   base::Unretained(proxy_config_service_.get()),

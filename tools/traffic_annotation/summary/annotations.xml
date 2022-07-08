@@ -188,7 +188,7 @@ Refer to README.md for content description and update process.
  <item id="proxy_config_direct" added_in_milestone="67" content_hash_code="072602b0" os_list="linux,windows,chromeos,android" file_path="net/proxy_resolution/proxy_config_with_annotation.cc" />
  <item id="proxy_config_headless" added_in_milestone="67" content_hash_code="049def4d" os_list="linux,windows,chromeos" file_path="headless/lib/browser/headless_request_context_manager.cc" />
  <item id="proxy_config_settings" added_in_milestone="67" content_hash_code="0129f6d1" os_list="linux,windows,chromeos,android" file_path="components/proxy_config/pref_proxy_config_tracker_impl.cc" />
- <item id="proxy_config_system" added_in_milestone="67" content_hash_code="0497cf89" os_list="linux,windows,chromeos,android" file_path="net/proxy_resolution/configured_proxy_resolution_service.cc" />
+ <item id="proxy_config_system" added_in_milestone="67" content_hash_code="0497cf89" os_list="linux,windows,chromeos,android" file_path="net/proxy_resolution/proxy_config_service.cc" />
  <item id="proxy_config_windows_resolver" added_in_milestone="86" content_hash_code="075530ef" os_list="windows" file_path="net/proxy_resolution/win/windows_system_proxy_resolution_request.cc" />
  <item id="qr_code_save" added_in_milestone="84" content_hash_code="045593bd" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.cc" />
  <item id="query_tiles_fetcher" added_in_milestone="84" content_hash_code="0100b835" os_list="linux,windows,chromeos,android" file_path="components/query_tiles/internal/tile_fetcher.cc" />

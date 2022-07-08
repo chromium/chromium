@@ -171,8 +171,7 @@ std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
   // Note: CreateSystemProxyConfigService internally assumes that
   // base::ThreadTaskRunnerHandle::Get() == JNI communication thread.
   std::unique_ptr<net::ProxyConfigService> service =
-      net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
-          io_task_runner);
+      net::ProxyConfigService::CreateSystemProxyConfigService(io_task_runner);
   // If a PAC URL is present, ignore it and use the address and port of
   // Android system's local HTTP proxy server. See: crbug.com/432539.
   // TODO(csharrison) Architect the wrapper better so we don't need to cast for

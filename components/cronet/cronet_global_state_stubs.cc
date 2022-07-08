@@ -62,7 +62,7 @@ void PostTaskToInitThread(const base::Location& posted_from,
 
 std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
-  return net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
+  return net::ProxyConfigService::CreateSystemProxyConfigService(
       io_task_runner);
 }
 
