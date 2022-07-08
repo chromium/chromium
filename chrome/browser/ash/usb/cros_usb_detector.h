@@ -99,6 +99,8 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   // Called when a VM starts, to attach USB devices marked as shared to the VM.
   void ConnectSharedDevicesOnVmStartup(const std::string& vm_name);
 
+  void DisconnectSharedDevicesOnVmShutdown(const std::string& vm_name);
+
   // device::mojom::UsbDeviceManagerClient
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device) override;
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device) override;
