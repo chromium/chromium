@@ -798,8 +798,19 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
     EXPECT_GE(va_descriptor.objects[1].size,
               base::checked_cast<uint32_t>(2 * uv_width * uv_height));
   }
-  const auto expected_drm_modifier =
-      backend == VAImplementation::kIntelIHD ? I915_FORMAT_MOD_Y_TILED : 0x0;
+
+  base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
+  const std::string va_vendor_string
+         = vaQueryVendorString(wrapper->va_display_);
+  uint64_t expected_drm_modifier = DRM_FORMAT_MOD_LINEAR;
+
+  if (backend == VAImplementation::kIntelIHD) {
+    expected_drm_modifier = I915_FORMAT_MOD_Y_TILED;
+  } else if (backend == VAImplementation::kMesaGallium) {
+    if (va_vendor_string.find("STONEY") != std::string::npos) {
+      expected_drm_modifier = DRM_FORMAT_MOD_INVALID;
+    }
+  }
   EXPECT_EQ(va_descriptor.objects[0].drm_format_modifier,
             expected_drm_modifier);
   // TODO(mcasas): |num_layers| actually depends on |va_descriptor.va_fourcc|.
