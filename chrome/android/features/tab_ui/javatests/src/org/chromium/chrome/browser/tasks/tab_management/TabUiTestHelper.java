@@ -71,6 +71,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -161,7 +162,7 @@ public class TabUiTestHelper {
      * @param index The index of the target card.
      */
     public static void clickNthCardFromTabSwitcher(ChromeTabbedActivity cta, int index) {
-        clickTabSwitcherCardWithParent(cta, index, org.chromium.chrome.R.id.compositor_view_holder);
+        clickTabSwitcherCardWithParent(cta, index, getTabSwitcherParentId(cta));
     }
 
     private static void clickTabSwitcherCardWithParent(
@@ -169,18 +170,6 @@ public class TabUiTestHelper {
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         onView(allOf(withParent(withId(parentId)), withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
-    }
-
-    /**
-     * Click the Nth card in grid tab switcher. When group is enabled and the Nth card is a
-     * group, this will open up the dialog; otherwise this will open up the tab page.
-     * @param cta  The current running activity.
-     * @param index The index of the target card.
-     */
-    public static void clickNthCardFromTabletTabSwitcherPolish(
-            ChromeTabbedActivity cta, int index) {
-        clickTabSwitcherCardWithParent(
-                cta, index, org.chromium.chrome.R.id.grid_tab_switcher_view_holder);
     }
 
     /**
@@ -384,9 +373,23 @@ public class TabUiTestHelper {
      */
     public static void verifyTabSwitcherCardCount(ChromeTabbedActivity cta, int count) {
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        onView(allOf(withParent(withId(org.chromium.chrome.R.id.compositor_view_holder)),
-                       withId(R.id.tab_list_view)))
+        int viewHolder = getTabSwitcherParentId(cta);
+        onView(allOf(withParent(withId(viewHolder)), withId(R.id.tab_list_view)))
                 .check(ChildrenCountAssertion.havingTabCount(count));
+    }
+
+    /**
+     * Returns parentId of GridTabSwitcher based on form factor and feature enabled.
+     * @param cta Activity running.
+     * @return View Id of GTS parent view.
+     */
+    public static int getTabSwitcherParentId(ChromeTabbedActivity cta) {
+        int viewHolder = org.chromium.chrome.R.id.compositor_view_holder;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)
+                && TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(cta)) {
+            viewHolder = R.id.grid_tab_switcher_view_holder;
+        }
+        return viewHolder;
     }
 
     /**

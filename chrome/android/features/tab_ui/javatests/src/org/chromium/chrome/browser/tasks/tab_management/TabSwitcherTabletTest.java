@@ -232,7 +232,7 @@ public class TabSwitcherTabletTest {
                 .check(matches(isDisplayed()));
 
         // Exit switcher.
-        exitSwitcherPolishWithTabClick(0);
+        exitSwitcherWithTabClick(0);
 
         // Assert tablet toolbar shows and switcher toolbar is gone.
         onView(allOf(withId(R.id.tab_switcher_toolbar),
@@ -254,7 +254,7 @@ public class TabSwitcherTabletTest {
                                                     .getScrimCoordinator();
         assertTrue(scrimCoordinator.isShowingScrim());
 
-        exitSwitcherPolishWithTabClick(0);
+        exitSwitcherWithTabClick(0);
         assertFalse(scrimCoordinator.isShowingScrim());
     }
 
@@ -367,13 +367,6 @@ public class TabSwitcherTabletTest {
 
     private void exitSwitcherWithTabClick(int index) throws TimeoutException {
         TabUiTestHelper.clickNthCardFromTabSwitcher(sActivityTestRule.getActivity(), index);
-        mLayoutChangedCallbackHelper.waitForCallback(1, 1, CALLBACK_WAIT_TIMEOUT, TimeUnit.SECONDS);
-        assertTrue(mCurrentlyActiveLayout == LayoutType.TAB_SWITCHER);
-    }
-
-    private void exitSwitcherPolishWithTabClick(int index) throws TimeoutException {
-        TabUiTestHelper.clickNthCardFromTabletTabSwitcherPolish(
-                sActivityTestRule.getActivity(), index);
         mLayoutChangedCallbackHelper.waitForCallback(1, 1, CALLBACK_WAIT_TIMEOUT, TimeUnit.SECONDS);
         assertTrue(mCurrentlyActiveLayout == LayoutType.TAB_SWITCHER);
     }

@@ -190,7 +190,8 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabletGridTabSwitcherPolishEnabled(Context context) {
         if (sGridTabSwitcherPolishEnabledForTesting != null) {
-            return sGridTabSwitcherPolishEnabledForTesting;
+            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                    && sGridTabSwitcherPolishEnabledForTesting;
         }
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();

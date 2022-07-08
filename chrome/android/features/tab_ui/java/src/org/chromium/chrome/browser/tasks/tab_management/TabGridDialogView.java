@@ -56,6 +56,7 @@ public class TabGridDialogView extends FrameLayout {
     private static final int DIALOG_ALPHA_ANIMATION_DURATION = 150;
     private static final int CARD_FADE_ANIMATION_DURATION = 50;
     private static Callback<RectF> sSourceRectCallbackForTesting;
+
     @IntDef({UngroupBarStatus.SHOW, UngroupBarStatus.HIDE, UngroupBarStatus.HOVERED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UngroupBarStatus {
@@ -870,5 +871,10 @@ public class TabGridDialogView extends FrameLayout {
     @VisibleForTesting
     static void setSourceRectCallbackForTesting(Callback<RectF> callback) {
         sSourceRectCallbackForTesting = callback;
+    }
+
+    @VisibleForTesting
+    ScrimCoordinator getScrimCoordinatorForTesting() {
+        return mScrimCoordinator;
     }
 }
