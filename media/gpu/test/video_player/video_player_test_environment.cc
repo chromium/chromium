@@ -14,7 +14,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/test/video.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 
 namespace media {
 namespace test {
