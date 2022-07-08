@@ -177,6 +177,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
     &kCCTBackgroundTab,
+    &kCCTBrandTransparency,
     &kCCTClientDataHeader,
     &kCCTIncognito,
     &kCCTIncognitoAvailableToThirdParty,
@@ -485,6 +486,9 @@ const base::Feature kCriticalPersistedTabData{
 
 const base::Feature kCCTBackgroundTab{"CCTBackgroundTab",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCCTBrandTransparency{"CCTBrandTransparency",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTClientDataHeader{"CCTClientDataHeader",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

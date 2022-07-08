@@ -3197,6 +3197,12 @@ const char kBulkTabRestoreAndroidDescription[] =
     "Enables restoration of bulk tab closures (e.g. close all tabs, close "
     "a group, etc.) from Recent Tabs > Recently Closed.";
 
+const char kCCTBrandTransparencyName[] =
+    "Chrome Custom Tabs Brand Transparency";
+const char kCCTBrandTransparencyDescription[] =
+    "When enabled, CCT will show more Chrome branding information when start, "
+    "giving user more transparency that the web page is running in Chrome.";
+
 const char kCCTIncognitoName[] = "Chrome Custom Tabs Incognito mode";
 const char kCCTIncognitoDescription[] =
     "Enables incognito mode for Chrome Custom Tabs, on Android.";

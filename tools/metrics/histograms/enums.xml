@@ -56310,6 +56310,7 @@ from previous Chrome versions.
   <int value="-1449590570" label="RestrictGamepadAccess:enabled"/>
   <int value="-1449358747" label="RemoveStatusBarInWebApps:enabled"/>
   <int value="-1448511207" label="UseMessagesStagingUrl:disabled"/>
+  <int value="-1448094672" label="CCTBrandTransparency:disabled"/>
   <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
   <int value="-1446625028" label="CrostiniUsbAllowUnsupported:enabled"/>
@@ -57437,6 +57438,7 @@ from previous Chrome versions.
   <int value="-737740161" label="SupportForAddPasswordsInSettings:enabled"/>
   <int value="-736477364" label="HTMLParamElementUrlSupport:disabled"/>
   <int value="-735827773" label="PageInfoHistoryDesktop:enabled"/>
+  <int value="-735790302" label="CCTBrandTransparency:enabled"/>
   <int value="-735084806" label="NewTabLoadingAnimation:enabled"/>
   <int value="-734301625"
       label="AutofillImportNonFocusableCreditCardForms:disabled"/>

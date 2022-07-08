@@ -760,6 +760,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "cct-brand-transparency",
+    "owners": [ "wenyufu" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "cct-incognito",
     "owners": [ "chrome-incognito", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 110

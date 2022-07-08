@@ -1799,6 +1799,9 @@ extern const char kBackGestureRefactorAndroidDescription[];
 extern const char kBulkTabRestoreAndroidName[];
 extern const char kBulkTabRestoreAndroidDescription[];
 
+extern const char kCCTBrandTransparencyName[];
+extern const char kCCTBrandTransparencyDescription[];
+
 extern const char kCCTIncognitoName[];
 extern const char kCCTIncognitoDescription[];
 

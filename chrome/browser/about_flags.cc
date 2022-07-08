@@ -5898,6 +5898,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCCTRealTimeEngagementSignals)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"cct-brand-transparency", flag_descriptions::kCCTBrandTransparencyName,
+     flag_descriptions::kCCTBrandTransparencyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTBrandTransparency)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"allow-dsp-based-aec", flag_descriptions::kCrOSDspBasedAecAllowedName,
      flag_descriptions::kCrOSDspBasedAecAllowedDescription, kOsCrOS | kOsLacros,
