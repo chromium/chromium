@@ -137,15 +137,6 @@ class AutoEnrollmentClientImpl::ServerStateAvailabilityRequester {
   // finished.
   virtual void Start(CompletionCallback callback) = 0;
 
-  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
-  virtual void Reset() = 0;
-
-  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
-  virtual bool IsRequesterForInitialEnrollment() const = 0;
-
-  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
-  virtual bool IsInProgress() const = 0;
-
   // Returns:
   // * nullopt if server state is not obtained yet,
   // * false if server state has been obtained and the answer is: it is not
@@ -193,17 +184,6 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
   void Start(CompletionCallback callback) override {
     StartImpl(std::move(callback));
   }
-
-  void Reset() override {
-    request_job_.reset();
-    completion_callback_.Reset();
-    hash_dance_time_start_ = base::TimeTicks();
-    modulus_updates_received_ = 0;
-  }
-
-  bool IsRequesterForInitialEnrollment() const override { return false; }
-
-  bool IsInProgress() const override { return request_job_ != nullptr; }
 
   absl::optional<bool> GetServerStateIfObtained() const override {
     const PrefService::Preference* has_server_state_pref =
@@ -491,14 +471,6 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
     StartImpl(std::move(callback));
   }
 
-  void Reset() override { completion_callback_.Reset(); }
-
-  bool IsRequesterForInitialEnrollment() const override { return true; }
-
-  bool IsInProgress() const override {
-    return psm_rlwe_dmserver_client_->IsCheckMembershipInProgress();
-  }
-
   absl::optional<bool> GetServerStateIfObtained() const override {
     const PrefService::Preference* has_psm_server_state_pref =
         local_state_->FindPreference(prefs::kShouldRetrieveDeviceState);
@@ -664,16 +636,6 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     }
   }
 
-  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
-  void Reset() {
-    request_job_.reset();
-    completion_callback_.Reset();
-    device_state_available_ = false;
-  }
-
-  // TODO(crbug.com/1294843): Cleanup once refactoring is done.
-  bool IsInProgress() const { return request_job_ != nullptr; }
-
  private:
   void StartImpl(CompletionCallback callback) {
     DCHECK(!request_job_);
@@ -785,8 +747,8 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
   CompletionCallback completion_callback_;
 };
 
-AutoEnrollmentClientImpl::FactoryImpl::FactoryImpl() {}
-AutoEnrollmentClientImpl::FactoryImpl::~FactoryImpl() {}
+AutoEnrollmentClientImpl::FactoryImpl::FactoryImpl() = default;
+AutoEnrollmentClientImpl::FactoryImpl::~FactoryImpl() = default;
 
 std::unique_ptr<AutoEnrollmentClient>
 AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
@@ -832,23 +794,31 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
               device_serial_number, device_brand_code))));
 }
 
-AutoEnrollmentClientImpl::~AutoEnrollmentClientImpl() {
-  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
-}
-
 // static
 void AutoEnrollmentClientImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   FREServerStateAvailabilityRequester::RegisterPrefs(registry);
   InitialServerStateAvailabilityRequester::RegisterPrefs(registry);
 }
 
+AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
+    ProgressCallback callback,
+    std::unique_ptr<ServerStateAvailabilityRequester>
+        server_state_avalability_requester,
+    std::unique_ptr<ServerStateRetriever> server_state_retriever)
+    : progress_callback_(std::move(callback)),
+      server_state_avalability_requester_(
+          std::move(server_state_avalability_requester)),
+      server_state_retriever_(std::move(server_state_retriever)) {
+  DCHECK(progress_callback_);
+}
+
+AutoEnrollmentClientImpl::~AutoEnrollmentClientImpl() = default;
+
 void AutoEnrollmentClientImpl::Start() {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!server_state_retriever_->GetAutoEnrollmentStateIfObtained());
 
-  // (Re-)register the network change observer.
-  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
-  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+  network_connection_observer_.Observe(content::GetNetworkConnectionTracker());
 
   RequestServerStateAvailability();
 }
@@ -892,34 +862,6 @@ void AutoEnrollmentClientImpl::OnConnectionChanged(
   }
 }
 
-AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
-    ProgressCallback callback,
-    std::unique_ptr<ServerStateAvailabilityRequester>
-        server_state_avalability_requester,
-    std::unique_ptr<ServerStateRetriever> server_state_retriever)
-    : progress_callback_(std::move(callback)),
-      server_state_avalability_requester_(
-          std::move(server_state_avalability_requester)),
-      server_state_retriever_(std::move(server_state_retriever)) {
-  DCHECK(progress_callback_);
-}
-
-void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) const {
-  progress_callback_.Run(state);
-}
-
-void AutoEnrollmentClientImpl::ReportFinished() const {
-  DCHECK_EQ(state_, State::kFinished);
-
-  const auto auto_enrollment_state_result =
-      server_state_retriever_->GetAutoEnrollmentStateIfObtained();
-  if (auto_enrollment_state_result) {
-    ReportProgress(auto_enrollment_state_result.value());
-  } else {
-    ReportProgress(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-  }
-}
-
 void AutoEnrollmentClientImpl::RequestServerStateAvailability() {
   DCHECK(state_ == State::kIdle ||
          state_ == State::kRequestServerStateAvailabilityConnectionError ||
@@ -936,23 +878,6 @@ void AutoEnrollmentClientImpl::RequestServerStateAvailability() {
   server_state_avalability_requester_->Start(base::BindOnce(
       &AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted,
       base::Unretained(this)));
-}
-
-void AutoEnrollmentClientImpl::RequestStateRetrieval() {
-  DCHECK(state_ == State::kRequestServerStateAvailabilitySuccess ||
-         state_ == State::kRequestStateRetrievalConnectionError ||
-         state_ == State::kRequestStateRetrievalServerError);
-  DCHECK(server_state_avalability_requester_->GetServerStateIfObtained());
-  DCHECK(
-      server_state_avalability_requester_->GetServerStateIfObtained().value());
-  DCHECK(!server_state_retriever_->GetAutoEnrollmentStateIfObtained());
-  state_ = State::kRequestingStateRetrieval;
-
-  ReportProgress(AUTO_ENROLLMENT_STATE_PENDING);
-
-  server_state_retriever_->Start(
-      base::BindOnce(&AutoEnrollmentClientImpl::OnStateRetrievalCompleted,
-                     base::Unretained(this)));
 }
 
 void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
@@ -991,6 +916,23 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
   }
 }
 
+void AutoEnrollmentClientImpl::RequestStateRetrieval() {
+  DCHECK(state_ == State::kRequestServerStateAvailabilitySuccess ||
+         state_ == State::kRequestStateRetrievalConnectionError ||
+         state_ == State::kRequestStateRetrievalServerError);
+  DCHECK(server_state_avalability_requester_->GetServerStateIfObtained());
+  DCHECK(
+      server_state_avalability_requester_->GetServerStateIfObtained().value());
+  DCHECK(!server_state_retriever_->GetAutoEnrollmentStateIfObtained());
+  state_ = State::kRequestingStateRetrieval;
+
+  ReportProgress(AUTO_ENROLLMENT_STATE_PENDING);
+
+  server_state_retriever_->Start(
+      base::BindOnce(&AutoEnrollmentClientImpl::OnStateRetrievalCompleted,
+                     base::Unretained(this)));
+}
+
 void AutoEnrollmentClientImpl::OnStateRetrievalCompleted(
     ServerStateRetrievalResult result) {
   DCHECK(state_ == State::kRequestingStateRetrieval);
@@ -1009,6 +951,23 @@ void AutoEnrollmentClientImpl::OnStateRetrievalCompleted(
       state_ = State::kRequestStateRetrievalServerError;
       ReportProgress(AUTO_ENROLLMENT_STATE_SERVER_ERROR);
       break;
+  }
+}
+
+void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) const {
+  DCHECK(progress_callback_);
+  progress_callback_.Run(state);
+}
+
+void AutoEnrollmentClientImpl::ReportFinished() const {
+  DCHECK_EQ(state_, State::kFinished);
+
+  const auto auto_enrollment_state_result =
+      server_state_retriever_->GetAutoEnrollmentStateIfObtained();
+  if (auto_enrollment_state_result) {
+    ReportProgress(auto_enrollment_state_result.value());
+  } else {
+    ReportProgress(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
   }
 }
 

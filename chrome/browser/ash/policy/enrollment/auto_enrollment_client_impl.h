@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -62,13 +63,13 @@ class AutoEnrollmentClientImpl final
         override;
   };
 
+  // Registers preferences in local state.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   AutoEnrollmentClientImpl(const AutoEnrollmentClientImpl&) = delete;
   AutoEnrollmentClientImpl& operator=(const AutoEnrollmentClientImpl&) = delete;
 
   ~AutoEnrollmentClientImpl() override;
-
-  // Registers preferences in local state.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // policy::AutoEnrollmentClient:
   void Start() override;
@@ -164,12 +165,12 @@ class AutoEnrollmentClientImpl final
   // device management service.
   void RequestServerStateAvailability();
 
-  // Sends a device state download request to the device management service.
-  void RequestStateRetrieval();
-
   // Handles result of server state availability request. Proceeds to the next
   // step on success. Reports failure otherwise.
   void OnServerStateAvailabilityCompleted(ServerStateAvailabilityResult result);
+
+  // Sends a device state download request to the device management service.
+  void RequestStateRetrieval();
 
   // Handles result of server state retrieval request. Proceeds to the next
   // step on success. Reports failure otherwise.
@@ -180,6 +181,13 @@ class AutoEnrollmentClientImpl final
   void ReportFinished() const;
 
   State state_ = State::kIdle;
+
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver,
+      &network::NetworkConnectionTracker::AddNetworkConnectionObserver,
+      &network::NetworkConnectionTracker::RemoveNetworkConnectionObserver>
+      network_connection_observer_{this};
 
   // Callback to invoke when the protocol generates a relevant event. This can
   // be either successful completion or an error that requires external action.
