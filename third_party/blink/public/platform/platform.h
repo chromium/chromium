@@ -132,7 +132,6 @@ class WebDedicatedWorker;
 class WebDedicatedWorkerHostFactoryClient;
 class WebGraphicsContext3DProvider;
 class WebLocalFrame;
-class WebMediaCapabilitiesClient;
 class WebPublicSuffixList;
 class WebResourceRequestSenderDelegate;
 class WebSandboxSupport;
@@ -737,12 +736,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Using a more narrowly defined scope when possible is also generally better
   // for security.
   virtual ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker();
-
-  // Media Capabilities --------------------------------------------------
-
-  virtual WebMediaCapabilitiesClient* MediaCapabilitiesClient() {
-    return nullptr;
-  }
 
   // Media Log -----------------------------------------------------------
 
