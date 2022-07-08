@@ -155,15 +155,22 @@ DocumentScannerServiceClient::DocumentScannerServiceClient() {
   if (IsEnabledOnRootfs()) {
     LoadDocumentScanner(kLibDocumentScannerDefaultDir);
   } else if (IsEnabledOnDlc()) {
-    DocumentScannerInstaller::GetInstance()->GetLibraryPath(base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
-        base::BindOnce(&DocumentScannerServiceClient::LoadDocumentScanner,
-                       weak_ptr_factory_.GetWeakPtr())));
+    DocumentScannerInstaller::GetInstance()->RegisterLibraryPathCallback(
+        base::BindPostTask(
+            base::SequencedTaskRunnerHandle::Get(),
+            base::BindOnce(&DocumentScannerServiceClient::LoadDocumentScanner,
+                           weak_ptr_factory_.GetWeakPtr())));
   }
 }
 
 void DocumentScannerServiceClient::LoadDocumentScanner(
     const std::string& lib_path) {
+  if (lib_path.empty()) {
+    OnLoadedDocumentScanner(chromeos::machine_learning::mojom::LoadModelResult::
+                                FEATURE_NOT_SUPPORTED_ERROR);
+    return;
+  }
+
   auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
   config->library_dlc_path = base::FilePath(lib_path);
 

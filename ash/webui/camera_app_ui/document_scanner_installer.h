@@ -22,7 +22,7 @@ namespace ash {
 // Singleton installer for document scanner library via DLC service.
 class DocumentScannerInstaller {
  public:
-  using OnGetLibraryPathCallback =
+  using LibraryPathCallback =
       base::OnceCallback<void(const std::string& library_path)>;
 
   static DocumentScannerInstaller* GetInstance();
@@ -31,7 +31,7 @@ class DocumentScannerInstaller {
   DocumentScannerInstaller& operator=(const DocumentScannerInstaller&) = delete;
   ~DocumentScannerInstaller();
 
-  void GetLibraryPath(OnGetLibraryPathCallback callback);
+  void RegisterLibraryPathCallback(LibraryPathCallback callback);
 
   // It should only be called on the UI thread.
   void TriggerInstall();
@@ -46,8 +46,10 @@ class DocumentScannerInstaller {
 
   std::string library_path_ GUARDED_BY(library_path_lock_);
 
-  std::vector<OnGetLibraryPathCallback> get_library_path_callbacks_
+  std::vector<LibraryPathCallback> library_path_callbacks_
       GUARDED_BY(library_path_lock_);
+
+  bool installing_ GUARDED_BY(library_path_lock_) = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> original_task_runner_ = nullptr;
 

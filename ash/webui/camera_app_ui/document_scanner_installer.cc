@@ -24,14 +24,19 @@ DocumentScannerInstaller* DocumentScannerInstaller::GetInstance() {
 
 DocumentScannerInstaller::~DocumentScannerInstaller() = default;
 
-void DocumentScannerInstaller::GetLibraryPath(
-    OnGetLibraryPathCallback callback) {
+void DocumentScannerInstaller::RegisterLibraryPathCallback(
+    LibraryPathCallback callback) {
   base::AutoLock auto_lock(library_path_lock_);
   if (library_path_.empty()) {
-    get_library_path_callbacks_.push_back(std::move(callback));
-    return;
+    if (!installing_) {
+      ui_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&DocumentScannerInstaller::TriggerInstall,
+                                    base::Unretained(this)));
+    }
+    library_path_callbacks_.push_back(std::move(callback));
+  } else {
+    std::move(callback).Run(library_path_);
   }
-  std::move(callback).Run(library_path_);
 }
 
 void DocumentScannerInstaller::TriggerInstall() {
@@ -40,6 +45,12 @@ void DocumentScannerInstaller::TriggerInstall() {
   if (!DocumentScannerServiceClient::IsSupportedByDlc()) {
     return;
   }
+
+  base::AutoLock auto_lock(library_path_lock_);
+  if (installing_) {
+    return;
+  }
+  installing_ = true;
 
   dlcservice::InstallRequest install_request;
   install_request.set_id(kDocumentScannerDlcId);
@@ -58,13 +69,15 @@ void DocumentScannerInstaller::OnInstalled(
   base::AutoLock auto_lock(library_path_lock_);
   if (install_result.error == dlcservice::kErrorNone) {
     library_path_ = install_result.root_path;
-    for (auto& callback : get_library_path_callbacks_) {
-      std::move(callback).Run(library_path_);
-    }
-    get_library_path_callbacks_.clear();
   } else {
-    LOG(ERROR) << "Failed to install document scanner DLC";
+    LOG(ERROR) << "Failed to install document scanner DLC: "
+               << install_result.error;
   }
+  for (auto& callback : library_path_callbacks_) {
+    std::move(callback).Run(library_path_);
+  }
+  library_path_callbacks_.clear();
+  installing_ = false;
 }
 
 }  // namespace ash
