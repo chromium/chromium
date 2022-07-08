@@ -53,6 +53,8 @@ public class SearchResumptionModuleUtils {
         if (!shouldShowSearchResumptionModule(profile, currentTab)) return null;
 
         Tab tabToTrack = TabModelUtils.getMostRecentTab(tabModel, currentTab.getId());
+        if (tabToTrack == null) return null;
+
         if (!isTabToTrackValid(tabToTrack)) return null;
 
         return new SearchResumptionModuleCoordinator(
