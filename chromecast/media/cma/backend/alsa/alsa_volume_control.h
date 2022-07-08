@@ -32,14 +32,14 @@ class AlsaVolumeControl : public SystemVolumeControl,
 
   // SystemVolumeControl interface.
   float GetRoundtripVolume(float volume) override;
+  float DbToVolumeLevel(float db_volume) override;
+  float VolumeLevelToDb(float level) override;
   float GetVolume() override;
   void SetVolume(float level) override;
   bool IsMuted() override;
   void SetMuted(bool muted) override;
   void SetPowerSave(bool power_save_on) override;
   void SetLimit(float limit) override;
-
-  void CheckPowerSave();
 
  private:
   static std::string GetVolumeElementName();
@@ -67,6 +67,8 @@ class AlsaVolumeControl : public SystemVolumeControl,
   void OnFileCanWriteWithoutBlocking(int fd) override;
 
   void OnVolumeOrMuteChanged();
+
+  void CheckPowerSave();
 
   Delegate* const delegate_;
 

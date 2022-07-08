@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
 #include "chromecast/base/chromecast_switches.h"
@@ -229,8 +230,34 @@ float AlsaVolumeControl::GetRoundtripVolume(float volume) {
   }
 
   long level = 0;  // NOLINT(runtime/int)
-  level = std::round((volume * (volume_range_max_ - volume_range_min_)) +
+  level = std::round((base::ClampToRange(volume, 0.0f, 1.0f) *
+                      (volume_range_max_ - volume_range_min_)) +
                      volume_range_min_);
+  return static_cast<float>(level - volume_range_min_) /
+         static_cast<float>(volume_range_max_ - volume_range_min_);
+}
+
+float AlsaVolumeControl::VolumeLevelToDb(float volume) {
+  long level = 0;  // NOLINT(runtime/int)
+  if (volume_range_max_ == volume_range_min_) {
+    level = volume_range_max_;
+  } else {
+    level = std::round((volume * (volume_range_max_ - volume_range_min_)) +
+                       volume_range_min_);
+  }
+  long volume_db = 0;  // NOLINT(runtime/int)
+  ALSA_ASSERT(MixerSelemAskPlaybackVolDb, volume_mixer_->element, level,
+              &volume_db);
+  return static_cast<float>(volume_db * 0.01f);
+}
+
+float AlsaVolumeControl::DbToVolumeLevel(float volume_db) {
+  if (volume_range_max_ == volume_range_min_) {
+    return 0.0f;
+  }
+  long level = 0.0f;  // NOLINT(runtime/int)
+  ALSA_ASSERT(MixerSelemAskPlaybackDbVol, volume_mixer_->element,
+              std::round(volume_db * 100.0f), &level);
   return static_cast<float>(level - volume_range_min_) /
          static_cast<float>(volume_range_max_ - volume_range_min_);
 }
@@ -299,10 +326,6 @@ void AlsaVolumeControl::SetPowerSave(bool power_save_on) {
   } else {
     power_save_timer_.Stop();
   }
-}
-
-void AlsaVolumeControl::CheckPowerSave() {
-  SetPowerSave(last_power_save_on_);
 }
 
 void AlsaVolumeControl::SetLimit(float limit) {}
@@ -384,6 +407,10 @@ void AlsaVolumeControl::OnFileCanWriteWithoutBlocking(int fd) {
 
 void AlsaVolumeControl::OnVolumeOrMuteChanged() {
   delegate_->OnSystemVolumeOrMuteChange(GetVolume(), IsMuted());
+}
+
+void AlsaVolumeControl::CheckPowerSave() {
+  SetPowerSave(last_power_save_on_);
 }
 
 // static

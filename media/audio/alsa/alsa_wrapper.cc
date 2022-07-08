@@ -10,8 +10,10 @@ AlsaWrapper::AlsaWrapper() = default;
 
 AlsaWrapper::~AlsaWrapper() = default;
 
-int AlsaWrapper::PcmOpen(snd_pcm_t** handle, const char* name,
-                         snd_pcm_stream_t stream, int mode) {
+int AlsaWrapper::PcmOpen(snd_pcm_t** handle,
+                         const char* name,
+                         snd_pcm_stream_t stream,
+                         int mode) {
   return snd_pcm_open(handle, name, stream, mode);
 }
 
@@ -75,20 +77,19 @@ const char* AlsaWrapper::PcmName(snd_pcm_t* handle) {
   return snd_pcm_name(handle);
 }
 
-int AlsaWrapper::PcmSetParams(snd_pcm_t* handle, snd_pcm_format_t format,
-                              snd_pcm_access_t access, unsigned int channels,
-                              unsigned int rate, int soft_resample,
+int AlsaWrapper::PcmSetParams(snd_pcm_t* handle,
+                              snd_pcm_format_t format,
+                              snd_pcm_access_t access,
+                              unsigned int channels,
+                              unsigned int rate,
+                              int soft_resample,
                               unsigned int latency) {
-  return snd_pcm_set_params(handle,
-                            format,
-                            access,
-                            channels,
-                            rate,
-                            soft_resample,
-                            latency);
+  return snd_pcm_set_params(handle, format, access, channels, rate,
+                            soft_resample, latency);
 }
 
-int AlsaWrapper::PcmGetParams(snd_pcm_t* handle, snd_pcm_uframes_t* buffer_size,
+int AlsaWrapper::PcmGetParams(snd_pcm_t* handle,
+                              snd_pcm_uframes_t* buffer_size,
                               snd_pcm_uframes_t* period_size) {
   return snd_pcm_get_params(handle, buffer_size, period_size);
 }
@@ -274,13 +275,15 @@ const char* AlsaWrapper::MixerSelemName(snd_mixer_elem_t* elem) {
   return snd_mixer_selem_get_name(elem);
 }
 
-int AlsaWrapper::MixerSelemSetCaptureVolumeAll(
-    snd_mixer_elem_t* elem, long value) {
+int AlsaWrapper::MixerSelemSetCaptureVolumeAll(snd_mixer_elem_t* elem,
+                                               long value) {
   return snd_mixer_selem_set_capture_volume_all(elem, value);
 }
 
 int AlsaWrapper::MixerSelemGetCaptureVolume(
-    snd_mixer_elem_t* elem, snd_mixer_selem_channel_id_t channel, long* value) {
+    snd_mixer_elem_t* elem,
+    snd_mixer_selem_channel_id_t channel,
+    long* value) {
   return snd_mixer_selem_get_capture_volume(elem, channel, value);
 }
 
@@ -289,7 +292,8 @@ int AlsaWrapper::MixerSelemHasCaptureVolume(snd_mixer_elem_t* elem) {
 }
 
 int AlsaWrapper::MixerSelemGetCaptureVolumeRange(snd_mixer_elem_t* elem,
-                                                 long* min, long* max) {
+                                                 long* min,
+                                                 long* max) {
   return snd_mixer_selem_get_capture_volume_range(elem, min, max);
 }
 
@@ -344,6 +348,18 @@ int AlsaWrapper::MixerSelemGetPlaybackVolumeRange(snd_mixer_elem_t* elem,
                                                   long* min,
                                                   long* max) {
   return snd_mixer_selem_get_playback_volume_range(elem, min, max);
+}
+
+int AlsaWrapper::MixerSelemAskPlaybackVolDb(snd_mixer_elem_t* elem,
+                                            long value,
+                                            long* db_value) {
+  return snd_mixer_selem_ask_playback_vol_dB(elem, value, db_value);
+}
+
+int AlsaWrapper::MixerSelemAskPlaybackDbVol(snd_mixer_elem_t* elem,
+                                            long db_value,
+                                            long* value) {
+  return snd_mixer_selem_ask_playback_dB_vol(elem, db_value, 0, value);
 }
 
 int AlsaWrapper::MixerSelemHasPlaybackSwitch(snd_mixer_elem_t* elem) {

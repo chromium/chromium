@@ -42,6 +42,12 @@ class SystemVolumeControl {
   // SetVolume(volume).
   virtual float GetRoundtripVolume(float volume) = 0;
 
+  // Returns the volume level for given |db_volume|.
+  virtual float DbToVolumeLevel(float db_volume) = 0;
+
+  // Returns the volume in dB for given |level|.
+  virtual float VolumeLevelToDb(float level) = 0;
+
   // Returns the current system volume (0 <= volume <= 1).
   virtual float GetVolume() = 0;
 

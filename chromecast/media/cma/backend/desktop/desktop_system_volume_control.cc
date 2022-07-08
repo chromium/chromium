@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 
 namespace chromecast {
@@ -18,6 +19,14 @@ class DesktopSystemVolumeControl : public SystemVolumeControl {
   // SystemVolumeControl interface.
   // Consider 'level' and 'volume' equivalent for simplicity.
   float GetRoundtripVolume(float volume) override { return volume; }
+  float DbToVolumeLevel(float db_volume) override {
+    NOTIMPLEMENTED();
+    return 0.0f;
+  }
+  float VolumeLevelToDb(float level) override {
+    NOTIMPLEMENTED();
+    return 0.0f;
+  }
   float GetVolume() override { return volume_; }
   void SetVolume(float level) override {
     if (level != volume_) {

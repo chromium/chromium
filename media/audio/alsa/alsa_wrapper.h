@@ -29,8 +29,10 @@ class MEDIA_EXPORT AlsaWrapper {
   virtual int DeviceNameFreeHint(void** hints);
   virtual int CardNext(int* rcard);
 
-  virtual int PcmOpen(snd_pcm_t** handle, const char* name,
-                      snd_pcm_stream_t stream, int mode);
+  virtual int PcmOpen(snd_pcm_t** handle,
+                      const char* name,
+                      snd_pcm_stream_t stream,
+                      int mode);
   virtual int PcmClose(snd_pcm_t* handle);
   virtual int PcmPrepare(snd_pcm_t* handle);
   virtual int PcmDrain(snd_pcm_t* handle);
@@ -44,11 +46,15 @@ class MEDIA_EXPORT AlsaWrapper {
                                      void* buffer,
                                      snd_pcm_uframes_t size);
   virtual int PcmRecover(snd_pcm_t* handle, int err, int silent);
-  virtual int PcmSetParams(snd_pcm_t* handle, snd_pcm_format_t format,
-                           snd_pcm_access_t access, unsigned int channels,
-                           unsigned int rate, int soft_resample,
+  virtual int PcmSetParams(snd_pcm_t* handle,
+                           snd_pcm_format_t format,
+                           snd_pcm_access_t access,
+                           unsigned int channels,
+                           unsigned int rate,
+                           int soft_resample,
                            unsigned int latency);
-  virtual int PcmGetParams(snd_pcm_t* handle, snd_pcm_uframes_t* buffer_size,
+  virtual int PcmGetParams(snd_pcm_t* handle,
+                           snd_pcm_uframes_t* buffer_size,
                            snd_pcm_uframes_t* period_size);
   virtual int PcmHwParamsMalloc(snd_pcm_hw_params_t** hw_params);
   virtual int PcmHwParamsAny(snd_pcm_t* handle, snd_pcm_hw_params_t* hw_params);
@@ -121,7 +127,8 @@ class MEDIA_EXPORT AlsaWrapper {
                                          long* value);
   virtual int MixerSelemHasCaptureVolume(snd_mixer_elem_t* elem);
   virtual int MixerSelemGetCaptureVolumeRange(snd_mixer_elem_t* elem,
-                                              long* min, long* max);
+                                              long* min,
+                                              long* max);
   virtual void* MixerElemGetCallbackPrivate(const snd_mixer_elem_t* obj);
   virtual void MixerElemSetCallback(snd_mixer_elem_t* obj,
                                     snd_mixer_elem_callback_t val);
@@ -142,6 +149,12 @@ class MEDIA_EXPORT AlsaWrapper {
   virtual int MixerSelemGetPlaybackVolumeRange(snd_mixer_elem_t* elem,
                                                long* min,
                                                long* max);
+  virtual int MixerSelemAskPlaybackVolDb(snd_mixer_elem_t* elem,
+                                         long value,
+                                         long* db_value);
+  virtual int MixerSelemAskPlaybackDbVol(snd_mixer_elem_t* elem,
+                                         long db_value,
+                                         long* value);
   virtual int MixerSelemHasPlaybackSwitch(snd_mixer_elem_t* elem);
   virtual int MixerSelemHasPlaybackVolume(snd_mixer_elem_t* elem);
   virtual void MixerSelemIdSetIndex(snd_mixer_selem_id_t* obj,
