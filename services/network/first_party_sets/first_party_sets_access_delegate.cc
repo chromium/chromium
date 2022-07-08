@@ -36,8 +36,10 @@ FirstPartySetsAccessDelegate::FirstPartySetsAccessDelegate(
 
 FirstPartySetsAccessDelegate::~FirstPartySetsAccessDelegate() = default;
 
-void FirstPartySetsAccessDelegate::NotifyReady() {
+void FirstPartySetsAccessDelegate::NotifyReady(
+    mojom::FirstPartySetsReadyEventPtr ready_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  context_config_.SetCustomizations(ready_event->customizations);
   InvokePendingQueries();
 }
 

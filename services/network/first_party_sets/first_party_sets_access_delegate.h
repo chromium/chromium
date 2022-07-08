@@ -51,7 +51,7 @@ class FirstPartySetsAccessDelegate
   ~FirstPartySetsAccessDelegate() override;
 
   // mojom::FirstPartySetsAccessDelegate
-  void NotifyReady() override;
+  void NotifyReady(mojom::FirstPartySetsReadyEventPtr ready_event) override;
 
   bool is_enabled() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

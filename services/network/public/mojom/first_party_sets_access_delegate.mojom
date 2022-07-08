@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/schemeful_site.mojom";
+
 // Lives in the network service and controlled by the browser process to
 // access First-Party Sets for each network context.
 //
@@ -16,13 +18,22 @@ interface FirstPartySetsAccessDelegate {
   //
   // Exactly one call is expected; subsequent calls with the same receiver
   // have no effect.
-  //
-  // TODO(crbug.com/1325050): Add param to let browser process configure
-  // the customizations provided for each network context.
-  NotifyReady();
+  NotifyReady(FirstPartySetsReadyEvent ready_event);
 };
 
 struct FirstPartySetsAccessDelegateParams {
   // Whether First-Party Sets is enabled for this network context.
   bool enabled;
+};
+
+struct FirstPartySetsReadyEvent {
+  // The list of modifications to override the public First-Party Sets owned
+  // by the network service for the network context.
+  //
+  // This map is computed by the browser side against the public First-Party
+  // Sets, where the keys are member sites and the values are the ultimate
+  // owners of the final First-Party Sets combining the public sets and the
+  // modifications. Entries of site -> absl::nullopt means the key site is
+  // considered deleted from the existing First-Party Sets.
+  map<SchemefulSite, SchemefulSite?> customizations;
 };

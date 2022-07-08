@@ -462,7 +462,8 @@ class SamePartyEnabledRestrictedCookieManagerTest
           net::SchemefulSite(GURL("https://example.com"))},
          {net::SchemefulSite(GURL("https://member1.com")),
           net::SchemefulSite(GURL("https://example.com"))}});
-    first_party_sets_access_delegate_remote_->NotifyReady();
+    first_party_sets_access_delegate_remote_->NotifyReady(
+        mojom::FirstPartySetsReadyEvent::New());
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(
         mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS,
         &first_party_sets_access_delegate_, &cookie_settings_);

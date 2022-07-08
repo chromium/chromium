@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -207,8 +208,15 @@ FirstPartySetsManager::FindOwnerInternal(
 
   FirstPartySetsManager::OwnerResult owner;
 
-  if (fps_context_config.is_enabled()) {
-    if (const auto it = sets_->find(normalized_site); it != sets_->end()) {
+  if (fps_context_config.is_enabled() && is_enabled()) {
+    // Check if `normalized_site` can be found in the customizations first.
+    // If not, fall back to look up in `sets_`.
+    if (const auto it =
+            fps_context_config.customizations().find(normalized_site);
+        it != fps_context_config.customizations().end()) {
+      owner = it->second;
+    } else if (const auto it = sets_->find(normalized_site);
+               it != sets_->end()) {
       owner = it->second;
     }
   }
@@ -342,17 +350,30 @@ FirstPartySetsManager::SetsByOwner FirstPartySetsManager::SetsInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
-  if (!fps_context_config.is_enabled())
+  if (!fps_context_config.is_enabled() || !is_enabled())
     return {};
 
   FirstPartySetsManager::SetsByOwner sets;
+  // Go over `sets_` to add entries that are not modified by the customizations.
   for (const auto& pair : *sets_) {
     const net::SchemefulSite& member = pair.first;
-    net::SchemefulSite owner = pair.second;
-    auto set = sets.emplace(std::make_pair(std::move(owner),
-                                           std::set<net::SchemefulSite>()))
-                   .first;
-    set->second.insert(member);
+    const net::SchemefulSite& owner = pair.second;
+    if (!base::Contains(fps_context_config.customizations(), member)) {
+      auto set = sets.emplace(owner, std::set<net::SchemefulSite>()).first;
+      set->second.insert(member);
+    }
+  }
+
+  // Then go over the customizations to add entries that are not deleted.
+  for (const auto& pair : fps_context_config.customizations()) {
+    const net::SchemefulSite& member = pair.first;
+    const absl::optional<net::SchemefulSite>& owner = pair.second;
+    if (owner.has_value()) {
+      auto set =
+          sets.emplace(std::move(owner.value()), std::set<net::SchemefulSite>())
+              .first;
+      set->second.insert(member);
+    }
   }
 
   return sets;

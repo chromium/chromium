@@ -173,8 +173,8 @@ class FirstPartySetsManager {
   // `infer_singleton_sets` is true. `fps_context_config` is the configuration
   // to be used in this context.
   //
-  // This is synchronous, and must not be called
-  // until the instance is fully initialized.
+  // This is synchronous, and must not be called until the instance is fully
+  // initialized.
   const absl::optional<net::SchemefulSite> FindOwnerInternal(
       const net::SchemefulSite& site,
       const FirstPartySetsContextConfig& fps_context_config,

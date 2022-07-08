@@ -995,10 +995,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       fps_access_delegate_remote;
   network_context_params->first_party_sets_access_delegate_receiver =
       fps_access_delegate_remote.BindNewPipeAndPassReceiver();
-  // TODO(crbug.com/1325050): Call NotifyReady() here for now to match the
-  // existing behavior. NotifyReady() will be called by the remote handle owner
-  // in the follow up change.
-  fps_access_delegate_remote->NotifyReady();
+  // TODO(crbug.com/1325050): NotifyReady() will be called by the remote
+  // handle owner with the proper input in the follow up changes.
+  fps_access_delegate_remote->NotifyReady(
+      network::mojom::FirstPartySetsReadyEvent::New());
   fps_access_delegate_remote_set_.Add(std::move(fps_access_delegate_remote));
 }
 
