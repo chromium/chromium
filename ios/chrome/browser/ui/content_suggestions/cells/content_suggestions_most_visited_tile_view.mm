@@ -89,6 +89,9 @@
   UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
   previewParameters.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  CGRect previewPath = CGRectInset(interaction.view.bounds, -2, -12);
+  previewParameters.visiblePath =
+      [UIBezierPath bezierPathWithRoundedRect:previewPath cornerRadius:12];
   return [[UITargetedPreview alloc] initWithView:self
                                       parameters:previewParameters];
 }
