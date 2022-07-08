@@ -8,17 +8,23 @@
  * implementation detail and subject to change (you should not add them to your
  * components directly).
  */
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 
+import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
+import {isWindows} from '//resources/js/cr.m.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 
 import {getTemplate} from './help_bubble.html.js';
 import {HelpBubblePosition} from './help_bubble.mojom-webui.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
+
+const ACTION_BUTTON_ID_PREFIX = 'action-button-';
 
 export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
 
@@ -31,6 +37,7 @@ export type HelpBubbleDismissedEvent = CustomEvent<{
 export interface HelpBubbleElement {
   $: {
     body: HTMLElement,
+    buttons: HTMLElement,
     close: CrIconButtonElement,
     main: HTMLElement,
     title: HTMLElement,
@@ -63,11 +70,15 @@ export class HelpBubbleElement extends PolymerElement {
   titleText: string;
   closeText: string;
   position: HelpBubblePosition;
+  buttons: string[] = [];
+  defaultButtonIndex: number;
 
   /**
    * HTMLElement corresponding to |this.anchorId|.
    */
   private anchorElement_: HTMLElement|null = null;
+
+  private buttonEventTracker_: EventTracker = new EventTracker();
 
   /**
    * Shows the bubble.
@@ -85,6 +96,8 @@ export class HelpBubbleElement extends PolymerElement {
     }
     this.$.body.innerText = this.bodyText;
 
+    this.addButtons_();
+
     this.anchorElement_ =
         this.parentElement!.querySelector<HTMLElement>(`#${this.anchorId}`)!;
     assert(
@@ -101,10 +114,15 @@ export class HelpBubbleElement extends PolymerElement {
   }
 
   /**
-   * Hides the bubble and ensures that screen readers cannot its contents
-   * while hidden.
+   * Hides the bubble, clears out its contents, and ensures that screen readers
+   * ignore it while hidden.
+   *
+   * TODO(dfried): We are moving towards formalizing help bubbles as single-use;
+   * in which case most of this tear-down logic can be removed since the entire
+   * bubble will go away on hide.
    */
   hide() {
+    this.removeButtons_();
     this.style.display = 'none';
     this.setAttribute('aria-hidden', 'true');
     this.setAnchorHighlight_(false);
@@ -119,8 +137,28 @@ export class HelpBubbleElement extends PolymerElement {
     return this.anchorElement_;
   }
 
+  /**
+   * Returns the button with the given `buttonIndex`, or null if not found.
+   */
+  getButtonForTesting(buttonIndex: number): CrButtonElement|null {
+    for (const button of this.$.buttons.children) {
+      if (button.id === ACTION_BUTTON_ID_PREFIX + buttonIndex) {
+        return button as CrButtonElement;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns whether the default button is leading (true on Windows) vs trailing
+   * (all other platforms).
+   */
+  static isDefaultButtonLeading(): boolean {
+    return isWindows;
+  }
+
   private dismiss_() {
-    assert(this.anchorId);
+    assert(this.anchorId, 'Dismiss: expected help bubble to have an anchor.');
     this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
       detail: {
         anchorId: this.anchorId,
@@ -129,12 +167,81 @@ export class HelpBubbleElement extends PolymerElement {
     }));
   }
 
+  private onButtonClicked_(buttonIndex: number, _e: Event) {
+    assert(
+        this.anchorId,
+        'Action button clicked: expected help bubble to have an anchor.');
+    this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
+      detail: {
+        anchorId: this.anchorId,
+        fromActionButton: true,
+        buttonIndex: buttonIndex,
+      },
+    }));
+  }
+
+  /**
+   * Removes button elements and listeners, if any are present.
+   */
+  private removeButtons_() {
+    while (this.$.buttons.firstChild) {
+      this.buttonEventTracker_.remove(this.$.buttons.firstChild, 'click');
+      this.$.buttons.removeChild(this.$.buttons.firstChild);
+    }
+  }
+
+  /**
+   * Adds any buttons required by `this.buttons` with their on-click listeners.
+   */
+  private addButtons_() {
+    assert(
+        !this.$.buttons.firstChild,
+        'Add buttons: expected button list to be empty.');
+
+    // If there are no buttons to add, hide the container and return.
+    if (!this.buttons.length) {
+      return;
+    }
+
+    let defaultButton: HTMLElement|null = null;
+    for (let i: number = 0; i < this.buttons.length; ++i) {
+      const button = document.createElement('cr-button');
+      button.innerText = this.buttons[i];
+      button.id = ACTION_BUTTON_ID_PREFIX + i;
+      this.buttonEventTracker_.add(
+          button, 'click', this.onButtonClicked_.bind(this, i));
+      if (i === this.defaultButtonIndex) {
+        defaultButton = button;
+        // Default button should always be first in tab order.
+        button.tabIndex = 1;
+        button.classList.add('default-button');
+      } else {
+        // Tab index for non-default buttons starts at 2, since default button
+        // gets 1.
+        button.tabIndex = i + 2;
+        this.$.buttons.appendChild(button);
+      }
+    }
+
+    // Place the default button in the correct order; either leading or
+    // trailing based on platform.
+    if (defaultButton) {
+      if (HelpBubbleElement.isDefaultButtonLeading() &&
+          this.$.buttons.firstChild) {
+        this.$.buttons.insertBefore(defaultButton, this.$.buttons.firstChild);
+      } else {
+        this.$.buttons.appendChild(defaultButton);
+      }
+    }
+  }
+
   /**
    * Sets the bubble position, as relative to that of the anchor element and
    * |this.position|.
    */
   private updatePosition_() {
-    assert(this.anchorElement_);
+    assert(
+        this.anchorElement_, 'Update position: expected valid anchor element.');
 
     // Inclusive of 8px visible arrow and 8px margin.
     const offset = 16;
@@ -190,7 +297,9 @@ export class HelpBubbleElement extends PolymerElement {
    * or removes the highlight.
    */
   private setAnchorHighlight_(highlight: boolean) {
-    assert(this.anchorElement_);
+    assert(
+        this.anchorElement_,
+        'Set anchor highlight: expected valid anchor element.');
     this.anchorElement_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
   }
 }

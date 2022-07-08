@@ -5,6 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
+import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
 import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -125,5 +126,105 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(0, clicked);
     closeButton.click();
     assertEquals(1, clicked);
+  });
+
+  test('help bubble adds one button', () => {
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.buttons = ['button1'];
+    helpBubble.show();
+    assertEquals(1, helpBubble.$.buttons.children.length);
+    const button = helpBubble.getButtonForTesting(0);
+    assertTrue(!!button);
+    assertEquals(helpBubble.buttons[0], button.textContent);
+    assertFalse(button.classList.contains('default-button'));
+  });
+
+  test('help bubble adds several buttons', () => {
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.buttons = ['button1', 'button2', 'button3'];
+    helpBubble.show();
+    assertEquals(3, helpBubble.$.buttons.children.length);
+    for (let i: number = 0; i < 3; ++i) {
+      const button = helpBubble.getButtonForTesting(i);
+      assertTrue(!!button);
+      assertEquals(helpBubble.buttons[i], button.textContent);
+      assertFalse(button.classList.contains('default-button'));
+    }
+  });
+
+  test('help bubble adds default button', () => {
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.buttons = ['button1'];
+    helpBubble.defaultButtonIndex = 0;
+    helpBubble.show();
+    const button = helpBubble.getButtonForTesting(0);
+    assertTrue(!!button);
+    assertTrue(button.classList.contains('default-button'));
+  });
+
+  test('help bubble adds default button among several', () => {
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.buttons = ['button1', 'button2', 'button3'];
+    helpBubble.defaultButtonIndex = 1;
+    helpBubble.show();
+    assertEquals(3, helpBubble.$.buttons.children.length);
+
+    // Make sure all buttons were created as expected, including the default
+    // button.
+    let defaultButton: CrButtonElement|null = null;
+    for (let i: number = 0; i < 3; ++i) {
+      const button = helpBubble.getButtonForTesting(i);
+      assertTrue(!!button);
+      assertEquals(helpBubble.buttons[i], button.textContent);
+      const isDefault = (i === helpBubble.defaultButtonIndex);
+      assertEquals(isDefault, button.classList.contains('default-button'));
+      if (isDefault) {
+        defaultButton = button;
+      }
+    }
+
+    // Verify that the default button is in the expected position.
+    assertTrue(!!defaultButton);
+    const expectedIndex = HelpBubbleElement.isDefaultButtonLeading() ? 0 : 2;
+    assertEquals(
+        defaultButton, helpBubble.$.buttons.children.item(expectedIndex));
+  });
+
+  test('help bubble click action button generates event', () => {
+    let clicked: boolean;
+    let buttonIndex: number;
+    const callback = (e: HelpBubbleDismissedEvent) => {
+      assertEquals('title', e.detail.anchorId, 'Check anchor.');
+      assertTrue(e.detail.fromActionButton, 'Check fromActionButton.');
+      assertTrue(e.detail.buttonIndex !== undefined, 'Check buttonIndex.');
+      clicked = true;
+      buttonIndex = e.detail.buttonIndex;
+    };
+    helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
+    helpBubble.anchorId = 'title';
+    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.buttons = ['button1', 'button2', 'button3'];
+    helpBubble.defaultButtonIndex = 1;
+
+    for (let i: number = 0; i < 3; ++i) {
+      clicked = false;
+      buttonIndex = -1;
+      helpBubble.show();
+      const button = helpBubble.getButtonForTesting(i);
+      assertTrue(!!button);
+      button.click();
+      assertTrue(clicked);
+      assertEquals(i, buttonIndex);
+      helpBubble.hide();
+    }
   });
 });

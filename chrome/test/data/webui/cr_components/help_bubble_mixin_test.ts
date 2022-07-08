@@ -443,4 +443,39 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         testProxy.getHandler().getArgs('helpBubbleClosed'));
     assertFalse(container.isHelpBubbleShowing());
   });
+
+  const buttonParams: HelpBubbleParams = new HelpBubbleParams();
+  buttonParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
+  buttonParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  buttonParams.position = HelpBubblePosition.BELOW;
+  buttonParams.bodyText = 'This is another help bubble.';
+  buttonParams.titleText = 'This is a title';
+  buttonParams.buttons = [
+    {
+      text: 'button1',
+      isDefault: false,
+    },
+    {
+      text: 'button2',
+      isDefault: true,
+    },
+  ];
+
+  test('help bubble mixin sends action button clicked event', async () => {
+    container.showHelpBubble('p1', buttonParams);
+
+    // Click one of the action buttons.
+    const button =
+        container.shadowRoot!.querySelector('help-bubble')!.getButtonForTesting(
+            1);
+    assertTrue(!!button);
+    button.click();
+    await waitForVisibilityEvents();
+    assertEquals(
+        1, testProxy.getHandler().getCallCount('helpBubbleButtonPressed'));
+    assertDeepEquals(
+        [[PARAGRAPH_NATIVE_ID, 1]],
+        testProxy.getHandler().getArgs('helpBubbleButtonPressed'));
+    assertFalse(container.isHelpBubbleShowing());
+  });
 });

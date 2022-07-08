@@ -95,6 +95,33 @@
   cr-icon-button:focus {
     border: 2px solid var(--help-bubble-text-color);
   }
+
+  #buttons {
+    text-align: end;
+  }
+
+  cr-button {
+    --text-color: var(--help-bubble-text-color);
+    border-color: var(--help-bubble-text-color);
+    margin-inline-start: 8px;
+    margin-top: 8px;
+  }
+
+  cr-button:focus {
+    border-color: var(--help-bubble-background);
+    box-shadow: 0 0 0 2px var(--help-bubble-text-color);
+  }
+
+  cr-button.default-button {
+    --text-color: var(--help-bubble-background);
+    background-color: var(--help-bubble-text-color);
+  }
+
+  cr-button.default-button:focus {
+    border: 2px solid var(--help-bubble-background);
+    box-shadow: 0 0 0 1px var(--help-bubble-text-color);
+  }
+
 </style>
 
 <div class="help-bubble">
@@ -106,5 +133,6 @@
     <div id="body"></div>
   </div>
   <div id="main"></div>
+  <div id="buttons"></div>
   <div class="arrow"></div>
 </div>
