@@ -7,29 +7,25 @@ package org.chromium.device.geolocation;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
 
+import android.content.Context;
 import android.location.LocationManager;
 import android.os.Build;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLocationManager;
-import org.robolectric.shadows.ShadowLog; // remove me ?
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
@@ -56,11 +52,6 @@ public class LocationProviderTest {
         return Arrays.asList(new Object[][] {{LocationProviderType.MOCK},
                 {LocationProviderType.ANDROID}, {LocationProviderType.GMS_CORE}});
     }
-
-    // Member variables for LocationProviderType.GMS_CORE case.
-    @Mock
-    private GoogleApiClient mGoogleApiClient;
-    private boolean mGoogleApiClientIsConnected;
 
     private LocationManager mLocationManager;
     private ShadowLocationManager mShadowLocationManager;
@@ -143,44 +134,12 @@ public class LocationProviderTest {
     }
 
     private void setLocationProviderGmsCore() {
-        // Robolectric has a ShadowGoogleApiClientBuilder class that mocks the behaviour of the real
-        // class very closely, but it's not available in our build
-        mGoogleApiClient = Mockito.mock(GoogleApiClient.class);
-        mGoogleApiClientIsConnected = false;
-        doAnswer(new Answer<Boolean>() {
-            @Override
-            public Boolean answer(InvocationOnMock invocation) {
-                return mGoogleApiClientIsConnected;
-            }
-        })
-                .when(mGoogleApiClient)
-                .isConnected();
-
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                mGoogleApiClientIsConnected = true;
-                return null;
-            }
-        })
-                .when(mGoogleApiClient)
-                .connect();
-
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                mGoogleApiClientIsConnected = false;
-                return null;
-            }
-        })
-                .when(mGoogleApiClient)
-                .disconnect();
-
-        FusedLocationProviderApi fusedLocationProviderApi =
-                Mockito.mock(FusedLocationProviderApi.class);
+        Context context = Mockito.mock(Context.class);
+        FusedLocationProviderClient fusedLocationProviderClient =
+                Mockito.mock(FusedLocationProviderClient.class);
 
         LocationProviderGmsCore locationProviderGmsCore =
-                new LocationProviderGmsCore(mGoogleApiClient, fusedLocationProviderApi);
+                new LocationProviderGmsCore(context, fusedLocationProviderClient);
 
         LocationProviderFactory.setLocationProviderImpl(locationProviderGmsCore);
     }
