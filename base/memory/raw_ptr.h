@@ -564,6 +564,71 @@ struct AsanBackupRefPtrImpl {
       void const volatile* ptr);
 };
 
+template <class Super>
+struct RawPtrCountingImplWrapperForTest : public Super {
+  template <typename T>
+  static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+    ++wrap_raw_ptr_cnt;
+    return Super::WrapRawPtr(ptr);
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE void ReleaseWrappedPtr(T* ptr) {
+    ++release_wrapped_ptr_cnt;
+    Super::ReleaseWrappedPtr(ptr);
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+    ++get_for_dereference_cnt;
+    return Super::SafelyUnwrapPtrForDereference(wrapped_ptr);
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+    ++get_for_extraction_cnt;
+    return Super::SafelyUnwrapPtrForExtraction(wrapped_ptr);
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+    ++get_for_comparison_cnt;
+    return Super::UnsafelyUnwrapPtrForComparison(wrapped_ptr);
+  }
+
+  static ALWAYS_INLINE void IncrementSwapCountForTest() {
+    ++wrapped_ptr_swap_cnt;
+  }
+
+  static ALWAYS_INLINE void IncrementLessCountForTest() {
+    ++wrapped_ptr_less_cnt;
+  }
+
+  static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {
+    ++pointer_to_member_operator_cnt;
+  }
+
+  static void ClearCounters() {
+    wrap_raw_ptr_cnt = 0;
+    release_wrapped_ptr_cnt = 0;
+    get_for_dereference_cnt = 0;
+    get_for_extraction_cnt = 0;
+    get_for_comparison_cnt = 0;
+    wrapped_ptr_swap_cnt = 0;
+    wrapped_ptr_less_cnt = 0;
+    pointer_to_member_operator_cnt = 0;
+  }
+
+  static inline int wrap_raw_ptr_cnt = INT_MIN;
+  static inline int release_wrapped_ptr_cnt = INT_MIN;
+  static inline int get_for_dereference_cnt = INT_MIN;
+  static inline int get_for_extraction_cnt = INT_MIN;
+  static inline int get_for_comparison_cnt = INT_MIN;
+  static inline int wrapped_ptr_swap_cnt = INT_MIN;
+  static inline int wrapped_ptr_less_cnt = INT_MIN;
+  static inline int pointer_to_member_operator_cnt = INT_MIN;
+};
+
 }  // namespace internal
 
 namespace raw_ptr_traits {
