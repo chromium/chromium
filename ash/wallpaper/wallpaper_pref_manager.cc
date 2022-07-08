@@ -120,6 +120,8 @@ bool GetWallpaperInfo(const AccountId& account_id,
   // Use temporary variables to keep |info| untouched in the error case.
   const std::string* location = info_dict->FindStringPath(
       WallpaperPrefManager::kNewWallpaperLocationNodeName);
+  const std::string* file_path = info_dict->FindStringPath(
+      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName);
   absl::optional<int> layout =
       info_dict->FindIntPath(WallpaperPrefManager::kNewWallpaperLayoutNodeName);
   absl::optional<int> type =
@@ -146,6 +148,7 @@ bool GetWallpaperInfo(const AccountId& account_id,
     return false;
 
   info->location = *location;
+  info->user_file_path = *file_path;
   info->layout = static_cast<WallpaperLayout>(layout.value());
   // TODO(skau): Switch to TimeFromValue
   info->date =
@@ -209,6 +212,9 @@ bool SetWallpaperInfo(const AccountId& account_id,
   }
   wallpaper_info_dict.SetStringPath(
       WallpaperPrefManager::kNewWallpaperLocationNodeName, info.location);
+  wallpaper_info_dict.SetStringPath(
+      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
+      info.user_file_path);
   wallpaper_info_dict.SetIntPath(
       WallpaperPrefManager::kNewWallpaperLayoutNodeName, info.layout);
   wallpaper_info_dict.SetIntPath(
@@ -545,6 +551,8 @@ const char WallpaperPrefManager::kNewWallpaperDateNodeName[] = "date";
 const char WallpaperPrefManager::kNewWallpaperDedupKeyNodeName[] = "dedup_key";
 const char WallpaperPrefManager::kNewWallpaperLayoutNodeName[] = "layout";
 const char WallpaperPrefManager::kNewWallpaperLocationNodeName[] = "file";
+const char WallpaperPrefManager::kNewWallpaperUserFilePathNodeName[] =
+    "file_path";
 const char WallpaperPrefManager::kNewWallpaperTypeNodeName[] = "type";
 const char WallpaperPrefManager::kNewWallpaperUnitIdNodeName[] = "unit_id";
 const char WallpaperPrefManager::kNewWallpaperVariantListNodeName[] =

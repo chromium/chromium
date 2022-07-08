@@ -313,11 +313,12 @@ void WallpaperControllerClientImpl::SetCustomWallpaper(
     const std::string& file_name,
     ash::WallpaperLayout layout,
     const gfx::ImageSkia& image,
-    bool preview_mode) {
+    bool preview_mode,
+    const std::string& file_path) {
   if (!IsKnownUser(account_id))
     return;
   wallpaper_controller_->SetCustomWallpaper(account_id, file_name, layout,
-                                            image, preview_mode);
+                                            image, preview_mode, file_path);
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaper(

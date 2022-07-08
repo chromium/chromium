@@ -194,7 +194,7 @@ class WallpaperChangeWaiter : public ash::WallpaperControllerObserver {
     ash::WallpaperController::Get()->SetCustomWallpaper(
         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
         /*file_name=*/"fakename", ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image,
-        /*preview_mode=*/true);
+        /*preview_mode=*/true, /*file_path=*/"");
 
     loop.Run();
   }
