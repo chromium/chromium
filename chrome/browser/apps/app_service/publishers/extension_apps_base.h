@@ -235,12 +235,21 @@ class ExtensionAppsBase : public apps::PublisherBase,
                      apps::mojom::Readiness readiness,
                      std::vector<apps::mojom::AppPtr>* apps_out);
 
-  void ExtensionWasEnabled(const std::string& app_id,
-                           int32_t event_flags,
-                           apps::mojom::IntentPtr intent,
-                           apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info,
-                           CallbackWrapper callback);
+  // TODO(crbug.com/1253250): Remove after migrating to the non mojom Launch
+  // interface.
+  void LaunchMojom(const std::string& app_id,
+                   int32_t event_flags,
+                   apps::mojom::LaunchSource launch_source,
+                   apps::mojom::WindowInfoPtr window_info);
+
+  // TODO(crbug.com/1253250): Remove after migrating to the non mojom Launch
+  // interface.
+  void LaunchAppWithIntentMojom(const std::string& app_id,
+                                int32_t event_flags,
+                                apps::mojom::IntentPtr intent,
+                                apps::mojom::LaunchSource launch_source,
+                                apps::mojom::WindowInfoPtr window_info,
+                                CallbackWrapper callback);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
