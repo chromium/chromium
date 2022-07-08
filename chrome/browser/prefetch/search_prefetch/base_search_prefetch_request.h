@@ -18,8 +18,7 @@ class SearchPrefetchURLLoader;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Any updates to this class need to be propagated to SearchPrefetchFinalStatus
-// in enums.xml.
+// Any updates to this class need to be propagated to enums.xml.
 enum class SearchPrefetchStatus {
   // The request has not started yet. This status should ideally never be
   // recorded as Start() should be called on the same stack as creating the

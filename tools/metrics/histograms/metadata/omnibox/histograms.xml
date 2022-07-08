@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SearchPrefetch.PrefetchFinalStatus.NavigationPrefetch"
-    enum="SearchPrefetchFinalStatus" expires_after="2022-10-30">
+    enum="SearchPrefetchStatus" expires_after="2022-10-30">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1234,7 +1234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch"
-    enum="SearchPrefetchFinalStatus" expires_after="2022-08-07">
+    enum="SearchPrefetchStatus" expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

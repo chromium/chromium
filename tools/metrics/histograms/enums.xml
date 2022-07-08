@@ -85333,7 +85333,22 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Throttle prevented the prefetch"/>
 </enum>
 
-<enum name="SearchPrefetchFinalStatus">
+<enum name="SearchPrefetchServingReason">
+  <int value="0" label="Served a prefetch response"/>
+  <int value="1" label="Search engine not set"/>
+  <int value="2" label="User disabled Javascript"/>
+  <int value="3" label="Navigation URL was not a default search URL"/>
+  <int value="4" label="No prefetch issued for the search terms"/>
+  <int value="5" label="Prefetch was for a different origin"/>
+  <int value="6" label="Prefetch request was cancelled"/>
+  <int value="7" label="Prefetch request failed"/>
+  <int value="8" label="Another reason (unexpected)"/>
+  <int value="9" label="POST, reload, link, or other non-cache loads."/>
+  <int value="10"
+      label="A prerender navigation request has taken this response away."/>
+</enum>
+
+<enum name="SearchPrefetchStatus">
   <int value="0" label="Not started"/>
   <int value="1" label="In flight"/>
   <int value="2" label="Headers received (for streaming responses)"/>
@@ -85349,21 +85364,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Serving to prerender navigation stack and user navigated to
              search terms"/>
   <int value="10" label="Upgraded to prerender and succeeded"/>
-</enum>
-
-<enum name="SearchPrefetchServingReason">
-  <int value="0" label="Served a prefetch response"/>
-  <int value="1" label="Search engine not set"/>
-  <int value="2" label="User disabled Javascript"/>
-  <int value="3" label="Navigation URL was not a default search URL"/>
-  <int value="4" label="No prefetch issued for the search terms"/>
-  <int value="5" label="Prefetch was for a different origin"/>
-  <int value="6" label="Prefetch request was cancelled"/>
-  <int value="7" label="Prefetch request failed"/>
-  <int value="8" label="Another reason (unexpected)"/>
-  <int value="9" label="POST, reload, link, or other non-cache loads."/>
-  <int value="10"
-      label="A prerender navigation request has taken this response away."/>
 </enum>
 
 <enum name="SearchResultExtractorClientStatus">
