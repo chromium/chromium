@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
@@ -17,6 +18,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+using ::testing::ElementsAre;
 
 class ParameterizedTextOffsetMappingTest
     : public ::testing::WithParamInterface<bool>,
@@ -283,6 +286,28 @@ TEST_P(ParameterizedTextOffsetMappingTest,
   const TextOffsetMapping::InlineContents previous_contents =
       TextOffsetMapping::InlineContents::PreviousOf(inline_contents);
   EXPECT_TRUE(previous_contents.IsNull());
+}
+
+// http://crbug.com/1324970
+TEST_P(ParameterizedTextOffsetMappingTest, BlockInInlineWithAbsolute) {
+  InsertStyleElement("a { position:absolute; } #t { position: relative; }");
+  const PositionInFlatTree position = ToPositionInFlatTree(
+      SetCaretTextToBody("<div id=t><i><p><a></a></p></i> </div><p>|ab</p>"));
+
+  Vector<String> results;
+  for (const auto contents : TextOffsetMapping::BackwardRangeOf(position))
+    results.push_back(GetRange(contents));
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
+                "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>");
+  } else {
+    EXPECT_THAT(
+        results,
+        ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                    "<div id=\"t\">^<i><p><a></a></p></i> |</div><p>ab</p>"));
+  }
 }
 
 TEST_P(ParameterizedTextOffsetMappingTest, ForwardRangesWithTextControl) {

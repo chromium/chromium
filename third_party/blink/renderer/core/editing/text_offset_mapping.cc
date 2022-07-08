@@ -195,6 +195,14 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
       break;
     }
     if (layout_object->IsBlockInInline()) {
+      if (target.IsDescendantOf(layout_object)) {
+        // Note: We reach here when `target` is `position:absolute` or
+        // `position:fixed`, aka `IsOutOfFlowPositioned()`, because
+        // `LayoutObject::ContainingBlock()` handles them specially.
+        // See http://crbug.com/1324970
+        last = first;
+        break;
+      }
       block_in_inline_before = layout_object;
       first = last = nullptr;
     }
