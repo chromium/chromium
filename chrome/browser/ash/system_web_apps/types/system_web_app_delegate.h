@@ -171,7 +171,7 @@ class SystemWebAppDelegate {
   // aborted.
   //
   // This is implemented in
-  // chrome/browser/ui/web_applications/system_web_app_delegate_ui_impl.cc.
+  // chrome/browser/ui/ash/system_web_apps/system_web_app_delegate_ui_impl.cc.
   virtual Browser* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
