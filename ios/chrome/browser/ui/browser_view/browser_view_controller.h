@@ -37,6 +37,7 @@ class Browser;
 // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
 // from BVC
 @class DownloadManagerCoordinator;
+class FullscreenController;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
@@ -70,6 +71,7 @@ typedef struct {
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeController* sideSwipeController;
   BookmarkInteractionController* bookmarkInteractionController;
+  FullscreenController* fullscreenController;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;

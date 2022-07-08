@@ -348,6 +348,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
   SideSwipeController* _sideSwipeController;
+  FullscreenController* _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarkInteractionController* _bookmarkInteractionController;
@@ -581,6 +582,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     _prerenderService->SetDelegate(self);
   }
 
+  _fullscreenController = FullscreenController::FromBrowser(self.browser);
+
   _primaryToolbarCoordinator =
       [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
 
@@ -683,6 +686,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.sideSwipeController = _sideSwipeController;
   _viewControllerDependencies.bookmarkInteractionController =
       _bookmarkInteractionController;
+  _viewControllerDependencies.fullscreenController = _fullscreenController;
   _viewControllerDependencies.textZoomHandler = _textZoomHandler;
   _viewControllerDependencies.helpHandler = _helpHandler;
   _viewControllerDependencies.popupMenuCommandsHandler =
@@ -749,6 +753,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _bubblePresenter = nil;
 
   _prerenderService = nil;
+  _fullscreenController = nullptr;
 
   [self.popupMenuCoordinator stop];
   self.popupMenuCoordinator = nil;
@@ -1032,7 +1037,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       initWithScenario:ActivityScenario::TabShareButton];
 
   // Exit fullscreen if needed to make sure that share button is visible.
-  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+  _fullscreenController->ExitFullscreen();
 
   UIBarButtonItem* anchor = nil;
   if ([self.viewController.activityServicePositioner

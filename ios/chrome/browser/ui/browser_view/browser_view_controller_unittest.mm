@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
@@ -234,6 +235,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     bookmark_interaction_controller_ =
         [[BookmarkInteractionController alloc] initWithBrowser:browser_.get()];
 
+    fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
+
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
@@ -246,6 +249,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.sideSwipeController = side_swipe_controller_;
     dependencies.bookmarkInteractionController =
         bookmark_interaction_controller_;
+    dependencies.fullscreenController = fullscreen_controller_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -299,6 +303,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
   SideSwipeController* side_swipe_controller_;
   BookmarkInteractionController* bookmark_interaction_controller_;
+  FullscreenController* fullscreen_controller_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

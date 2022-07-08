@@ -509,9 +509,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.snackbarCommandsHandler = dependencies.snackbarCommandsHandler;
 
     _inNewTabAnimation = NO;
-
-    _fullscreenController = FullscreenController::FromBrowser(browser);
-
+    self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
 
     if (browser)
