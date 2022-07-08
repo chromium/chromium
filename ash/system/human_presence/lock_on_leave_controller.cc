@@ -18,6 +18,10 @@ void EnableLockOnLeaveViaDBus() {
   const auto config = hps::GetEnableLockOnLeaveConfig();
   if (config.has_value()) {
     HumanPresenceDBusClient::Get()->EnableHpsSense(config.value());
+    LOG(ERROR) << "LockOnLeaveController: enabling HpsSense from chrome.";
+  } else {
+    LOG(ERROR)
+        << "LockOnLeaveController: couldn't parse HpsSense configuration.";
   }
 }
 

@@ -262,9 +262,12 @@ void SnoopingProtectionController::ReconfigureService(State* new_state) {
     const absl::optional<hps::FeatureConfig> config =
         hps::GetEnableSnoopingProtectionConfig();
     if (!config.has_value()) {
-      LOG(ERROR) << "Couldn't parse notify configuration";
+      LOG(ERROR) << "SnoopingProtectionController: couldn't parse HpsNotify "
+                    "configuration.";
       return;
     }
+    LOG(ERROR)
+        << "SnoopingProtectionController: enabling HpsNotify from chrome.";
 
     HumanPresenceDBusClient::Get()->EnableHpsNotify(*config);
 
