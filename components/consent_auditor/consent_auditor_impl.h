@@ -61,6 +61,10 @@ class ConsentAuditorImpl : public ConsentAuditor {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
+  void RecordAutofillAssistantConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent)
+      override;
   void RecordLocalConsent(const std::string& feature,
                           const std::string& description_text,
                           const std::string& confirmation_text) override;
@@ -68,11 +72,11 @@ class ConsentAuditorImpl : public ConsentAuditor {
       override;
 
  private:
-  raw_ptr<PrefService> pref_service_;
-  std::unique_ptr<ConsentSyncBridge> consent_sync_bridge_;
-  std::string app_version_;
-  std::string app_locale_;
-  raw_ptr<base::Clock> clock_;
+  const raw_ptr<PrefService> pref_service_;
+  const std::unique_ptr<ConsentSyncBridge> consent_sync_bridge_;
+  const std::string app_version_;
+  const std::string app_locale_;
+  const raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace consent_auditor

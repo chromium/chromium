@@ -55,6 +55,12 @@ void FakeConsentAuditor::RecordAccountPasswordsConsent(
   NOTIMPLEMENTED();
 }
 
+void FakeConsentAuditor::RecordAutofillAssistantConsent(
+    const CoreAccountId& account_id,
+    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {
+  NOTIMPLEMENTED();
+}
+
 void FakeConsentAuditor::RecordGaiaConsent(
     const CoreAccountId& account_id,
     consent_auditor::Feature feature,

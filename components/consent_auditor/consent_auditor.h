@@ -89,6 +89,12 @@ class ConsentAuditor : public KeyedService {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
 
+  // Records the `consent` to use Autofill Assistant for the signed-in GAIA
+  // account and the current user profile.
+  virtual void RecordAutofillAssistantConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) = 0;
+
   // Records that the user consented to a |feature|. The user was presented with
   // |description_text| and accepted it by interacting |confirmation_text|
   // (e.g. clicking on a button; empty if not applicable).
