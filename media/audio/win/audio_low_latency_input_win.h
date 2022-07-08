@@ -78,6 +78,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "media/audio/agc_audio_stream.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/audio/win/audio_manager_win.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"
@@ -147,6 +148,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   bool started() const { return started_; }
 
  private:
+  class DataDiscontinuityReporter;
+
   void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
 
   // DelegateSimpleThread::Delegate implementation.
@@ -199,14 +202,19 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // AudioConverter::InputCallback implementation.
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
 
-  // Detects and counts glitches based on |device_position|.
-  void UpdateGlitchCount(UINT64 device_position);
-
   // Reports glitch stats and resets associated variables.
   void ReportAndResetGlitchStats();
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
+
+  // Used to track and log data discontinuity warnings from
+  // IAudioCaptureClient::GetBuffer.
+  std::unique_ptr<DataDiscontinuityReporter> data_discontinuity_reporter_;
 
   // Capturing is driven by this thread (which has no message loop).
   // All OnData() callbacks will be called from this thread.
@@ -313,12 +321,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // For detecting and reporting glitches.
   UINT64 expected_next_device_position_ = 0;
-  int total_glitches_ = 0;
-  UINT64 total_lost_frames_ = 0;
-  UINT64 largest_glitch_frames_ = 0;
 
   // Tracks error messages from IAudioCaptureClient::GetBuffer.
-  UINT64 num_data_discontinuity_warnings_ = 0;
   UINT64 num_timestamp_errors_ = 0;
   base::TimeTicks record_start_time_;
   base::TimeDelta time_until_first_timestamp_error_;

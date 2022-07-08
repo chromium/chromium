@@ -50,6 +50,7 @@
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/mac/audio_manager_mac.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 
@@ -268,9 +269,10 @@ class MEDIA_EXPORT AUAudioInputStream
   // NOTE: Float64 and UInt32 types are used for native API compatibility.
   Float64 last_sample_time_;
   UInt32 last_number_of_frames_;
-  UInt32 total_lost_frames_;
-  UInt32 largest_glitch_frames_;
-  int glitches_detected_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;
