@@ -1781,7 +1781,7 @@ crbug.com/1123630 paint/caret/multicol_inline_children.html [ Failure ]
 # Some Sanitizer API tests test behaviour for MathML, which in Chromium depends
 # on LayoutNG. We accept failures of those specific tests when LayoutNG is
 # disabled.
-crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.html [ Failure Pass ]
+crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure Pass ]
 
 # broken by https://chromium-review.googlesource.com/c/chromium/src/+/3376745
 crbug.com/1283025 external/wpt/css/css-tables/fractional-percent-width.html [ Failure ]

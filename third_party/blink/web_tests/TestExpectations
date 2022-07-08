@@ -6709,7 +6709,7 @@ crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
 # Sanitizer API: Namespace-based tests will partially fail until namespace support is complete.
-crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.html [ Failure ]
+crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure ]
 crbug.com/1225606 virtual/mathml-disabled/sanitizer-api-math-namespace-designator.html [ Failure ]
 
 # Temporarily disabled to unblock https://crrev.com/c/3657449
