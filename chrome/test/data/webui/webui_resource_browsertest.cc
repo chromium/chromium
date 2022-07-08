@@ -65,17 +65,15 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
   LoadTestUrl("i18n_process_css_test.html");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/list_test.js");
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridModuleTest) {
   LoadTestUrl("?module=js/cr/ui/grid_test.js");
 }
 
-// This test is Chrome OS only as the utils file it imports relies on
-// list_single_selection_model, which is only included on Chrome OS.
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/list_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/list_selection_model_test.js");
 }

@@ -183,7 +183,6 @@ checked_in_dts_files = [
   "cr_elements/policy/cr_policy_pref_indicator.m.d.ts",
   "cr_elements/policy/cr_tooltip_icon.m.d.ts",
   "js/cr/ui/focus_row_behavior.m.d.ts",
-  "js/cr/ui/list.m.d.ts",
   "js/i18n_behavior.m.d.ts",
   "js/list_property_update_behavior.m.d.ts",
   "js/parse_html_subset.m.d.ts",
@@ -214,6 +213,7 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/smb_shares/add_smb_share_dialog.d.ts",
     "cr_components/chromeos/smb_shares/smb_browser_proxy.d.ts",
     "js/cr/ui/grid.m.d.ts",
+    "js/cr/ui/list.m.d.ts",
   ]
 }
 
@@ -238,9 +238,6 @@ generate_definitions_js_files = [
   "js/cr/ui/focus_outline_manager.m.js",
   "js/cr/ui/focus_row.m.js",
   "js/cr/ui/keyboard_shortcut_list.m.js",
-  "js/cr/ui/list_item.m.js",
-  "js/cr/ui/list_selection_controller.m.js",
-  "js/cr/ui/list_selection_model.m.js",
   "js/cr/ui/store.js",
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
@@ -260,6 +257,9 @@ if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
 
 if (is_chromeos_ash) {
   generate_definitions_js_files += [
+    "js/cr/ui/list_item.m.js",
+    "js/cr/ui/list_selection_controller.m.js",
+    "js/cr/ui/list_selection_model.m.js",
     "js/cr/ui/list_single_selection_model.m.js",
     "js/cr/ui/store_client.js",
   ]

@@ -77,10 +77,6 @@ preprocess_if_expr("preprocess_generated") {
     "focus_outline_manager.m.js",
     "focus_row.m.js",
     "keyboard_shortcut_list.m.js",
-    "list_item.m.js",
-    "list.m.js",
-    "list_selection_controller.m.js",
-    "list_selection_model.m.js",
   ]
 
   if (!is_android) {
@@ -99,6 +95,10 @@ preprocess_if_expr("preprocess_generated") {
   if (is_chromeos_ash) {
     in_files += [
       "grid.m.js",
+      "list_item.m.js",
+      "list.m.js",
+      "list_selection_controller.m.js",
+      "list_selection_model.m.js",
       "list_single_selection_model.m.js",
     ]
   }
@@ -206,38 +206,40 @@ if (is_chromeos_ash) {
     deps = [ "../..:cr" ]
   }
 
-  js_library("list") {
-    deps = [
-      ":array_data_model",
-      ":list_item",
-      ":list_selection_controller",
-      ":list_selection_model",
-    ]
-  }
+  if (is_chromeos_ash) {
+    js_library("list") {
+      deps = [
+        ":array_data_model",
+        ":list_item",
+        ":list_selection_controller",
+        ":list_selection_model",
+      ]
+    }
 
-  js_library("list_item") {
-    deps = [ "../..:cr" ]
-  }
+    js_library("list_item") {
+      deps = [ "../..:cr" ]
+    }
 
-  js_library("list_selection_controller") {
-    deps = [
-      ":list_selection_model",
-      "../..:cr",
-    ]
-  }
+    js_library("list_selection_controller") {
+      deps = [
+        ":list_selection_model",
+        "../..:cr",
+      ]
+    }
 
-  js_library("list_selection_model") {
-    deps = [
-      "..:event_target",
-      "../..:cr",
-    ]
-  }
+    js_library("list_selection_model") {
+      deps = [
+        "..:event_target",
+        "../..:cr",
+      ]
+    }
 
-  js_library("list_single_selection_model") {
-    deps = [
-      "..:event_target",
-      "../..:cr",
-    ]
+    js_library("list_single_selection_model") {
+      deps = [
+        "..:event_target",
+        "../..:cr",
+      ]
+    }
   }
 
   js_library("menu_button") {
