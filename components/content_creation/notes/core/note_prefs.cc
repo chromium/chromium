@@ -40,14 +40,14 @@ absl::optional<std::vector<NoteTemplateIds>> TryGetRandomOrder(
     return absl::nullopt;
   }
 
-  const base::Value* stored_value = prefs->Get(kTemplatesRandomOrder);
+  const base::Value& stored_value = prefs->GetValue(kTemplatesRandomOrder);
 
-  if (!stored_value || !stored_value->is_list()) {
+  if (!stored_value.is_list()) {
     return absl::nullopt;
   }
 
   std::vector<NoteTemplateIds> template_ids;
-  for (const base::Value& current_value : stored_value->GetListDeprecated()) {
+  for (const base::Value& current_value : stored_value.GetListDeprecated()) {
     absl::optional<int> maybe_int = current_value.GetIfInt();
     if (!maybe_int) {
       continue;

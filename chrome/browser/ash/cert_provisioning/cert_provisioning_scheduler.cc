@@ -553,13 +553,9 @@ absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
     const CertProfileId& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value* profile_list = pref_service_->Get(pref_name_);
-  if (!profile_list) {
-    LOG(WARNING) << "Preference is not found";
-    return {};
-  }
+  const base::Value& profile_list = pref_service_->GetValue(pref_name_);
 
-  for (const base::Value& cur_profile : profile_list->GetListDeprecated()) {
+  for (const base::Value& cur_profile : profile_list.GetListDeprecated()) {
     const CertProfileId* id = cur_profile.FindStringKey(kCertProfileIdKey);
     if (!id || (*id != cert_profile_id)) {
       continue;
@@ -574,14 +570,10 @@ absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
 std::vector<CertProfile> CertProvisioningSchedulerImpl::GetCertProfiles() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value* profile_list = pref_service_->Get(pref_name_);
-  if (!profile_list) {
-    LOG(WARNING) << "Preference is not found";
-    return {};
-  }
+  const base::Value& profile_list = pref_service_->GetValue(pref_name_);
 
   std::vector<CertProfile> result_profiles;
-  for (const base::Value& cur_profile : profile_list->GetListDeprecated()) {
+  for (const base::Value& cur_profile : profile_list.GetListDeprecated()) {
     absl::optional<CertProfile> p = CertProfile::MakeFromValue(cur_profile);
     if (!p) {
       LOG(WARNING) << "Failed to parse certificate profile";

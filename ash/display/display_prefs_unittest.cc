@@ -285,11 +285,10 @@ class DisplayPrefsTest : public AshTestBase {
         testing::Message()
         << "Expected to read kExternalDisplayMirrorInfo with list values="
         << base::JoinString(expected_display_id_strs, ","));
-    const base::Value* prefs =
-        local_state()->Get(prefs::kExternalDisplayMirrorInfo);
-    ASSERT_TRUE(prefs);
+    const base::Value& prefs =
+        local_state()->GetValue(prefs::kExternalDisplayMirrorInfo);
     std::set<int64_t> read_ids;
-    for (const auto& value : prefs->GetListDeprecated()) {
+    for (const auto& value : prefs.GetListDeprecated()) {
       int64_t id;
       EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
       read_ids.insert(id);

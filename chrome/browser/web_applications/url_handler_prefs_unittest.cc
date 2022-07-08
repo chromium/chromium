@@ -66,12 +66,11 @@ class UrlHandlerPrefsTest : public ::testing::Test {
   }
 
   void ExpectUrlHandlerPrefs(const std::string& expected_prefs) {
-    const base::Value* const stored_prefs =
-        LocalState()->Get(prefs::kWebAppsUrlHandlerInfo);
-    ASSERT_TRUE(stored_prefs);
+    const base::Value& stored_prefs =
+        LocalState()->GetValue(prefs::kWebAppsUrlHandlerInfo);
     const base::Value expected_prefs_value =
         base::test::ParseJson(expected_prefs);
-    EXPECT_EQ(*stored_prefs, expected_prefs_value);
+    EXPECT_EQ(stored_prefs, expected_prefs_value);
   }
 
   std::unique_ptr<WebApp> WebAppWithUrlHandlers(

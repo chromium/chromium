@@ -49,10 +49,11 @@ void CryptAuthDeviceRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
     PrefService* pref_service)
     : pref_service_(pref_service) {
-  const base::Value* dict = pref_service_->Get(prefs::kCryptAuthDeviceRegistry);
+  const base::Value& dict =
+      pref_service_->GetValue(prefs::kCryptAuthDeviceRegistry);
 
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap instance_id_to_device_map;
-  for (const auto id_device_pair : dict->DictItems()) {
+  for (const auto id_device_pair : dict.DictItems()) {
     absl::optional<std::string> instance_id =
         util::DecodeFromString(id_device_pair.first);
     absl::optional<CryptAuthDevice> device =

@@ -519,14 +519,12 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
   if (!prefs->HasPrefPath(prefs::kPrinterTypeDenyList))
     return;
 
-  const base::Value* deny_list_from_prefs =
-      prefs->Get(prefs::kPrinterTypeDenyList);
-  if (!deny_list_from_prefs)
-    return;
+  const base::Value& deny_list_from_prefs =
+      prefs->GetValue(prefs::kPrinterTypeDenyList);
 
   std::vector<mojom::PrinterType> deny_list;
-  deny_list.reserve(deny_list_from_prefs->GetList().size());
-  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+  deny_list.reserve(deny_list_from_prefs.GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs.GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     mojom::PrinterType printer_type;
     if (deny_list_str == "extension")

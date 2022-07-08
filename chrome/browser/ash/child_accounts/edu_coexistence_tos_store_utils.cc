@@ -66,15 +66,14 @@ void SetUserConsentInfoListForProfile(
 
 std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
     Profile* profile) {
-  const base::Value* user_consent_info_dict_value =
-      profile->GetPrefs()->Get(prefs::kEduCoexistenceToSAcceptedVersion);
+  const base::Value& user_consent_info_dict_value =
+      profile->GetPrefs()->GetValue(prefs::kEduCoexistenceToSAcceptedVersion);
 
-  DCHECK(user_consent_info_dict_value);
-  DCHECK(user_consent_info_dict_value->is_dict());
+  DCHECK(user_consent_info_dict_value.is_dict());
 
   std::vector<UserConsentInfo> info_list;
 
-  for (const auto entry : user_consent_info_dict_value->DictItems()) {
+  for (const auto entry : user_consent_info_dict_value.DictItems()) {
     const std::string& gaia_id = entry.first;
     const std::string& accepted_tos_version = entry.second.GetString();
     info_list.push_back(UserConsentInfo(gaia_id, accepted_tos_version));
@@ -85,11 +84,11 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
 
 std::string GetAcceptedToSVersion(Profile* profile,
                                   const std::string& secondary_edu_gaia_id) {
-  const base::Value* accepted_values =
-      profile->GetPrefs()->Get(prefs::kEduCoexistenceToSAcceptedVersion);
+  const base::Value& accepted_values =
+      profile->GetPrefs()->GetValue(prefs::kEduCoexistenceToSAcceptedVersion);
 
   const std::string* entry =
-      accepted_values->FindStringKey(secondary_edu_gaia_id);
+      accepted_values.FindStringKey(secondary_edu_gaia_id);
   return entry ? *entry : std::string();
 }
 

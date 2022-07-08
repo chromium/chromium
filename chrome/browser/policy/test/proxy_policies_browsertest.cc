@@ -32,10 +32,9 @@ void VerifyProxyPrefs(PrefService* prefs,
                       absl::optional<bool> expected_proxy_pac_mandatory,
                       const std::string& expected_proxy_bypass_list,
                       const ProxyPrefs::ProxyMode& expected_proxy_mode) {
-  const base::Value* value = prefs->Get(proxy_config::prefs::kProxy);
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_dict());
-  ProxyConfigDictionary dict(value->Clone());
+  const base::Value& value = prefs->GetValue(proxy_config::prefs::kProxy);
+  ASSERT_TRUE(value.is_dict());
+  ProxyConfigDictionary dict(value.Clone());
   std::string s;
   bool b;
   if (expected_proxy_server.empty()) {

@@ -1612,9 +1612,8 @@ class PrefServiceObserver {
   }
 
   void OnPrefsChange() {
-    const base::Value* pref_value = service_->Get(pref_name_);
-    DCHECK(pref_value);
-    OnPrefValueUpdated(*pref_value);
+    const base::Value& pref_value = service_->GetValue(pref_name_);
+    OnPrefValueUpdated(pref_value);
   }
 
   // Allows to add expectations about preference changes and verify new values.

@@ -872,12 +872,12 @@ bool IsHandlerForProfile(const base::Value& handler,
 
 bool ProfileHasUrlHandlers(PrefService* local_state,
                            const base::FilePath& profile_path) {
-  const base::Value* const pref_value =
-      local_state->Get(prefs::kWebAppsUrlHandlerInfo);
-  if (!pref_value || !pref_value->is_dict())
+  const base::Value& pref_value =
+      local_state->GetValue(prefs::kWebAppsUrlHandlerInfo);
+  if (!pref_value.is_dict())
     return false;
 
-  for (const auto origin_value : pref_value->DictItems()) {
+  for (const auto origin_value : pref_value.DictItems()) {
     for (const auto& handler : origin_value.second.GetListDeprecated()) {
       if (IsHandlerForProfile(handler, profile_path))
         return true;
@@ -898,12 +898,12 @@ std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
   if (!url.is_valid())
     return {};
 
-  const base::Value* const pref_value =
-      local_state->Get(prefs::kWebAppsUrlHandlerInfo);
-  if (!pref_value || !pref_value->is_dict())
+  const base::Value& pref_value =
+      local_state->GetValue(prefs::kWebAppsUrlHandlerInfo);
+  if (!pref_value.is_dict())
     return {};
 
-  return FindMatches(*pref_value, url);
+  return FindMatches(pref_value, url);
 }
 
 void SaveOpenInApp(PrefService* local_state,

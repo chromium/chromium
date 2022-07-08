@@ -245,8 +245,8 @@ void EuiccStatusUploader::MaybeUploadStatus() {
     return;
   }
 
-  const base::Value* last_uploaded_pref =
-      local_state_->Get(kLastUploadedEuiccStatusPref);
+  const base::Value& last_uploaded_pref =
+      local_state_->GetValue(kLastUploadedEuiccStatusPref);
   auto current_state = GetCurrentEuiccStatus();
 
   // Force send the status if reset request was received.
@@ -269,7 +269,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
 
   retry_timer_.reset();
 
-  if (!last_uploaded_pref || *last_uploaded_pref != current_state) {
+  if (last_uploaded_pref != current_state) {
     UploadStatus(std::move(current_state));
   }
 }

@@ -478,15 +478,11 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
     return;
   }
 
-  const base::Value* deny_list_from_prefs =
-      prefs->Get(prefs::kPrinterTypeDenyList);
-  if (!deny_list_from_prefs) {
-    std::move(callback).Run(deny_list);
-    return;
-  }
+  const base::Value& deny_list_from_prefs =
+      prefs->GetValue(prefs::kPrinterTypeDenyList);
 
-  deny_list.reserve(deny_list_from_prefs->GetList().size());
-  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+  deny_list.reserve(deny_list_from_prefs.GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs.GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     printing::mojom::PrinterType printer_type;
     if (deny_list_str == "extension")

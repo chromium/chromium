@@ -18,11 +18,11 @@ const char kLacrosAccountIdsPref[] =
 
 // Reads from `prefs` a list of account ids known by Lacros.
 AccountCache::AccountIdSet GetLacrosAccountIdsPref(PrefService* prefs) {
-  const base::Value* list = prefs->Get(kLacrosAccountIdsPref);
-  if (!list->is_list())
+  const base::Value& list = prefs->GetValue(kLacrosAccountIdsPref);
+  if (!list.is_list())
     return {};
   AccountCache::AccountIdSet account_ids;
-  for (const base::Value& value : list->GetListDeprecated()) {
+  for (const base::Value& value : list.GetListDeprecated()) {
     const std::string* gaia_id = value.GetIfString();
     if (gaia_id)
       account_ids.insert(*gaia_id);

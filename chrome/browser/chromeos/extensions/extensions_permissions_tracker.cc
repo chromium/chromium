@@ -42,15 +42,16 @@ ExtensionsPermissionsTracker::~ExtensionsPermissionsTracker() = default;
 void ExtensionsPermissionsTracker::OnForcedExtensionsPrefChanged() {
   // TODO(crbug.com/1015378): handle pref_names::kExtensionManagement with
   // installation_mode: forced.
-  const base::Value* value = pref_service_->Get(pref_names::kInstallForceList);
-  if (!value || value->type() != base::Value::Type::DICTIONARY) {
+  const base::Value& value =
+      pref_service_->GetValue(pref_names::kInstallForceList);
+  if (value.type() != base::Value::Type::DICTIONARY) {
     return;
   }
 
   extension_safety_ratings_.clear();
   pending_forced_extensions_.clear();
 
-  for (const auto entry : value->DictItems()) {
+  for (const auto entry : value.DictItems()) {
     const ExtensionId& extension_id = entry.first;
     // By default the extension permissions are assumed to trigger full warning
     // (false). When the extension is loaded, if all of its permissions is safe,

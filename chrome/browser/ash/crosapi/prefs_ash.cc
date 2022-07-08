@@ -146,12 +146,12 @@ void PrefsAsh::GetExtensionPrefWithControl(
     return;
   }
 
-  const base::Value* value = state->pref_service->Get(state->path);
+  const base::Value& value = state->pref_service->GetValue(state->path);
 
   if (!state->is_extension_controlled_pref) {
     // Not extension controlled
     std::move(callback).Run(
-        absl::optional<base::Value>(value->Clone()),
+        absl::optional<base::Value>(value.Clone()),
         mojom::PrefControlState::kNotExtensionControlledPrefPath);
     return;
   }
@@ -171,7 +171,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
     // Lacros could control this.
     pref_control_state = mojom::PrefControlState::kLacrosExtensionControllable;
   }
-  std::move(callback).Run(absl::optional<base::Value>(value->Clone()),
+  std::move(callback).Run(absl::optional<base::Value>(value.Clone()),
                           pref_control_state);
 }
 

@@ -57,12 +57,10 @@ PendingWriteStore::GetPendingAdds() {
     return list;
   }
 
-  const base::Value* result = pref_service->Get(kFastPairPendingWritesPref);
-  if (!result) {
-    return list;
-  }
+  const base::Value& result =
+      pref_service->GetValue(kFastPairPendingWritesPref);
 
-  for (const auto item : result->DictItems()) {
+  for (const auto item : result.DictItems()) {
     list.emplace_back(item.first, item.second.GetString());
   }
 
