@@ -8,25 +8,21 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace enterprise_management {
-class DeviceManagementResponse;
+namespace network {
+class SharedURLLoaderFactory;
 }
 
 namespace policy {
+
+class DeviceManagementService;
+class PsmRlweDmserverClient;
 
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
@@ -35,11 +31,6 @@ class AutoEnrollmentClientImpl
     : public AutoEnrollmentClient,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  // Provides device identifier for Forced Re-Enrollment (FRE), where the
-  // server-backed state key is used. It will set the identifier for the
-  // DeviceAutoEnrollmentRequest.
-  class DeviceIdentifierProviderFRE;
-
   class FactoryImpl : public Factory {
    public:
     FactoryImpl();
@@ -86,11 +77,17 @@ class AutoEnrollmentClientImpl
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
  private:
-  typedef bool (AutoEnrollmentClientImpl::*RequestCompletionHandler)(
-      DeviceManagementService::Job*,
-      DeviceManagementStatus,
-      int,
-      const enterprise_management::DeviceManagementResponse&);
+  // Base class to handle server state availability requests.
+  class ServerStateAvailabilityRequester;
+
+  // Responsible for resolving server state availability status via auto
+  // enrollment requests for force re-enrollment.
+  class FREServerStateAvailabilityRequester;
+
+  // Responsible for resolving server state availability status via private
+  // membership check requests for initial enrollment.
+  class InitialServerStateAvailabilityRequester;
+  enum class ServerStateAvailabilityResult;
 
   // Responsible for resolving server state status for both Forced Re-Enrollment
   // (FRE) and Initial Enrollment.
@@ -99,17 +96,10 @@ class AutoEnrollmentClientImpl
 
   AutoEnrollmentClientImpl(
       const ProgressCallback& progress_callback,
-      DeviceManagementService* device_management_service,
       PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<DeviceIdentifierProviderFRE>
-          device_identifier_provider_fre,
-      std::unique_ptr<ServerStateRetriever> server_state_retriever,
-      const std::string& device_id,
-      int power_initial,
-      int power_limit,
-      std::string uma_suffix,
-      std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client);
+      std::unique_ptr<ServerStateAvailabilityRequester>
+          server_state_avalability_requester,
+      std::unique_ptr<ServerStateRetriever> server_state_retriever);
 
   // Tries to load the result of a previous execution of the protocol from
   // local state. Returns true if that decision has been made and is valid.
@@ -140,8 +130,7 @@ class AutoEnrollmentClientImpl
 
   // Calls `NextStep` in case of successful execution of PSM protocol.
   // Otherwise, reports the failure reason of PSM protocol execution.
-  void HandlePsmCompletion(
-      PsmRlweDmserverClient::ResultHolder psm_result_holder);
+  void HandlePsmCompletion(ServerStateAvailabilityResult result);
 
   // Cleans up and invokes |progress_callback_|.
   void ReportProgress(AutoEnrollmentState state);
@@ -156,36 +145,13 @@ class AutoEnrollmentClientImpl
   // Sends a device state download request to the device management service.
   void SendDeviceStateRequest();
 
-  // Runs the response handler for device management requests and calls
-  // NextStep().
-  void HandleRequestCompletion(
-      RequestCompletionHandler handler,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
-
-  // Parses the server response to a bucket download request.
-  bool OnBucketDownloadRequestCompletion(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  // Handles result of server state availability request. Proceeds to the next
+  // step on success. Reports failure otherwise.
+  void OnBucketDownloadRequestCompleted(ServerStateAvailabilityResult result);
 
   // Handles result of server state retrieval request. Proceeds to the next
   // step on success. Reports failure otherwise.
   void OnStateRetrievalCompleted(ServerStateRetrievalResult result);
-
-  // Returns true if the identifier hash provided by
-  // |device_identifier_provider_fre_| is contained in |hashes|.
-  bool IsIdHashInProtobuf(
-      const google::protobuf::RepeatedPtrField<std::string>& hashes);
-
-  // Updates UMA histograms for bucket download timings.
-  void UpdateBucketDownloadTimingHistograms();
-
-  // Updates the UMA histogram for successful hash dance.
-  void RecordHashDanceSuccessTimeHistogram();
 
   // Callback to invoke when the protocol generates a relevant event. This can
   // be either successful completion or an error that requires external action.
@@ -201,58 +167,16 @@ class AutoEnrollmentClientImpl
   // information.
   absl::optional<bool> has_server_state_;
 
-  // Holds the cached PSM execution result.
-  absl::optional<PsmRlweDmserverClient::ResultHolder> psm_result_holder_;
-
-  // Randomly generated device id for the auto-enrollment requests.
-  std::string device_id_;
-
-  // Power-of-2 modulus to try next.
-  int current_power_;
-
-  // Power of the maximum power-of-2 modulus that this client will accept from
-  // a retry response from the server.
-  int power_limit_;
-
-  // Number of requests for a different modulus received from the server.
-  // Used to determine if the server keeps asking for different moduli.
-  int modulus_updates_received_;
-
-  // Used to communicate with the device management service.
-  DeviceManagementService* device_management_service_;
-  // Indicates whether Hash dance i.e. DeviceAutoEnrollmentRequest or
-  // DeviceStateRetrievalRequest is in progress. Note that is not affected by
-  // PSM protocol, whether it's in progress or not.
-  std::unique_ptr<DeviceManagementService::Job> request_job_;
-
   // PrefService where the protocol's results are cached.
   PrefService* local_state_;
 
-  // The loader factory to use to perform the auto enrollment request.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Specifies the device identifier for FRE and its corresponding hash.
-  std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre_;
+  // Sends server state availability request and parses response. Reports
+  // results.
+  std::unique_ptr<ServerStateAvailabilityRequester>
+      server_state_avalability_requester_;
 
   // Sends server state retrieval request and parses response. Reports results.
   std::unique_ptr<ServerStateRetriever> server_state_retriever_;
-
-  // Obtains the device state using PSM protocol. Handles all communications
-  // related to PSM protocol with DMServer.
-  std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client_;
-
-  // Times used to determine the duration of the protocol, and the extra time
-  // needed to complete after the signin was complete.
-  // If |hash_dance_time_start_| is not null, the protocol is still running.
-  base::TimeTicks hash_dance_time_start_;
-
-  // The time when the bucket download part of the protocol started.
-  base::TimeTicks time_start_bucket_download_;
-
-  // The UMA histogram suffix. Will be ".ForcedReenrollment" for an
-  // |AutoEnrollmentClient| used for FRE and ".InitialEnrollment" for an
-  // |AutoEnrollmentclient| used for initial enrollment.
-  const std::string uma_suffix_;
 };
 
 }  // namespace policy
