@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -23,6 +24,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -848,6 +850,15 @@ class ShellUtil {
       HKEY root,
       const std::vector<std::unique_ptr<RegistryEntry>>& entries,
       bool best_effort_no_rollback = false);
+
+  static std::array<uint32_t, 4> ComputeHashForTesting(
+      base::span<const uint8_t> input);
+
+  static std::wstring ComputeUserChoiceHashForTesting(
+      const std::wstring& extension,
+      const std::wstring& sid,
+      const std::wstring& prog_id,
+      const std::wstring& datetime);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SHELL_UTIL_H_

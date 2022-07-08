@@ -22,6 +22,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -42,6 +43,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/values.h"
 #include "base/win/default_apps_util.h"
+#include "base/win/pe_image.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/shortcut.h"
@@ -1643,6 +1645,124 @@ bool DeleteFileExtensionsForProgId(const std::wstring& prog_id) {
   return ShellUtil::DeleteApplicationClass(prog_id);
 }
 
+// The user choice hash function uses a shell32 wide string as a salt. This
+// function attempts to extract that string.
+std::wstring GetShellUserChoiceSalt() {
+  std::wstring result;
+  HMODULE shell32 = GetModuleHandle(L"shell32.dll");
+  if (!shell32)
+    return result;
+
+  base::win::PEImage shell32_image(shell32);
+  IMAGE_SECTION_HEADER* data_section_header =
+      shell32_image.GetImageSectionHeaderByName(".rdata");
+  if (!data_section_header)
+    data_section_header = shell32_image.GetImageSectionHeaderByName(".text");
+
+  if (!data_section_header)
+    return result;
+
+  base::span<const uint8_t> data_section(
+      reinterpret_cast<const uint8_t*>(
+          shell32_image.RVAToAddr(data_section_header->VirtualAddress)),
+      data_section_header->SizeOfRawData);
+  static constexpr base::WStringPiece kSaltSubstring(
+      L"User Choice set via Windows User Experience");
+  base::span<const uint8_t> subsalt_span(
+      reinterpret_cast<const uint8_t*>(kSaltSubstring.data()),
+      kSaltSubstring.size() * sizeof(decltype(kSaltSubstring)::value_type));
+  auto salt_start = std::search(data_section.begin(), data_section.end(),
+                                subsalt_span.begin(), subsalt_span.end());
+  if (salt_start == data_section.end())
+    return result;
+
+  static constexpr wchar_t kBracket = L'}';
+  base::span<const uint8_t> bracket_span(
+      reinterpret_cast<const uint8_t*>(&kBracket), sizeof(kBracket));
+  // The salt string is currently not expected to be longer than 256 bytes.
+  // It could be shorter, and so the bracket helps find the end of the string.
+  auto salt_end_limited = salt_start + 256;
+  auto salt_end =
+      std::search(salt_start + subsalt_span.size(), salt_end_limited,
+                  bracket_span.begin(), bracket_span.end());
+  if (salt_end == salt_end_limited)
+    return result;
+
+  const size_t string_size = salt_end - salt_start + sizeof(kBracket);
+  result.assign(reinterpret_cast<const wchar_t*>(&*salt_start),
+                string_size / sizeof(wchar_t));
+  return result;
+}
+
+std::array<uint32_t, 4> ComputeHash(base::span<const uint8_t> input) {
+  const size_t items = input.size() / sizeof(uint32_t);
+  const size_t items_block_aligned = items - (items & 1);
+  base::span<const uint32_t> input_32(
+      reinterpret_cast<const uint32_t*>(input.data()), items_block_aligned);
+
+  base::MD5Digest md5_digest;
+  MD5Sum(input.data(), input.size_bytes(), &md5_digest);
+  uint32_t md5[2];
+  memcpy(md5, md5_digest.a, sizeof(md5));
+
+  std::array<uint32_t, 4> result{};
+
+  const uint32_t md5_0 = (md5[0] | 1) + 0x69FB0000;
+  const uint32_t md5_1 = (md5[1] | 1) + 0x13DB0000;
+  const uint32_t md5_2 = md5[0] | 1;
+  const uint32_t md5_3 = md5[1] | 1;
+  size_t length = input_32.size();
+  uint32_t part_1 = 0;
+  uint32_t part_2 = 0;
+  for (size_t pos = 0; pos < length; ++pos) {
+    if (pos & 1) {
+      const uint32_t prev_part_1 = part_1;
+      part_1 = input_32[pos] + prev_part_1;
+      part_1 = part_1 * md5_1 - 0x3CE8EC25 * (part_1 >> 16);
+      part_1 = 0x59C3AF2D * part_1 - 0x2232E0F1 * (part_1 >> 16);
+      result[0] = 0x1EC90001 * part_1 + 0x35BD1EC9 * (part_1 >> 16);
+      result[1] = result[0] + prev_part_1 + result[1];
+
+      const uint32_t prev_part_2 = part_2;
+      part_2 = input_32[pos] + prev_part_2;
+      part_2 = md5_3 * part_2;
+      part_2 = 0x16F50000 * part_2 + 0xA27416F5 * (part_2 >> 16);
+      part_2 = 0x96FF0000 * part_2 + 0xD38396FF * (part_2 >> 16);
+      part_2 = 0x2B890000 * part_2 + 0x7C932B89 * (part_2 >> 16);
+      result[2] = 0x9F690000 * part_2 + 0xBFA49F69 * (part_2 >> 16);
+      result[3] = result[2] + prev_part_2 + result[3];
+    } else {
+      part_1 = input_32[pos] + result[0];
+      part_1 = part_1 * md5_0 - 0x10FA9605 * (part_1 >> 16);
+      part_1 = 0x79F8A395 * part_1 + 0x689B6B9F * (part_1 >> 16);
+      part_1 = 0xEA970001 * part_1 - 0x3C101569 * (part_1 >> 16);
+      part_2 = md5_2 * (input_32[pos] + result[2]);
+      part_2 = 0xB1110000 * part_2 + 0xCF98B111 * (part_2 >> 16);
+      part_2 = 0x5B9F0000 * part_2 + 0x87085B9F * (part_2 >> 16);
+      part_2 = 0xB96D0000 * part_2 + 0x12CEB96D * (part_2 >> 16);
+      part_2 = 0x1D830000 * part_2 + 0x257E1D83 * (part_2 >> 16);
+    }
+  }
+
+  return result;
+}
+
+std::wstring ComputeUserChoiceHash(const std::wstring& extension,
+                                   const std::wstring& sid,
+                                   const std::wstring& prog_id,
+                                   const std::wstring& datetime,
+                                   const std::wstring& salt) {
+  std::wstring hash_input = base::ToLowerASCII(
+      base::StrCat({extension, sid, prog_id, datetime, salt}));
+  base::span<const uint8_t> hash_input_span(
+      reinterpret_cast<const uint8_t*>(hash_input.c_str()),
+      sizeof(decltype(hash_input)::value_type) * (hash_input.size() + 1));
+  std::array<uint32_t, 4> result = ComputeHash(hash_input_span);
+  uint32_t input[] = {result[0] ^ result[2], result[1] ^ result[3]};
+  return base::UTF8ToWide(base::Base64Encode(
+      base::span<uint8_t>(reinterpret_cast<uint8_t*>(input), sizeof(input))));
+}
+
 }  // namespace
 
 const wchar_t* ShellUtil::kRegAppProtocolHandlers = L"\\AppProtocolHandlers";
@@ -2896,4 +3016,23 @@ bool ShellUtil::AddRegistryEntries(
     return false;
   }
   return true;
+}
+
+// static
+std::array<uint32_t, 4> ShellUtil::ComputeHashForTesting(
+    base::span<const uint8_t> input) {
+  return ComputeHash(input);
+}
+
+// static
+std::wstring ShellUtil::ComputeUserChoiceHashForTesting(
+    const std::wstring& extension,
+    const std::wstring& sid,
+    const std::wstring& prog_id,
+    const std::wstring& datetime) {
+  std::wstring shell_salt = GetShellUserChoiceSalt();
+  if (shell_salt.empty())
+    return std::wstring();
+
+  return ComputeUserChoiceHash(extension, sid, prog_id, datetime, shell_salt);
 }
