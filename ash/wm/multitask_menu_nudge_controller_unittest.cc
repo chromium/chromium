@@ -10,8 +10,11 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chromeos/ui/wm/features.h"
 
 namespace ash {
@@ -77,6 +80,31 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgeShownAfterStateChange) {
 
   WindowState::Get(window.get())->Maximize();
   EXPECT_TRUE(GetWidget());
+}
+
+// Tests that there is no crash after toggling fullscreen on and off. Regression
+// test for https://crbug.com/1341142.
+TEST_F(MultitaskMenuNudgeControllerTest, NoCrashAfterFullscreening) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_FALSE(GetWidget());
+
+  // Turn of animations for immersive mode, so we don't have to wait for the top
+  // container to hide on fullscreen.
+  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
+      views::Widget::GetWidgetForNativeView(window.get()));
+  chromeos::ImmersiveFullscreenControllerTestApi(immersive_controller)
+      .SetupForTest();
+
+  const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState::Get(window.get())->OnWMEvent(&event);
+
+  // Window needs to be immersive enabled, but not revealed for the bug to
+  // reproduce.
+  ASSERT_TRUE(immersive_controller->IsEnabled());
+  ASSERT_FALSE(immersive_controller->IsRevealed());
+
+  WindowState::Get(window.get())->OnWMEvent(&event);
+  EXPECT_FALSE(GetWidget());
 }
 
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {

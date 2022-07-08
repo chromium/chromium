@@ -154,13 +154,19 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   if (!frame_header)
     return;
 
+  // The anchor is the button on the header that serves as the maximize or
+  // restore button (depending on the window state).
+  auto* anchor_view = frame_header->caption_button_container()->size_button();
+  DCHECK(anchor_view);
+
+  // If either the window or anchor is not visible, do not show the nudge.
+  if (!window->IsVisible() || !anchor_view->IsDrawn())
+    return;
+
   window_ = window;
   window_observation_.Observe(window_);
 
-  // The anchor is the button on the header that serves as the maximize or
-  // restore button (depending on the window state).
-  anchor_view_ = frame_header->caption_button_container()->size_button();
-  DCHECK(anchor_view_);
+  anchor_view_ = anchor_view;
 
   nudge_widget_ = CreateWidget(window_->parent());
   nudge_widget_->Show();
@@ -171,6 +177,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   window_->parent()->layer()->Add(pulse_layer_.get());
 
   UpdateWidgetAndPulse();
+  DCHECK(nudge_widget_);
 
   // Fade the educational nudge in.
   ui::Layer* layer = nudge_widget_->GetLayer();
