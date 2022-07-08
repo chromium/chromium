@@ -83,7 +83,9 @@ void ClickResetButton() {
 }
 
 void ClickRestartButton() {
-  test::OobeJS().TapOnPath({kResetScreen, kRestartButton});
+  // Clicking on the button to restart can be flaky if a synchronous call is
+  // used because the WebUI can be destroyed before it returns.
+  test::TapOnPathAndWaitForOobeToBeDestroyed({kResetScreen, kRestartButton});
 }
 
 void ClickToConfirmButton() {
@@ -291,9 +293,7 @@ IN_PROC_BROWSER_TEST_F(ResetTest, RestartBeforePowerwash) {
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
-  // Clicking on the button to restart can be flaky if a synchronous call is
-  // used because the WebUI can be destroyed before it returns.
-  test::TapOnPathAndWaitForOobeToBeDestroyed({kResetScreen, kRestartButton});
+  ClickRestartButton();
 
   ASSERT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   ASSERT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
@@ -518,8 +518,7 @@ IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdate,
 }
 
 IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdate,
-                       // TODO(crbug.com/1324763): Re-enable this test
-                       DISABLED_ResetFromSigninWithFirmwareUpdate) {
+                       ResetFromSigninWithFirmwareUpdate) {
   OobeScreenWaiter(ResetView::kScreenId).Wait();
 
   ASSERT_TRUE(HasPendingTpmFirmwareUpdateCheck());
