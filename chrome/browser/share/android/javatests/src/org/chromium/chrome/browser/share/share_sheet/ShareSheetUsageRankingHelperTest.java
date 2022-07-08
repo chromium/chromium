@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -167,5 +169,31 @@ public class ShareSheetUsageRankingHelperTest {
         assertNotNull("Callback should not be null before pressing More", mParams.getCallback());
         onClickListener.onClick(null);
         assertNull("Callback should be null after pressing More", mParams.getCallback());
+    }
+
+    ResolveInfo resolveInfoForPackage(String name) {
+        ResolveInfo info = new ResolveInfo();
+        info.activityInfo = new ActivityInfo();
+        info.activityInfo.packageName = name;
+        info.activityInfo.name = "foo";
+        return info;
+    }
+
+    @Test
+    @SmallTest
+    public void testFilteringRemovesCtsShims() {
+        List<ResolveInfo> infos = List.of(resolveInfoForPackage("org.chromium.a"),
+                resolveInfoForPackage("com.android.cts.ctsshim"),
+                resolveInfoForPackage("org.chromium.b"),
+                resolveInfoForPackage("com.android.cts.priv.ctsshim"),
+                resolveInfoForPackage("org.chromium.c"));
+
+        List<ResolveInfo> result =
+                ShareSheetUsageRankingHelper.filterOutBlocklistedResolveInfos(infos);
+
+        assertEquals(3, result.size());
+        assertEquals("org.chromium.a", result.get(0).activityInfo.packageName);
+        assertEquals("org.chromium.b", result.get(1).activityInfo.packageName);
+        assertEquals("org.chromium.c", result.get(2).activityInfo.packageName);
     }
 }

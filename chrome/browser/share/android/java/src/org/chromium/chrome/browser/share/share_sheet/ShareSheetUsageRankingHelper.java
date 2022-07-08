@@ -52,6 +52,15 @@ public class ShareSheetUsageRankingHelper {
     // without also changing the C++ side.
     private static final String MORE_TARGET_NAME = "$more";
 
+    // Packages in this set will never be offered as share targets, even if they
+    // match the share intent. This allows us to hide the Android CTS shim
+    // packages, which are installed on some OEM production builds and claim to
+    // handle all share intents, but are actually intended only to be used for
+    // testing.
+    private static final Set<String> PACKAGE_BLOCK_LIST = Set.of(
+            // https://crbug.com/1323786
+            "com.android.cts.ctsshim", "com.android.cts.priv.ctsshim");
+
     // Don't log click indexes for usage-ranked items: the ordering is local to this client, so
     // histogramming them would have no value.
     private static final int NO_LOG_INDEX = -1;
@@ -112,7 +121,6 @@ public class ShareSheetUsageRankingHelper {
         String type = contentTypesToTypeForRanking(contentTypes);
 
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-
         List<ResolveInfo> availableResolveInfos =
                 pm.queryIntentActivities(ShareHelper.getShareLinkAppCompatibilityIntent(), 0);
         availableResolveInfos.addAll(pm.queryIntentActivities(
@@ -125,6 +133,10 @@ public class ShareSheetUsageRankingHelper {
         // by Chrome - especially the Print activity. We don't want to offer
         // these as "third party" targets, so filter them out.
         availableResolveInfos = filterOutOwnResolveInfos(availableResolveInfos);
+
+        // Certain resolve infos correspond to system-internal or testing
+        // packages and should never be offered.
+        availableResolveInfos = filterOutBlocklistedResolveInfos(availableResolveInfos);
 
         // Sort the resolve infos by package name: on the backend, we store them by activity name,
         // but there's no particular reason activity names would be unique, and when we get them
@@ -172,7 +184,7 @@ public class ShareSheetUsageRankingHelper {
         }
     }
 
-    // Returns a new list of ResovleInfos containing only the elements of the
+    // Returns a new list of ResolveInfos containing only the elements of the
     // supplied list which are not references to activities from the current
     // package.
     private List<ResolveInfo> filterOutOwnResolveInfos(List<ResolveInfo> infos) {
@@ -180,6 +192,18 @@ public class ShareSheetUsageRankingHelper {
         List<ResolveInfo> remaining = new ArrayList<ResolveInfo>();
         for (ResolveInfo info : infos) {
             if (!info.activityInfo.packageName.equals(currentPackageName)) {
+                remaining.add(info);
+            }
+        }
+        return remaining;
+    }
+
+    // Returns a new list of ResolveInfos with blocklisted packages removed.
+    @VisibleForTesting
+    static List<ResolveInfo> filterOutBlocklistedResolveInfos(List<ResolveInfo> infos) {
+        List<ResolveInfo> remaining = new ArrayList<ResolveInfo>();
+        for (ResolveInfo info : infos) {
+            if (!PACKAGE_BLOCK_LIST.contains(info.activityInfo.packageName)) {
                 remaining.add(info);
             }
         }
