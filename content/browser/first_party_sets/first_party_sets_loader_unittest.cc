@@ -52,46 +52,6 @@ void SetComponentSets(FirstPartySetsLoader& loader, base::StringPiece content) {
       base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
 }
 
-// Create a base::Value::Dict representation of a First-Party Set that has
-// an owner field equal to |owner| and members field equal to |members|.
-base::Value::Dict MakeFirstPartySetDict(
-    const std::string& owner,
-    const base::flat_set<std::string>& members) {
-  base::Value::Dict dict;
-  base::Value::List member_list;
-
-  dict.Set("owner", owner);
-  for (const std::string& member : members) {
-    member_list.Append(member);
-  }
-  dict.Set("members", std::move(member_list));
-  return dict;
-}
-
-// Converts a map of (owner->members) into a base::Value::List of First-Party
-// Sets, each represented as a base::Value::Dict for ease of testing.
-base::Value::List MakeFirstPartySetsList(
-    const base::flat_map<std::string, std::vector<std::string>>&
-        owners_to_members) {
-  base::Value::List set_list;
-  for (auto& [owner, members] : owners_to_members) {
-    set_list.Append(MakeFirstPartySetDict(owner, members));
-  }
-  return set_list;
-}
-
-// Creates a base::Value::Dict representing a policy input JSON with a
-// 'replacements' field equal to |replacements| and an 'additions' field equal
-// to |additions|.
-base::Value::Dict MakePolicySetInputFromMap(
-    const base::flat_map<std::string, std::vector<std::string>>& replacements,
-    const base::flat_map<std::string, std::vector<std::string>>& additions) {
-  base::Value::Dict result;
-  result.Set("replacements", base::Value(MakeFirstPartySetsList(replacements)));
-  result.Set("additions", base::Value(MakeFirstPartySetsList(additions)));
-  return result;
-}
-
 enum class FirstPartySetsSource { kPublicSets, kCommandLineSet };
 
 FirstPartySetsLoader::FlattenedSets MakeFlattenedSetsFromMap(
@@ -113,45 +73,36 @@ FirstPartySetsLoader::FlattenedSets MakeFlattenedSetsFromMap(
 
 class FirstPartySetsLoaderTest : public ::testing::Test {
  public:
-  FirstPartySetsLoaderTest() = default;
+  FirstPartySetsLoaderTest() : loader_(future_.GetCallback()) {}
+
+  FirstPartySetsLoader& loader() { return loader_; }
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite> WaitAndGetResult() {
     return future_.Get();
   }
 
- protected:
+ private:
   base::test::TaskEnvironment env_;
   base::test::TestFuture<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
       future_;
-};
-
-class FirstPartySetsLoaderTestWithoutPolicySets
-    : public FirstPartySetsLoaderTest {
- public:
-  FirstPartySetsLoaderTestWithoutPolicySets()
-      : loader_(future_.GetCallback(), base::Value::Dict()) {}
-
-  FirstPartySetsLoader& loader() { return loader_; }
-
- private:
   FirstPartySetsLoader loader_;
 };
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, IgnoresInvalidFile) {
+TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   loader().SetManuallySpecifiedSet("");
   const std::string input = "certainly not valid JSON";
   SetComponentSets(loader(), input);
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, ParsesComponent) {
+TEST_F(FirstPartySetsLoaderTest, ParsesComponent) {
   SetComponentSets(loader(), "");
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, AcceptsMinimal) {
+TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
   const std::string input =
       "{\"owner\": \"https://example.test\",\"members\": "
       "[\"https://aaaa.test\",],}";
@@ -166,7 +117,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, AcceptsMinimal) {
                                         SerializesTo("https://example.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, AcceptsMultipleSets) {
+TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
   const std::string input =
       "{\"owner\": \"https://example.test\",\"members\": "
       "[\"https://member1.test\"]}\n"
@@ -188,7 +139,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, AcceptsMultipleSets) {
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, SetComponentSets_Idempotent) {
+TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
   std::string input =
       R"({"owner": "https://example.test", "members": ["https://member1.test"]}
 {"owner": "https://foo.test", "members": ["https://member2.test"]})";
@@ -214,7 +165,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, SetComponentSets_Idempotent) {
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, OwnerIsOnlyMember) {
+TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
   const std::string input =
       R"({"owner": "https://example.test", "members": ["https://example.test"]}
 {"owner": "https://foo.test", "members": ["https://member2.test"]})";
@@ -226,7 +177,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, OwnerIsOnlyMember) {
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, OwnerIsMember) {
+TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
   const std::string input =
       R"({"owner": "https://example.test", "members":)"
       R"( ["https://example.test", "https://member1.test"]}
@@ -238,7 +189,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, OwnerIsMember) {
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, RepeatedMember) {
+TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
   const std::string input =
       R"({"owner": "https://example.test", "members":)"
       R"( ["https://member1.test", "https://member2.test",)"
@@ -252,8 +203,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets, RepeatedMember) {
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Invalid_TooSmall) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
   loader().SetManuallySpecifiedSet("https://example.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
@@ -261,8 +211,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Invalid_NotOrigins) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
   loader().SetManuallySpecifiedSet("https://example.test,member1");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
@@ -270,8 +219,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Invalid_NotHTTPS) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
   loader().SetManuallySpecifiedSet("https://example.test,http://member1.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
@@ -279,7 +227,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Invalid_RegisteredDomain_Owner) {
   loader().SetManuallySpecifiedSet(
       "https://www.example.test..,https://www.member.test");
@@ -289,7 +237,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Invalid_RegisteredDomain_Member) {
   loader().SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test..");
@@ -299,8 +247,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Valid_SingleMember) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
   loader().SetManuallySpecifiedSet("https://example.test,https://member.test");
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
@@ -312,7 +259,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://example.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Valid_SingleMember_RegisteredDomain) {
   loader().SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test");
@@ -326,8 +273,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://example.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Valid_MultipleMembers) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
   // Set required input to make sure callback gets called.
@@ -342,7 +288,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://example.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_Valid_OwnerIsOnlyMember) {
   loader().SetManuallySpecifiedSet("https://example.test,https://example.test");
   // Set required input to make sure callback gets called.
@@ -351,8 +297,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
   EXPECT_THAT(WaitAndGetResult(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Valid_OwnerIsMember) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
   loader().SetManuallySpecifiedSet(
       "https://example.test,https://example.test,https://member1.test");
   // Set required input to make sure callback gets called.
@@ -365,8 +310,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://example.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_Valid_RepeatedMember) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
   loader().SetManuallySpecifiedSet(R"(https://example.test,
 https://member1.test,
 https://member2.test,
@@ -383,8 +327,7 @@ https://member1.test)");
                                         SerializesTo("https://example.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
-       SetsManuallySpecified_DeduplicatesOwnerOwner) {
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
   const std::string input = R"({"owner": "https://example.test", "members": )"
                             R"(["https://member2.test", "https://member3.test"]}
 {"owner": "https://bar.test", "members": ["https://member4.test"]})";
@@ -405,7 +348,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://bar.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesOwnerMember) {
   const std::string input = R"({"owner": "https://foo.test", "members": )"
                             R"(["https://member1.test", "https://example.test"]}
@@ -427,7 +370,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://bar.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberOwner) {
   const std::string input = R"({"owner": "https://foo.test", "members": )"
                             R"(["https://member1.test", "https://member2.test"]}
@@ -448,7 +391,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberMember) {
   const std::string input = R"({"owner": "https://foo.test", "members": )"
                             R"(["https://member2.test", "https://member3.test"]}
@@ -474,7 +417,7 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                         SerializesTo("https://bar.test"))));
 }
 
-TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
+TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_PrunesInducedSingletons) {
   const std::string input =
       R"({"owner": "https://foo.test", "members": ["https://member1.test"]})";
@@ -491,292 +434,6 @@ TEST_F(FirstPartySetsLoaderTestWithoutPolicySets,
                                    Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test"))));
 }
-
-// These tests verify that the policy sets override the public sets and that the
-// policy sets override the manually-specified set.
-class FirstPartySetsLoaderTestWithPolicySets
-    : public FirstPartySetsLoaderTest,
-      public testing::WithParamInterface<FirstPartySetsSource> {
- public:
-  FirstPartySetsLoaderTestWithPolicySets() = default;
-
- protected:
-  // This method sets either the public sets or the manually specified
-  // set with a {owner: `owner`, members: `members`} First-Party Set.
-  //
-  // This is used to test how the policy sets override either the public or
-  // manually specified set.
-  void SetEitherPublicOrManuallySpecifiedSet(
-      FirstPartySetsLoader& loader,
-      const std::string& owner,
-      const std::vector<std::string>& members) {
-    switch (GetParam()) {
-      case FirstPartySetsSource::kPublicSets: {
-        // Create the JSON representation.
-        base::Value::Dict public_set;
-        public_set.Set("owner", base::Value(owner));
-        base::Value::List member_list;
-        for (const std::string& member : members) {
-          member_list.Append(member);
-        }
-        public_set.Set("members", base::Value(std::move(member_list)));
-        std::string component_input;
-        JSONStringValueSerializer serializer(&component_input);
-        serializer.Serialize(public_set);
-        SetComponentSets(loader, component_input);
-        loader.SetManuallySpecifiedSet("");
-        return;
-      }
-      case FirstPartySetsSource::kCommandLineSet:
-        SetComponentSets(loader, "");
-        loader.SetManuallySpecifiedSet(base::StringPrintf(
-            "%s,%s", owner.c_str(), base::JoinString(members, ",").c_str()));
-        return;
-    }
-  }
-
-  base::OnceCallback<
-      void(base::flat_map<net::SchemefulSite, net::SchemefulSite>)>
-  callback() {
-    return future_.GetCallback();
-  }
-};
-
-TEST_P(FirstPartySetsLoaderTestWithPolicySets, EmptyPolicySetLists) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(/*replacements=*/{}, /*additions=*/{}));
-  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
-                                        {"https://member1.test"});
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test"))));
-}
-
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Replacements__NoIntersection_NoRemoval) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(
-          /*replacements=*/{{"https://owner2.test", {"https://member2.test"}}},
-          /*additions=*/{}));
-  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
-                                        {"https://member1.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://owner2.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://owner2.test"),
-                                        SerializesTo("https://owner2.test"))));
-}
-
-// The common member between the policy and existing set is removed from its
-// previous set.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Replacements_ReplacesExistingMember_RemovedFromFormerSet) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(
-          /*replacements=*/{{"https://owner2.test", {"https://member1b.test"}}},
-          /*additions=*/{}));
-  SetEitherPublicOrManuallySpecifiedSet(
-      loader, "https://owner1.test",
-      {"https://member1a.test", "https://member1b.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member1a.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://member1b.test"),
-                                        SerializesTo("https://owner2.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://owner2.test"),
-                                        SerializesTo("https://owner2.test"))));
-}
-
-// The common owner between the policy and existing set is removed and its
-// former members are removed since they are now unowned.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Replacements_ReplacesExistingOwner_RemovesFormerMembers) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(
-          /*replacements=*/{{"https://owner1.test", {"https://member2.test"}}},
-          /*additions=*/{}));
-  SetEitherPublicOrManuallySpecifiedSet(
-      loader, "https://owner1.test",
-      {"https://member1a.test", "https://member1b.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test"))));
-}
-
-// The common member between the policy and existing set is removed and any
-// leftover singletons are deleted.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Replacements_ReplacesExistingMember_RemovesSingletons) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(
-          /*replacements=*/{{"https://owner3.test", {"https://member1.test"}}},
-          /*additions=*/{}));
-  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
-                                        {"https://member1.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://owner3.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner3.test"),
-                                        SerializesTo("https://owner3.test"))));
-}
-
-// The policy set and the existing set have nothing in common so the policy set
-// gets added in without updating the existing set.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Additions_NoIntersection_AddsWithoutUpdating) {
-  FirstPartySetsLoader loader(
-      callback(), MakePolicySetInputFromMap(
-                      /*replacements=*/{}, /*additions=*/{
-                          {"https://owner2.test", {"https://member2.test"}}}));
-  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
-                                        {"https://member1.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://owner2.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://owner2.test"),
-                                        SerializesTo("https://owner2.test"))));
-}
-
-// The owner of a policy set is also a member in an existing set.
-// The policy set absorbs all sites in the existing set into its members.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Additions_PolicyOwnerIsExistingMember_PolicySetAbsorbsExistingSet) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(
-          /*replacements=*/{}, /*additions=*/{
-              {"https://member2.test",
-               {"https://member2a.test", "https://member2b.test"}}}));
-  SetEitherPublicOrManuallySpecifiedSet(loader, "https://owner1.test",
-                                        {"https://member2.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://member2.test")),
-                                   Pair(SerializesTo("https://member2b.test"),
-                                        SerializesTo("https://member2.test")),
-                                   Pair(SerializesTo("https://member2a.test"),
-                                        SerializesTo("https://member2.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://member2.test"))));
-}
-
-// The owner of a policy set is also an owner of an existing set.
-// The policy set absorbs all of its owner's existing members into its members.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       Additions_PolicyOwnerIsExistingOwner_PolicySetAbsorbsExistingMembers) {
-  FirstPartySetsLoader loader(
-      callback(), MakePolicySetInputFromMap(
-                      /*replacements=*/{}, /*additions=*/{
-                          {"https://owner1.test", {"https://member2.test"}}}));
-  SetEitherPublicOrManuallySpecifiedSet(
-      loader, "https://owner1.test",
-      {"https://member1.test", "https://member3.test"});
-
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member3.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test"))));
-}
-
-// Replacement & Addition policy set lists are required to be disjoint with
-// each other.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       BothTypes_SetListsIntersect_NoOverridesApplied) {
-  FirstPartySetsLoader loader(
-      callback(), MakePolicySetInputFromMap(
-                      /*replacements=*/{{"https://owner0.test",
-                                         {"https://new-member.test"}}},
-                      /*additions=*/{{"https://owner42.test",
-                                      {"https://new-member.test"}}}));
-  SetEitherPublicOrManuallySpecifiedSet(
-      loader, "https://owner1.test",
-      {"https://member1.test", "https://member2.test"});
-
-  // The policy set overrides are ignored since the set lists were not disjoint,
-  // which violates a requirement of the policy.
-  EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://owner1.test")),
-                                   // Below are the owner self mappings.
-                                   Pair(SerializesTo("https://owner1.test"),
-                                        SerializesTo("https://owner1.test"))));
-}
-
-// Replacement & Addition policy set lists are disjoint with each other.
-TEST_P(FirstPartySetsLoaderTestWithPolicySets,
-       BothTypes_SetListsDontIntersect_OverridesApplied) {
-  FirstPartySetsLoader loader(
-      callback(),
-      MakePolicySetInputFromMap(
-          /*replacements=*/{{"https://owner0.test", {"https://member1.test"}}},
-          /*additions=*/{
-              {"https://owner1.test", {"https://new-member1.test"}}}));
-  SetEitherPublicOrManuallySpecifiedSet(
-      loader, "https://owner1.test",
-      {"https://member1.test", "https://member2.test"});
-
-  // While the policy set lists are disjoint, they are able to affect the same
-  // existing set.
-  EXPECT_THAT(
-      WaitAndGetResult(),
-      UnorderedElementsAre(Pair(SerializesTo("https://member2.test"),
-                                SerializesTo("https://owner1.test")),
-                           Pair(SerializesTo("https://new-member1.test"),
-                                SerializesTo("https://owner1.test")),
-                           Pair(SerializesTo("https://member1.test"),
-                                SerializesTo("https://owner0.test")),
-                           // Below are the owner self mappings.
-                           Pair(SerializesTo("https://owner0.test"),
-                                SerializesTo("https://owner0.test")),
-                           Pair(SerializesTo("https://owner1.test"),
-                                SerializesTo("https://owner1.test"))));
-}
-
-INSTANTIATE_TEST_CASE_P(
-    /* no label */,
-    FirstPartySetsLoaderTestWithPolicySets,
-    ::testing::Values(FirstPartySetsSource::kPublicSets,
-                      FirstPartySetsSource::kCommandLineSet));
 
 // There is no overlap between the existing sets and the addition sets, so
 // normalization should be a noop.

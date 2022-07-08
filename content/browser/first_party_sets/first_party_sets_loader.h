@@ -12,7 +12,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
@@ -33,8 +32,7 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   using SingleSet =
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
 
-  FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete,
-                       base::Value::Dict policy_overrides);
+  explicit FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete);
 
   ~FirstPartySetsLoader();
 
@@ -80,33 +78,6 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // `SetManuallySpecifiedSet`, and the public sets via `SetComponentSets`.
   void ApplyManuallySpecifiedSet();
 
-  // Removes the intersection between `sets_` and `override_sets` from the
-  // `sets_` member variable, and then adds the `override_sets` into `sets_`.
-  void ApplyReplacementOverrides(const std::vector<SingleSet>& override_sets);
-
-  // Updates the intersection between `sets_` and `override_sets` within the
-  // `sets_` member variable, and then adds the `override_sets` into
-  // `sets_`.
-  //
-  // The applied update ensures that invariants of First-Party Sets are
-  // maintained, and that all sets in sets_ are disjoint.
-  //
-  // This will add in the `override_sets` into `sets_` without removing
-  // any existing sites from the list of First-Party Sets.
-  void ApplyAdditionOverrides(const std::vector<SingleSet>& override_sets);
-
-  // Removes all singletons (owners that have no members) from sets_.
-  void RemoveAllSingletons();
-
-  // Applies the First-Party Sets overrides provided by policy.
-  //
-  // Must not be called until the loader has already received the public sets
-  // via `SetComponentSets` and the CLI-provided sets have been applied to
-  // `sets_`.
-  //
-  // Applies "Replacement" overrides before applying "Addition" overrides.
-  void ApplyAllPolicyOverrides();
-
   // Checks the required inputs have been received, and if so, invokes the
   // callback `on_load_complete_`, after merging sets appropriately.
   void MaybeFinishLoading();
@@ -128,15 +99,6 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // optional), and may be empty if no command-line flag was provided (or one
   // was provided but invalid) (inner optional).
   absl::optional<absl::optional<SingleSet>> manually_specified_set_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Contains two (possibly empty) lists of SingleSets which are provided to
-  // override |sets_| either by replacement or addition. The type of override
-  // that a SingleSet should be used for is specified by the
-  // ParsedPolicySetLists field.
-  //
-  // This variable is not set by any methods other than the constructor.
-  FirstPartySetParser::ParsedPolicySetLists policy_overrides_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum Progress {

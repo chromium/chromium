@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -38,6 +39,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
   using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using SetsReadyOnceCallback = base::OnceCallback<void(FlattenedSets)>;
+  // The keys are member sites and the values are their owners in the final
+  // list of First-Party Sets that result from combining the public sets and
+  // the per-profile Overrides policy. Entries of site -> absl::nullopt means
+  // the key site is considered deleted from the existing First-Party Sets.
+  using PolicyCustomization =
+      base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
 
   static FirstPartySetsHandlerImpl* GetInstance();
 
@@ -94,6 +101,13 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
           current_sets);
+
+  // Computes information needed by the FirstPartySetsAccessDelegate in order to
+  // update the browser's list of First-Party Sets to respect a profile's
+  // setting for the per-profile FirstPartySetsOverrides policy.
+  static PolicyCustomization ComputeEnterpriseCustomizations(
+      const FlattenedSets& sets,
+      const FirstPartySetParser::ParsedPolicySetLists& policy);
 
  private:
   friend class base::NoDestructor<FirstPartySetsHandlerImpl>;

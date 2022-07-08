@@ -26,6 +26,7 @@
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -55,6 +56,32 @@ void MaybeWriteSetsToDisk(const base::FilePath& path, base::StringPiece sets) {
   if (!base::ImportantFileWriter::WriteFileAtomically(path, sets)) {
     VLOG(1) << "Failed writing serialized First-Party Sets to file "
             << path.MaybeAsASCII();
+  }
+}
+
+// Converts a list of First-Party Sets from a SingleSet to a FlattenedSet
+// representation.
+FirstPartySetsHandlerImpl::FlattenedSets SetListToFlattenedSets(
+    const std::vector<FirstPartySetParser::SingleSet>& set_list) {
+  FirstPartySetsHandlerImpl::FlattenedSets sets;
+  for (const auto& [owner, members] : set_list) {
+    sets.emplace(owner, owner);
+    for (const net::SchemefulSite& member : members)
+      sets.emplace(member, owner);
+  }
+  return sets;
+}
+
+// Adds all sets in a list of First-Party Sets into `site_to_owner` which maps
+// from a site to its owner.
+void UpdateCustomizationMap(
+    const std::vector<FirstPartySetParser::SingleSet>& set_list,
+    base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>&
+        site_to_owner) {
+  for (const auto& [owner, members] : set_list) {
+    site_to_owner.emplace(owner, owner);
+    for (const net::SchemefulSite& member : members)
+      site_to_owner.emplace(member, owner);
   }
 }
 
@@ -90,6 +117,113 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
       policy, /*out_sets=*/nullptr);
 }
 
+// TODO (https://crbug.com/1325050): Call this function when NetworkContext are
+// created in order to provide the customizations to the
+// FirstPartySetsAccessDelegate.
+FirstPartySetsHandlerImpl::PolicyCustomization
+FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+    const FlattenedSets& sets,
+    const FirstPartySetParser::ParsedPolicySetLists& policy) {
+  // Maps a site to its new owner if it has one.
+  base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>
+      site_to_owner;
+
+  // Normalize the addition sets to prevent them from affecting the same
+  // existing set.
+  std::vector<FirstPartySetParser::SingleSet> normalized_additions =
+      FirstPartySetsLoader::NormalizeAdditionSets(sets, policy.additions);
+
+  // Create flattened versions of the sets for easier lookup.
+  FlattenedSets flattened_replacements =
+      SetListToFlattenedSets(policy.replacements);
+  FlattenedSets flattened_additions =
+      SetListToFlattenedSets(normalized_additions);
+
+  // All of the policy sets are automatically inserted into site_to_owner.
+  UpdateCustomizationMap(policy.replacements, site_to_owner);
+  UpdateCustomizationMap(normalized_additions, site_to_owner);
+
+  // Maps old owner to new owner.
+  base::flat_map<net::SchemefulSite, net::SchemefulSite>
+      addition_intersected_owners;
+  for (const auto& [new_member, new_owner] : flattened_additions) {
+    if (const auto entry = sets.find(new_member); entry != sets.end()) {
+      // Found an overlap with the existing list of sets.
+      addition_intersected_owners.emplace(entry->second, new_owner);
+    }
+  }
+
+  // Maps an existing owner to the members it lost due to replacement.
+  base::flat_map<net::SchemefulSite, base::flat_set<net::SchemefulSite>>
+      potential_singletons;
+  for (const auto& [member, owner] : flattened_replacements) {
+    if (member == owner)
+      continue;
+    if (auto entry = sets.find(member);
+        entry != sets.end() && entry->second != member) {
+      const net::SchemefulSite& existing_owner = entry->second;
+      if (!addition_intersected_owners.contains(existing_owner) &&
+          !flattened_additions.contains(existing_owner) &&
+          !flattened_replacements.contains(existing_owner)) {
+        auto [it, successful] = potential_singletons.emplace(
+            existing_owner, base::flat_set<net::SchemefulSite>{member});
+        if (!successful)
+          it->second.insert(member);
+      }
+    }
+  }
+
+  // Find the existing owners that have left their existing sets, and whose
+  // existing members should be removed from their set (excl any policy sets
+  // that those members are involved in).
+  base::flat_set<net::SchemefulSite> replaced_existing_owners;
+  for (const auto& [site, unused_owner] : flattened_replacements) {
+    if (const auto entry = sets.find(site);
+        entry != sets.end() && entry->second == site) {
+      // Site was an owner in the existing sets.
+      bool inserted = replaced_existing_owners.emplace(site).second;
+      DCHECK(inserted);
+    }
+  }
+
+  // Find out which potential singletons are actually singletons; delete
+  // members whose owners left; and reparent the sets that intersected with
+  // an addition set.
+  for (const auto& [member, owner] : sets) {
+    // Reparent all sites in any intersecting addition sets.
+    if (auto entry = addition_intersected_owners.find(owner);
+        entry != addition_intersected_owners.end() &&
+        !flattened_replacements.contains(member)) {
+      site_to_owner.emplace(member, entry->second);
+    }
+    if (member == owner)
+      continue;
+    // Remove non-singletons from the potential list.
+    if (auto entry = potential_singletons.find(owner);
+        entry != potential_singletons.end() &&
+        !entry->second.contains(member)) {
+      // This owner lost members, but it still has at least one (`member`),
+      // so it's not a singleton.
+      potential_singletons.erase(entry);
+    }
+    // Remove members from sets whose owner left.
+    if (replaced_existing_owners.contains(owner) &&
+        !flattened_replacements.contains(member) &&
+        !addition_intersected_owners.contains(owner)) {
+      bool inserted = site_to_owner.emplace(member, absl::nullopt).second;
+      DCHECK(inserted);
+    }
+  }
+  // Any owner remaining in `potential_singleton` is a real singleton, so delete
+  // it:
+  for (auto& [owner, members] : potential_singletons) {
+    bool inserted = site_to_owner.emplace(owner, absl::nullopt).second;
+    DCHECK(inserted);
+  }
+
+  return site_to_owner;
+}
+
 FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
     bool enabled,
     bool embedder_will_provide_public_sets)
@@ -100,9 +234,7 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
       base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
                      // base::Unretained(this) is safe here because
                      // this is a static singleton.
-                     base::Unretained(this)),
-      IsEnabled() ? GetContentClient()->browser()->GetFirstPartySetsOverrides()
-                  : base::Value::Dict());
+                     base::Unretained(this)));
 }
 
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
@@ -163,9 +295,7 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
       base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
                      // base::Unretained(this) is safe here because
                      // this is a static singleton.
-                     base::Unretained(this)),
-      IsEnabled() ? GetContentClient()->browser()->GetFirstPartySetsOverrides()
-                  : base::Value::Dict());
+                     base::Unretained(this)));
   on_sets_ready_callbacks_.clear();
   persisted_sets_path_ = base::FilePath();
   sets_ = absl::nullopt;

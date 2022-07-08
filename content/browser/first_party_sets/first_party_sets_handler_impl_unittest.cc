@@ -23,16 +23,59 @@
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 // Some of these tests overlap with FirstPartySetParser unittests, but
 // overlapping test coverage isn't the worst thing.
 namespace content {
+namespace {
+using PolicyCustomization = FirstPartySetsHandlerImpl::PolicyCustomization;
 
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
+}
+
+FirstPartySetsHandlerImpl::FlattenedSets MakeFlattenedSetsFromMap(
+    const base::flat_map<std::string, std::vector<std::string>>&
+        owners_to_members) {
+  FirstPartySetsHandlerImpl::FlattenedSets result;
+  for (const auto& [owner, members] : owners_to_members) {
+    net::SchemefulSite owner_site((GURL(owner)));
+    result.insert(std::make_pair(owner_site, owner_site));
+    for (const std::string& member : members) {
+      net::SchemefulSite member_site((GURL(member)));
+      result.insert(std::make_pair(member_site, owner_site));
+    }
+  }
+  return result;
+}
+
+// Creates a ParsedPolicySetLists with the replacements and additions fields
+// constructed from `replacements` and `additions`.
+FirstPartySetParser::ParsedPolicySetLists MakeParsedPolicyFromMap(
+    const base::flat_map<std::string, std::vector<std::string>>& replacements,
+    const base::flat_map<std::string, std::vector<std::string>>& additions) {
+  FirstPartySetParser::ParsedPolicySetLists result;
+  for (auto& [owner, members] : replacements) {
+    std::vector<net::SchemefulSite> member_sites;
+    for (const std::string& member : members) {
+      member_sites.emplace_back(GURL(member));
+    }
+    result.replacements.emplace_back(net::SchemefulSite(GURL(owner)),
+                                     member_sites);
+  }
+  for (auto& [owner, members] : additions) {
+    std::vector<net::SchemefulSite> member_sites;
+    for (const std::string& member : members) {
+      member_sites.emplace_back(GURL(member));
+    }
+    result.additions.emplace_back(net::SchemefulSite(GURL(owner)),
+                                  member_sites);
+  }
+  return result;
 }
 
 FirstPartySetsHandlerImpl::FlattenedSets ParseSetsFromStream(
@@ -47,6 +90,7 @@ FirstPartySetsHandlerImpl::FlattenedSets GetSetsAndWait() {
       FirstPartySetsHandlerImpl::GetInstance()->GetSets(future.GetCallback());
   return result.has_value() ? result.value() : future.Get();
 }
+}  // namespace
 
 TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
   FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
@@ -539,4 +583,191 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                     SerializesTo("https://example.test")))));
 }
 
+TEST(FirstPartySetsProfilePolicyCustomizations, EmptyPolicySetLists) {
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+                  MakeFlattenedSetsFromMap(
+                      {{"https://owner1.test", {"https://member1.test"}}}),
+                  MakeParsedPolicyFromMap({}, {})),
+              FirstPartySetsHandlerImpl::PolicyCustomization());
+}
+
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Replacements__NoIntersection_NoRemoval) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test", {"https://member1.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{{"https://owner2.test",
+                                 {"https://member2.test"}}},
+              /*additions=*/{}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://owner2.test"))),
+                  Pair(SerializesTo("https://owner2.test"),
+                       Optional(SerializesTo("https://owner2.test")))));
+}
+
+// The common member between the policy and existing set is removed from its
+// previous set.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Replacements_ReplacesExistingMember_RemovedFromFormerSet) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test",
+                {"https://member1a.test", "https://member1b.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{{"https://owner2.test",
+                                 {"https://member1b.test"}}},
+              /*additions=*/{}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1b.test"),
+                       Optional(SerializesTo("https://owner2.test"))),
+                  Pair(SerializesTo("https://owner2.test"),
+                       Optional(SerializesTo("https://owner2.test")))));
+}
+
+// The common owner between the policy and existing set is removed and its
+// former members are removed since they are now unowned.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Replacements_ReplacesExistingOwner_RemovesFormerMembers) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test",
+                {"https://member1a.test", "https://member1b.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{{"https://owner1.test",
+                                 {"https://member2.test"}}},
+              /*additions=*/{}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://owner1.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://member1a.test"), absl::nullopt),
+                  Pair(SerializesTo("https://member1b.test"), absl::nullopt)));
+}
+
+// The common member between the policy and existing set is removed and any
+// leftover singletons are deleted.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Replacements_ReplacesExistingMember_RemovesSingletons) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test", {"https://member1.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{{"https://owner3.test",
+                                 {"https://member1.test"}}},
+              /*additions=*/{}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       Optional(SerializesTo("https://owner3.test"))),
+                  Pair(SerializesTo("https://owner3.test"),
+                       Optional(SerializesTo("https://owner3.test"))),
+                  Pair(SerializesTo("https://owner1.test"), absl::nullopt)));
+}
+
+// The policy set and the existing set have nothing in common so the policy set
+// gets added in without updating the existing set.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Additions_NoIntersection_AddsWithoutUpdating) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test", {"https://member1.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{},
+              /*additions=*/{
+                  {"https://owner2.test", {"https://member2.test"}}}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://owner2.test"))),
+                  Pair(SerializesTo("https://owner2.test"),
+                       Optional(SerializesTo("https://owner2.test")))));
+}
+
+// The owner of a policy set is also a member in an existing set.
+// The policy set absorbs all sites in the existing set into its members.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Additions_PolicyOwnerIsExistingMember_PolicySetAbsorbsExistingSet) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test", {"https://member2.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{},
+              /*additions=*/{
+                  {"https://member2.test",
+                   {"https://member2a.test", "https://member2b.test"}}}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://owner1.test"),
+                       Optional(SerializesTo("https://member2.test"))),
+                  Pair(SerializesTo("https://member2a.test"),
+                       Optional(SerializesTo("https://member2.test"))),
+                  Pair(SerializesTo("https://member2b.test"),
+                       Optional(SerializesTo("https://member2.test"))),
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://member2.test")))));
+}
+
+// The owner of a policy set is also an owner of an existing set.
+// The policy set absorbs all of its owner's existing members into its members.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     Additions_PolicyOwnerIsExistingOwner_PolicySetAbsorbsExistingMembers) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test",
+                {"https://member1.test", "https://member3.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{},
+              /*additions=*/{
+                  {"https://owner1.test", {"https://member2.test"}}}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://member1.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://member3.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://owner1.test"),
+                       Optional(SerializesTo("https://owner1.test")))));
+}
+
+// Existing set overlaps with both replacement and addition set.
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     ReplacementsAndAdditions_SetListsOverlapWithSameExistingSet) {
+  PolicyCustomization customization =
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test",
+                {"https://member1.test", "https://member2.test"}}}),
+          MakeParsedPolicyFromMap(
+              /*replacements=*/{{"https://owner0.test",
+                                 {"https://member1.test"}}},
+              /*additions=*/{
+                  {"https://owner1.test", {"https://new-member1.test"}}}));
+  EXPECT_THAT(customization,
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       Optional(SerializesTo("https://owner0.test"))),
+                  Pair(SerializesTo("https://owner0.test"),
+                       Optional(SerializesTo("https://owner0.test"))),
+                  Pair(SerializesTo("https://new-member1.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://owner1.test"))),
+                  Pair(SerializesTo("https://owner1.test"),
+                       Optional(SerializesTo("https://owner1.test")))));
+}
 }  // namespace content
