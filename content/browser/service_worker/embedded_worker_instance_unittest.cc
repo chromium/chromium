@@ -510,10 +510,6 @@ class RecordCacheStorageInstanceClient
 
 // Test that the worker is given a CacheStoragePtr during startup.
 TEST_F(EmbeddedWorkerInstanceTest, CacheStorageOptimization) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kEagerCacheStorageSetupForServiceWorkers);
-
   const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 

@@ -81,10 +81,9 @@ const base::Feature kPaintHoldingCrossOrigin{"PaintHoldingCrossOrigin",
 
 // Enable eagerly setting up a CacheStorage interface pointer and
 // passing it to service workers on startup as an optimization.
-// TODO(crbug/1077916): Re-enable once the issue with COOP/COEP is fixed.
 const base::Feature kEagerCacheStorageSetupForServiceWorkers{
     "EagerCacheStorageSetupForServiceWorkers",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls script streaming.
 const base::Feature kScriptStreaming{"ScriptStreaming",
