@@ -279,11 +279,15 @@ PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   // process.
   auto forms_to_edit =
       saved_passwords_presenter_.GetCorrespondingPasswordForms(entry->key());
-  bool success = saved_passwords_presenter_.EditSavedCredentials(to_edit);
-  if (!success) {
-    return absl::nullopt;
+  switch (saved_passwords_presenter_.EditSavedCredentials(to_edit)) {
+    case password_manager::SavedPasswordsPresenter::EditResult::kSuccess:
+    case password_manager::SavedPasswordsPresenter::EditResult::kNothingChanged:
+      break;
+    case password_manager::SavedPasswordsPresenter::EditResult::kNotFound:
+    case password_manager::SavedPasswordsPresenter::EditResult::kAlreadyExisits:
+    case password_manager::SavedPasswordsPresenter::EditResult::kEmptyPassword:
+      return absl::nullopt;
   }
-
   api::passwords_private::CredentialIds new_ids;
   for (auto& form : forms_to_edit) {
     // Calculate the new IDs using the new username and password.

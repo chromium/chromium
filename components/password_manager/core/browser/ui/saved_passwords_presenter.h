@@ -57,6 +57,21 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     virtual void OnSavedPasswordsChanged(SavedPasswordsView passwords) {}
   };
 
+  // Result of EditSavedCredentials.
+  enum EditResult {
+    // Some credentials were successfully updated.
+    kSuccess,
+    // New credential matches the old one so nothing was changed.
+    kNothingChanged,
+    // Credential couldn't be found in the store.
+    kNotFound,
+    // Credentials with the same username and sign on realm already exists.
+    kAlreadyExisits,
+    // Password was empty.
+    kEmptyPassword,
+    kMaxValue = kEmptyPassword,
+  };
+
   explicit SavedPasswordsPresenter(
       scoped_refptr<PasswordStoreInterface> profile_store,
       scoped_refptr<PasswordStoreInterface> account_store = nullptr);
@@ -99,18 +114,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                           const std::u16string& new_username,
                           const std::u16string& new_password);
 
-  // Modifies provided password forms, with |new_username|, |new_password| and
-  // |new_note|. |forms| must represent single credential, with its duplicates,
-  // or the same form saved on another store type.
-  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
-  bool EditSavedPasswords(const SavedPasswordsView forms,
-                          const std::u16string& new_username,
-                          const std::u16string& new_password,
-                          const std::u16string& new_note = std::u16string());
-
   // Modifies all the saved credentials with a matching key. Only username,
   // password and notes are modified.
-  bool EditSavedCredentials(const CredentialUIEntry& credential);
+  EditResult EditSavedCredentials(const CredentialUIEntry& credential);
 
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;

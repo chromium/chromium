@@ -344,7 +344,16 @@ bool PasswordCheckDelegate::ChangeInsecureCredential(
 
   CredentialUIEntry credential_to_edit = *entry;
   credential_to_edit.password = base::UTF8ToUTF16(new_password);
-  return saved_passwords_presenter_->EditSavedCredentials(credential_to_edit);
+  switch (
+      saved_passwords_presenter_->EditSavedCredentials(credential_to_edit)) {
+    case password_manager::SavedPasswordsPresenter::EditResult::kSuccess:
+    case password_manager::SavedPasswordsPresenter::EditResult::kNothingChanged:
+      return true;
+    case password_manager::SavedPasswordsPresenter::EditResult::kNotFound:
+    case password_manager::SavedPasswordsPresenter::EditResult::kAlreadyExisits:
+    case password_manager::SavedPasswordsPresenter::EditResult::kEmptyPassword:
+      return false;
+  }
 }
 
 bool PasswordCheckDelegate::RemoveInsecureCredential(

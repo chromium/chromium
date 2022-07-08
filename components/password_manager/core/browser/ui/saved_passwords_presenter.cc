@@ -30,6 +30,7 @@ using PasswordNote = password_manager::PasswordNote;
 using Store = password_manager::PasswordForm::Store;
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
+using EditResult = password_manager::SavedPasswordsPresenter::EditResult;
 
 bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
                            SavedPasswordsView forms_to_check,
@@ -63,16 +64,36 @@ password_manager::PasswordForm GenerateFormFromCredential(
   return form;
 }
 
-PasswordNoteAction CalculatePasswordNoteAction(bool old_note_empty,
-                                               bool new_note_empty) {
-  if (old_note_empty && !new_note_empty)
+// Check if notes was modified for a specified |form| with |new_note|.
+IsPasswordNoteChanged IsNoteChanged(const password_manager::PasswordForm& form,
+                                    const PasswordNote& new_note) {
+  const auto& old_note_itr = base::ranges::find_if(
+      form.notes, &std::u16string::empty, &PasswordNote::unique_display_name);
+  bool old_note_exists = old_note_itr != form.notes.end();
+  return IsPasswordNoteChanged(
+      (old_note_exists && old_note_itr->value != new_note.value) ||
+      (!old_note_exists && !new_note.value.empty()));
+}
+
+PasswordNoteAction UpdateNoteInPasswordForm(
+    password_manager::PasswordForm& form,
+    const PasswordNote& new_note) {
+  const auto& note_itr = base::ranges::find_if(
+      form.notes, &std::u16string::empty, &PasswordNote::unique_display_name);
+  // if the old note doesn't exist, the note is just created.
+  if (note_itr == form.notes.end()) {
+    form.notes.push_back(new_note);
     return PasswordNoteAction::kNoteAddedInEditDialog;
-  if (!old_note_empty && new_note_empty)
-    return PasswordNoteAction::kNoteRemovedInEditDialog;
-  if (!old_note_empty && !new_note_empty)
-    return PasswordNoteAction::kNoteEditedInEditDialog;
-  NOTREACHED();
-  return PasswordNoteAction::kNoteEditedInEditDialog;
+  }
+  // Note existed, but it was empty.
+  if (note_itr->value.empty()) {
+    note_itr->value = new_note.value;
+    note_itr->date_created = base::Time::Now();
+    return PasswordNoteAction::kNoteAddedInEditDialog;
+  }
+  note_itr->value = new_note.value;
+  return new_note.value.empty() ? PasswordNoteAction::kNoteRemovedInEditDialog
+                                : PasswordNoteAction::kNoteEditedInEditDialog;
 }
 
 }  // namespace
@@ -184,7 +205,7 @@ bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            std::u16string new_password) {
   CredentialUIEntry entry(form);
   entry.password = new_password;
-  return EditSavedCredentials(entry);
+  return EditSavedCredentials(entry) == EditResult::kSuccess;
 }
 
 bool SavedPasswordsPresenter::EditSavedPasswords(
@@ -196,117 +217,85 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
   CredentialUIEntry entry(form);
   entry.password = new_password;
   entry.username = new_username;
-  return EditSavedCredentials(entry);
+  return EditSavedCredentials(entry) == EditResult::kSuccess;
 }
 
-bool SavedPasswordsPresenter::EditSavedCredentials(
+SavedPasswordsPresenter::EditResult
+SavedPasswordsPresenter::EditSavedCredentials(
     const CredentialUIEntry& credential) {
   std::vector<PasswordForm> forms_to_change =
       GetCorrespondingPasswordForms(credential.key());
   if (forms_to_change.empty())
-    return false;
+    return EditResult::kNotFound;
 
-  const auto& old_note_itr =
-      base::ranges::find_if(forms_to_change[0].notes, &std::u16string::empty,
-                            &PasswordNote::unique_display_name);
+  IsUsernameChanged username_changed(credential.username !=
+                                     forms_to_change[0].username_value);
+  IsPasswordChanged password_changed(credential.password !=
+                                     forms_to_change[0].password_value);
+  IsPasswordNoteChanged note_changed =
+      IsNoteChanged(forms_to_change[0], credential.note);
 
-  // TODO(crbug.com/1184691): Merge into a single method.
-  if (credential.username != forms_to_change[0].username_value ||
-      credential.password != forms_to_change[0].password_value ||
-      (old_note_itr != forms_to_change[0].notes.end() &&
-       credential.note != *old_note_itr)) {
-    return EditSavedPasswords(forms_to_change, credential.username,
-                              credential.password, credential.note.value);
-  } else if (credential.password_issues != forms_to_change[0].password_issues) {
-    for (auto& old_form : forms_to_change) {
-      old_form.password_issues = credential.password_issues;
-      GetStoreFor(old_form).UpdateLogin(old_form);
-    }
-    return true;
-  }
-  return false;
-}
+  bool issues_changed =
+      credential.password_issues != forms_to_change[0].password_issues;
 
-bool SavedPasswordsPresenter::EditSavedPasswords(
-    const SavedPasswordsView forms,
-    const std::u16string& new_username,
-    const std::u16string& new_password,
-    const std::u16string& new_note) {
-  if (forms.empty())
-    return false;
-  IsUsernameChanged username_changed(new_username != forms[0].username_value);
-  IsPasswordChanged password_changed(new_password != forms[0].password_value);
+  // Password can't be empty.
+  if (credential.password.empty())
+    return EditResult::kEmptyPassword;
 
-  const auto& old_note_itr =
-      base::ranges::find_if(forms[0].notes, &std::u16string::empty,
-                            &PasswordNote::unique_display_name);
-  bool old_note_exists = old_note_itr != forms[0].notes.end();
-  IsPasswordNoteChanged note_changed = IsPasswordNoteChanged(
-      (old_note_exists && old_note_itr->value != new_note) ||
-      (!old_note_exists && !new_note.empty()));
-
-  if (new_password.empty())
-    return false;
+  // Username can't be changed to the existing one.
   if (username_changed &&
-      IsUsernameAlreadyUsed(passwords_, forms, new_username)) {
-    return false;
+      IsUsernameAlreadyUsed(passwords_, forms_to_change, credential.username)) {
+    return EditResult::kAlreadyExisits;
   }
 
-  // An updated username implies a change in the primary key, thus we need to
-  // make sure to call the right API. Update every entry in the equivalence
-  // class.
-  if (username_changed || password_changed || note_changed) {
-    for (const auto& old_form : forms) {
-      PasswordStoreInterface& store = GetStoreFor(old_form);
-      PasswordForm new_form = old_form;
+  // Nothing changed.
+  if (!username_changed && !password_changed && !note_changed &&
+      !issues_changed) {
+    password_manager::metrics_util::LogPasswordEditResult(username_changed,
+                                                          password_changed);
+    return EditResult::kNothingChanged;
+  }
 
-      if (password_changed) {
-        new_form.password_value = new_password;
-        new_form.date_password_modified = base::Time::Now();
-        new_form.password_issues.clear();
-      }
+  for (const auto& old_form : forms_to_change) {
+    PasswordStoreInterface& store = GetStoreFor(old_form);
+    PasswordForm new_form = old_form;
 
-      if (note_changed) {
-        bool old_note_empty = false;
-        // if the old note doesn't exist, the note is just created.
-        const auto& note_itr =
-            base::ranges::find_if(new_form.notes, &std::u16string::empty,
-                                  &PasswordNote::unique_display_name);
-        if (note_itr == new_form.notes.end()) {
-          new_form.notes.emplace_back(new_note,
-                                      /*date_created=*/base::Time::Now());
-          old_note_empty = true;
-        } else {
-          if (note_itr->value.empty()) {
-            note_itr->date_created = base::Time::Now();
-            old_note_empty = true;
-          }
-          note_itr->value = new_note;
-        }
-
-        metrics_util::LogPasswordNoteActionInSettings(
-            CalculatePasswordNoteAction(old_note_empty, new_note.empty()));
-      }
-
-      if (username_changed) {
-        new_form.username_value = new_username;
-        // Phished and leaked issues are no longer relevant on username change.
-        // Weak and reused issues are still relevant.
-        new_form.password_issues.erase(InsecureType::kPhished);
-        new_form.password_issues.erase(InsecureType::kLeaked);
-        // Changing username requires deleting old form and adding new one. So
-        // the different API should be called.
-        store.UpdateLoginWithPrimaryKey(new_form, old_form);
-      } else {
-        store.UpdateLogin(new_form);
-      }
-      NotifyEdited(new_form);
+    if (issues_changed) {
+      new_form.password_issues = credential.password_issues;
     }
+
+    if (password_changed) {
+      new_form.password_value = credential.password;
+      new_form.date_password_modified = base::Time::Now();
+      new_form.password_issues.clear();
+    }
+
+    if (note_changed) {
+      PasswordNoteAction note_action =
+          UpdateNoteInPasswordForm(new_form, credential.note);
+      metrics_util::LogPasswordNoteActionInSettings(note_action);
+    }
+
+    // An updated username implies a change in the primary key, thus we need
+    // to make sure to call the right API.
+    if (username_changed) {
+      new_form.username_value = credential.username;
+      // Phished and leaked issues are no longer relevant on username change.
+      // Weak and reused issues are still relevant.
+      new_form.password_issues.erase(InsecureType::kPhished);
+      new_form.password_issues.erase(InsecureType::kLeaked);
+      // Changing username requires deleting old form and adding new one. So
+      // the different API should be called.
+      store.UpdateLoginWithPrimaryKey(new_form, old_form);
+    } else {
+      store.UpdateLogin(new_form);
+    }
+    NotifyEdited(new_form);
   }
 
   password_manager::metrics_util::LogPasswordEditResult(username_changed,
                                                         password_changed);
-  return true;
+  return EditResult::kSuccess;
 }
 
 SavedPasswordsPresenter::SavedPasswordsView
