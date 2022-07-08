@@ -4,7 +4,6 @@
 
 #include "extensions/browser/offscreen_document_host.h"
 
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -578,75 +577,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, NavigationIsDisallowed) {
   // offscreen documents to navigate themselves, even to another extension
   // resource.
   expect_navigation_failure(extension->GetResourceURL("other.html"));
-}
-
-// Tests calling window.close() in an offscreen document.
-IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, CallWindowClose) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Offscreen Document Test",
-           "manifest_version": 3,
-           "version": "0.1"
-         })";
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     "<html>offscreen</html>");
-
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
-
-  {
-    std::unique_ptr<OffscreenDocumentHost> offscreen_document =
-        CreateOffscreenDocument(*extension, offscreen_url);
-    // Create a simple handler for the window.close() call that deletes the
-    // document.
-    base::RunLoop run_loop;
-    auto close_handler = [&run_loop, &offscreen_document](ExtensionHost* host) {
-      ASSERT_EQ(offscreen_document.get(), host);
-      offscreen_document.reset();
-      run_loop.Quit();
-    };
-    offscreen_document->SetCloseHandler(
-        base::BindOnce(base::BindLambdaForTesting(close_handler)));
-    content::ExecuteScriptAsync(offscreen_document->host_contents(),
-                                "window.close();");
-    run_loop.Run();
-    // The close handler should have been invoked.
-    EXPECT_EQ(nullptr, offscreen_document);
-  }
-
-  {
-    std::unique_ptr<OffscreenDocumentHost> offscreen_document =
-        CreateOffscreenDocument(*extension, offscreen_url);
-
-    // Repeat the test, but don't actually close the document in response to
-    // the call (which simulates an asynchronous close). This allows the
-    // window to call close() multiple times. Even though it does so, we should
-    // only receive the signal from the OffscreenDocumentHost once.
-    size_t close_count = 0;
-    auto close_handler = [&close_count,
-                          &offscreen_document](ExtensionHost* host) {
-      ASSERT_EQ(offscreen_document.get(), host);
-      ++close_count;
-    };
-    offscreen_document->SetCloseHandler(
-        base::BindOnce(base::BindLambdaForTesting(close_handler)));
-
-    content::WebContents* contents = offscreen_document->host_contents();
-    ASSERT_TRUE(content::ExecuteScript(contents, "window.close();"));
-    // Unfortunately, ExecuteScript() and the call to
-    // WebContentsDelegate::CloseContents() race with each other. Add an ugly
-    // RunUntilIdle() to "solve" it.
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(1u, close_count);
-    // Repeat the close() call. It shouldn't fire the close handler a second
-    // time.
-    ASSERT_TRUE(content::ExecuteScript(contents, "window.close();"));
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(1u, close_count);
-  }
 }
 
 }  // namespace extensions
