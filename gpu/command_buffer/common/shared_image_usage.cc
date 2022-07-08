@@ -62,6 +62,12 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
   if (usage & SHARED_IMAGE_USAGE_CPU_WRITE) {
     label += "|CpuWrite";
   }
+  if (usage & SHARED_IMAGE_USAGE_RAW_DRAW) {
+    label += "|RawDraw";
+  }
+  if (usage & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) {
+    label += "|RasterDelegatedCompositing";
+  }
 
   DCHECK(!label.empty());
 

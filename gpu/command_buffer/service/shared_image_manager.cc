@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/trace_util.h"
@@ -429,6 +430,12 @@ void SharedImageManager::OnMemoryDump(const Mailbox& mailbox,
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   estimated_size);
+  // Usage is optional, but |CreateLabelForSharedImageUsage()| expects one to be
+  // set.
+  if (backing->usage()) {
+    dump->AddString("usage", "",
+                    CreateLabelForSharedImageUsage(backing->usage()));
+  }
   // Add a mailbox guid which expresses shared ownership with the client
   // process.
   // This must match the client-side.
