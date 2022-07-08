@@ -3,6 +3,10 @@ Tests Application Panel response to a main frame navigation.
 Initial state:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -37,6 +41,10 @@ Page reloaded.
 After navigation:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage

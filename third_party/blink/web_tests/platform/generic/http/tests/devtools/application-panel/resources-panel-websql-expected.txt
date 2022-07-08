@@ -3,6 +3,10 @@ Tests Application Panel WebSQL support.
 Initial state:
 Application
   Manifest (selected)
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -36,6 +40,10 @@ Found: true
 Database created state:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -69,6 +77,10 @@ Frames
 Table added:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage

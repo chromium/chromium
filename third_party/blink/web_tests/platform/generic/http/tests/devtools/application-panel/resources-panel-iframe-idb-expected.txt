@@ -4,6 +4,10 @@ Initial tree...
 
 Application
  Manifest
+  Identity
+  Presentation
+  Protocol Handlers
+  Icons
  Service Workers
  Storage
 Storage
@@ -44,6 +48,10 @@ Remove iframe from page...
 
 Application
  Manifest
+  Identity
+  Presentation
+  Protocol Handlers
+  Icons
  Service Workers
  Storage
 Storage
@@ -78,6 +86,10 @@ Add iframe to page again...
 
 Application
  Manifest
+  Identity
+  Presentation
+  Protocol Handlers
+  Icons
  Service Workers
  Storage
 Storage
