@@ -282,42 +282,51 @@ namespace std {
 
 // Override so set/map lookups do not create extra raw_ref. This also
 // allows C++ references to be used for lookup.
-template <typename T, typename I>
-struct less<raw_ref<T, I>> {
+template <typename T, typename Impl>
+struct less<raw_ref<T, Impl>> {
   using is_transparent = void;
 
-  bool operator()(const raw_ref<T, I>& lhs, const raw_ref<T, I>& rhs) const {
+  bool operator()(const raw_ref<T, Impl>& lhs,
+                  const raw_ref<T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<const T, I>& lhs,
-                  const raw_ref<const T, I>& rhs) const {
+  bool operator()(const raw_ref<const T, Impl>& lhs,
+                  const raw_ref<const T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<T, I>& lhs,
-                  const raw_ref<const T, I>& rhs) const {
+  bool operator()(const raw_ref<T, Impl>& lhs,
+                  const raw_ref<const T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<const T, I>& lhs,
-                  const raw_ref<T, I>& rhs) const {
+  bool operator()(const raw_ref<const T, Impl>& lhs,
+                  const raw_ref<T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const T& lhs, const raw_ref<const T, I>& rhs) const {
+  bool operator()(const T& lhs, const raw_ref<const T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const T& lhs, const raw_ref<T, I>& rhs) const {
+  bool operator()(const T& lhs, const raw_ref<T, Impl>& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<const T, I>& lhs, const T& rhs) const {
+  bool operator()(const raw_ref<const T, Impl>& lhs, const T& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<T, I>& lhs, const T& rhs) const {
+  bool operator()(const raw_ref<T, Impl>& lhs, const T& rhs) const {
+    Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 };
