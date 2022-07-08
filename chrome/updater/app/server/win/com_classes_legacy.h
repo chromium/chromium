@@ -222,18 +222,17 @@ class LegacyAppCommandWebImpl
           IAppCommandWeb,
           IDispatch> {
  public:
-  // Creates an instance of `IAppCommandWeb` for the given `app_id` and
-  // `command_id`. Returns an error if the command format does not exist in the
-  // registry, or if the command format in the registry has an invalid
-  // formatting.
-  static HRESULT CreateAppCommandWeb(UpdaterScope scope,
-                                     const std::wstring& app_id,
-                                     const std::wstring& command_id,
-                                     IDispatch** app_command_web);
-
   LegacyAppCommandWebImpl();
   LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;
   LegacyAppCommandWebImpl& operator=(const LegacyAppCommandWebImpl&) = delete;
+
+  // Initializes an instance of `IAppCommandWeb` for the given `scope`,
+  // `app_id`, and `command_id`. Returns an error if the command format does not
+  // exist in the registry, or if the command format in the registry has an
+  // invalid formatting, or if the type information could not be initialized.
+  HRESULT RuntimeClassInitialize(UpdaterScope scope,
+                                 const std::wstring& app_id,
+                                 const std::wstring& command_id);
 
   // Overrides for IAppCommandWeb.
   IFACEMETHODIMP get_status(UINT* status) override;
@@ -279,12 +278,6 @@ class LegacyAppCommandWebImpl
 
  private:
   ~LegacyAppCommandWebImpl() override;
-
-  static HRESULT CreateLegacyAppCommandWebImpl(
-      UpdaterScope scope,
-      const std::wstring& app_id,
-      const std::wstring& command_id,
-      Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl);
 
   HRESULT InitializeTypeInfo();
 

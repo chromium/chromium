@@ -65,24 +65,8 @@ class LegacyAppCommandWebImplTest : public testing::Test {
     CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
                              command_line_format);
 
-    return LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
-        GetTestScope(), app_id, command_id, app_command_web);
-  }
-
-  void NoAppTest() {
-    Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-    EXPECT_HRESULT_FAILED(
-        LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
-            GetTestScope(), kAppId1, kCmdId1, app_command_web));
-  }
-
-  void NoCmdTest() {
-    Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-    CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1, kCmdLineValid);
-
-    EXPECT_HRESULT_FAILED(
-        LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
-            GetTestScope(), kAppId1, kCmdId2, app_command_web));
+    return Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
+        &app_command_web, GetTestScope(), app_id, command_id);
   }
 
   void WaitForUpdateCompletion(
@@ -105,11 +89,19 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 };
 
 TEST_F(LegacyAppCommandWebImplTest, NoApp) {
-  NoAppTest();
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
+  EXPECT_HRESULT_FAILED(
+      Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
+          &app_command_web, GetTestScope(), kAppId1, kCmdId1));
 }
 
 TEST_F(LegacyAppCommandWebImplTest, NoCmd) {
-  NoCmdTest();
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
+  CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1, kCmdLineValid);
+
+  EXPECT_HRESULT_FAILED(
+      Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
+          &app_command_web, GetTestScope(), kAppId1, kCmdId2));
 }
 
 TEST_F(LegacyAppCommandWebImplTest, Execute) {

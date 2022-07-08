@@ -206,8 +206,8 @@ STDMETHODIMP LegacyOnDemandImpl::get_nextVersionWeb(IDispatch** next) {
 
 STDMETHODIMP LegacyOnDemandImpl::get_command(BSTR command_id,
                                              IDispatch** command) {
-  return LegacyAppCommandWebImpl::CreateAppCommandWeb(
-      GetUpdaterScope(), base::UTF8ToWide(app_id()), command_id, command);
+  return Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
+      command, GetUpdaterScope(), base::UTF8ToWide(app_id()), command_id);
 }
 
 STDMETHODIMP LegacyOnDemandImpl::get_currentState(IDispatch** current_state) {
@@ -514,48 +514,17 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
 LegacyAppCommandWebImpl::LegacyAppCommandWebImpl() = default;
 LegacyAppCommandWebImpl::~LegacyAppCommandWebImpl() = default;
 
-HRESULT LegacyAppCommandWebImpl::CreateAppCommandWeb(
+HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     UpdaterScope scope,
     const std::wstring& app_id,
-    const std::wstring& command_id,
-    IDispatch** app_command_web) {
-  DCHECK(app_command_web);
-
-  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> web_impl;
-  if (HRESULT hr =
-          CreateLegacyAppCommandWebImpl(scope, app_id, command_id, web_impl);
-      FAILED(hr)) {
-    return hr;
-  }
-
-  return web_impl.CopyTo(app_command_web);
-}
-
-HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
-    UpdaterScope scope,
-    const std::wstring& app_id,
-    const std::wstring& command_id,
-    Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl) {
-  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> web;
-
-  if (HRESULT hr =
-          Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(&web);
-      FAILED(hr)) {
-    return hr;
-  }
-
+    const std::wstring& command_id) {
   if (HRESULT hr = AppCommandRunner::LoadAppCommand(scope, app_id, command_id,
-                                                    web->app_command_runner_);
+                                                    app_command_runner_);
       FAILED(hr)) {
     return hr;
   }
 
-  if (HRESULT hr = web->InitializeTypeInfo(); FAILED(hr)) {
-    return hr;
-  }
-
-  web_impl.Swap(web);
-  return S_OK;
+  return InitializeTypeInfo();
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
