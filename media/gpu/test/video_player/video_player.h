@@ -8,9 +8,9 @@
 #include <limits.h>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
@@ -133,11 +133,11 @@ class VideoPlayer {
   mutable base::Lock event_lock_;
   base::ConditionVariable event_cv_;
 
-  std::vector<VideoPlayerEvent> video_player_events_ GUARDED_BY(event_lock_);
+  // NotifyEvent() will store events here for WaitForEvent() to process.
+  base::queue<VideoPlayerEvent> video_player_events_ GUARDED_BY(event_lock_);
+
   size_t video_player_event_counts_[static_cast<size_t>(
-      VideoPlayerEvent::kNumEvents)] GUARDED_BY(event_lock_);
-  // The next event ID to start at, when waiting for events.
-  size_t event_id_ GUARDED_BY(event_lock_);
+      VideoPlayerEvent::kNumEvents)] GUARDED_BY(event_lock_){};
 
   // Set by PlayUntil() to automatically pause decoding once this event occurs.
   absl::optional<VideoPlayerEvent> play_until_;

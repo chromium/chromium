@@ -38,8 +38,7 @@ const char* EventName(VideoPlayerEvent event) {
 }
 }  // namespace
 
-VideoPlayer::VideoPlayer()
-    : event_cv_(&event_lock_), video_player_event_counts_{}, event_id_(0) {}
+VideoPlayer::VideoPlayer() : event_cv_(&event_lock_) {}
 
 VideoPlayer::~VideoPlayer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -139,30 +138,27 @@ void VideoPlayer::Flush() {
   decoder_client_->Flush();
 }
 
-bool VideoPlayer::WaitForEvent(VideoPlayerEvent event, size_t times) {
+bool VideoPlayer::WaitForEvent(VideoPlayerEvent sought_event, size_t times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(times, 1u);
-  DVLOGF(4) << "Event: " << EventName(event);
+  DVLOGF(4) << "Event: " << EventName(sought_event);
 
   base::TimeDelta time_waiting;
   base::AutoLock auto_lock(event_lock_);
   while (true) {
-    // TODO(dstaessens@) Investigate whether we really need to keep the full
-    // list of events for more complex testcases.
-    // Go through list of events since last wait, looking for the event we're
-    // interested in.
-    for (; event_id_ < video_player_events_.size(); ++event_id_) {
-      if (video_player_events_[event_id_] == event)
+    while (!video_player_events_.empty()) {
+      const auto received_event = video_player_events_.front();
+      video_player_events_.pop();
+
+      if (received_event == sought_event)
         times--;
-      if (times == 0) {
-        event_id_++;
+      if (times == 0)
         return true;
-      }
     }
 
     // Check whether we've exceeded the maximum time we're allowed to wait.
     if (time_waiting >= event_timeout_) {
-      LOG(ERROR) << "Timeout while waiting for '" << EventName(event)
+      LOG(ERROR) << "Timeout while waiting for '" << EventName(sought_event)
                  << "' event";
       return false;
     }
@@ -220,7 +216,7 @@ bool VideoPlayer::NotifyEvent(VideoPlayerEvent event) {
     video_player_state_ = VideoPlayerState::kIdle;
   }
 
-  video_player_events_.push_back(event);
+  video_player_events_.push(event);
   video_player_event_counts_[static_cast<size_t>(event)]++;
   event_cv_.Signal();
 
