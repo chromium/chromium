@@ -82,7 +82,7 @@ bool SimplePathBuilderDelegate::IsPublicKeyAcceptable(EVP_PKEY* public_key,
     RSA* rsa = EVP_PKEY_get0_RSA(public_key);
     if (!rsa)
       return false;
-    unsigned int modulus_length_bits = BN_num_bits(rsa->n);
+    unsigned int modulus_length_bits = RSA_bits(rsa);
 
     if (modulus_length_bits < min_rsa_modulus_length_bits_) {
       errors->AddError(

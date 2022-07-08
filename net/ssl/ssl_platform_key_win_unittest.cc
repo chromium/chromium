@@ -86,8 +86,8 @@ bool PKCS8ToBLOBForCAPI(const std::string& pkcs8, std::vector<uint8_t>* blob) {
 
   RSAPUBKEY rsapubkey = {0};
   rsapubkey.magic = 0x32415352;
-  rsapubkey.bitlen = BN_num_bits(rsa->n);
-  rsapubkey.pubexp = BN_get_word(rsa->e);
+  rsapubkey.bitlen = RSA_bits(rsa);
+  rsapubkey.pubexp = BN_get_word(RSA_get0_e(rsa));
 
   uint8_t* blob_data;
   size_t blob_len;
@@ -97,13 +97,20 @@ bool PKCS8ToBLOBForCAPI(const std::string& pkcs8, std::vector<uint8_t>* blob) {
                      sizeof(header)) ||
       !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&rsapubkey),
                      sizeof(rsapubkey)) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->n, rsapubkey.bitlen / 8) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->p, rsapubkey.bitlen / 16) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->q, rsapubkey.bitlen / 16) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->dmp1, rsapubkey.bitlen / 16) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->dmq1, rsapubkey.bitlen / 16) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->iqmp, rsapubkey.bitlen / 16) ||
-      !AddBIGNUMLittleEndian(cbb.get(), rsa->d, rsapubkey.bitlen / 8) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_n(rsa),
+                             rsapubkey.bitlen / 8) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_p(rsa),
+                             rsapubkey.bitlen / 16) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_q(rsa),
+                             rsapubkey.bitlen / 16) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_dmp1(rsa),
+                             rsapubkey.bitlen / 16) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_dmq1(rsa),
+                             rsapubkey.bitlen / 16) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_iqmp(rsa),
+                             rsapubkey.bitlen / 16) ||
+      !AddBIGNUMLittleEndian(cbb.get(), RSA_get0_d(rsa),
+                             rsapubkey.bitlen / 8) ||
       !CBB_finish(cbb.get(), &blob_data, &blob_len)) {
     return false;
   }
@@ -139,11 +146,11 @@ bool PKCS8ToBLOBForCNG(const std::string& pkcs8,
     const RSA* rsa = EVP_PKEY_get0_RSA(key.get());
     BCRYPT_RSAKEY_BLOB header = {0};
     header.Magic = BCRYPT_RSAFULLPRIVATE_MAGIC;
-    header.BitLength = BN_num_bits(rsa->n);
-    header.cbPublicExp = BN_num_bytes(rsa->e);
-    header.cbModulus = BN_num_bytes(rsa->n);
-    header.cbPrime1 = BN_num_bytes(rsa->p);
-    header.cbPrime2 = BN_num_bytes(rsa->q);
+    header.BitLength = RSA_bits(rsa);
+    header.cbPublicExp = BN_num_bytes(RSA_get0_e(rsa));
+    header.cbModulus = BN_num_bytes(RSA_get0_n(rsa));
+    header.cbPrime1 = BN_num_bytes(RSA_get0_p(rsa));
+    header.cbPrime2 = BN_num_bytes(RSA_get0_q(rsa));
 
     uint8_t* blob_data;
     size_t blob_len;
@@ -151,14 +158,14 @@ bool PKCS8ToBLOBForCNG(const std::string& pkcs8,
     if (!CBB_init(cbb.get(), sizeof(header) + pkcs8.size()) ||
         !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&header),
                        sizeof(header)) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->e, header.cbPublicExp) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->n, header.cbModulus) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->p, header.cbPrime1) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->q, header.cbPrime2) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->dmp1, header.cbPrime1) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->dmq1, header.cbPrime2) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->iqmp, header.cbPrime1) ||
-        !AddBIGNUMBigEndian(cbb.get(), rsa->d, header.cbModulus) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_e(rsa), header.cbPublicExp) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_n(rsa), header.cbModulus) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_p(rsa), header.cbPrime1) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_q(rsa), header.cbPrime2) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_dmp1(rsa), header.cbPrime1) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_dmq1(rsa), header.cbPrime2) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_iqmp(rsa), header.cbPrime1) ||
+        !AddBIGNUMBigEndian(cbb.get(), RSA_get0_d(rsa), header.cbModulus) ||
         !CBB_finish(cbb.get(), &blob_data, &blob_len)) {
       return false;
     }
