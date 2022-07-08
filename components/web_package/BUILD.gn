@@ -12,6 +12,8 @@ static_library("web_package") {
     "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/signed_web_bundle_id.cc",
     "signed_web_bundles/signed_web_bundle_id.h",
+    "signed_web_bundles/signed_web_bundle_utils.cc",
+    "signed_web_bundles/signed_web_bundle_utils.h",
     "web_bundle_builder.cc",
     "web_bundle_builder.h",
     "web_bundle_parser.cc",
@@ -39,6 +41,7 @@ source_set("unit_tests") {
   sources = [
     "signed_web_bundles/ed25519_public_key_unittest.cc",
     "signed_web_bundles/signed_web_bundle_id_unittest.cc",
+    "signed_web_bundles/signed_web_bundle_utils_unittest.cc",
     "web_bundle_builder_unittest.cc",
     "web_bundle_parser_factory_unittest.cc",
     "web_bundle_parser_unittest.cc",
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     ":web_package",
     "//base/test:test_support",
     "//components/cbor",
+    "//components/web_package/test_support",
     "//testing/gtest",
   ]
 }

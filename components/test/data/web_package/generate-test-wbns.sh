@@ -42,4 +42,10 @@ sign-bundle \
   -date $signature_date \
   -expire 168h \
   -validityUrl https://test.example.org/resource.validity.msg \
-  -o hello_signed.wbn
+  -o hello_vouched_subsets.wbn
+
+sign-bundle \
+  -i simple_b2.wbn \
+  -signType integrityblock \
+  -privateKey signed_web_bundle_private_key.pem \
+  -o simple_b2_signed.wbn
