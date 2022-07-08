@@ -180,7 +180,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              IsEnabledForThread) {
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(config()->IsEnabledForThread(
+  EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kBrowser,
       metrics::CallStackProfileParams::Thread::kMain));
   EXPECT_FALSE(config()->IsEnabledForThread(

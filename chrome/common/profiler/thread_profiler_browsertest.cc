@@ -156,7 +156,6 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 // These threads are not currently profiled on Android.
-#define MAYBE_BrowserProcessMainThread DISABLED_BrowserProcessMainThread
 #define MAYBE_BrowserProcessIOThread DISABLED_BrowserProcessIOThread
 #define MAYBE_GpuProcessMainThread DISABLED_GpuProcessMainThread
 #define MAYBE_GpuProcessIOThread DISABLED_GpuProcessIOThread
@@ -165,7 +164,6 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 #define MAYBE_NetworkServiceProcessIOThread \
   DISABLED_NetworkServiceProcessIOThread
 #else
-#define MAYBE_BrowserProcessMainThread BrowserProcessMainThread
 #define MAYBE_BrowserProcessIOThread BrowserProcessIOThread
 #define MAYBE_GpuProcessMainThread GpuProcessMainThread
 #define MAYBE_GpuProcessIOThread GpuProcessIOThread
@@ -177,8 +175,7 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 // processes/threads. We've seen multiple breakages previously where profiles
 // were dropped as a result of bugs introduced by mojo refactorings.
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
-                       MAYBE_BrowserProcessMainThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessMainThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::BROWSER_PROCESS, metrics::MAIN_THREAD));
 }

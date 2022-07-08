@@ -226,6 +226,8 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
   switch (process) {
     case metrics::CallStackProfileParams::Process::kRenderer:
       return true;
+    case metrics::CallStackProfileParams::Process::kBrowser:
+      return thread == metrics::CallStackProfileParams::Thread::kMain;
 
     default:
       return false;
