@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
@@ -47,7 +48,7 @@
     }
 
     if (ch.style.height != "100")
-      ch.style.height = changerY;
+      ch.style.height = changerY + "px";
   }
 
   window.onload = async () => {
@@ -55,7 +56,8 @@
     document.addEventListener("scroll", scrollListener);
 
     // Smooth scroll.
-    smoothScroll(userScrollY, 100, 100, source, 'down', SPEED_INSTANT);
+    smoothScroll(userScrollY, 100, 100, source, 'down', 
+                 SPEED_INSTANT, false /* precise_scrolling_deltas */);
     await raf();
     document.getElementById('anchor').scrollIntoView();
   }

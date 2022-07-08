@@ -4,6 +4,7 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
 <script src="../../resources/scrollbar-util.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <body style="height: 1000px; width: 1000px">
 <script>
 window.onload = () => {
@@ -54,18 +55,23 @@ window.onload = () => {
     resetScrollOffset(document.scrollingElement);
     await waitForCompositorCommit();
 
+    const scrollAmountY = 72;
+    const expectedScrollY = isPercentBasedScrollingEnabled() ?
+          calculateExpectedScroll(document.scrollingElement, 0, scrollAmountY).y
+        : scrollAmountY;
+
     // Start at 0, perform a mousewheel tick and check that scrollY animates at
     // least once. This test is relevant only when running in threaded mode
     // (--enable-threaded-compositing).
     assert_equals(window.scrollY, 0, "Scroller is expected to be at 0 offset.");
-    initBounds(0, 72);
-    await smoothScrollWithXY(0, 72, window.innerWidth / 2, window.innerHeight / 2,
+    initBounds(0, expectedScrollY);
+    await smoothScrollWithXY(0, scrollAmountY, window.innerWidth / 2, window.innerHeight / 2,
                              GestureSourceType.MOUSE_INPUT,
                              SPEED_INSTANT, false /* precise_scrolling_deltas */,
                              false /* scroll_by_page */, true /* cursor_visible */,
                              false /* scroll_by_percentage */);
     await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, 72, "Unexpected scroll offset for mousewheel tick.");
+    assert_approx_equals(window.scrollY, expectedScrollY, 0.0001, "Unexpected scroll offset for mousewheel tick.");
     assert_true(animated_scroll, "Mousewheel tick did not animate.");
   }, "Test mouse wheel tick is animated.");
 }

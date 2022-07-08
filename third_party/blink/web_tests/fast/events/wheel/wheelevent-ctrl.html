@@ -2,6 +2,7 @@
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 
 <span id="parent">
     <div id="target" style="border:solid 1px green; width:220px; height:70px; overflow:scroll; white-space:nowrap;">
@@ -18,10 +19,16 @@
 <script>
 var scrollAmount = 1;
 var last_event = null;
-// TODO(crbug.com/1204176): expectedDeltaY will not match expectations if
-// percent-based scrolling is enabled.
-var expectedDeltaY = scrollAmount * pixelsPerTick();
 var testDiv = document.getElementById('target');
+var expectedScrollY =
+      calculateExpectedScroll(testDiv, 0, scrollAmount * pixelsPerTick()).y;
+var expectedScrollParentY =
+      calculateExpectedScroll(document.scrollingElement,
+      0, scrollAmount * pixelsPerTick()).y;
+var expectedDeltaY =
+      scrollAmount * (isPercentBasedScrollingEnabled() ? 100 : pixelsPerTick());
+var expectedPreciseDeltaY = pixelsPerTick();
+
 var scroller_target = elementCenter(testDiv);
 
 // Reset the page state and last wheel event.
@@ -59,8 +66,8 @@ promise_test(async () => {
   await wheelTick(0, scrollAmount, scroller_target, SPEED_INSTANT);
   await wheelPromise;
   await waitForAnimationEndTimeBased(() => { return testDiv.scrollTop; });
-  assert_equals(testDiv.scrollTop, expectedDeltaY);
-  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_equals(testDiv.scrollTop, expectedScrollY);
+  assert_approx_equals(last_event.deltaY, expectedDeltaY, 0.00001);
   assert_false(last_event.ctrlKey);
 }, "Div: No-Ctrl wheel scrolls.");
 
@@ -99,8 +106,8 @@ promise_test(async () => {
                            Modifiers.CONTROL);
   await wheelPromise;
   await waitForAnimationEndTimeBased(() => { return window.scrollY; });
-  assert_equals(window.scrollY, expectedDeltaY);
-  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_equals(window.scrollY, expectedPreciseDeltaY);
+  assert_equals(last_event.deltaY, expectedPreciseDeltaY);
   assert_true(last_event.ctrlKey);
 }, "Doc: Ctrl+high precision touchpad scroll scrolls.");
 
@@ -111,8 +118,8 @@ promise_test(async () => {
   await wheelTick(0, scrollAmount, document_target, SPEED_INSTANT);
   await wheelPromise;
   await waitForAnimationEndTimeBased(() => { return window.scrollY; });
-  assert_equals(window.scrollY, expectedDeltaY);
-  assert_equals(last_event.deltaY, expectedDeltaY);
+  assert_equals(window.scrollY, expectedScrollParentY);
+  assert_approx_equals(last_event.deltaY, expectedDeltaY, 0.00001);
   assert_false(last_event.ctrlKey);
 }, "Doc: No-Ctrl wheel scrolls.");
 

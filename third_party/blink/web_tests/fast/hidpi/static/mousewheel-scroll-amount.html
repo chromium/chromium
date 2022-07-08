@@ -2,6 +2,7 @@
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 
 <style type="text/css">
     body {
@@ -24,8 +25,10 @@ promise_test(async () => {
     await waitForAnimationEndTimeBased( () => {
         return document.scrollingElement.scrollTop;
     });
-    assert_equals(document.scrollingElement.scrollLeft, 0);
-    assert_equals(document.scrollingElement.scrollTop, pixelsPerTick());
+    const {x: expectedScrollX, y: expectedScrollY} = 
+        calculateExpectedScroll(document.scrollingElement, 0, pixelsPerTick());
+    assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
+    assert_approx_equals(document.scrollingElement.scrollTop, expectedScrollY, 0.0001);
 }, "One vertical wheel tick scrolls the right number of pixels in high dpi mode.");
 
 promise_test(async () => {
@@ -34,8 +37,10 @@ promise_test(async () => {
     await waitForAnimationEndTimeBased( () => {
         return document.scrollingElement.scrollLeft;
     });
-    assert_equals(document.scrollingElement.scrollLeft, pixelsPerTick());
-    assert_equals(document.scrollingElement.scrollTop, 0);
+    const {x: expectedScrollX, y: expectedScrollY} = 
+        calculateExpectedScroll(document.scrollingElement, pixelsPerTick(), 0);
+    assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
+    assert_approx_equals(document.scrollingElement.scrollTop, expectedScrollY, 0.0001);
 }, "One horizontal wheel tick scrolls the right number of pixels in high dpi mode.");
 
 promise_test(async () => {
@@ -44,8 +49,10 @@ promise_test(async () => {
     await waitForAnimationEndTimeBased( () => {
         return document.scrollingElement.scrollTop;
     });
-    assert_equals(document.scrollingElement.scrollLeft, 0);
-    assert_equals(document.scrollingElement.scrollTop, 2 * pixelsPerTick());
+    const {x: expectedScrollX, y: expectedScrollY} = 
+        calculateExpectedScroll(document.scrollingElement, 0, pixelsPerTick() * 2);
+    assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
+    assert_approx_equals(document.scrollingElement.scrollTop, expectedScrollY, 0.0001);
 }, "Two vertical wheel ticks scroll the right number of pixels in high dpi mode.");
 
 promise_test(async () => {
@@ -54,7 +61,9 @@ promise_test(async () => {
     await waitForAnimationEndTimeBased( () => {
         return document.scrollingElement.scrollLeft;
     });
-    assert_equals(document.scrollingElement.scrollLeft, 2 * pixelsPerTick());
-    assert_equals(document.scrollingElement.scrollTop, 0);
+    const {x: expectedScrollX, y: expectedScrollY} = 
+        calculateExpectedScroll(document.scrollingElement, pixelsPerTick() * 2, 0);
+    assert_approx_equals(document.scrollingElement.scrollLeft, expectedScrollX, 0.0001);
+    assert_approx_equals(document.scrollingElement.scrollTop, expectedScrollY, 0.0001);
 }, "Two horizontal wheel ticks scroll the right number of pixels in high dpi mode.");
 </script>

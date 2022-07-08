@@ -77,7 +77,8 @@ overlay without overflow
     const expectedScroll = calculateExpectedScroll(div, pixelsToScroll, pixelsToScroll);
     await mouseMoveTo(x, y);
 
-    await smoothScroll(pixelsToScroll, x, y, mouse, 'down', SPEED_INSTANT);
+    await smoothScroll(pixelsToScroll, x, y, mouse, 'down',
+                       SPEED_INSTANT, false /* precise_scrolling_deltas */);
     let assertDescription = `${div_id} vertical scroll failed`;
     if (can_scroll)
       assert_approx_equals(div.scrollTop, expectedScroll.y, 0.01, assertDescription);
@@ -85,7 +86,8 @@ overlay without overflow
       assert_equals(div.scrollTop, 0, assertDescription);
     }
 
-    await smoothScroll(pixelsToScroll, x, y, mouse, 'right', SPEED_INSTANT);
+    await smoothScroll(pixelsToScroll, x, y, mouse, 'right',
+                       SPEED_INSTANT, false /* precise_scrolling_deltas */);
     assertDescription = `${div_id} horizontal scroll failed`;
     if (can_scroll) {
       assert_approx_equals(div.scrollLeft, expectedScroll.x, 0.01, assertDescription);
