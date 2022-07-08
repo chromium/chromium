@@ -40,7 +40,7 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
   // automatically on finishing the navigation. To avoid this, we check whether
   // such a navigation is ongoing and delay opening the dialog until completes.
   content::NavigationEntry* entry =
-      web_contents_->GetController().GetActiveEntry();
+      web_contents_->GetController().GetPendingEntry();
   if (entry &&
       !net::registry_controlled_domains::SameDomainOrHost(
           web_contents_->GetLastCommittedURL(), entry->GetURL(),
