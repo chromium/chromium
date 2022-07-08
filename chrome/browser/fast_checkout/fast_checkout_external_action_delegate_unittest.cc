@@ -7,11 +7,11 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/fast_checkout/proto/fast_checkout.pb.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/public/fast_checkout/proto/actions.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using autofill::ServerFieldType;
@@ -30,11 +30,11 @@ using DomUpdateCallback =
 // Helper function for creating a "show bottomsheet" action.
 autofill_assistant::external::Action CreateShowBottomsheetAction() {
   autofill_assistant::external::Action action;
-  FastCheckoutAction fast_checkout_action;
-  ShowFastCheckoutBottomSheet show_bottom_sheet;
-  fast_checkout_action.mutable_show_bottom_sheet()->CopyFrom(show_bottom_sheet);
-  fast_checkout_action.SerializeToString(
-      action.mutable_info()->mutable_action_payload());
+  autofill_assistant::fast_checkout::FastCheckoutAction fast_checkout_action;
+  autofill_assistant::fast_checkout::ShowFastCheckoutBottomSheet
+      show_bottom_sheet;
+  *fast_checkout_action.mutable_show_bottom_sheet() = show_bottom_sheet;
+  *action.mutable_info()->mutable_fast_checkout_action() = fast_checkout_action;
   return action;
 }
 

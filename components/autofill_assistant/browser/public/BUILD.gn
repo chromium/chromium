@@ -28,6 +28,7 @@ static_library("public") {
   deps = [
     ":proto",
     "//base",
+    "//components/autofill_assistant/browser/public/fast_checkout/proto:proto",
     "//components/autofill_assistant/browser/public/password_change/proto:proto",
     "//components/version_info:channel",
     "//content/public/browser",
@@ -37,7 +38,10 @@ static_library("public") {
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "external_action.proto" ]
-  link_deps = [ "//components/autofill_assistant/browser/public/password_change/proto:proto" ]
+  link_deps = [
+    "//components/autofill_assistant/browser/public/fast_checkout/proto:proto",
+    "//components/autofill_assistant/browser/public/password_change/proto:proto",
+  ]
 }
 
 # Java protos are only used for testing.
@@ -45,7 +49,10 @@ if (is_android) {
   proto_java_library("proto_java") {
     proto_path = "//"
     sources = [ "external_action.proto" ]
-    deps = [ "//components/autofill_assistant/browser/public/password_change/proto:proto_java" ]
+    deps = [
+      "//components/autofill_assistant/browser/public/fast_checkout/proto:proto_java",
+      "//components/autofill_assistant/browser/public/password_change/proto:proto_java",
+    ]
   }
 }
 
