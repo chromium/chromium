@@ -241,17 +241,17 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
   base::GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<base::Value> root =
+  absl::optional<base::Value::Dict> root =
       base::test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  base::Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  base::Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
   EXPECT_EQ(3u, dict->size());
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestLocations(
       *dict, "MockContentBrowserTest"));
 
-  base::Value::List* list = root->GetDict().FindList("per_iteration_data");
+  base::Value::List* list = root->FindList("per_iteration_data");
   ASSERT_TRUE(list);
   ASSERT_EQ(1u, list->size());
 

@@ -49,7 +49,7 @@ bool ValidateTestLocation(const Value::Dict& test_locations,
                           int line);
 
 // Read json output file of test launcher.
-absl::optional<Value> ReadSummary(const FilePath& path);
+absl::optional<Value::Dict> ReadSummary(const FilePath& path);
 
 }  // namespace test_launcher_utils
 

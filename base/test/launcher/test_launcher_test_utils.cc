@@ -147,13 +147,16 @@ bool ValidateTestLocation(const Value::Dict& test_locations,
   return result;
 }
 
-absl::optional<Value> ReadSummary(const FilePath& path) {
-  absl::optional<Value> result;
+absl::optional<Value::Dict> ReadSummary(const FilePath& path) {
+  absl::optional<Value::Dict> result;
   File resultFile(path, File::FLAG_OPEN | File::FLAG_READ);
   const int size = 2e7;
   std::string json;
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
-  result = JSONReader::Read(json);
+  absl::optional<Value> value = JSONReader::Read(json);
+  if (value && value->is_dict())
+    result = std::move(value->GetDict());
+
   return result;
 }
 

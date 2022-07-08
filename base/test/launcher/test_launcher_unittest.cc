@@ -607,10 +607,10 @@ bool ValidateTestResultObject(const Value::Dict& iteration_data,
 
 // Validate |root| dictionary value contains a list with |values|
 // at |key| value.
-bool ValidateStringList(const absl::optional<Value>& root,
+bool ValidateStringList(const absl::optional<Value::Dict>& root,
                         const std::string& key,
                         std::vector<const char*> values) {
-  const Value::List* list = root->GetDict().FindList(key);
+  const Value::List* list = root->FindList(key);
   if (!list) {
     ADD_FAILURE() << "|root| has no list_value in key: " << key;
     return false;
@@ -665,7 +665,7 @@ TEST_F(TestLauncherTest, JsonSummary) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
   EXPECT_TRUE(
       ValidateStringList(root, "all_tests",
@@ -675,7 +675,7 @@ TEST_F(TestLauncherTest, JsonSummary) {
       ValidateStringList(root, "disabled_tests",
                          {"Test.firstTestDisabled", "TestDisabled.firstTest"}));
 
-  const Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  const Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
   EXPECT_EQ(2u, dict->size());
   ASSERT_TRUE(test_launcher_utils::ValidateTestLocation(*dict, "Test.firstTest",
@@ -683,7 +683,7 @@ TEST_F(TestLauncherTest, JsonSummary) {
   ASSERT_TRUE(test_launcher_utils::ValidateTestLocation(
       *dict, "Test.secondTest", "File", 100));
 
-  const Value::List* list = root->GetDict().FindList("per_iteration_data");
+  const Value::List* list = root->FindList("per_iteration_data");
   ASSERT_TRUE(list);
   ASSERT_EQ(2u, list->size());
   for (const auto& iteration_val : *list) {
@@ -717,15 +717,15 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
-  Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
   EXPECT_EQ(1u, dict->size());
   EXPECT_TRUE(test_launcher_utils::ValidateTestLocation(
       *dict, "Test.DISABLED_Test", "File", 100));
 
-  Value::List* list = root->GetDict().FindList("per_iteration_data");
+  Value::List* list = root->FindList("per_iteration_data");
   ASSERT_TRUE(list);
   ASSERT_EQ(1u, list->size());
 
@@ -875,17 +875,17 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  const Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  const Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
   EXPECT_EQ(4u, dict->size());
 
   EXPECT_TRUE(
       test_launcher_utils::ValidateTestLocations(*dict, "MockUnitTests"));
 
-  const Value::List* list = root->GetDict().FindList("per_iteration_data");
+  const Value::List* list = root->FindList("per_iteration_data");
   ASSERT_TRUE(list);
   ASSERT_EQ(1u, list->size());
 
@@ -991,10 +991,10 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   GetAppOutputWithExitCode(command_line, &output, &exit_code);
 
   // Validate that we actually ran a test.
-  absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
+  absl::optional<Value::Dict> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  Value::Dict* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
   EXPECT_EQ(1u, dict->size());
 
