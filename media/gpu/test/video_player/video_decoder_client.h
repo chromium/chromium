@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_WRAPPER_H_
-#define MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_WRAPPER_H_
+#ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_VIDEO_DECODER_CLIENT_H_
+#define MEDIA_GPU_TEST_VIDEO_PLAYER_VIDEO_DECODER_CLIENT_H_
 
 #include <stdint.h>
 #include <map>
@@ -37,8 +37,8 @@ enum class DecoderImplementation {
   kVDVDA,  // VD-based video decoder with VdVDA.
 };
 
-// Video decoder wrapper configuration.
-struct DecoderWrapperConfig {
+// Video decoder client configuration.
+struct VideoDecoderClientConfig {
   // The maximum number of bitstream buffer decodes that can be requested
   // without waiting for the result of the previous decode requests.
   size_t max_outstanding_decode_requests = 1;
@@ -46,26 +46,30 @@ struct DecoderWrapperConfig {
   bool linear_output = false;
 };
 
-// This class wraps the VideoDecoder implementation and associated
-// FrameRendererDummy and, maybe, VideoFrameProcessors. It maintains the
-// communication between them, notifies |event_cb| of events and does all the
-// necessary thread jumping between the parent thread and the internal worker
-// thread.
-class DecoderWrapper {
+// The video decoder client is responsible for the communication between the
+// video player and the video decoder. It also communicates with the frame
+// renderer and other components. The video decoder client can only have one
+// active decoder at any time.
+//
+// All communication with the decoder is done on the |decoder_client_thread_|,
+// so callbacks scheduled by the decoder can be executed asynchronously. This is
+// necessary if we don't want to interrupt the test flow.
+class VideoDecoderClient {
  public:
-  DecoderWrapper(const DecoderWrapper&) = delete;
-  DecoderWrapper& operator=(const DecoderWrapper&) = delete;
+  VideoDecoderClient(const VideoDecoderClient&) = delete;
+  VideoDecoderClient& operator=(const VideoDecoderClient&) = delete;
 
-  ~DecoderWrapper();
+  ~VideoDecoderClient();
 
-  // Return an instance of the DecoderWrapper. The |event_cb| will be called
+  // Return an instance of the VideoDecoderClient. The |event_cb| will be called
   // whenever an event occurs (e.g. frame decoded) and should be thread-safe.
-  // The produced DecoderWrapper must be Initialize()d before being used.
-  static std::unique_ptr<DecoderWrapper> Create(
+  // Initialization is performed asynchronous, upon completion a 'kInitialized'
+  // event will be thrown.
+  static std::unique_ptr<VideoDecoderClient> Create(
       const VideoPlayer::EventCallback& event_cb,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
-      const DecoderWrapperConfig& config);
+      const VideoDecoderClientConfig& config);
 
   // Wait until all frame processors have finished processing. Returns whether
   // processing was successful.
@@ -90,7 +94,7 @@ class DecoderWrapper {
   void Reset();
 
  private:
-  enum class DecoderWrapperState : size_t {
+  enum class VideoDecoderClientState : size_t {
     kUninitialized = 0,
     kIdle,
     kDecoding,
@@ -98,60 +102,68 @@ class DecoderWrapper {
     kResetting,
   };
 
-  DecoderWrapper(
+  VideoDecoderClient(
       const VideoPlayer::EventCallback& event_cb,
       std::unique_ptr<FrameRendererDummy> renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
-      const DecoderWrapperConfig& config);
+      const VideoDecoderClientConfig& config);
 
-  // All methods called ...Task() below are executed on |worker_thread_|.
-
-  // Creates a new |decoder_|, returns whether creating was successful.
+  // Create a new decoder, returns whether creating was successful.
   bool CreateDecoder();
+  // Create a new video |decoder_| on the |decoder_client_thread_|.
   void CreateDecoderTask(bool* success, base::WaitableEvent* done);
+  // Destroy the active video |decoder_| on the |decoder_client_thread_|.
   void DestroyDecoderTask(base::WaitableEvent* done);
 
-  // Methods below are the equivalent of the public homonym ones.
-  void InitializeTask(const Video* video, base::WaitableEvent* done);
+  // Initialize the video |decoder_| with |video| on the
+  // |decoder_client_thread_|.
+  void InitializeDecoderTask(const Video* video, base::WaitableEvent* done);
+
+  // Start decoding video stream fragments on the |decoder_client_thread_|.
   void PlayTask();
+  // Instruct the decoder to decode the next video stream fragment on the
+  // |decoder_client_thread_|.
+  void DecodeNextFragmentTask();
+  // Instruct the decoder to perform a flush on the |decoder_client_thread_|.
   void FlushTask();
+  // Instruct the decoder to perform a Reset on the |decoder_client_thread_|.
   void ResetTask();
 
-  // Instruct the decoder to decode the next video stream fragment on the
-  // |worker_thread_|.
-  void DecodeNextFragmentTask();
-
-  // Callbacks for |decoder_|. See media::VideoDecoder.
-  void OnDecoderInitializedTask(DecoderStatus status);
-  void OnDecodeDoneTask(DecoderStatus status);
-  void OnFrameReadyTask(scoped_refptr<VideoFrame> video_frame);
-  void OnFlushDoneTask(DecoderStatus status);
-  void OnResetDoneTask();
-
+  // The below functions are callbacks provided to the video decoder. They are
+  // all executed on the |decoder_client_thread_|.
+  // Called by the decoder when initialization has completed.
+  void DecoderInitializedTask(DecoderStatus status);
+  // Called by the decoder when a fragment has been decoded.
+  void DecodeDoneTask(DecoderStatus status);
+  // Called by the decoder when a video frame is ready.
+  void FrameReadyTask(scoped_refptr<VideoFrame> video_frame);
+  // Called by the decoder when flushing has completed.
+  void FlushDoneTask(DecoderStatus status);
+  // Called by the decoder when resetting has completed.
+  void ResetDoneTask();
   // Called by the decoder when a resolution change was requested, returns
   // whether we should continue or abort the resolution change.
-  bool OnResolutionChangedTask();
+  bool ResolutionChangeTask();
 
-  // Fires the specified event, and returns true if the caller should continue
-  // decoding.
+  // Fire the specified event, and return true if the decoder should continue
+  // the decoding.
   bool FireEvent(VideoPlayerEvent event);
 
   VideoPlayer::EventCallback event_cb_;
   std::unique_ptr<FrameRendererDummy> frame_renderer_;
   std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors_;
 
-  std::unique_ptr<media::VideoDecoder> decoder_
-      GUARDED_BY(worker_sequence_checker_);
-  const DecoderWrapperConfig decoder_wrapper_config_;
+  std::unique_ptr<media::VideoDecoder> decoder_;
+  const VideoDecoderClientConfig decoder_client_config_;
+  base::Thread decoder_client_thread_;
 
-  base::Thread worker_thread_;
-
-  DecoderWrapperState state_ GUARDED_BY(worker_sequence_checker_);
+  // Decoder client state, should only be accessed on the decoder client thread.
+  VideoDecoderClientState decoder_client_state_;
 
   // Decoded video frame index.
   size_t current_frame_index_ = 0;
   // The current number of decode requests in |decoder_|, for DCHECK purposes.
-  // Increased in DecodeNextFragmentTask() and decreased in OnDecodeDoneTask().
+  // Increased in DecodeNextFragmentTask() and decreased in DecodeDoneTask().
   size_t num_outstanding_decode_requests_ = 0;
 
   // TODO(dstaessens@) Replace with StreamParser.
@@ -162,14 +174,14 @@ class DecoderWrapper {
   VideoCodec input_video_codec_;
   VideoCodecProfile input_video_profile_;
 
-  SEQUENCE_CHECKER(parent_sequence_checker_);
-  SEQUENCE_CHECKER(worker_sequence_checker_);
+  SEQUENCE_CHECKER(video_player_sequence_checker_);
+  SEQUENCE_CHECKER(decoder_client_sequence_checker_);
 
-  base::WeakPtr<DecoderWrapper> weak_this_;
-  base::WeakPtrFactory<DecoderWrapper> weak_this_factory_{this};
+  base::WeakPtr<VideoDecoderClient> weak_this_;
+  base::WeakPtrFactory<VideoDecoderClient> weak_this_factory_{this};
 };
 
 }  // namespace test
 }  // namespace media
 
-#endif  // MEDIA_GPU_TEST_VIDEO_PLAYER_DECODER_WRAPPER_H_
+#endif  // MEDIA_GPU_TEST_VIDEO_PLAYER_VIDEO_DECODER_CLIENT_H_
