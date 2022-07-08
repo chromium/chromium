@@ -5965,21 +5965,6 @@
             ]
         }
     ],
-    "NearbySharingWifiLan": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220519",
-                    "enable_features": [
-                        "NearbySharingWifiLan"
-                    ]
-                }
-            ]
-        }
-    ],
     "NeuralPalmRejectionModelV2AndAdaptiveHold": [
         {
             "platforms": [
