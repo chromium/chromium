@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 7
+// Next min version: 9
 
 module cros.mojom;
 
@@ -17,7 +17,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // It should be kept in sync with the ChromeOSCameraClientType enum in
 // tools/metrics/histograms/enums.xml in chromium.
 [Extensible]
-enum CameraClientType{
+enum CameraClientType {
   UNKNOWN = 0,
   TESTING = 1,
   CHROME = 2,
@@ -28,10 +28,13 @@ enum CameraClientType{
 };
 
 // CameraPrivacySwitchState indicates the state of the camera privacy switch.
-enum CameraPrivacySwitchState{
-  // For devices which can only read the privacy switch status while the camera
-  // is streaming, it is possible that the state of privacy switch is currently
-  // unknown.
+// This can represent both software and hardware privacy switch statuses.
+enum CameraPrivacySwitchState {
+  // [HW] For devices which can only read the privacy switch status while the
+  // camera is streaming, it is possible that the state of privacy switch is
+  // currently unknown.
+  // [SW] If the CrOS Camera Service is not reachable, UNKNOWN will be returned
+  // as the result of GetCameraSWPrivacySwitchState.
   UNKNOWN = 0,
 
   // State when the privacy switch is on, which means the black frames will be
@@ -41,6 +44,18 @@ enum CameraPrivacySwitchState{
   // State when the privacy switch is off, which means camera should stream
   // normally.
   OFF = 2,
+};
+
+// CameraAutoZoomState indicates the state of the camera autozoom feature.
+enum CameraAutoFramingState {
+  // Auto framing is disabled.
+  OFF = 0,
+
+  // Auto framing is enabled and set to single person mode.
+  ON_SINGLE = 1,
+
+  // Auto framing is enabled and set to multi people mode.
+  ON_MULTI = 2,
 };
 
 // The CrOS camera HAL v3 Mojo dispatcher.  The dispatcher acts as a proxy and
@@ -113,6 +128,18 @@ interface CameraHalServer {
   // Enable or disable tracing.
   [MinVersion=3]
   SetTracingEnabled@1(bool enabled);
+
+  // Enable or disable auto framing.
+  [MinVersion=7]
+  SetAutoFramingState@2(CameraAutoFramingState state);
+
+  // Get the current camera software privacy switch state.
+  [MinVersion=8]
+  GetCameraSWPrivacySwitchState@3() => (CameraPrivacySwitchState state);
+
+  // Enable or disable the camera software privacy switch.
+  [MinVersion=8]
+  SetCameraSWPrivacySwitchState@4(CameraPrivacySwitchState state);
 };
 
 // CameraHalServerCallbacks is an interface for CameraHalServer to notify
@@ -133,4 +160,8 @@ interface CameraHalServerCallbacks {
   // current status when the callbacks are registered.
   [MinVersion=5]
   CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state);
+
+  // Fired when the camera software privacy switch status is changed.
+  [MinVersion=8]
+  CameraSWPrivacySwitchStateChange@2(CameraPrivacySwitchState state);
 };

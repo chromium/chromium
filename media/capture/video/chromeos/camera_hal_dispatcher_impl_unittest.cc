@@ -48,6 +48,14 @@ class MockCameraHalServer : public cros::mojom::CameraHalServer {
                     cros::mojom::CameraClientType camera_client_type));
 
   MOCK_METHOD1(SetTracingEnabled, void(bool enabled));
+  MOCK_METHOD1(SetAutoFramingState,
+               void(cros::mojom::CameraAutoFramingState state));
+  MOCK_METHOD1(
+      GetCameraSWPrivacySwitchState,
+      void(cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+               callback));
+  MOCK_METHOD1(SetCameraSWPrivacySwitchState,
+               void(cros::mojom::CameraPrivacySwitchState state));
 
   mojo::PendingRemote<cros::mojom::CameraHalServer> GetPendingRemote() {
     return receiver_.BindNewPipeAndPassRemote();

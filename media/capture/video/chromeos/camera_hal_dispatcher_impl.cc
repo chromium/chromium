@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
@@ -30,6 +31,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -149,6 +151,9 @@ void FailedCameraHalServerCallbacks::CameraDeviceActivityChange(
     cros::mojom::CameraClientType type) {}
 
 void FailedCameraHalServerCallbacks::CameraPrivacySwitchStateChange(
+    cros::mojom::CameraPrivacySwitchState state) {}
+
+void FailedCameraHalServerCallbacks::CameraSWPrivacySwitchStateChange(
     cros::mojom::CameraPrivacySwitchState state) {}
 
 // static
@@ -325,15 +330,48 @@ void CameraHalDispatcherImpl::RemoveActiveClientObserver(
 cros::mojom::CameraPrivacySwitchState
 CameraHalDispatcherImpl::AddCameraPrivacySwitchObserver(
     CameraPrivacySwitchObserver* observer) {
+  base::AutoLock lock(privacy_switch_lock_);
   privacy_switch_observers_->AddObserver(observer);
-
-  base::AutoLock lock(privacy_switch_state_lock_);
   return current_privacy_switch_state_;
 }
 
 void CameraHalDispatcherImpl::RemoveCameraPrivacySwitchObserver(
     CameraPrivacySwitchObserver* observer) {
+  base::AutoLock lock(privacy_switch_lock_);
   privacy_switch_observers_->RemoveObserver(observer);
+}
+
+void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchState(
+    cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+        callback) {
+  proxy_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::GetCameraSWPrivacySwitchStateOnProxyThread,
+          base::Unretained(this), std::move(callback)));
+}
+
+void CameraHalDispatcherImpl::SetCameraSWPrivacySwitchState(
+    cros::mojom::CameraPrivacySwitchState state) {
+  proxy_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::SetCameraSWPrivacySwitchStateOnProxyThread,
+          base::Unretained(this), state));
+}
+
+cros::mojom::CameraPrivacySwitchState
+CameraHalDispatcherImpl::AddCameraSWPrivacySwitchObserver(
+    CameraPrivacySwitchObserver* observer) {
+  base::AutoLock lock(sw_privacy_switch_lock_);
+  sw_privacy_switch_observers_->AddObserver(observer);
+  return current_sw_privacy_switch_state_;
+}
+
+void CameraHalDispatcherImpl::RemoveCameraSWPrivacySwitchObserver(
+    CameraPrivacySwitchObserver* observer) {
+  base::AutoLock lock(sw_privacy_switch_lock_);
+  sw_privacy_switch_observers_->RemoveObserver(observer);
 }
 
 void CameraHalDispatcherImpl::RegisterPluginVmToken(
@@ -359,7 +397,11 @@ CameraHalDispatcherImpl::CameraHalDispatcherImpl()
           new base::ObserverListThreadSafe<CameraActiveClientObserver>()),
       current_privacy_switch_state_(
           cros::mojom::CameraPrivacySwitchState::UNKNOWN),
+      current_sw_privacy_switch_state_(
+          cros::mojom::CameraPrivacySwitchState::UNKNOWN),
       privacy_switch_observers_(
+          new base::ObserverListThreadSafe<CameraPrivacySwitchObserver>()),
+      sw_privacy_switch_observers_(
           new base::ObserverListThreadSafe<CameraPrivacySwitchObserver>()) {}
 
 CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
@@ -512,7 +554,7 @@ void CameraHalDispatcherImpl::CameraPrivacySwitchStateChange(
     cros::mojom::CameraPrivacySwitchState state) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock lock(privacy_switch_state_lock_);
+  base::AutoLock lock(privacy_switch_lock_);
   current_privacy_switch_state_ = state;
   privacy_switch_observers_->Notify(
       FROM_HERE,
@@ -520,6 +562,20 @@ void CameraHalDispatcherImpl::CameraPrivacySwitchStateChange(
       current_privacy_switch_state_);
   CAMERA_LOG(EVENT) << "Camera privacy switch state changed: "
                     << current_privacy_switch_state_;
+}
+
+void CameraHalDispatcherImpl::CameraSWPrivacySwitchStateChange(
+    cros::mojom::CameraPrivacySwitchState state) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(sw_privacy_switch_lock_);
+  current_sw_privacy_switch_state_ = state;
+  sw_privacy_switch_observers_->Notify(
+      FROM_HERE,
+      &CameraPrivacySwitchObserver::OnCameraPrivacySwitchStatusChanged,
+      current_sw_privacy_switch_state_);
+  CAMERA_LOG(EVENT) << "Camera software privacy switch state changed: "
+                    << current_sw_privacy_switch_state_;
 }
 
 base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
@@ -648,6 +704,28 @@ void CameraHalDispatcherImpl::StartServiceLoop(base::ScopedFD socket_fd,
   }
 }
 
+void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchStateOnProxyThread(
+    cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+        callback) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  if (!camera_hal_server_) {
+    LOG(ERROR) << "Camera HAL server is not registered";
+    std::move(callback).Run(cros::mojom::CameraPrivacySwitchState::UNKNOWN);
+    return;
+  }
+  camera_hal_server_->GetCameraSWPrivacySwitchState(std::move(callback));
+}
+
+void CameraHalDispatcherImpl::SetCameraSWPrivacySwitchStateOnProxyThread(
+    cros::mojom::CameraPrivacySwitchState state) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  if (!camera_hal_server_) {
+    LOG(ERROR) << "Camera HAL server is not registered";
+    return;
+  }
+  camera_hal_server_->SetCameraSWPrivacySwitchState(state);
+}
+
 void CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client,
     cros::mojom::CameraClientType type,
@@ -707,20 +785,22 @@ void CameraHalDispatcherImpl::OnPeerConnected(
 
 void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  base::AutoLock lock(opened_camera_id_map_lock_);
-  CAMERA_LOG(EVENT) << "Camera HAL server connection lost";
-  camera_hal_server_.reset();
-  camera_hal_server_callbacks_.reset();
-  for (auto& [camera_client_type, camera_id_set] : opened_camera_id_map_) {
-    if (!camera_id_set.empty()) {
-      active_client_observers_->Notify(
-          FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange,
-          camera_client_type, /*is_active=*/false);
+  {
+    base::AutoLock lock(opened_camera_id_map_lock_);
+    CAMERA_LOG(EVENT) << "Camera HAL server connection lost";
+    camera_hal_server_.reset();
+    camera_hal_server_callbacks_.reset();
+    for (auto& [camera_client_type, camera_id_set] : opened_camera_id_map_) {
+      if (!camera_id_set.empty()) {
+        active_client_observers_->Notify(
+            FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange,
+            camera_client_type, /*is_active=*/false);
+      }
     }
+    opened_camera_id_map_.clear();
   }
-  opened_camera_id_map_.clear();
 
-  base::AutoLock privacy_lock(privacy_switch_state_lock_);
+  base::AutoLock lock(privacy_switch_lock_);
   current_privacy_switch_state_ =
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
   privacy_switch_observers_->Notify(
