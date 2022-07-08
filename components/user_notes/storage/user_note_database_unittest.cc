@@ -220,9 +220,9 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
     std::string original_text = "original text " + base::NumberToString(i);
     std::string selector = "selector " + base::NumberToString(i);
     std::string body = "new test note " + base::NumberToString(i);
-    GURL url = GURL("https://www.test.com");
+    GURL url = GURL("https://www.test.com/");
     auto test_target = std::make_unique<UserNoteTarget>(
-        UserNoteTarget::TargetType::kPage, original_text, url, selector);
+        UserNoteTarget::TargetType::kPageText, original_text, url, selector);
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      std::move(test_target));
@@ -233,17 +233,18 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
   }
 
   std::vector<std::unique_ptr<UserNote>> notes = user_note_db.GetNotesById(ids);
+  EXPECT_EQ(3u, notes.size());
 
   int i = 0;
   for (std::unique_ptr<UserNote>& note : notes) {
     EXPECT_EQ(ids[i].ToString(), note->id().ToString());
-    EXPECT_EQ("https://www.test.com", note->target().target_page().spec());
+    EXPECT_EQ("https://www.test.com/", note->target().target_page().spec());
     EXPECT_EQ("original text " + base::NumberToString(i),
               note->target().original_text());
     EXPECT_EQ("selector " + base::NumberToString(i), note->target().selector());
     EXPECT_EQ("new test note " + base::NumberToString(i),
               note->body().plain_text_value());
-    EXPECT_EQ(UserNoteTarget::TargetType::kPage, note->target().type());
+    EXPECT_EQ(UserNoteTarget::TargetType::kPageText, note->target().type());
     i++;
   }
 }

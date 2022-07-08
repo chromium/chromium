@@ -158,7 +158,7 @@ std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
   if (!statement_notes.is_valid())
     return nullptr;
   statement_notes.BindString(0, id.ToString());
-  if (statement_notes.Step())
+  if (!statement_notes.Step())
     return nullptr;
   DCHECK_EQ(4, statement_notes.ColumnCount());
   base::Time creation_date = statement_notes.ColumnTime(0);
@@ -181,9 +181,10 @@ std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
       std::make_unique<UserNoteBody>(statement_notes_body.ColumnString(0));
 
   // Get original_text and selector from notes_text_target.
-  sql::Statement statement_notes_text_target(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT original_text, selector FROM notes_text_target WHERE id = ?"));
+  sql::Statement statement_notes_text_target(
+      db_.GetCachedStatement(SQL_FROM_HERE,
+                             "SELECT original_text, selector FROM "
+                             "notes_text_target WHERE note_id = ?"));
   if (!statement_notes_text_target.is_valid())
     return nullptr;
   statement_notes_text_target.BindString(0, id.ToString());

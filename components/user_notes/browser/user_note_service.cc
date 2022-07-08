@@ -21,7 +21,9 @@ UserNoteService::UserNoteService(
     std::unique_ptr<UserNoteServiceDelegate> delegate,
     std::unique_ptr<UserNoteStorage> storage)
     : delegate_(std::move(delegate)), storage_(std::move(storage)) {
-  // TODO(gujen): Observe the storage.
+  // storage_ can be null in tests.
+  if (storage_)
+    storage_->AddObserver(this);
 }
 
 UserNoteService::~UserNoteService() = default;
@@ -197,8 +199,10 @@ void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
   const auto& creation_entry_it = creation_map_.find(id);
   DCHECK(creation_entry_it != creation_map_.end())
       << "Attempted to complete the creation of a note that doesn't exist";
-  // TODO(gujen): Call
-  // UserNoteStorage::UpdateNote(entry.model, content, /*is_creation=*/true).
+  const UserNote* note = creation_entry_it->second.model.get();
+  if (!note)
+    return;
+  storage_->UpdateNote(note, note_content, /*is_creation=*/true);
 }
 
 void UserNoteService::OnNoteCreationCancelled(
