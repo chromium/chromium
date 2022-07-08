@@ -31,54 +31,52 @@ MachineLevelUserCloudPolicyStatusProvider::
     core_->store()->RemoveObserver(this);
 }
 
-void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
-    base::DictionaryValue* dict) {
+base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
   CloudPolicyRefreshScheduler* refresh_scheduler = core_->refresh_scheduler();
 
-  dict->SetStringKey(
-      "refreshInterval",
-      ui::TimeFormat::Simple(
-          ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,
-          base::Milliseconds(
-              refresh_scheduler
-                  ? refresh_scheduler->GetActualRefreshDelay()
-                  : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs)));
-  dict->SetBoolKey(
+  base::Value::Dict dict;
+  dict.Set("refreshInterval",
+           ui::TimeFormat::Simple(
+               ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,
+               base::Milliseconds(
+                   refresh_scheduler
+                       ? refresh_scheduler->GetActualRefreshDelay()
+                       : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs)));
+  dict.Set(
       "policiesPushAvailable",
       refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
 
   if (!context_->enrollmentToken.empty())
-    dict->SetStringKey("enrollmentToken", context_->enrollmentToken);
+    dict.Set("enrollmentToken", context_->enrollmentToken);
 
   if (!context_->deviceId.empty())
-    dict->SetStringKey("deviceId", context_->deviceId);
+    dict.Set("deviceId", context_->deviceId);
 
   CloudPolicyStore* store = core_->store();
   if (store) {
     std::u16string status = GetPolicyStatusFromStore(store, core_->client());
 
-    dict->SetStringKey("status", status);
+    dict.Set("status", status);
 
     const enterprise_management::PolicyData* policy = store->policy();
     if (policy) {
-      dict->SetStringKey(
-          "timeSinceLastRefresh",
-          GetTimeSinceLastActionString(refresh_scheduler
-                                           ? refresh_scheduler->last_refresh()
-                                           : base::Time()));
-      dict->SetStringKey("domain", gaia::ExtractDomainName(policy->username()));
+      dict.Set("timeSinceLastRefresh",
+               GetTimeSinceLastActionString(
+                   refresh_scheduler ? refresh_scheduler->last_refresh()
+                                     : base::Time()));
+      dict.Set("domain", gaia::ExtractDomainName(policy->username()));
     }
   }
-  dict->SetStringKey("machine", GetMachineName());
+  dict.Set("machine", GetMachineName());
 
   if (!context_->lastCloudReportSent.is_null()) {
-    dict->SetStringKey("lastCloudReportSentTimestamp",
-                       base::TimeFormatShortDateAndTimeWithTimeZone(
-                           context_->lastCloudReportSent));
-    dict->SetStringKey(
-        "timeSinceLastCloudReportSent",
-        GetTimeSinceLastActionString(context_->lastCloudReportSent));
+    dict.Set("lastCloudReportSentTimestamp",
+             base::TimeFormatShortDateAndTimeWithTimeZone(
+                 context_->lastCloudReportSent));
+    dict.Set("timeSinceLastCloudReportSent",
+             GetTimeSinceLastActionString(context_->lastCloudReportSent));
   }
+  return dict;
 }
 
 void MachineLevelUserCloudPolicyStatusProvider::OnStoreLoaded(

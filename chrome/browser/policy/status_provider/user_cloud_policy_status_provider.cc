@@ -17,10 +17,12 @@ UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
 
 UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() = default;
 
-void UserCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
+base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
   if (!core_->store()->is_managed())
-    return;
-  policy::PolicyStatusProvider::GetStatusFromCore(core_, dict);
-  ExtractDomainFromUsername(dict);
-  GetUserAffiliationStatus(dict, profile_);
+    return {};
+  base::Value::Dict dict =
+      policy::PolicyStatusProvider::GetStatusFromCore(core_);
+  ExtractDomainFromUsername(&dict);
+  GetUserAffiliationStatus(&dict, profile_);
+  return dict;
 }

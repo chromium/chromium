@@ -21,22 +21,22 @@ DeviceLocalAccountPolicyStatusProvider::
   service_->RemoveObserver(this);
 }
 
-void DeviceLocalAccountPolicyStatusProvider::GetStatus(
-    base::DictionaryValue* dict) {
+base::Value::Dict DeviceLocalAccountPolicyStatusProvider::GetStatus() {
   const policy::DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(user_id_);
+  base::Value::Dict dict;
   if (broker) {
-    policy::PolicyStatusProvider::GetStatusFromCore(broker->core(), dict);
+    dict = policy::PolicyStatusProvider::GetStatusFromCore(broker->core());
   } else {
-    dict->SetBoolKey("error", true);
-    dict->SetStringKey("status",
-                       policy::FormatStoreStatus(
+    dict.Set("error", true);
+    dict.Set("status", policy::FormatStoreStatus(
                            policy::CloudPolicyStore::STATUS_BAD_STATE,
                            policy::CloudPolicyValidatorBase::VALIDATION_OK));
-    dict->SetStringKey("username", std::string());
+    dict.Set("username", std::string());
   }
-  ExtractDomainFromUsername(dict);
-  dict->SetBoolKey("publicAccount", true);
+  ExtractDomainFromUsername(&dict);
+  dict.Set("publicAccount", true);
+  return dict;
 }
 
 void DeviceLocalAccountPolicyStatusProvider::OnPolicyUpdated(

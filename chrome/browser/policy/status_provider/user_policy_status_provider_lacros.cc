@@ -20,31 +20,32 @@ UserPolicyStatusProviderLacros::UserPolicyStatusProviderLacros(
 
 UserPolicyStatusProviderLacros::~UserPolicyStatusProviderLacros() = default;
 
-void UserPolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
+base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
   enterprise_management::PolicyData* policy = loader_->GetPolicyData();
   if (!policy)
-    return;
-  GetStatusFromPolicyData(policy, dict);
-  ExtractDomainFromUsername(dict);
-  GetUserAffiliationStatus(dict, profile_);
+    return {};
+  base::Value::Dict dict = GetStatusFromPolicyData(policy);
+  ExtractDomainFromUsername(&dict);
+  GetUserAffiliationStatus(&dict, profile_);
 
   // Get last fetched time from policy, since we have no refresh scheduler here.
   base::Time last_refresh_time =
       policy && policy->has_timestamp()
           ? base::Time::FromJavaTime(policy->timestamp())
           : base::Time();
-  dict->SetStringKey("timeSinceLastRefresh",
-                     GetTimeSinceLastActionString(last_refresh_time));
+  dict.Set("timeSinceLastRefresh",
+           GetTimeSinceLastActionString(last_refresh_time));
 
   const base::Time last_refresh_attempt_time = loader_->last_fetch_timestamp();
-  dict->SetStringKey("timeSinceLastFetchAttempt",
-                     GetTimeSinceLastActionString(last_refresh_attempt_time));
+  dict.Set("timeSinceLastFetchAttempt",
+           GetTimeSinceLastActionString(last_refresh_attempt_time));
 
   // TODO(https://crbug.com/1243869): Pass this information from Ash through
   // Mojo. Assume no error for now.
-  dict->SetBoolKey("error", false);
-  dict->SetStringKey(
-      "status", FormatStoreStatus(
-                    policy::CloudPolicyStore::STATUS_OK,
-                    policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
+  dict.Set("error", false);
+  dict.Set("status",
+           FormatStoreStatus(
+               policy::CloudPolicyStore::STATUS_OK,
+               policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
+  return dict;
 }

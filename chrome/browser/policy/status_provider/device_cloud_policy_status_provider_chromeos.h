@@ -7,10 +7,6 @@
 
 #include "chrome/browser/policy/status_provider/cloud_policy_core_status_provider.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace policy {
 class BrowserPolicyConnectorAsh;
 }  // namespace policy
@@ -30,7 +26,7 @@ class DeviceCloudPolicyStatusProviderChromeOS
   ~DeviceCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
  private:
   std::string enterprise_domain_manager_;

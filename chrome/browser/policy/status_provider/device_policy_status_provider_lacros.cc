@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/status_provider/device_policy_status_provider_lacros.h"
 
 #include <utility>
+#include "base/values.h"
 
 DevicePolicyStatusProviderLacros::DevicePolicyStatusProviderLacros()
     : PolicyStatusProvider() {}
@@ -16,7 +17,6 @@ void DevicePolicyStatusProviderLacros::SetDevicePolicyStatus(
   device_policy_status_ = std::move(status);
 }
 
-void DevicePolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
-  static_cast<base::Value&>(*dict) =
-      base::Value(std::move(device_policy_status_));
+base::Value::Dict DevicePolicyStatusProviderLacros::GetStatus() {
+  return device_policy_status_.Clone();
 }

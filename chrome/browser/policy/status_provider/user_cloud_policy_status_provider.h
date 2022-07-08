@@ -10,10 +10,6 @@
 
 class Profile;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace policy {
 class CloudPolicyCore;
 }  // namespace policy
@@ -31,7 +27,7 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
   ~UserCloudPolicyStatusProvider() override;
 
   // CloudPolicyCoreStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
  private:
   raw_ptr<Profile> profile_;

@@ -20,11 +20,11 @@ UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
 UserCloudPolicyStatusProviderChromeOS::
     ~UserCloudPolicyStatusProviderChromeOS() = default;
 
-void UserCloudPolicyStatusProviderChromeOS::GetStatus(
-    base::DictionaryValue* dict) {
+base::Value::Dict UserCloudPolicyStatusProviderChromeOS::GetStatus() {
   if (!core_->store()->is_managed())
-    return;
-  UserCloudPolicyStatusProvider::GetStatus(dict);
-  GetUserAffiliationStatus(dict, profile_);
-  GetUserManager(dict, profile_);
+    return {};
+  base::Value::Dict dict = UserCloudPolicyStatusProvider::GetStatus();
+  GetUserAffiliationStatus(&dict, profile_);
+  GetUserManager(&dict, profile_);
+  return dict;
 }

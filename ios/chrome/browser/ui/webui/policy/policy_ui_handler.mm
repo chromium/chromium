@@ -2,43 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
+#import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
 
 #import <UIKit/UIKit.h>
-#include <utility>
-#include <vector>
+#import <algorithm>
+#import <utility>
+#import <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "base/values.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/policy/core/browser/policy_conversions.h"
-#include "components/policy/core/browser/webui/json_generation.h"
-#include "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/policy/core/common/schema.h"
-#include "components/policy/core/common/schema_map.h"
-#include "components/policy/policy_constants.h"
-#include "components/prefs/pref_service.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
-#include "ios/chrome/browser/policy/policy_conversions_client_ios.h"
+#import "base/time/time.h"
+#import "base/values.h"
+#import "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/policy/core/browser/policy_conversions.h"
+#import "components/policy/core/browser/webui/json_generation.h"
+#import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/policy_types.h"
+#import "components/policy/core/common/schema.h"
+#import "components/policy/core/common/schema_map.h"
+#import "components/policy/policy_constants.h"
+#import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/policy_conversions_client_ios.h"
 #import "ios/chrome/common/channel_info.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-#include "ui/base/webui/web_ui_util.h"
+#import "ui/base/webui/web_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -231,23 +232,21 @@ void PolicyUIHandler::SendPolicies() {
 }
 
 base::Value PolicyUIHandler::GetStatusValue(bool include_box_legend_key) const {
-  std::unique_ptr<base::DictionaryValue> machine_status(
-      new base::DictionaryValue);
-  machine_status_provider_->GetStatus(machine_status.get());
+  base::Value::Dict machine_status = machine_status_provider_->GetStatus();
 
   // Given that it's usual for users to bring their own devices and the fact
   // that device names could expose personal information. We do not show
   // this field in Device Policy Box
-  machine_status->RemoveKey("machine");
+  machine_status.Remove("machine");
 
-  base::DictionaryValue status;
-  if (!machine_status->DictEmpty()) {
+  base::Value::Dict status;
+  if (!machine_status.empty()) {
     if (include_box_legend_key) {
-      machine_status->SetString("boxLegendKey", "statusDevice");
+      machine_status.Set("boxLegendKey", "statusDevice");
     }
     status.Set("machine", std::move(machine_status));
   }
-  return status;
+  return base::Value(std::move(status));
 }
 
 void PolicyUIHandler::SendStatus() {

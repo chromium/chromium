@@ -14,8 +14,8 @@ DeviceActiveDirectoryPolicyStatusProvider::
     : UserActiveDirectoryPolicyStatusProvider(policy_manager, nullptr),
       enterprise_domain_manager_(enterprise_domain_manager) {}
 
-void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
-    base::DictionaryValue* dict) {
-  UserActiveDirectoryPolicyStatusProvider::GetStatus(dict);
-  dict->SetStringKey("enterpriseDomainManager", enterprise_domain_manager_);
+base::Value::Dict DeviceActiveDirectoryPolicyStatusProvider::GetStatus() {
+  base::Value::Dict dict = UserActiveDirectoryPolicyStatusProvider::GetStatus();
+  dict.Set("enterpriseDomainManager", enterprise_domain_manager_);
+  return dict;
 }

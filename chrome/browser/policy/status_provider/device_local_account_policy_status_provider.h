@@ -10,10 +10,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 // A cloud policy status provider that reads policy status from the policy core
 // associated with the device-local account specified by |user_id| at
 // construction time. The indirection via user ID and
@@ -36,7 +32,7 @@ class DeviceLocalAccountPolicyStatusProvider
   ~DeviceLocalAccountPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
   // policy::DeviceLocalAccountPolicyService::Observer implementation.
   void OnPolicyUpdated(const std::string& user_id) override;

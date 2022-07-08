@@ -56,10 +56,8 @@ void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
       ProfileManager::GetActiveUserProfile());
   client->EnableUserPolicies(false);
   DeviceCloudPolicyStatusProviderChromeOS provider(connector);
-  base::DictionaryValue status;
-  provider.GetStatus(&status);
-  std::move(callback).Run(client->GetChromePolicies(),
-                          std::move(status.GetDict()));
+  base::Value::Dict status = provider.GetStatus();
+  std::move(callback).Run(client->GetChromePolicies(), std::move(status));
 }
 
 void DeviceSettingsAsh::GetDevicePolicyDeprecated(
@@ -75,10 +73,9 @@ void DeviceSettingsAsh::GetDevicePolicyDeprecated(
       ProfileManager::GetActiveUserProfile());
   client->EnableUserPolicies(false);
   DeviceCloudPolicyStatusProviderChromeOS provider(connector);
-  base::DictionaryValue status;
-  provider.GetStatus(&status);
+  base::Value::Dict status = provider.GetStatus();
   std::move(callback).Run(base::Value(client->GetChromePolicies()),
-                          std::move(status));
+                          base::Value(std::move(status)));
 }
 
 }  // namespace crosapi

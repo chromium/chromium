@@ -17,7 +17,7 @@ class DevicePolicyStatusProviderLacros : public policy::PolicyStatusProvider {
   void SetDevicePolicyStatus(base::Value::Dict status);
 
   // PolicyStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
  private:
   base::Value::Dict device_policy_status_;

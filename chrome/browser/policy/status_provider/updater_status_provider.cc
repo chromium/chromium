@@ -32,18 +32,19 @@ void UpdaterStatusProvider::SetUpdaterStatus(
   NotifyStatusChange();
 }
 
-void UpdaterStatusProvider::GetStatus(base::DictionaryValue* dict) {
+base::Value::Dict UpdaterStatusProvider::GetStatus() {
+  base::Value::Dict dict;
   if (!domain_.empty())
-    dict->SetStringKey("domain", domain_);
+    dict.Set("domain", domain_);
   if (!updater_status_)
-    return;
+    return dict;
   if (!updater_status_->version.empty())
-    dict->SetStringKey("version", base::WideToUTF8(updater_status_->version));
+    dict.Set("version", base::WideToUTF8(updater_status_->version));
   if (!updater_status_->last_checked_time.is_null()) {
-    dict->SetStringKey(
-        "timeSinceLastRefresh",
-        GetTimeSinceLastActionString(updater_status_->last_checked_time));
+    dict.Set("timeSinceLastRefresh",
+             GetTimeSinceLastActionString(updater_status_->last_checked_time));
   }
+  return dict;
 }
 
 // static

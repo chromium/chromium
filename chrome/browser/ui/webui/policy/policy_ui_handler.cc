@@ -547,50 +547,42 @@ void PolicyUIHandler::SendStatus() {
   FireWebUIListener("status-updated", GetStatusValue(/*for_webui*/ true));
 }
 
-base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
-  std::unique_ptr<base::DictionaryValue> device_status(
-      new base::DictionaryValue);
-  device_status_provider_->GetStatus(device_status.get());
-  std::unique_ptr<base::DictionaryValue> user_status(new base::DictionaryValue);
-  user_status_provider_->GetStatus(user_status.get());
-  const std::string* username = user_status->FindStringKey("username");
+base::Value PolicyUIHandler::GetStatusValue(bool for_webui) const {
+  base::Value::Dict device_status = device_status_provider_->GetStatus();
+  base::Value::Dict user_status = user_status_provider_->GetStatus();
+  const std::string* username = user_status.FindString("username");
   if (username && !username->empty())
-    user_status->SetStringKey("domain", gaia::ExtractDomainName(*username));
+    user_status.Set("domain", gaia::ExtractDomainName(*username));
 
-  std::unique_ptr<base::DictionaryValue> machine_status(
-      new base::DictionaryValue);
-  machine_status_provider_->GetStatus(machine_status.get());
+  base::Value::Dict machine_status = machine_status_provider_->GetStatus();
 
-  std::unique_ptr<base::DictionaryValue> updater_status(
-      new base::DictionaryValue);
-  updater_status_provider_->GetStatus(updater_status.get());
+  base::Value::Dict updater_status = updater_status_provider_->GetStatus();
 
-  base::DictionaryValue status;
-  if (!device_status->DictEmpty()) {
+  base::Value::Dict status;
+  if (!device_status.empty()) {
     if (for_webui)
-      device_status->SetStringKey("boxLegendKey", "statusDevice");
+      device_status.Set("boxLegendKey", "statusDevice");
     status.Set("device", std::move(device_status));
   }
 
-  if (!machine_status->DictEmpty()) {
+  if (!machine_status.empty()) {
     if (for_webui)
-      machine_status->SetStringKey("boxLegendKey", GetMachineStatusLegendKey());
-
+      machine_status.Set("boxLegendKey", GetMachineStatusLegendKey());
     status.Set("machine", std::move(machine_status));
   }
 
-  if (!user_status->DictEmpty()) {
+  if (!user_status.empty()) {
     if (for_webui)
-      user_status->SetStringKey("boxLegendKey", "statusUser");
+      user_status.Set("boxLegendKey", "statusUser");
     status.Set("user", std::move(user_status));
   }
 
-  if (!updater_status->DictEmpty()) {
+  if (!updater_status.empty()) {
     if (for_webui)
-      updater_status->SetStringKey("boxLegendKey", "statusUpdater");
+      updater_status.Set("boxLegendKey", "statusUpdater");
     status.Set("updater", std::move(updater_status));
   }
-  return status;
+  return base::Value(std::move(status));
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {

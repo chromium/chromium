@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 
+#include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
@@ -16,13 +17,13 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #endif
 
-void ExtractDomainFromUsername(base::DictionaryValue* dict) {
-  const std::string* username = dict->FindStringKey("username");
+void ExtractDomainFromUsername(base::Value::Dict* dict) {
+  const std::string* username = dict->FindString("username");
   if (username && !username->empty())
-    dict->SetStringKey("domain", gaia::ExtractDomainName(*username));
+    dict->Set("domain", gaia::ExtractDomainName(*username));
 }
 
-void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
+void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
   CHECK(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -30,7 +31,7 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return;
-  dict->SetBoolKey("isAffiliated", user->IsAffiliated());
+  dict->Set("isAffiliated", user->IsAffiliated());
 #else
   // Don't show affiliation status if the browser isn't enrolled in CBCM.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -40,28 +41,27 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
     if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
       return;
   }
-  dict->SetBoolKey("isAffiliated",
-                   chrome::enterprise_util::IsProfileAffiliated(profile));
+  dict->Set("isAffiliated",
+            chrome::enterprise_util::IsProfileAffiliated(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void GetOffHoursStatus(base::DictionaryValue* dict) {
+void GetOffHoursStatus(base::Value::Dict* dict) {
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
   if (off_hours_controller) {
-    dict->SetBoolKey("isOffHoursActive",
-                     off_hours_controller->is_off_hours_mode());
+    dict->Set("isOffHoursActive", off_hours_controller->is_off_hours_mode());
   }
 }
 
-void GetUserManager(base::DictionaryValue* dict, Profile* profile) {
+void GetUserManager(base::Value::Dict* dict, Profile* profile) {
   CHECK(profile);
 
   absl::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
   if (account_manager) {
-    dict->SetStringKey("enterpriseDomainManager", *account_manager);
+    dict->Set("enterpriseDomainManager", *account_manager);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

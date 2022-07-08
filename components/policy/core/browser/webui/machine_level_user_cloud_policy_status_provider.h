@@ -9,13 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_export.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace policy {
 class CloudPolicyCore;
@@ -40,7 +37,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
   ~MachineLevelUserCloudPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
   // CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(CloudPolicyStore* store) override;

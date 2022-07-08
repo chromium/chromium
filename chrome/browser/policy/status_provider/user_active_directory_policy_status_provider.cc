@@ -29,8 +29,7 @@ UserActiveDirectoryPolicyStatusProvider::
   policy_manager_->store()->RemoveObserver(this);
 }
 
-void UserActiveDirectoryPolicyStatusProvider::GetStatus(
-    base::DictionaryValue* dict) {
+base::Value::Dict UserActiveDirectoryPolicyStatusProvider::GetStatus() {
   const enterprise_management::PolicyData* policy =
       policy_manager_->store()->policy();
   const std::string client_id = policy ? policy->device_id() : std::string();
@@ -38,13 +37,14 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
   const std::u16string status =
       policy::FormatStoreStatus(policy_manager_->store()->status(),
                                 policy_manager_->store()->validation_status());
-  dict->SetStringKey("status", status);
-  dict->SetStringKey("username", username);
-  dict->SetStringKey("clientId", client_id);
+  base::Value::Dict dict;
+  dict.Set("status", status);
+  dict.Set("username", username);
+  dict.Set("clientId", client_id);
 
   const base::TimeDelta refresh_interval =
       policy_manager_->scheduler()->interval();
-  dict->SetStringKey(
+  dict.Set(
       "refreshInterval",
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_SHORT, refresh_interval));
@@ -53,22 +53,23 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
       (policy && policy->has_timestamp())
           ? base::Time::FromJavaTime(policy->timestamp())
           : base::Time();
-  dict->SetStringKey("timeSinceLastRefresh",
-                     GetTimeSinceLastActionString(last_refresh_time));
+  dict.Set("timeSinceLastRefresh",
+           GetTimeSinceLastActionString(last_refresh_time));
 
   const base::Time last_refresh_attempt_time =
       policy_manager_->scheduler()->last_refresh_attempt();
-  dict->SetStringKey("timeSinceLastFetchAttempt",
-                     GetTimeSinceLastActionString(last_refresh_attempt_time));
+  dict.Set("timeSinceLastFetchAttempt",
+           GetTimeSinceLastActionString(last_refresh_attempt_time));
 
   // Check if profile is present. Note that profile is not present if object is
   // an instance of DeviceActiveDirectoryPolicyStatusProvider that inherits from
   // UserActiveDirectoryPolicyStatusProvider.
   // TODO(b/182585903): Extend browser test to cover Active Directory case.
   if (profile_) {
-    GetUserAffiliationStatus(dict, profile_);
-    GetUserManager(dict, profile_);
+    GetUserAffiliationStatus(&dict, profile_);
+    GetUserManager(&dict, profile_);
   }
+  return dict;
 }
 
 void UserActiveDirectoryPolicyStatusProvider::OnStoreLoaded(

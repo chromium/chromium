@@ -11,16 +11,12 @@
 
 struct GoogleUpdateState;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 class UpdaterStatusProvider : public policy::PolicyStatusProvider {
  public:
   UpdaterStatusProvider();
   ~UpdaterStatusProvider() override;
   void SetUpdaterStatus(std::unique_ptr<GoogleUpdateState> status);
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
  private:
   static std::string FetchActiveDirectoryDomain();

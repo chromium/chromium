@@ -9,10 +9,6 @@
 
 class Profile;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace policy {
 class PolicyLoaderLacros;
 }  // namespace policy
@@ -31,7 +27,7 @@ class UserPolicyStatusProviderLacros : public policy::PolicyStatusProvider {
   ~UserPolicyStatusProviderLacros() override;
 
   // CloudPolicyCoreStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
  private:
   raw_ptr<Profile> profile_;

@@ -10,10 +10,6 @@
 
 class Profile;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace policy {
 class ActiveDirectoryPolicyManager;
 }  // namespace policy
@@ -35,7 +31,7 @@ class UserActiveDirectoryPolicyStatusProvider
   ~UserActiveDirectoryPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
   // policy::CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(policy::CloudPolicyStore* store) override;

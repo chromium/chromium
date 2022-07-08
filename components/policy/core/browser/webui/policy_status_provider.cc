@@ -12,6 +12,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -68,9 +69,10 @@ void PolicyStatusProvider::SetStatusChangeCallback(
 }
 
 // static
-void PolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
+base::Value::Dict PolicyStatusProvider::GetStatus() {
   // This method is called when the client is not enrolled.
-  // Thus leaving the dict without any changes.
+  // Thus return an empty dictionary.
+  return base::Value::Dict();
 }
 
 void PolicyStatusProvider::NotifyStatusChange() {
@@ -79,8 +81,8 @@ void PolicyStatusProvider::NotifyStatusChange() {
 }
 
 // static
-void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
-                                             base::DictionaryValue* dict) {
+base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
+    const CloudPolicyCore* core) {
   const CloudPolicyStore* store = core->store();
   const CloudPolicyClient* client = core->client();
   const CloudPolicyRefreshScheduler* refresh_scheduler =
@@ -89,7 +91,7 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
   const std::u16string status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
-  GetStatusFromPolicyData(policy, dict);
+  base::Value::Dict dict = GetStatusFromPolicyData(policy);
 
   base::TimeDelta refresh_interval = base::Milliseconds(
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
@@ -100,13 +102,13 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
-  dict->SetBoolKey("error", !no_error);
-  dict->SetBoolKey("policiesPushAvailable", is_push_available);
-  dict->SetStringKey("status", status);
+  dict.Set("error", !no_error);
+  dict.Set("policiesPushAvailable", is_push_available);
+  dict.Set("status", status);
   // If push is on, policy update will be done via push. Hide policy fetch
   // interval label to prevent users from misunderstanding.
   if (!is_push_available) {
-    dict->SetStringKey(
+    dict.Set(
         "refreshInterval",
         ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                ui::TimeFormat::LENGTH_SHORT, refresh_interval));
@@ -115,45 +117,47 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
       policy && policy->has_timestamp()
           ? base::Time::FromJavaTime(policy->timestamp())
           : base::Time();
-  dict->SetStringKey("timeSinceLastRefresh",
-                     GetTimeSinceLastActionString(last_refresh_time));
+  dict.Set("timeSinceLastRefresh",
+           GetTimeSinceLastActionString(last_refresh_time));
 
   // In case state_keys aren't available, we have no scheduler. See also
   // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445.
   base::Time last_fetch_attempted_time =
       refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
-  dict->SetStringKey("timeSinceLastFetchAttempt",
-                     GetTimeSinceLastActionString(last_fetch_attempted_time));
+  dict.Set("timeSinceLastFetchAttempt",
+           GetTimeSinceLastActionString(last_fetch_attempted_time));
+  return dict;
 }
 
 // static
-void PolicyStatusProvider::GetStatusFromPolicyData(
-    const em::PolicyData* policy,
-    base::DictionaryValue* dict) {
+base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
+    const em::PolicyData* policy) {
   std::string client_id = policy ? policy->device_id() : std::string();
   std::string username = policy ? policy->username() : std::string();
 
+  base::Value::Dict dict;
   if (policy && policy->has_annotated_asset_id())
-    dict->SetStringKey("assetId", policy->annotated_asset_id());
+    dict.Set("assetId", policy->annotated_asset_id());
   if (policy && policy->has_annotated_location())
-    dict->SetStringKey("location", policy->annotated_location());
+    dict.Set("location", policy->annotated_location());
   if (policy && policy->has_directory_api_id())
-    dict->SetStringKey("directoryApiId", policy->directory_api_id());
+    dict.Set("directoryApiId", policy->directory_api_id());
   if (policy && policy->has_gaia_id())
-    dict->SetStringKey("gaiaId", policy->gaia_id());
+    dict.Set("gaiaId", policy->gaia_id());
 
-  dict->SetStringKey("clientId", client_id);
-  dict->SetStringKey("username", username);
+  dict.Set("clientId", client_id);
+  dict.Set("username", username);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Include the "Managed by:" attribute for the user policy legend.
   if (policy->state() == enterprise_management::PolicyData::ACTIVE) {
     if (policy->has_managed_by())
-      dict->SetStringKey("enterpriseDomainManager", policy->managed_by());
+      dict.Set("enterpriseDomainManager", policy->managed_by());
     else if (policy->has_display_domain())
-      dict->SetStringKey("enterpriseDomainManager", policy->display_domain());
+      dict.Set("enterpriseDomainManager", policy->display_domain());
   }
 #endif
+  return dict;
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.

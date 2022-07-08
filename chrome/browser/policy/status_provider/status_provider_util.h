@@ -8,11 +8,11 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 
-void ExtractDomainFromUsername(base::DictionaryValue* dict);
+void ExtractDomainFromUsername(base::Value::Dict* dict);
 
 // Adds a new entry to |dict| with the affiliation status of the user associated
 // with |profile|. This method shouldn't be called for device scope status.
-void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile);
+void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile);
 
 // MachineStatus box labels itself as `machine policies` on desktop. In the
 // domain of mobile devices such as iOS or Android we want to label this box as
@@ -21,12 +21,12 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile);
 std::string GetMachineStatusLegendKey();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void GetOffHoursStatus(base::DictionaryValue* dict);
+void GetOffHoursStatus(base::Value::Dict* dict);
 
 // Adds a new entry to |dict| with the enterprise domain manager of the user
 // associated with |profile|. This method shouldn't be called for device scope
 // status.
-void GetUserManager(base::DictionaryValue* dict, Profile* profile);
+void GetUserManager(base::Value::Dict* dict, Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_STATUS_PROVIDER_UTIL_H_

@@ -9,10 +9,6 @@
 
 #include "chrome/browser/policy/status_provider/user_active_directory_policy_status_provider.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace policy {
 class ActiveDirectoryPolicyManager;
 }  // namespace policy
@@ -33,7 +29,7 @@ class DeviceActiveDirectoryPolicyStatusProvider
   ~DeviceActiveDirectoryPolicyStatusProvider() override = default;
 
   // PolicyStatusProvider implementation.
-  void GetStatus(base::DictionaryValue* dict) override;
+  base::Value::Dict GetStatus() override;
 
  private:
   std::string enterprise_domain_manager_;
