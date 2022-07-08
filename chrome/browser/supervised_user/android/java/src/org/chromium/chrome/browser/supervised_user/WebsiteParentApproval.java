@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.supervised_user;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.supervised_user.website_approval.WebsiteApprovalCoordinator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -20,8 +21,8 @@ class WebsiteParentApproval {
      */
     @CalledByNative
     private static boolean isLocalApprovalSupported() {
-        // TODO(crbug.com/1340913): wire in ParentAuthDelegateImpl once landed in internal.
-        return false;
+        ParentAuthDelegate delegate = new ParentAuthDelegateImpl();
+        return delegate.isLocalAuthSupported();
     }
 
     /**
@@ -39,8 +40,36 @@ class WebsiteParentApproval {
      * */
     @CalledByNative
     private static void requestLocalApproval(WindowAndroid windowAndroid, GURL url) {
-        // TODO(crbug.com/1340913): finish moving the approve/deny screen to the Chromium repo.
-        throw new UnsupportedOperationException("Approve/deny screen not implemented");
+        // First ask the parent to authenticate.
+        ParentAuthDelegate delegate = new ParentAuthDelegateImpl();
+        delegate.requestLocalAuth(windowAndroid, url,
+                (success) -> { onParentAuthComplete(success, windowAndroid, url); });
+    }
+
+    /** Displays the screen giving the parent the option to approve or deny the website.*/
+    private static void onParentAuthComplete(
+            boolean success, WindowAndroid windowAndroid, GURL url) {
+        if (!success) {
+            WebsiteParentApprovalJni.get().onCompletion(false);
+            return;
+        }
+
+        // Launch the bottom sheet.
+        WebsiteApprovalCoordinator websiteApprovalUi = new WebsiteApprovalCoordinator(
+                windowAndroid, url, new WebsiteApprovalCoordinator.CompletionCallback() {
+                    @Override
+                    public void onWebsiteApproved() {
+                        // TODO(crbug.com/1330897): add metrics.
+                        WebsiteParentApprovalJni.get().onCompletion(true);
+                    }
+
+                    @Override
+                    public void onWebsiteDenied() {
+                        // TODO(crbug.com/1330897): add metrics.
+                        WebsiteParentApprovalJni.get().onCompletion(false);
+                    }
+                });
+        websiteApprovalUi.show();
     }
 
     @NativeMethods

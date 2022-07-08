@@ -290,6 +290,15 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- Temporarily suppressed until impelmentation is ready, see: https://crbug.com/1330631 -->
     <ignore regexp="The resource `R.string.price_drop_spotted_iph` appears to be unused"/>
 
+    <!-- 7: TODO(crbug.com/1330900): figure out why this is triggering a lint check (the resources are used). -->
+    <ignore regexp="The resource `R.string.parent_website_approval_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.parent_website_approval_all_of_domain` appears to be unused"/>
+    <ignore regexp="The resource `R.string.parent_website_approval_approve_button` appears to be unused"/>
+    <ignore regexp="The resource `R.string.parent_website_approval_deny_button` appears to be unused"/>
+    <ignore regexp="The resource `R.string.parent_website_approval_content_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.parent_website_approval_full_height` appears to be unused"/>
+    <ignore regexp="The resource `R.string.parent_website_approval_closed` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
