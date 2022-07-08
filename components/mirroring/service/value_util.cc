@@ -7,7 +7,7 @@
 namespace mirroring {
 
 bool GetInt(const base::Value& value, const std::string& key, int32_t* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_int()) {
@@ -20,7 +20,7 @@ bool GetInt(const base::Value& value, const std::string& key, int32_t* result) {
 bool GetDouble(const base::Value& value,
                const std::string& key,
                double* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_double()) {
@@ -37,7 +37,7 @@ bool GetDouble(const base::Value& value,
 bool GetString(const base::Value& value,
                const std::string& key,
                std::string* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_string()) {
@@ -48,7 +48,7 @@ bool GetString(const base::Value& value,
 }
 
 bool GetBool(const base::Value& value, const std::string& key, bool* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_bool()) {
@@ -61,12 +61,12 @@ bool GetBool(const base::Value& value, const std::string& key, bool* result) {
 bool GetIntArray(const base::Value& value,
                  const std::string& key,
                  std::vector<int32_t>* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (!found->is_list())
     return false;
-  for (const auto& number_value : found->GetListDeprecated()) {
+  for (const auto& number_value : found->GetList()) {
     if (number_value.is_int())
       result->emplace_back(number_value.GetInt());
     else
@@ -78,12 +78,12 @@ bool GetIntArray(const base::Value& value,
 bool GetStringArray(const base::Value& value,
                     const std::string& key,
                     std::vector<std::string>* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (!found->is_list())
     return false;
-  for (const auto& string_value : found->GetListDeprecated()) {
+  for (const auto& string_value : found->GetList()) {
     if (string_value.is_string())
       result->emplace_back(string_value.GetString());
     else

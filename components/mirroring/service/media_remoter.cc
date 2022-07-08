@@ -166,9 +166,9 @@ void MediaRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
       base::StringPiece(reinterpret_cast<const char*>(message.data()),
                         message.size()),
       &encoded_rpc);
-  base::Value rpc(base::Value::Type::DICTIONARY);
-  rpc.SetKey("type", base::Value("RPC"));
-  rpc.SetKey("rpc", base::Value(std::move(encoded_rpc)));
+  base::Value::Dict rpc;
+  rpc.Set("type", "RPC");
+  rpc.Set("rpc", std::move(encoded_rpc));
   mojom::CastMessagePtr rpc_message = mojom::CastMessage::New();
   rpc_message->message_namespace = mojom::kRemotingNamespace;
   const bool did_serialize_rpc =

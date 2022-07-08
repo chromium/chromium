@@ -129,20 +129,19 @@ class SessionTest : public mojom::ResourceProvider,
   void Send(mojom::CastMessagePtr message) override {
     EXPECT_TRUE(message->message_namespace == mojom::kWebRtcNamespace ||
                 message->message_namespace == mojom::kRemotingNamespace);
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated(message->json_format_data);
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(message->json_format_data);
     ASSERT_TRUE(value);
     std::string message_type;
     EXPECT_TRUE(GetString(*value, "type", &message_type));
     if (message_type == "OFFER") {
       EXPECT_TRUE(GetInt(*value, "seqNum", &offer_sequence_number_));
-      auto* offer = value->FindKey("offer");
+      base::Value::Dict* offer = value->GetDict().FindDict("offer");
       ASSERT_TRUE(offer);
-      auto* raw_streams = offer->FindKey("supportedStreams");
+      base::Value* raw_streams = offer->Find("supportedStreams");
       if (raw_streams) {
-        base::Value::ListView streams = raw_streams->GetListDeprecated();
-        for (auto it = streams.begin(); it != streams.end(); ++it) {
-          EXPECT_EQ(it->FindKey("targetDelay")->GetInt(),
+        for (auto& value : raw_streams->GetList()) {
+          EXPECT_EQ(*value.GetDict().FindInt("targetDelay"),
                     target_playout_delay_ms_);
         }
       }
