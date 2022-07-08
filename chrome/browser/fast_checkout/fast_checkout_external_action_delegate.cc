@@ -5,10 +5,10 @@
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 
 #include "chrome/browser/fast_checkout/fast_checkout_util.h"
-#include "chrome/browser/fast_checkout/proto/fast_checkout.pb.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/public/fast_checkout/proto/actions.pb.h"
 
 namespace {
 // Note: the value of `kProfileName` must be in sync with Autofill Assistant's
@@ -29,34 +29,28 @@ void FastCheckoutExternalActionDelegate::OnActionRequested(
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const autofill_assistant::external::Result&)>
         end_action_callback) {
-  FastCheckoutAction fast_checkout_action;
-  if (!fast_checkout_action.ParseFromString(action.info().action_payload())) {
-    DLOG(ERROR) << "unable to parse FastCheckoutAction";
+  if (!action.info().has_fast_checkout_action()) {
+    DLOG(ERROR) << "Action is not of type FastCheckoutAction";
     CancelInvalidActionRequest(std::move(end_action_callback));
     return;
   }
 
+  autofill_assistant::fast_checkout::FastCheckoutAction fast_checkout_action =
+      action.info().fast_checkout_action();
+
   switch (fast_checkout_action.action_case()) {
-    case FastCheckoutAction::ActionCase::kShowBottomSheet:
+    case autofill_assistant::fast_checkout::FastCheckoutAction::ActionCase::
+        kShowBottomSheet:
       // Show bottomsheet UI.
       end_show_bottomsheet_action_callback_ = std::move(end_action_callback);
       fast_checkout_controller_->Show();
       break;
-    case FastCheckoutAction::ActionCase::ACTION_NOT_SET:
+    case autofill_assistant::fast_checkout::FastCheckoutAction::ActionCase::
+        ACTION_NOT_SET:
       DLOG(ERROR) << "unknown fast checkout action";
       CancelInvalidActionRequest(std::move(end_action_callback));
       break;
   }
-}
-
-void FastCheckoutExternalActionDelegate::OnInterruptStarted() {
-  // Currently interrupts are not required for this.
-  // TODO(crrev.com/c/3734869): Remove once linked CL is merged.
-}
-
-void FastCheckoutExternalActionDelegate::OnInterruptFinished() {
-  // Currently interrupts are not required for this.
-  // TODO(crrev.com/c/3734869): Remove once linked CL is merged.
 }
 
 void FastCheckoutExternalActionDelegate::OnOptionsSelected(
