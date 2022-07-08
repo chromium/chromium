@@ -1,0 +1,69 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is govered by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromeos.assistant;
+
+// Represents the subsection of the ConsentUi that displays and conveys an
+// opt-in to receive email update abouts the Assistant.
+message EmailOptInUi {
+  // Title text to show on the email opt-in.
+  optional string title = 2;
+
+  // A paragraph telling the user what they get from email updates.
+  optional string description = 3;
+
+  // Supplementary text that is only required in some locales which tells
+  // users how to opt out.
+  optional string legal_text = 4;
+
+  // Whether the switch should default to enabled. This affects the opt-in
+  // state if the user does not override it.
+  optional bool default_enabled = 5;
+
+  // URI of a icon to display alongside the email section.
+  optional string icon_uri = 6;
+
+  // Text for the button that lets the user accept the opt-ins, committing
+  // their new state.
+  //
+  // Required, since the user must be able to continue past this screen.
+  optional string accept_button_text = 7;
+}
+
+message EmailOptInUpdate {
+  // Represents an update to the user's email notification preference.
+  enum EmailOptInUpdateState {
+    UNSPECIFIED = 0;
+
+    // The user wants to receive email notifications about the Assistant.
+    OPT_IN = 2;
+
+    // The user does not want to receive email notifications about the
+    // Assistant.
+    OPT_OUT = 3;
+  }
+
+  optional EmailOptInUpdateState email_opt_in_update_state = 1;
+}
+
+// Represents the response to updating email opt-in.
+message EmailOptInUpdateResult {
+  // Represents the outcome of the update; did it succeed or fail?
+  enum UpdateStatus {
+    UNSPECIFIED = 0;
+
+    // The update was successfully executed.
+    SUCCESS = 1;
+
+    // The update was not successfully executed.
+    ERROR = 2;
+  }
+
+  optional UpdateStatus update_status = 1;
+}

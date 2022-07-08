@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(https://crbug.com/1164001): Remove this file when internal assistant
+// codes are changed to use the new path chromeos/ash/services/assistant.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
 package chromeos.assistant;
 
-message ActivityControlSettingsUiSelector {
-  // An ID that uniquely identifies a single consent screen / client integration
-  // with consent flow.
-  // Required.
-  enum FlowId {
-    UNKNOWN = 0;
-    // FlowId for onboarding for the setup wizard on Chrome OS.
-    ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS = 16;
-  }
-  optional FlowId flow_id = 1;
-}
+import public "chromeos/ash/services/assistant/public/proto/activity_control_settings_ui.proto";

@@ -1,0 +1,42 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromeos.assistant;
+
+message AboutMeSettingsUi {
+  // Nickname and its pronunciation. These fields would be empty if user has
+  // never configured a nickname before.
+  optional string name = 1;
+  // optional string name_pronunciation = 2;
+
+  // If user has never set it before, the default will be based on the locale
+  // from header. Defaults to fahrenheit for en-US, and celsius for everything
+  // else.
+  optional WeatherUnit weather_unit = 3;
+
+  // The official first and full name.
+  // optional string first_name = 6;
+  optional string full_name = 7;
+}
+
+// Only the provided fields will be updated.
+message AboutMeSettingsUiUpdate {
+  optional string name = 1;
+  optional string name_pronunciation = 2;
+  optional WeatherUnit weather_unit = 3;
+}
+
+message AboutMeSettingsUiUpdateResult {
+  // Localized message to display to the users regarding email optin status.
+  optional string email_optin_message = 2;
+}
+
+enum WeatherUnit {
+  CELSIUS = 0;
+  FAHRENHEIT = 1;
+}

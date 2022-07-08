@@ -2,16 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(https://crbug.com/1164001): Before editing this file, please consider
-# to use chromeos/ash/services/assistant/public/cpp/BUILD.gn instead.
-# This is temporary during the migartion of assistant directories to ash.
-# We keep it until internal assistant codes are changed to use the new path
-# chromeos/ash/services/assistant.
-
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
+
 proto_library("proto") {
-  visibility = [ "//chromeos/assistant/internal/*" ]
   proto_in_dir = "//"
   sources = [
     "about_me_settings_ui.proto",
@@ -25,5 +21,4 @@ proto_library("proto") {
     "header.proto",
     "settings_ui.proto",
   ]
-  deps = [ "//chromeos/ash/services/assistant/public/proto" ]
 }

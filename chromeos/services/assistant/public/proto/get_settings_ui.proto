@@ -2,24 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(https://crbug.com/1164001): Remove this file when internal assistant
+// codes are changed to use the new path chromeos/ash/services/assistant.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
 package chromeos.assistant;
 
-import "header.proto";
-import "settings_ui.proto";
-
-// GetSettingsUi.
-message GetSettingsUiRequest {
-  // Indicates which fields in SettingsUi to fetch.
-  // Required.
-  optional SettingsUiSelector selector = 4;
-}
-
-message GetSettingsUiResponse {
-  optional SettingsUi settings = 1;
-
-  optional SettingsResponseHeader header = 2;
-}
+import public "chromeos/ash/services/assistant/public/proto/get_settings_ui.proto";

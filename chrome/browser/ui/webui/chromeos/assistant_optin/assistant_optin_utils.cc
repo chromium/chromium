@@ -18,7 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/proto/activity_control_settings_common.pb.h"
+#include "chromeos/ash/services/assistant/public/proto/activity_control_settings_common.pb.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"

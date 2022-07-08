@@ -1,0 +1,27 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromeos.assistant;
+
+// TODO(https://crbug.com/1164001): Remove 'public' notion when internal codes
+// update the path for assistant service to ch/ash/services/assistant.
+import public "chromeos/ash/services/assistant/public/proto/header.proto";
+import public "chromeos/ash/services/assistant/public/proto/settings_ui.proto";
+
+// GetSettingsUi.
+message GetSettingsUiRequest {
+  // Indicates which fields in SettingsUi to fetch.
+  // Required.
+  optional SettingsUiSelector selector = 4;
+}
+
+message GetSettingsUiResponse {
+  optional SettingsUi settings = 1;
+
+  optional SettingsResponseHeader header = 2;
+}

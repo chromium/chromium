@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
-#include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
+#include "chromeos/ash/services/assistant/public/proto/get_settings_ui.pb.h"
+#include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 
 namespace chromeos {
 namespace assistant {

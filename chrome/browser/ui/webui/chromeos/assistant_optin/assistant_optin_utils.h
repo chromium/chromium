@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
+#include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 
 class PrefService;
