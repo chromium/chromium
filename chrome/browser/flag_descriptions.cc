@@ -4355,8 +4355,7 @@ const char kArcFilePickerExperimentName[] =
 const char kArcFilePickerExperimentDescription[] =
     "Enables using ChromeOS file picker in ARC.";
 
-const char kArcGameModeName[] =
-    "Enable Game Mode for ARC";
+const char kArcGameModeName[] = "Enable Game Mode for ARC";
 const char kArcGameModeDescription[] =
     "ARC Fullscreen Games will request accomodation from ChromeOS for "
     "sustained performance.";
@@ -5315,7 +5314,8 @@ const char kLauncherLacrosIntegrationDescription[] =
 
 const char kLauncherPlayStoreSearchName[] = "Launcher Play Store search";
 const char kLauncherPlayStoreSearchDescription[] =
-    "Enables Play Store search in the Launcher";
+    "Enables Play Store search in the Launcher. Only available in the "
+    "productivity launcher.";
 
 const char kLimitShelfItemsToActiveDeskName[] =
     "Limit Shelf items to active desk";
