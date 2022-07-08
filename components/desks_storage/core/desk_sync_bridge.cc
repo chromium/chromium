@@ -27,6 +27,7 @@
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -252,7 +253,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 
   if (app.has_container()) {
     app_launch_info->container = static_cast<int32_t>(
-        desk_template_conversion::ToMojomLaunchContainer(app.container()));
+        desk_template_conversion::ToLaunchContainer(app.container()));
   }
 
   if (app.has_disposition()) {
@@ -549,8 +550,8 @@ void FillAppWithLaunchContainer(
     const app_restore::AppRestoreData* app_restore_data,
     WorkspaceDeskSpecifics_App* out_app) {
   if (app_restore_data->container.has_value()) {
-    out_app->set_container(desk_template_conversion::FromMojomLaunchContainer(
-        static_cast<apps::mojom::LaunchContainer>(
+    out_app->set_container(desk_template_conversion::FromLaunchContainer(
+        static_cast<apps::LaunchContainer>(
             app_restore_data->container.value())));
   }
 }

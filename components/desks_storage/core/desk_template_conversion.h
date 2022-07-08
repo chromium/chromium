@@ -8,6 +8,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "ui/base/window_open_disposition.h"
@@ -65,17 +66,15 @@ WindowOpenDisposition ToBaseWindowOpenDisposition(
 SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
     WindowOpenDisposition disposition);
 
-// Convert from apps::mojom::LaunchContainer to sunc proto LaunchContainer.
+// Convert from apps::LaunchContainer to sunc proto LaunchContainer.
 // Assumes caller has cast `container` from int32_t to
-// apps::mojom::LaunchContainer.
-SyncLaunchContainer FromMojomLaunchContainer(
-    apps::mojom::LaunchContainer container);
+// apps::LaunchContainer.
+SyncLaunchContainer FromLaunchContainer(apps::LaunchContainer container);
 
-// Convert sync proto LaunchContainer to apps::Mojom::LaunchContainer
+// Convert sync proto LaunchContainer to apps::LaunchContainer
 // used in the AppRestoreData `container` field.  This value is cast to
 // int32_t by the caller to be assigned to the field in AppRestoreData.
-apps::mojom::LaunchContainer ToMojomLaunchContainer(
-    SyncLaunchContainer container);
+apps::LaunchContainer ToLaunchContainer(SyncLaunchContainer container);
 
 }  // namespace desk_template_conversion
 

@@ -660,9 +660,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   auto app_restore_data_iter2 = iter2->second.find(settings_window_id);
   ASSERT_TRUE(app_restore_data_iter2 != iter2->second.end());
   const auto& data2 = app_restore_data_iter2->second;
-  EXPECT_EQ(
-      static_cast<int>(apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      data2->container.value());
+  EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
+            data2->container.value());
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
             data2->disposition.value());
   // Verify window info are correctly captured.
@@ -1859,9 +1858,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   auto app_restore_data_iter2 = iter2->second.find(settings_window_id);
   ASSERT_NE(iter->second.end(), app_restore_data_iter2);
   const auto& data2 = app_restore_data_iter2->second;
-  EXPECT_EQ(
-      static_cast<int>(apps::mojom::LaunchContainer::kLaunchContainerWindow),
-      data2->container.value());
+  EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
+            data2->container.value());
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
             data2->disposition.value());
   // Verify window info are correctly captured.

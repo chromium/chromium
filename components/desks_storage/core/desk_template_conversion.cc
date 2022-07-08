@@ -335,29 +335,24 @@ bool IsValidLaunchContainer(const std::string& launch_container) {
   return base::Contains(kValidLaunchContainers, launch_container);
 }
 
-// Returns a casted apps::mojom::LaunchContainer to be set as an app restore
-// data's container field.
+// Returns a casted apps::LaunchContainer to be set as an app restore data's
+// container field.
 int32_t StringToLaunchContainer(const std::string& launch_container) {
   if (launch_container == kLaunchContainerWindow) {
-    return static_cast<int32_t>(
-        apps::mojom::LaunchContainer::kLaunchContainerWindow);
+    return static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerWindow);
   } else if (launch_container == kLaunchContainerPanelDeprecated) {
     return static_cast<int32_t>(
-        apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated);
+        apps::LaunchContainer::kLaunchContainerPanelDeprecated);
   } else if (launch_container == kLaunchContainerTab) {
-    return static_cast<int32_t>(
-        apps::mojom::LaunchContainer::kLaunchContainerTab);
+    return static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerTab);
   } else if (launch_container == kLaunchContainerNone) {
-    return static_cast<int32_t>(
-        apps::mojom::LaunchContainer::kLaunchContainerNone);
+    return static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerNone);
   } else if (launch_container == kLaunchContainerUnspecified) {
-    return static_cast<int32_t>(
-        apps::mojom::LaunchContainer::kLaunchContainerWindow);
+    return static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerWindow);
     // Dcheck if our container isn't valid.  We should not reach here.
   } else {
     DCHECK(IsValidLaunchContainer(launch_container));
-    return static_cast<int32_t>(
-        apps::mojom::LaunchContainer::kLaunchContainerWindow);
+    return static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerWindow);
   }
 }
 
@@ -757,16 +752,15 @@ std::string WindowOpenDispositionToString(WindowOpenDisposition disposition) {
   }
 }
 
-std::string LaunchContainerToString(
-    apps::mojom::LaunchContainer launch_container) {
+std::string LaunchContainerToString(apps::LaunchContainer launch_container) {
   switch (launch_container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+    case apps::LaunchContainer::kLaunchContainerWindow:
       return kLaunchContainerWindow;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       return kLaunchContainerPanelDeprecated;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+    case apps::LaunchContainer::kLaunchContainerTab:
       return kLaunchContainerTab;
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+    case apps::LaunchContainer::kLaunchContainerNone:
       return kLaunchContainerNone;
   }
 }
@@ -937,8 +931,8 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   }
 
   if (app->container.has_value()) {
-    apps::mojom::LaunchContainer container =
-        static_cast<apps::mojom::LaunchContainer>(app->container.value());
+    apps::LaunchContainer container =
+        static_cast<apps::LaunchContainer>(app->container.value());
     app_data.SetKey(kLaunchContainer,
                     base::Value(LaunchContainerToString(container)));
   }
@@ -1166,40 +1160,38 @@ SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
   }
 }
 
-SyncLaunchContainer FromMojomLaunchContainer(
-    apps::mojom::LaunchContainer container) {
+SyncLaunchContainer FromLaunchContainer(apps::LaunchContainer container) {
   switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+    case apps::LaunchContainer::kLaunchContainerWindow:
       return sync_pb::
           WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       return sync_pb::
           WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+    case apps::LaunchContainer::kLaunchContainerTab:
       return sync_pb::
           WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB;
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+    case apps::LaunchContainer::kLaunchContainerNone:
       return sync_pb::
           WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE;
   }
 }
 
-apps::mojom::LaunchContainer ToMojomLaunchContainer(
-    SyncLaunchContainer container) {
+apps::LaunchContainer ToLaunchContainer(SyncLaunchContainer container) {
   switch (container) {
     case sync_pb::
         WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_UNSPECIFIED:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      return apps::LaunchContainer::kLaunchContainerWindow;
     case sync_pb::
         WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+      return apps::LaunchContainer::kLaunchContainerWindow;
     case sync_pb::
         WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED:
-      return apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
+      return apps::LaunchContainer::kLaunchContainerPanelDeprecated;
     case sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+      return apps::LaunchContainer::kLaunchContainerTab;
     case sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
+      return apps::LaunchContainer::kLaunchContainerNone;
   }
 }
 
