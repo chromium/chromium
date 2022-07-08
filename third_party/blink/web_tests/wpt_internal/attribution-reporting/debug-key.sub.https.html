@@ -10,7 +10,7 @@
 <script>
 const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
-    registerAttributionSrc(t, {
+    await registerAttributionSrc(t, {
       source: {
         source_event_id: '1',
         destination: `https://{{host}}`,
@@ -19,7 +19,7 @@ const debug_key_promise_test = (testCase, forSource) =>
       cookie: testCase.cookie,
     });
 
-    registerAttributionSrc(t, {trigger: {
+    await registerAttributionSrc(t, {trigger: {
       event_trigger_data: [{trigger_data: '0'}],
       debug_key: forSource ? undefined : testCase.debugKey,
     }});

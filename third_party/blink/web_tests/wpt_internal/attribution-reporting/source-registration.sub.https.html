@@ -26,7 +26,7 @@ attribution_reporting_promise_test(async t => {
     method: 'variant',
   });
 
-  registerAttributionSrc(t, {trigger: {
+  await registerAttributionSrc(t, {trigger: {
     event_trigger_data: [{trigger_data: '0'}],
   }});
 

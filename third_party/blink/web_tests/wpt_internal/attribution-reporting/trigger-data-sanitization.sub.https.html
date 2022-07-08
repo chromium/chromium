@@ -34,7 +34,7 @@ const trigger_data_cardinality_promise_test = value =>
       method,
     });
 
-    registerAttributionSrc(t, {trigger: {
+    await registerAttributionSrc(t, {trigger: {
       event_trigger_data: [{trigger_data: `${value}`}],
     }});
 

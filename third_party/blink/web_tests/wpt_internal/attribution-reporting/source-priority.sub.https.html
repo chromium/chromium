@@ -5,23 +5,25 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  registerAttributionSrc(t, {source: {
-    source_event_id: '1',
-    destination: `https://{{host}}`,
-    priority: '11',
-  }});
-  registerAttributionSrc(t, {source: {
-    source_event_id: '2',
-    destination: `https://{{host}}`,
-    priority: '13',
-  }});
-  registerAttributionSrc(t, {source: {
-    source_event_id: '3',
-    destination: `https://{{host}}`,
-    priority: '12',
-  }});
+  await Promise.all([
+    registerAttributionSrc(t, {source: {
+      source_event_id: '1',
+      destination: `https://{{host}}`,
+      priority: '11',
+    }}),
+    registerAttributionSrc(t, {source: {
+      source_event_id: '2',
+      destination: `https://{{host}}`,
+      priority: '13',
+    }}),
+    registerAttributionSrc(t, {source: {
+      source_event_id: '3',
+      destination: `https://{{host}}`,
+      priority: '12',
+    }}),
+  ]);
 
-  registerAttributionSrc(t, {trigger: {
+  await registerAttributionSrc(t, {trigger: {
     event_trigger_data: [{trigger_data: '0'}],
   }});
 
