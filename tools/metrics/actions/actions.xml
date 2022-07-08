@@ -7720,7 +7720,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DownloadNotification.Button_Review">
-  <obsolete>It was discovered in June 2022 that this was dead code.</obsolete>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>

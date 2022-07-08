@@ -144,6 +144,11 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   // download in-progress notifications.
   bool suppressed_ = false;
 
+  // Flag to indicate that a review dialog is open for the user to accept or
+  // bypass an enterprise warning on the download. If this is true, the "Review"
+  // button should be removed from the notification.
+  bool in_review_ = false;
+
   download::DownloadItem::DownloadState previous_download_state_ =
       download::DownloadItem::MAX_DOWNLOAD_STATE;  // As uninitialized state
   bool previous_dangerous_state_ = false;
