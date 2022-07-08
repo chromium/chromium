@@ -253,17 +253,14 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, SingleWindowTest) {
 //   Linux TSAN Tests
 // See crbug.com/771119
 // TODO(https://crbug.com/1317446): Fix and enable on Fuchsia.
-#if (BUILDFLAG(IS_WIN) && !defined(NDEBUG)) || (BUILDFLAG(IS_CHROMEOS_ASH)) || \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                        \
-     defined(THREAD_SANITIZER)) ||                                             \
+#if (BUILDFLAG(IS_WIN) && !defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                      \
+     defined(THREAD_SANITIZER)) ||                                           \
     BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_SyncMultiWindowTest DISABLED_SyncMultiWindowTest
-#define MAYBE_AsyncMultiWindowTest DISABLED_AsyncMultiWindowTest
 #else
 #define MAYBE_SyncMultiWindowTest SyncMultiWindowTest
-#define MAYBE_AsyncMultiWindowTest AsyncMultiWindowTest
 #endif
-
 IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SyncMultiWindowTest) {
   SetupTestServer();
 
@@ -315,6 +312,22 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SyncMultiWindowTest) {
   }
 }
 
+// Timing out either all the time, or infrequently, apparently because
+// they're too slow, on the following configurations:
+//   Windows Debug
+//   Linux Chromium OS ASAN LSAN Tests (1)
+//   Linux TSAN Tests
+// See crbug.com/771119
+// TODO(crbug.com/1164581): recently crashes flakily on
+// linux_chromium_asan_rel_ng and linux-rel.
+// TODO(https://crbug.com/1317446): Fix and enable on Fuchsia.
+#if (BUILDFLAG(IS_WIN) && !defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(THREAD_SANITIZER)) ||                 \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AsyncMultiWindowTest DISABLED_AsyncMultiWindowTest
+#else
+#define MAYBE_AsyncMultiWindowTest AsyncMultiWindowTest
+#endif
 IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_AsyncMultiWindowTest) {
   SetupTestServer();
 
