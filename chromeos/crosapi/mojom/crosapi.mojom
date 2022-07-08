@@ -830,8 +830,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 47
-// Next id: 47
+// Next version: 48
+// Next id: 48
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1120,6 +1120,10 @@ struct BrowserInitParams {
   // Tells lacros whether ash uses floss for bluetooth.
   [MinVersion=46]
   bool use_floss_bluetooth@46;
+
+  // Tells lacros whether the currently logged in user is the device owner.
+  [MinVersion=47]
+  bool is_current_user_device_owner@47;
 };
 
 // Parameters to specify OpenUrl behavior.

@@ -170,6 +170,10 @@ absl::optional<policy::ComponentPolicyMap> GetDeviceAccountComponentPolicy(
   return policy::CopyComponentPolicyMap(map);
 }
 
+bool GetIsCurrentUserOwner() {
+  return user_manager::UserManager::Get()->IsCurrentUserOwner();
+}
+
 bool GetUseCupsForPrinting() {
 #if defined(USE_CUPS)
   return true;
@@ -532,6 +536,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->ash_chrome_version = version_info::GetVersionNumber();
   params->use_cups_for_printing = GetUseCupsForPrinting();
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
+  params->is_current_user_device_owner = GetIsCurrentUserOwner();
 
   return params;
 }
