@@ -31,19 +31,22 @@ bool FederatedIdentityActiveSessionPermissionContext::HasActiveSession(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  return HasPermission(relying_party, identity_provider, account_identifier);
+  return HasPermission(relying_party, relying_party, identity_provider,
+                       account_identifier);
 }
 
 void FederatedIdentityActiveSessionPermissionContext::GrantActiveSession(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  GrantPermission(relying_party, identity_provider, account_identifier);
+  GrantPermission(relying_party, relying_party, identity_provider,
+                  account_identifier);
 }
 
 void FederatedIdentityActiveSessionPermissionContext::RevokeActiveSession(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  RevokePermission(relying_party, identity_provider, account_identifier);
+  RevokePermission(relying_party, relying_party, identity_provider,
+                   account_identifier);
 }

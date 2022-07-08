@@ -33,29 +33,35 @@ class FederatedIdentityAccountKeyedPermissionContext
   FederatedIdentityAccountKeyedPermissionContext& operator=(
       const FederatedIdentityAccountKeyedPermissionContext&) = delete;
 
-  // Returns whether there is an existing permission for the (relying_party,
-  // identity_provider, account_id) tuple.
-  bool HasPermission(const url::Origin& relying_party,
+  // Returns whether there is an existing permission for the
+  // (relying_party_requester, relying_party_embedder, identity_provider,
+  // account_id) tuple.
+  bool HasPermission(const url::Origin& relying_party_requester,
+                     const url::Origin& relying_party_embedder,
                      const url::Origin& identity_provider,
                      const std::string& account_id);
 
-  // Grants permission for the (relying_party, identity_provider, account_id)
-  // tuple.
-  void GrantPermission(const url::Origin& relying_party,
+  // Grants permission for the (relying_party_requester, relying_party_embedder,
+  // identity_provider, account_id) tuple.
+  void GrantPermission(const url::Origin& relying_party_requester,
+                       const url::Origin& relying_party_embedder,
                        const url::Origin& identity_provider,
                        const std::string& account_id);
 
-  // Revokes previously-granted permission for the (relying_party,
-  // identity_provider, account_id) tuple.
-  void RevokePermission(const url::Origin& relying_party,
+  // Revokes previously-granted permission for the (relying_party_requester,
+  // relying_party_embedder, identity_provider, account_id) tuple.
+  void RevokePermission(const url::Origin& relying_party_requester,
+                        const url::Origin& relying_party_embedder,
                         const url::Origin& identity_provider,
                         const std::string& account_id);
+
+  // permissions::ObjectPermissionContextBase:
+  std::string GetKeyForObject(const base::Value& object) override;
 
  private:
   // permissions::ObjectPermissionContextBase:
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
-  std::string GetKeyForObject(const base::Value& object) override;
 
   const std::string idp_origin_key_;
 };

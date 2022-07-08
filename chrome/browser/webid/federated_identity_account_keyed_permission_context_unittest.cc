@@ -13,13 +13,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace {
+
+const char kTestIdpOriginKey[] = "identity-provider";
+
+}
+
 class FederatedIdentityAccountKeyedPermissionContextTest
     : public testing::Test {
  public:
   FederatedIdentityAccountKeyedPermissionContextTest() {
     context_ = std::make_unique<FederatedIdentityAccountKeyedPermissionContext>(
         &profile_, ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-        "identity-provider");
+        kTestIdpOriginKey);
   }
 
   void TearDown() override { context_.reset(); }
@@ -42,81 +48,207 @@ class FederatedIdentityAccountKeyedPermissionContextTest
   TestingProfile profile_;
 };
 
+// Test that the key is identical reglardless of whether the permission was
+// stored using the old format (prior to the relying-party-embedder key being
+// added) or the new format.
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
-       GrantAndRevokeAccountSpecificGenericPermission) {
-  const auto rp = url::Origin::Create(GURL("https://rp.example"));
-  const auto idp = url::Origin::Create(GURL("https://idp.example"));
-  std::string account{"consetogo"};
+       VerifyKeyRequesterAndEmbedderIdentical) {
+  const url::Origin rp = url::Origin::Create(GURL("https://rp.example"));
+  const url::Origin idp = url::Origin::Create(GURL("https://idp.example"));
+  const std::string account("consetogo");
 
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account));
+  // Old Format
+  {
+    base::Value::Dict new_object;
+    new_object.Set(kTestIdpOriginKey, idp.Serialize());
+    base::Value::List account_list;
+    account_list.Append(account);
+    new_object.Set("account-ids", base::Value(std::move(account_list)));
+    context()->GrantObjectPermission(rp, base::Value(std::move(new_object)));
+  }
+  auto granted_objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(1u, granted_objects.size());
+  std::string key_old_format =
+      context()->GetKeyForObject(granted_objects[0]->value);
 
-  context()->GrantPermission(rp, idp, account);
-  EXPECT_TRUE(context()->HasPermission(rp, idp, account));
+  // Cleanup
+  context()->RevokePermission(rp, rp, idp, account);
+  EXPECT_TRUE(context()->GetAllGrantedObjects().empty());
 
-  context()->RevokePermission(rp, idp, account);
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account));
+  // New format
+  context()->GrantPermission(rp, rp, idp, account);
+  granted_objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(1u, granted_objects.size());
+  std::string key_new_format =
+      context()->GetKeyForObject(granted_objects[0]->value);
+
+  EXPECT_EQ(key_old_format, key_new_format);
 }
 
-// Ensure the context can handle multiple accounts per RP/IdP origin.
-TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
-       GrantTwoAccountSpecificPermissionsAndRevokeThem) {
-  const auto rp = url::Origin::Create(GURL("https://rp.example"));
-  const auto idp = url::Origin::Create(GURL("https://idp.example"));
-  std::string account_a{"consetogo"};
-  std::string account_b{"woolwich"};
+// Test that '<' in the url::Origin parameters passed to
+// FederatedIdentityAccountKeyedPermissionContext::GrantPermission() are
+// escaped.
+// '<' is used as a separator in
+// FederatedIdentityAccountKeyedPermissionContextTest::GetKeyForObject().
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, VerifyKeySeparator) {
+  const url::Origin rp = url::Origin::Create(GURL("https://rp<.example</<?<"));
+  const url::Origin idp =
+      url::Origin::Create(GURL("https://idp<.example</<?<"));
+  const url::Origin rp_embedder =
+      url::Origin::Create(GURL("https://rp-embedder<.example</<?<"));
+  const std::string account("consetogo");
 
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account_a));
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account_b));
-
-  context()->GrantPermission(rp, idp, account_a);
-  EXPECT_TRUE(context()->HasPermission(rp, idp, account_a));
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account_b));
-
-  context()->GrantPermission(rp, idp, account_b);
-  EXPECT_TRUE(context()->HasPermission(rp, idp, account_a));
-  EXPECT_TRUE(context()->HasPermission(rp, idp, account_b));
-
-  context()->RevokePermission(rp, idp, account_a);
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account_a));
-  EXPECT_TRUE(context()->HasPermission(rp, idp, account_b));
-
-  context()->RevokePermission(rp, idp, account_b);
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account_a));
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account_b));
+  context()->GrantPermission(rp, rp_embedder, idp, account);
+  auto granted_objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(1u, granted_objects.size());
+  std::string key = context()->GetKeyForObject(granted_objects[0]->value);
+  EXPECT_EQ("https://idp%3C.example%3C<https://rp-embedder%3C.example%3C", key);
 }
 
-// Test granting permissions for multiple IDPs mapped to the same RP and
-// multiple RPs mapped to the same IDP.
+// Test calling
+// FederatedIdentityAccountKeyedPermissionContextTest::HasPermission() for
+// permissions stored with the pre-relying-party-embedder-format.
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
-       GrantPermissionsMultipleRpsMultipleIdps) {
-  const auto rp1 = url::Origin::Create(GURL("https://rp1.example"));
-  const auto rp2 = url::Origin::Create(GURL("https://rp2.example"));
-  const auto idp1 = url::Origin::Create(GURL("https://idp1.example"));
-  const auto idp2 = url::Origin::Create(GURL("https://idp2.example"));
+       CompatibleWithOldFormat) {
+  const url::Origin rp = url::Origin::Create(GURL("https://rp.example"));
+  const url::Origin idp1 = url::Origin::Create(GURL("https://idp1.example"));
+  const url::Origin idp2 = url::Origin::Create(GURL("https://idp2.example"));
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://other.example"));
+  const std::string account_a("conestogo");
+  const std::string account_b("woolwich");
+  const std::string account_c("wellesley");
 
-  context()->GrantPermission(rp1, idp1, "consestogo");
-  context()->GrantPermission(rp1, idp2, "woolwich");
-  context()->GrantPermission(rp2, idp1, "wilmot");
+  {
+    base::Value::Dict new_object;
+    new_object.Set(kTestIdpOriginKey, idp1.Serialize());
+    base::Value::List account_list;
+    account_list.Append(account_a);
+    account_list.Append(account_b);
+    new_object.Set("account-ids", base::Value(std::move(account_list)));
+    context()->GrantObjectPermission(rp, base::Value(std::move(new_object)));
+  }
+  {
+    base::Value::Dict new_object;
+    new_object.Set(kTestIdpOriginKey, idp2.Serialize());
+    base::Value::List account_list;
+    account_list.Append(account_c);
+    new_object.Set("account-ids", base::Value(std::move(account_list)));
+    context()->GrantObjectPermission(rp, base::Value(std::move(new_object)));
+  }
 
-  EXPECT_EQ(3u, context()->GetAllGrantedObjects().size());
-  EXPECT_EQ(2u, context()->GetGrantedObjects(rp1).size());
-  EXPECT_EQ(1u, context()->GetGrantedObjects(rp2).size());
+  // Permissions in the old format should only be returned when
+  // relying-party-requester == relying-party-embedder.
+  EXPECT_TRUE(context()->HasPermission(rp, rp, idp1, account_a));
+  EXPECT_TRUE(context()->HasPermission(rp, rp, idp1, account_b));
+  EXPECT_TRUE(context()->HasPermission(rp, rp, idp2, account_c));
+  EXPECT_FALSE(context()->HasPermission(rp, other_origin, idp1, account_a));
+
+  EXPECT_FALSE(context()->HasPermission(rp, rp, idp1, account_c));
+}
+
+namespace {
+
+struct PermissionGrant {
+  url::Origin relying_party_requester;
+  url::Origin relying_party_embedder;
+  url::Origin identity_provider;
+  std::string account_id;
+};
+
+}  // anonymous namespace
+
+void TestGrantAndRevoke(FederatedIdentityAccountKeyedPermissionContext* context,
+                        const PermissionGrant& grant1,
+                        const PermissionGrant& grant2) {
+  context->GrantPermission(grant1.relying_party_requester,
+                           grant1.relying_party_embedder,
+                           grant1.identity_provider, grant1.account_id);
+
+  EXPECT_TRUE(context->HasPermission(
+      grant1.relying_party_requester, grant1.relying_party_embedder,
+      grant1.identity_provider, grant1.account_id));
+  EXPECT_FALSE(context->HasPermission(
+      grant2.relying_party_requester, grant2.relying_party_embedder,
+      grant2.identity_provider, grant2.account_id));
+
+  context->GrantPermission(grant2.relying_party_requester,
+                           grant2.relying_party_embedder,
+                           grant2.identity_provider, grant2.account_id);
+
+  EXPECT_TRUE(context->HasPermission(
+      grant1.relying_party_requester, grant1.relying_party_embedder,
+      grant1.identity_provider, grant1.account_id));
+  EXPECT_TRUE(context->HasPermission(
+      grant2.relying_party_requester, grant2.relying_party_embedder,
+      grant2.identity_provider, grant2.account_id));
+
+  context->RevokePermission(grant1.relying_party_requester,
+                            grant1.relying_party_embedder,
+                            grant1.identity_provider, grant1.account_id);
+  EXPECT_FALSE(context->HasPermission(
+      grant1.relying_party_requester, grant1.relying_party_embedder,
+      grant1.identity_provider, grant1.account_id));
+  EXPECT_TRUE(context->HasPermission(
+      grant2.relying_party_requester, grant2.relying_party_embedder,
+      grant2.identity_provider, grant2.account_id));
+
+  context->RevokePermission(grant2.relying_party_requester,
+                            grant2.relying_party_embedder,
+                            grant2.identity_provider, grant2.account_id);
+  EXPECT_FALSE(context->HasPermission(
+      grant1.relying_party_requester, grant1.relying_party_embedder,
+      grant1.identity_provider, grant1.account_id));
+  EXPECT_FALSE(context->HasPermission(
+      grant2.relying_party_requester, grant2.relying_party_embedder,
+      grant2.identity_provider, grant2.account_id));
+
+  EXPECT_TRUE(context->GetAllGrantedObjects().empty());
+}
+
+// Test granting and revoking a permission.
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, GrantAndRevoke) {
+  const url::Origin rp_requester1 =
+      url::Origin::Create(GURL("https://rp1.example"));
+  const url::Origin rp_requester2 =
+      url::Origin::Create(GURL("https://rp2.example"));
+  const url::Origin rp_embedder1 =
+      url::Origin::Create(GURL("https://rp-embedder1.example"));
+  const url::Origin rp_embedder2 =
+      url::Origin::Create(GURL("https://rp-embedder2.example"));
+  const url::Origin idp1 = url::Origin::Create(GURL("https://idp1.example"));
+  const url::Origin idp2 = url::Origin::Create(GURL("https://idp2.example"));
+  const std::string account1("consetogo");
+  const std::string account2("woolwich");
+
+  TestGrantAndRevoke(context(), {rp_requester1, rp_embedder1, idp1, account1},
+                     {rp_requester2, rp_embedder1, idp1, account1});
+  TestGrantAndRevoke(context(), {rp_requester1, rp_embedder1, idp1, account1},
+                     {rp_requester1, rp_embedder2, idp1, account1});
+  TestGrantAndRevoke(context(), {rp_requester1, rp_embedder1, idp1, account1},
+                     {rp_requester1, rp_embedder1, idp2, account1});
+  TestGrantAndRevoke(context(), {rp_requester1, rp_embedder1, idp1, account1},
+                     {rp_requester1, rp_embedder1, idp1, account2});
 }
 
 // Test that granting a permission for an account, if the permission has already
 // been granted, is a noop.
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
        GrantPermissionForSameAccount) {
-  const auto rp = url::Origin::Create(GURL("https://rp.example"));
-  const auto idp = url::Origin::Create(GURL("https://idp.example"));
+  const url::Origin rp_requester =
+      url::Origin::Create(GURL("https://rp.example"));
+  const url::Origin rp_embedder =
+      url::Origin::Create(GURL("https://rp-embedder.example"));
+  const url::Origin idp = url::Origin::Create(GURL("https://idp.example"));
   std::string account{"consetogo"};
 
-  EXPECT_FALSE(context()->HasPermission(rp, idp, account));
+  context()->GrantPermission(rp_requester, rp_embedder, idp, account);
+  auto granted_objects1 = context()->GetAllGrantedObjects();
 
-  context()->GrantPermission(rp, idp, account);
-  context()->GrantPermission(rp, idp, account);
-  EXPECT_TRUE(context()->HasPermission(rp, idp, account));
-  auto granted_object = context()->GetGrantedObject(rp, idp.Serialize());
-  EXPECT_EQ(1u,
-            granted_object->value.GetDict().FindList("account-ids")->size());
+  context()->GrantPermission(rp_requester, rp_embedder, idp, account);
+  auto granted_objects2 = context()->GetAllGrantedObjects();
+
+  EXPECT_EQ(1u, granted_objects1.size());
+  EXPECT_EQ(1u, granted_objects2.size());
+  EXPECT_EQ(granted_objects1[0]->value, granted_objects2[0]->value);
 }

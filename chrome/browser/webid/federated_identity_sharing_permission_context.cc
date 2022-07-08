@@ -31,12 +31,13 @@ bool FederatedIdentitySharingPermissionContext::HasSharingPermission(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
     const std::string& account_id) {
-  return HasPermission(relying_party, identity_provider, account_id);
+  return HasPermission(relying_party, relying_party, identity_provider,
+                       account_id);
 }
 
 void FederatedIdentitySharingPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
     const std::string& account_id) {
-  GrantPermission(relying_party, identity_provider, account_id);
+  GrantPermission(relying_party, relying_party, identity_provider, account_id);
 }
