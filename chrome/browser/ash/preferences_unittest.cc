@@ -65,9 +65,7 @@ CreatePrefSyncData(const std::string& name, const base::Value& value) {
   json.Serialize(value);
   sync_pb::EntitySpecifics specifics;
   sync_pb::PreferenceSpecifics* pref =
-      features::IsSyncSettingsCategorizationEnabled()
-          ? specifics.mutable_os_preference()->mutable_preference()
-          : specifics.mutable_preference();
+      specifics.mutable_os_preference()->mutable_preference();
   pref->set_name(name);
   pref->set_value(serialized);
   return syncer::SyncData::CreateRemoteData(
@@ -280,18 +278,9 @@ TEST_F(PreferencesTest, TestNonDeviceOwnerInitCAUCheck) {
   EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
 }
 
-class InputMethodPreferencesTest : public PreferencesTest,
-                                   public ::testing::WithParamInterface<bool> {
+class InputMethodPreferencesTest : public PreferencesTest {
  public:
-  InputMethodPreferencesTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kSyncSettingsCategorization);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kSyncSettingsCategorization);
-    }
-  }
-
+  InputMethodPreferencesTest() = default;
   InputMethodPreferencesTest(const InputMethodPreferencesTest&) = delete;
   InputMethodPreferencesTest& operator=(const InputMethodPreferencesTest&) =
       delete;
@@ -444,13 +433,9 @@ class InputMethodPreferencesTest : public PreferencesTest,
   // Simulates the initial sync of preferences.
   syncer::SyncableService* SyncPreferences(
       const syncer::SyncDataList& sync_data_list) {
-    // SyncSettingsCategorization moves IME prefs to be OS prefs.
-    syncer::ModelType model_type =
-        features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
-                                                        : syncer::PREFERENCES;
     syncer::SyncableService* sync =
-        pref_service_->GetSyncableService(model_type);
-    sync->MergeDataAndStartSyncing(model_type, sync_data_list,
+        pref_service_->GetSyncableService(syncer::OS_PREFERENCES);
+    sync->MergeDataAndStartSyncing(syncer::OS_PREFERENCES, sync_data_list,
                                    std::unique_ptr<syncer::SyncChangeProcessor>(
                                        new syncer::FakeSyncChangeProcessor),
                                    std::unique_ptr<syncer::SyncErrorFactory>(
@@ -468,7 +453,7 @@ class InputMethodPreferencesTest : public PreferencesTest,
 };
 
 // Tests that the server values are added to the values chosen at OOBE.
-TEST_P(InputMethodPreferencesTest, TestOobeAndSync) {
+TEST_F(InputMethodPreferencesTest, TestOobeAndSync) {
   // Choose options at OOBE.
   pref_service_->SetBoolean(
       prefs::kLanguageShouldMergeInputMethods, true);
@@ -546,7 +531,7 @@ TEST_P(InputMethodPreferencesTest, TestOobeAndSync) {
 }
 
 // Tests that logging in after sync has completed changes nothing.
-TEST_P(InputMethodPreferencesTest, TestLogIn) {
+TEST_F(InputMethodPreferencesTest, TestLogIn) {
   // Set up existing preference values.
   std::string languages("es");
   std::string preload_engines(ToInputMethodIds("xkb:es::spa"));
@@ -585,7 +570,7 @@ TEST_P(InputMethodPreferencesTest, TestLogIn) {
 
 // Tests that logging in with preferences from before a) XKB component
 // extensions and b) the IME syncing logic doesn't overwrite settings.
-TEST_P(InputMethodPreferencesTest, TestLogInLegacy) {
+TEST_F(InputMethodPreferencesTest, TestLogInLegacy) {
   // Simulate existing local preferences from M-36.
   SetLocalValues("es", "xkb:es::spa", kIdentityIMEID);
   InitPreferences();
@@ -619,7 +604,7 @@ TEST_P(InputMethodPreferencesTest, TestLogInLegacy) {
 }
 
 // Tests some edge cases: empty strings, lots of values, duplicates.
-TEST_P(InputMethodPreferencesTest, MergeStressTest) {
+TEST_F(InputMethodPreferencesTest, MergeStressTest) {
   SetLocalValues("hr,lv,lt,es-419,he,el,da,ca,es,cs,bg",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  std::string());
@@ -669,7 +654,7 @@ TEST_P(InputMethodPreferencesTest, MergeStressTest) {
 }
 
 // Tests non-existent IDs.
-TEST_P(InputMethodPreferencesTest, MergeInvalidValues) {
+TEST_F(InputMethodPreferencesTest, MergeInvalidValues) {
   SetLocalValues("es",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  kIdentityIMEID);
@@ -704,7 +689,7 @@ TEST_P(InputMethodPreferencesTest, MergeInvalidValues) {
 
 // Tests that we merge input methods even if syncing has started before
 // initialization of Preferences.
-TEST_P(InputMethodPreferencesTest, MergeAfterSyncing) {
+TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
   SetLocalValues("es",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  kIdentityIMEID);
@@ -745,7 +730,5 @@ TEST_P(InputMethodPreferencesTest, MergeAfterSyncing) {
         std::string(kIdentityIMEID) + "," + kUnknownIMEID);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All, InputMethodPreferencesTest, testing::Bool());
 
 }  // namespace ash
