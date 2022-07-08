@@ -4,11 +4,12 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 component("image_loader") {
-  output_name = "chromeos_image_loader"
-  defines = [ "IS_CHROMEOS_DBUS_IMAGE_LOADER_IMPL" ]
+  output_name = "ash_image_loader"
+  defines = [ "IS_ASH_DBUS_IMAGE_LOADER_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/common",

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/image_loader/image_loader_client.h"
+#include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/dbus/image_loader/fake_image_loader_client.h"
+#include "chromeos/ash/components/dbus/image_loader/fake_image_loader_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -198,4 +198,4 @@ ImageLoaderClient::~ImageLoaderClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

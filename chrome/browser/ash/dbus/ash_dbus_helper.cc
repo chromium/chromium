@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
+#include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
 #include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
@@ -70,7 +71,6 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
-#include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -152,7 +152,7 @@ void InitializeDBus() {
   InitializeDBusClient<HibermanClient>(bus);
 #endif
   InitializeDBusClient<chromeos::ImageBurnerClient>(bus);
-  InitializeDBusClient<chromeos::ImageLoaderClient>(bus);
+  InitializeDBusClient<ImageLoaderClient>(bus);
   InitializeDBusClient<InstallAttributesClient>(bus);
   InitializeDBusClient<IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
@@ -272,7 +272,7 @@ void ShutdownDBus() {
   KerberosClient::Shutdown();
   IpPeripheralServiceClient::Shutdown();
   InstallAttributesClient::Shutdown();
-  chromeos::ImageLoaderClient::Shutdown();
+  ImageLoaderClient::Shutdown();
   chromeos::ImageBurnerClient::Shutdown();
 #if BUILDFLAG(ENABLE_HIBERNATE)
   HibermanClient::Shutdown();
