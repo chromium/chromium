@@ -36,13 +36,16 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.devui.HomeFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
@@ -91,6 +94,14 @@ public class HomeFragmentTest {
         // done after launching the activity.
         intending(not(IntentMatchers.isInternal()))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHasPublicNoArgsConstructor() throws Throwable {
+        HomeFragment fragment = new HomeFragment();
+        Assert.assertNotNull(fragment);
     }
 
     @Test

@@ -80,7 +80,7 @@ public class FlagsFragment extends DevUiBaseFragment {
             STATE_ENABLED,
     };
 
-    private final boolean mEnabled;
+    private boolean mEnabled;
 
     private Map<String, Boolean> mOverriddenFlags = new HashMap<>();
     private FlagsListAdapter mListAdapter;
@@ -95,6 +95,11 @@ public class FlagsFragment extends DevUiBaseFragment {
 
     public FlagsFragment(boolean enabled) {
         mEnabled = enabled;
+    }
+
+    public FlagsFragment() {
+        // All fragments must have a public no-args constructor
+        // https://developer.android.com/reference/android/app/Fragment
     }
 
     @Override

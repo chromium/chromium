@@ -90,6 +90,14 @@ public class ComponentsListFragmentTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testHasPublicNoArgsConstructor() throws Throwable {
+        ComponentsListFragment fragment = new ComponentsListFragment();
+        Assert.assertNotNull(fragment);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testComponentsDownloadDirectory_isEmpty() throws Throwable {
         sComponentsDownloadDir.mkdirs();
         CallbackHelper helper = getComponentInfoLoadedListener();
