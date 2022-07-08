@@ -38,10 +38,35 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
+#include "ui/aura/env.h"
+#include "ui/events/gestures/gesture_recognizer.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
 namespace {
+
+gfx::PointF GetCursorScreenPoint(ui::mojom::DragEventSource event_source,
+                                 aura::Window* window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (event_source == ui::mojom::DragEventSource::kTouch &&
+      aura::Env::GetInstance()->is_touch_down()) {
+    DCHECK(window);
+    DCHECK(window->GetRootWindow());
+    gfx::PointF touch_point_f;
+    bool got_touch_point =
+        aura::Env::GetInstance()
+            ->gesture_recognizer()
+            ->GetLastTouchPointForTarget(window, &touch_point_f);
+    if (got_touch_point) {
+      gfx::Point touch_point = gfx::ToFlooredPoint(touch_point_f);
+      wm::ConvertPointToScreen(window->GetRootWindow(), &touch_point);
+      return gfx::PointF(touch_point);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return gfx::PointF(display::Screen::GetScreen()->GetCursorScreenPoint());
+}
 
 }  // namespace
 
@@ -130,9 +155,9 @@ void Seat::StartDrag(DataSource* source,
                      Surface* origin,
                      Surface* icon,
                      ui::mojom::DragEventSource event_source) {
+  gfx::PointF cursor_location =
+      GetCursorScreenPoint(event_source, origin->window());
   // DragDropOperation manages its own lifetime.
-  auto cursor_location =
-      gfx::PointF(display::Screen::GetScreen()->GetCursorScreenPoint());
   drag_drop_operation_ =
       DragDropOperation::Create(data_exchange_delegate_.get(), source, origin,
                                 icon, cursor_location, event_source);

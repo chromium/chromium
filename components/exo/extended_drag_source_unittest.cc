@@ -643,6 +643,50 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates) {
   EXPECT_FALSE(shell_surface->IsDragged());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
+  // Create and map a toplevel shell surface.
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  extended_drag_source_->Drag(surface, gfx::Vector2d());
+
+  // Start the DND + extended-drag session.
+  // Creates a mouse-pressed event before starting the drag session.
+  ui::test::EventGenerator generator(GetContext(), gfx::Point(10, 10));
+  generator.MoveTouch(surface->window()->GetBoundsInScreen().origin());
+  generator.PressTouch();
+
+  // Start a DragDropOperation.
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kTouch);
+
+  base::RunLoop loop;
+  drag_drop_controller_->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        auto* toplevel_handler =
+            ash::Shell::Get()->toplevel_window_event_handler();
+        EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
+
+        auto* window_state =
+            ash::WindowState::Get(surface->window()->GetToplevelWindow());
+        auto* drag_details = window_state->drag_details();
+        DCHECK(drag_details);
+        EXPECT_EQ(gfx::ToRoundedPoint(drag_details->initial_location_in_parent),
+                  surface->window()->GetBoundsInScreen().origin());
+        drag_drop_controller_->DragCancel();
+        EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+        loop.Quit();
+      }),
+      base::DoNothing());
+
+  loop.Run();
+  EXPECT_TRUE(data_source_delegate_->cancelled());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   UpdateDisplay("800x600,800x600");
 
