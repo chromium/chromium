@@ -43,7 +43,7 @@ const int kTestIdpBrandIconIdealSize = 32;
 
 const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
-const char kTestManifestListUrl[] = "https://idp.test/.well-known/fedcm.json";
+const char kTestManifestListUrl[] = "https://idp.test/.well-known/web-identity";
 const char kTestManifestUrl[] = "https://idp.test/fedcm.json";
 const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
@@ -421,12 +421,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ComputeManifestListUrl) {
-  EXPECT_EQ("https://localhost:8000/.well-known/fedcm.json",
+  EXPECT_EQ("https://localhost:8000/.well-known/web-identity",
             IdpNetworkRequestManager::ComputeManifestListUrl(
                 GURL("https://localhost:8000/test/"))
                 ->spec());
 
-  EXPECT_EQ("https://google.com/.well-known/fedcm.json",
+  EXPECT_EQ("https://google.com/.well-known/web-identity",
             IdpNetworkRequestManager::ComputeManifestListUrl(
                 GURL("https://www.google.com:8000/test/"))
                 ->spec());
@@ -468,32 +468,32 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
   std::set<GURL> urls;
 
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
-  "provider_urls": ["https://idp.test/"]
+  "provider_urls": ["https://idp.test/fedcm.json"]
   })");
   EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
-  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/")}, urls);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")}, urls);
 
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
-  "provider_urls": ["https://idp.test/path/"]
+  "provider_urls": ["https://idp.test/path/fedcm.json"]
   })");
   EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
-  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/path/")}, urls);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/path/fedcm.json")}, urls);
 
   // Value not a list
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
-  "provider_urls": "https://idp.test/"
+  "provider_urls": "https://idp.test/fedcm.json"
   })");
   EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
 
   // Toplevel not a dictionary
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"(
-  ["https://idp.test/"]
+  ["https://idp.test/fedcm.json"]
   )");
   EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
 
   // Incorrect key
   std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
-  "providers": ["https://idp.test/"]
+  "providers": ["https://idp.test/fedcm.json"]
   })");
   EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
 

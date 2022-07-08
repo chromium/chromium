@@ -67,6 +67,7 @@ namespace {
 
 constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kProviderUrl[] = "https://idp.example/";
+constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kRpUrl[] = "https://rp.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
@@ -92,7 +93,7 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
     GURL()              // picture
 }};
 
-static const std::set<std::string> kManifestList{kProviderUrl};
+static const std::set<std::string> kManifestList{kProviderUrlFull};
 
 // Parameters for a call to RequestToken.
 struct RequestParameters {
@@ -163,7 +164,7 @@ static const MockClientIdConfiguration kDefaultClientMetadata{
     FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
 
 static const RequestParameters kDefaultRequestParameters{
-    kProviderUrl, kClientId, kNonce, /*prefer_auto_sign_in=*/false};
+    kProviderUrlFull, kClientId, kNonce, /*prefer_auto_sign_in=*/false};
 
 static const MockConfiguration kConfigurationValid{
     kToken,
@@ -860,6 +861,24 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListNotInList) {
   RequestParameters parameters{"https://not-in-list.example", kClientId, kNonce,
                                /*prefer_auto_sign_in=*/false};
   RunAuthTest(parameters, request_not_in_list, kConfigurationValid);
+}
+
+// Test that not having the filename in the manifest list fails
+// (kProviderUrl vs kProviderUrlFull).
+TEST_F(BasicFederatedAuthRequestImplTest, ManifestListHasNoFilename) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmManifestValidation);
+
+  RequestParameters parameters{"https://idp.example/foo", kClientId, kNonce,
+                               /*prefer_auto_sign_in=*/false};
+  MockConfiguration config{kConfigurationValid};
+  config.manifest_list.provider_urls = std::set<std::string>{kProviderUrl};
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+      FetchedEndpoint::MANIFEST_LIST};
+  RunAuthTest(parameters, expectations, config);
 }
 
 // Test that request fails if manifest is missing token endpoint.

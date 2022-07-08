@@ -529,13 +529,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
   //     "https://foo.idp.example/fedcm.json"
   //   ]
   // }
-
-  // Temporarily resolve provider_ with respect to the current directory to
-  // allow both filepaths and filenames as the provider_url since the manifest
-  // list is still specifying directories, not filenames. To be removed when
-  // crrev.com/c/3730747 lands.
-  GURL provider_url = provider_.Resolve(".");
-  bool provider_url_is_valid = (urls.count(provider_url) != 0);
+  bool provider_url_is_valid = (urls.count(provider_) != 0);
 
   if (!provider_url_is_valid) {
     fedcm_metrics_->RecordRequestTokenStatus(

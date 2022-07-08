@@ -730,7 +730,7 @@ WEB-PLATFORM.TEST:web-bundle/subresource-loading/*.html
 WEB-PLATFORM.TEST:web-bundle/subresource-loading/resources/*.js
 
 # well-known file has hardcoded URLs
-WEB-PLATFORM.TEST: .well-known/fedcm.json
+WEB-PLATFORM.TEST: .well-known/web-identity
 
 # Tests that depend on resources in /gen/ in Chromium:
 # https://github.com/web-platform-tests/wpt/issues/16455

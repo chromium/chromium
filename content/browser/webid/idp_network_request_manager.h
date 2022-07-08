@@ -127,13 +127,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
-  // Does provider URL fixups (add a slash to the path if missing).
-  static GURL FixupProviderUrl(const GURL& url);
-
   // Computes the manifest list URL from the identity provider URL.
   static absl::optional<GURL> ComputeManifestListUrl(const GURL& url);
 
-  // Fetch the manifest list. This is the /.well-known/fedcm.json file on
+  // Fetch the manifest list. This is the /.well-known/web-identity file on
   // the eTLD+1 calculated from the provider URL, used to check that the
   // provider URL is valid for this eTLD+1.
   virtual void FetchManifestList(FetchManifestListCallback);

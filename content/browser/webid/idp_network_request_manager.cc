@@ -40,7 +40,7 @@ using LoginState = IdentityRequestAccount::LoginState;
 // referenced here.
 
 // Path to find the manifest list on the eTLD+1 host.
-constexpr char kManifestListPath[] = "/.well-known/fedcm.json";
+constexpr char kManifestListPath[] = "/.well-known/web-identity";
 
 // manifest list JSON keys
 constexpr char kProviderUrlListKey[] = "provider_urls";
