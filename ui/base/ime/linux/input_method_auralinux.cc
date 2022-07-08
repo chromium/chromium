@@ -112,7 +112,9 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     // For Wayland, wl_keyboard::key will be sent following the peek key event
     // if the event is not consumed by IME, so peek key events should not be
     // dispatched. crbug.com/1225747
-    if (context_->IsPeekKeyEvent(*event)) {
+    // Do not keep release events. Non-peek Release key event is dispatched,
+    // so the event will be stale. See WaylandKeyboard::OnKey for details.
+    if (event->type() == ET_KEY_PRESSED && context_->IsPeekKeyEvent(*event)) {
       ime_filtered_key_event_ = std::move(*event);
       return ui::EventDispatchDetails();
     }

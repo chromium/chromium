@@ -130,11 +130,10 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     // For the purposes of tests if kPropertyKeyboardImeFlag is not
     // explicitly set assume the event is not a key event.
     if (!properties)
-      return false;
+      return true;
     auto it = properties->find(kPropertyKeyboardImeFlag);
-    if (it == properties->end()) {
-      return false;
-    }
+    if (it == properties->end())
+      return true;
     return !(it->second[0] & kPropertyKeyboardImeIgnoredFlag);
   }
 
@@ -606,15 +605,15 @@ TEST_F(InputMethodAuraLinuxTest, DeadKeyTestTypeNone) {
 // consumed by IME. In that case, the peek key should not be dispatched.
 TEST_F(InputMethodAuraLinuxTest, MockWaylandEventsTest) {
   KeyEvent peek_key(ET_KEY_PRESSED, VKEY_TAB, 0);
-  ui::Event::Properties properties;
-  properties[ui::kPropertyKeyboardImeFlag] =
-      std::vector<uint8_t>(ui::kPropertyKeyboardImeIgnoredFlag);
-  peek_key.SetProperties(properties);
   input_method_auralinux_->DispatchKeyEvent(&peek_key);
   // No expected action for peek key events.
   test_result_->Verify();
 
   KeyEvent key(ET_KEY_PRESSED, VKEY_TAB, 0);
+  ui::Event::Properties properties;
+  properties[ui::kPropertyKeyboardImeFlag] =
+      std::vector<uint8_t>({ui::kPropertyKeyboardImeIgnoredFlag});
+  key.SetProperties(properties);
   input_method_auralinux_->DispatchKeyEvent(&key);
   test_result_->ExpectAction("keydown:9");
   test_result_->Verify();
@@ -923,6 +922,18 @@ TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest) {
   test_result_->ExpectAction("textinput:c");
   test_result_->ExpectAction("keydown:65");
   test_result_->ExpectAction("keypress:65");
+  test_result_->Verify();
+}
+
+TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest_PeekKey) {
+  context_->SetSyncMode(true);
+  context_->SetEatKey(true);
+
+  KeyEvent key(ET_KEY_RELEASED, VKEY_A, 0);
+  key.set_character(L'A');
+  input_method_auralinux_->DispatchKeyEvent(&key);
+
+  test_result_->ExpectAction("keyup:65");
   test_result_->Verify();
 }
 
