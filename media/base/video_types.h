@@ -110,6 +110,9 @@ MEDIA_SHMEM_EXPORT std::string FourccToString(uint32_t fourcc);
 // Returns true if |format| is a YUV format with multiple planes.
 MEDIA_SHMEM_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
 
+// Returns true if |format| is an RGB format.
+MEDIA_SHMEM_EXPORT bool IsRGB(VideoPixelFormat format);
+
 // Returns true if |format| has no Alpha channel (hence is always opaque).
 MEDIA_SHMEM_EXPORT bool IsOpaque(VideoPixelFormat format);
 
