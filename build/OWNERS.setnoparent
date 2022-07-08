@@ -73,3 +73,7 @@ file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
 # Origin Trials owners are responsible for determining trials that need to be
 # completed manually.
 file://third_party/blink/common/origin_trials/OT_OWNERS
+
+# New notifiers added to //ash/constants/notifier_catalogs.h should be reviewed
+# by //ash/system owners to ensure that the correct notifier is being used.
+file://ash/system/OWNERS

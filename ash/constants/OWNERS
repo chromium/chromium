@@ -4,5 +4,6 @@ per-file ash_switches.cc=*
 per-file ash_switches.h=*
 per-file url_constants.cc=*
 per-file url_constants.h=*
+per-file notifier_catalogs.h=set noparent
 per-file notifier_catalogs.h=file://ash/system/OWNERS
 per-file notifier_catalogs.h=kradtke@chromium.org
