@@ -3215,6 +3215,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MediaElement.ContentTypeParseable"
     enum="ContentTypeParseableResult" expires_after="2022-07-03">
+  <obsolete>
+    Removed 07/2022 due to lack of further need for this data.
+  </obsolete>
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
