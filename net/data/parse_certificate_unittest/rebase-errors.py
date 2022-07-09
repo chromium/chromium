@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -71,7 +71,7 @@ def read_file_to_string(path):
 
 def write_string_to_file(data, path):
   """Writes a string to a file"""
-  print "Writing file %s ..." % (path)
+  print("Writing file %s ..." % (path))
   with open(path, "w") as f:
     f.write(data)
 
@@ -115,7 +115,7 @@ def get_src_root():
       break
     cur_dir = parent_dir
 
-  print "Couldn't find src dir"
+  print("Couldn't find src dir")
   sys.exit(1)
 
 
@@ -126,7 +126,7 @@ def get_abs_path(rel_path):
 
 def main():
   if len(sys.argv) > 2:
-    print 'Usage: %s [path-to-unittest-stdout]' % (sys.argv[0])
+    print('Usage: %s [path-to-unittest-stdout]' % (sys.argv[0]))
     sys.exit(1)
 
   # Read the input either from a file, or from stdin.
@@ -134,7 +134,7 @@ def main():
   if len(sys.argv) == 2:
     test_stdout = read_file_to_string(sys.argv[1])
   else:
-    print 'Reading input from stdin...'
+    print('Reading input from stdin...')
     test_stdout = sys.stdin.read()
 
   for m in failed_test_regex.finditer(test_stdout):

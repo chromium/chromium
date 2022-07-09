@@ -17,7 +17,7 @@ import shutil
 import subprocess
 import sys
 
-import openssl_conf
+from . import openssl_conf
 
 # Enum for the "type" of certificate that is to be created. This is used to
 # select sane defaults for the .cnf file and command line flags, but they can
@@ -499,8 +499,10 @@ class Certificate(object):
 
 
 def text_data_to_pem(block_header, text_data):
-  return '%s\n-----BEGIN %s-----\n%s\n-----END %s-----\n' % (text_data,
-          block_header, base64.b64encode(text_data), block_header)
+  # b64encode takes in bytes and returns bytes.
+  pem_data = base64.b64encode(text_data.encode('utf8')).decode('utf8')
+  return '%s\n-----BEGIN %s-----\n%s\n-----END %s-----\n' % (
+      text_data, block_header, pem_data, block_header)
 
 
 def write_chain(description, chain, out_pem):
