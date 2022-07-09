@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "components/reporting/metrics/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fake_reporting_settings.h"
 #include "components/reporting/metrics/fake_sampler.h"
@@ -106,7 +105,9 @@ class MockDelegate : public MetricReportingManager::Delegate {
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
               CreateMetricReportQueue,
-              (Destination destination, Priority priority),
+              (EventType event_type,
+               Destination destination,
+               Priority priority),
               (override));
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
@@ -232,11 +233,13 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
 
   ON_CALL(*mock_delegate, IsDeprovisioned).WillByDefault(Return(true));
   ON_CALL(*mock_delegate, IsAffiliated).WillByDefault(Return(true));
-  ON_CALL(*mock_delegate, CreateMetricReportQueue(Destination::INFO_METRIC,
-                                                  Priority::SLOW_BATCH))
+  ON_CALL(*mock_delegate,
+          CreateMetricReportQueue(EventType::kDevice, Destination::INFO_METRIC,
+                                  Priority::SLOW_BATCH))
       .WillByDefault(Return(ByMove(std::move(info_queue_))));
-  ON_CALL(*mock_delegate, CreateMetricReportQueue(Destination::EVENT_METRIC,
-                                                  Priority::SLOW_BATCH))
+  ON_CALL(*mock_delegate,
+          CreateMetricReportQueue(EventType::kDevice, Destination::EVENT_METRIC,
+                                  Priority::SLOW_BATCH))
       .WillByDefault(Return(ByMove(std::move(event_queue_))));
   ON_CALL(*mock_delegate,
           CreatePeriodicUploadReportQueue(Destination::TELEMETRY_METRIC,
@@ -294,8 +297,9 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
   int collector_count = 0;
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
-  ON_CALL(*mock_delegate_ptr, CreateMetricReportQueue(Destination::INFO_METRIC,
-                                                      Priority::SLOW_BATCH))
+  ON_CALL(*mock_delegate_ptr,
+          CreateMetricReportQueue(EventType::kDevice, Destination::INFO_METRIC,
+                                  Priority::SLOW_BATCH))
       .WillByDefault(Return(ByMove(std::move(info_queue_))));
   ON_CALL(*mock_delegate_ptr,
           CreateOneShotCollector(
@@ -373,8 +377,9 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   int observer_manager_count = 0;
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
-  ON_CALL(*mock_delegate_ptr, CreateMetricReportQueue(Destination::EVENT_METRIC,
-                                                      Priority::SLOW_BATCH))
+  ON_CALL(*mock_delegate_ptr,
+          CreateMetricReportQueue(EventType::kDevice, Destination::EVENT_METRIC,
+                                  Priority::SLOW_BATCH))
       .WillByDefault(Return(ByMove(std::move(event_queue_))));
   ON_CALL(*mock_delegate_ptr,
           CreateEventObserverManager(
@@ -448,7 +453,8 @@ TEST_P(MetricReportingManagerPeripheralTest, Default) {
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
   ON_CALL(*mock_delegate_ptr,
-          CreateMetricReportQueue(Destination::PERIPHERAL_EVENTS,
+          CreateMetricReportQueue(EventType::kDevice,
+                                  Destination::PERIPHERAL_EVENTS,
                                   Priority::SECURITY))
       .WillByDefault(Return(ByMove(std::move(peripheral_queue_))));
   ON_CALL(*mock_delegate_ptr,
@@ -642,8 +648,9 @@ TEST_P(MetricReportingManagerPeriodicEventTest, Default) {
   int collector_count = 0;
   ON_CALL(*mock_delegate_ptr, IsAffiliated)
       .WillByDefault(Return(test_case.is_affiliated));
-  ON_CALL(*mock_delegate_ptr, CreateMetricReportQueue(Destination::EVENT_METRIC,
-                                                      Priority::SLOW_BATCH))
+  ON_CALL(*mock_delegate_ptr,
+          CreateMetricReportQueue(EventType::kDevice, Destination::EVENT_METRIC,
+                                  Priority::SLOW_BATCH))
       .WillByDefault(Return(ByMove(std::move(event_queue_))));
   ON_CALL(*mock_delegate_ptr,
           CreatePeriodicEventCollector(

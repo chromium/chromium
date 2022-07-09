@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
@@ -51,11 +51,12 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     virtual bool IsAffiliated(Profile* profile);
 
     virtual std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
-    CreateReportQueue(Destination destination);
+    CreateReportQueue(EventType event_type, Destination destination);
 
     virtual bool IsDeprovisioned();
 
     virtual std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
+        EventType event_type,
         Destination destination,
         Priority priority);
 
@@ -147,6 +148,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
                             const std::string& enable_setting_path,
                             bool setting_enabled_default_value);
   void InitPeriodicCollector(std::unique_ptr<Sampler> sampler,
+                             MetricReportQueue* metric_report_queue,
                              const std::string& enable_setting_path,
                              bool setting_enabled_default_value,
                              const std::string& rate_setting_path,
@@ -155,6 +157,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitPeriodicEventCollector(std::unique_ptr<Sampler> sampler,
                                   std::unique_ptr<EventDetector> event_detector,
                                   std::vector<Sampler*> additional_samplers,
+                                  MetricReportQueue* metric_report_queue,
                                   const std::string& enable_setting_path,
                                   bool setting_enabled_default_value,
                                   const std::string& rate_setting_path,
