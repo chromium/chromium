@@ -1441,9 +1441,11 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     }
   }
 
+  const WritingModeConverter container_converter(
+      container_writing_direction, node_info.container_physical_content_size);
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
-      container_builder_->AnchorQuery());
+      container_converter, container_builder_->AnchorQuery());
 
   const LogicalSize computed_available_size =
       ComputeOutOfFlowAvailableSize(node_info.node, node_info.constraint_space,

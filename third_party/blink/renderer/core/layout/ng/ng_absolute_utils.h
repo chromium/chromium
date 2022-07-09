@@ -37,6 +37,7 @@ struct CORE_EXPORT NGLogicalOutOfFlowInsets {
 CORE_EXPORT NGLogicalOutOfFlowInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
+                       const WritingModeConverter& container_converter,
                        const NGLogicalAnchorQuery& anchor_query);
 
 CORE_EXPORT LogicalSize

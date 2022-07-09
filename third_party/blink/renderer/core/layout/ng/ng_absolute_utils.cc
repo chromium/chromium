@@ -263,59 +263,71 @@ bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
 
 NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
-    const LogicalSize& available_size,
+    const LogicalSize& available_logical_size,
+    const WritingModeConverter& container_converter,
     const NGLogicalAnchorQuery& anchor_query) {
   struct AnchorEvaluatorImpl : public Length::AnchorEvaluator {
     STACK_ALLOCATED();
 
    public:
-    explicit AnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query)
-        : anchor_query(anchor_query) {}
+    AnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
+                        const WritingModeConverter& container_converter)
+        : anchor_query(anchor_query),
+          container_converter(container_converter) {}
 
     absl::optional<LayoutUnit> Evaluate(
         const AtomicString& anchor_name,
         AnchorValue anchor_value) const override {
       return anchor_query.Evaluate(anchor_name, anchor_value, available_size,
-                                   is_block_direction, is_end);
+                                   container_converter, is_vertical,
+                                   is_right_or_bottom);
     }
 
     const NGLogicalAnchorQuery& anchor_query;
+    const WritingModeConverter& container_converter;
     LayoutUnit available_size;
-    bool is_block_direction = false;
-    bool is_end = false;
-  } anchor_evaluator(anchor_query);
+    bool is_vertical = false;
+    bool is_right_or_bottom = false;
+  } anchor_evaluator(anchor_query, container_converter);
 
-  anchor_evaluator.available_size = available_size.inline_size;
-  absl::optional<LayoutUnit> inline_start;
-  if (!style.LogicalInlineStart().IsAuto()) {
-    inline_start =
-        MinimumValueForLength(style.LogicalInlineStart(),
-                              available_size.inline_size, &anchor_evaluator);
+  // Compute in physical, because anchors may be in different `writing-mode` or
+  // `direction`.
+  const WritingDirectionMode writing_direction = style.GetWritingDirection();
+  const PhysicalSize available_size = ToPhysicalSize(
+      available_logical_size, writing_direction.GetWritingMode());
+  anchor_evaluator.available_size = available_size.width;
+  absl::optional<LayoutUnit> left;
+  if (!style.Left().IsAuto()) {
+    left = MinimumValueForLength(style.Left(), available_size.width,
+                                 &anchor_evaluator);
   }
-  absl::optional<LayoutUnit> inline_end;
-  if (!style.LogicalInlineEnd().IsAuto()) {
-    anchor_evaluator.is_end = true;
-    inline_end =
-        MinimumValueForLength(style.LogicalInlineEnd(),
-                              available_size.inline_size, &anchor_evaluator);
-  }
-
-  anchor_evaluator.is_block_direction = true;
-  anchor_evaluator.available_size = available_size.block_size;
-  absl::optional<LayoutUnit> block_start;
-  if (!style.LogicalTop().IsAuto()) {
-    anchor_evaluator.is_end = false;
-    block_start = MinimumValueForLength(
-        style.LogicalTop(), available_size.block_size, &anchor_evaluator);
-  }
-  absl::optional<LayoutUnit> block_end;
-  if (!style.LogicalBottom().IsAuto()) {
-    anchor_evaluator.is_end = true;
-    block_end = MinimumValueForLength(
-        style.LogicalBottom(), available_size.block_size, &anchor_evaluator);
+  absl::optional<LayoutUnit> right;
+  if (!style.Right().IsAuto()) {
+    anchor_evaluator.is_right_or_bottom = true;
+    right = MinimumValueForLength(style.Right(), available_size.width,
+                                  &anchor_evaluator);
   }
 
-  return {inline_start, inline_end, block_start, block_end};
+  anchor_evaluator.is_vertical = true;
+  anchor_evaluator.available_size = available_size.height;
+  absl::optional<LayoutUnit> top;
+  if (!style.Top().IsAuto()) {
+    anchor_evaluator.is_right_or_bottom = false;
+    top = MinimumValueForLength(style.Top(), available_size.height,
+                                &anchor_evaluator);
+  }
+  absl::optional<LayoutUnit> bottom;
+  if (!style.Bottom().IsAuto()) {
+    anchor_evaluator.is_right_or_bottom = true;
+    bottom = MinimumValueForLength(style.Bottom(), available_size.height,
+                                   &anchor_evaluator);
+  }
+
+  // Convert the physical insets to logical.
+  PhysicalToLogical<absl::optional<LayoutUnit>&> insets(writing_direction, top,
+                                                        right, bottom, left);
+  return {insets.InlineStart(), insets.InlineEnd(), insets.BlockStart(),
+          insets.BlockEnd()};
 }
 
 LogicalSize ComputeOutOfFlowAvailableSize(

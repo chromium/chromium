@@ -17,6 +17,8 @@
 
 namespace blink {
 
+class WritingModeConverter;
+
 struct NGPhysicalAnchorQuery {
   bool IsEmpty() const { return anchor_references.IsEmpty(); }
 
@@ -28,11 +30,13 @@ struct NGLogicalAnchorQuery {
 
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
-  absl::optional<LayoutUnit> Evaluate(const AtomicString& anchor_name,
-                                      AnchorValue anchor_value,
-                                      LayoutUnit available_size,
-                                      bool is_block_direction,
-                                      bool is_end) const;
+  absl::optional<LayoutUnit> Evaluate(
+      const AtomicString& anchor_name,
+      AnchorValue anchor_value,
+      LayoutUnit available_size,
+      const WritingModeConverter& container_converter,
+      bool is_vertical,
+      bool is_right_or_bottom) const;
 
   HashMap<AtomicString, LogicalRect> anchor_references;
 };
