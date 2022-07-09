@@ -13,9 +13,6 @@
 const base::Feature kEnableDiscoverFeedPreview{
     "EnableDiscoverFeedPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnableDiscoverFeedAppFlows{
-    "EnableDiscoverFeedAppFlows", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDiscoverFeedGhostCardsEnabled{
     "DiscoverFeedGhostCardsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -49,10 +46,6 @@ const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
-}
-
-bool IsDiscoverFeedAppFlowsEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDiscoverFeedAppFlows);
 }
 
 bool IsDiscoverFeedGhostCardsEnabled() {

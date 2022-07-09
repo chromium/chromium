@@ -57,9 +57,6 @@ extern const base::Feature kEnableFeedAblation;
 // Whether the Discover feed content preview is shown in the context menu.
 bool IsDiscoverFeedPreviewEnabled();
 
-// Whether the Discover feed appflows are enabled.
-bool IsDiscoverFeedAppFlowsEnabled();
-
 // Whether the Discover feed shorter cache is enabled.
 bool IsDiscoverFeedShorterCacheEnabled();
 
