@@ -451,7 +451,7 @@
 <translation id="1429300045468813835">すべて消去</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1431188203598586230">最後のソフトウェア アップデート</translation>
-<translation id="1432581352905426595">検索エンジンの管理</translation>
+<translation id="1432581352905426595">検索エンジンを管理</translation>
 <translation id="1434696352799406980">起動ページ、新しいタブページ、検索エンジン、固定タブをリセットします。また、すべての拡張機能を無効にし、Cookie などの一時データを削除します。ただし、ブックマーク、履歴、保存したパスワードはそのまま残ります。</translation>
 <translation id="1434886155212424586">ホームページは新しいタブのページです</translation>
 <translation id="1436390408194692385">有効期限まであと <ph name="TICKET_TIME_LEFT" /></translation>
@@ -1962,7 +1962,7 @@
 <translation id="2836635946302913370">このユーザー名でのログインは、管理者によって無効にされています。</translation>
 <translation id="283669119850230892">ネットワーク <ph name="NETWORK_ID" /> を使用するには、まずインターネット接続を完了してください（下記参照）。</translation>
 <translation id="2838379631617906747">インストール中</translation>
-<translation id="2839032553903800133">通知がブロックされています</translation>
+<translation id="2839032553903800133">通知をブロック中</translation>
 <translation id="2841013758207633010">時間</translation>
 <translation id="2841837950101800123">提供元</translation>
 <translation id="2843560154284403323">Linux の設定を完了するには、Chrome OS を更新してからもう一度お試しください。</translation>
@@ -3442,7 +3442,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> を接続すると、生産性が向上します</translation>
-<translation id="4314815835985389558">同期の管理</translation>
+<translation id="4314815835985389558">同期を管理</translation>
 <translation id="4315933848520197627">アカウントのリンク解除</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="4317820549299924617">確認が失敗しました</translation>
@@ -4151,7 +4151,7 @@
 <translation id="5038022729081036555">明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
 <translation id="5038818366306248416"><ph name="ORIGIN" /> の拡張機能を一切許可しないよう選択しています</translation>
 <translation id="5039696241953571917">Google アカウントでの保存パスワードの表示と管理</translation>
-<translation id="5039804452771397117">許可</translation>
+<translation id="5039804452771397117">許可する</translation>
 <translation id="5040823038948176460">その他のコンテンツの設定</translation>
 <translation id="5041509233170835229">Chrome アプリ</translation>
 <translation id="5043440033854483429">名前には文字、数字、ハイフン（-）を使用できます。1～15 文字の間で指定してください。</translation>
@@ -4782,7 +4782,7 @@
 <translation id="567643736130151854">ログインして同期を有効にすれば、ブックマーク、パスワード、その他の設定をどのデバイスからでもご利用いただけます</translation>
 <translation id="567740581294087470">お送りいただくフィードバックの種類を選択してください。</translation>
 <translation id="5677503058916217575">ページの言語:</translation>
-<translation id="5677928146339483299">ブロック中</translation>
+<translation id="5677928146339483299">ブロック</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> への読み書きのアクセス権が許可されました。</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> に送信しています</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> でのユーザーデータの読み取り</translation>
