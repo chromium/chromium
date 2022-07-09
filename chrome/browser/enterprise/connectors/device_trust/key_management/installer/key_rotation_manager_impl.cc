@@ -55,7 +55,7 @@ KeyRotationManagerImpl::KeyRotationManagerImpl(
 
 KeyRotationManagerImpl::~KeyRotationManagerImpl() = default;
 
-void KeyRotationManagerImpl::RotateWithAdminRights(
+void KeyRotationManagerImpl::Rotate(
     const GURL& dm_server_url,
     const std::string& dm_token,
     const std::string& nonce,

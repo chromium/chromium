@@ -89,7 +89,7 @@ class KeyRotationManagerTest : public testing::Test,
 
 // Tests a success key rotation flow when a hardware key and hardware key
 // provider are available.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_WithKey) {
+TEST_P(KeyRotationManagerTest, Rotate_Hw_WithKey) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake hardware keys.
@@ -126,8 +126,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_WithKey) {
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_TRUE(future.Get());
 
   // Validate body.
@@ -149,7 +148,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_WithKey) {
 
 // Tests a success key rotation flow when hardware key provider is available,
 // but no previous key was created.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_NoKey) {
+TEST_P(KeyRotationManagerTest, Rotate_Hw_NoKey) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake hardware keys.
@@ -181,8 +180,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_NoKey) {
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_TRUE(future.Get());
 
   // Should expect one successful attempt to rotate a key.
@@ -193,7 +191,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_NoKey) {
 
 // Tests a success key rotation flow when a hardware key provider is not
 // available and no key previously existed.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_NoKey) {
+TEST_P(KeyRotationManagerTest, Rotate_NoHw_NoKey) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate =
@@ -221,8 +219,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_NoKey) {
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_TRUE(future.Get());
 
   // Should expect one successful attempt to rotate a key.
@@ -235,7 +232,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_NoKey) {
 // and no key previously existed and the network request permanetly failed.
 // Also, in this case the registry should be cleared.
 TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_Hw_WithoutKey_NetworkFails_ClearRegistry) {
+       Rotate_Hw_WithoutKey_NetworkFails_ClearRegistry) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake hardware keys.
@@ -276,8 +273,7 @@ TEST_P(KeyRotationManagerTest,
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_FALSE(future.Get());
 
   //   Should expect one failed attempt to rotate a key on first try.
@@ -291,9 +287,8 @@ TEST_P(KeyRotationManagerTest,
 // Tests a failed key rotation flow when a hardware key provider is available
 // and no key previously existed and the network request transiently
 // fails. Also, in this case the registry should be cleared.
-TEST_P(
-    KeyRotationManagerTest,
-    RotateWithAdminRights_Hw_WithoutKey_ExhaustedNetworkFails_ClearRegistry) {
+TEST_P(KeyRotationManagerTest,
+       Rotate_Hw_WithoutKey_ExhaustedNetworkFails_ClearRegistry) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake hardware keys.
@@ -334,8 +329,7 @@ TEST_P(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key with max tries.
@@ -349,7 +343,7 @@ TEST_P(
 
 // Tests a success key rotation flow when a hardware key provider is not
 // available and a key previously existed.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey) {
+TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -376,8 +370,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey) {
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_TRUE(future.Get());
 
   // Should expect one successful attempt to rotate a key.
@@ -389,7 +382,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey) {
 // Tests a failed key rotation flow when a hardware key provider is not
 // available and a key previously existed, but storing the new key locally
 // failed.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey_StoreFailed) {
+TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_StoreFailed) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -413,8 +406,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey_StoreFailed) {
   GURL dm_server_url(kDmServerUrl);
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key.
@@ -425,8 +417,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey_StoreFailed) {
 
 // Tests a key rotation flow where the network request fails and the subsequent
 // attempt to restore the old key also fails.
-TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_NoHw_WithKey_NetworkFails_RestoreFails) {
+TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_NetworkFails_RestoreFails) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -459,8 +450,7 @@ TEST_P(KeyRotationManagerTest,
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key on first try.
@@ -473,8 +463,7 @@ TEST_P(KeyRotationManagerTest,
 // Tests a failed key rotation flow when a hardware key provider is not
 // available and a key previously existed, and the network request transiently
 // fails. Also, in this case, the original key should be stored back.
-TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_NoHw_WithKey_ExhaustedNetworkFailure) {
+TEST_P(KeyRotationManagerTest, Rotate_NoHw_WithKey_ExhaustedNetworkFailure) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -509,8 +498,7 @@ TEST_P(KeyRotationManagerTest,
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_FALSE(future.Get());
 
   // Should expect one failed attempt to rotate a key with max tries.
@@ -522,8 +510,7 @@ TEST_P(KeyRotationManagerTest,
 
 // Tests a success key rotation flow when incorrect permissions were set
 // on the signing key file.
-TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_StoreFailed_InvalidFilePermissions) {
+TEST_P(KeyRotationManagerTest, Rotate_StoreFailed_InvalidFilePermissions) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate =
@@ -547,8 +534,7 @@ TEST_P(KeyRotationManagerTest,
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   base::test::TestFuture<bool> future;
-  manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce(),
-                                 future.GetCallback());
+  manager->Rotate(dm_server_url, kDmToken, nonce(), future.GetCallback());
   EXPECT_FALSE(future.Get());
 
   // Should expect one successful attempt to rotate a key.

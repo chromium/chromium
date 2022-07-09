@@ -81,7 +81,7 @@ bool RotateDeviceTrustKey(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   bool rotation_result = false;
-  key_rotation_manager->RotateWithAdminRights(
+  key_rotation_manager->Rotate(
       dm_server_url, *dm_token, *decoded_nonce,
       base::BindOnce(
           [](bool& rotation_result, base::OnceClosure quit_closure,

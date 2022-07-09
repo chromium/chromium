@@ -35,13 +35,12 @@ class KeyRotationManager {
   // `dm_token` is the DM token to use when sending the new public key to the
   // DM server at `dm_server_url`. The `nonce` is an opaque binary blob and is
   // used when building the upload request result of the rotation is
-  // returned via the `result_callback`. This function will fail if not
-  // called with admin rights and it makes asynchronous network requests.
-  virtual void RotateWithAdminRights(
-      const GURL& dm_server_url,
-      const std::string& dm_token,
-      const std::string& nonce,
-      base::OnceCallback<void(bool)> result_callback) = 0;
+  // returned via the `result_callback`. This function will fail on linux
+  // and windows if not called with admin rights.
+  virtual void Rotate(const GURL& dm_server_url,
+                      const std::string& dm_token,
+                      const std::string& nonce,
+                      base::OnceCallback<void(bool)> result_callback) = 0;
 };
 
 }  // namespace enterprise_connectors

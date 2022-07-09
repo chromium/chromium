@@ -9,7 +9,7 @@
 
 namespace enterprise_connectors {
 
-// Status of rotation attempts made with RotateWithAdminRights().
+// Status of rotation attempts made with Rotate().
 // Must be kept in sync with the DeviceTrustKeyRotationStatus UMA enum.
 enum class RotationStatus {
   SUCCESS,
@@ -24,9 +24,8 @@ enum class RotationStatus {
   kMaxValue = FAILURE_INCORRECT_FILE_PERMISSIONS,
 };
 
-// Metrics for the RotateWithAdminRights() result. `nonce` is the
-// nonce from the rotate attempt and `status` is the status of the
-// rotation.
+// Metrics for the Rotate result. `nonce` is the nonce from the
+// rotate attempt and `status` is the status of the rotation.
 void RecordRotationStatus(const std::string& nonce, RotationStatus status);
 
 // Metrics for the network delegates upload key result. `nonce` is
