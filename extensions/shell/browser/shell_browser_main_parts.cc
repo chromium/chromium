@@ -50,6 +50,11 @@
 #include "ui/aura/env.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/components/audio/cras_audio_handler.h"
@@ -59,7 +64,7 @@
 #include "extensions/shell/browser/shell_network_controller_chromeos.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
@@ -68,7 +73,7 @@
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #endif
 
@@ -152,7 +157,7 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
+  bluez::DBusBluezManagerWrapperLinux::Initialize();
 #endif
 }
 
@@ -293,8 +298,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   bluez::BluezDBusManager::Shutdown();
 #elif BUILDFLAG(IS_LINUX)
   device::BluetoothAdapterFactory::Shutdown();
-  bluez::BluezDBusManager::Shutdown();
-  bluez::BluezDBusThreadManager::Shutdown();
+  bluez::DBusBluezManagerWrapperLinux::Shutdown();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
