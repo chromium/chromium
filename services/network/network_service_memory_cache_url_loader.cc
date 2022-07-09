@@ -63,6 +63,9 @@ void NetworkServiceMemoryCacheURLLoader::Start(
     return;
   }
 
+  net::NetLogRequestHeaders(
+      net_log_, net::NetLogEventType::IN_MEMORY_CACHE_READ_REQUEST_HEADERS,
+      /*request_line=*/"", &resource_request.headers);
   net::NetLogResponseHeaders(
       net_log_, net::NetLogEventType::IN_MEMORY_CACHE_READ_RESPONSE_HEADERS,
       response_head->headers.get());

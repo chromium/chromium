@@ -3526,12 +3526,13 @@ EVENT_TYPE(RESOURCE_SCHEDULER_REQUEST_STARTED)
 // Auxiliary network service in-memory HTTP cache related events
 // -----------------------------------------------------------------------------
 
-// This event is emitted when HTTP response headers are served from the
+// These event are emitted when HTTP response headers are served from the
 // in-memory cache.
 // The following parameters are attached:
 //   {
 //     "headers": <The list of header:value pairs>,
 //   }
+EVENT_TYPE(IN_MEMORY_CACHE_READ_REQUEST_HEADERS)
 EVENT_TYPE(IN_MEMORY_CACHE_READ_RESPONSE_HEADERS)
 
 // This event is emitted when response content are read from the in-memory
