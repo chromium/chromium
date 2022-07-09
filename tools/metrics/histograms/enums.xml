@@ -65062,6 +65062,16 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Received WM_QUIT"/>
 </enum>
 
+<enum name="MessagePumpPhases">
+  <int value="1" label="Scheduled"/>
+  <int value="2" label="PumpOverhead"/>
+  <int value="3" label="NativeWork"/>
+  <int value="4" label="SelectingApplicationTask"/>
+  <int value="5" label="ApplicationTask"/>
+  <int value="6" label="IdleWork"/>
+  <int value="7" label="Nested"/>
+</enum>
+
 <enum name="MetadataReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Open failure"/>

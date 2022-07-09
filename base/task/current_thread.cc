@@ -68,6 +68,11 @@ bool CurrentThread::IsIdleForTesting() {
   return current_->IsIdleForTesting();
 }
 
+void CurrentThread::EnableMessagePumpTimeKeeperMetrics(
+    const char* thread_name) {
+  return current_->EnableMessagePumpTimeKeeperMetrics(thread_name);
+}
+
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->AddTaskObserver(task_observer);

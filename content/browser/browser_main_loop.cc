@@ -977,6 +977,19 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
           self->parts_->OnFirstIdle();
 
         self->responsiveness_watcher_->OnFirstIdle();
+
+        // Enable MessagePumpPhases metrics/tracing on-first-idle, not before as
+        // queuing time is not relevant before first idle.
+        // TODO(1329717): Consider supporting the initial run (until first idle)
+        // as well.
+        auto enable_message_pump_metrics =
+            base::BindRepeating([](const char* thread_name) {
+              base::CurrentThread::Get()->EnableMessagePumpTimeKeeperMetrics(
+                  thread_name);
+            });
+        enable_message_pump_metrics.Run("BrowserUI");
+        GetIOThreadTaskRunner({})->PostTask(
+            FROM_HERE, BindOnce(enable_message_pump_metrics, "BrowserIO"));
       },
       base::Unretained(this)));
 

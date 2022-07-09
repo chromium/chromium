@@ -99,6 +99,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   MessagePump::Delegate::NextWorkInfo DoWork() override;
   bool DoIdleWork() override;
 
+  void OnBeginWorkItemImpl(LazyNow& lazy_now);
+  void OnEndWorkItemImpl(LazyNow& lazy_now);
+
   // RunLoop::Delegate implementation.
   void Run(bool application_tasks_allowed, TimeDelta timeout) override;
   void Quit() override;

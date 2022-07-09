@@ -63,11 +63,17 @@ class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
    public:
     MOCK_METHOD0(OnThreadControllerActiveBegin, void());
     MOCK_METHOD0(OnThreadControllerActiveEnd, void());
+    MOCK_METHOD1(OnPhaseRecorded, void(Phase));
   };
 
   void InstallTraceObserver() {
     trace_observer_.emplace();
     RunLevelTracker::SetTraceObserverForTesting(&trace_observer_.value());
+
+    // EnableMessagePumpTimeKeeperMetrics is a no-op on hardware which lacks
+    // high-res clocks.
+    ASSERT_TRUE(TimeTicks::IsHighResolution());
+    EnableMessagePumpTimeKeeperMetrics("TestMainThread");
   }
 
   // Optionally emplaced, strict from then on.
@@ -155,13 +161,14 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
 
   void AddTask(Location posted_from,
                OnceClosure task,
-               TimeTicks delayed_run_time = TimeTicks()) {
+               TimeTicks delayed_run_time = TimeTicks(),
+               TimeTicks queue_time = TimeTicks()) {
     DCHECK(tasks_.empty() || delayed_run_time.is_null() ||
            tasks_.back().delayed_run_time < delayed_run_time);
     tasks_.push(
         Task(PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
                         base::subtle::DelayPolicy::kFlexibleNoSooner),
-             EnqueueOrder::FromIntForTesting(13)));
+             EnqueueOrder::FromIntForTesting(13), EnqueueOrder(), queue_time));
   }
 
   bool HasPendingHighResolutionTasks() override {
@@ -865,19 +872,33 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // Post 1 task, run it, go idle, repeat 5 times. Expected to enter/exit
         // "ThreadController active" state 5 consecutive times.
         for (int i = 0; i < 5; ++i, first_pass = false) {
+          MockCallback<OnceClosure> task;
+          task_source_.AddTask(FROM_HERE, task.Get());
+
           if (!first_pass) {
             EXPECT_CALL(*thread_controller_.trace_observer_,
                         OnThreadControllerActiveBegin);
+          } else {
+            // The first pass begins with a kPumpOverhead phase as the
+            // RunLoop::Run() begins active. Subsequent passes begin idle and
+            // thus start with a kSelectingApplicationTask phase.
+            EXPECT_CALL(*thread_controller_.trace_observer_,
+                        OnPhaseRecorded(ThreadController::kPumpOverhead));
           }
-          MockCallback<OnceClosure> task;
-          task_source_.AddTask(FROM_HERE, task.Get());
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
           EXPECT_CALL(task, Run());
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
 
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
 
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kIdleWork));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -912,11 +933,25 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           const TimeTicks expected_delayed_run_time =
               i < std::size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
 
+          // The first pass begins with a kPumpOverhead phase as the
+          // RunLoop::Run() begins active and the subsequent ones also do
+          // (between the end of the last kChromeTask and the next
+          // kSelectingApplicationTask).
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kPumpOverhead));
+
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
           EXPECT_CALL(tasks[i], Run());
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     expected_delayed_run_time);
         }
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -948,13 +983,24 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           if (!first_pass) {
             EXPECT_CALL(*thread_controller_.trace_observer_,
                         OnThreadControllerActiveBegin);
+          } else {
+            // As-in ThreadControllerActiveSingleApplicationTask.
+            EXPECT_CALL(*thread_controller_.trace_observer_,
+                        OnPhaseRecorded(ThreadController::kPumpOverhead));
           }
+          EXPECT_CALL(
+              *thread_controller_.trace_observer_,
+              OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                     TimeTicks::Max());
 
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
 
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kIdleWork));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
           EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1025,8 +1071,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         //     D: Run the next task (remain nested active)
         //     E: Go idle (exit active)
         //     F: Post 2 tasks
-        //     G: Run one
-        //     H: exit nested loop (enter nested active, exit nested active)
+        //     G: Run one (enter nested active)
+        //     H: exit nested loop (exit nested active)
         // I: Run the next one, go idle (remain active, exit active)
         // J: Post/run one more task, go idle (enter active, exit active)
         // 😅
@@ -1035,8 +1081,16 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[0].Get());
         task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
+          // kChromeTask phase is suspended when the nested loop is entered.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           EXPECT_CALL(*message_pump_, Run(_))
@@ -1059,10 +1113,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                 task_source_.AddTask(FROM_HERE, tasks[2].Get());
                 task_source_.AddTask(FROM_HERE, tasks[3].Get());
 
+                // G:
                 EXPECT_CALL(*thread_controller_.trace_observer_,
                             OnThreadControllerActiveBegin);
-
-                // G:
                 EXPECT_CALL(tasks[2], Run());
                 EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                           TimeTicks());
@@ -1072,21 +1125,38 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                 // H:
                 EXPECT_CALL(*thread_controller_.trace_observer_,
                             OnThreadControllerActiveEnd);
+                // The kNested phase (C) ends when the RunLoop exits...
+                EXPECT_CALL(*thread_controller_.trace_observer_,
+                            OnPhaseRecorded(ThreadController::kNested));
+                // ... and then the calling task (B) ends.
+                EXPECT_CALL(
+                    *thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
               }));
           RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
         }));
+
         // B:
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
         testing::Mock::VerifyAndClearExpectations(
             &*thread_controller_.trace_observer_);
 
         // I:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[3], Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
             &*thread_controller_.trace_observer_);
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1097,12 +1167,19 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[4].Get());
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveBegin);
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[4], Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
             &*thread_controller_.trace_observer_);
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1143,6 +1220,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[0].Get());
         task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
@@ -1153,6 +1235,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // a nested native loop which would invoke OnBeginWorkItem()
 
           // D:
+
+          // kChromeTask phase is suspended when the nested native loop is
+          // entered.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
@@ -1185,6 +1272,10 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // H:
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
+          // The kNested phase (C) ends when the RunLoop exits and kChromeTask
+          // doesn't resume as task (B) is done.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kNested));
           thread_controller_.SetTaskExecutionAllowed(false);
         }));
 
@@ -1195,6 +1286,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         // I:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1231,6 +1324,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[0].Get());
         task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
@@ -1239,6 +1337,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
           // D:
           thread_controller_.SetTaskExecutionAllowed(false);
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
         }));
 
         // B:
@@ -1247,13 +1347,22 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         // E:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[1], Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
         testing::Mock::VerifyAndClearExpectations(
             &*thread_controller_.trace_observer_);
 
         // F:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1292,9 +1401,17 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[0].Get());
         task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
           // D:
+          // kChromeTask phase is suspended when the nested loop is entered.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
@@ -1305,6 +1422,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // E:
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kNested));
         }));
 
         // B:
@@ -1313,11 +1432,20 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         // F:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[1], Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
         EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
                   TimeTicks::Max());
 
         // G:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1357,6 +1485,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // A:
         task_source_.AddTask(FROM_HERE, tasks[0].Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           for (int i = 0; i < 2; ++i) {
             // C & F:
@@ -1366,6 +1499,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
             // D & G:
             if (i == 0) {
+              // kChromeTask phase is suspended when the nested loop is entered.
+              EXPECT_CALL(*thread_controller_.trace_observer_,
+                          OnPhaseRecorded(ThreadController::kApplicationTask));
               EXPECT_CALL(*thread_controller_.trace_observer_,
                           OnThreadControllerActiveBegin);
             }
@@ -1383,6 +1519,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // I:
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kNested));
         }));
 
         // B:
@@ -1392,6 +1530,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         // J:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1438,6 +1578,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // A:
         task_source_.AddTask(FROM_HERE, task.Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(task, Run()).WillOnce(Invoke([&]() {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
@@ -1445,6 +1590,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.SetTaskExecutionAllowed(true);
 
           // D:
+          // kChromeTask phase is suspended when the nested loop is entered.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           thread_controller_.OnBeginWorkItem();
@@ -1473,6 +1621,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           // H:
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveEnd);
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kNested));
         }));
 
         // B:
@@ -1482,6 +1632,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         // I:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1521,6 +1673,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         task_source_.AddTask(FROM_HERE, tasks[0].Get());
         task_source_.AddTask(FROM_HERE, tasks[1].Get());
 
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
         EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
@@ -1528,6 +1685,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.SetTaskExecutionAllowed(true);
 
           // D:
+          // kChromeTask phase is suspended when the nested loop is entered.
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kApplicationTask));
           EXPECT_CALL(*thread_controller_.trace_observer_,
                       OnThreadControllerActiveBegin);
           EXPECT_CALL(tasks[1], Run());
@@ -1547,6 +1707,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.SetTaskExecutionAllowed(false);
 
           // H:
+          EXPECT_CALL(*thread_controller_.trace_observer_,
+                      OnPhaseRecorded(ThreadController::kNested));
         }));
 
         // B:
@@ -1556,6 +1718,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         // I:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1586,6 +1750,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         // Start this test idle for a change.
         EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
@@ -1610,6 +1776,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
 
               // D:
+              // kNativeWork phase is suspended when the nested loop is entered.
+              EXPECT_CALL(*thread_controller_.trace_observer_,
+                          OnPhaseRecorded(ThreadController::kNativeWork));
               EXPECT_CALL(*thread_controller_.trace_observer_,
                           OnThreadControllerActiveBegin);
               EXPECT_CALL(task, Run());
@@ -1627,9 +1796,13 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // E:
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kNested));
         thread_controller_.OnEndWorkItem();
 
         // F:
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
@@ -1663,6 +1836,8 @@ TEST_F(ThreadControllerWithMessagePumpTest,
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         // Start this test idle for a change.
         EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
         testing::Mock::VerifyAndClearExpectations(
@@ -1693,6 +1868,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                   &*thread_controller_.trace_observer_);
 
               // E:
+              // kNativeWork phase is suspended when the nested loop is entered.
+              EXPECT_CALL(*thread_controller_.trace_observer_,
+                          OnPhaseRecorded(ThreadController::kNativeWork));
               EXPECT_CALL(*thread_controller_.trace_observer_,
                           OnThreadControllerActiveBegin);
               EXPECT_CALL(task, Run());
@@ -1714,12 +1892,89 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // G:
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kNested));
         thread_controller_.OnEndWorkItem();
 
         // H:
         EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveEnd);
         EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
+      }));
+
+  RunLoop().Run();
+}
+
+// Verify that the kScheduled phase is emitted when coming out of idle and
+// `queue_time` is set on PendingTasks.
+TEST_F(ThreadControllerWithMessagePumpTest, MessagePumpPhasesWithQueuingTime) {
+  ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
+
+  thread_controller_.InstallTraceObserver();
+
+  testing::InSequence sequence;
+
+  RunLoop run_loop;
+  EXPECT_CALL(*thread_controller_.trace_observer_,
+              OnThreadControllerActiveBegin);
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
+        // Start this test idle.
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
+
+        MockCallback<OnceClosure> task1;
+        task_source_.AddTask(FROM_HERE, task1.Get(),
+                             /*delayed_run_time=*/TimeTicks(),
+                             /*queue_time=*/clock_.NowTicks());
+        MockCallback<OnceClosure> task2;
+        task_source_.AddTask(FROM_HERE, task2.Get(),
+                             /*delayed_run_time=*/TimeTicks(),
+                             /*queue_time=*/clock_.NowTicks());
+        // kScheduled is only emitted if in past.
+        clock_.Advance(Milliseconds(1));
+
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnThreadControllerActiveBegin);
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kScheduled));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+        EXPECT_CALL(task1, Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time, TimeTicks());
+
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kPumpOverhead));
+        EXPECT_CALL(
+            *thread_controller_.trace_observer_,
+            OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
+        EXPECT_CALL(task2, Run());
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kApplicationTask));
+        EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,
+                  TimeTicks::Max());
+
+        testing::Mock::VerifyAndClearExpectations(
+            &*thread_controller_.trace_observer_);
+
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnPhaseRecorded(ThreadController::kIdleWork));
+        EXPECT_CALL(*thread_controller_.trace_observer_,
+                    OnThreadControllerActiveEnd);
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+
         testing::Mock::VerifyAndClearExpectations(
             &*thread_controller_.trace_observer_);
       }));

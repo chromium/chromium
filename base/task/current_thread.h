@@ -182,6 +182,10 @@ class BASE_EXPORT CurrentThread {
   // deferred non-nestable tasks remaining if currently in a nested run level.
   bool IsIdleForTesting();
 
+  // Enables ThreadControllerWithMessagePumpImpl's TimeKeeper metrics.
+  // `thread_name` will be used as a suffix.
+  void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
+
  protected:
   explicit CurrentThread(
       sequence_manager::internal::SequenceManagerImpl* sequence_manager)

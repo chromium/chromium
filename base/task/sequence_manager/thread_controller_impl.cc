@@ -46,7 +46,8 @@ ThreadControllerImpl::ThreadControllerImpl(
   // Unlike ThreadControllerWithMessagePumpImpl, ThreadControllerImpl isn't
   // explicitly Run(). Rather, DoWork() will be invoked at some point in the
   // future when the associated thread begins pumping messages.
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kIdle);
+  LazyNow lazy_now(time_source_);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kIdle, lazy_now);
 }
 
 ThreadControllerImpl::~ThreadControllerImpl() {
@@ -178,18 +179,26 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
   WeakPtr<ThreadControllerImpl> weak_ptr = weak_factory_.GetWeakPtr();
   for (int i = 0; i < main_sequence_only().work_batch_size_; i++) {
-    // Include SelectNextTask() in the scope of the work item. This ensures it's
-    // covered in tracing and hang reports. This is particularly important when
-    // SelectNextTask() finds no work immediately after a wakeup, otherwise the
-    // power-inefficient wakeup is invisible in tracing.
-    DCHECK_GT(run_level_tracker_.num_run_levels(), 0U);
-    run_level_tracker_.OnWorkStarted();
+    LazyNow lazy_now_select_task(recent_time, time_source_);
 
-    LazyNow lazy_now(recent_time, time_source_);
+    // Include SelectNextTask() in the scope of the work item. This ensures
+    // it's covered in tracing and hang reports. This is particularly
+    // important when SelectNextTask() finds no work immediately after a
+    // wakeup, otherwise the power-inefficient wakeup is invisible in
+    // tracing. OnApplicationTaskSelected() assumes this ordering as well.
+    DCHECK_GT(run_level_tracker_.num_run_levels(), 0U);
+    run_level_tracker_.OnWorkStarted(lazy_now_select_task);
+
     absl::optional<SequencedTaskSource::SelectedTask> selected_task =
-        sequence_->SelectNextTask(lazy_now);
+        sequence_->SelectNextTask(lazy_now_select_task);
+    LazyNow lazy_now_task_selected(time_source_);
+    run_level_tracker_.OnApplicationTaskSelected(
+        (selected_task && selected_task->task.delayed_run_time.is_null())
+            ? selected_task->task.queue_time
+            : TimeTicks(),
+        lazy_now_task_selected);
     if (!selected_task) {
-      run_level_tracker_.OnWorkEnded();
+      run_level_tracker_.OnWorkEnded(lazy_now_task_selected);
       break;
     }
 
@@ -215,6 +224,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
       // after it.
       LazyNow lazy_now_after_run_task(time_source_);
       sequence_->DidRunTask(lazy_now_after_run_task);
+      run_level_tracker_.OnWorkEnded(lazy_now_after_run_task);
 
       // If DidRunTask() read the clock (lazy_now_after_run_task.has_value()),
       // store it in `recent_time` so it can be reused by SelectNextTask() at
@@ -226,7 +236,6 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
         recent_time.reset();
       }
     }
-    run_level_tracker_.OnWorkEnded();
 
     // NOTE: https://crbug.com/828835.
     // When we're running inside a nested RunLoop it may quit anytime, so any
@@ -245,9 +254,10 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
   work_deduplicator_.WillCheckForMoreWork();
 
-  LazyNow lazy_now(time_source_);
-  sequence_->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
-  absl::optional<WakeUp> next_wake_up = sequence_->GetPendingWakeUp(&lazy_now);
+  LazyNow lazy_now_after_work(time_source_);
+  sequence_->RemoveAllCanceledDelayedTasksFromFront(&lazy_now_after_work);
+  absl::optional<WakeUp> next_wake_up =
+      sequence_->GetPendingWakeUp(&lazy_now_after_work);
   // The OnSystemIdle callback allows the TimeDomains to advance virtual time
   // in which case we now have immediate work to do.
   if ((next_wake_up && next_wake_up->is_immediate()) ||
@@ -272,7 +282,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   }
 
   // No more immediate work.
-  run_level_tracker_.OnIdle();
+  run_level_tracker_.OnIdle(lazy_now_after_work);
 
   // Any future work?
   if (!next_wake_up) {
@@ -293,7 +303,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   // TODO(1153139): Use PostDelayedTaskAt().
   task_runner_->PostDelayedTask(FROM_HERE,
                                 cancelable_delayed_do_work_closure_.callback(),
-                                next_wake_up_time - lazy_now.Now());
+                                next_wake_up_time - lazy_now_after_work.Now());
 }
 
 void ThreadControllerImpl::AddNestingObserver(
@@ -312,7 +322,9 @@ void ThreadControllerImpl::RemoveNestingObserver(
 }
 
 void ThreadControllerImpl::OnBeginNestedRunLoop() {
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenWorkItems);
+  LazyNow lazy_now(time_source_);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenWorkItems,
+                                      lazy_now);
 
   // Just assume we have a pending task and post a DoWork to make sure we don't
   // grind to a halt while nested.

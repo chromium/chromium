@@ -178,6 +178,7 @@ class BASE_EXPORT SequenceManagerImpl
   void AttachToMessagePump();
 #endif
   bool IsIdleForTesting() override;
+  void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
 
   // Requests that a task to process work is scheduled.
   void ScheduleWork();

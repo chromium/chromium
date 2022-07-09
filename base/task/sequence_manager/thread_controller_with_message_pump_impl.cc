@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -250,17 +252,28 @@ void ThreadControllerWithMessagePumpImpl::RemoveNestingObserver(
 }
 
 void ThreadControllerWithMessagePumpImpl::OnBeginWorkItem() {
+  LazyNow lazy_now(time_source_);
+  OnBeginWorkItemImpl(lazy_now);
+}
+
+void ThreadControllerWithMessagePumpImpl::OnBeginWorkItemImpl(
+    LazyNow& lazy_now) {
   hang_watch_scope_.emplace();
   work_id_provider_->IncrementWorkId();
-  run_level_tracker_.OnWorkStarted();
+  run_level_tracker_.OnWorkStarted(lazy_now);
 }
 
 void ThreadControllerWithMessagePumpImpl::OnEndWorkItem() {
+  LazyNow lazy_now(time_source_);
+  OnEndWorkItemImpl(lazy_now);
+}
+
+void ThreadControllerWithMessagePumpImpl::OnEndWorkItemImpl(LazyNow& lazy_now) {
   // Work completed, begin a new hang watch until the next task (watching the
   // pump's overhead).
   hang_watch_scope_.emplace();
   work_id_provider_->IncrementWorkId();
-  run_level_tracker_.OnWorkEnded();
+  run_level_tracker_.OnWorkEnded(lazy_now);
 }
 
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
@@ -272,7 +285,8 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   hang_watch_scope_.reset();
 
   work_id_provider_->IncrementWorkId();
-  run_level_tracker_.OnIdle();
+  LazyNow lazy_now(time_source_);
+  run_level_tracker_.OnIdle(lazy_now);
 }
 
 MessagePump::Delegate::NextWorkInfo
@@ -374,23 +388,31 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
        (batch_duration.is_zero() &&
         num_tasks_executed < main_thread_only().work_batch_size);
        ++num_tasks_executed) {
+    LazyNow lazy_now_select_task(recent_time, time_source_);
     // Include SelectNextTask() in the scope of the work item. This ensures
     // it's covered in tracing and hang reports. This is particularly
     // important when SelectNextTask() finds no work immediately after a
     // wakeup, otherwise the power-inefficient wakeup is invisible in
-    // tracing.
-    auto work_item_scope = BeginWorkItem();
+    // tracing. OnApplicationTaskSelected() assumes this ordering as well.
+    OnBeginWorkItemImpl(lazy_now_select_task);
 
     const SequencedTaskSource::SelectTaskOption select_task_option =
         power_monitor_.IsProcessInPowerSuspendState()
             ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
             : SequencedTaskSource::SelectTaskOption::kDefault;
-    LazyNow lazy_now(recent_time, time_source_);
     absl::optional<SequencedTaskSource::SelectedTask> selected_task =
-        main_thread_only().task_source->SelectNextTask(lazy_now,
+        main_thread_only().task_source->SelectNextTask(lazy_now_select_task,
                                                        select_task_option);
-    if (!selected_task)
+    LazyNow lazy_now_task_selected(time_source_);
+    run_level_tracker_.OnApplicationTaskSelected(
+        (selected_task && selected_task->task.delayed_run_time.is_null())
+            ? selected_task->task.queue_time
+            : TimeTicks(),
+        lazy_now_task_selected);
+    if (!selected_task) {
+      OnEndWorkItemImpl(lazy_now_task_selected);
       break;
+    }
 
     // Execute the task and assume the worst: it is probably not reentrant.
     AutoReset<bool> ban_nested_application_tasks(
@@ -410,10 +432,12 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
                                 selected_task->task_execution_trace_logger.Run(
                                     ctx, selected_task->task);
                             });
-    // This processes microtasks and is intentionally included in
-    // |work_item_scope|.
+
     LazyNow lazy_now_after_run_task(time_source_);
     main_thread_only().task_source->DidRunTask(lazy_now_after_run_task);
+    // End the work item scope after DidRunTask() as it can process microtasks
+    // (which are extensions of the RunTask).
+    OnEndWorkItemImpl(lazy_now_after_run_task);
 
     // If DidRunTask() read the clock (lazy_now_after_run_task.has_value()) or
     // if |batch_duration| > 0, store the clock value in `recent_time` so it can
@@ -448,15 +472,17 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   struct OnIdle {
-    explicit OnIdle(ThreadControllerWithMessagePumpImpl& outer)
-        : outer_(outer) {}
+    OnIdle(const TickClock* time_source, RunLevelTracker& run_level_tracker_ref)
+        : lazy_now(time_source), run_level_tracker(run_level_tracker_ref) {}
 
     // Very last step before going idle, must be fast as this is hidden from the
     // DoIdleWork trace event below.
-    ~OnIdle() { outer_.run_level_tracker_.OnIdle(); }
+    ~OnIdle() { run_level_tracker.OnIdle(lazy_now); }
+
+    LazyNow lazy_now;
 
    private:
-    ThreadControllerWithMessagePumpImpl& outer_;
+    RunLevelTracker& run_level_tracker;
   };
   absl::optional<OnIdle> on_idle;
 
@@ -506,11 +532,11 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   hang_watch_scope_.reset();
 
   // All return paths below are truly idle.
-  on_idle.emplace(*this);
+  on_idle.emplace(time_source_, run_level_tracker_);
 
   // Check if any runloop timeout has expired.
   if (main_thread_only().quit_runloop_after != TimeTicks::Max() &&
-      main_thread_only().quit_runloop_after <= time_source_->NowTicks()) {
+      main_thread_only().quit_runloop_after <= on_idle->lazy_now.Now()) {
     Quit();
     return false;
   }
@@ -525,6 +551,9 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
 void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
                                               TimeDelta timeout) {
   DCHECK(RunsTasksInCurrentSequence());
+
+  LazyNow lazy_now_run_loop_start(time_source_);
+
   // RunLoops can be nested so we need to restore the previous value of
   // |quit_runloop_after| upon exit. NB we could use saturated arithmetic here
   // but don't because we have some tests which assert the number of calls to
@@ -532,9 +561,10 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
   AutoReset<TimeTicks> quit_runloop_after(
       &main_thread_only().quit_runloop_after,
       (timeout == TimeDelta::Max()) ? TimeTicks::Max()
-                                    : time_source_->NowTicks() + timeout);
+                                    : lazy_now_run_loop_start.Now() + timeout);
 
-  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenWorkItems);
+  run_level_tracker_.OnRunLoopStarted(RunLevelTracker::kInBetweenWorkItems,
+                                      lazy_now_run_loop_start);
 
   // Quit may have been called outside of a Run(), so |quit_pending| might be
   // true here. We can't use InTopLevelDoWork() in Quit() as this call may be

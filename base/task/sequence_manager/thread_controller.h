@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
+#include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/profiler/sample_metadata.h"
@@ -20,10 +21,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
+class HistogramBase;
 class MessageLoopBase;
 class TickClock;
 struct PendingTask;
@@ -36,8 +41,35 @@ class SequencedTaskSource;
 // Implementation of this interface is used by SequenceManager to schedule
 // actual work to be run. Hopefully we can stop using MessageLoop and this
 // interface will become more concise.
-class ThreadController {
+class BASE_EXPORT ThreadController {
  public:
+  // Phases the top-RunLevel can go through. While these are more precise than
+  // RunLevelTracker::State, unlike it: phases are determined retrospectively
+  // as we often only find out the type of work that was just performed at the
+  // end of a phase. Or even find out about past phases later in the timeline
+  // (i.e. kScheduled is only known after the first kSelectingApplicationTask
+  // phase out-of-idle).
+  // Public for unit tests.
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync
+  // with "MessagePumpPhases" in src/tools/metrics/histograms/enums.xml.
+  enum Phase {
+    kScheduled = 1,
+    kPumpOverhead = 2,
+    // Any work item, in practice application tasks are mapped to
+    // kApplicationTask so this only accounts for native work.
+    kWorkItem = 3,
+    kNativeWork = kWorkItem,
+    kSelectingApplicationTask = 4,
+    kApplicationTask = 5,
+    kIdleWork = 6,
+    kNested = 7,
+    // Reported as a kWorkItem but doesn't clear state relevant to the ongoing
+    // work item as it isn't finished (will resume after nesting).
+    kWorkItemSuspendedOnNested = 8,
+    kMaxValue = kNested
+  };
+
   explicit ThreadController(const TickClock* time_source);
   virtual ~ThreadController();
 
@@ -112,6 +144,9 @@ class ThreadController {
   // controller to be shut down cleanly.
   virtual void DetachFromMessagePump() = 0;
 #endif
+
+  // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
+  void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
 
   // Currently only overridden on ThreadControllerWithMessagePumpImpl.
   //
@@ -200,6 +235,7 @@ class ThreadController {
   //          state is now back to kInBetweenWorkItems or kIdle as before (A).
   class BASE_EXPORT RunLevelTracker {
    public:
+    // States each RunLevel can be in.
     enum State {
       // Waiting for work (pending wakeup).
       kIdle,
@@ -214,16 +250,19 @@ class ThreadController {
     explicit RunLevelTracker(const ThreadController& outer);
     ~RunLevelTracker();
 
-    void OnRunLoopStarted(State initial_state);
+    void OnRunLoopStarted(State initial_state, LazyNow& lazy_now);
     void OnRunLoopEnded();
-    void OnWorkStarted();
-    void OnWorkEnded();
-    void OnIdle();
+    void OnWorkStarted(LazyNow& lazy_now);
+    void OnApplicationTaskSelected(TimeTicks queue_time, LazyNow& lazy_now);
+    void OnWorkEnded(LazyNow& lazy_now);
+    void OnIdle(LazyNow& lazy_now);
 
     size_t num_run_levels() const {
       DCHECK_CALLED_ON_VALID_THREAD(outer_.associated_thread_->thread_checker);
       return run_levels_.size();
     }
+
+    void EnableTimeKeeperMetrics(const char* thread_name);
 
     // Observers changes of state sent as trace-events so they can be tested.
     class TraceObserverForTesting {
@@ -232,15 +271,99 @@ class ThreadController {
 
       virtual void OnThreadControllerActiveBegin() = 0;
       virtual void OnThreadControllerActiveEnd() = 0;
+      virtual void OnPhaseRecorded(Phase phase) = 0;
     };
 
     static void SetTraceObserverForTesting(
         TraceObserverForTesting* trace_observer_for_testing);
 
    private:
+    // Keeps track of the time spent in various Phases (ignores idle), reports
+    // via UMA to the corresponding phase every time one reaches >= 100ms of
+    // cumulative time, resulting in a metric of relative time spent in each
+    // non-idle phase. Also emits each phase as a trace event on its own
+    // MessagePumpPhases track when the disabled-by-default-base tracing
+    // category is enabled.
+    class TimeKeeper {
+     public:
+      explicit TimeKeeper(const RunLevelTracker& outer);
+
+      void EnableRecording(const char* thread_name);
+
+      // Records the start time of the first phase out-of-idle. The kScheduled
+      // phase will be attributed the time before this point once its
+      // `queue_time` is known.
+      void RecordWakeUp(LazyNow& lazy_now);
+
+      // Accounts the time since OnWorkStarted() towards
+      // kSelectingApplicationTask. Accounts `queue_time - last_wakeup_` towards
+      // kScheduled (iff `queue_time` is not null nor later than
+      // `last_wakeup_`). And flags the current kWorkItem as a kApplicationTask,
+      // to be accounted from OnWorkEnded(). Emits a trace event for the
+      // kScheduled phase if applicable.
+      void OnApplicationTaskSelected(TimeTicks queue_time, LazyNow& lazy_now);
+
+      // If recording is enabled: Records the end of a phase, attributing it the
+      // delta between `lazy_now` and `last_phase_end` and emit a trace event
+      // for it.
+      void RecordEndOfPhase(Phase phase, LazyNow& lazy_now);
+
+     private:
+      enum class ShouldRecordReqs {
+        // Regular should-record requirements.
+        kRegular,
+        // On wakeup there's an exception to the requirement that `last_wakeup_`
+        // be set.
+        kOnWakeUp,
+        // On end-nested there's an exception to the requirement that there's no
+        // ongoing nesting (as the kNested phase ends from ~RunLevel, before
+        // run_levels.pop() completes).
+        kOnEndNested,
+      };
+      bool ShouldRecordNow(ShouldRecordReqs reqs = ShouldRecordReqs::kRegular);
+
+      // Common helper to actually record time in a phase and emitt histograms
+      // as needed.
+      void RecordTimeInPhase(Phase phase,
+                             TimeTicks phase_begin,
+                             TimeTicks phase_end);
+
+      static const char* PhaseToEventName(Phase phase);
+
+      // Cumulative time deltas for each phase, reported and reset when >=100ms.
+      std::array<TimeDelta, Phase::kMaxValue + 1> deltas_ = {};
+      // Set at the start of the first work item out-of-idle. Consumed from the
+      // first application task found in that work cycle
+      // (in OnApplicationTaskSelected).
+      TimeTicks last_wakeup_;
+      // The end of the last phase (used as the beginning of the next one).
+      TimeTicks last_phase_end_;
+      // The end of the last kIdleWork phase. Used as a minimum for the next
+      // kScheduled phase's begin (as it's possible that the next wake-up is
+      // scheduled during DoIdleWork adn we don't want overlapping phases).
+      TimeTicks last_sleep_;
+      // Assumes each kWorkItem is native unless OnApplicationTaskSelected() is
+      // invoked in a given [OnWorkStarted, OnWorkEnded].
+      bool current_work_item_is_native_ = true;
+
+      // non-null when recording is enabled.
+      HistogramBase* histogram_ = nullptr;
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+      absl::optional<perfetto::Track> perfetto_track_;
+#endif
+
+      // True if tracing was enabled during the last pass of RecordTimeInPhase.
+      bool was_tracing_enabled_;
+
+      const RunLevelTracker& outer_;
+    } time_keeper_{*this};
+
     class RunLevel {
      public:
-      explicit RunLevel(State initial_state, bool is_nested);
+      RunLevel(State initial_state,
+               bool is_nested,
+               TimeKeeper& time_keeper,
+               LazyNow& lazy_now);
       ~RunLevel();
 
       // Move-constructible for STL compat. Flags `other.was_moved_` so it noops
@@ -249,13 +372,23 @@ class ThreadController {
       RunLevel(RunLevel&& other);
       RunLevel& operator=(RunLevel&&) = delete;
 
-      void UpdateState(State new_state);
+      void UpdateState(State new_state, LazyNow& lazy_now);
 
       State state() const { return state_; }
+
+      void set_exit_lazy_now(LazyNow* exit_lazy_now) {
+        DCHECK(exit_lazy_now);
+        DCHECK(!exit_lazy_now_);
+        exit_lazy_now_ = exit_lazy_now;
+      }
 
      private:
       State state_ = kIdle;
       bool is_nested_;
+
+      const raw_ref<TimeKeeper> time_keeper_;
+      // Must be set shortly before ~RunLevel.
+      LazyNow* exit_lazy_now_ = nullptr;
 
       SampleMetadata thread_controller_sample_metadata_;
       size_t thread_controller_active_id_ = 0;

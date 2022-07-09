@@ -1177,6 +1177,11 @@ bool SequenceManagerImpl::IsIdleForTesting() {
   return !main_thread_only().selector.GetHighestPendingPriority().has_value();
 }
 
+void SequenceManagerImpl::EnableMessagePumpTimeKeeperMetrics(
+    const char* thread_name) {
+  controller_->EnableMessagePumpTimeKeeperMetrics(thread_name);
+}
+
 size_t SequenceManagerImpl::GetPendingTaskCountForTesting() const {
   size_t total = 0;
   for (internal::TaskQueueImpl* task_queue : main_thread_only().active_queues) {

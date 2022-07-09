@@ -200,6 +200,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
+    enum="MessagePumpPhases" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Records the number of milliseconds spent in each phase of pumping tasks on
+    {NamedThread}. Each enum value can be analyzed for its total time or as a
+    percentage relative to other phases.
+  </summary>
+  <token key="NamedThread">
+    <variant name="BrowserIO"/>
+    <variant name="BrowserUI"/>
+  </token>
+</histogram>
+
 <histogram name="Scheduling.Renderer.DeadlineMode"
     enum="RendererSchedulerDeadlineMode" expires_after="2022-12-25">
   <owner>weiliangc@chromium.org</owner>
