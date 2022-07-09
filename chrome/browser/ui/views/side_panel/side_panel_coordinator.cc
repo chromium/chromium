@@ -496,6 +496,9 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/false)
           .WithAlignment(views::LayoutAlignment::kStart));
+  combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
+  combobox->SetEventHighlighting(true);
+  combobox->SetSizeToLargestLabel(false);
   return combobox;
 }
 

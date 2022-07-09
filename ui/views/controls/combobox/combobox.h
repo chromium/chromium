@@ -101,6 +101,11 @@ class VIEWS_EXPORT Combobox : public View,
   void SetInvalid(bool invalid);
   bool GetInvalid() const { return invalid_; }
 
+  void SetBorderColorId(ui::ColorId color_id);
+
+  // Sets whether there should be ink drop highlighting on hover/press.
+  void SetEventHighlighting(bool should_highlight);
+
   // Whether the combobox should use the largest label as the content size.
   void SetSizeToLargestLabel(bool size_to_largest_label);
   bool GetSizeToLargestLabel() const { return size_to_largest_label_; }
@@ -175,6 +180,10 @@ class VIEWS_EXPORT Combobox : public View,
   // Finds the size of the largest menu label.
   gfx::Size GetContentSize() const;
 
+  // Returns the width needed to accommodate the provided width and checkmarks
+  // and padding if checkmarks should be shown.
+  int MaybeAdjustWidthForCheckmarks(int original_width) const;
+
   void OnContentSizeMaybeChanged();
 
   // Handles the clicking event.
@@ -212,6 +221,12 @@ class VIEWS_EXPORT Combobox : public View,
   // True when the selection is visually denoted as invalid.
   bool invalid_ = false;
 
+  // True when there should be ink drop highlighting on hover and press.
+  bool should_highlight_ = false;
+
+  // Overriding ColorId for the combobox border.
+  absl::optional<ui::ColorId> border_color_id_;
+
   // The accessible name of this combobox.
   std::u16string accessible_name_;
 
@@ -241,9 +256,10 @@ class VIEWS_EXPORT Combobox : public View,
   // destroyed.
   std::unique_ptr<MenuRunner> menu_runner_;
 
-  // When true, the size of contents is defined by the selected label.
-  // Otherwise, it's defined by the widest label in the menu. If this is set to
-  // true, the parent view must relayout in ChildPreferredSizeChanged().
+  // When true, the size of contents is defined by the widest label in the menu.
+  // If this is set to true, the parent view must relayout in
+  // ChildPreferredSizeChanged(). When false, the size of contents is defined by
+  // the selected label
   bool size_to_largest_label_ = true;
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>

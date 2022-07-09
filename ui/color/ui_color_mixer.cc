@@ -160,6 +160,7 @@ void AddUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorShadowBase, 0x3d);
   mixer[kColorShadowValueKeyShadowElevationSixteen] =
       SetAlpha(kColorShadowBase, 0x1a);
+  mixer[kColorSidePanelComboboxBorder] = {SK_ColorTRANSPARENT};
   mixer[kColorSliderThumb] = {kColorAccent};
   mixer[kColorSliderThumbMinimal] = {kColorSecondaryForeground};
   mixer[kColorSliderTrack] = {kColorSubtleAccent};

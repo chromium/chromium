@@ -44,6 +44,7 @@
 #include "ui/views/mouse_constants.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -71,6 +72,15 @@ class TransparentButton : public Button {
     SetHasInkDropActionOnClick(true);
     InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
                                        /*highlight_on_hover=*/false);
+    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+        [](Button* host) {
+          // This button will be used like a LabelButton, so use the same
+          // foreground base color as a label button.
+          return color_utils::DeriveDefaultIconColor(
+              views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                     views::style::STYLE_PRIMARY));
+        },
+        this));
     InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
@@ -96,6 +106,19 @@ class TransparentButton : public Button {
 
   double GetAnimationValue() const {
     return hover_animation().GetCurrentValue();
+  }
+
+  void UpdateInkDrop(bool show_on_press_and_hover) {
+    if (show_on_press_and_hover) {
+      // We must use UseInkDropForFloodFillRipple here because
+      // UseInkDropForSquareRipple hides the InkDrop when the ripple effect is
+      // active instead of layering underneath it causing flashing.
+      InkDrop::UseInkDropForFloodFillRipple(InkDrop::Get(this),
+                                            /*highlight_on_hover=*/true);
+    } else {
+      InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
+                                         /*highlight_on_hover=*/false);
+    }
   }
 };
 
@@ -350,6 +373,17 @@ void Combobox::SetInvalid(bool invalid) {
   OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
 }
 
+void Combobox::SetBorderColorId(ui::ColorId color_id) {
+  border_color_id_ = color_id;
+  UpdateBorder();
+}
+
+void Combobox::SetEventHighlighting(bool should_highlight) {
+  should_highlight_ = should_highlight;
+  AsViewClass<TransparentButton>(arrow_button_)
+      ->UpdateInkDrop(should_highlight);
+}
+
 void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
   if (size_to_largest_label_ == size_to_largest_label)
     return;
@@ -589,6 +623,8 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 
 void Combobox::UpdateBorder() {
   std::unique_ptr<FocusableBorder> border(new FocusableBorder());
+  if (border_color_id_.has_value())
+    border->SetColorId(border_color_id_.value());
   if (invalid_)
     border->SetColorId(ui::kColorAlertHighSeverity);
   SetBorder(std::move(border));
@@ -675,6 +711,10 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
   View::ConvertPointToScreen(this, &menu_position);
 
   gfx::Rect bounds(menu_position, lb.size());
+  // If check marks exist in the combobox, adjust with bounds width to account
+  // for them.
+  if (!size_to_largest_label_)
+    bounds.set_width(MaybeAdjustWidthForCheckmarks(bounds.width()));
 
   Button::ButtonState original_state = arrow_button_->GetState();
   arrow_button_->SetState(Button::STATE_PRESSED);
@@ -687,12 +727,21 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
         base::BindRepeating(&Combobox::OnMenuClosed, base::Unretained(this),
                             original_state));
   }
+  if (should_highlight_) {
+    InkDrop::Get(arrow_button_)
+        ->AnimateToState(InkDropState::ACTIVATED, nullptr);
+  }
   menu_runner_->RunMenuAt(GetWidget(), nullptr, bounds,
                           MenuAnchorPosition::kTopLeft, source_type);
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 }
 
 void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
+  if (should_highlight_) {
+    InkDrop::Get(arrow_button_)
+        ->AnimateToState(InkDropState::DEACTIVATED, nullptr);
+    InkDrop::Get(arrow_button_)->GetInkDrop()->SetHovered(IsMouseHovered());
+  }
   menu_runner_.reset();
   arrow_button_->SetState(original_button_state);
   closed_time_ = base::TimeTicks::Now();
@@ -734,17 +783,22 @@ gfx::Size Combobox::GetContentSize() const {
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);
-        if (MenuConfig::instance().check_selected_combobox_item) {
-          item_width +=
-              kMenuCheckSize + LayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_RELATED_BUTTON_HORIZONTAL);
-        }
         height = std::max(height, icon_skia.height());
       }
+      if (size_to_largest_label_)
+        item_width = MaybeAdjustWidthForCheckmarks(item_width);
       width = std::max(width, item_width);
     }
   }
   return gfx::Size(width, height);
+}
+
+int Combobox::MaybeAdjustWidthForCheckmarks(int original_width) const {
+  return MenuConfig::instance().check_selected_combobox_item
+             ? original_width + kMenuCheckSize +
+                   LayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_RELATED_BUTTON_HORIZONTAL)
+             : original_width;
 }
 
 void Combobox::OnContentSizeMaybeChanged() {
