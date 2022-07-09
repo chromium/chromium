@@ -96,7 +96,7 @@ TEST_F(BubbleViewTest, Accessibility) {
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
   // Add the bubble view to the view hierarchy.
   [superview addSubview:bubble];
-  EXPECT_NSEQ(longText_, bubble.accessibilityLabel);
+  EXPECT_NSEQ(longText_, bubble.accessibilityValue);
 }
 
 // Tests that the close button is not showed when the option is set to hidden.

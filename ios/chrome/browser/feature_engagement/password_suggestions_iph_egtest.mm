@@ -40,14 +40,12 @@ constexpr char kPasswordFormUsername[] = "username";
 
 // Matcher for the PasswordSuggestions tip text.
 id<GREYMatcher> TipText() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSStringWithFixup(IDS_IOS_PASSWORD_SUGGESTIONS_TIP));
+  return grey_accessibilityID(@"BubbleViewLabelIdentifier");
 }
 
 // Matcher for the PasswordSuggestions tip title.
 id<GREYMatcher> TipTitle() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSStringWithFixup(IDS_IOS_PASSWORD_SUGGESTIONS_TIP_TITLE));
+  return grey_accessibilityID(@"BubbleViewTitleLabelIdentifier");
 }
 
 // Matcher for the PasswordSuggestions tip close button.

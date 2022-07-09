@@ -11,6 +11,8 @@
 extern NSString* const kBubbleViewCloseButtonIdentifier;
 // Accessibility identifier for the title label.
 extern NSString* const kBubbleViewTitleLabelIdentifier;
+// Accessibility identifier for the label.
+extern NSString* const kBubbleViewLabelIdentifier;
 // Accessibility identifier for the image view.
 extern NSString* const kBubbleViewImageViewIdentifier;
 // Accessibility identifier for the snooze button.

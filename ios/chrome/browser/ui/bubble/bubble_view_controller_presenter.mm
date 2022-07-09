@@ -199,22 +199,33 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                                      userInfo:nil
                                       repeats:NO];
 
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(onKeyboardHide:)
+             name:UIKeyboardWillHideNotification
+           object:nil];
+
   if (self.voiceOverAnnouncement) {
-    // The VoiceOverAnnouncement should be dispatched after a delay to account
-    // for the fact that it can be presented right after a screen change (for
-    // example when the application or a new tab is opened). This screen change
-    // is changing the VoiceOver focus to focus a newly visible element. If this
-    // announcement is currently being read, it is cancelled. The added delay
-    // allows the announcement to be posted after the element is focused, so it
-    // is not cancelled.
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      (int64_t)(kVoiceOverAnnouncementDelay * NSEC_PER_SEC)),
-        dispatch_get_main_queue(), ^{
-          UIAccessibilityPostNotification(
-              UIAccessibilityAnnouncementNotification,
-              self.voiceOverAnnouncement);
-        });
+    if (self.bubbleShouldAutoDismissUnderAccessibility) {
+      // The VoiceOverAnnouncement should be dispatched after a delay to account
+      // for the fact that it can be presented right after a screen change (for
+      // example when the application or a new tab is opened). This screen
+      // change is changing the VoiceOver focus to focus a newly visible
+      // element. If this announcement is currently being read, it is cancelled.
+      // The added delay allows the announcement to be posted after the element
+      // is focused, so it is not cancelled.
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW,
+                        (int64_t)(kVoiceOverAnnouncementDelay * NSEC_PER_SEC)),
+          dispatch_get_main_queue(), ^{
+            UIAccessibilityPostNotification(
+                UIAccessibilityAnnouncementNotification,
+                self.voiceOverAnnouncement);
+          });
+    } else {
+      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                      self.bubbleViewController.view);
+    }
   }
 }
 
@@ -320,7 +331,13 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 // Automatically dismisses the bubble view when `bubbleDismissalTimer` fires.
 - (void)bubbleDismissalTimerFired:(id)sender {
-  [self dismissAnimated:YES];
+  BOOL usesScreenReader = UIAccessibilityIsVoiceOverRunning() ||
+                          UIAccessibilityIsSwitchControlRunning();
+  if (usesScreenReader && !self.bubbleShouldAutoDismissUnderAccessibility) {
+    // No-op. Keep the IPH available for screen reader users.
+  } else {
+    [self dismissAnimated:YES];
+  }
 }
 
 // Marks the user as not engaged when `engagementTimer` fires.
@@ -328,6 +345,11 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   self.userEngaged = NO;
   self.triggerFollowUpAction = NO;
   self.engagementTimer = nil;
+}
+
+// Invoked when the keybord is dismissed.
+- (void)onKeyboardHide:(NSNotification*)notification {
+  [self dismissAnimated:YES];
 }
 
 // Calculates the frame of the BubbleView. `rect` is the frame of the bubble's
@@ -369,6 +391,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
     return CGRectNull;
   }
   return bubbleFrame;
+}
+
+// Whether the bubble should stick or auto-dismiss when the user uses a screen
+// reader.
+- (BOOL)bubbleShouldAutoDismissUnderAccessibility {
+  return self.bubbleType == BubbleViewTypeDefault;
 }
 
 @end
