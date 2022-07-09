@@ -141,15 +141,14 @@ TEST_F(DeviceIdMapTest, PersistRecordsForDeviceValid) {
 
   // Validate that the ID records are persisted to prefs.
   PrefService* local_state = Shell::Get()->local_state();
-  const base::Value* device_id_map_dict =
-      local_state->GetDictionary(DeviceIdMap::kDeviceIdMapPref);
-  EXPECT_TRUE(device_id_map_dict);
+  const base::Value::Dict& device_id_map_dict =
+      local_state->GetValueDict(DeviceIdMap::kDeviceIdMapPref);
   const std::string* ble_model_id =
-      device_id_map_dict->FindStringKey(kTestBLEDeviceId);
+      device_id_map_dict.FindString(kTestBLEDeviceId);
   EXPECT_TRUE(ble_model_id);
   EXPECT_EQ(*ble_model_id, kTestModelId);
   const std::string* classic_model_id =
-      device_id_map_dict->FindStringKey(kTestClassicDeviceId);
+      device_id_map_dict.FindString(kTestClassicDeviceId);
   EXPECT_TRUE(classic_model_id);
   EXPECT_EQ(*classic_model_id, kTestModelId);
 }
@@ -203,11 +202,9 @@ TEST_F(DeviceIdMapTest, EvictDeviceIdRecordValid) {
 
   // Validate that the ID records are evicted from prefs.
   PrefService* local_state = Shell::Get()->local_state();
-  const base::Value* device_id_map_dict =
-      local_state->GetDictionary(DeviceIdMap::kDeviceIdMapPref);
-  EXPECT_TRUE(device_id_map_dict);
-  const std::string* model_id =
-      device_id_map_dict->FindStringKey(kTestBLEDeviceId);
+  const base::Value::Dict& device_id_map_dict =
+      local_state->GetValueDict(DeviceIdMap::kDeviceIdMapPref);
+  const std::string* model_id = device_id_map_dict.FindString(kTestBLEDeviceId);
   EXPECT_FALSE(model_id);
 }
 

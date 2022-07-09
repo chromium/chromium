@@ -180,16 +180,16 @@ TEST_F(TriggerThrottlerTest, TriggerQuotaPersistence) {
 
   // Check the pref directly, it should reflect the events for each trigger.
   PrefService* prefs = get_pref_service();
-  const base::Value* event_dict =
-      prefs->GetDictionary(prefs::kSafeBrowsingTriggerEventTimestamps);
+  const base::Value::Dict& event_dict =
+      prefs->GetValueDict(prefs::kSafeBrowsingTriggerEventTimestamps);
 
   const std::string kAdSampleKey = "2";
-  const base::Value* ad_sample_events = event_dict->FindKey(kAdSampleKey);
+  const base::Value* ad_sample_events = event_dict.Find(kAdSampleKey);
   EXPECT_EQ(3u, ad_sample_events->GetListDeprecated().size());
 
   const std::string kSuspiciousSiteKey = "4";
   const base::Value* suspicious_site_events =
-      event_dict->FindKey(kSuspiciousSiteKey);
+      event_dict.Find(kSuspiciousSiteKey);
   EXPECT_EQ(2u, suspicious_site_events->GetListDeprecated().size());
 
   // To simulate a new startup of the browser, we can create another throttler

@@ -553,10 +553,9 @@ void ApkWebAppService::UpdatePackageInfo(
 }
 
 const base::Value::Dict& ApkWebAppService::WebAppToApks() const {
-  const base::Value* value =
-      profile_->GetPrefs()->GetDictionary(kWebAppToApkDictPref);
-  DCHECK(value);
-  return value->GetDict();
+  const base::Value::Dict& value =
+      profile_->GetPrefs()->GetValueDict(kWebAppToApkDictPref);
+  return value;
 }
 
 }  // namespace ash

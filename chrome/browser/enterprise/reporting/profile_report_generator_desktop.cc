@@ -45,12 +45,10 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled))
     return;
-  const base::Value* pending_requests =
-      profile_->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
+  const base::Value::Dict& pending_requests =
+      profile_->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
 
   // In case a corrupted profile prefs causing |pending_requests| to be null.
-  if (!pending_requests)
-    return;
 
   extensions::ExtensionManagement* extension_management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
@@ -58,7 +56,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
   int number_of_requests = 0;
-  for (auto it : pending_requests->DictItems()) {
+  for (auto it : pending_requests) {
     if (!ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
             it.first, webstore_update_url, extension_management)) {
       continue;

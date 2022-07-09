@@ -96,11 +96,8 @@ void ExtensionRequestObserver::ShowAllNotifications() {
 
 void ExtensionRequestObserver::ShowNotification(
     ExtensionRequestNotification::NotifyType type) {
-  const base::Value* pending_requests =
-      profile_->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-
-  if (!pending_requests)
-    return;
+  const base::Value::Dict& pending_requests =
+      profile_->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
 
   ExtensionRequestNotification::ExtensionIds filtered_extension_ids;
   extensions::ExtensionManagement* extension_management =
@@ -108,7 +105,7 @@ void ExtensionRequestObserver::ShowNotification(
   std::string web_store_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  for (auto request : pending_requests->DictItems()) {
+  for (auto request : pending_requests) {
     const std::string& id = request.first;
     extensions::ExtensionManagement::InstallationMode mode =
         extension_management->GetInstallationMode(id, web_store_update_url);

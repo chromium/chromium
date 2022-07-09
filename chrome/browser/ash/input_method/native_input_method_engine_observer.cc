@@ -115,10 +115,11 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
     return true;
   }
 
-  const base::Value* input_method_settings =
-      prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value* autocorrect_setting = input_method_settings->FindPath(
-      engine_id + ".physicalKeyboardAutoCorrectionLevel");
+  const base::Value::Dict& input_method_settings =
+      prefs->GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
+  const base::Value* autocorrect_setting =
+      input_method_settings.FindByDottedPath(
+          engine_id + ".physicalKeyboardAutoCorrectionLevel");
   return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
 }
 

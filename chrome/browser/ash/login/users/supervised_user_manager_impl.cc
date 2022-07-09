@@ -110,9 +110,9 @@ std::string SupervisedUserManagerImpl::GetUserSyncId(
 std::u16string SupervisedUserManagerImpl::GetManagerDisplayName(
     const std::string& user_id) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* manager_names =
-      local_state->GetDictionary(kSupervisedUserManagerNames);
-  const std::string* result = manager_names->FindStringKey(user_id);
+  const base::Value::Dict& manager_names =
+      local_state->GetValueDict(kSupervisedUserManagerNames);
+  const std::string* result = manager_names.FindString(user_id);
   if (result && !result->empty())
     return base::UTF8ToUTF16(*result);
   return base::UTF8ToUTF16(GetManagerDisplayEmail(user_id));
@@ -190,8 +190,8 @@ bool SupervisedUserManagerImpl::GetUserStringValue(
     const char* key,
     std::string* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dictionary = local_state->GetDictionary(key);
-  const std::string* value = dictionary->FindStringKey(user_id);
+  const base::Value::Dict& dictionary = local_state->GetValueDict(key);
+  const std::string* value = dictionary.FindString(user_id);
   if (!value)
     return false;
 
@@ -203,8 +203,8 @@ bool SupervisedUserManagerImpl::GetUserIntegerValue(const std::string& user_id,
                                                     const char* key,
                                                     int* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dictionary = local_state->GetDictionary(key);
-  absl::optional<int> value = dictionary->FindIntKey(user_id);
+  const base::Value::Dict& dictionary = local_state->GetValueDict(key);
+  absl::optional<int> value = dictionary.FindInt(user_id);
   if (!value)
     return false;
 
@@ -216,8 +216,8 @@ bool SupervisedUserManagerImpl::GetUserBooleanValue(const std::string& user_id,
                                                     const char* key,
                                                     bool* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dictionary = local_state->GetDictionary(key);
-  absl::optional<bool> flag = dictionary->FindBoolKey(user_id);
+  const base::Value::Dict& dictionary = local_state->GetValueDict(key);
+  absl::optional<bool> flag = dictionary.FindBool(user_id);
   if (!flag)
     return false;
 

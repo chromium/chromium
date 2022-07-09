@@ -113,8 +113,9 @@ void DataUseTracker::UpdateUsagePref(const std::string& pref_name,
   DictionaryPrefUpdate pref_updater(local_state_, pref_name);
   std::string todays_key = GetCurrentMeasurementDateAsString();
 
-  const base::Value* user_pref_dict = local_state_->GetDictionary(pref_name);
-  int todays_traffic = user_pref_dict->FindIntKey(todays_key).value_or(0);
+  const base::Value::Dict& user_pref_dict =
+      local_state_->GetValueDict(pref_name);
+  int todays_traffic = user_pref_dict.FindInt(todays_key).value_or(0);
   pref_updater->SetIntKey(todays_key, todays_traffic + message_size);
 }
 
@@ -127,12 +128,13 @@ void DataUseTracker::RemoveExpiredEntries() {
 void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::Value* user_pref_dict = local_state_->GetDictionary(pref_name);
+  const base::Value::Dict& user_pref_dict =
+      local_state_->GetValueDict(pref_name);
   const base::Time current_date = GetCurrentMeasurementDate();
   const base::Time week_ago = current_date - base::Days(7);
 
   base::Value user_pref_new_dict{base::Value::Type::DICTIONARY};
-  for (const auto it : user_pref_dict->DictItems()) {
+  for (const auto it : user_pref_dict) {
     base::Time key_date;
     if (base::Time::FromUTCString(it.first.c_str(), &key_date) &&
         key_date > week_ago)
@@ -149,8 +151,8 @@ int DataUseTracker::ComputeTotalDataUse(const std::string& pref_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int total_data_use = 0;
-  const base::Value* pref_dict = local_state_->GetDictionary(pref_name);
-  for (const auto it : pref_dict->DictItems()) {
+  const base::Value::Dict& pref_dict = local_state_->GetValueDict(pref_name);
+  for (const auto it : pref_dict) {
     total_data_use += it.second.GetIfInt().value_or(0);
   }
   return total_data_use;

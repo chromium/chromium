@@ -57,12 +57,11 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
     int suggestion_group_id) {
   DCHECK(prefs);
 
-  const base::Value* dictionary =
-      prefs->GetDictionary(kSuggestionGroupVisibility);
-  DCHECK(dictionary);
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(kSuggestionGroupVisibility);
 
   absl::optional<int> value =
-      dictionary->FindIntKey(base::NumberToString(suggestion_group_id));
+      dictionary.FindInt(base::NumberToString(suggestion_group_id));
 
   if (value == SuggestionGroupVisibility::HIDDEN ||
       value == SuggestionGroupVisibility::SHOWN) {

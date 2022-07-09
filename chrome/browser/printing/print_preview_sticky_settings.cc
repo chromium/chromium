@@ -47,11 +47,9 @@ void PrintPreviewStickySettings::SaveInPrefs(PrefService* prefs) const {
 }
 
 void PrintPreviewStickySettings::RestoreFromPrefs(PrefService* prefs) {
-  const base::Value* value =
-      prefs->GetDictionary(prefs::kPrintPreviewStickySettings);
-  if (!value)
-    return;
-  const std::string* app_state = value->GetDict().FindString(kSettingAppState);
+  const base::Value::Dict& value =
+      prefs->GetValueDict(prefs::kPrintPreviewStickySettings);
+  const std::string* app_state = value.FindString(kSettingAppState);
   if (app_state)
     StoreAppState(*app_state);
 }

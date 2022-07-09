@@ -255,10 +255,8 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   value_map_.clear();
 
   // The returned value could be nullptr if the pref has never been set.
-  const base::Value* all_settings_dictionary =
-      prefs_->GetDictionary(pref_name_);
-  if (!all_settings_dictionary)
-    return;
+  const base::Value::Dict& all_settings_dictionary =
+      prefs_->GetValueDict(pref_name_);
 
   // Accumulates non-canonical pattern strings found in Prefs for which the
   // corresponding canonical pattern is also in Prefs. In these cases the
@@ -274,7 +272,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   // patterns is to be re-keyed under the canonical pattern.
   base::StringPairs non_canonical_patterns_to_canonical_pattern;
 
-  for (const auto i : all_settings_dictionary->DictItems()) {
+  for (const auto i : all_settings_dictionary) {
     const std::string& pattern_str(i.first);
     PatternPair pattern_pair = ParsePatternString(pattern_str);
     if (!pattern_pair.first.IsValid() || !pattern_pair.second.IsValid()) {
@@ -287,7 +285,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
         CreatePatternString(pattern_pair.first, pattern_pair.second);
     DCHECK(!canonicalized_pattern_str.empty());
     if (canonicalized_pattern_str != pattern_str) {
-      if (all_settings_dictionary->FindKey(canonicalized_pattern_str)) {
+      if (all_settings_dictionary.Find(canonicalized_pattern_str)) {
         non_canonical_patterns_to_remove.push_back(pattern_str);
         continue;
       } else {

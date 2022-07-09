@@ -141,12 +141,10 @@ void InfoCardTracker::ResetState(int info_card_type) {
 }
 
 InfoCardTrackingState InfoCardTracker::GetState(int info_card_type) const {
-  const base::Value* all_states =
-      profile_prefs_->GetDictionary(prefs::kInfoCardStates);
-  if (!all_states)
-    return InfoCardTrackingState();
+  const base::Value::Dict& all_states =
+      profile_prefs_->GetValueDict(prefs::kInfoCardStates);
   const std::string* base64_serialized_state =
-      all_states->FindStringKey(InfoCardTypeToString(info_card_type));
+      all_states.FindString(InfoCardTypeToString(info_card_type));
   if (!base64_serialized_state)
     return InfoCardTrackingState();
   return DecodeFromBase64SerializedString(*base64_serialized_state);

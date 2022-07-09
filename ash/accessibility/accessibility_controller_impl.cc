@@ -2031,10 +2031,10 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
     return;
 
   std::string pref_key = PrefKeyForSwitchAccessCommand(command);
-  const base::Value* key_codes_pref =
-      active_user_prefs_->GetDictionary(pref_key);
+  const base::Value::Dict& key_codes_pref =
+      active_user_prefs_->GetValueDict(pref_key);
   std::map<int, std::set<std::string>> key_codes;
-  for (const auto v : key_codes_pref->DictItems()) {
+  for (const auto v : key_codes_pref) {
     int key_code;
     if (!base::StringToInt(v.first, &key_code)) {
       NOTREACHED();

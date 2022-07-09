@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 
-#include <memory>
+#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
@@ -39,27 +39,16 @@ void NetworkThrottlingObserver::OnPreferenceChanged(
     const std::string& pref_name) {
   DCHECK(pref_name == prefs::kNetworkThrottlingEnabled);
 
-  const base::Value* throttling_policy =
-      local_state_->GetDictionary(prefs::kNetworkThrottlingEnabled);
+  const base::Value::Dict& throttling_policy =
+      local_state_->GetValueDict(prefs::kNetworkThrottlingEnabled);
 
   // Default is to disable throttling if the policy is not found.
-  bool enabled = false;
-  uint32_t upload_rate = 0, download_rate = 0;
-  if (throttling_policy) {
-    enabled = throttling_policy->FindBoolKey("enabled").value_or(false);
+  const bool enabled = throttling_policy.FindBool("enabled").value_or(false);
+  const uint32_t upload_rate =
+      std::max(0, throttling_policy.FindInt("upload_rate_kbits").value_or(0));
+  const uint32_t download_rate =
+      std::max(0, throttling_policy.FindInt("download_rate_kbits").value_or(0));
 
-    int upload_rate_read =
-        throttling_policy->FindIntKey("upload_rate_kbits").value_or(0);
-    if (upload_rate_read > 0) {
-      upload_rate = upload_rate_read;
-    }
-
-    int download_rate_read =
-        throttling_policy->FindIntKey("download_rate_kbits").value_or(0);
-    if (download_rate_read > 0) {
-      download_rate = download_rate_read;
-    }
-  }
   NetworkHandler::Get()->network_state_handler()->SetNetworkThrottlingStatus(
       enabled, upload_rate, download_rate);
 }

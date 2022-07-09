@@ -59,16 +59,13 @@ constexpr char kIsPlaceholder[] = "is_placeholder";
 const base::Value* GetPreferenceValue(const PrefService* pref_service,
                                       const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value* urls_to_dicts =
-      pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
-  if (!urls_to_dicts) {
-    return nullptr;
-  }
+  const base::Value::Dict& urls_to_dicts =
+      pref_service->GetValueDict(prefs::kWebAppsExtensionIDs);
   // Do a simple O(N) scan for app_id being a value in each dictionary's
   // key/value pairs. We expect both N and the number of times
   // GetPreferenceValue is called to be relatively small in practice. If they
   // turn out to be large, we can write a more sophisticated implementation.
-  for (auto it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts) {
     const base::Value* root = &it.second;
     const base::Value* v = root;
     if (v->is_dict()) {
@@ -121,16 +118,12 @@ base::flat_map<AppId, base::flat_set<GURL>>
 ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
     const PrefService* pref_service,
     ExternalInstallSource install_source) {
-  const base::Value* urls_to_dicts =
-      pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
+  const base::Value::Dict& urls_to_dicts =
+      pref_service->GetValueDict(prefs::kWebAppsExtensionIDs);
 
   base::flat_map<AppId, base::flat_set<GURL>> ids_to_urls;
 
-  if (!urls_to_dicts) {
-    return ids_to_urls;
-  }
-
-  for (auto it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts) {
     const base::Value* v = &it.second;
     if (!v->is_dict()) {
       continue;
@@ -241,13 +234,11 @@ bool ExternallyInstalledWebAppPrefs::IsPlaceholderApp(
 ExternallyInstalledWebAppPrefs::ParsedPrefs
 ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
     PrefService* pref_service) {
-  const base::Value* urls_to_dicts =
-      pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
+  const base::Value::Dict& urls_to_dicts =
+      pref_service->GetValueDict(prefs::kWebAppsExtensionIDs);
   ParsedPrefs ids_to_parsed_data;
-  if (!urls_to_dicts)
-    return ids_to_parsed_data;
 
-  for (auto it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts) {
     const base::Value* v = &it.second;
     if (!v->is_dict()) {
       continue;

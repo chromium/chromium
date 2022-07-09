@@ -1336,12 +1336,12 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
   // Let all tasks run.
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 
-  const base::Value* new_state =
-      profile->GetPrefs()->GetDictionary(prefs::kSafeBrowsingIncidentsSent);
+  const base::Value::Dict& new_state =
+      profile->GetPrefs()->GetValueDict(prefs::kSafeBrowsingIncidentsSent);
   // The legacy value must be gone.
-  ASSERT_FALSE(new_state->FindKey(blocklist_load_type));
+  ASSERT_FALSE(new_state.Find(blocklist_load_type));
   // But other data must be untouched.
-  ASSERT_TRUE(new_state->FindKey(preference_type));
+  ASSERT_TRUE(new_state.Find(preference_type));
 }
 
 // Tests that an identical incident added after an incident is pruned and

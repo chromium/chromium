@@ -49,11 +49,9 @@ bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
 
 std::string PrefServiceFlagsStorage::GetOriginListFlag(
     const std::string& internal_entry_name) const {
-  const base::Value* origin_lists =
-      prefs_->GetDictionary(prefs::kAboutFlagsOriginLists);
-  if (!origin_lists)
-    return std::string();
-  if (const std::string* s = origin_lists->FindStringKey(internal_entry_name))
+  const base::Value::Dict& origin_lists =
+      prefs_->GetValueDict(prefs::kAboutFlagsOriginLists);
+  if (const std::string* s = origin_lists.FindString(internal_entry_name))
     return *s;
   return std::string();
 }

@@ -168,12 +168,10 @@ void MultiProfileUserController::RemoveCachedValues(
 
 std::string MultiProfileUserController::GetCachedValue(
     const std::string& user_email) const {
-  const base::Value* dict =
-      local_state_->GetDictionary(prefs::kCachedMultiProfileUserBehavior);
-  if (!dict)
-    return std::string(kBehaviorUnrestricted);
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(prefs::kCachedMultiProfileUserBehavior);
 
-  const std::string* value = dict->FindStringKey(user_email);
+  const std::string* value = dict.FindString(user_email);
   if (value)
     return SanitizeBehaviorValue(*value);
 

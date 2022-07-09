@@ -661,13 +661,13 @@ void TranslatePrefs::DeleteNeverPromptSitesBetween(base::Time begin,
 bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
     base::StringPiece source_language,
     base::StringPiece target_language) {
-  const base::Value* dict =
-      prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
-  if (dict) {
-    const std::string* auto_target_lang = dict->FindStringKey(source_language);
-    if (auto_target_lang && *auto_target_lang == target_language)
-      return true;
-  }
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(prefs::kPrefAlwaysTranslateList);
+
+  const std::string* auto_target_lang = dict.FindString(source_language);
+  if (auto_target_lang && *auto_target_lang == target_language)
+    return true;
+
   return false;
 }
 
@@ -714,12 +714,11 @@ void TranslatePrefs::SetLanguageAlwaysTranslateState(
 }
 
 std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
-  const base::Value* dict =
-      prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
-  DCHECK(dict) << "Always translate pref is unregistered";
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(prefs::kPrefAlwaysTranslateList);
 
   std::vector<std::string> languages;
-  for (auto language_pair : dict->DictItems()) {
+  for (auto language_pair : dict) {
     std::string chrome_language(language_pair.first);
     language::ToChromeLanguageSynonym(&chrome_language);
     languages.push_back(chrome_language);
@@ -742,8 +741,9 @@ void TranslatePrefs::ClearAlwaysTranslateLanguagePairs() {
 
 int TranslatePrefs::GetTranslationDeniedCount(
     base::StringPiece language) const {
-  const base::Value* dict = prefs_->GetDictionary(kPrefTranslateDeniedCount);
-  return dict->FindIntKey(language).value_or(0);
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(kPrefTranslateDeniedCount);
+  return dict.FindInt(language).value_or(0);
 }
 
 void TranslatePrefs::IncrementTranslationDeniedCount(
@@ -763,8 +763,9 @@ void TranslatePrefs::ResetTranslationDeniedCount(base::StringPiece language) {
 
 int TranslatePrefs::GetTranslationIgnoredCount(
     base::StringPiece language) const {
-  const base::Value* dict = prefs_->GetDictionary(kPrefTranslateIgnoredCount);
-  return dict->FindIntKey(language).value_or(0);
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(kPrefTranslateIgnoredCount);
+  return dict.FindInt(language).value_or(0);
 }
 
 void TranslatePrefs::IncrementTranslationIgnoredCount(
@@ -784,8 +785,9 @@ void TranslatePrefs::ResetTranslationIgnoredCount(base::StringPiece language) {
 
 int TranslatePrefs::GetTranslationAcceptedCount(
     base::StringPiece language) const {
-  const base::Value* dict = prefs_->GetDictionary(kPrefTranslateAcceptedCount);
-  return dict->FindIntKey(language).value_or(0);
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(kPrefTranslateAcceptedCount);
+  return dict.FindInt(language).value_or(0);
 }
 
 void TranslatePrefs::IncrementTranslationAcceptedCount(
@@ -806,9 +808,9 @@ void TranslatePrefs::ResetTranslationAcceptedCount(base::StringPiece language) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 int TranslatePrefs::GetTranslationAutoAlwaysCount(
     base::StringPiece language) const {
-  const base::Value* dict =
-      prefs_->GetDictionary(kPrefTranslateAutoAlwaysCount);
-  return dict->FindIntKey(language).value_or(0);
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(kPrefTranslateAutoAlwaysCount);
+  return dict.FindInt(language).value_or(0);
 }
 
 void TranslatePrefs::IncrementTranslationAutoAlwaysCount(
@@ -829,8 +831,9 @@ void TranslatePrefs::ResetTranslationAutoAlwaysCount(
 
 int TranslatePrefs::GetTranslationAutoNeverCount(
     base::StringPiece language) const {
-  const base::Value* dict = prefs_->GetDictionary(kPrefTranslateAutoNeverCount);
-  return dict->FindIntKey(language).value_or(0);
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(kPrefTranslateAutoNeverCount);
+  return dict.FindInt(language).value_or(0);
 }
 
 void TranslatePrefs::IncrementTranslationAutoNeverCount(
@@ -890,12 +893,10 @@ bool TranslatePrefs::CanTranslateLanguage(base::StringPiece language) {
 
 bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece source_language,
                                          std::string* target_language) {
-  const base::Value* dict =
-      prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
-  if (!dict)
-    return false;
+  const base::Value::Dict& dict =
+      prefs_->GetValueDict(prefs::kPrefAlwaysTranslateList);
 
-  const std::string* value = dict->FindStringKey(source_language);
+  const std::string* value = dict.FindString(source_language);
   if (!value)
     return false;
 
@@ -1084,7 +1085,7 @@ size_t TranslatePrefs::GetListSize(const char* pref_id) const {
 }
 
 bool TranslatePrefs::IsDictionaryEmpty(const char* pref_id) const {
-  const base::Value* dict = prefs_->GetDictionary(pref_id);
-  return (dict == nullptr || dict->DictEmpty());
+  const base::Value::Dict& dict = prefs_->GetValueDict(pref_id);
+  return (dict.empty());
 }
 }  // namespace translate

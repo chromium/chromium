@@ -6584,13 +6584,8 @@ base::Value::Dict ChromeContentBrowserClient::GetFirstPartySetsOverrides() {
                           first_party_sets::kFirstPartySetsOverrides)) {
     return base::Value::Dict();
   }
-  const base::Value* maybe_dict =
-      local_state->GetDictionary(first_party_sets::kFirstPartySetsOverrides);
-
-  if (!maybe_dict)
-    return base::Value::Dict();
-
-  return maybe_dict->GetDict().Clone();
+  return local_state->GetValueDict(first_party_sets::kFirstPartySetsOverrides)
+      .Clone();
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr

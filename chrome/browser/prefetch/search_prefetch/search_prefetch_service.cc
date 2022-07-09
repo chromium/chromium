@@ -613,18 +613,17 @@ void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
 
 bool SearchPrefetchService::LoadFromPrefs() {
   prefetch_cache_.clear();
-  const base::Value* dictionary =
-      profile_->GetPrefs()->GetDictionary(prefetch::prefs::kCachePrefPath);
-  DCHECK(dictionary);
+  const base::Value::Dict& dictionary =
+      profile_->GetPrefs()->GetValueDict(prefetch::prefs::kCachePrefPath);
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
       !template_url_service->GetDefaultSearchProvider()) {
-    return dictionary->DictSize() > 0;
+    return dictionary.size() > 0;
   }
 
-  for (auto element : dictionary->DictItems()) {
+  for (auto element : dictionary) {
     GURL navigation_url(net::SimplifyUrlForRequest(GURL(element.first)));
     if (!navigation_url.is_valid())
       continue;
@@ -678,7 +677,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
     prefetch_cache_.emplace(navigation_url,
                             std::make_pair(prefetch_url, last_update.value()));
   }
-  return dictionary->DictSize() > prefetch_cache_.size();
+  return dictionary.size() > prefetch_cache_.size();
 }
 
 void SearchPrefetchService::SaveToPrefs() const {

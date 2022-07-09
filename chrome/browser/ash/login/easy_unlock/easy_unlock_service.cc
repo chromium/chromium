@@ -266,12 +266,10 @@ bool EasyUnlockService::GetPersistedHardlockState(
   if (!local_state)
     return false;
 
-  const base::Value* dict =
-      local_state->GetDictionary(prefs::kEasyUnlockHardlockState);
-  if (!dict)
-    return false;
+  const base::Value::Dict& dict =
+      local_state->GetValueDict(prefs::kEasyUnlockHardlockState);
 
-  absl::optional<int> state_int = dict->FindIntKey(account_id.GetUserEmail());
+  absl::optional<int> state_int = dict.FindInt(account_id.GetUserEmail());
   if (!state_int.has_value())
     return false;
 

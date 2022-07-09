@@ -772,9 +772,9 @@ bool DoesMetadataSupportNewAccountManager(base::Value* metadata) {
 
 base::Version GetDataVer(PrefService* local_state,
                          const std::string& user_id_hash) {
-  const base::Value* data_versions = local_state->GetDictionary(kDataVerPref);
-  const std::string* data_version_str =
-      data_versions->FindStringKey(user_id_hash);
+  const base::Value::Dict& data_versions =
+      local_state->GetValueDict(kDataVerPref);
+  const std::string* data_version_str = data_versions.FindString(user_id_hash);
 
   if (!data_version_str)
     return base::Version();

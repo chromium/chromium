@@ -79,11 +79,10 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
 void PrefetchProxyOriginDecider::LoadFromPrefs() {
   origin_retry_afters_.clear();
 
-  const base::Value* dictionary =
-      pref_service_->GetDictionary(prefetch::prefs::kRetryAfterPrefPath);
-  DCHECK(dictionary);
+  const base::Value::Dict& dictionary =
+      pref_service_->GetValueDict(prefetch::prefs::kRetryAfterPrefPath);
 
-  for (auto element : dictionary->DictItems()) {
+  for (auto element : dictionary) {
     GURL url_origin(element.first);
     if (!url_origin.is_valid()) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle

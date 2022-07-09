@@ -123,12 +123,12 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
       switch (is_allowed_diagnostics.policy_configured) {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
-          const base::Value* image_policy =
-              active_profile_->GetPrefs()->GetDictionary(prefs::kPluginVmImage);
+          const base::Value::Dict& image_policy =
+              active_profile_->GetPrefs()->GetValueDict(prefs::kPluginVmImage);
           const base::Value* url =
-              image_policy->FindKey(prefs::kPluginVmImageUrlKeyName);
+              image_policy.Find(prefs::kPluginVmImageUrlKeyName);
           const base::Value* hash =
-              image_policy->FindKey(prefs::kPluginVmImageHashKeyName);
+              image_policy.Find(prefs::kPluginVmImageHashKeyName);
           if (!url || !GURL(url->GetString()).is_valid()) {
             entry.SetFail(IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION);
           } else if (!hash || hash->GetString().empty()) {

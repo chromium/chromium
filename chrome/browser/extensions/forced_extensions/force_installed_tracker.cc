@@ -119,9 +119,9 @@ bool ForceInstalledTracker::ProceedIfForcedExtensionsPrefReady() {
   DCHECK(status_ == kWaitingForPolicyService ||
          status_ == kWaitingForInstallForcelistPref);
 
-  const base::Value* value =
-      pref_service_->GetDictionary(pref_names::kInstallForceList);
-  if (!forced_extensions_pref_ready_ && value && !value->DictEmpty()) {
+  const base::Value::Dict& value =
+      pref_service_->GetValueDict(pref_names::kInstallForceList);
+  if (!forced_extensions_pref_ready_ && !value.empty()) {
     forced_extensions_pref_ready_ = true;
     OnForcedExtensionsPrefReady();
     return true;
@@ -143,28 +143,27 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
   registry_observation_.Observe(registry_.get());
   collector_observation_.Observe(InstallStageTracker::Get(profile_));
 
-  const base::Value* value =
-      pref_service_->GetDictionary(pref_names::kInstallForceList);
-  if (value) {
-    // Add each extension to |extensions_|.
-    for (auto entry : value->DictItems()) {
-      const ExtensionId& extension_id = entry.first;
-      const std::string* update_url = nullptr;
-      if (entry.second.is_dict()) {
-        update_url = entry.second.FindStringKey(
-            ExternalProviderImpl::kExternalUpdateUrl);
-      }
-      bool is_from_store =
-          update_url && *update_url == extension_urls::kChromeWebstoreUpdateURL;
+  const base::Value::Dict& value =
+      pref_service_->GetValueDict(pref_names::kInstallForceList);
 
-      ExtensionStatus status = ExtensionStatus::kPending;
-      if (registry_->enabled_extensions().Contains(extension_id)) {
-        status = registry_->ready_extensions().Contains(extension_id)
-                     ? ExtensionStatus::kReady
-                     : ExtensionStatus::kLoaded;
-      }
-      AddExtensionInfo(extension_id, status, is_from_store);
+  // Add each extension to |extensions_|.
+  for (auto entry : value) {
+    const ExtensionId& extension_id = entry.first;
+    const std::string* update_url = nullptr;
+    if (entry.second.is_dict()) {
+      update_url =
+          entry.second.FindStringKey(ExternalProviderImpl::kExternalUpdateUrl);
     }
+    bool is_from_store =
+        update_url && *update_url == extension_urls::kChromeWebstoreUpdateURL;
+
+    ExtensionStatus status = ExtensionStatus::kPending;
+    if (registry_->enabled_extensions().Contains(extension_id)) {
+      status = registry_->ready_extensions().Contains(extension_id)
+                   ? ExtensionStatus::kReady
+                   : ExtensionStatus::kLoaded;
+    }
+    AddExtensionInfo(extension_id, status, is_from_store);
   }
 
   // Run observers if there are no pending installs.

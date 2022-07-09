@@ -274,9 +274,9 @@ std::string SyncTransportDataPrefs::GetBagOfChips() const {
 // static
 void SyncTransportDataPrefs::MigrateInvalidationVersions(
     PrefService* pref_service) {
-  const base::Value* invalidation_dictionary =
-      pref_service->GetDictionary(kDeprecatedSyncInvalidationVersions);
-  if (invalidation_dictionary->DictEmpty()) {
+  const base::Value::Dict& invalidation_dictionary =
+      pref_service->GetValueDict(kDeprecatedSyncInvalidationVersions);
+  if (invalidation_dictionary.empty()) {
     // No data, or was already migrated. Nothing to do here.
     return;
   }
@@ -289,8 +289,7 @@ void SyncTransportDataPrefs::MigrateInvalidationVersions(
     // migration.
     if (key.empty())
       continue;
-    const std::string* version_str =
-        invalidation_dictionary->FindStringKey(key);
+    const std::string* version_str = invalidation_dictionary.FindString(key);
     if (!version_str)
       continue;
     int64_t version = 0;
@@ -308,13 +307,12 @@ std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<ModelType, int64_t> invalidation_versions;
-  const base::Value* invalidation_dictionary =
-      pref_service_->GetDictionary(kSyncInvalidationVersions2);
+  const base::Value::Dict& invalidation_dictionary =
+      pref_service_->GetValueDict(kSyncInvalidationVersions2);
   for (ModelType type : ProtocolTypes()) {
     std::string key =
         base::NumberToString(GetSpecificsFieldNumberFromModelType(type));
-    const std::string* version_str =
-        invalidation_dictionary->FindStringKey(key);
+    const std::string* version_str = invalidation_dictionary.FindString(key);
     if (!version_str)
       continue;
     int64_t version = 0;

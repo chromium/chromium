@@ -206,14 +206,14 @@ NetworkTimeTracker::NetworkTimeTracker(
       tick_clock_(std::move(tick_clock)),
       pref_service_(pref_service),
       time_query_completed_(false) {
-  const base::Value* time_mapping =
-      pref_service_->GetDictionary(prefs::kNetworkTimeMapping);
-  absl::optional<double> time_js = time_mapping->FindDoubleKey(kPrefTime);
-  absl::optional<double> ticks_js = time_mapping->FindDoubleKey(kPrefTicks);
+  const base::Value::Dict& time_mapping =
+      pref_service_->GetValueDict(prefs::kNetworkTimeMapping);
+  absl::optional<double> time_js = time_mapping.FindDouble(kPrefTime);
+  absl::optional<double> ticks_js = time_mapping.FindDouble(kPrefTicks);
   absl::optional<double> uncertainty_js =
-      time_mapping->FindDoubleKey(kPrefUncertainty);
+      time_mapping.FindDouble(kPrefUncertainty);
   absl::optional<double> network_time_js =
-      time_mapping->FindDoubleKey(kPrefNetworkTime);
+      time_mapping.FindDouble(kPrefNetworkTime);
   if (time_js && ticks_js && uncertainty_js && network_time_js) {
     time_at_last_measurement_ = base::Time::FromJsTime(*time_js);
     ticks_at_last_measurement_ =

@@ -667,10 +667,10 @@ void SupervisedUserService::UpdateDenylist() {
 }
 
 void SupervisedUserService::UpdateManualHosts() {
-  const base::Value* dict =
-      profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualHosts);
+  const base::Value::Dict& dict =
+      profile_->GetPrefs()->GetValueDict(prefs::kSupervisedUserManualHosts);
   std::map<std::string, bool> host_map;
-  for (auto it : dict->DictItems()) {
+  for (auto it : dict) {
     DCHECK(it.second.is_bool());
     host_map[it.first] = it.second.GetIfBool().value_or(false);
   }
@@ -684,10 +684,10 @@ void SupervisedUserService::UpdateManualHosts() {
 }
 
 void SupervisedUserService::UpdateManualURLs() {
-  const base::Value* dict =
-      profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualURLs);
+  const base::Value::Dict& dict =
+      profile_->GetPrefs()->GetValueDict(prefs::kSupervisedUserManualURLs);
   std::map<GURL, bool> url_map;
-  for (auto it : dict->DictItems()) {
+  for (auto it : dict) {
     DCHECK(it.second.is_bool());
     url_map[GURL(it.first)] = it.second.GetIfBool().value_or(false);
   }

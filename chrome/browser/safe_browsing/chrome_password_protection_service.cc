@@ -200,13 +200,11 @@ void OpenUrl(content::WebContents* current_web_contents,
 
 int64_t GetNavigationIDFromPrefsByOrigin(PrefService* prefs,
                                          const Origin& origin) {
-  const base::Value* unhandled_sync_password_reuses =
-      prefs->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-  if (!unhandled_sync_password_reuses)
-    return 0;
+  const base::Value::Dict& unhandled_sync_password_reuses =
+      prefs->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
 
   const base::Value* navigation_id_value =
-      unhandled_sync_password_reuses->FindKey(origin.Serialize());
+      unhandled_sync_password_reuses.Find(origin.Serialize());
 
   int64_t navigation_id;
   return navigation_id_value &&

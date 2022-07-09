@@ -145,10 +145,10 @@ void DeviceImageStore::LoadPersistedImagesFromPrefs() {
     QP_LOG(WARNING) << __func__ << ": No shell local state available.";
     return;
   }
-  const base::Value* device_image_store =
-      local_state->GetDictionary(kDeviceImageStorePref);
+  const base::Value::Dict& device_image_store =
+      local_state->GetValueDict(kDeviceImageStorePref);
   for (std::pair<const std::string&, const base::Value&> record :
-       device_image_store->DictItems()) {
+       device_image_store) {
     absl::optional<DeviceImageInfo> images =
         DeviceImageInfo::FromDictionaryValue(record.second);
     if (!images) {

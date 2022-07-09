@@ -76,9 +76,9 @@ void StabilityMetricsManager::ResetMetrics() {
 
 absl::optional<bool> StabilityMetricsManager::GetArcEnabledState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* dict =
-      local_state_->GetDictionary(prefs::kStabilityMetrics);
-  return dict->FindBoolKey(kArcEnabledStateKey);
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(prefs::kStabilityMetrics);
+  return dict.FindBool(kArcEnabledStateKey);
 }
 
 void StabilityMetricsManager::SetArcEnabledState(bool enabled) {
@@ -90,10 +90,10 @@ void StabilityMetricsManager::SetArcEnabledState(bool enabled) {
 absl::optional<NativeBridgeType>
 StabilityMetricsManager::GetArcNativeBridgeType() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* dict =
-      local_state_->GetDictionary(prefs::kStabilityMetrics);
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(prefs::kStabilityMetrics);
   absl::optional<int> native_bridge_type =
-      dict->FindIntKey(kArcNativeBridgeTypeKey);
+      dict.FindInt(kArcNativeBridgeTypeKey);
   if (native_bridge_type) {
     return absl::make_optional(
         static_cast<NativeBridgeType>(*native_bridge_type));

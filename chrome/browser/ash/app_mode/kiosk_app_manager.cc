@@ -829,9 +829,9 @@ void KioskAppManager::OnExtensionDownloadFailed(
 
 KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
   PrefService* prefs = g_browser_process->local_state();
-  const base::Value* dict =
-      prefs->GetDictionary(KioskAppManager::kKioskDictionaryName);
-  absl::optional<int> value = dict->FindIntKey(kKeyAutoLoginState);
+  const base::Value::Dict& dict =
+      prefs->GetValueDict(KioskAppManager::kKioskDictionaryName);
+  absl::optional<int> value = dict.FindInt(kKeyAutoLoginState);
   if (!value.has_value())
     return AutoLoginState::kNone;
 

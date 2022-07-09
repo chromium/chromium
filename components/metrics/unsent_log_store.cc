@@ -395,14 +395,12 @@ void UnsentLogStore::RecordMetaDataMetrics() {
   if (metadata_pref_name_ == nullptr)
     return;
 
-  const base::Value* value = local_state_->GetDictionary(metadata_pref_name_);
-  if (!value)
-    return;
+  const base::Value::Dict& value =
+      local_state_->GetValueDict(metadata_pref_name_);
 
-  auto unsent_samples_count = value->FindIntKey(kLogUnsentCountKey);
-  auto sent_samples_count = value->FindIntKey(kLogSentCountKey);
-  auto unsent_persisted_size_in_kb =
-      value->FindIntKey(kLogPersistedSizeInKbKey);
+  auto unsent_samples_count = value.FindInt(kLogUnsentCountKey);
+  auto sent_samples_count = value.FindInt(kLogSentCountKey);
+  auto unsent_persisted_size_in_kb = value.FindInt(kLogPersistedSizeInKbKey);
 
   if (unsent_samples_count && sent_samples_count &&
       unsent_persisted_size_in_kb) {

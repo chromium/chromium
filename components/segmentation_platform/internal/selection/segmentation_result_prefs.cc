@@ -41,11 +41,10 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
 absl::optional<SelectedSegment>
 SegmentationResultPrefs::ReadSegmentationResultFromPref(
     const std::string& result_key) {
-  const base::Value* dictionary =
-      prefs_->GetDictionary(kSegmentationResultPref);
-  DCHECK(dictionary);
+  const base::Value::Dict& dictionary =
+      prefs_->GetValueDict(kSegmentationResultPref);
 
-  const base::Value* value = dictionary->FindKey(result_key);
+  const base::Value* value = dictionary.Find(result_key);
   if (!value)
     return absl::nullopt;
 

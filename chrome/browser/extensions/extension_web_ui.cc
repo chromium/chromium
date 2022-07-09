@@ -453,16 +453,14 @@ bool ExtensionWebUI::HandleChromeURLOverride(
 bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     GURL* url, content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::Value* overrides =
-      profile->GetPrefs()->GetDictionary(kExtensionURLOverrides);
-  if (!overrides)
-    return false;
+  const base::Value::Dict& overrides =
+      profile->GetPrefs()->GetValueDict(kExtensionURLOverrides);
 
   // Find the reverse mapping based on the given URL. For example this maps the
   // internal URL
   // chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/main.html#1 to
   // chrome://bookmarks/#1 for display in the omnibox.
-  for (const auto dict_iter : overrides->DictItems()) {
+  for (const auto dict_iter : overrides) {
     if (!dict_iter.second.is_list())
       continue;
 

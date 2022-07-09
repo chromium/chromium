@@ -542,10 +542,9 @@ std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(
   CHECK(profile_);
   CHECK(profile_->GetPrefs());
   // |shared_paths| format is {'path': ['vm1', vm2']}.
-  const base::Value* shared_paths =
-      profile_->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
-  CHECK(shared_paths);
-  for (const auto it : shared_paths->DictItems()) {
+  const base::Value::Dict& shared_paths =
+      profile_->GetPrefs()->GetValueDict(prefs::kGuestOSPathsSharedToVms);
+  for (const auto it : shared_paths) {
     base::FilePath path(it.first);
     for (const auto& vm : it.second.GetListDeprecated()) {
       // Register all shared paths for all VMs since we want FilePathWatchers
@@ -635,9 +634,9 @@ void GuestOsSharePath::OnVolumeMounted(chromeos::MountError error_code,
 
   // Check if any persisted paths match volume.mount_path() or are children
   // of it then share them with any running VMs.
-  const base::Value* shared_paths =
-      profile_->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
-  for (const auto it : shared_paths->DictItems()) {
+  const base::Value::Dict& shared_paths =
+      profile_->GetPrefs()->GetValueDict(prefs::kGuestOSPathsSharedToVms);
+  for (const auto it : shared_paths) {
     base::FilePath path(it.first);
     if (path != volume.mount_path() && !volume.mount_path().IsParent(path)) {
       continue;

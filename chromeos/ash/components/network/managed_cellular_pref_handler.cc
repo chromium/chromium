@@ -92,9 +92,9 @@ const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
     NET_LOG(ERROR) << "Device pref not available yet.";
     return nullptr;
   }
-  const base::Value* iccid_smdp_pairs =
-      device_prefs_->GetDictionary(ash::prefs::kManagedCellularIccidSmdpPair);
-  return iccid_smdp_pairs->FindStringKey(iccid);
+  const base::Value::Dict& iccid_smdp_pairs =
+      device_prefs_->GetValueDict(ash::prefs::kManagedCellularIccidSmdpPair);
+  return iccid_smdp_pairs.FindString(iccid);
 }
 
 }  // namespace chromeos

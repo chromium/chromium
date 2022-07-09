@@ -94,16 +94,11 @@ bool SavedDeviceRegistry::IsAccountKeySavedToRegistry(
     return false;
   }
 
-  const base::Value* saved_devices =
-      pref_service->GetDictionary(kFastPairSavedDevicesPref);
-  if (!saved_devices) {
-    QP_LOG(WARNING) << __func__
-                    << ": No Fast Pair Saved Devices pref available.";
-    return false;
-  }
+  const base::Value::Dict& saved_devices =
+      pref_service->GetValueDict(kFastPairSavedDevicesPref);
 
   std::string encoded_key = base::Base64Encode(account_key);
-  for (const auto it : saved_devices->DictItems()) {
+  for (const auto it : saved_devices) {
     const std::string* value = it.second.GetIfString();
     if (value && *value == encoded_key) {
       return true;

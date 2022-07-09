@@ -255,11 +255,11 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value* background_info =
-      profile_->GetPrefs()->GetDictionary(prefs::kNtpCustomBackgroundDict);
+  const base::Value::Dict& background_info =
+      profile_->GetPrefs()->GetValueDict(prefs::kNtpCustomBackgroundDict);
   int64_t refresh_timestamp = 0;
   const base::Value* timestamp_value =
-      background_info->FindKey(kNtpCustomBackgroundRefreshTimestamp);
+      background_info.Find(kNtpCustomBackgroundRefreshTimestamp);
   if (timestamp_value)
     refresh_timestamp = timestamp_value->GetInt();
   if (refresh_timestamp == 0)
@@ -267,9 +267,9 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
 
   if (clock_->Now().ToTimeT() > refresh_timestamp) {
     std::string collection_id =
-        background_info->FindKey(kNtpCustomBackgroundCollectionId)->GetString();
+        background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
     std::string resume_token =
-        background_info->FindKey(kNtpCustomBackgroundResumeToken)->GetString();
+        background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
     background_service_->FetchNextCollectionImage(collection_id, resume_token);
   }
 }
@@ -295,41 +295,41 @@ NtpCustomBackgroundService::GetCustomBackground() {
   // Attempt to get custom background URL from preferences.
   if (IsCustomBackgroundPrefValid()) {
     auto custom_background = absl::make_optional<CustomBackground>();
-    const base::Value* background_info =
-        pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict);
+    const base::Value::Dict& background_info =
+        pref_service_->GetValueDict(prefs::kNtpCustomBackgroundDict);
     GURL custom_background_url(
-        background_info->FindKey(kNtpCustomBackgroundURL)->GetString());
+        background_info.Find(kNtpCustomBackgroundURL)->GetString());
 
     std::string collection_id;
     const base::Value* id_value =
-        background_info->FindKey(kNtpCustomBackgroundCollectionId);
+        background_info.Find(kNtpCustomBackgroundCollectionId);
     if (id_value)
       collection_id = id_value->GetString();
 
     // Set custom background information in theme info (attributions are
     // optional).
     const base::Value* attribution_line_1 =
-        background_info->FindKey(kNtpCustomBackgroundAttributionLine1);
+        background_info.Find(kNtpCustomBackgroundAttributionLine1);
     const base::Value* attribution_line_2 =
-        background_info->FindKey(kNtpCustomBackgroundAttributionLine2);
+        background_info.Find(kNtpCustomBackgroundAttributionLine2);
     const base::Value* attribution_action_url =
-        background_info->FindKey(kNtpCustomBackgroundAttributionActionURL);
+        background_info.Find(kNtpCustomBackgroundAttributionActionURL);
     custom_background->custom_background_url = custom_background_url;
     custom_background->collection_id = collection_id;
 
     if (attribution_line_1) {
       custom_background->custom_background_attribution_line_1 =
-          background_info->FindKey(kNtpCustomBackgroundAttributionLine1)
+          background_info.Find(kNtpCustomBackgroundAttributionLine1)
               ->GetString();
     }
     if (attribution_line_2) {
       custom_background->custom_background_attribution_line_2 =
-          background_info->FindKey(kNtpCustomBackgroundAttributionLine2)
+          background_info.Find(kNtpCustomBackgroundAttributionLine2)
               ->GetString();
     }
     if (attribution_action_url) {
       GURL action_url(
-          background_info->FindKey(kNtpCustomBackgroundAttributionActionURL)
+          background_info.Find(kNtpCustomBackgroundAttributionActionURL)
               ->GetString());
 
       if (!action_url.SchemeIsCryptographic()) {
@@ -400,13 +400,11 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
 
 bool NtpCustomBackgroundService::IsCustomBackgroundPrefValid() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value* background_info =
-      profile_->GetPrefs()->GetDictionary(prefs::kNtpCustomBackgroundDict);
-  if (!background_info)
-    return false;
+  const base::Value::Dict& background_info =
+      profile_->GetPrefs()->GetValueDict(prefs::kNtpCustomBackgroundDict);
 
   const base::Value* background_url =
-      background_info->FindKey(kNtpCustomBackgroundURL);
+      background_info.Find(kNtpCustomBackgroundURL);
   if (!background_url)
     return false;
 

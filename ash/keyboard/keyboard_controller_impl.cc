@@ -69,13 +69,10 @@ absl::optional<display::Display> GetFirstTouchDisplay() {
 bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
                                     const std::string& feature_path) {
   DCHECK(prefs);
-  const base::Value* features =
-      prefs->GetDictionary(prefs::kAccessibilityVirtualKeyboardFeatures);
+  const base::Value::Dict& features =
+      prefs->GetValueDict(prefs::kAccessibilityVirtualKeyboardFeatures);
 
-  if (!features)
-    return false;
-
-  return features->FindBoolPath(feature_path).value_or(false);
+  return features.FindBool(feature_path).value_or(false);
 }
 
 }  // namespace

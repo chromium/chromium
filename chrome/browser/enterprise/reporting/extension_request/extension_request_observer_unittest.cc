@@ -146,11 +146,11 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     close_run_loop.Run();
 
     // Verify that only |expected_removed_requests| are removed from the pref.
-    const base::Value* actual_pending_requests =
-        profile()->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
+    const base::Value::Dict& actual_pending_requests =
+        profile()->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
-              actual_pending_requests->DictSize());
-    for (auto it : actual_pending_requests->DictItems()) {
+              actual_pending_requests.size());
+    for (auto it : actual_pending_requests) {
       EXPECT_EQ(expected_removed_requests.end(),
                 std::find(expected_removed_requests.begin(),
                           expected_removed_requests.end(), it.first));

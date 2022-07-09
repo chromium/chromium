@@ -39,12 +39,10 @@ const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
   if (!profile_prefs)
     return nullptr;
 
-  const base::Value* platform_keys =
-      profile_prefs->GetDictionary(prefs::kPlatformKeys);
-  if (!platform_keys)
-    return nullptr;
+  const base::Value::Dict& platform_keys =
+      profile_prefs->GetValueDict(prefs::kPlatformKeys);
 
-  return platform_keys->FindKey(public_key_spki_der_b64);
+  return platform_keys.Find(public_key_spki_der_b64);
 }
 
 }  // namespace

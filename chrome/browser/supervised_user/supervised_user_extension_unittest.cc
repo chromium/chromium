@@ -444,9 +444,9 @@ TEST_F(SupervisedUserExtensionTest, UpdateWithoutPermissionIncrease) {
   // Prefs are updated via sync.
   PrefService* pref_service = profile()->GetPrefs();
   ASSERT_TRUE(pref_service);
-  const base::Value* approved_extensions =
-      pref_service->GetDictionary(prefs::kSupervisedUserApprovedExtensions);
-  EXPECT_TRUE(approved_extensions->FindStringKey(id));
+  const base::Value::Dict& approved_extensions =
+      pref_service->GetValueDict(prefs::kSupervisedUserApprovedExtensions);
+  EXPECT_TRUE(approved_extensions.FindString(id));
 }
 
 // Tests that the kApprovalGranted UMA metric only increments once without

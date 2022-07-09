@@ -171,11 +171,9 @@ const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return nullptr;
-  const base::Value* dict =
-      pref_service_->GetDictionary(kPersistedDataPreference);
-  if (!dict)
-    return nullptr;
-  const base::Value::Dict* apps = dict->GetDict().FindDict("apps");
+  const base::Value::Dict& dict =
+      pref_service_->GetValueDict(kPersistedDataPreference);
+  const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return nullptr;
   return apps->FindDict(id);

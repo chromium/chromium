@@ -451,11 +451,10 @@ void AppListSyncableService::InitFromLocalStorage() {
   DCHECK(!IsInitialized());
 
   // Restore initial state from local storage.
-  const base::Value* local_items =
-      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
-  DCHECK(local_items);
+  const base::Value::Dict& local_items =
+      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
 
-  for (const auto item : local_items->DictItems()) {
+  for (const auto item : local_items) {
     if (!item.second.is_dict()) {
       LOG(ERROR) << "Dictionary not found for " << item.first + ".";
       continue;

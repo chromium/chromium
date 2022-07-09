@@ -199,11 +199,9 @@ TEST_F(DeviceImageStoreTest, PersistDeviceImagesValid) {
 
   // Validate that the images are persisted to prefs.
   PrefService* local_state = Shell::Get()->local_state();
-  const base::Value* device_image_store_dict =
-      local_state->GetDictionary(DeviceImageStore::kDeviceImageStorePref);
-  EXPECT_TRUE(device_image_store_dict);
-  const base::Value* images_dict =
-      device_image_store_dict->FindKey(kTestModelId);
+  const base::Value::Dict& device_image_store_dict =
+      local_state->GetValueDict(DeviceImageStore::kDeviceImageStorePref);
+  const base::Value* images_dict = device_image_store_dict.Find(kTestModelId);
   EXPECT_TRUE(images_dict);
   const std::string* persisted_image = images_dict->FindStringKey("Default");
   std::string expected_encoded_image =
@@ -225,11 +223,9 @@ TEST_F(DeviceImageStoreTest, EvictDeviceImagesValid) {
 
   // Validate that the images are evicted from prefs.
   PrefService* local_state = Shell::Get()->local_state();
-  const base::Value* device_image_store_dict =
-      local_state->GetDictionary(DeviceImageStore::kDeviceImageStorePref);
-  EXPECT_TRUE(device_image_store_dict);
-  const base::Value* images_dict =
-      device_image_store_dict->FindKey(kTestModelId);
+  const base::Value::Dict& device_image_store_dict =
+      local_state->GetValueDict(DeviceImageStore::kDeviceImageStorePref);
+  const base::Value* images_dict = device_image_store_dict.Find(kTestModelId);
   EXPECT_FALSE(images_dict);
 }
 

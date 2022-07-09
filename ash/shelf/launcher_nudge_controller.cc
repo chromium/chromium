@@ -49,12 +49,10 @@ PrefService* GetPrefs() {
 
 // Gets the timestamp when the nudge was last shown.
 base::Time GetLastShownTime(PrefService* prefs) {
-  const base::Value* dictionary =
-      prefs->GetDictionary(prefs::kShelfLauncherNudge);
-  if (!dictionary)
-    return base::Time();
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kShelfLauncherNudge);
   absl::optional<base::Time> last_shown_time =
-      base::ValueToTime(dictionary->FindKey(kLastShownTime));
+      base::ValueToTime(dictionary.Find(kLastShownTime));
   return last_shown_time.value_or(base::Time());
 }
 
@@ -62,22 +60,18 @@ base::Time GetLastShownTime(PrefService* prefs) {
 // set if the user has logged in before the launcher nudge feature was
 // enabled.
 base::Time GetFirstLoginTime(PrefService* prefs) {
-  const base::Value* dictionary =
-      prefs->GetDictionary(prefs::kShelfLauncherNudge);
-  if (!dictionary)
-    return base::Time();
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kShelfLauncherNudge);
   absl::optional<base::Time> first_login_time =
-      base::ValueToTime(dictionary->FindKey(kFirstLoginTime));
+      base::ValueToTime(dictionary.Find(kFirstLoginTime));
   return first_login_time.value_or(base::Time());
 }
 
 // Returns true if the launcher has been shown before.
 bool WasLauncherShownPreviously(PrefService* prefs) {
-  const base::Value* dictionary =
-      prefs->GetDictionary(prefs::kShelfLauncherNudge);
-  if (!dictionary)
-    return false;
-  return dictionary->FindBoolKey(kWasLauncherShown).value_or(false);
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kShelfLauncherNudge);
+  return dictionary.FindBool(kWasLauncherShown).value_or(false);
 }
 
 }  // namespace
@@ -116,11 +110,9 @@ HomeButton* LauncherNudgeController::GetHomeButtonForDisplay(
 
 // static
 int LauncherNudgeController::GetShownCount(PrefService* prefs) {
-  const base::Value* dictionary =
-      prefs->GetDictionary(prefs::kShelfLauncherNudge);
-  if (!dictionary)
-    return 0;
-  return dictionary->FindIntKey(kShownCount).value_or(0);
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kShelfLauncherNudge);
+  return dictionary.FindInt(kShownCount).value_or(0);
 }
 
 base::TimeDelta LauncherNudgeController::GetNudgeInterval(

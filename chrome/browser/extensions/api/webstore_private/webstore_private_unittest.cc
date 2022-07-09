@@ -112,13 +112,12 @@ struct ExtensionRequestData {
 void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
                            expected_pending_requests,
                        Profile* profile) {
-  const base::Value* actual_pending_requests =
-      profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-  ASSERT_EQ(expected_pending_requests.size(),
-            actual_pending_requests->DictSize());
+  const base::Value::Dict& actual_pending_requests =
+      profile->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
+  ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests.size());
   for (const auto& expected_request : expected_pending_requests) {
     auto* actual_pending_request =
-        actual_pending_requests->FindKey(expected_request.first);
+        actual_pending_requests.Find(expected_request.first);
     ASSERT_NE(nullptr, actual_pending_request);
 
     // All extensions in the pending list are expected to have a timestamp.

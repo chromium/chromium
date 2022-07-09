@@ -449,9 +449,9 @@ bool DevToolsFileHelper::IsFileSystemAdded(
     const std::string& file_system_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const base::Value* file_systems_paths_value =
-      profile_->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths);
-  return file_systems_paths_value->FindKey(file_system_path);
+  const base::Value::Dict& file_systems_paths_value =
+      profile_->GetPrefs()->GetValueDict(prefs::kDevToolsFileSystemPaths);
+  return file_systems_paths_value.Find(file_system_path);
 }
 
 void DevToolsFileHelper::OnOpenItemComplete(

@@ -262,11 +262,9 @@ std::string EasyUnlockTpmKeyManager::GetPublicTpmKey(
     const AccountId& account_id) {
   if (!local_state_)
     return std::string();
-  const base::Value* dict =
-      local_state_->GetDictionary(prefs::kEasyUnlockLocalStateTpmKeys);
-  const std::string* key = nullptr;
-  if (dict)
-    key = dict->FindStringKey(account_id.GetUserEmail());
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(prefs::kEasyUnlockLocalStateTpmKeys);
+  const std::string* key = dict.FindString(account_id.GetUserEmail());
   std::string decoded;
   base::Base64Decode(key ? *key : std::string(), &decoded);
   return decoded;
