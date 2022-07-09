@@ -521,7 +521,7 @@
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="3803784507854318295">Управление автовоспроизведением</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3810973564298564668">Перейти</translation>
+<translation id="3810973564298564668">Управление</translation>
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
 <translation id="3845098929839618392">Открыть в режиме инкогнито</translation>

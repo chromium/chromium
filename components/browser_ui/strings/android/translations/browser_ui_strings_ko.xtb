@@ -232,7 +232,7 @@
 <translation id="6545864417968258051">블루투스 검색</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨}}</translation>
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
-<translation id="6561560012278703671">눈에 띄지 않는 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>
+<translation id="6561560012278703671">조용한 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>
 <translation id="6593061639179217415">데스크톱 사이트</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>

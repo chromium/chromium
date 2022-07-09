@@ -361,7 +361,7 @@
 <translation id="1353980523955420967">PPD फेला पार्न सकिएन। आफ्नो Chromebook अनलाइन भएको सुनिश्चित गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> लाई तपाईंको डिभाइसको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने अनुमति दिइराख्नुहोस्</translation>
 <translation id="1355088139103479645">सबै डेटा मेटाउने हो?</translation>
-<translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> माथि रोक लगाइएको छ</translation>
+<translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> लाई ब्लक गरिएको छ</translation>
 <translation id="1358741672408003399">हिज्जे तथा व्याकरण</translation>
 <translation id="1359923111303110318">तपाईंको यन्त्र Smart Lock प्रयोग गरी अनलक गर्न सकिन्छ। अनलक गर्न Enter थिच्नुहोस्।</translation>
 <translation id="1361164813881551742">म्यानुअल तरिकाले थप्नुहोस्</translation>
@@ -441,7 +441,7 @@
             <ph name="LINE_BREAKS" />
            बुकमार्क, इतिहास तथा सुरक्षित गरिएका पासवर्डहरूमा केही पनि असर पर्ने छैन।</translation>
 <translation id="1426410128494586442">हो</translation>
-<translation id="142655739075382478"><ph name="APP_NAME" /> माथि रोक लगाइएको छ</translation>
+<translation id="142655739075382478"><ph name="APP_NAME" /> लाई ब्लक गरिएको छ</translation>
 <translation id="1426870617281699524">फेरि प्रयास गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस् र आफ्नो कम्प्युटरमा प्रम्प्टलाई स्वीकार गर्नुहोस्</translation>
 <translation id="1427179946227469514">टेक्स्ट-टू-स्पिचको पिच</translation>
 <translation id="1427269577154060167">देश</translation>
@@ -1193,7 +1193,7 @@
 <translation id="2119349053129246860"><ph name="APP" /> मा खोल्नुहोस्</translation>
 <translation id="2119461801241504254">सुरक्षित ब्राउजिङ सक्रिय छ र यसले हानिकारक साइट र डाउनलोडहरूबाट तपाईंलाई सुरक्षित राख्दै छ</translation>
 <translation id="2120297377148151361">क्रियाकलाप तथा अन्तर्क्रियाहरू</translation>
-<translation id="2120639962942052471"><ph name="PERMISSION" /> माथि रोक लगाइएको छ</translation>
+<translation id="2120639962942052471"><ph name="PERMISSION" /> लाई ब्लक गरिएको छ</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{कुकीहरूलाई रोक लगाइएको छ}=1{कुकीहरूलाई रोक लगाइएको छ, १ वटा बाहेक}other{कुकीहरूलाई रोक लगाइएको छ, {COUNT} वटा बाहेक}}</translation>
 <translation id="2121825465123208577">पुनःआकार मिलाउनुहोस्</translation>
 <translation id="2123766928840368256">कुनै अर्को फाइल छनौट गर्नुहोस्</translation>
@@ -2831,7 +2831,7 @@
 <translation id="3700993174159313525">साइटहरूलाई मेरो क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइयोस्</translation>
 <translation id="3702500414347826004">तपाईंका सुरुवात पृष्ठहरूलाई परिवर्तन गरी <ph name="URL" /> समावेश गर्ने बनाइएको छ।</translation>
 <translation id="3703699162703116302">टिकट पुनः ताजा गरियो</translation>
-<translation id="370415077757856453">JavaScript माथि रोक लगाइएको छ</translation>
+<translation id="370415077757856453">JavaScript लाई ब्लक गरिएको छ</translation>
 <translation id="3704331259350077894">अपरेशनको समाप्ति</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706463572498736864">प्रति पाना पृष्ठहरू</translation>
@@ -4296,7 +4296,7 @@
 <translation id="5160634252433617617">भौतिक किबोर्ड</translation>
 <translation id="5160857336552977725">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> का USB डिभाइसहरू</translation>
-<translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> माथि रोक लगाइएको छ</translation>
+<translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> लाई ब्लक गरिएको छ</translation>
 <translation id="5163910114647549394">यो ट्याब ट्याबस्ट्रिपको अन्त्यमा सारियो</translation>
 <translation id="5166596762332123936"><ph name="PLUGIN_NAME" /> को म्याद सकिएको हुनाले यसमाथि रोक लगाइयो</translation>
 <translation id="516747639689914043">हाइपरटेक्स्ट ट्रान्स्पोर्ट प्रोटोकोल (HTTP)</translation>
