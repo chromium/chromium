@@ -1055,10 +1055,6 @@ void Value::Append(std::string&& value) {
   GetList().Append(std::move(value));
 }
 
-void Value::Append(const char16_t* value) {
-  GetList().Append(value);
-}
-
 void Value::Append(StringPiece16 value) {
   GetList().Append(value);
 }

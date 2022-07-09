@@ -100,12 +100,12 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
   }
 
   bool RunMediaGalleriesTest(const std::string& extension_name) {
-    base::ListValue empty_list_value;
+    base::Value::List empty_list_value;
     return RunMediaGalleriesTestWithArg(extension_name, empty_list_value);
   }
 
   bool RunMediaGalleriesTestWithArg(const std::string& extension_name,
-                                    const base::ListValue& custom_arg_value) {
+                                    const base::Value::List& custom_arg_value) {
     // Copy the test data for this test into a temporary directory. Then add
     // a common_injected.js to the temporary copy and run it.
     const char kTestDir[] = "api_test/media_galleries/";
@@ -131,7 +131,7 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
 
     const char* custom_arg = NULL;
     std::string json_string;
-    if (!custom_arg_value.GetListDeprecated().empty()) {
+    if (!custom_arg_value.empty()) {
       base::JSONWriter::Write(custom_arg_value, &json_string);
       custom_arg = json_string.c_str();
     }
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MAYBE_MediaGalleriesNoAccess) {
   MakeSingleFakeGallery(NULL);
 
-  base::ListValue custom_args;
+  base::Value::List custom_args;
   custom_args.Append(num_galleries() + 1);
 
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("no_access", custom_args))
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MediaGalleriesRead) {
   RemoveAllGalleries();
   MakeSingleFakeGallery(NULL);
-  base::ListValue custom_args;
+  base::Value::List custom_args;
   custom_args.Append(test_jpg_size());
 
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("read_access", custom_args))
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MediaGalleriesDelete) {
   MakeSingleFakeGallery(NULL);
-  base::ListValue custom_args;
+  base::Value::List custom_args;
   custom_args.Append(num_galleries() + 1);
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("delete_access", custom_args))
       << message_;
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MediaGalleriesAccessAttached) {
   AttachFakeDevice();
 
-  base::ListValue custom_args;
+  base::Value::List custom_args;
   custom_args.Append(num_galleries() + 1);
   custom_args.Append(kDeviceName);
 
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, ToURL) {
   MediaGalleryPrefId pref_id;
   MakeSingleFakeGallery(&pref_id);
 
-  base::ListValue custom_args;
+  base::Value::List custom_args;
   custom_args.Append(base::checked_cast<int>(pref_id));
   custom_args.Append(browser()->profile()->GetBaseName().MaybeAsASCII());
 
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, GetMetadata) {
   AddFileToSingleFakeGallery(media::GetTestDataFilePath("90rotation.mp4"));
   AddFileToSingleFakeGallery(media::GetTestDataFilePath("id3_png_test.mp3"));
 
-  base::ListValue custom_args;
+  base::Value::List custom_args;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   custom_args.Append(true);
 #else

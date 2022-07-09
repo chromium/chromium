@@ -717,8 +717,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::List::Append()`.
   void Append(const char* value);
   // DEPRECATED: prefer `Value::List::Append()`.
-  void Append(const char16_t* value);
-  // DEPRECATED: prefer `Value::List::Append()`.
   void Append(std::string&& value);
 
   // Inserts `value` before `pos`.

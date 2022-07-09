@@ -496,8 +496,8 @@ TEST(ValuesTest, Append) {
   EXPECT_TRUE(value.GetListDeprecated().back().is_string());
 
   std::u16string str16 = u"bar";
-  value.Append(str16.c_str());
-  EXPECT_TRUE(value.GetListDeprecated().back().is_string());
+  value.GetList().Append(str16.c_str());
+  EXPECT_TRUE(value.GetList().back().is_string());
 
   value.Append(base::StringPiece16(str16));
   EXPECT_TRUE(value.GetListDeprecated().back().is_string());
