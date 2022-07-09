@@ -13,42 +13,32 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace shared_highlighting {
-static auto CreateBlocklist() {
-  if (base::FeatureList::IsEnabled(kSharedHighlightingRefinedBlocklist)) {
-    return base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
-        {{"facebook.com", "(?!.*(about)).*"},
-         // TODO(crbug.com/1157981): special case this to cover other Google
-         // TLDs
-         {"google.com", "^\\/amp\\/.*"},
-         {"instagram.com", "(?!.*(/p/)).*"},
-         {"mail.google.com", ".*"},
-         {"outlook.live.com", ".*"},
-         {"reddit.com", "(?!.*(comments)).*"},
-         {"twitter.com", "(?!.*(status)).*"},
-         {"web.whatsapp.com", ".*"},
-         {"youtube.com", "?!.*(about|community)).*"}});
-  } else {
-    return base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
-        {{"facebook.com", ".*"},
-         // TODO(crbug.com/1157981): special case this to cover other Google
-         // TLDs
-         {"google.com", "^\\/amp\\/.*"},
-         {"instagram.com", ".*"},
-         {"mail.google.com", ".*"},
-         {"outlook.live.com", ".*"},
-         {"reddit.com", ".*"},
-         {"twitter.com", ".*"},
-         {"web.whatsapp.com", ".*"},
-         {"youtube.com", ".*"}});
-  }
-}
 
 bool ShouldOfferLinkToText(const GURL& url) {
-  // If a URL's host matches a key in this map, then the path will be tested
+  // If a URL's host matches a key in the map, then the path will be tested
   // against the RE stored in the value. For example, {"foo.com", ".*"} means
   // any page on the foo.com domain.
+  static constexpr auto kBlocklist =
+      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+          {{"facebook.com", ".*"},
+           // TODO(crbug.com/1157981): special case this to cover other Google
+           // TLDs
+           {"google.com", "^\\/amp\\/.*"},
+           {"instagram.com", ".*"},
+           {"mail.google.com", ".*"},
+           {"outlook.live.com", ".*"},
+           {"reddit.com", ".*"},
+           {"twitter.com", ".*"},
+           {"web.whatsapp.com", ".*"},
+           {"youtube.com", ".*"}});
 
-  static auto kBlocklist = CreateBlocklist();
+  static constexpr auto kAllowlist =
+      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+          {{"facebook.com", ".*(about).*"},
+           {"instagram.com", ".*(/p/).*"},
+           {"reddit.com", ".*(comments).*"},
+           {"twitter.com", ".*(status).*"},
+           {"youtube.com", ".*(about|community).*"}});
 
   std::string domain = url.host();
   if (domain.compare(0, 4, "www.") == 0) {
@@ -64,9 +54,17 @@ bool ShouldOfferLinkToText(const GURL& url) {
     return true;
   }
 
-  auto* it = kBlocklist.find(domain);
-  if (it != kBlocklist.end()) {
-    return !re2::RE2::FullMatch(url.path(), it->second.data());
+  auto* block_list_it = kBlocklist.find(domain);
+  if (block_list_it != kBlocklist.end()) {
+    if (re2::RE2::FullMatch(url.path(), block_list_it->second.data())) {
+      if (base::FeatureList::IsEnabled(kSharedHighlightingRefinedBlocklist)) {
+        auto* allow_list_it = kAllowlist.find(domain);
+        if (allow_list_it != kAllowlist.end()) {
+          return re2::RE2::FullMatch(url.path(), allow_list_it->second.data());
+        }
+      }
+      return false;
+    }
   }
   return true;
 }
