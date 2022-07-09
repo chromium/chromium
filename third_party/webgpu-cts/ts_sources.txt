@@ -420,7 +420,7 @@ src/webgpu/web_platform/util.ts
 src/webgpu/web_platform/canvas/configure.spec.ts
 src/webgpu/web_platform/canvas/context_creation.spec.ts
 src/webgpu/web_platform/canvas/getCurrentTexture.spec.ts
-src/webgpu/web_platform/canvas/getPreferredFormat.spec.ts
+src/webgpu/web_platform/canvas/getPreferredCanvasFormat.spec.ts
 src/webgpu/web_platform/canvas/readbackFromWebGPUCanvas.spec.ts
 src/webgpu/web_platform/copyToTexture/ImageBitmap.spec.ts
 src/webgpu/web_platform/copyToTexture/canvas.spec.ts
