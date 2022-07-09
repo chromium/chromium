@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Secured</translation>
 <translation id="2638942478653899953">Google Drive could not be reached. Please <ph name="BEGIN_LINK" />log out<ph name="END_LINK" /> and log back in.</translation>
 <translation id="2649120831653069427">Rainbowfish</translation>
+<translation id="2653059201992392941">You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="2663066752008346276">Burmese/Myanmar with Myansan keyboard</translation>
 <translation id="2664412712123763093">File location</translation>
 <translation id="2718540689505416944">Install app with Linux</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">Latvian</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filter is off.</translation>
 <translation id="5494920125229734069">Select all</translation>
+<translation id="5500104704744051184">You won't be able to use this network until you enter the PUK</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Dots</translation>
 <translation id="5522908512596376669">File list has changed to list view.</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="642282551015776456">This name may not be used as a file or folder name</translation>
 <translation id="6423031066725912715">Vietnamese with TCVN keyboard</translation>
+<translation id="6430271654280079150">You have 1 remaining attempt.</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
 <translation id="649877868557234318">Extracting <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903">Syncing <ph name="NUMBER_OF_FILES" /> items...</translation>
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
+<translation id="8608515571837163082">An incorrect PIN was entered too many times. Enter the 8-digit Personal Unblocking Key (PUK) provided by the operator.</translation>
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Incorrect PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

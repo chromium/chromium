@@ -1263,6 +1263,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Add Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sync will start once you leave sync settings</translation>
+<translation id="2162705204091149050">Read information about your browser, OS, device, installed software and files</translation>
 <translation id="2162926944953615670">No available eSIM profiles</translation>
 <translation id="2163470535490402084">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
@@ -2515,6 +2516,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3359256513598016054">Certificate Policy Constraints</translation>
 <translation id="3360297538363969800">Printing failed. Please check your printer and try again.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}other{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}}</translation>
+<translation id="3363202073972776113">This new profile will be managed by your organisation. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">From your administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Use either Ctrl or Alt</translation>
 <translation id="3368922792935385530">Connected</translation>
@@ -2549,6 +2551,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="339722927132407568">Freezes</translation>
 <translation id="3399432415385675819">Notifications will be disabled</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – interlaced</translation>
+<translation id="3401484564516348917">Read information about your browser, OS, device, installed software, registry values and files</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} password is stored on this device}other{{COUNT} passwords are stored on this device}}</translation>
 <translation id="3402255108239926910">Pick an avatar</translation>
 <translation id="3402585168444815892">Enrolling in demo mode</translation>
@@ -2795,6 +2798,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3627879631695760395">Install <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Turn off Bluetooth</translation>
 <translation id="3629631988386925734">Enter your password to enable Smart Lock. Next time, your phone will unlock your <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
+<translation id="3629664892718440872">Remember this choice</translation>
 <translation id="3630132874740063857">Your phone</translation>
 <translation id="3630995161997703415">Add this site to your shelf to use it at any time</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, and how much memory you typically use.<ph name="END_PARAGRAPH1" />
@@ -3285,6 +3289,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Full control of MIDI devices denied</translation>
+<translation id="4087328411748538168">Show on right</translation>
 <translation id="4089235344645910861">Settings saved. Sync started.</translation>
 <translation id="4090103403438682346">Enable Verified Access</translation>
 <translation id="4090947011087001172">Reset site permissions for <ph name="SITE" />?</translation>
@@ -3979,6 +3984,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4779766576531456629">Rename eSIM mobile network</translation>
 <translation id="4780321648949301421">Save Page As...</translation>
 <translation id="4781443161433589743">You’re on Chrome’s strongest security</translation>
+<translation id="4782861709165039462">All microphones disabled by devices hardware switch</translation>
 <translation id="4785719467058219317">You're using a security key that's not registered with this website</translation>
 <translation id="4785914069240823137">Cancel crop</translation>
 <translation id="4788092183367008521">Please check your network connection and try again.</translation>
@@ -4747,6 +4753,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5548075230008247516">All items unselected, selection mode exited.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
 <translation id="5548606607480005320">Safety check</translation>
+<translation id="5548644592758170183">Show on left</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Keyboard and text input</translation>
 <translation id="5553089923092577885">Certificate Policy Mappings</translation>
@@ -8237,6 +8244,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8980345560318123814">Feedback reports</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Crashed</translation>
 <translation id="8981825781894055334">Low on paper</translation>
+<translation id="8983018820925880511">This new profile will be managed by <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> can edit <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">You will be visible to everyone for <ph name="MINUTES" /> minutes. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Welcome to Steam for Chromebook</translation>
@@ -8333,6 +8341,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9075413375877487220">This extension is not trusted by Enhanced Safe Browsing.</translation>
 <translation id="9076283476770535406">It may have mature content</translation>
 <translation id="9076523132036239772">Sorry, your email or password could not be verified. Try connecting to a network first.</translation>
+<translation id="9076821103818989526">Side panel</translation>
 <translation id="9076977315710973122">SMB share</translation>
 <translation id="9078193189520575214">Applying changes…</translation>
 <translation id="9078316009970372699">Disable Instant Tethering</translation>

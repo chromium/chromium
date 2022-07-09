@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="2405260961377511836">Unable to open the photo picker</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="6315516427814392808">Unable to complete previous operation due to low memory</translation>
 <translation id="6555463879959038093">Failed to copy to the clipboard</translation>

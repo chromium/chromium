@@ -214,7 +214,7 @@
 <translation id="1193927020065025187">Возможно, этот сайт пытается обманным путем заставить вас разрешить навязчивые уведомления.</translation>
 <translation id="1195210374336998651">Открыть настройки приложений</translation>
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
-<translation id="1195558154361252544">Уведомления со всех сайтов, кроме тех, которым вы предоставили отдельные разрешения, автоматически блокируются.</translation>
+<translation id="1195558154361252544">Уведомления от всех сайтов блокируются автоматически – кроме тех, которым вы дали разрешение.</translation>
 <translation id="1197088940767939838">Оранжевый</translation>
 <translation id="1197199342062592414">Приступим</translation>
 <translation id="11978075283960463">Размер данных приложения: <ph name="APP_SIZE" /></translation>
@@ -2972,7 +2972,7 @@
 <translation id="3809280248639369696">Пришелец</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> может просматривать файлы в указанных ниже папках.</translation>
 <translation id="3810914450553844415">Администратор запретил добавлять дополнительные аккаунты Google</translation>
-<translation id="3810973564298564668">Перейти</translation>
+<translation id="3810973564298564668">Управление</translation>
 <translation id="381202950560906753">Добавить ещё</translation>
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
 <translation id="3813296892522778813">Поиск не дал результатов? Перейдите в <ph name="BEGIN_LINK_CHROMIUM" />Справочный центр Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
