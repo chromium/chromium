@@ -306,7 +306,6 @@ crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.htm
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
 
 # Skipping new tests
-crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
@@ -436,7 +435,6 @@ crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-o
 crbug.com/1152602 [ win amd-0x7340 angle-d3d11 ] conformance/canvas/drawingbuffer-static-canvas-test.html [ RetryOnFailure ]
 
 # Win / D3D9 failures
-# Skipping these two tests because they're causing assertion failures.
 
 # The functions test have been persistently flaky on D3D9
 crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
@@ -557,6 +555,12 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL
 
 crbug.com/903903 [ android qualcomm ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
 crbug.com/478572 [ android qualcomm ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
+
+# Need to investigate failure on basically all devices with passthrough on Android.
+crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+# Failure on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Was too difficult to suppress these failures on individual bots.
 crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
@@ -723,6 +727,8 @@ crbug.com/1227774 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/mis
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1271227 [ chromeos chromeos-board-amd64-generic ] conformance/attribs/gl-bindAttribLocation-aliasing.html [ RetryOnFailure ]
 
+# Failures on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #

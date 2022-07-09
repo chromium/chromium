@@ -214,7 +214,6 @@ crbug.com/891953 [ linux display-server-wayland ] WebglExtension_OVR_multiview2 
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
-crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
@@ -703,6 +702,12 @@ crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-rende
 # Video uploads to some texture formats new in WebGL 2.0 are
 # failing.
 crbug.com/951628 [ android no-passthrough ] conformance/rendering/blending.html [ Failure ]
+
+# Need to investigate failure on basically all devices with passthrough on Android.
+crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+# Failure on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Qualcomm (Pixel 2) failures
 
