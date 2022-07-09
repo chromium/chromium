@@ -507,7 +507,7 @@
     ]
   },
   "offscreen": {
-    "channel": "trunk",
+    "channel": "canary",
     "extension_types": ["extension"],
     "min_manifest_version": 3,
     "feature_flag": "ExtensionsOffscreenDocuments"

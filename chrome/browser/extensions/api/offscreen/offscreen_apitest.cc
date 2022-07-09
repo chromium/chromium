@@ -146,8 +146,7 @@ class OffscreenApiTest : public ExtensionApiTest {
   // The `offscreen` API is currently behind both a feature and a channel
   // restriction.
   base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_override_{
-      version_info::Channel::UNKNOWN};
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::CANARY};
 };
 
 // Tests the general flow of creating an offscreen document.
