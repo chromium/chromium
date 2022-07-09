@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/linux_key_network_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 
 #include <memory>
 #include <string>
@@ -11,8 +11,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -27,16 +25,15 @@ constexpr int kMaxRetryCount = 10;
 
 }  // namespace
 
-LinuxKeyNetworkDelegate::LinuxKeyNetworkDelegate(
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        pending_remote_url_loader_factory)
-    : remote_url_loader_factory_(std::move(pending_remote_url_loader_factory)) {
-  DCHECK(remote_url_loader_factory_);
+MojoKeyNetworkDelegate::MojoKeyNetworkDelegate(
+    network::mojom::URLLoaderFactory* url_loader_factory)
+    : url_loader_factory_(url_loader_factory) {
+  DCHECK(url_loader_factory_);
 }
 
-LinuxKeyNetworkDelegate::~LinuxKeyNetworkDelegate() = default;
+MojoKeyNetworkDelegate::~MojoKeyNetworkDelegate() = default;
 
-void LinuxKeyNetworkDelegate::SendPublicKeyToDmServer(
+void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
     const GURL& url,
     const std::string& dm_token,
     const std::string& body,
@@ -89,13 +86,13 @@ void LinuxKeyNetworkDelegate::SendPublicKeyToDmServer(
   url_loader_->SetRetryOptions(
       kMaxRetryCount, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX);
   url_loader_->DownloadHeadersOnly(
-      remote_url_loader_factory_.get(),
-      base::BindOnce(&LinuxKeyNetworkDelegate::OnURLLoaderComplete,
+      url_loader_factory_,
+      base::BindOnce(&MojoKeyNetworkDelegate::OnURLLoaderComplete,
                      weak_factory_.GetWeakPtr(),
                      std::move(upload_key_completed_callback)));
 }
 
-void LinuxKeyNetworkDelegate::OnURLLoaderComplete(
+void MojoKeyNetworkDelegate::OnURLLoaderComplete(
     UploadKeyCompletedCallback upload_key_completed_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   HttpResponseCode response_code = headers ? headers->response_code() : 0;

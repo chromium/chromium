@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/linux_key_network_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
@@ -97,26 +97,29 @@ int ChromeManagementService::Run(const base::CommandLine* command_line,
 
   mojo::ScopedMessagePipeHandle pipe = invitation.ExtractMessagePipe(pipe_name);
 
-  auto remote_url_loader_factory =
+  auto pending_remote_url_loader_factory =
       mojo::PendingRemote<network::mojom::URLLoaderFactory>(std::move(pipe), 0);
-
-  if (!remote_url_loader_factory.is_valid()) {
+  if (!pending_remote_url_loader_factory.is_valid()) {
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
                      "connect to the browser process.";
     return kFailure;
   }
 
-  return std::move(rotation_callback_)
-      .Run(std::move(remote_url_loader_factory), command_line);
+  remote_url_loader_factory_.Bind(std::move(pending_remote_url_loader_factory));
+  if (!remote_url_loader_factory_.is_bound()) {
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
+                     "connect to the browser process.";
+    return kFailure;
+  }
+
+  return std::move(rotation_callback_).Run(command_line);
 }
 
 int ChromeManagementService::StartRotation(
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        remote_url_loader_factory,
     const base::CommandLine* command_line) {
   auto key_rotation_manager =
-      KeyRotationManager::Create(std::make_unique<LinuxKeyNetworkDelegate>(
-          std::move(remote_url_loader_factory)));
+      KeyRotationManager::Create(std::make_unique<MojoKeyNetworkDelegate>(
+          remote_url_loader_factory_.get()));
   return RotateDeviceTrustKey(std::move(key_rotation_manager), *command_line,
                               chrome::GetChannel())
              ? kSuccess

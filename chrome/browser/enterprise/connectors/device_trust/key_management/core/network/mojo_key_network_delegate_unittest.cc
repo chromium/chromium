@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/linux_key_network_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 
 #include <memory>
 #include <string>
@@ -10,7 +10,6 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -35,16 +34,14 @@ constexpr HttpResponseCode kHardFailureCode = 404;
 
 }  // namespace
 
-class LinuxKeyNetworkDelegateTest : public testing::Test {
+class MojoKeyNetworkDelegateTest : public testing::Test {
  public:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   void SetUp() override {
-    test_url_loader_factory.Clone(
-        remote_url_loader_factory.InitWithNewPipeAndPassReceiver());
-    network_delegate = std::make_unique<LinuxKeyNetworkDelegate>(
-        std::move(remote_url_loader_factory));
+    network_delegate =
+        std::make_unique<MojoKeyNetworkDelegate>(&test_url_loader_factory);
   }
 
   HttpResponseCode SendRequest() {
@@ -60,19 +57,17 @@ class LinuxKeyNetworkDelegateTest : public testing::Test {
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      remote_url_loader_factory;
-  std::unique_ptr<LinuxKeyNetworkDelegate> network_delegate;
+  std::unique_ptr<MojoKeyNetworkDelegate> network_delegate;
 };
 
 // Tests a successful upload request.
-TEST_F(LinuxKeyNetworkDelegateTest, UploadRequest_Success) {
+TEST_F(MojoKeyNetworkDelegateTest, UploadRequest_Success) {
   AddResponse(net::HTTP_OK);
   EXPECT_EQ(kSuccessCode, SendRequest());
 }
 
 // Tests two separate sequential requests.
-TEST_F(LinuxKeyNetworkDelegateTest, UploadRequest_MultipleSequentialRequests) {
+TEST_F(MojoKeyNetworkDelegateTest, UploadRequest_MultipleSequentialRequests) {
   AddResponse(net::HTTP_NOT_FOUND);
   EXPECT_EQ(kHardFailureCode, SendRequest());
 
@@ -82,7 +77,7 @@ TEST_F(LinuxKeyNetworkDelegateTest, UploadRequest_MultipleSequentialRequests) {
 
 // Tests an upload request when no response headers were returned from
 // the url loader.
-TEST_F(LinuxKeyNetworkDelegateTest, UploadRequest_EmptyHeader) {
+TEST_F(MojoKeyNetworkDelegateTest, UploadRequest_EmptyHeader) {
   test_url_loader_factory.AddResponse(
       GURL(kFakeDMServerUrl), network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::OK),

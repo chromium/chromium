@@ -26,10 +26,10 @@ source_set("network") {
     ]
   }
 
-  if (is_linux) {
-    public += [ "linux_key_network_delegate.h" ]
+  if (is_linux || is_mac) {
+    public += [ "mojo_key_network_delegate.h" ]
 
-    sources += [ "linux_key_network_delegate.cc" ]
+    sources += [ "mojo_key_network_delegate.cc" ]
 
     deps += [
       "//mojo/public/cpp/bindings",
@@ -72,8 +72,8 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_linux) {
-    sources = [ "linux_key_network_delegate_unittest.cc" ]
+  if (is_linux || is_mac) {
+    sources = [ "mojo_key_network_delegate_unittest.cc" ]
 
     deps = [
       ":network",

@@ -40,6 +40,7 @@ class ChromeManagementServiceTest : public testing::Test {
  public:
   static int TestRunProcess(const bool& permissions_callback_result,
                             const int& rotation_callback_result) {
+    base::test::SingleThreadTaskEnvironment single_threaded_task_environment;
     base::MockCallback<ChromeManagementService::PermissionsCallback>
         mock_permissions_callback;
     base::MockCallback<ChromeManagementService::RotationCallback>
@@ -54,12 +55,12 @@ class ChromeManagementServiceTest : public testing::Test {
 
     if (rotation_callback_result == kSuccess ||
         rotation_callback_result == kFailure) {
-      EXPECT_CALL(mock_rotation_callback, Run(_, _))
+      EXPECT_CALL(mock_rotation_callback, Run(_))
           .WillOnce([&rotation_callback_result]() {
             return rotation_callback_result;
           });
     } else {
-      EXPECT_CALL(mock_rotation_callback, Run(_, _)).Times(0);
+      EXPECT_CALL(mock_rotation_callback, Run(_)).Times(0);
     }
 
     ChromeManagementService chrome_management_service = ChromeManagementService(
