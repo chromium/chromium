@@ -6,6 +6,7 @@
 #define CHROME_TEST_CHROMEDRIVER_CHROME_PAGE_TRACKER_H_
 
 #include <list>
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
