@@ -147,6 +147,8 @@
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -160,6 +162,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 @interface BrowserCoordinator () <ActivityServiceCommands,
                                   BrowserCoordinatorCommands,
+                                  CRWWebStateObserver,
                                   DefaultBrowserPromoCommands,
                                   DefaultPromoNonModalPresentationDelegate,
                                   EnterprisePromptCoordinatorDelegate,
@@ -334,9 +337,13 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 @implementation BrowserCoordinator {
   // Observers for WebStateList.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObservation;
+  std::unique_ptr<
+      base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
+      _scopedWebStatesObservation;
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
   PrerenderService* _prerenderService;
@@ -366,6 +373,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   DCHECK(!self.viewController);
 
+  [self addWebStateObserver];
   [self createViewControllerDependencies];
   [self createViewController];
   [self updateViewControllerDependencies];
@@ -398,6 +406,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
+  [self removeWebStateObserver];
   self.started = NO;
 }
 
@@ -1542,6 +1551,17 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _webStateListObserverBridge.reset();
 }
 
+- (void)addWebStateObserver {
+  _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
+  _scopedWebStatesObservation = std::make_unique<
+      base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>(
+      _webStateObserverBridge.get());
+}
+
+- (void)removeWebStateObserver {
+  _scopedWebStatesObservation.reset();
+}
+
 // Installs delegates for each WebState in WebStateList.
 - (void)installDelegatesForAllWebStates {
   self.openInCoordinator =
@@ -1625,6 +1645,14 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 // Install delegates for `webState`.
 - (void)installDelegatesForWebState:(web::WebState*)webState {
+  if (!webState->IsRealized()) {
+    [self startObservingRealizationForWebState:webState];
+    return;
+  }
+
+  DCHECK(!_prerenderService ||
+         !_prerenderService->IsWebStatePrerendered(webState));
+
   if (AutofillTabHelper::FromWebState(webState)) {
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
         self.viewController);
@@ -1659,6 +1687,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 // Uninstalls delegates for `webState`.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
+  if (!webState->IsRealized()) {
+    [self stopObservingRealizationForWebState:webState];
+    return;
+  }
+
   if (AutofillTabHelper::FromWebState(webState)) {
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);
   }
@@ -1683,6 +1716,27 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         nil);
   }
+}
+
+- (void)startObservingRealizationForWebState:(web::WebState*)webState {
+  if (_scopedWebStatesObservation->IsObservingSource(webState))
+    return;
+  _scopedWebStatesObservation->AddObservation(webState);
+}
+
+- (void)stopObservingRealizationForWebState:(web::WebState*)webState {
+  _scopedWebStatesObservation->RemoveObservation(webState);
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateRealized:(web::WebState*)webState {
+  [self stopObservingRealizationForWebState:webState];
+  [self installDelegatesForWebState:webState];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self stopObservingRealizationForWebState:webState];
 }
 
 #pragma mark - PasswordBreachCommands
