@@ -683,13 +683,17 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   friend class ScopedUnpackParametersResetRestore;
 
   // WebGL extensions.
+  friend class EXTColorBufferFloat;
+  friend class EXTColorBufferHalfFloat;
   friend class EXTDisjointTimerQuery;
   friend class EXTDisjointTimerQueryWebGL2;
   friend class EXTTextureCompressionBPTC;
   friend class EXTTextureCompressionRGTC;
   friend class OESDrawBuffersIndexed;
+  friend class OESTextureFloat;
   friend class OESVertexArrayObject;
   friend class OVRMultiview2;
+  friend class WebGLColorBufferFloat;
   friend class WebGLCompressedTextureASTC;
   friend class WebGLCompressedTextureETC;
   friend class WebGLCompressedTextureETC1;
@@ -1060,6 +1064,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   }
 
   bool ExtensionSupportedAndAllowed(const ExtensionTracker*);
+  WebGLExtension* EnableExtensionIfSupported(const String& name);
 
   inline bool ExtensionEnabled(WebGLExtensionName name) {
     return extension_enabled_[name];

@@ -31,9 +31,17 @@ namespace blink {
 
 WebGLColorBufferFloat::WebGLColorBufferFloat(WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_CHROMIUM_color_buffer_float_rgba");
+  // Optimistically enable rendering to RGB floating-point textures if
+  // supported.
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_CHROMIUM_color_buffer_float_rgb");
+
   // https://github.com/KhronosGroup/WebGL/pull/2830
-  // Spec requires EXT_float_blend needs to be turned on implicitly here
-  context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_float_blend");
+  // Spec requires EXT_float_blend to be implicitly turned on here if
+  // it's supported.
+  context->EnableExtensionIfSupported("EXT_float_blend");
 }
 
 WebGLExtensionName WebGLColorBufferFloat::GetName() const {

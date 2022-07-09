@@ -13,6 +13,12 @@ WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_WEBGL_multi_draw");
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_ANGLE_multi_draw");
+
+  // Spec requires ANGLE_instanced_arrays to be implicitly turned on
+  // here in WebGL 1.0 contexts.
+  if (!context->IsWebGL2()) {
+    context->EnableExtensionIfSupported("ANGLE_instanced_arrays");
+  }
 }
 
 WebGLExtensionName WebGLMultiDraw::GetName() const {

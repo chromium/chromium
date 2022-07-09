@@ -3209,22 +3209,9 @@ bool WebGLRenderingContextBase::ExtensionSupportedAndAllowed(
   return true;
 }
 
-bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
-  return (drawing_buffer_ && drawing_buffer_->ContextProvider() &&
-          drawing_buffer_->ContextProvider()
-              ->GetGpuFeatureInfo()
-              .IsWorkaroundEnabled(gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS));
-}
-
-ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
-                                                    const String& name) {
+WebGLExtension* WebGLRenderingContextBase::EnableExtensionIfSupported(
+    const String& name) {
   WebGLExtension* extension = nullptr;
-
-  if (name == WebGLDebugRendererInfo::ExtensionName()) {
-    ExecutionContext* context = ExecutionContext::From(script_state);
-    UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
-    Dactyloscoper::Record(context, WebFeature::kWebGLDebugRendererInfo);
-  }
 
   if (!isContextLost()) {
     for (ExtensionTracker* tracker : extensions_) {
@@ -3241,6 +3228,26 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
       }
     }
   }
+
+  return extension;
+}
+
+bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
+  return (drawing_buffer_ && drawing_buffer_->ContextProvider() &&
+          drawing_buffer_->ContextProvider()
+              ->GetGpuFeatureInfo()
+              .IsWorkaroundEnabled(gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS));
+}
+
+ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
+                                                    const String& name) {
+  if (name == WebGLDebugRendererInfo::ExtensionName()) {
+    ExecutionContext* context = ExecutionContext::From(script_state);
+    UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
+    Dactyloscoper::Record(context, WebFeature::kWebGLDebugRendererInfo);
+  }
+
+  WebGLExtension* extension = EnableExtensionIfSupported(name);
 
   v8::Local<v8::Value> wrapped_extension =
       ToV8(extension, script_state->GetContext()->Global(),
