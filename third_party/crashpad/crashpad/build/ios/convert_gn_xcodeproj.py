@@ -28,6 +28,7 @@ import copy
 import filecmp
 import functools
 import hashlib
+import io
 import json
 import os
 import re
@@ -65,7 +66,7 @@ class Template(string.Template):
 @functools.lru_cache
 def LoadSchemeTemplate(root, name):
   """Return a string.Template object for scheme file loaded relative to root."""
-  path = os.path.join(root, 'build', 'ios', name)
+  path = os.path.join(root, 'build', 'ios', name + '.template')
   with open(path) as file:
     return Template(file.read())
 
@@ -75,7 +76,7 @@ def CreateIdentifier(str_id):
   return hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
 
 
-def GenerateSchemeForTarget(root, project, old_project, name, path, tests):
+def GenerateSchemeForTarget(root, project, old_project, name, path, is_test):
   """Generates the .xcsheme file for target named |name|.
 
   The file is generated in the new project schemes directory from a template.
@@ -91,9 +92,23 @@ def GenerateSchemeForTarget(root, project, old_project, name, path, tests):
   if not os.path.isdir(os.path.dirname(scheme_path)):
     os.makedirs(os.path.dirname(scheme_path))
 
+  substitutions = {
+    'LLDBINIT_PATH': LLDBINIT_PATH,
+    'BLUEPRINT_IDENTIFIER': identifier,
+    'BUILDABLE_NAME': path,
+    'BLUEPRINT_NAME': name,
+    'PROJECT_NAME': project_name
+  }
+
+  if is_test:
+    template = LoadSchemeTemplate(root, 'xcodescheme-testable')
+    substitutions['PATH'] = os.environ['PATH']
+
+  else:
+    template = LoadSchemeTemplate(root, 'xcodescheme')
+
   old_scheme_path = os.path.join(old_project, relative_path)
   if os.path.exists(old_scheme_path):
-    made_changes = False
 
     tree = xml.etree.ElementTree.parse(old_scheme_path)
     tree_root = tree.getroot()
@@ -105,7 +120,6 @@ def GenerateSchemeForTarget(root, project, old_project, name, path, tests):
           ('BlueprintIdentifier', identifier)):
         if reference.get(attr) != value:
           reference.set(attr, value)
-          made_changes = True
 
     for child in tree_root:
       if child.tag not in ('TestAction', 'LaunchAction'):
@@ -113,59 +127,29 @@ def GenerateSchemeForTarget(root, project, old_project, name, path, tests):
 
       if child.get('customLLDBInitFile') != LLDBINIT_PATH:
         child.set('customLLDBInitFile', LLDBINIT_PATH)
-        made_changes = True
 
-      # Override the list of testables.
-      if child.tag == 'TestAction':
-        for subchild in child:
-          if subchild.tag != 'Testables':
-            continue
+    if is_test:
 
-          for elt in list(subchild):
-            subchild.remove(elt)
+      template_tree = xml.etree.ElementTree.parse(
+          io.StringIO(template.substitute(**substitutions)))
 
-          if tests:
-            template = LoadSchemeTemplate(root, 'xcodescheme-testable.template')
-            for (key, test_path, test_name) in sorted(tests):
-              testable = ''.join(template.substitute(
-                  BLUEPRINT_IDENTIFIER=key,
-                  BUILDABLE_NAME=test_path,
-                  BLUEPRINT_NAME=test_name,
-                  PROJECT_NAME=project_name))
+      template_tree_root = template_tree.getroot()
+      for child in tree_root:
+        if child.tag != 'BuildAction':
+          continue
 
-              testable_elt = xml.etree.ElementTree.fromstring(testable)
-              subchild.append(testable_elt)
+        for subchild in list(child):
+          child.remove(subchild)
 
-    if made_changes:
-      tree.write(scheme_path, xml_declaration=True, encoding='UTF-8')
+        for post_action in template_tree_root.findall('.//PostActions'):
+          child.append(post_action)
 
-    else:
-      shutil.copyfile(old_scheme_path, scheme_path)
+    tree.write(scheme_path, xml_declaration=True, encoding='UTF-8')
 
   else:
 
-    testables = ''
-    if tests:
-      template = LoadSchemeTemplate(root, 'xcodescheme-testable.template')
-      testables = '\n' + ''.join(
-          template.substitute(
-              BLUEPRINT_IDENTIFIER=key,
-              BUILDABLE_NAME=test_path,
-              BLUEPRINT_NAME=test_name,
-              PROJECT_NAME=project_name)
-          for (key, test_path, test_name) in sorted(tests)).rstrip()
-
-    template = LoadSchemeTemplate(root, 'xcodescheme.template')
-
     with open(scheme_path, 'w') as scheme_file:
-      scheme_file.write(
-          template.substitute(
-              TESTABLES=testables,
-              LLDBINIT_PATH=LLDBINIT_PATH,
-              BLUEPRINT_IDENTIFIER=identifier,
-              BUILDABLE_NAME=path,
-              BLUEPRINT_NAME=name,
-              PROJECT_NAME=project_name))
+      scheme_file.write(template.substitute(**substitutions))
 
 
 class XcodeProject(object):
@@ -225,13 +209,13 @@ class XcodeProject(object):
     # because objects will be added to/removed from the project upon
     # iterating this list and python dictionaries cannot be mutated
     # during iteration.
+
     for key, obj in list(self.IterObjectsByIsa('XCConfigurationList')):
       # Use the first build configuration as template for creating all the
       # new build configurations.
       build_config_template = self.objects[obj['buildConfigurations'][0]]
       build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = \
           '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
-
 
       # Remove the existing build configurations from the project before
       # creating the new ones.
@@ -342,46 +326,54 @@ def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
     product = project.objects[obj['productReference']]
     product_path = product['path']
 
-    # For XCTests, the key is the product path, while for XCUITests, the key
-    # is the target name. Use a sum of both possible keys (there should not
-    # be overlaps since different hosts are used for XCTests and XCUITests
-    # but this make the code simpler).
+    # Do not generate scheme for the XCTests and XXCUITests target app.
+    # Instead, a scheme will be generated for each test modules.
     tests = mapping.get(product_path, []) + mapping.get(obj['name'], [])
-    GenerateSchemeForTarget(
-        root_dir, project_dir, old_project_dir,
-        obj['name'], product_path, tests)
+    if not tests:
+      GenerateSchemeForTarget(
+          root_dir, project_dir, old_project_dir,
+          obj['name'], product_path, False)
 
+    else:
+      for (_, test_name, test_path) in tests:
+        GenerateSchemeForTarget(
+          root_dir, project_dir, old_project_dir,
+          test_name, test_path, True)
 
-  source = GetOrCreateRootGroup(project, json_data['rootObject'], 'Source')
-  AddMarkdownToProject(project, root_dir, source)
-  SortFileReferencesByName(project, source)
+  root_object = project.objects[json_data['rootObject']]
+  main_group = project.objects[root_object['mainGroup']]
+
+  sources = None
+  for child_key in main_group['children']:
+    child = project.objects[child_key]
+    if child.get('name') == 'Source' or child.get('name') == 'Sources':
+      sources = child
+      break
+
+  if sources is None:
+    sources = main_group
+
+  AddMarkdownToProject(project, root_dir, sources, sources is main_group)
+  SortFileReferencesByName(project, sources, root_object.get('productRefGroup'))
 
   objects = collections.OrderedDict(sorted(project.objects.items()))
-  WriteXcodeProject(project_dir, json.dumps(json_data))
+  # WriteXcodeProject(project_dir, json.dumps(json_data))
 
 
-def CreateGroup(project, parent_group, group_name, path=None):
+def CreateGroup(project, parent_group, group_name, use_relative_paths):
   group_object = {
     'children': [],
     'isa': 'PBXGroup',
-    'name': group_name,
     'sourceTree': '<group>',
   }
-  if path is not None:
-    group_object['path'] = path
+  if use_relative_paths:
+    group_object['path'] = group_name
+  else:
+    group_object['name'] = group_name
   parent_group_name = parent_group.get('name', '')
   group_object_key = project.AddObject(parent_group_name, group_object)
   parent_group['children'].append(group_object_key)
   return group_object
-
-
-def GetOrCreateRootGroup(project, root_object, group_name):
-  main_group = project.objects[project.objects[root_object]['mainGroup']]
-  for child_key in main_group['children']:
-    child = project.objects[child_key]
-    if child['name'] == group_name:
-      return child
-  return CreateGroup(project, main_group, group_name, path='../..')
 
 
 class ObjectKey(object):
@@ -401,19 +393,24 @@ class ObjectKey(object):
   is checked and compared in alphabetic order.
   """
 
-  def __init__(self, obj):
+  def __init__(self, obj, last):
     self.isa = obj['isa']
     if 'name' in obj:
       self.name = obj['name']
     else:
       self.name = obj['path']
+    self.last = last
 
   def __lt__(self, other):
+    if self.last != other.last:
+      return other.last
     if self.isa != other.isa:
       return self.isa > other.isa
     return self.name < other.name
 
   def __gt__(self, other):
+    if self.last != other.last:
+      return self.last
     if self.isa != other.isa:
       return self.isa < other.isa
     return self.name > other.name
@@ -422,9 +419,10 @@ class ObjectKey(object):
     return self.isa == other.isa and self.name == other.name
 
 
-def SortFileReferencesByName(project, group_object):
+def SortFileReferencesByName(project, group_object, products_group_ref):
   SortFileReferencesByNameWithSortKey(
-      project, group_object, lambda ref: ObjectKey(project.objects[ref]))
+      project, group_object,
+      lambda ref: ObjectKey(project.objects[ref], ref == products_group_ref))
 
 
 def SortFileReferencesByNameWithSortKey(project, group_object, sort_key):
@@ -435,7 +433,7 @@ def SortFileReferencesByNameWithSortKey(project, group_object, sort_key):
       SortFileReferencesByNameWithSortKey(project, child, sort_key)
 
 
-def AddMarkdownToProject(project, root_dir, group_object):
+def AddMarkdownToProject(project, root_dir, group_object, use_relative_paths):
   list_files_cmd = ['git', '-C', root_dir, 'ls-files', '*.md']
   paths = check_output(list_files_cmd).splitlines()
   ios_internal_dir = os.path.join(root_dir, 'ios_internal')
@@ -448,31 +446,43 @@ def AddMarkdownToProject(project, root_dir, group_object):
       "fileEncoding": "4",
       "isa": "PBXFileReference",
       "lastKnownFileType": "net.daringfireball.markdown",
-      "name": os.path.basename(path),
-      "path": path,
       "sourceTree": "<group>"
     }
-    new_markdown_entry_id = project.AddObject('sources', new_markdown_entry)
-    folder = GetFolderForPath(project, group_object, os.path.dirname(path))
+    if use_relative_paths:
+      new_markdown_entry['path'] = os.path.basename(path)
+    else:
+      new_markdown_entry['name'] = os.path.basename(path)
+      new_markdown_entry['path'] = path
+    folder = GetFolderForPath(
+        project, group_object, os.path.dirname(path),
+        use_relative_paths)
+    folder_name = folder.get('name', None)
+    if folder_name is None:
+      folder_name = folder.get('path', 'sources')
+    new_markdown_entry_id = project.AddObject(folder_name, new_markdown_entry)
     folder['children'].append(new_markdown_entry_id)
 
 
-def GetFolderForPath(project, group_object, path):
+def GetFolderForPath(project, group_object, path, use_relative_paths):
   objects = project.objects
   if not path:
     return group_object
   for folder in path.split('/'):
     children = group_object['children']
     new_root = None
-    for child in children:
-      if objects[child]['isa'] == 'PBXGroup' and \
-         objects[child]['name'] == folder:
-        new_root = objects[child]
-        break
+    for child_key in children:
+      child = objects[child_key]
+      if child['isa'] == 'PBXGroup':
+        child_name = child.get('name', None)
+        if child_name is None:
+          child_name = child.get('path')
+        if child_name == folder:
+          new_root = child
+          break
     if not new_root:
       # If the folder isn't found we could just cram it into the leaf existing
       # folder, but that leads to folders with tons of README.md inside.
-      new_root = CreateGroup(project, group_object, folder)
+      new_root = CreateGroup(project, group_object, folder, use_relative_paths)
     group_object = new_root
   return group_object
 

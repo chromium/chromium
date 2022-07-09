@@ -195,7 +195,10 @@ source_set("client_test") {
   }
 
   if (crashpad_is_win) {
-    data_deps += [ "../handler:crashpad_handler_console" ]
+    data_deps += [
+      "../handler:crashpad_handler_console",
+      "../handler/win/wer:crashpad_wer_handler",
+    ]
   }
 }
 

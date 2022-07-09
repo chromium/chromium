@@ -37,6 +37,48 @@ struct ExceptionInformation {
   DWORD thread_id;
 };
 
+//! \brief Context to be passed to WerRegisterRuntimeExceptionModule().
+//!
+//! Used by the crashpad client, and the WER exception DLL.
+struct WerRegistration {
+  //! \brief The expected value of `version`. This should be changed whenever
+  //!     this struct is modified incompatibly.
+  enum { kWerRegistrationVersion = 1 };
+  //! \brief Version field to detect skew between target process and helper.
+  //!     Should be set to kWerRegistrationVersion.
+  int version;
+  //! \brief Used by DumpWithoutCrashing and the WER module to initiate a dump.
+  //!     These handles are leaked in the client process.
+  HANDLE dump_without_crashing;
+  //! \brief Used by DumpWithoutCrashing to signal that a dump has been taken.
+  //!     These handles are leaked in the client process.
+  HANDLE dump_completed;
+  //! \brief Set just before and cleared just after the events above are
+  //!     triggered or signalled in a normal DumpWithoutCrashing call.
+  //! When `true` the WER handler should not set the exception structures until
+  //! after dump_completed has been signalled.
+  bool in_dump_without_crashing;
+  //! \brief Address of g_non_crash_exception_information.
+  //!
+  //! Provided by the target process. Just before dumping we will point
+  //! (*crashpad_exception_info).exception_pointers at `pointers`. As WerFault
+  //! loads the helper with the same bitness as the client this can be void*.
+  void* crashpad_exception_info;
+  //! \brief These will point into the `exception` and `context` members in this
+  //!     structure.
+  //!
+  //! Filled in by the helper DLL.
+  EXCEPTION_POINTERS pointers;
+  //! \brief The exception provided by WerFault.
+  //!
+  //! Filled in by the helper DLL.
+  EXCEPTION_RECORD exception;
+  //! \brief The context provided by WerFault.
+  //!
+  //! Filled in by the helper DLL.
+  CONTEXT context;
+};
+
 //! \brief A client registration request.
 struct RegistrationRequest {
   //! \brief The expected value of `version`. This should be changed whenever

@@ -110,7 +110,7 @@ class GnGenerator(object):
     self._config = config
     self._target = target
 
-  def _GetGnArgs(self, extra_args=None):
+  def _GetGnArgs(self):
     """Build the list of arguments to pass to gn.
 
     Returns:
@@ -133,11 +133,6 @@ class GnGenerator(object):
     args.append((
         'target_environment',
         self.TARGET_ENVIRONMENT_VALUES[self._target]))
-
-    # If extra arguments are passed to the function, pass them before the
-    # user overrides (if any).
-    if extra_args is not None:
-      args.extend(extra_args)
 
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.
@@ -218,6 +213,10 @@ class GnGenerator(object):
       gn_command.append('--ninja-executable=autoninja')
       gn_command.append('--xcode-build-system=new')
       gn_command.append('--xcode-project=%s' % xcode_project_name)
+      gn_command.append('--xcode-additional-files-patterns=*.md')
+      gn_command.append('--xcode-configs=' + ';'.join(SUPPORTED_CONFIGS))
+      gn_command.append('--xcode-config-build-dir='
+                        '//out/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}')
       if self._settings.has_section('filters'):
         target_filters = self._settings.values('filters')
         if target_filters:

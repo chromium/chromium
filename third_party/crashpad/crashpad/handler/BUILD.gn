@@ -145,7 +145,10 @@ source_set("handler_test") {
   ]
 
   if (crashpad_is_win) {
-    deps += [ "../minidump:test_support" ]
+    deps += [
+      "../minidump:test_support",
+      "win/wer:crashpad_wer_test",
+    ]
 
     data_deps = [
       ":crashpad_handler_test_extended_handler",
@@ -352,5 +355,21 @@ if (crashpad_is_win) {
         "../third_party/mini_chromium:base",
       ]
     }
+  }
+
+  config("enable_cfg") {
+    cflags = [ "/guard:cf" ]
+    ldflags = [ "/guard:cf" ]
+  }
+  crashpad_executable("fastfail_program") {
+    testonly = true
+
+    sources = [ "win/fastfail_test_program.cc" ]
+    configs = [ ":enable_cfg" ]
+
+    deps = [
+      "../client",
+      "../third_party/mini_chromium:base",
+    ]
   }
 }

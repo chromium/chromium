@@ -28,8 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       customLLDBInitFile = "@{LLDBINIT_PATH}"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>@{TESTABLES}
-      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"

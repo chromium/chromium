@@ -87,6 +87,15 @@ def GetCdbPath():
     return None
 
 
+def Win32_20H1():
+    (major, _, build) = platform.win32_ver()[1].split('.')
+    if int(major) < 10:
+        return False
+    if int(build) >= 19041:
+        return True
+    return False
+
+
 def NamedPipeExistsAndReady(pipe_name):
     """Returns False if pipe_name does not exist. If pipe_name does exist,
     blocks until the pipe is ready to service clients, and then returns True.
@@ -203,6 +212,12 @@ def GetDumpFromZ7Program(out_dir, pipe_name):
                               win32con.EXCEPTION_ACCESS_VIOLATION)
 
 
+def GetDumpFromFastFailProgram(out_dir, pipe_name, *args):
+    STATUS_STACK_BUFFER_OVERRUN = 0xc0000409
+    return GetDumpFromProgram(out_dir, pipe_name, 'fastfail_program.exe',
+                              STATUS_STACK_BUFFER_OVERRUN, *args)
+
+
 class CdbRun(object):
     """Run cdb.exe passing it a cdb command and capturing the output.
     `Check()` searches for regex patterns in sequence allowing verification of
@@ -215,18 +230,25 @@ class CdbRun(object):
         self.out = subprocess.check_output(
             [cdb_path, '-z', dump_path, '-c', command + ';q'], text=True)
 
-    def Check(self, pattern, message, re_flags=0):
+    def Check(self, pattern, message, re_flags=0, must_not_match=False):
         match_obj = re.search(pattern, self.out, re_flags)
-        if match_obj:
+        if match_obj and not must_not_match:
             # Matched. Consume up to end of match.
             self.out = self.out[match_obj.end(0):]
+            print('ok - %s' % message)
+            sys.stdout.flush()
+        elif must_not_match and not match_obj:
+            # Did not match and did not want to match.
             print('ok - %s' % message)
             sys.stdout.flush()
         else:
             print('-' * 80, file=sys.stderr)
             print('FAILED - %s' % message, file=sys.stderr)
             print('-' * 80, file=sys.stderr)
-            print('did not match:\n  %s' % pattern, file=sys.stderr)
+            if must_not_match:
+                print('unexpected match:\n  %s' % pattern, file=sys.stderr)
+            else:
+                print('did not match:\n  %s' % pattern, file=sys.stderr)
             print('-' * 80, file=sys.stderr)
             print('remaining output was:\n  %s' % self.out, file=sys.stderr)
             print('-' * 80, file=sys.stderr)
@@ -244,8 +266,7 @@ class CdbRun(object):
 
 
 def RunTests(cdb_path, dump_path, start_handler_dump_path, destroyed_dump_path,
-             z7_dump_path, other_program_path, other_program_no_exception_path,
-             sigabrt_main_path, sigabrt_background_path, pipe_name):
+             pipe_name):
     """Runs various tests in sequence. Runs a new cdb instance on the dump for
     each block of tests to reduce the chances that output from one command is
     confused for output from another.
@@ -373,17 +394,22 @@ def RunTests(cdb_path, dump_path, start_handler_dump_path, destroyed_dump_path,
     out.Check(r'type \?\?\? \(333333\), size 00001000', 'first user stream')
     out.Check(r'type \?\?\? \(222222\), size 00000080', 'second user stream')
 
-    if z7_dump_path:
-        out = CdbRun(cdb_path, z7_dump_path, '.ecxr;lm')
-        out.Check('This dump file has an exception of interest stored in it',
-                  'captured exception in z7 module')
-        # Older versions of cdb display relative to exports for /Z7 modules,
-        # newer ones just display the offset.
-        out.Check(r'z7_test(!CrashMe\+0xe|\+0x100e):',
-                  'exception in z7 at correct location')
-        out.Check(r'z7_test  C \(codeview symbols\)     z7_test\.dll',
-                  'expected non-pdb symbol format')
 
+def Run7zDumpTest(cdb_path, z7_dump_path):
+    """Validate output when non-pdb symbols are in a module."""
+    out = CdbRun(cdb_path, z7_dump_path, '.ecxr;lm')
+    out.Check('This dump file has an exception of interest stored in it',
+              'captured exception in z7 module')
+    # Older versions of cdb display relative to exports for /Z7 modules,
+    # newer ones just display the offset.
+    out.Check(r'z7_test(!CrashMe\+0xe|\+0x100e):',
+              'exception in z7 at correct location')
+    out.Check(r'z7_test  C \(codeview symbols\)     z7_test\.dll',
+              'expected non-pdb symbol format')
+
+
+def RunOtherProgramTests(cdb_path, other_program_path,
+                         other_program_no_exception_path):
     out = CdbRun(cdb_path, other_program_path, '.ecxr;k;~')
     out.Check('Unknown exception - code deadbea7',
               'other program dump exception code')
@@ -407,12 +433,41 @@ def RunTests(cdb_path, dump_path, start_handler_dump_path, destroyed_dump_path,
               'other program with no exception given')
     out.Check('!RaiseException', 'other program in RaiseException()')
 
+
+def RunSigAbrtTest(cdb_path, sigabrt_main_path, sigabrt_background_path):
+    """Validate that abort signals are collected."""
     out = CdbRun(cdb_path, sigabrt_main_path, '.ecxr')
     out.Check('code 40000015', 'got sigabrt signal')
     out.Check('::HandleAbortSignal', '  stack in expected location')
 
     out = CdbRun(cdb_path, sigabrt_background_path, '.ecxr')
     out.Check('code 40000015', 'got sigabrt signal from background thread')
+
+
+def RunFastFailDumpTest(cdb_path, fastfail_path):
+    """Runs tests on __fastfail() caught using the runtime exception helper."""
+    out = CdbRun(cdb_path, fastfail_path, '.ecxr;k')
+    out.Check('This dump file has an exception of interest stored in it',
+              'captured exception from __fastfail() crash()')
+    out.Check(r'Subcode: 0x4d \(unknown subcode\)', 'See expected subcode.')
+    out.Check('FastFailCrash', 'See expected throwing function.')
+    out = CdbRun(cdb_path, fastfail_path, '.ecxr;k')
+
+
+def RunCfgDumpTest(cdb_path, cfg_path):
+    """Runs tests on a cfg crash caught using the runtime exception helper."""
+    out = CdbRun(cdb_path, cfg_path, '.ecxr;k')
+    out.Check('This dump file has an exception of interest stored in it',
+              'captured exception from cfg crash()')
+    out.Check('Subcode: 0xa FAST_FAIL_GUARD_ICALL_CHECK_FAILURE',
+              'See expected cfg error code.')
+    out.Check('RtlFailFast',
+              'See expected Windows exception throwing function.')
+    out.Check('::CfgCrash', 'expected crashy function is on the stack.')
+    out = CdbRun(cdb_path, cfg_path, '.ecxr;k')
+    out.Check(r'CallRffeManyTimes',
+              'Do not see the function we fiddled the pointer for.',
+              must_not_match=True)
 
 
 def main(args):
@@ -437,6 +492,7 @@ def main(args):
         pipe_name = r'\\.\pipe\end-to-end_%s_%s' % (os.getpid(),
                                                     str(random.getrandbits(64)))
 
+        # Basic tests.
         crashy_dump_path = GetDumpFromCrashyProgram(args[0], pipe_name)
         if not crashy_dump_path:
             return 1
@@ -450,12 +506,10 @@ def main(args):
         if not destroyed_dump_path:
             return 1
 
-        z7_dump_path = None
-        if not args[0].endswith('_x64'):
-            z7_dump_path = GetDumpFromZ7Program(args[0], pipe_name)
-            if not z7_dump_path:
-                return 1
+        RunTests(cdb_path, crashy_dump_path, start_handler_dump_path,
+                 destroyed_dump_path, pipe_name)
 
+        # Other program dumps.
         other_program_path = GetDumpFromOtherProgram(args[0], pipe_name)
         if not other_program_path:
             return 1
@@ -465,6 +519,10 @@ def main(args):
         if not other_program_no_exception_path:
             return 1
 
+        RunOtherProgramTests(cdb_path, other_program_path,
+                             other_program_no_exception_path)
+
+        # SIGABRT.
         sigabrt_main_path = GetDumpFromSignal(args[0], pipe_name, 'main')
         if not sigabrt_main_path:
             return 1
@@ -474,10 +532,25 @@ def main(args):
         if not sigabrt_background_path:
             return 1
 
-        RunTests(cdb_path, crashy_dump_path, start_handler_dump_path,
-                 destroyed_dump_path, z7_dump_path, other_program_path,
-                 other_program_no_exception_path, sigabrt_main_path,
-                 sigabrt_background_path, pipe_name)
+        RunSigAbrtTest(cdb_path, sigabrt_main_path, sigabrt_background_path)
+
+        # Can only build the z7 program on x86.
+        if not args[0].endswith('_x64'):
+            z7_dump_path = GetDumpFromZ7Program(args[0], pipe_name)
+            if not z7_dump_path:
+                return 1
+            Run7zDumpTest(cdb_path, z7_dump_path)
+
+        # __fastfail() & CFG crash caught by WerRuntimeExceptionHelperModule.
+        if (Win32_20H1()):
+            cfg_path = GetDumpFromFastFailProgram(args[0], pipe_name, "cf")
+            if not cfg_path:
+                return 1
+            RunCfgDumpTest(cdb_path, cfg_path)
+            fastfail_path = GetDumpFromFastFailProgram(args[0], pipe_name, "ff")
+            if not fastfail_path:
+                return 1
+            RunFastFailDumpTest(cdb_path, fastfail_path)
 
         return 1 if g_had_failures else 0
     finally:

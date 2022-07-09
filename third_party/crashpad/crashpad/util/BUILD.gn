@@ -167,6 +167,19 @@ if (crashpad_is_mac || crashpad_is_ios) {
   }
 }
 
+# Used by crashpad_wer_handler to avoid linking all of :util.
+if (crashpad_is_win) {
+  source_set("util_registration_protocol") {
+    sources = [
+      "misc/address_types.h",
+      "win/address_types.h",
+      "win/registration_protocol_win.h",
+    ]
+    public_deps = [ "../third_party/mini_chromium:build" ]
+    public_configs = [ "..:crashpad_config" ]
+  }
+}
+
 crashpad_static_library("util") {
   sources = [
     "file/delimited_file_reader.cc",

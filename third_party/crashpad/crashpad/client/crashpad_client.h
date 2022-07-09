@@ -669,6 +669,21 @@ class CrashpadClient {
   //!     error message will have been logged.
   bool WaitForHandlerStart(unsigned int timeout_ms);
 
+  //! \brief Register a DLL using WerRegisterExceptionModule().
+  //!
+  //! This method should only be called after a successful call to
+  //! SetHandlerIPCPipe() or StartHandler(). The registration is valid for the
+  //! lifetime of this object.
+  //!
+  //! \param[in] full_path The full path to the DLL that will be registered.
+  //!     The DLL path should also be set in an appropriate
+  //!     `Windows Error Reporting` registry key.
+  //!
+  //! \return `true` if the DLL was registered. Note: Windows just stashes the
+  //!     path somewhere so this returns `true` even if the DLL is not yet
+  //!     set in an appropriate registry key, or does not exist.
+  bool RegisterWerModule(const std::wstring& full_path);
+
   //! \brief Requests that the handler capture a dump even though there hasn't
   //!     been a crash.
   //!

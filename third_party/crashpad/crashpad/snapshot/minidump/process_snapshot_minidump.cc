@@ -643,7 +643,9 @@ bool ProcessSnapshotMinidump::InitializeThreadNames() {
       return false;
     }
 
-    thread_names_.emplace(minidump_thread_name.ThreadId, std::move(name));
+    // See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36566
+    const uint32_t thread_id = minidump_thread_name.ThreadId;
+    thread_names_.emplace(thread_id, std::move(name));
   }
 
   return true;
