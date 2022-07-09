@@ -61,15 +61,22 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  // TODO(https://crbug.com/1339382): This method is not complete. We need more
-  // robust URL handling, to check if the extension already has an offscreen
-  // document, to properly handle incognito, etc.
+  GURL url(params->parameters.url);
+  if (!url.is_valid())
+    url = extension()->GetResourceURL(params->parameters.url);
 
-  const GURL url = extension()->GetResourceURL(params->parameters.url);
-  CHECK_EQ(extension()->origin(), url::Origin::Create(url));
+  if (!url.is_valid() || url::Origin::Create(url) != extension()->origin()) {
+    return RespondNow(Error("Invalid URL."));
+  }
 
   OffscreenDocumentManager* manager =
       GetManagerToUse(*browser_context(), *extension());
+
+  if (manager->GetOffscreenDocumentForExtension(*extension())) {
+    return RespondNow(
+        Error("Only a single offscreen document may be created."));
+  }
+
   OffscreenDocumentHost* offscreen_document =
       manager->CreateOffscreenDocument(*extension(), url);
   DCHECK(offscreen_document);
