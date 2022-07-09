@@ -15,7 +15,7 @@ OESDrawBuffersIndexed::OESDrawBuffersIndexed(WebGLRenderingContextBase* context)
 }
 
 WebGLExtensionName OESDrawBuffersIndexed::GetName() const {
-  return kOESDrawBuffersIndexed;
+  return kOESDrawBuffersIndexedName;
 }
 
 bool OESDrawBuffersIndexed::Supported(WebGLRenderingContextBase* context) {
@@ -85,7 +85,19 @@ void OESDrawBuffersIndexed::colorMaskiOES(GLuint buf,
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
-  scoped.Context()->ContextGL()->ColorMaskiOES(buf, r, g, b, a);
+
+  WebGLRenderingContextBase* context = scoped.Context();
+
+  // Used in WebGLRenderingContextBase's
+  // DrawingBufferClientRestoreMaskAndClearValues.
+  if (buf == 0) {
+    context->color_mask_[0] = r;
+    context->color_mask_[1] = g;
+    context->color_mask_[2] = b;
+    context->color_mask_[3] = a;
+  }
+
+  context->ContextGL()->ColorMaskiOES(buf, r, g, b, a);
 }
 
 }  // namespace blink

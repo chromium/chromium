@@ -4950,7 +4950,7 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
     case GL_BLEND_SRC_ALPHA:
     case GL_BLEND_DST_RGB:
     case GL_BLEND_DST_ALPHA: {
-      if (!ExtensionEnabled(kOESDrawBuffersIndexed)) {
+      if (!ExtensionEnabled(kOESDrawBuffersIndexedName)) {
         // return null
         SynthesizeGLError(GL_INVALID_ENUM, "getIndexedParameter",
                           "invalid parameter name");
@@ -4961,7 +4961,7 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
       return WebGLAny(script_state, value);
     }
     case GL_COLOR_WRITEMASK: {
-      if (!ExtensionEnabled(kOESDrawBuffersIndexed)) {
+      if (!ExtensionEnabled(kOESDrawBuffersIndexedName)) {
         // Enum validation has to happen here to return null
         // instead of an array to pass
         // conformance2/state/gl-object-get-calls.html

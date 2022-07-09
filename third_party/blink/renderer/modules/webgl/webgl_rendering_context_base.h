@@ -687,6 +687,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   friend class EXTDisjointTimerQueryWebGL2;
   friend class EXTTextureCompressionBPTC;
   friend class EXTTextureCompressionRGTC;
+  friend class OESDrawBuffersIndexed;
   friend class OESVertexArrayObject;
   friend class OVRMultiview2;
   friend class WebGLCompressedTextureASTC;
@@ -938,6 +939,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   GLint scissor_box_[4];
   GLfloat clear_depth_;
   GLint clear_stencil_;
+  // State of the color mask - or the zeroth indexed color mask, if
+  // OES_draw_buffers_indexed is enabled.
   GLboolean color_mask_[4];
   GLboolean depth_mask_;
 

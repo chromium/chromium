@@ -1532,9 +1532,7 @@ WebGLRenderingContextBase::ClearIfComposited(
   } else {
     ContextGL()->ClearColor(0, 0, 0, 0);
   }
-  ContextGL()->ColorMask(
-      true, true, true,
-      !GetDrawingBuffer()->RequiresAlphaChannelToBePreserved());
+
   GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
 
   const bool has_depth =
@@ -1557,10 +1555,15 @@ WebGLRenderingContextBase::ClearIfComposited(
     ContextGL()->StencilMaskSeparate(GL_FRONT, 0xFFFFFFFF);
   }
 
-  ContextGL()->ColorMask(
-      true, true, true,
-      !GetDrawingBuffer()->DefaultBufferRequiresAlphaChannelToBePreserved());
-
+  if (ExtensionEnabled(kOESDrawBuffersIndexedName)) {
+    ContextGL()->ColorMaskiOES(
+        0, true, true, true,
+        !GetDrawingBuffer()->DefaultBufferRequiresAlphaChannelToBePreserved());
+  } else {
+    ContextGL()->ColorMask(
+        true, true, true,
+        !GetDrawingBuffer()->DefaultBufferRequiresAlphaChannelToBePreserved());
+  }
   {
     ScopedDisableRasterizerDiscard scoped_disable(this,
                                                   rasterizer_discard_enabled_);
@@ -7169,8 +7172,13 @@ void WebGLRenderingContextBase::DrawingBufferClientRestoreMaskAndClearValues() {
     return;
   bool color_mask_alpha =
       color_mask_[3] && active_scoped_rgb_emulation_color_masks_ == 0;
-  ContextGL()->ColorMask(color_mask_[0], color_mask_[1], color_mask_[2],
-                         color_mask_alpha);
+  if (ExtensionEnabled(kOESDrawBuffersIndexedName)) {
+    ContextGL()->ColorMaskiOES(0, color_mask_[0], color_mask_[1],
+                               color_mask_[2], color_mask_alpha);
+  } else {
+    ContextGL()->ColorMask(color_mask_[0], color_mask_[1], color_mask_[2],
+                           color_mask_alpha);
+  }
   ContextGL()->DepthMask(depth_mask_);
   ContextGL()->StencilMaskSeparate(GL_FRONT, stencil_mask_);
 
