@@ -1,92 +1,192 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/android/app_web_message_port.h"
+#include "content/browser/android/app_web_message_port.h"
+#include <memory>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
+#include "content/browser/android/message_payload.h"
 #include "content/public/android/content_jni_headers/AppWebMessagePort_jni.h"
+#include "content/public/browser/android/message_port_helper.h"
+#include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
+#include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/common/messaging/transferable_message_mojom_traits.h"
+#include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 
-namespace content {
+namespace content::android {
 
-namespace AppWebMessagePort {
+base::android::ScopedJavaLocalRef<jobjectArray> CreateJavaMessagePort(
+    std::vector<blink::MessagePortDescriptor> descriptors) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_descriptors;
+  j_descriptors.reserve(descriptors.size());
+  for (auto& descriptor : descriptors) {
+    j_descriptors.push_back(AppWebMessagePort::Create(std::move(descriptor)));
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, base::make_span(j_descriptors),
+      base::android::GetClass(
+          env, kClassPath_org_chromium_content_browser_AppWebMessagePort));
+}
 
 // static
-std::vector<blink::MessagePortDescriptor> UnwrapJavaArray(
+base::android::ScopedJavaLocalRef<jobject> AppWebMessagePort::Create(
+    blink::MessagePortDescriptor&& descriptor) {
+  auto ptr = base::WrapUnique(new AppWebMessagePort(std::move(descriptor)));
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* raw_ptr = ptr.get();
+  auto j_obj = Java_AppWebMessagePort_Constructor(
+      env, reinterpret_cast<intptr_t>(ptr.release()));
+  raw_ptr->j_obj_ = JavaObjectWeakGlobalRef(env, j_obj);
+  return j_obj;
+}
+
+// static
+std::vector<blink::MessagePortDescriptor> AppWebMessagePort::Release(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& jports) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<blink::MessagePortDescriptor> ports;
   if (!jports.is_null()) {
     for (auto jport : jports.ReadElements<jobject>()) {
-      jlong port_ptr =
-          Java_AppWebMessagePort_releaseNativeMessagePortDescriptor(env, jport);
+      jlong port_ptr = Java_AppWebMessagePort_getNativeObj(env, jport);
       // Ports are heap allocated native objects. Since we are taking ownership
       // of the object from the Java code we are responsible for cleaning it up.
-      std::unique_ptr<blink::MessagePortDescriptor> port = base::WrapUnique(
-          reinterpret_cast<blink::MessagePortDescriptor*>(port_ptr));
-      ports.push_back(std::move(*port));
+      std::unique_ptr<AppWebMessagePort> port =
+          base::WrapUnique(reinterpret_cast<AppWebMessagePort*>(port_ptr));
+      ports.emplace_back(port->PassPort());
     }
   }
   return ports;
 }
 
-// static
-base::android::ScopedJavaGlobalRef<jobjectArray> WrapJavaArray(
+AppWebMessagePort::AppWebMessagePort(blink::MessagePortDescriptor&& descriptor)
+    : runner_(base::ThreadTaskRunnerHandle::Get()),
+      descriptor_(std::move(descriptor)) {
+  // AppWebMessagePort can only be created on main thread.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  connector_ = std::make_unique<mojo::Connector>(
+      descriptor_.TakeHandleToEntangleWithEmbedder(),
+      mojo::Connector::SINGLE_THREADED_SEND);
+  connector_->set_connection_error_handler(
+      base::BindOnce(&AppWebMessagePort::OnPipeError, base::Unretained(this)));
+}
+
+AppWebMessagePort::~AppWebMessagePort() {
+  DCHECK(runner_->BelongsToCurrentThread());
+  GiveDisentangledHandleIfNeeded();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AppWebMessagePort_nativeDestroyed(env, GetJavaObj(env));
+}
+
+// JNI
+void AppWebMessagePort::PostMessage(
     JNIEnv* env,
-    std::vector<blink::MessagePortDescriptor> descriptors) {
-  // Convert to an array of raw blink::MessagePortDescriptor pointers. Ownership
-  // of these objects is passed to Java.
-  std::vector<int64_t> descriptor_ptrs;
-  descriptor_ptrs.reserve(descriptors.size());
-  for (size_t i = 0; i < descriptors.size(); ++i) {
-    blink::MessagePortDescriptor* descriptor =
-        new blink::MessagePortDescriptor(std::move(descriptors[i]));
-    descriptor_ptrs.push_back(reinterpret_cast<int64_t>(descriptor));
+    const base::android::JavaParamRef<jobject>& j_message_payload,
+    const base::android::JavaParamRef<jobjectArray>& j_ports) {
+  DCHECK(runner_->BelongsToCurrentThread());
+  DCHECK(descriptor_.IsValid());
+  DCHECK(connector_);
+  blink::TransferableMessage transferable_message =
+      CreateTransferableMessageFromJavaMessagePayload(
+          base::android::ScopedJavaLocalRef<jobject>(j_message_payload));
+  transferable_message.ports =
+      blink::MessagePortChannel::CreateFromHandles(Release(env, j_ports));
+
+  mojo::Message mojo_message =
+      blink::mojom::TransferableMessage::SerializeAsMessage(
+          &transferable_message);
+  bool send_result = connector_->Accept(&mojo_message);
+  DCHECK(send_result);
+}
+
+void AppWebMessagePort::SetShouldReceiveMessages(JNIEnv* env,
+                                                 bool should_receive_message) {
+  DCHECK(runner_->BelongsToCurrentThread());
+  DCHECK(connector_);
+  if (!should_receive_message) {
+    connector_->set_incoming_receiver(nullptr);
+  } else {
+    connector_->set_incoming_receiver(this);
+    if (!is_watching_) {
+      is_watching_ = true;
+      connector_->StartReceiving(runner_);
+    }
   }
-
-  // Now convert to a Java array.
-  base::android::ScopedJavaLocalRef<jlongArray> native_descriptors =
-      base::android::ToJavaLongArray(env, descriptor_ptrs.data(),
-                                     descriptor_ptrs.size());
-
-  // And finally convert this to a Java array of AppWebMessagePorts.
-  base::android::ScopedJavaLocalRef<jobjectArray> ports =
-      Java_AppWebMessagePort_createFromNativeBlinkMessagePortDescriptors(
-          env, native_descriptors);
-
-  base::android::ScopedJavaGlobalRef<jobjectArray> global_ports(ports);
-  return global_ports;
 }
 
-}  // namespace AppWebMessagePort
-
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AppWebMessagePort_DecodeStringMessage(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& encoded_data) {
-  std::vector<uint8_t> encoded_message;
-  base::android::JavaByteArrayToByteVector(env, encoded_data, &encoded_message);
-
-  std::u16string message;
-  if (!blink::DecodeStringMessage(encoded_message, &message))
-    return nullptr;
-
-  base::android::ScopedJavaLocalRef<jstring> jmessage =
-      base::android::ConvertUTF16ToJavaString(env, message);
-  return jmessage;
+void AppWebMessagePort::CloseAndDestroy(JNIEnv* env) {
+  DCHECK(runner_->BelongsToCurrentThread());
+  DCHECK(connector_);
+  delete this;
 }
 
-base::android::ScopedJavaLocalRef<jbyteArray>
-JNI_AppWebMessagePort_EncodeStringMessage(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jmessage) {
-  std::vector<uint8_t> encoded_message = blink::EncodeStringMessage(
-      base::android::ConvertJavaStringToUTF16(jmessage));
-  return base::android::ToJavaByteArray(env, encoded_message);
+// mojo::MessageReceiver:
+bool AppWebMessagePort::Accept(mojo::Message* message) {
+  DCHECK(runner_->BelongsToCurrentThread());
+  blink::TransferableMessage transferable_message;
+  if (!blink::mojom::TransferableMessage::DeserializeFromMessage(
+          std::move(*message), &transferable_message)) {
+    return false;
+  }
+  auto j_ports = CreateJavaMessagePort(
+      blink::MessagePortChannel::ReleaseHandles(transferable_message.ports));
+  base::android::ScopedJavaLocalRef<jobject> j_message =
+      CreateJavaMessagePayload(transferable_message);
+  if (j_message) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AppWebMessagePort_onMessage(env, GetJavaObj(env), j_message, j_ports);
+  }
+  return true;
 }
 
-}  // namespace content
+blink::MessagePortDescriptor AppWebMessagePort::PassPort() {
+  DCHECK(runner_->BelongsToCurrentThread());
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AppWebMessagePort_setTransferred(env, GetJavaObj(env));
+  GiveDisentangledHandleIfNeeded();
+  return std::move(descriptor_);
+}
+
+void AppWebMessagePort::OnPipeError() {
+  DCHECK(runner_->BelongsToCurrentThread());
+  connector_errored_ = true;
+}
+
+void AppWebMessagePort::GiveDisentangledHandleIfNeeded() {
+  DCHECK(runner_->BelongsToCurrentThread());
+  if (!connector_ || !descriptor_.IsValid()) {
+    return;
+  }
+  if (connector_errored_) {
+    // Return an empty message pipe.
+    descriptor_.GiveDisentangledHandle(mojo::ScopedMessagePipeHandle());
+  } else {
+    descriptor_.GiveDisentangledHandle(connector_->PassMessagePipe());
+  }
+  connector_.reset();
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+JNI_AppWebMessagePort_CreatePair(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  blink::MessagePortDescriptorPair port_pair;
+  std::vector<blink::MessagePortDescriptor> descriptors;
+  descriptors.emplace_back(port_pair.TakePort0());
+  descriptors.emplace_back(port_pair.TakePort1());
+  return CreateJavaMessagePort(std::move(descriptors));
+}
+
+}  // namespace content::android

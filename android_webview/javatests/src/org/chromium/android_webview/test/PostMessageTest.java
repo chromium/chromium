@@ -24,11 +24,16 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
@@ -36,10 +41,13 @@ import org.chromium.net.test.util.TestWebServer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The tests for content postMessage API.
  */
+@Batch(Batch.PER_CLASS)
 @RunWith(AwJUnit4ClassRunner.class)
 public class PostMessageTest {
     @Rule
@@ -968,5 +976,173 @@ public class PostMessageTest {
         MessageObject.Data data = mMessageObject.waitForMessage();
         Assert.assertEquals(WEBVIEW_MESSAGE, data.mMessage);
         Assert.assertEquals(SOURCE_ORIGIN, data.mOrigin);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testMessagePortLifecycle() throws Throwable {
+        final String baseUrl = mWebServer.getBaseUrl();
+        loadPage(TEST_PAGE);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            final MessagePort[] ports = mAwContents.createMessageChannel();
+            Assert.assertFalse(ports[0].isTransferred());
+            Assert.assertFalse(ports[0].isClosed());
+            Assert.assertFalse(ports[0].isStarted());
+            Assert.assertFalse(ports[1].isTransferred());
+            Assert.assertFalse(ports[1].isClosed());
+            Assert.assertFalse(ports[1].isStarted());
+
+            // Post port1 to main frame.
+            mAwContents.postMessageToMainFrame(
+                    new MessagePayload("1"), baseUrl, new MessagePort[] {ports[1]});
+            Assert.assertTrue(ports[1].isTransferred());
+            Assert.assertFalse(ports[1].isClosed());
+            Assert.assertFalse(ports[1].isStarted());
+
+            // Close one port.
+            ports[0].close();
+            Assert.assertFalse(ports[0].isTransferred());
+            Assert.assertTrue(ports[0].isClosed());
+            Assert.assertFalse(ports[0].isStarted());
+        });
+    }
+
+    private static final String COUNT_PORT_FROM_MESSAGE = "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        var counter = 0;"
+            + "        var received = '';"
+            + "        onmessage = function (e) {"
+            + "            e.ports[0].onmessage = function(e) {"
+            + "                received += e.data;"
+            + "                counter += e.ports.length;"
+            + "                document.title = received + counter;"
+            + "                e.ports[0].postMessage(received + counter);"
+            + "            };"
+            + "        };"
+            + "   </script>"
+            + "</body></html>";
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    // Previously postMessage can be called on any thread, but no tests or CTS tests checked.
+    public void testTransferPortOnAnotherThread() throws Throwable {
+        loadPage(COUNT_PORT_FROM_MESSAGE);
+        final ChannelContainer container = new ChannelContainer();
+        final MessagePort[] ports =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAwContents.postMessageToMainFrame(
+                    new MessagePayload(""), "*", new MessagePort[] {ports[1]});
+        });
+        final MessagePort[] ports2 =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+        ports2[0].setMessageCallback((messagePayload, sentPorts) -> {
+            ThreadUtils.checkUiThread();
+            container.notifyCalled(messagePayload);
+        }, null);
+        ports[0].postMessage(new MessagePayload(HELLO), new MessagePort[] {ports2[1]});
+        expectTitle(HELLO + "1");
+        Assert.assertEquals(HELLO + "1", container.waitForMessageCallback().getStringValue());
+        ports[0].close();
+        ports2[0].close();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testTransferPortImmediateAfterPostMessageOnAnotherThread() throws Throwable {
+        loadPage(COUNT_PORT_FROM_MESSAGE);
+        final MessagePort[] ports =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAwContents.postMessageToMainFrame(
+                    new MessagePayload(""), "*", new MessagePort[] {ports[1]});
+        });
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        final AtomicReference<IllegalStateException> exceptionRef = new AtomicReference<>();
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            try {
+                callbackHelper.waitForCallback(0);
+                mAwContents.postMessageToMainFrame(
+                        new MessagePayload(HELLO), "*", new MessagePort[] {ports[0]});
+            } catch (TimeoutException ignored) {
+            } catch (IllegalStateException e) {
+                exceptionRef.set(e);
+                callbackHelper.notifyCalled();
+            }
+        });
+        ports[0].postMessage(new MessagePayload(HELLO), null);
+        callbackHelper.notifyCalled();
+
+        callbackHelper.waitForCallback(1);
+        Assert.assertEquals("Port is already started", exceptionRef.get().getMessage());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testCloseMessagePortOnAnotherThread() throws Throwable {
+        final MessagePort[] messagePorts = new MessagePort[1];
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            final MessagePort[] ports = mAwContents.createMessageChannel();
+            messagePorts[0] = ports[0];
+            // Move message port into |receiving| state.
+            messagePorts[0].setMessageCallback((messagePayload, sentPorts) -> {}, null);
+        });
+        // Close message channel on another thread, simulate the case where the "finalize" is called
+        // on finalizer thread.
+        messagePorts[0].close();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testTransferPortInAnotherThreadRaceCondition() throws Throwable {
+        loadPage(COUNT_PORT_FROM_MESSAGE);
+        final MessagePort[] ports =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAwContents.postMessageToMainFrame(
+                    new MessagePayload(""), "*", new MessagePort[] {ports[1]});
+        });
+        final MessagePort[] portsToTransfer =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+        // Transfer the port in another thread.
+        ports[0].postMessage(new MessagePayload("test"), new MessagePort[] {portsToTransfer[0]});
+        // Check port2[0] is transferred right now.
+        Assert.assertTrue(portsToTransfer[0].isTransferred());
+        // Set callback on the just transferred port right now. It should fail.
+        try {
+            portsToTransfer[0].setMessageCallback((messagePayload, sentPorts) -> {}, null);
+            Assert.fail("Port transferred, should not able to listen on");
+        } catch (IllegalStateException e) {
+            // Ignored.
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testSetReceiverAfterMessageReceived() throws Throwable {
+        loadPage(COUNT_PORT_FROM_MESSAGE);
+        final ChannelContainer container = new ChannelContainer();
+        final HandlerThread thread = new HandlerThread("test-thread");
+        thread.start();
+        final Handler handler = new Handler(thread.getLooper());
+        final MessagePort[] ports =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            // Post message before set callback
+            ports[0].postMessage(new MessagePayload("msg1"), null);
+        });
+        ports[1].setMessageCallback((messagePayload, sentPorts) -> {
+            container.notifyCalled(messagePayload);
+        }, handler);
+        Assert.assertEquals("msg1", container.waitForMessageCallback().getStringValue());
     }
 }
