@@ -30,6 +30,7 @@
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/trigger_context.h"
 
@@ -140,6 +141,25 @@ SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
   auto& selector = segment_selectors_.at(segmentation_key);
   return selector->GetCachedSegmentResult();
+}
+
+void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
+    const std::string& segmentation_key,
+    scoped_refptr<InputContext> input_context,
+    SegmentSelectionCallback callback) {
+  if (!storage_initialized_) {
+    // If the platform isn't fully initialized, cache the input arguments to run
+    // later.
+    pending_actions_.push_back(base::BindOnce(
+        &SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand,
+        weak_ptr_factory_.GetWeakPtr(), segmentation_key,
+        std::move(input_context), std::move(callback)));
+    return;
+  }
+
+  CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
+  auto& selector = segment_selectors_.at(segmentation_key);
+  selector->GetSelectedSegmentOnDemand(input_context, std::move(callback));
 }
 
 CallbackId

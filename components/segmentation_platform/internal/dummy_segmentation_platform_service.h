@@ -29,6 +29,9 @@ class DummySegmentationPlatformService : public SegmentationPlatformService {
                           SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
+  void GetSelectedSegmentOnDemand(const std::string& segmentation_key,
+                                  scoped_refptr<InputContext> input_context,
+                                  SegmentSelectionCallback callback) override;
   CallbackId RegisterOnDemandSegmentSelectionCallback(
       const std::string& segmentation_key,
       const OnDemandSegmentSelectionCallback& callback) override;

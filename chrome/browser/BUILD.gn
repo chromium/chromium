@@ -3206,6 +3206,7 @@ static_library("browser") {
       "search_engines/template_url_service_factory_android.cc",
       "search_engines/ui_thread_search_terms_data_android.cc",
       "search_engines/ui_thread_search_terms_data_android.h",
+      "segmentation_platform/android/contextual_page_action_controller_android.cc",
       "segmentation_platform/android/segmentation_platform_service_factory_android.cc",
       "segmentation_platform/default_model/chrome_start_model_android.cc",
       "segmentation_platform/default_model/chrome_start_model_android.h",

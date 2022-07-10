@@ -8,6 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/trigger_context.h"
 
@@ -30,6 +31,14 @@ void DummySegmentationPlatformService::GetSelectedSegment(
 SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
     const std::string& segmentation_key) {
   return SegmentSelectionResult();
+}
+
+void DummySegmentationPlatformService::GetSelectedSegmentOnDemand(
+    const std::string& segmentation_key,
+    scoped_refptr<InputContext> input_context,
+    SegmentSelectionCallback callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
 }
 
 CallbackId

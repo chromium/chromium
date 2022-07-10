@@ -18,6 +18,7 @@
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger_context.h"
@@ -110,6 +111,10 @@ class TestSegmentationPlatformService
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
     return result;
   }
+  void GetSelectedSegmentOnDemand(
+      const std::string& segmentation_key,
+      scoped_refptr<segmentation_platform::InputContext> input_context,
+      SegmentSelectionCallback callback) override {}
   segmentation_platform::CallbackId RegisterOnDemandSegmentSelectionCallback(
       const std::string& segmentation_key,
       const OnDemandSegmentSelectionCallback& callback) override {

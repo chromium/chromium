@@ -22,6 +22,7 @@
 class PrefRegistrySimple;
 
 namespace segmentation_platform {
+struct InputContext;
 class ServiceProxy;
 struct SegmentSelectionResult;
 class TriggerContext;
@@ -68,6 +69,13 @@ class SegmentationPlatformService : public KeyedService,
   // result.
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
+
+  // Given a client and a set of inputs, runs the required models on demand and
+  // returns the result in the supplied callback.
+  virtual void GetSelectedSegmentOnDemand(
+      const std::string& segmentation_key,
+      scoped_refptr<InputContext> input_context,
+      SegmentSelectionCallback callback) = 0;
 
   // Called to register a callback that will be invoked on segment selection
   // on-demand. Returns a callback ID that can be used for unregister.

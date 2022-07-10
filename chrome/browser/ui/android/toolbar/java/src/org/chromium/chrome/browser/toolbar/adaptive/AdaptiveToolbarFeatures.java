@@ -122,6 +122,18 @@ public class AdaptiveToolbarFeatures {
     /**
      * @return Whether contextual page actions are enabled.
      */
+    public static boolean isContextualPageActionsEnabled() {
+        // TODO(shaktisahu): These checks must match the ones when creating config. Maybe introduce
+        // a something common for android clients.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST);
+    }
+
+    /**
+     * @return Whether contextual page actions UI is enabled.
+     */
     public static boolean isContextualPageActionUiEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(

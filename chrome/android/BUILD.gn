@@ -4179,6 +4179,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsLauncher.java",
+    "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionController.java",
     "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",
     "java/src/org/chromium/chrome/browser/sharing/SharingServiceProxy.java",
     "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",
