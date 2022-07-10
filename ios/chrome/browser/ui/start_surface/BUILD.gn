@@ -34,6 +34,7 @@ source_set("start_surface") {
     ":feature_flags",
     "//base",
     "//components/favicon/ios",
+    "//components/url_param_filter/core",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser",

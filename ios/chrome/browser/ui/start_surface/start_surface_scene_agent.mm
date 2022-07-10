@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -130,7 +131,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
       params, nullptr, /*opened_by_dom=*/false,
       TabInsertion::kPositionAutomatically, /*in_background=*/false,
       /*inherit_opener=*/false, /*should_show_start_surface=*/true,
-      /*filtered_param_count=*/0);
+      url_param_filter::FilterResult());
 }
 
 // Removes duplicate NTP tabs in `browser`'s WebStateList.

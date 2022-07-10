@@ -93,6 +93,7 @@ source_set("eg2_tests") {
     "//components/url_param_filter/core",
     "//components/url_param_filter/core:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",

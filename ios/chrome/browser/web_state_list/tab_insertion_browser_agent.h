@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/url_param_filter/core/url_param_filterer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
@@ -39,7 +40,7 @@ class TabInsertionBrowserAgent
       bool in_background,
       bool inherit_opener,
       bool should_show_start_surface,
-      int filtered_param_count);
+      const url_param_filter::FilterResult& filtering_result);
 
   web::WebState* InsertWebStateOpenedByDOM(web::WebState* parent);
 

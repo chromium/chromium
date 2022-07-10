@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/web_state.h"
@@ -19,11 +20,6 @@ namespace url_param_filter {
 
 namespace {
 
-constexpr char kCrossOtrRefreshCountMetricName[] =
-    "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
-constexpr char kCrossOtrResponseCodeMetricName[] =
-    "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
-
 // Returns true if the web_state corresponds to one where a user enters
 // incognito by long-pressing on an embedded link and selecting "Open In
 // Incognito".
@@ -35,6 +31,39 @@ bool IsOpenInIncognito(web::WebState* web_state,
          ui::PageTransitionCoreTypeIs(navigation_context->GetPageTransition(),
                                       ui::PAGE_TRANSITION_TYPED);
 }
+
+// TODO(https://crbug.com/1342757): Refactor this class and CrossOtrObserver to
+// share logic.
+void WriteRefreshMetric(ClassificationExperimentStatus experiment_status,
+                        int refresh_count) {
+  // If we used experimental classifications, write the experimental metric in
+  // addition to the standard one for additional segmentation (default vs
+  // experimental).
+  if (experiment_status == ClassificationExperimentStatus::EXPERIMENTAL) {
+    base::UmaHistogramCounts100(
+        "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental",
+        refresh_count);
+  }
+  base::UmaHistogramCounts100("Navigation.CrossOtr.ContextMenu.RefreshCount",
+                              refresh_count);
+}
+
+// TODO(https://crbug.com/1342757): Refactor this class and CrossOtrObserver to
+// share logic.
+void WriteResponseMetric(ClassificationExperimentStatus experiment_status,
+                         int response_code) {
+  // If we used experimental classifications, write the experimental metric in
+  // addition to the standard one for additional segmentation (default vs
+  // experimental).
+  if (experiment_status == ClassificationExperimentStatus::EXPERIMENTAL) {
+    base::UmaHistogramSparse(
+        "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental",
+        response_code);
+  }
+  base::UmaHistogramSparse("Navigation.CrossOtr.ContextMenu.ResponseCode",
+                           response_code);
+}
+
 }  // namespace
 
 // static
@@ -87,8 +116,8 @@ void CrossOtrTabHelper::DidFinishNavigation(
     // TODO(https://crbug.com/1324194) See comment two about restricting metric
     // collection here.
     if (headers) {
-      base::UmaHistogramSparse(
-          kCrossOtrResponseCodeMetricName,
+      WriteResponseMetric(
+          experimental_status_,
           net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
     }
     return;
@@ -113,10 +142,15 @@ bool CrossOtrTabHelper::GetCrossOtrStateForTesting() const {
   return protecting_navigations_;
 }
 
+void CrossOtrTabHelper::SetExperimentalStatus(
+    ClassificationExperimentStatus status) {
+  experimental_status_ = status;
+}
+
 void CrossOtrTabHelper::Detach(web::WebState* web_state) {
   // TODO(https://crbug.com/1324194) See comment two about restricting metric
   // collection here.
-  base::UmaHistogramCounts100(kCrossOtrRefreshCountMetricName, refresh_count_);
+  WriteRefreshMetric(experimental_status_, refresh_count_);
   web_state->RemoveObserver(this);
   web_state->RemoveUserData(CrossOtrTabHelper::UserDataKey());
 }

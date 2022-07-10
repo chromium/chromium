@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_URL_PARAM_FILTER_IOS_CROSS_OTR_TAB_HELPER_H_
 #define COMPONENTS_URL_PARAM_FILTER_IOS_CROSS_OTR_TAB_HELPER_H_
 
+#include "components/url_param_filter/core/url_param_filterer.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
@@ -44,6 +45,10 @@ class CrossOtrTabHelper : public web::WebStateObserver,
   // Returns whether this observer is in Cross-OTR state, used for testing.
   bool GetCrossOtrStateForTesting() const;
 
+  // Stores the experimental status of the params being filtered for use in
+  // sending metrics.
+  void SetExperimentalStatus(ClassificationExperimentStatus status);
+
  private:
   CrossOtrTabHelper(web::WebState* web_state);
   friend class WebStateUserData<CrossOtrTabHelper>;
@@ -65,6 +70,10 @@ class CrossOtrTabHelper : public web::WebStateObserver,
   // user interaction is observed or a new navigation starts that is not a
   // client redirect.
   bool protecting_navigations_ = true;
+
+  // The type of filtering that occurred when entering the current webstate.
+  // This can take on two values : EXPERIMENTAL or NON_EXPERIMENTAL
+  ClassificationExperimentStatus experimental_status_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

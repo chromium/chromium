@@ -12,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_filter_test_helper.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -27,6 +28,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/common/features.h"
 #include "ios/web/public/test/element_selector.h"
+#import "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -660,7 +662,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 @end
 
-// Context menu tests for Chrome.
 @interface FilterWhenEnteringIncognitoDisabled : ChromeTestCase {
   std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
 }
@@ -695,7 +696,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
   [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
                              inWindowWithNumber:0];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   // Display the context menu.
   LongPressElement(kInitialPageDestinationLinkId);
@@ -715,28 +715,24 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 @end
 
-// Context menu tests for Chrome.
-@interface FilterWhenEnteringIncognitoEnabled : ChromeTestCase {
+// The IncognitoParamFilterExperiment feature is enabled, but the should_filter
+// param is false. The expected behavior is that params aren't be filtered from
+// URLs, but metrics are logged.
+@interface FilterWhenEnteringIncognitoPartiallyEnabled : ChromeTestCase {
   std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
 }
 
 @end
 
-@implementation FilterWhenEnteringIncognitoEnabled
+@implementation FilterWhenEnteringIncognitoPartiallyEnabled
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  // Make create a  127.0.0.1,clid (site,param) source classification
-  std::string classification =
-      url_param_filter::CreateBase64EncodedFilterParamClassificationForTesting(
-          {{"127.0.0.1", {"clid"}}}, {});
   config.additional_args.push_back(
       "--enable-features=" +
       std::string(
           url_param_filter::features::kIncognitoParamFilterEnabled.name) +
-      ":should_filter/true/classifications/" + classification);
-
+      ":should_filter/false");
   return config;
 }
 
@@ -747,6 +743,113 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+  // Set 127.0.0.1,clid as a (site,param) source classification for Url Param
+  // Filtering.
+  std::string test_contents =
+      url_param_filter::CreateSerializedUrlParamFilterClassificationForTesting(
+          {{"127.0.0.1", {"clid"}}}, {}, {"default"});
+  [ChromeEarlGrey setUrlParamClassifications:test_contents];
+}
+
+- (void)tearDown {
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+  [super tearDown];
+  [ChromeEarlGrey resetUrlParamClassifications];
+}
+
+// Checks that a decorated link isn't filtered when "Open in Incognito" is
+// pressed and the kIncognitoParamFilterEnabled feature is disabled.
+- (void)testOpenIncognitoLinkDoesntFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in Incognito.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was not filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Decorated destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kDecoratedDestinationLink),
+                  @"URL was filtered when it shouldn't have been");
+
+  // Reload the page once.
+  [ChromeEarlGrey reloadAndWaitForCompletion:true];
+
+  // Close the tab to check that the tab helper logged metrics when destroyed.
+  [ChromeEarlGrey closeCurrentTab];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:net::HttpUtil::MapStatusCodeForHistogram(200)
+                     forHistogram:
+                         @"Navigation.CrossOtr.ContextMenu.ResponseCode"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@"Navigation.CrossOtr.ContextMenu.RefreshCount"];
+  if (error) {
+    GREYFail([error description]);
+  }
+}
+
+@end
+
+@interface FilterWhenEnteringIncognitoFullyEnabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoFullyEnabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(
+      "--enable-features=" +
+      std::string(
+          url_param_filter::features::kIncognitoParamFilterEnabled.name) +
+      ":should_filter/true");
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+  // Set 127.0.0.1,clid as a (site,param) source classification for Url Param
+  // Filtering.
+  std::string test_contents =
+      url_param_filter::CreateSerializedUrlParamFilterClassificationForTesting(
+          {{"127.0.0.1", {"clid"}}}, {}, {"default"});
+  [ChromeEarlGrey setUrlParamClassifications:test_contents];
+}
+
+- (void)tearDown {
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+  [super tearDown];
+  [ChromeEarlGrey resetUrlParamClassifications];
 }
 
 // Checks that a decorated link is filtered when "Open in Incognito" is pressed
@@ -758,7 +861,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
   [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
                              inWindowWithNumber:0];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   // Display the context menu.
   LongPressElement(kInitialPageDestinationLinkId);
@@ -774,6 +876,28 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
                   self.testServer->GetURL(kFilteredDestinationLink),
                   @"URL wasn't filtered when it should've been");
+
+  // Reload the page once.
+  [ChromeEarlGrey reloadAndWaitForCompletion:true];
+
+  // Close the tab to check that the tab helper logged metrics when destroyed.
+  [ChromeEarlGrey closeCurrentTab];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+      expectUniqueSampleWithCount:1
+                        forBucket:net::HttpUtil::MapStatusCodeForHistogram(200)
+                     forHistogram:
+                         @"Navigation.CrossOtr.ContextMenu.ResponseCode"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@"Navigation.CrossOtr.ContextMenu.RefreshCount"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 @end

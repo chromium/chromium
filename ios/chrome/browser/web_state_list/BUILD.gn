@@ -132,6 +132,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/favicon/ios",
+    "//components/url_param_filter/core",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main",

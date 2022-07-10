@@ -27,6 +27,7 @@ source_set("url_loading") {
     "//components/keyed_service/ios",
     "//components/search_engines",
     "//components/sessions",
+    "//components/url_param_filter/core",
     "//ios/chrome/app:mode",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser",
@@ -57,6 +58,7 @@ source_set("url_loading_params_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "url_loading_params.h" ]
   deps = [
+    "//components/url_param_filter/core",
     "//ios/chrome/browser/ui/commands",
     "//ios/web/public",
     "//ui/base",
