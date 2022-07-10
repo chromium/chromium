@@ -93,6 +93,13 @@ template("ios_test_runner_wrapper") {
       "${shards}",
     ]
 
+    if (xcode_version_int >= 1400) {
+      executable_args += [
+        "--readline-timeout",
+        "600",
+      ]
+    }
+
     data_deps = [ "//testing:test_scripts_shared" ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
