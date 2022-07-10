@@ -673,7 +673,7 @@ void TableLayoutAlgorithmAuto::InsertSpanCell(LayoutTableCell* cell) {
          span > span_cells_[pos]->ColSpan())
     pos++;
   memmove(span_cells_.data() + pos + 1, span_cells_.data() + pos,
-          (size - pos - 1) * sizeof(LayoutTableCell*));
+          (size - pos - 1) * sizeof(decltype(span_cells_)::value_type));
   span_cells_[pos] = cell;
 }
 
