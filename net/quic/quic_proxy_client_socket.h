@@ -38,7 +38,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
       const std::string& user_agent,
       const HostPortPair& endpoint,
       const NetLogWithSource& net_log,
-      HttpAuthController* auth_controller,
+      scoped_refptr<HttpAuthController> auth_controller,
       ProxyDelegate* proxy_delegate);
 
   QuicProxyClientSocket(const QuicProxyClientSocket&) = delete;

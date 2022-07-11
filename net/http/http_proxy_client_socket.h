@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
                         const std::string& user_agent,
                         const HostPortPair& endpoint,
                         const ProxyServer& proxy_server,
-                        HttpAuthController* http_auth_controller,
+                        scoped_refptr<HttpAuthController> http_auth_controller,
                         ProxyDelegate* proxy_delegate,
                         const NetworkTrafficAnnotationTag& traffic_annotation);
 

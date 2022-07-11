@@ -51,7 +51,7 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
                         const std::string& user_agent,
                         const HostPortPair& endpoint,
                         const NetLogWithSource& source_net_log,
-                        HttpAuthController* auth_controller,
+                        scoped_refptr<HttpAuthController> auth_controller,
                         ProxyDelegate* proxy_delegate);
 
   SpdyProxyClientSocket(const SpdyProxyClientSocket&) = delete;

@@ -323,10 +323,10 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
         HostPortPair::FromSchemeHostPort(destination_endpoint_),
         NetLogWithSource::Make(NetLogSourceType::NONE),
-        new HttpAuthController(HttpAuth::AUTH_PROXY, proxy_endpoint_.GetURL(),
-                               NetworkIsolationKey(), &http_auth_cache_,
-                               http_auth_handler_factory_.get(),
-                               host_resolver_.get()),
+        base::MakeRefCounted<HttpAuthController>(
+            HttpAuth::AUTH_PROXY, proxy_endpoint_.GetURL(),
+            NetworkIsolationKey(), &http_auth_cache_,
+            http_auth_handler_factory_.get(), host_resolver_.get()),
         proxy_delegate_.get());
 
     session_->StartReading();

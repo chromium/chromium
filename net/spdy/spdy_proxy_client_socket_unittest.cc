@@ -282,7 +282,7 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
   sock_ = std::make_unique<SpdyProxyClientSocket>(
       spdy_stream, ProxyServer(ProxyServer::SCHEME_HTTPS, proxy_host_port_),
       user_agent_, endpoint_host_port_pair_, net_log_with_source_,
-      new HttpAuthController(
+      base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_PROXY, GURL("https://" + proxy_host_port_.ToString()),
           NetworkIsolationKey(), session_->http_auth_cache(),
           session_->http_auth_handler_factory(), session_->host_resolver()),

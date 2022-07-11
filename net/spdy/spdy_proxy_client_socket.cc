@@ -38,11 +38,11 @@ SpdyProxyClientSocket::SpdyProxyClientSocket(
     const std::string& user_agent,
     const HostPortPair& endpoint,
     const NetLogWithSource& source_net_log,
-    HttpAuthController* auth_controller,
+    scoped_refptr<HttpAuthController> auth_controller,
     ProxyDelegate* proxy_delegate)
     : spdy_stream_(spdy_stream),
       endpoint_(endpoint),
-      auth_(auth_controller),
+      auth_(std::move(auth_controller)),
       proxy_server_(proxy_server),
       proxy_delegate_(proxy_delegate),
       user_agent_(user_agent),
