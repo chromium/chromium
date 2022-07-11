@@ -11,8 +11,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

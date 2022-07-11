@@ -5,7 +5,7 @@
 #include "ash/components/tether/fake_wifi_hotspot_connector.h"
 
 #include "base/memory/ptr_util.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

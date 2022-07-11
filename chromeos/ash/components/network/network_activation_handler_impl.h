@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_activation_handler.h"
-#include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
 
 namespace chromeos {
 

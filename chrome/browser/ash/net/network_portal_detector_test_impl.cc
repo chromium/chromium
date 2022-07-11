@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 
 namespace ash {
 

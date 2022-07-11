@@ -5,8 +5,8 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
-#include "chromeos/network/network_device_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/services/network_config/cros_network_config.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 

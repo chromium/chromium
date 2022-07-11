@@ -10,8 +10,8 @@
 
 #include "base/strings/string_split.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/network/network_state.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_posix.h"

@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "chromeos/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
 
 namespace chromeos {
 

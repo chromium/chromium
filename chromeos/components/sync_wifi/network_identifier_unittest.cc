@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/components/sync_wifi/test_data_generator.h"
-#include "chromeos/network/network_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

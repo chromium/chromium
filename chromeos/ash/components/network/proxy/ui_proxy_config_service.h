@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chromeos/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_prefs.h"
 

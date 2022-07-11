@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/prefs/pref_service.h"

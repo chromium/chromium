@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
 
 #include "base/component_export.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

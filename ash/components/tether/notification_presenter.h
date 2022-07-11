@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_
 
 #include "ash/components/multidevice/remote_device_ref.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 
 namespace ash {
 

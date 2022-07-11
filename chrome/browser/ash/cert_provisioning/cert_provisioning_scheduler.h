@@ -22,8 +22,8 @@
 #include "chrome/browser/platform_keys/platform_keys.h"
 // TODO(https://crbug.com/1164001): forward declare NetworkStateHandler
 // after //chromeos/network is moved to ash.
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;

@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 
 namespace ash {

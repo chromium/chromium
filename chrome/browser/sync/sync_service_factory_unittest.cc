@@ -32,10 +32,10 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/components/sync_wifi/wifi_configuration_sync_service.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/network_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #endif
 

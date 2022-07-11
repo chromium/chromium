@@ -55,7 +55,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/net/delay_network_call.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

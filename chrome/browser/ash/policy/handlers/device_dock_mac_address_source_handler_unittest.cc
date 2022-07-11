@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/network/mock_network_device_handler.h"
-#include "chromeos/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

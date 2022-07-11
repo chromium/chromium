@@ -16,8 +16,8 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/network_handler.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

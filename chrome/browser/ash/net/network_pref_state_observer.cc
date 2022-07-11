@@ -10,9 +10,9 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/components/sync_wifi/wifi_configuration_sync_service.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "content/public/browser/notification_service.h"
 
 namespace ash {

@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
 

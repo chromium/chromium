@@ -16,9 +16,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_detail_dialog_resources.h"
 #include "chrome/grit/internet_detail_dialog_resources_map.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "chromeos/strings/grit/chromeos_strings.h"

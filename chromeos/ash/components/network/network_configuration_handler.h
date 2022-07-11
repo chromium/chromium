@@ -18,11 +18,11 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {

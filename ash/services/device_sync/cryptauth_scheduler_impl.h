@@ -17,10 +17,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;

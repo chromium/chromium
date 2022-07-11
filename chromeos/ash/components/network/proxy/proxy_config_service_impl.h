@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"

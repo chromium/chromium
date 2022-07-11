@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 

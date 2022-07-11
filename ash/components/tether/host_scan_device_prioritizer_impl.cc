@@ -9,8 +9,8 @@
 #include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

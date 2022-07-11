@@ -13,7 +13,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;

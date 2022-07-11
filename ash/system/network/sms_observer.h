@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_NETWORK_SMS_OBSERVER_H_
 
 #include "ash/ash_export.h"
-#include "chromeos/network/network_sms_handler.h"
+#include "chromeos/ash/components/network/network_sms_handler.h"
 
 namespace ash {
 

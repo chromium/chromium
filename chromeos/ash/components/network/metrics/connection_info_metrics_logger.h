@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

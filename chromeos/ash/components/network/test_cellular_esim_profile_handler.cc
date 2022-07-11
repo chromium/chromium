@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace chromeos {
 

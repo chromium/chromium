@@ -23,11 +23,11 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

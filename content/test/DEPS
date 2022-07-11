@@ -13,9 +13,9 @@ include_rules = [
   # For WebRTC tests.
   "+ash/components/audio",
   "+chromeos/ash/components/dbus/audio",
-  "+chromeos/network/network_handler.h",
-  "+chromeos/network/network_state.h",
-  "+chromeos/network/network_state_handler.h",
+  "+chromeos/ash/components/network/network_handler.h",
+  "+chromeos/ash/components/network/network_state.h",
+  "+chromeos/ash/components/network/network_state_handler.h",
   # Testing utilities can access anything in content/
   "+content",
   "+device/bluetooth", # For WebBluetooth tests

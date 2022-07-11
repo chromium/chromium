@@ -13,8 +13,8 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

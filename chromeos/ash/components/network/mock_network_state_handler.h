@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_MOCK_NETWORK_STATE_HANDLER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_MOCK_NETWORK_STATE_HANDLER_H_
 
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {

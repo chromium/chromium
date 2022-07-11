@@ -13,9 +13,9 @@
 #include "ash/components/tether/mock_tether_host_response_recorder.h"
 #include "base/containers/contains.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

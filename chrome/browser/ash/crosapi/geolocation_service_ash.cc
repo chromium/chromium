@@ -8,7 +8,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace crosapi {

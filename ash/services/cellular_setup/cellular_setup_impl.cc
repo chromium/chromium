@@ -9,7 +9,7 @@
 #include "ash/services/cellular_setup/ota_activator_impl.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace ash::cellular_setup {

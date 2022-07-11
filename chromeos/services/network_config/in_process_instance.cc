@@ -5,7 +5,7 @@
 #include "chromeos/services/network_config/in_process_instance.h"
 
 #include "base/no_destructor.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/services/network_config/cros_network_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

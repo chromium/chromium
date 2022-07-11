@@ -18,7 +18,7 @@
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "components/country_codes/country_codes.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"

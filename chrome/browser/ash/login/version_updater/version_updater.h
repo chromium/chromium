@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when migrated.
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 
 namespace base {
 class DefaultTickClock;

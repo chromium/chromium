@@ -16,8 +16,8 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_profile_observer.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
+#include "chromeos/ash/components/network/network_profile_observer.h"
 #include "chromeos/network/policy_applicator.h"
 #include "chromeos/network/profile_policies.h"
 

@@ -17,7 +17,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace ash {

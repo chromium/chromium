@@ -5,11 +5,11 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 
 #include "base/run_loop.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/network/network_device_handler.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
 
 namespace chromeos {
 

@@ -10,7 +10,7 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 // TODO(https://crbug.com/1164001): forward declare NetworkState when moved to
 // chrome/browser/ash/.
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_state.h"
 
 namespace chromeos {
 

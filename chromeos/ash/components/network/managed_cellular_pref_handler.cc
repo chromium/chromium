@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/network/network_event_log.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"

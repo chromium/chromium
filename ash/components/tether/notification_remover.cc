@@ -5,7 +5,7 @@
 #include "ash/components/tether/notification_remover.h"
 
 #include "ash/components/tether/notification_presenter.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
 

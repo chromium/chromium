@@ -9,8 +9,8 @@
 #include "ash/components/tether/tether_host_response_recorder.h"
 #include "base/bind.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 
 namespace ash {

@@ -8,8 +8,8 @@
 #include "ash/components/tether/device_id_tether_network_guid_map.h"
 #include "ash/components/tether/tether_host_response_recorder.h"
 #include "base/containers/contains.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
 
