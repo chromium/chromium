@@ -238,8 +238,7 @@ void LoginRemoveAccountDialog::ResetState() {
     remove_user_button_->SetBackgroundAndFont(/*alert_mode=*/false);
     // Reset button's description to none.
     remove_user_button_->GetViewAccessibility().OverrideDescription(
-        std::u16string(),
-        ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+        std::u16string());
   }
 }
 

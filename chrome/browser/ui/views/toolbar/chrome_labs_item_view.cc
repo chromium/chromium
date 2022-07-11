@@ -154,8 +154,7 @@ ChromeLabsItemView::ChromeLabsItemView(
   experiment_name_->GetViewAccessibility().OverrideIsIgnored(true);
   experiment_description->GetViewAccessibility().OverrideIsIgnored(true);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
-  if (!lab.visible_name.empty())
-    GetViewAccessibility().OverrideName(lab.visible_name);
+  GetViewAccessibility().OverrideName(lab.visible_name);
 
   // There is currently a MacOS VoiceOver screen reader bug where VoiceOver does
   // not announce the accessible description for groups (crbug.com/1197159). The
@@ -169,8 +168,7 @@ ChromeLabsItemView::ChromeLabsItemView(
   // when VoiceOver bug is fixed.
 
 #if !BUILDFLAG(IS_MAC)
-  if (!lab.visible_description.empty())
-    GetViewAccessibility().OverrideDescription(lab.visible_description);
+  GetViewAccessibility().OverrideDescription(lab.visible_description);
 #endif
 
   AddChildView(

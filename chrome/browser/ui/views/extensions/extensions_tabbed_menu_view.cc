@@ -239,15 +239,7 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
   // appropriately.
   SetPaintClientToLayer(true);
 
-  // ExtensionsTabbedMenuView::GetAccessibleWindowTitle always returns an empty
-  // string. This was done because the title is already spoken via the call to
-  // SetTitle(). Should that change, kAttributeExplicitlyEmpty will not be
-  // appropriate.
-  ax::mojom::NameFrom name_from =
-      GetAccessibleWindowTitle().empty()
-          ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-          : ax::mojom::NameFrom::kAttribute;
-  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle(), name_from);
+  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
 
   toolbar_model_observation_.Observe(toolbar_model_.get());
   browser_->tab_strip_model()->AddObserver(this);

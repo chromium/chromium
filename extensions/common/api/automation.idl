@@ -476,7 +476,6 @@
 
   enum DescriptionFromType {
     ariaDescription,
-    attributeExplicitlyEmpty,
     buttonLabel,
     popupElement,
     relatedElement,

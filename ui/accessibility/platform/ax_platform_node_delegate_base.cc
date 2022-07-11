@@ -213,11 +213,6 @@ ax::mojom::NameFrom AXPlatformNodeDelegateBase::GetNameFrom() const {
   return GetData().GetNameFrom();
 }
 
-ax::mojom::DescriptionFrom AXPlatformNodeDelegateBase::GetDescriptionFrom()
-    const {
-  return GetData().GetDescriptionFrom();
-}
-
 std::u16string AXPlatformNodeDelegateBase::GetTextContentUTF16() const {
   // Unlike in web content The "kValue" attribute always takes precedence,
   // because we assume that users of this base class, such as Views controls,
@@ -565,10 +560,6 @@ AXPlatformNodeDelegateBase::ChildrenEnd() {
 
 const std::string& AXPlatformNodeDelegateBase::GetName() const {
   return GetStringAttribute(ax::mojom::StringAttribute::kName);
-}
-
-const std::string& AXPlatformNodeDelegateBase::GetDescription() const {
-  return GetStringAttribute(ax::mojom::StringAttribute::kDescription);
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetHypertext() const {

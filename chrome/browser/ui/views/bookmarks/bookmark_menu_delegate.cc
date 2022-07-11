@@ -619,6 +619,7 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
       DCHECK(node->is_folder());
       child_menu_item = menu->AppendSubMenu(
           id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
+      child_menu_item->GetViewAccessibility().OverrideDescription("");
     }
     AddMenuToMaps(child_menu_item, node);
   }

@@ -200,8 +200,7 @@ void ContinueTaskView::UpdateResult() {
   if (!result()) {
     title_->SetText(std::u16string());
     subtitle_->SetText(std::u16string());
-    GetViewAccessibility().OverrideName(
-        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    GetViewAccessibility().OverrideName(std::u16string());
     return;
   }
 

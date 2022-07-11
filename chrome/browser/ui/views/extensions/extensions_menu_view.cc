@@ -104,17 +104,7 @@ ExtensionsMenuView::ExtensionsMenuView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
   SetTitle(IDS_EXTENSIONS_MENU_TITLE);
-
-  // ExtensionsMenuView::GetAccessibleWindowTitle always returns an empty
-  // string. This was done to prevent repetition of "Alert Extensions"
-  // when the user selects Extensions from the Desktop PWA three dot menu.
-  // See crrev.com/c/2661700. Should that change, kAttributeExplicitlyEmpty
-  // will not be appropriate.
-  ax::mojom::NameFrom name_from =
-      GetAccessibleWindowTitle().empty()
-          ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-          : ax::mojom::NameFrom::kAttribute;
-  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle(), name_from);
+  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
 
   SetEnableArrowKeyTraversal(true);
 

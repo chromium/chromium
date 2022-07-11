@@ -1268,7 +1268,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         from = "tooltip";
         break;
       case ax::mojom::DescriptionFrom::kNone:
-      case ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty:
         NOTREACHED();
     }
     DCHECK(!from.empty());

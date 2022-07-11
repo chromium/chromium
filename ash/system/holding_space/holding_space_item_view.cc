@@ -134,15 +134,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
 
   // Accessibility.
   GetViewAccessibility().OverrideName(item->GetAccessibleName());
-
-  // When the description is not specified, tooltip text will be used.
-  // That text is redundant to the name, but different enough that it is
-  // still exposed to assistive technologies which may then present both.
-  // To avoid that redundant presentation, set the description explicitly
-  // to the empty string. See crrev.com/c/3218112.
-  GetViewAccessibility().OverrideDescription(
-      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
-
+  GetViewAccessibility().OverrideDescription(base::EmptyString16());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   // Layer.

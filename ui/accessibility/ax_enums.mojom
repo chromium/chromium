@@ -1183,55 +1183,17 @@ enum NameFrom {
   kValue,  // E.g. <input type="button" value="Button's name">.
 };
 
-// The source of the accessible description. Used by some screen readers
-// to determine if and how the description should be presented to the user.
 enum DescriptionFrom {
-  // No description has been provided. (See also kAttributeExplicitlyEmpty)
   kNone,
-
-  // The description comes from a flat string, such as aria-description (in the
-  // case of web content) or provided by the View.
   kAriaDescription,
-
-  // The description has been removed to improve accessibility. Example: The
-  // description normally provided by this View's tooltip contains text which
-  // is also present in this View's name. This could cause screen readers to
-  // speak the information twice, which is not desired. Therefore the
-  // description has been deliberately set to the empty string to prevent
-  // double presentation.
-  kAttributeExplicitlyEmpty,
-
-  // The description comes from the label/text of a button.
-  // See HTML-AAM's Accessible Name and Description Computation.
-  kButtonLabel,
-
-  // The description comes from some other object such as an element referenced
-  // by aria-describedby (in the case of web content), or another View present
-  // in the UI.
+  kButtonLabel,  // HTML-AAM 5.2.2
   kRelatedElement,
-
-  // The description comes from a Ruby annotation.
   kRubyAnnotation,
-
-  // The description comes from the contents of a summary element.
-  // See HTML-AAM's Accessible Name and Description Computation.
-  kSummary,
-
-  // The description comes from the text of an SVG desc element.
-  // See SVG-AAM's Accessible Name and Description Computation.
+  kSummary,  // HTML-AAM 5.8.2
   kSvgDescElement,
-
-  // The description comes from a table's caption element.
-  // See HTML-AAM's Accessible Name and Description Computation.
-  kTableCaption,
-
-  // The description comes from the title attribute (HTML), the title element
-  // (SVG), or a View's tooltip.
+  kTableCaption,  // HTML-AAM 5.9.2
   kTitle,
-
-  // The description comes from a non-tooltip popup, e.g. the |triggerpopup|
-  // attribute pointing to `popup=hint`.
-  kPopupElement,
+  kPopupElement, // E.g. |triggerpopup| attr pointing to `popup=hint`.
 };
 
 // Next value: 4
